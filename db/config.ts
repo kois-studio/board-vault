@@ -14,7 +14,7 @@ const Account = defineTable({
 const Owner = defineTable({
     columns: {
         id: column.number({ primaryKey: true }),
-        accountId: column.number({ references: () => Account.columns.id }),
+        userId: column.number({ references: () => Account.columns.id }),
         name: column.text(),
         imageUrl: column.text(),
     },
