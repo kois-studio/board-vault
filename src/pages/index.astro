@@ -1,18 +1,4 @@
 ---
-import Layout from '../layouts/Layout.astro'
-import { db, Game } from 'astro:db'
-
-const games = await db.select().from(Game);
-
+Astro.redirect('/en/')
 ---
-
-<Layout title='Dashboard' | description='Home page'>
-    <h1>Welcome {'email'}</h1>
-    <p>We are happy to see you here</p>
-    {games.map(game => (
-        <div>
-            <h2>{game.id}</h2>
-            <p>{game.title}</p>
-        </div>
-    ))}
-</Layout>
+<meta http-equiv='refresh' content='0;url=/en/' />

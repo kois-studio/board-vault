@@ -1,10 +1,17 @@
 ---
+import '../styles/global.scss'
+import { translations } from '../i18n/translations'
+import Language from '../components/Language.astro'
+
 interface Props {
-	title: string;
-    description: string;
+    lang: keyof typeof translations
 }
 
-const { title, description } = Astro.props;
+const { lang } = Astro.props
+const t = translations[lang]
+
+// styles
+const styles_link = 'b-0 cursor-pointer p-2 text-xl font-bold tracking-wider hover:text-blue-600'
 ---
 
 <!doctype html>
@@ -17,9 +24,9 @@ const { title, description } = Astro.props;
         <meta name='generator' content={Astro.generator} />
         
         <!-- Primary Meta Tags -->
-        <title>Board Vault | {title}</title>
-        <meta name='title' content={title} />
-        <meta name='description' content={description} />
+        <title>Board Vault | {t.test}</title>
+        <meta name='title' content={t.test} />
+        <meta name='description' content={t.test} />
         
         <!-- Bootstrap & Icons -->
         <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css' />
@@ -28,13 +35,78 @@ const { title, description } = Astro.props;
         <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css' />
 	</head>
 	<body class="bg-zinc-900 text-white">
-        <header>
+        <header class='absolute left-0 right-0 top-0 z-10 bg-transparent p-2 text-white'>
+            <nav class='animate__animated animate__fadeIn relative flex items-center justify-between px-4'>
+                <a href={`/${Astro.currentLocale}`} class='' aria-label='Home'>
+                    <span class='hidden'>Home</span>
+                    <img src='/images/logo.webp' alt='logo' class='w-16' />
+                </a>
+
+                <!-- DESKTOP MENU -->
+                <div class='hidden lg:block'>
+                    <a class={styles_link} href={`/${lang}`}>{t.test}</a>
+                    <a class={styles_link} href={`/${lang}/services`}>{t.test}</a>
+                    <a class={styles_link} href={`/${lang}/about`}>{t.test}</a>
+                    <a class={styles_link} href={`/${lang}/contact`}>{t.test}</a>
+                </div>
+
+                <div class='absolute left-0 top-20 lg:relative lg:top-0'>
+                    <Language lang={lang} />
+                </div>
+
+                <!-- MOBILE MENU -->
+                <button id='menu-btn' class='block text-4xl lg:hidden' aria-label="menu">
+                    <i class='bi bi-list'></i>
+                </button>
+
+                <div id='menu' class='absolute right-0 top-20 hidden flex-col items-end lg:hidden'>
+                    <a class={styles_link} href={`/${lang}`}>{t.test}</a>
+                    <a class={styles_link} href={`/${lang}/services`}>{t.test}</a>
+                    <a class={styles_link} href={`/${lang}/about`}>{t.test}</a>
+                    <a class={styles_link} href={`/${lang}/contact`}>{t.test}</a>
+                </div>
+            </nav>
         </header>
+
         <main class="container mx-auto">
             <slot />
         </main>
+
+        <footer class='mt-8 bg-zinc-800 text-white'>
+            <div class='container mx-auto grid gap-y-8 px-4 pb-40 pt-8 xl:grid-cols-4'>
+                <div class='mx-auto pb-8 xl:mx-0 xl:pb-0'>
+                    <img src='/images/logo.webp' alt='logo' class='w-32' />
+                </div>
+                <div class='flex flex-col items-start'>
+                    <h2 class='pb-4 text-3xl font-bold tracking-wider'>{t.test}</h2>
+                    <a class='pb-2 hover:underline' href={`/${Astro.currentLocale}/services`}>{t.test}</a>
+                    <a class='pb-2 hover:underline' href={`/${Astro.currentLocale}/about`}>{t.test}</a>
+                </div>
+                <div class='flex flex-col items-start'>
+                    <h2 class='pb-4 text-3xl font-bold tracking-wider'>{t.test}</h2>
+                    <a class='pb-2 hover:underline' href={`/${Astro.currentLocale}#faq`}>{t.test}</a>
+                    <a class='pb-2 hover:underline' href={`/${Astro.currentLocale}/terms`}>{t.test}</a>
+                </div>
+                <div class='flex flex-col items-start'>
+                    <h2 class='pb-4 text-3xl font-bold tracking-wider'>{t.test}</h2>
+                    <a class='pb-2 hover:underline' href={`/${Astro.currentLocale}/contact`}>{t.test}</a>
+                    <p class='pb-2'>hola@gmail.com</p>
+                </div>
+            </div>
+            <div class='bg-zinc-900 p-4 text-center text-xl'>newver.com &copy; {new Date().getFullYear().toString()}</div>
+        </footer>
 	</body>
 </html>
+
+<script is:inline>
+    const menuBtn = document.querySelectorAll('#menu-btn')[0]
+    const menu = document.querySelectorAll('#menu')[0]
+    menuBtn.addEventListener('click', () => {
+        menu.classList.toggle('hidden')
+        menu.classList.toggle('flex')
+    })
+</script>
+
 <style is:global>
     html, body {
         font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;

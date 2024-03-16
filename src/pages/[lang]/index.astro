@@ -1,0 +1,47 @@
+---
+import Layout from '../../layouts/Layout.astro'
+import { db, Game } from 'astro:db'
+
+// Translations stuff
+import { generatePaths } from '../../utils'
+import { translations } from '../../i18n/translations'
+export const getStaticPaths = generatePaths
+const { lang } = Astro.params
+const t = translations[lang]
+
+// Other stuff
+const games = await db.select().from(Game);
+
+const { cookies, redirect } = Astro
+
+const accessToken = cookies.get('session_id')
+
+if (!accessToken) {
+    return redirect(`/${Astro.currentLocale}/signin`)
+}
+
+// const { data, error } = await supabase.auth.setSession({
+//     refresh_token: refreshToken.value,
+//     access_token: accessToken.value,
+// })
+
+// if (error) {
+//     cookies.delete('sb-access-token', { path: '/' })
+//     cookies.delete('sb-refresh-token', { path: '/' })
+
+//     return redirect('/signin')
+// }
+
+// const email = data?.user?.email
+---
+
+<Layout lang={lang}>
+    <h1>Welcome {'email'}</h1>
+    <p>We are happy to see you here</p>
+    {games.map(game => (
+        <div>
+            <h2>{game.id}</h2>
+            <p>{game.title}</p>
+        </div>
+    ))}
+</Layout>
