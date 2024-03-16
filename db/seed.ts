@@ -1,10 +1,13 @@
 import { db, Account, Owner, Game, OwnedGame } from 'astro:db'
 
+// Hashed password for "1234"
+const example_password = '$2a$14$.nywJt3bPWo7f2tpuGOjWu1.rBpJX2kpU94yQoIzcnyzwlAexEsRe'
+
 // https://astro.build/db/seed
 export default async function seed() {
     await db.insert(Account).values([
-        { id: 1, email: 'hi@hi.com', password: '1234' },
-        { id: 2, email: 'ho@ho.com', password: '1234' },
+        { id: 1, email: 'hi@hi.com', password: example_password },
+        { id: 2, email: 'ho@ho.com', password: example_password },
     ])
 
     await db.insert(Owner).values([
