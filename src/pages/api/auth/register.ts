@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro'
-import { supabase } from '../../../lib/supabase'
+import { db, Account } from 'astro:db'
+import bcrypt from 'bcryptjs'
 
 export const POST: APIRoute = async ({ request, redirect }) => {
     const formData = await request.formData()
@@ -10,14 +11,18 @@ export const POST: APIRoute = async ({ request, redirect }) => {
         return new Response('Email and password are required', { status: 400 })
     }
 
-    const { error } = await supabase.auth.signUp({
-        email,
-        password,
-    })
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 14)
 
-    if (error) {
-        return new Response(error.message, { status: 500 })
+     // Insert the new user into the DB
+     try {
+        await db.insert(Account).values({
+            email,
+            password: hashedPassword,
+        });
+
+        return redirect('/signin');
+    } catch (error: any) {
+        return new Response(error?.message, { status: 500 });
     }
-
-    return redirect('/signin')
 }
