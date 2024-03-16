@@ -14,7 +14,7 @@ const Account = defineTable({
 const Owner = defineTable({
     columns: {
         id: column.number({ primaryKey: true }),
-        userId: column.number({ references: () => Account.columns.id }),
+        accountId: column.number({ references: () => Account.columns.id }),
         name: column.text(),
         imageUrl: column.text(),
     },
@@ -41,6 +41,15 @@ const OwnedGame = defineTable({
     },
 })
 
+// Session - User sessions
+const Session = defineTable({
+    columns: {
+        sessionId: column.text({ primaryKey: true }),
+        accountId: column.number({ references: () => Account.columns.id }),
+        createdAt: column.date({ default: NOW }),
+    },
+})
+
 // https://astro.build/db/config
 export default defineDb({
     tables: {
@@ -48,5 +57,6 @@ export default defineDb({
         Game,
         Owner,
         OwnedGame,
+        Session,
     },
 })

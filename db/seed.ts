@@ -8,8 +8,8 @@ export default async function seed() {
     ])
 
     await db.insert(Owner).values([
-        { id: 1, userId: 1, name: 'John Doe', imageUrl: 'https://fastly.picsum.photos/id/96/200/200.jpg?hmac=OWdGKA_6EKn7IZEMPRZ-F_wvRBZlDHi-n9QCzIKJV_4' },
-        { id: 2, userId: 1, name: 'Jane Doe', imageUrl: 'https://fastly.picsum.photos/id/921/200/200.jpg?hmac=6pwJUhec4NqIAFxrha-8WXGa8yI1pJXKEYCWMSHroSU' },
+        { id: 1, accountId: 1, name: 'John Doe', imageUrl: 'https://fastly.picsum.photos/id/96/200/200.jpg?hmac=OWdGKA_6EKn7IZEMPRZ-F_wvRBZlDHi-n9QCzIKJV_4' },
+        { id: 2, accountId: 1, name: 'Jane Doe', imageUrl: 'https://fastly.picsum.photos/id/921/200/200.jpg?hmac=6pwJUhec4NqIAFxrha-8WXGa8yI1pJXKEYCWMSHroSU' },
     ])
 
     await db.insert(Game).values([
