@@ -1,6 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro'
-import RegisterForm from '../../components/forms/RegisterForm.svelte'
+import LoginForm from '../../components/forms/LoginForm.svelte'
 
 // Translations stuff
 import { generatePaths } from '../../utils'
@@ -19,11 +19,13 @@ if (accessToken) {
 ---
 
 <Layout lang={lang}>
-    <h1 class='text-4xl text-center pt-24 lg:pt-48'>Create an account</h1>
+    <h1 class='text-4xl text-center pt-24 lg:pt-48'>Welcome!</h1>
     <p class='text-gray-400 text-center py-8'>
-        <span>Already have an account?</span>
-        <a href={`/${Astro.currentLocale}/login`} class='underline'>Log in</a>
+        <span>New here?</span>
+        <a href={`/${Astro.currentLocale}/register`} class='underline'>
+            Create an account
+        </a>
     </p>
 
-    <RegisterForm client:load />
+    <LoginForm client:load redirect={redirect} />
 </Layout>
