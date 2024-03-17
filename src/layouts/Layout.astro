@@ -35,7 +35,7 @@ const styles_link = 'b-0 cursor-pointer p-2 text-xl font-bold tracking-wider hov
         <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css' />
 	</head>
 	<body class="bg-zinc-900 text-white">
-        <header class='absolute left-0 right-0 top-0 z-10 bg-transparent p-2 text-white'>
+        <header class='p-2 border-b border-zinc-500'>
             <nav class='animate__animated animate__fadeIn relative flex items-center justify-between px-4'>
                 <a href={`/${Astro.currentLocale}`} class='' aria-label='Home'>
                     <span class='hidden'>Home</span>
@@ -68,7 +68,7 @@ const styles_link = 'b-0 cursor-pointer p-2 text-xl font-bold tracking-wider hov
             </nav>
         </header>
 
-        <main class="container mx-auto">
+        <main>
             <slot />
         </main>
 
