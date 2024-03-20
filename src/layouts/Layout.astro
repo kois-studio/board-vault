@@ -11,7 +11,7 @@ const { lang } = Astro.props
 const t = translations[lang]
 
 // styles
-const styles_link = 'b-0 cursor-pointer p-2 text-xl font-bold tracking-wider hover:text-blue-600'
+const styles_link = 'b-0 cursor-pointer p-2 text-xl font-bold tracking-wider hover:text-green-600'
 ---
 
 <!doctype html>
@@ -44,10 +44,7 @@ const styles_link = 'b-0 cursor-pointer p-2 text-xl font-bold tracking-wider hov
 
                 <!-- DESKTOP MENU -->
                 <div class='hidden lg:block'>
-                    <a class={styles_link} href={`/${lang}`}>{t.test}</a>
-                    <a class={styles_link} href={`/${lang}/services`}>{t.test}</a>
-                    <a class={styles_link} href={`/${lang}/about`}>{t.test}</a>
-                    <a class={styles_link} href={`/${lang}/contact`}>{t.test}</a>
+                    <a class={styles_link} href={`/${lang}/games`}>Games list</a>
                 </div>
 
                 <div class='absolute left-0 top-20 lg:relative lg:top-0'>
@@ -60,10 +57,7 @@ const styles_link = 'b-0 cursor-pointer p-2 text-xl font-bold tracking-wider hov
                 </button>
 
                 <div id='menu' class='absolute right-0 top-20 hidden flex-col items-end lg:hidden'>
-                    <a class={styles_link} href={`/${lang}`}>{t.test}</a>
-                    <a class={styles_link} href={`/${lang}/services`}>{t.test}</a>
-                    <a class={styles_link} href={`/${lang}/about`}>{t.test}</a>
-                    <a class={styles_link} href={`/${lang}/contact`}>{t.test}</a>
+                    <a class={styles_link} href={`/${lang}/games`}>Games list</a>
                 </div>
             </nav>
         </header>
