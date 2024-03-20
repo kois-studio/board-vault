@@ -1,0 +1,39 @@
+---
+import Layout from '../../layouts/Layout.astro'
+import { db, Game, OwnedGame, Owner } from 'astro:db'
+import { sql } from '@astrojs/db/runtime'
+import GameCard from '../../components/GameCard.astro'
+
+
+// Translations stuff
+import { generatePaths } from '../../utils'
+import { translations } from '../../i18n/translations'
+export const getStaticPaths = generatePaths
+const { lang } = Astro.params
+const t = translations[lang]
+
+// List of all games in DB
+const games = await db.select().from(Game)
+---
+
+<Layout lang={lang}>
+    <div class='container mx-auto pt-8 lg:pt-16'>
+        <h1 class='text-4xl text-center'>Games list</h1>
+        <p class='text-gray-400 text-center py-8'>
+            These are all the games registered so far <br />
+            You may add to request new ones here
+        </p>
+
+        <div class='flex gap-2'>
+            {games.map(game =>
+                <GameCard
+                    title={game.title}
+                    imageUrl={game.imageUrl}
+                    gameAvgDuration={game.gameAvgDuration}
+                    minPlayers={game.minPlayers}
+                    maxPlayers={game.maxPlayers}
+                />
+            )}
+        </div>
+    </div>
+</Layout>
