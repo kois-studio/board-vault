@@ -1,0 +1,23 @@
+---
+import Image from './Image.astro'
+
+interface Props {
+    title: string
+    imageUrl: string
+    gameAvgDuration: number
+    minPlayers: number,
+    maxPlayers: number,
+}
+
+const { title, imageUrl, gameAvgDuration, minPlayers, maxPlayers } = Astro.props
+---
+<div class="grid grid-rows-2 rounded bg-zinc-700 p-2 min-w-40">
+    <!-- <div class="bgimage h-full w-full rounded" style="background-image: url({game.imageUrl});" /> -->
+    <Image src={imageUrl} />
+
+    <div class="relative overflow-hidden">
+        <h3 class="py-2 text-lg overflow-hidden text-ellipsis whitespace-nowrap">{title}</h3>
+        <p><i class="bi bi-clock-fill" /> {gameAvgDuration} mins</p>
+        <p><i class="bi bi-people-fill" /> {minPlayers} - {maxPlayers}</p>
+    </div>
+</div>
