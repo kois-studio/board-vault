@@ -1,0 +1,11 @@
+---
+interface Props {
+    src: string
+}
+
+const { src } = Astro.props
+---
+
+<div class="bg-cover bg-no-repeat bg-center h-full w-full overflow-hidden" style={`background-image: url(${src});`}>
+    <slot />
+</div>

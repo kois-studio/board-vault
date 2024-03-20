@@ -1,0 +1,21 @@
+---
+import Image from './Image.astro'
+
+interface Props {
+    name: string
+    gamesOwned: number
+    imageUrl: string
+}
+
+const { name, gamesOwned, imageUrl } = Astro.props
+---
+
+<button class='flex items-center gap-2 rounded border-2 bg-zinc-800 p-2 hover:bg-zinc-700 border-zinc-800 min-w-48'>
+    <div class='h-20 w-20'>
+        <Image src={imageUrl} />
+    </div>
+    <div class='flex flex-col items-start'>
+        <span class='text-xl'>{name}</span>
+        <span><i class='bi bi-joystick'></i> {gamesOwned}</span>
+    </div>
+</button>
