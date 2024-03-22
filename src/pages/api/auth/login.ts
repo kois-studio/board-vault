@@ -3,9 +3,12 @@ import { db, Account, Session } from 'astro:db'
 import { sql } from '@astrojs/db/runtime'
 import bcrypt from 'bcryptjs'
 import { v4 as uuidv4 } from 'uuid'
+import { Log } from '../../../utils'
 
 export const POST: APIRoute = async ({ request, cookies }) => {
     const { email, password } = await request.json()
+
+    Log('Login: ', { email })
 
     if (!email || !password) {
         return new Response(JSON.stringify({
@@ -16,6 +19,8 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     // Fetch user from database
     const users = await db.select().from(Account).where(sql`email = ${email}`).execute()
     const user = users[0]
+
+    Log({ user })
 
     if (!user || !bcrypt.compareSync(password, user.password)) {
         return new Response(JSON.stringify({
@@ -33,8 +38,13 @@ export const POST: APIRoute = async ({ request, cookies }) => {
         })
         .execute()
 
+    if (import.meta.env) {
+        const sessions = await db.select().from(Session)
+        Log({ sessions })
+    }
+
     // Set the session ID in cookies
-    cookies.set('session_id', sessionId, { path: '/', httpOnly: true })
+    cookies.set('session_id', sessionId, { path: '/', httpOnly: true, secure: import.meta.env.PROD, sameSite: 'strict' })
 
     return new Response(JSON.stringify({
         message: 'Logged in successfully',
