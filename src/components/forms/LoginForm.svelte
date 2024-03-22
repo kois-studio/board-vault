@@ -3,8 +3,6 @@
     let email = ''
     let password = ''
 
-    export let redirect: (path: string) => void
-
     function validateEmail(email: string): boolean {
         const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/
         return regex.test(email)
@@ -40,7 +38,7 @@
         const data = await response.json()
 
         response.ok
-            ? redirect('/')
+            ? window.location.href = '/'
             : alert(data.error)
     
         return loading = false

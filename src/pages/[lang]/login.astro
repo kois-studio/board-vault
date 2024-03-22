@@ -10,11 +10,10 @@ const { lang } = Astro.params
 const t = translations[lang]
 
 // Other stuff
-const { cookies, redirect } = Astro
-const accessToken = cookies.get('session_id')
+const accessToken = Astro.cookies.get('session_id')
 
 if (accessToken) {
-    return redirect(`/${Astro.currentLocale}/`)
+    return Astro.redirect(`/${Astro.currentLocale}/`)
 }
 ---
 
@@ -27,5 +26,5 @@ if (accessToken) {
         </a>
     </p>
 
-    <LoginForm client:load redirect={redirect} />
+    <LoginForm client:load />
 </Layout>
