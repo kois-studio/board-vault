@@ -18,13 +18,13 @@ if (accessToken) {
 ---
 
 <Layout lang={lang}>
-    <h1 class='text-4xl text-center pt-24 lg:pt-48'>Welcome!</h1>
+    <h1 class='text-4xl text-center pt-24 lg:pt-48'>{t.login_title}</h1>
     <p class='text-gray-400 text-center py-8'>
-        <span>New here?</span>
+        <span>{t.login_description}</span>
         <a href={`/${Astro.currentLocale}/register`} class='underline'>
-            Create an account
+            {t.login_description_link}
         </a>
     </p>
 
-    <LoginForm client:load />
+    <LoginForm client:load lang={lang} />
 </Layout>
