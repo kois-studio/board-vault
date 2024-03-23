@@ -69,13 +69,6 @@ const owners = await db
                 <hr class='mb-4' />
 
                 <GamesSelector owners={owners} games={games} ownedGames={ownedGames} />
-
-                <button
-                    id='signout'
-                    class='rounded bg-green-600 px-6 py-4 text-xl font-bold hover:bg-green-700'
-                >
-                    Sign out
-                </button>
             </div>
         ) : (
             <div class='text-center container mx-auto px-4 py-20'>
@@ -88,20 +81,6 @@ const owners = await db
 </Layout>
 
 <script is:inline>
-    // Handle Sign Out
-    document.getElementById('signout').addEventListener('click', async () => {
-        // Call the sign out endpoint
-        const response = await fetch('/api/auth/signout', { method: 'GET' })
-
-        if (response.ok) {
-            // Redirect to the homepage or sign-in page after successful sign out
-            window.location.href = '/'
-        } else {
-            // Handle errors (optional)
-            console.error('Sign out failed')
-        }
-    })
-
     // Add a class to the owner card
     document.querySelectorAll('.dx-ownerCard').forEach(card => {
         card.addEventListener('click', () => {
