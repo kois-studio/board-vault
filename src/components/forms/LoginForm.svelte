@@ -2,8 +2,11 @@
     let loading = false
     let email = ''
     let password = ''
-
-    export let lang: string = 'en'
+    
+    // Translations
+    import { translations } from '../../i18n/translations'
+    export let lang: keyof typeof translations = 'en'
+    const t = translations[lang]
 
     function validateEmail(email: string): boolean {
         const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/
@@ -49,13 +52,13 @@
 
 <div class="flex flex-col gap-4 rounded bg-zinc-800 p-8 w-96 mx-auto">
     <input
-        placeholder="Email ..."
+        placeholder={`${t.login_email} ...`}
         type="email"
         class="rounded border border-zinc-700 bg-zinc-800 px-4 py-2"
         bind:value={email}
     />
     <input
-        placeholder="Password ..."
+        placeholder={`${t.login_password} ...`}
         type="password"
         class="rounded border border-zinc-700 bg-zinc-800 px-4 py-2"
         bind:value={password}
@@ -65,6 +68,6 @@
         disabled={loading}
         class="rounded bg-green-600 px-6 py-4 text-xl font-bold hover:bg-green-700 lg:col-span-3 disabled:cursor-not-allowed disabled:bg-green-400 disabled:hover:bg-green-400 disabled:opacity-50"
     >
-        Login
+        {t.login_button}
     </button>
 </div>
