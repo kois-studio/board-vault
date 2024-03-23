@@ -1,96 +1,95 @@
 ---
 import Layout from '../../layouts/Layout.astro'
-import { db, Game, OwnedGame, Owner } from 'astro:db'
+import { db, Game, OwnedGame, Owner, Session } from 'astro:db'
 import { sql } from '@astrojs/db/runtime'
-import OwnerCard from '../../components/OwnerCard.astro'
+import GamesSelector from '../../components/GamesSelector.svelte'
 
 // Translations stuff
-import { generatePaths } from '../../utils'
 import { translations } from '../../i18n/translations'
-export const getStaticPaths = generatePaths
+import { Account } from 'astro:db'
 const { lang } = Astro.params
 const t = translations[lang]
 
 // Other stuff
 const accessToken = Astro.cookies.get('session_id')
+let isValid: boolean = false
 
-// async function validateSession() {
-//     try {
-//         const response = await fetch('/api/auth/session', { method: 'GET' })
-//         console.log(1243125)
-//         const data = await response.json()
+if (!accessToken) {
+    return Astro.redirect(`/${Astro.currentLocale}/login`)
+}
 
-//         if (!data.valid) {
-//             redirect(`/${Astro.currentLocale}/login`)
-//         }
-//     } catch (error) {
-//         console.error('a', error)
-//     }
-// }
+const sessions = await db
+    .select()
+    .from(Session)
+    .where(sql`sessionId = ${accessToken.value}`)
 
-// if (!accessToken) {
-//     return redirect(`/${Astro.currentLocale}/login`)
-// } else {
-//     validateSession()
-// }
+if (sessions.length === 0) {
+    Astro.cookies.delete('session_id', { path: '/' })
+    return Astro.redirect(`/${Astro.currentLocale}/login`)
+}
 
-// const { data, error } = await supabase.auth.setSession({
-//     refresh_token: refreshToken.value,
-//     access_token: accessToken.value,
-// })
+const accounts = await db
+    .select()
+    .from(Account)
+    .where(sql`id = ${sessions[0]?.accountId!}`)
+const account = accounts[0]
 
-// if (error) {
-//     cookies.delete('sb-access-token', { path: '/' })
-//     cookies.delete('sb-refresh-token', { path: '/' })
-
-//     return redirect('/signin')
-// }
-
-// const email = data?.user?.email
+if (!account) {
+    throw new Error('Account not found')
+} else {
+    isValid = true
+}
 
 // Step 1: load all the owners from your account
 const games = await db.select().from(Game)
+const ownedGames = await db.select().from(OwnedGame)
 const owners = await db
     .select()
     .from(Owner)
-    .where(sql`userId = ${1}`)
-
-const ownedGames = await db
-    .select()
-    .from(OwnedGame)
-
-function getGames(ownerId: number): typeof games {
-    return games.filter(game => {
-        return ownedGames.some(ownedGame => {
-            return ownedGame.gameId === game.id && ownedGame.ownerId === ownerId
-        })
-    })
-}
+    .where(sql`userId = ${account.id}`)
 ---
 
-<Layout lang={lang}>
-    <div class='container mx-auto pt-8 lg:pt-16'>
-        <h1 class='text-4xl text-center'>Welcome!</h1>
-        <p class='text-gray-400 text-center py-8'>New here?</p>
+<Layout lang={lang as keyof typeof translations}>
+    {
+        isValid ? (
+            <div class='container mx-auto pt-8 lg:pt-16'>
+                <h1 class='text-2xl font-bold text-center mb-8'>
+                    Select the people who comes to play today
+                </h1>
 
-        <button
-            id='signout'
-            class='rounded bg-green-600 px-6 py-4 text-xl font-bold hover:bg-green-700'
-        >
-            Sign out
-        </button>
-        <div class="flex gap-2">
-        {
-            owners.map(owner => (
-                <OwnerCard name={owner.name} gamesOwned={getGames(owner.id).length} imageUrl={owner.imageUrl} />
-            ))
-        }
-        </div>
-    </div>
+                <div class="flex items-center justify-start mb-2 gap-4">
+                    <button
+                        title='Edit group'
+                        class='block rounded bg-green-600 px-2 hover:bg-green-700'
+                    >
+                        <i class='bi bi-pencil-square' />
+                    </button>
+                    <p class='text-lg font-bold'>{account.email} - Group</p>
+                </div>
+                <hr class='mb-4' />
+
+                <GamesSelector owners={owners} games={games} ownedGames={ownedGames} />
+
+                <button
+                    id='signout'
+                    class='rounded bg-green-600 px-6 py-4 text-xl font-bold hover:bg-green-700'
+                >
+                    Sign out
+                </button>
+            </div>
+        ) : (
+            <div class='text-center container mx-auto px-4 py-20'>
+                <p class='pb-8'>
+                    Something went wrong. <br /> Please, sign out and log in again
+                </p>
+            </div>
+        )
+    }
 </Layout>
 
 <script is:inline>
-    async function handleSignOut() {
+    // Handle Sign Out
+    document.getElementById('signout').addEventListener('click', async () => {
         // Call the sign out endpoint
         const response = await fetch('/api/auth/signout', { method: 'GET' })
 
@@ -101,7 +100,13 @@ function getGames(ownerId: number): typeof games {
             // Handle errors (optional)
             console.error('Sign out failed')
         }
-    }
+    })
 
-    document.getElementById('signout').addEventListener('click', handleSignOut)
+    // Add a class to the owner card
+    document.querySelectorAll('.dx-ownerCard').forEach(card => {
+        card.addEventListener('click', () => {
+            // When an owner is clicked, add a class to the card
+            card.classList.toggle('bg-zinc-700')
+        })
+    })
 </script>
