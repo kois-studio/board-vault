@@ -24,7 +24,7 @@ const games = await db.select().from(Game)
             You may add to request new ones here
         </p>
 
-        <div class='flex gap-2'>
+        <div class='flex gap-2 flex-wrap'>
             {games.map(game =>
                 <GameCard
                     title={game.title}
