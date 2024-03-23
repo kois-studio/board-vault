@@ -13,7 +13,7 @@ const t = translations[lang]
 const accessToken = Astro.cookies.get('session_id')
 
 if (accessToken) {
-    return Astro.redirect(`/${Astro.currentLocale}/`)
+    return Astro.redirect(`/${Astro.currentLocale}/dashboard`)
 }
 ---
 
