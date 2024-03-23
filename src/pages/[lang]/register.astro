@@ -14,16 +14,16 @@ const { cookies, redirect } = Astro
 const accessToken = cookies.get('session_id')
 
 if (accessToken) {
-    return redirect(`/${Astro.currentLocale}/`)
+    return redirect(`/${Astro.currentLocale}/dashboard`)
 }
 ---
 
 <Layout lang={lang}>
-    <h1 class='text-4xl text-center pt-24 lg:pt-48'>Create an account</h1>
+    <h1 class='text-4xl text-center pt-24 lg:pt-48'>{t.register_title}</h1>
     <p class='text-gray-400 text-center py-8'>
-        <span>Already have an account?</span>
-        <a href={`/${Astro.currentLocale}/login`} class='underline'>Log in</a>
+        <span>{t.register_description}</span>
+        <a href={`/${Astro.currentLocale}/login`} class='underline'>{t.register_description_link}</a>
     </p>
 
-    <RegisterForm client:load />
+    <RegisterForm client:load lang={lang} />
 </Layout>
