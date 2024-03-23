@@ -2,9 +2,13 @@ import type { APIRoute } from 'astro'
 import { db, Account } from 'astro:db'
 import bcrypt from 'bcryptjs'
 import { validateEmail } from '../../../utils'
+import { Log } from '../../../utils'
+import { sql } from '@astrojs/db/runtime'
 
-export const POST: APIRoute = async ({ request, redirect }) => {
+export const POST: APIRoute = async ({ request }) => {
     const { email, password, confirmPassword } = await request.json()
+
+    Log('Register: ', { email })
 
     if (!email || !password || !confirmPassword) {
         return new Response(JSON.stringify({
@@ -33,22 +37,30 @@ export const POST: APIRoute = async ({ request, redirect }) => {
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 14)
 
-    return new Response(
-        JSON.stringify({
-            email,
-            password: hashedPassword,
-        }),
-        { status: 501 },
-    )
-
     // Insert the new user into the DB
     try {
+        const accounts = await db
+            .select()
+            .from(Account)
+            .where(sql`email = ${email}`)
+
+        if (accounts.length > 0) {
+            return new Response(JSON.stringify({
+                error: 'Email already in use! Login instead.',
+            }), { status: 400 })
+        }
+
         await db.insert(Account).values({
             email,
             password: hashedPassword,
         })
 
-        return redirect('/login')
+        const accounts_check = await db.select().from(Account)
+        Log('Accounts on DB:', accounts_check)
+
+        return new Response(JSON.stringify({
+            message: 'Registration successful!',
+        }), { status: 200 })
     } catch (error: any) {
         return new Response(JSON.stringify({
             error: error?.message,
