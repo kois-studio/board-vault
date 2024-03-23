@@ -1,6 +1,5 @@
 ---
 import Layout from '../../layouts/Layout.astro'
-import { db, Game } from 'astro:db'
 
 // Translations stuff
 import { generatePaths } from '../../utils'
@@ -9,84 +8,19 @@ export const getStaticPaths = generatePaths
 const { lang } = Astro.params
 const t = translations[lang]
 
-// Other stuff
-const games = await db.select().from(Game)
-const { cookies, redirect } = Astro
-const accessToken = cookies.get('session_id')
-
-async function validateSession() {
-    try {
-        const response = await fetch('/api/auth/session', { method: 'GET' })
-        console.log(1243125)
-        const data = await response.json()
-
-        if (!data.valid) {
-            redirect(`/${Astro.currentLocale}/login`)
-        }
-    } catch (error) {
-        console.error(error)
-    }
-}
-
-if (!accessToken) {
-    return redirect(`/${Astro.currentLocale}/login`)
-} else {
-    validateSession()
-}
-
-
-// const { data, error } = await supabase.auth.setSession({
-//     refresh_token: refreshToken.value,
-//     access_token: accessToken.value,
-// })
-
-// if (error) {
-//     cookies.delete('sb-access-token', { path: '/' })
-//     cookies.delete('sb-refresh-token', { path: '/' })
-
-//     return redirect('/signin')
-// }
-
-// const email = data?.user?.email
 ---
 
 <Layout lang={lang}>
     <div class='container mx-auto pt-8 lg:pt-16'>
-        <h1 class='text-4xl text-center'>Welcome!</h1>
-        <p class='text-gray-400 text-center py-8'>New here?</p>
+        <h1 class='text-4xl text-center'>Board Vault</h1>
+        <p class='text-gray-400 text-center py-8'>A database to organize the table games of your friends group</p>
 
-        <button
-            id='signout'
+        <a
+            href={`/${Astro.currentLocale}/login`}
             class='rounded bg-green-600 px-6 py-4 text-xl font-bold hover:bg-green-700'
         >
-            Sign out
-        </button>
-        <p>We are happy to see you here</p>
-        {}
-        {
-            games.map(game => (
-                <div>
-                    <h2>{game.id}</h2>
-                    <p>{game.title}</p>
-                </div>
-            ))
-        }
+            Log in
+        </a>
     </div>
 </Layout>
 
-<script is:inline>
-    async function handleSignOut() {
-        // Call the sign out endpoint
-        const response = await fetch('/api/auth/signout', { method: 'GET' })
-
-        if (response.ok) {
-            // Redirect to the homepage or sign-in page after successful sign out
-            window.location.href = '/signin'
-        } else {
-            // Handle errors (optional)
-            console.error('Sign out failed')
-        }
-    }
-
-    document.getElementById('signout').addEventListener('click', handleSignOut)
-</script>

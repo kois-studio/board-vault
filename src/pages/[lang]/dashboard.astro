@@ -1,0 +1,107 @@
+---
+import Layout from '../../layouts/Layout.astro'
+import { db, Game, OwnedGame, Owner } from 'astro:db'
+import { sql } from '@astrojs/db/runtime'
+import OwnerCard from '../../components/OwnerCard.astro'
+
+// Translations stuff
+import { generatePaths } from '../../utils'
+import { translations } from '../../i18n/translations'
+export const getStaticPaths = generatePaths
+const { lang } = Astro.params
+const t = translations[lang]
+
+// Other stuff
+const accessToken = Astro.cookies.get('session_id')
+
+// async function validateSession() {
+//     try {
+//         const response = await fetch('/api/auth/session', { method: 'GET' })
+//         console.log(1243125)
+//         const data = await response.json()
+
+//         if (!data.valid) {
+//             redirect(`/${Astro.currentLocale}/login`)
+//         }
+//     } catch (error) {
+//         console.error('a', error)
+//     }
+// }
+
+// if (!accessToken) {
+//     return redirect(`/${Astro.currentLocale}/login`)
+// } else {
+//     validateSession()
+// }
+
+// const { data, error } = await supabase.auth.setSession({
+//     refresh_token: refreshToken.value,
+//     access_token: accessToken.value,
+// })
+
+// if (error) {
+//     cookies.delete('sb-access-token', { path: '/' })
+//     cookies.delete('sb-refresh-token', { path: '/' })
+
+//     return redirect('/signin')
+// }
+
+// const email = data?.user?.email
+
+// Step 1: load all the owners from your account
+const games = await db.select().from(Game)
+const owners = await db
+    .select()
+    .from(Owner)
+    .where(sql`userId = ${1}`)
+
+const ownedGames = await db
+    .select()
+    .from(OwnedGame)
+
+function getGames(ownerId: number): typeof games {
+    return games.filter(game => {
+        return ownedGames.some(ownedGame => {
+            return ownedGame.gameId === game.id && ownedGame.ownerId === ownerId
+        })
+    })
+}
+---
+
+<Layout lang={lang}>
+    <div class='container mx-auto pt-8 lg:pt-16'>
+        <h1 class='text-4xl text-center'>Welcome!</h1>
+        <p class='text-gray-400 text-center py-8'>New here?</p>
+
+        <button
+            id='signout'
+            class='rounded bg-green-600 px-6 py-4 text-xl font-bold hover:bg-green-700'
+        >
+            Sign out
+        </button>
+        <div class="flex gap-2">
+        {
+            owners.map(owner => (
+                <OwnerCard name={owner.name} gamesOwned={getGames(owner.id).length} imageUrl={owner.imageUrl} />
+            ))
+        }
+        </div>
+    </div>
+</Layout>
+
+<script is:inline>
+    async function handleSignOut() {
+        // Call the sign out endpoint
+        const response = await fetch('/api/auth/signout', { method: 'GET' })
+
+        if (response.ok) {
+            // Redirect to the homepage or sign-in page after successful sign out
+            window.location.href = '/'
+        } else {
+            // Handle errors (optional)
+            console.error('Sign out failed')
+        }
+    }
+
+    document.getElementById('signout').addEventListener('click', handleSignOut)
+</script>
