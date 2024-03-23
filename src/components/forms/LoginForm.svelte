@@ -3,6 +3,8 @@
     let email = ''
     let password = ''
 
+    export let lang: string = 'en'
+
     function validateEmail(email: string): boolean {
         const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/
         return regex.test(email)
@@ -38,7 +40,7 @@
         const data = await response.json()
 
         response.ok
-            ? window.location.href = '/'
+            ? window.location.href = `/${lang}/dashboard`
             : alert(data.error)
     
         return loading = false
