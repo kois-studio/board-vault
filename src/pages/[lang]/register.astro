@@ -10,11 +10,10 @@ const { lang } = Astro.params
 const t = translations[lang]
 
 // Other stuff
-const { cookies, redirect } = Astro
-const accessToken = cookies.get('session_id')
+const accessToken = Astro.cookies.get('session_id')
 
 if (accessToken) {
-    return redirect(`/${Astro.currentLocale}/dashboard`)
+    return Astro.redirect(`/${Astro.currentLocale}/dashboard`)
 }
 ---
 
