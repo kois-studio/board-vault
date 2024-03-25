@@ -1,7 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro'
-import { db, Game, OwnedGame, Owner } from 'astro:db'
-import { sql } from '@astrojs/db/runtime'
+import { db, Game } from 'astro:db'
 import GameCard from '../../components/GameCard.astro'
 
 
@@ -18,7 +17,7 @@ const games = await db.select().from(Game)
 
 <Layout lang={lang}>
     <div class='container mx-auto pt-8 lg:pt-16'>
-        <h1 class='text-4xl text-center'>Games list</h1>
+        <h1 class='text-4xl text-center'>{t.games_title}</h1>
         <p class='text-gray-400 text-center py-8'>
             These are all the games registered so far <br />
             You may add to request new ones here
