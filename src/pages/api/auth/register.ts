@@ -1,18 +1,17 @@
 import type { APIRoute } from 'astro'
-import { db, Account } from 'astro:db'
+import { db, Account, eq } from 'astro:db'
 import bcrypt from 'bcryptjs'
 import { validateEmail } from '../../../utils'
 import { Log } from '../../../utils'
-import { sql } from '@astrojs/db/runtime'
 
 export const POST: APIRoute = async ({ request }) => {
-    const { email, password, confirmPassword } = await request.json()
+    const { alias, email, password, confirmPassword } = await request.json()
 
     Log('Register: ', { email })
 
-    if (!email || !password || !confirmPassword) {
+    if (!alias || !email || !password || !confirmPassword) {
         return new Response(JSON.stringify({
-            error: 'Email and password are required',
+            error: 'Please fill all the required fields',
         }), { status: 400 })
     }
 
@@ -42,7 +41,7 @@ export const POST: APIRoute = async ({ request }) => {
         const accounts = await db
             .select()
             .from(Account)
-            .where(sql`email = ${email}`)
+            .where(eq(Account.email, email))
 
         if (accounts.length > 0) {
             return new Response(JSON.stringify({
@@ -52,6 +51,8 @@ export const POST: APIRoute = async ({ request }) => {
 
         await db.insert(Account).values({
             email,
+            alias,
+            imageUrl: '',
             password: hashedPassword,
         })
 

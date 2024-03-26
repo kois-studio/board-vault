@@ -2,8 +2,7 @@
 import '../styles/global.scss'
 import { translations } from '../i18n/translations'
 import Language from '../components/Language.astro'
-import { Account, Session, db } from 'astro:db'
-import { sql } from '@astrojs/db/runtime'
+import { Account, Session, db, eq } from 'astro:db'
 
 interface Props {
     lang: keyof typeof translations
@@ -21,14 +20,14 @@ if (accessToken) {
     const sessions = await db
         .select()
         .from(Session)
-        .where(sql`sessionId = ${accessToken.value}`)
+        .where(eq(Session.sessionId, accessToken.value))
 
     // 2. Check if the session is valid
     if (sessions.length > 0) {
         const accounts = await db
             .select()
             .from(Account)
-            .where(sql`id = ${sessions[0]?.accountId}`)
+            .where(eq(Account.id, Number(sessions[0]?.accountId)))
         const account = accounts[0]
         if (account) {
             isSessionValid = true
