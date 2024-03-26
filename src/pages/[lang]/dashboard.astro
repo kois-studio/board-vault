@@ -1,13 +1,12 @@
 ---
 import Layout from '../../layouts/Layout.astro'
 import { db, eq, Game, OwnedGame, Session } from 'astro:db'
-import GamesSelector from '../../components/GamesSelector.svelte'
 
 // Translations stuff
 import { generatePaths } from '../../utils'
 import { translations } from '../../i18n/translations'
 export const getStaticPaths = generatePaths
-import { Account } from 'astro:db'
+import { Account, Group, GroupMembership } from 'astro:db'
 const { lang } = Astro.params
 const t = translations[lang]
 console.log(t.test)
@@ -42,9 +41,88 @@ if (!account) {
     isValid = true
 }
 
-// Step 1: load all the owners from your account
-const games = await db.select().from(Game)
-const ownedGames = await db.select().from(OwnedGame)
+// FIXME: load all games list, and owned games list
+// const games = await db.select().from(Game)
+// const ownedGames = await db.select().from(OwnedGame)
+
+// check which memberships the user has and get the info of each group
+/**
+ * 1. Get the memberships of the user AND the group's data of each one
+ */
+const yourMemberships = await db
+    .select()
+    .from(GroupMembership)
+    .where(eq(GroupMembership.accountId, account.id))
+
+const groups = (
+    await Promise.all(
+        yourMemberships.map(
+            async membership =>
+                (
+                    await db.select().from(Group).where(eq(Group.id, membership.groupId))
+                )[0],
+        ),
+    )
+).filter(group => group !== undefined)
+
+/**
+ * 2. Get the members inside each group
+ * And the games that each member of each group has
+ */
+const groupDetails = await Promise.all(
+    groups.map(async group => {
+        // Fetch all memberships for the current group
+        const memberships = await db
+            .select()
+            .from(GroupMembership)
+            .where(eq(GroupMembership.groupId, Number(group?.id)))
+
+        // Fetch account details for each member in the group
+        const members = await Promise.all(
+            memberships.map(async membership => {
+                const memberAccount = await db
+                    .select()
+                    .from(Account)
+                    .where(eq(Account.id, membership.accountId))
+                if (!memberAccount[0]) {
+                    throw new Error('Account not found')
+                }
+                return memberAccount[0] // Assuming there's always a matching account
+            }),
+        )
+
+        // Fetch owned games for each member in the group
+        const membersWithGames = await Promise.all(
+            members.map(async member => {
+                const ownedGames = await db
+                    .select()
+                    .from(OwnedGame)
+                    .where(eq(OwnedGame.accountId, Number(member?.id)))
+
+                // Fetch game details for each owned game
+                const gameDetails = await Promise.all(
+                    ownedGames.map(async ownedGame => {
+                        const game = await db
+                            .select()
+                            .from(Game)
+                            .where(eq(Game.id, ownedGame.gameId))
+                        return game[0] // Assuming there's always a matching game
+                    }),
+                )
+
+                return {
+                    ...member,
+                    ownedGames: gameDetails,
+                }
+            }),
+        )
+
+        return {
+            ...group,
+            members: membersWithGames,
+        }
+    }),
+)
 ---
 
 <Layout lang={lang as keyof typeof translations}>
@@ -52,21 +130,49 @@ const ownedGames = await db.select().from(OwnedGame)
         isValid ? (
             <div class='container mx-auto pt-8 lg:pt-16'>
                 <h1 class='text-2xl font-bold text-center mb-8'>
-                    Select the people who comes to play today
+                    {account.alias}'s Groups
                 </h1>
 
-                <div class="flex items-center justify-start mb-2 gap-4">
-                    <button
-                        title='Edit group'
-                        class='block rounded bg-green-600 px-2 hover:bg-green-700'
-                    >
-                        <i class='bi bi-pencil-square' />
-                    </button>
-                    <p class='text-lg font-bold'>{account.email} - Group</p>
-                </div>
-                <hr class='mb-4' />
-
-                <GamesSelector accounts={accounts} games={games} ownedGames={ownedGames} />
+                {groupDetails.map(group => (
+                    <div>
+                        <div class='flex items-center justify-start mb-2 gap-4'>
+                            <button
+                                title='Edit group'
+                                class='block rounded bg-green-600 px-2 hover:bg-green-700'
+                            >
+                                <i class='bi bi-pencil-square' />
+                            </button>
+                            <div class='flex justify-between w-full'>
+                                <span class='text-lg font-bold'>{group?.name}</span>
+                                <span title="creation date">{group?.createdAt?.toLocaleDateString()}</span>
+                            </div>
+                        </div>
+                        <hr class='mb-4' />
+                        <div class='md:grid-4 container mx-auto mb-24 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6 lg:gap-4 xl:grid-cols-8'>
+                            {group.members.map(member => (
+                                <button class='dx-ownerCard rounded border-2 bg-zinc-800 p-2 hover:bg-zinc-700 border-zinc-800 relative'>
+                                    <div class='flex items-center gap-2'>
+                                        <div class='h-20 w-20'>
+                                            <div
+                                                class='bg-cover bg-no-repeat bg-center h-full w-full overflow-hidden'
+                                                style={`background-image: url(${member.imageUrl});`}
+                                            />
+                                        </div>
+                                        {group.createdBy === member.id && (
+                                            <i class='bi bi-star-fill text-yellow-400 absolute -top-3 -left-2' />
+                                        )}
+                                        <div class='flex flex-col items-start'>
+                                            <span class='text-xl'>{member.alias}</span>
+                                            <span>
+                                                <i class='bi bi-joystick' /> 420
+                                            </span>
+                                        </div>
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                ))}
             </div>
         ) : (
             <div class='text-center container mx-auto px-4 py-20'>
@@ -78,7 +184,7 @@ const ownedGames = await db.select().from(OwnedGame)
     }
 </Layout>
 
-<script is:inline>
+<!-- <script is:inline>
     // Add a class to the owner card
     document.querySelectorAll('.dx-ownerCard').forEach(card => {
         card.addEventListener('click', () => {
@@ -86,4 +192,4 @@ const ownedGames = await db.select().from(OwnedGame)
             card.classList.toggle('bg-zinc-700')
         })
     })
-</script>
+</script> -->
