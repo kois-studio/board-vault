@@ -1,4 +1,12 @@
-import { db, Account, Owner, Game, OwnedGame } from 'astro:db'
+import {
+    db,
+    Account,
+    Game,
+    OwnedGame,
+    Group,
+    GroupMembership,
+    Invitation,
+} from 'astro:db'
 
 // Hashed password for "1234"
 const example_password = '$2a$14$.nywJt3bPWo7f2tpuGOjWu1.rBpJX2kpU94yQoIzcnyzwlAexEsRe'
@@ -6,22 +14,33 @@ const example_password = '$2a$14$.nywJt3bPWo7f2tpuGOjWu1.rBpJX2kpU94yQoIzcnyzwlA
 // https://astro.build/db/seed
 export default async function seed() {
     await db.insert(Account).values([
-        { id: 1, email: 'hi@hi.com', password: example_password },
-        { id: 2, email: 'ho@ho.com', password: example_password },
-    ])
-
-    await db.insert(Owner).values([
         {
             id: 1,
-            userId: 1,
-            name: 'Marcos',
-            imageUrl: 'https://media3.giphy.com/media/9Ai5dIk8xvBm0/200.webp',
+            email: 'david@test.com',
+            password: example_password,
+            alias: 'David',
+            imageUrl: 'https://media0.giphy.com/media/N8uutOwabFDcmsuPkp/giphy.gif',
         },
         {
             id: 2,
-            userId: 1,
-            name: 'David',
-            imageUrl: 'https://media0.giphy.com/media/N8uutOwabFDcmsuPkp/giphy.gif',
+            email: 'marcos@test.com',
+            password: example_password,
+            alias: 'Marcos',
+            imageUrl: 'https://media3.giphy.com/media/9Ai5dIk8xvBm0/200.webp',
+        },
+        {
+            id: 3,
+            email: 'alex@test.com',
+            password: example_password,
+            alias: 'Alex',
+            imageUrl: 'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbWE1d3FoZDIwOHA3OHowcmVqb2NoZWRrNTN3MHZpZTlicGp3bnUyeSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/WGFdv6kbikBq0/giphy.gif',
+        },
+        {
+            id: 4,
+            email: 'bruno@test.com',
+            password: example_password,
+            alias: 'Bruno',
+            imageUrl: 'https://media4.giphy.com/media/zXKA3p9aR3u7u/giphy.gif',
         },
     ])
 
@@ -472,10 +491,39 @@ export default async function seed() {
     ])
 
     await db.insert(OwnedGame).values([
-        { ownerId: 1, gameId: 1 },
-        { ownerId: 1, gameId: 2 },
-        { ownerId: 1, gameId: 3 },
-        { ownerId: 2, gameId: 3 },
-        { ownerId: 2, gameId: 4 },
+        { accountId: 1, gameId: 1 },
+        { accountId: 1, gameId: 2 },
+        { accountId: 1, gameId: 3 },
+        { accountId: 2, gameId: 3 },
+        { accountId: 2, gameId: 4 },
+        { accountId: 3, gameId: 6 },
+        { accountId: 3, gameId: 7 },
+        { accountId: 3, gameId: 8 },
+        { accountId: 4, gameId: 8 },
+        { accountId: 4, gameId: 9 },
+    ])
+
+    await db.insert(Group).values([
+        { id: 1, name: 'Friends', createdBy: 1 },
+        { id: 2, name: 'University', createdBy: 1 },
+        { id: 3, name: 'Family', createdBy: 2 },
+        { id: 4, name: 'Familia', createdBy: 3 },
+        { id: 5, name: 'Santiago', createdBy: 4 },
+    ])
+
+    await db.insert(GroupMembership).values([
+        { accountId: 1, groupId: 1 },
+        { accountId: 1, groupId: 2 },
+        { accountId: 2, groupId: 3 },
+        { accountId: 3, groupId: 4 },
+        { accountId: 4, groupId: 5 },
+    ])
+
+    await db.insert(Invitation).values([
+        { id: 1, groupId: 1, fromAccountId: 1, toAccountId: 2, status: 'pending' },
+        { id: 2, groupId: 1, fromAccountId: 1, toAccountId: 3, status: 'pending' },
+        { id: 3, groupId: 1, fromAccountId: 1, toAccountId: 4, status: 'pending' },
+        { id: 5, groupId: 2, fromAccountId: 2, toAccountId: 3, status: 'pending' },
+        { id: 4, groupId: 4, fromAccountId: 4, toAccountId: 2, status: 'pending' },
     ])
 }
