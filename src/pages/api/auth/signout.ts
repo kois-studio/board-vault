@@ -1,6 +1,5 @@
 import type { APIRoute } from 'astro'
-import { Session, db } from 'astro:db'
-import { sql } from '@astrojs/db/runtime'
+import { Session, db, eq } from 'astro:db'
 import { Log } from '../../../utils'
 
 export const GET: APIRoute = async ({ cookies }) => {
@@ -22,7 +21,7 @@ export const GET: APIRoute = async ({ cookies }) => {
         // Delete session from DB
         await db
             .delete(Session)
-            .where(sql`sessionId = ${sessionId.value}`)
+            .where(eq(Session.sessionId, sessionId.value))
             .execute()
 
         return new Response(JSON.stringify({
