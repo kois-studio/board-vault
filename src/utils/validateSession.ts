@@ -1,4 +1,4 @@
-import { db, Session } from 'astro:db'
+import { db, eq, Session } from 'astro:db'
 
 // This is a utility function to validate sessions on protected routes
 export async function validateSession(cookies: any) {
@@ -10,7 +10,7 @@ export async function validateSession(cookies: any) {
     const sessions = await db
         .select()
         .from(Session)
-        .where(`${Session.sessionId} = ${sessionId}`)
+        .where(eq(Session.sessionId, sessionId))
         .execute()
     return sessions.length > 0
 }
