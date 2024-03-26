@@ -63,8 +63,16 @@ export const POST: APIRoute = async ({ request }) => {
             message: 'Registration successful!',
         }), { status: 200 })
     } catch (error: any) {
+        Log('Error: ', error.message)
+
+        if (error?.message === 'SQLITE_CONSTRAINT_UNIQUE: UNIQUE constraint failed: Account.alias') {
+            return new Response(JSON.stringify({
+                error: 'Alias already in use! Please choose another one.',
+            }), { status: 400 })
+        }
+
         return new Response(JSON.stringify({
-            error: error?.message,
+            error: 'An error occurred while registering the user. Please try again later.'
         }), { status: 500 })
     }
 }

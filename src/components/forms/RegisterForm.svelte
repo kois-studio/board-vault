@@ -43,7 +43,7 @@
         const options = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password, confirmPassword }),
+            body: JSON.stringify({ alias, email, password, confirmPassword }),
         }
 
         const response = await fetch(endpoint, options)
