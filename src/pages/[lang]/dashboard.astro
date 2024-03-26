@@ -10,6 +10,7 @@ export const getStaticPaths = generatePaths
 import { Account } from 'astro:db'
 const { lang } = Astro.params
 const t = translations[lang]
+console.log(t.test)
 
 // Other stuff
 const accessToken = Astro.cookies.get('session_id')
