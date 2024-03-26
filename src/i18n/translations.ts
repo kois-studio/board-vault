@@ -24,6 +24,7 @@ type TranslationKeys = {
     register_title: string
     register_description: string
     register_description_link: string
+    register_alias: string
     register_email: string
     register_password: string
     register_password_confirm: string
@@ -74,6 +75,10 @@ const raw_translations: Record<keyof TranslationKeys, Record<TranslationLangs, s
     register_description_link: {
         en: 'Login',
         es: 'Iniciar sesión',
+    },
+    register_alias: {
+        en: 'Alias (username)',
+        es: 'Alias (nombre de usuario)',
     },
     register_email: {
         en: 'Email',

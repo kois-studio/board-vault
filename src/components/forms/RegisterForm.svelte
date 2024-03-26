@@ -1,6 +1,7 @@
 <script lang="ts">
     let loading = false
     let email = ''
+    let alias = ''
     let password = ''
     let confirmPassword = ''
 
@@ -20,60 +21,68 @@
 
         if (!email || !password || !confirmPassword) {
             alert('Please fill in all fields')
-            return loading = false
+            return (loading = false)
         }
 
         if (!validateEmail(email) || email.length > 128) {
             alert('Please enter a valid email')
-            return loading = false
+            return (loading = false)
         }
 
         if (password !== confirmPassword) {
             alert('Passwords do not match')
-            return loading = false
+            return (loading = false)
         }
 
         if (password.length < 4 || password.length > 48) {
             alert('Password must be at least 4 characters long')
-            return loading = false
+            return (loading = false)
         }
 
         const endpoint = '/api/auth/register'
         const options = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password, confirmPassword })
+            body: JSON.stringify({ email, password, confirmPassword }),
         }
 
         const response = await fetch(endpoint, options)
         const data = await response.json()
 
-        response.ok
-            ? window.location.href = `/${lang}/dashboard`
-            : alert(data.error)
+        response.ok ? (window.location.href = `/${lang}/dashboard`) : alert(data.error)
 
-        return loading = false
+        return (loading = false)
     }
 </script>
 
 <div class="flex flex-col gap-4 rounded bg-zinc-800 p-8 w-96 mx-auto">
     <input
+        placeholder={`${t.register_alias} ...`}
+        type="text"
+        class="rounded border border-zinc-700 bg-zinc-800 px-4 py-2"
+        bind:value={alias}
+        required
+    />
+    <input
         placeholder={`${t.register_email} ...`}
         type="email"
         class="rounded border border-zinc-700 bg-zinc-800 px-4 py-2"
         bind:value={email}
+        required
     />
     <input
         placeholder={`${t.register_password} ...`}
         type="password"
         class="rounded border border-zinc-700 bg-zinc-800 px-4 py-2"
         bind:value={password}
+        required
     />
     <input
         placeholder={`${t.register_password_confirm} ...`}
         type="password"
         class="rounded border border-zinc-700 bg-zinc-800 px-4 py-2"
         bind:value={confirmPassword}
+        required
     />
     <button
         on:click={handleRegister}

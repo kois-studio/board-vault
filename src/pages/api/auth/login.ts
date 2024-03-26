@@ -1,6 +1,5 @@
 import type { APIRoute } from 'astro'
-import { db, Account, Session } from 'astro:db'
-import { sql } from '@astrojs/db/runtime'
+import { db, Account, Session, eq } from 'astro:db'
 import bcrypt from 'bcryptjs'
 import { v4 as uuidv4 } from 'uuid'
 import { Log } from '../../../utils'
@@ -17,7 +16,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     }
 
     // Fetch user from database
-    const users = await db.select().from(Account).where(sql`email = ${email}`).execute()
+    const users = await db.select().from(Account).where(eq(Account.email, email)).execute()
     const user = users[0]
 
     Log({ user })
