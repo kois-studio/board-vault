@@ -1,26 +1,27 @@
 import { defineDb, defineTable, column, NOW } from 'astro:db'
 
-// Accounts - Authentication
+// User accounts
 const Account = defineTable({
     columns: {
         id: column.number({ primaryKey: true }),
         email: column.text(),
         password: column.text(),
         created_at: column.date({ default: NOW }),
+        alias: column.text({ unique: true }), // Display name
+        imageUrl: column.text(), // Profile picture
     },
 })
 
-// Each Account will be able to register their friends and family as owners inside their account
-const Owner = defineTable({
+// User sessions
+const Session = defineTable({
     columns: {
-        id: column.number({ primaryKey: true }),
-        userId: column.number({ references: () => Account.columns.id }),
-        name: column.text(),
-        imageUrl: column.text(),
+        sessionId: column.text({ primaryKey: true }),
+        accountId: column.number({ references: () => Account.columns.id }),
+        createdAt: column.date({ default: NOW }),
     },
 })
 
-// Games - Shared index of known games for all users to read
+// Shared index of known games for all users to read
 const Game = defineTable({
     columns: {
         id: column.number({ primaryKey: true }),
@@ -32,31 +33,55 @@ const Game = defineTable({
     },
 })
 
-
-// JOIN table to link an owner to a game
+// JOIN table to link an account to a game
 const OwnedGame = defineTable({
     columns: {
-        ownerId: column.number({ references: () => Owner.columns.id }),
+        accountId: column.number({ references: () => Account.columns.id }),
         gameId: column.number({ references: () => Game.columns.id }),
     },
 })
 
-// Session - User sessions
-const Session = defineTable({
+// Accounts can create groups and invite others to join it
+const Group = defineTable({
     columns: {
-        sessionId: column.text({ primaryKey: true }),
-        accountId: column.number({ references: () => Account.columns.id }),
+        id: column.number({ primaryKey: true }),
+        name: column.text(),
+        createdBy: column.number({ references: () => Account.columns.id }),
         createdAt: column.date({ default: NOW }),
     },
 })
+
+// JOIN table to link an account to a group
+const GroupMembership = defineTable({
+    columns: {
+        accountId: column.number({ references: () => Account.columns.id }),
+        groupId: column.number({ references: () => Group.columns.id }),
+        joinedAt: column.date({ default: NOW }),
+    },
+})
+
+// Invitations to join a group system
+const Invitation = defineTable({
+    columns: {
+        id: column.number({ primaryKey: true }),
+        groupId: column.number({ references: () => Group.columns.id }),
+        fromAccountId: column.number({ references: () => Account.columns.id }),
+        toAccountId: column.number({ references: () => Account.columns.id }),
+        status: column.text(), // e.g., 'pending', 'accepted', 'declined'
+        sentAt: column.date({ default: NOW }),
+    },
+})
+
 
 // https://astro.build/db/config
 export default defineDb({
     tables: {
         Account,
-        Game,
-        Owner,
-        OwnedGame,
         Session,
+        Game,
+        OwnedGame,
+        Group,
+        GroupMembership,
+        Invitation,
     },
 })
