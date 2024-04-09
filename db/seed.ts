@@ -513,6 +513,7 @@ export default async function seed() {
 
     await db.insert(GroupMembership).values([
         { accountId: 1, groupId: 1 },
+        { accountId: 2, groupId: 1 },
         { accountId: 1, groupId: 2 },
         { accountId: 2, groupId: 3 },
         { accountId: 3, groupId: 4 },
