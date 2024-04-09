@@ -1,44 +1,24 @@
 ---
 import Layout from '../../layouts/Layout.astro'
-import { db, eq, Game, OwnedGame, Session } from 'astro:db'
+import { db, eq, Game, OwnedGame, Account, Group, GroupMembership } from 'astro:db'
+import { generatePaths, validateSession } from '../../utils'
+import GameCard from '../../components/GameCard.astro'
 
 // Translations stuff
-import { generatePaths } from '../../utils'
 import { translations } from '../../i18n/translations'
 export const getStaticPaths = generatePaths
-import { Account, Group, GroupMembership } from 'astro:db'
 const { lang } = Astro.params
 const t = translations[lang]
 console.log(t.test)
 
 // Other stuff
-const accessToken = Astro.cookies.get('session_id')
-let isValid: boolean = false
+const accessToken = Astro.cookies.get('session_id')?.value ?? null
+const account = await validateSession(accessToken)
 
-if (!accessToken) {
-    return Astro.redirect(`/${Astro.currentLocale}/login`)
-}
-
-const sessions = await db
-    .select()
-    .from(Session)
-    .where(eq(Session.sessionId, accessToken.value))
-
-if (sessions.length === 0) {
+if (account === null) {
     Astro.cookies.delete('session_id', { path: '/' })
+    // Returing a redirect will stop the page from rendering
     return Astro.redirect(`/${Astro.currentLocale}/login`)
-}
-
-const accounts = await db
-    .select()
-    .from(Account)
-    .where(eq(Account.id, Number(sessions[0]?.accountId)))
-const account = accounts[0]
-
-if (!account) {
-    throw new Error('Account not found')
-} else {
-    isValid = true
 }
 
 // FIXME: load all games list, and owned games list
@@ -123,65 +103,85 @@ const groupDetails = await Promise.all(
         }
     }),
 )
+
+/**
+ * 3. The games that the user has
+ */
+ const games = await db.select().from(Game)
+
 ---
 
 <Layout lang={lang as keyof typeof translations}>
-    {
-        isValid ? (
-            <div class='container mx-auto pt-8 lg:pt-16'>
-                <h1 class='text-2xl font-bold text-center mb-8'>
-                    {account.alias}'s Groups
-                </h1>
+    <div class='container mx-auto pt-8 lg:pt-16'>
+        <!-- GROUPS -->
+        <h1 class='text-2xl font-bold text-center mb-8'>
+            {account.alias}'s Groups
+        </h1>
 
-                {groupDetails.map(group => (
-                    <div>
-                        <div class='flex items-center justify-start mb-2 gap-4'>
-                            <button
-                                title='Edit group'
-                                class='block rounded bg-green-600 px-2 hover:bg-green-700'
-                            >
-                                <i class='bi bi-pencil-square' />
-                            </button>
-                            <div class='flex justify-between w-full'>
-                                <span class='text-lg font-bold'>{group?.name}</span>
-                                <span title="creation date">{group?.createdAt?.toLocaleDateString()}</span>
-                            </div>
-                        </div>
-                        <hr class='mb-4' />
-                        <div class='md:grid-4 container mx-auto mb-24 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6 lg:gap-4 xl:grid-cols-8'>
-                            {group.members.map(member => (
-                                <button class='dx-ownerCard rounded border-2 bg-zinc-800 p-2 hover:bg-zinc-700 border-zinc-800 relative'>
-                                    <div class='flex items-center gap-2'>
-                                        <div class='h-20 w-20'>
-                                            <div
-                                                class='bg-cover bg-no-repeat bg-center h-full w-full overflow-hidden'
-                                                style={`background-image: url(${member.imageUrl});`}
-                                            />
-                                        </div>
-                                        {group.createdBy === member.id && (
-                                            <i class='bi bi-star-fill text-yellow-400 absolute -top-3 -left-2' />
-                                        )}
-                                        <div class='flex flex-col items-start'>
-                                            <span class='text-xl'>{member.alias}</span>
-                                            <span>
-                                                <i class='bi bi-joystick' /> 420
-                                            </span>
-                                        </div>
-                                    </div>
-                                </button>
-                            ))}
+        {
+            groupDetails.map(group => (
+                <div>
+                    <div class='flex items-center justify-start mb-2 gap-4'>
+                        <button
+                            title='Edit group'
+                            class='block rounded bg-green-600 px-2 hover:bg-green-700'
+                        >
+                            <i class='bi bi-pencil-square' />
+                        </button>
+                        <div class='flex justify-between w-full'>
+                            <span class='text-lg font-bold'>{group?.name}</span>
+                            <span title='creation date'>
+                                {group?.createdAt?.toLocaleDateString()}
+                            </span>
                         </div>
                     </div>
-                ))}
-            </div>
-        ) : (
-            <div class='text-center container mx-auto px-4 py-20'>
-                <p class='pb-8'>
-                    Something went wrong. <br /> Please, sign out and log in again
-                </p>
-            </div>
-        )
-    }
+                    <hr class='mb-4' />
+                    <div class='md:grid-4 container mx-auto mb-24 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6 lg:gap-4 xl:grid-cols-8'>
+                        {group.members.map(member => (
+                            <button class='dx-ownerCard rounded border-2 bg-zinc-800 p-2 hover:bg-zinc-700 border-zinc-800 relative'>
+                                <div class='flex items-center gap-2'>
+                                    <div class='h-20 w-20'>
+                                        <div
+                                            class='bg-cover bg-no-repeat bg-center h-full w-full overflow-hidden'
+                                            style={`background-image: url(${member.imageUrl});`}
+                                        />
+                                    </div>
+                                    {group.createdBy === member.id && (
+                                        <i class='bi bi-star-fill text-yellow-400 absolute -top-3 -left-2' />
+                                    )}
+                                    <div class='flex flex-col items-start'>
+                                        <span class='text-xl'>{member.alias}</span>
+                                        <span>
+                                            <i class='bi bi-joystick' /> 420
+                                        </span>
+                                    </div>
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            ))
+        }
+
+        <!-- GAMES -->
+        <h1 class='text-2xl font-bold text-center mb-8'>
+            {account.alias}'s Games
+        </h1>
+
+
+        <div class='flex gap-2 flex-wrap'>
+            {games.map(game =>
+                <GameCard
+                    title={game.title}
+                    imageUrl={'game.imageUrl'}
+                    gameAvgDuration={game.gameAvgDuration}
+                    minPlayers={game.minPlayers}
+                    maxPlayers={game.maxPlayers}
+                />
+            )}
+        </div>
+
+    </div>
 </Layout>
 
 <!-- <script is:inline>
