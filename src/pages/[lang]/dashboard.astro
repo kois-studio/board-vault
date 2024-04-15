@@ -109,6 +109,16 @@ const groupDetails = await Promise.all(
  */
  const games = await db.select().from(Game)
 
+ const gamesOwned = await db
+    .select()
+    .from(OwnedGame)
+    .where(eq(OwnedGame.accountId, account.id))
+
+const gameDetails = gamesOwned.map(ownedGame => {
+    return games.find(g => g.id === ownedGame.gameId)!
+})
+
+
 ---
 
 <Layout lang={lang as keyof typeof translations}>
@@ -170,7 +180,7 @@ const groupDetails = await Promise.all(
 
 
         <div class='flex gap-2 flex-wrap'>
-            {games.map(game =>
+            {gameDetails.map(game =>
                 <GameCard
                     title={game.title}
                     imageUrl={'game.imageUrl'}
@@ -179,6 +189,9 @@ const groupDetails = await Promise.all(
                     maxPlayers={game.maxPlayers}
                 />
             )}
+            <a href={`/${lang}/add-games`} class="h-50 bg-zinc-700 hover:bg-zinc-800 hover:cursor-pointer p-2 min-w-40 rounded flex items-center justify-center">
+                <i class="bi bi-plus-lg"/>
+            </a>
         </div>
 
     </div>
