@@ -50,17 +50,18 @@ const gamesList = games.map(game => {
         
         <div id="list-games" class='flex gap-2 flex-wrap'>
             {gamesList.map(game => (
-                <div class={game.isOwned ? '' : 'opacity-20'}>
-                    <div class="grid grid-rows-2 rounded bg-zinc-700 p-2 w-40">
-                        <div class="bg-cover bg-no-repeat bg-center h-full w-full overflow-hidden" style={`background-image: url(${game.imageUrl});`}/>
-                    
-                        <div class="relative overflow-hidden">
-                            <h3 class="py-2 text-lg overflow-hidden text-ellipsis whitespace-nowrap">{game.title}</h3>
-                            <p><i class="bi bi-clock-fill" /> {game.gameAvgDuration} mins</p>
-                            <p><i class="bi bi-people-fill" /> {game.minPlayers} - {game.maxPlayers}</p>
-                        </div>
+                <button class:list={[
+                    game.isOwned ? 'hover:border-red-400' : 'opacity-30 hover:border-green-400',
+                    "grid grid-rows-2 rounded bg-zinc-700 p-2 w-40 h-60 hover:opacity-100 border-2 border-transparent cursor-pointer"
+                ]}>
+                    <div class="bg-cover bg-no-repeat bg-center h-full w-full overflow-hidden" style={`background-image: url(${game.imageUrl});`}/>
+                
+                    <div class="relative overflow-hidden h-full grid">
+                        <h3 class="py-2 text-lg overflow-hidden text-ellipsis whitespace-nowrap">{game.title}</h3>
+                        <p><i class="bi bi-clock-fill" /> {game.gameAvgDuration} mins</p>
+                        <p><i class="bi bi-people-fill" /> {game.minPlayers} - {game.maxPlayers}</p>
                     </div>
-                </div>
+                </button>
             ))}
         </div>
     </div>
@@ -83,6 +84,15 @@ const gamesList = games.map(game => {
             } else {
                 game.style.display = 'none'
             }
+        }
+    })
+
+    // When a game is clicked, toggle the owned class
+    listGames.addEventListener('click', (e) => {
+        const game = e.target.closest('button')
+        if (game) {
+            game.classList.toggle('border-green-400')
+            game.classList.toggle('border-red-400')
         }
     })
 </script>
