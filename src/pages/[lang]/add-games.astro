@@ -51,8 +51,8 @@ const gamesList = games.map(game => {
         <div id="list-games" class='flex gap-2 flex-wrap'>
             {gamesList.map(game => (
                 <button class:list={[
-                    game.isOwned ? 'hover:border-red-400' : 'opacity-30 hover:border-green-400',
-                    "grid grid-rows-2 rounded bg-zinc-700 p-2 w-40 h-60 hover:opacity-100 border-2 border-transparent cursor-pointer"
+                    game.isOwned ? 'border-green-400' : 'opacity-30 border-red-400',
+                    "grid grid-rows-2 rounded bg-zinc-700 p-2 w-40 h-60 hover:opacity-100 border-2 cursor-pointer"
                 ]}>
                     <div class="bg-cover bg-no-repeat bg-center h-full w-full overflow-hidden" style={`background-image: url(${game.imageUrl});`}/>
                 
@@ -80,9 +80,9 @@ const gamesList = games.map(game => {
             const game = games[i]
             const title = game.querySelector('h3').innerText.toLowerCase()
             if (title.includes(filter)) {
-                game.style.display = 'block'
+                game.classList.remove('hidden')
             } else {
-                game.style.display = 'none'
+                game.classList.add('hidden')
             }
         }
     })
@@ -90,9 +90,12 @@ const gamesList = games.map(game => {
     // When a game is clicked, toggle the owned class
     listGames.addEventListener('click', (e) => {
         const game = e.target.closest('button')
-        if (game) {
-            game.classList.toggle('border-green-400')
-            game.classList.toggle('border-red-400')
-        }
+        game.classList.remove('border-transparent')
+
+        // on the first click, remove red and add green
+        game.classList.toggle('border-green-400')
+        game.classList.toggle('border-red-400')
+        game.classList.toggle('opacity-30')
+
     })
 </script>
