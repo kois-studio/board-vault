@@ -27,7 +27,7 @@ const games = await db.select().from(Game)
             {games.map(game =>
                 <GameCard
                     title={game.title}
-                    imageUrl={game.imageUrl}
+                    imageUrl={'game.imageUrl'}
                     gameAvgDuration={game.gameAvgDuration}
                     minPlayers={game.minPlayers}
                     maxPlayers={game.maxPlayers}
