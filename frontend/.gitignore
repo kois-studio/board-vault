@@ -40,3 +40,8 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Ignore lock files for NPM, PNPM and YARN
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
