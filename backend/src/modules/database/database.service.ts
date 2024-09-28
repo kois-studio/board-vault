@@ -1,5 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common'
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
+import { Client, createClient } from '@libsql/client'
 
 let is_redis_disabled = false
 
@@ -34,34 +35,43 @@ function Wrapper(response_on_error: any = null) {
 }
 
 @Injectable()
-export class DatabaseService {
+export class DatabaseService implements OnModuleInit {
     private readonly LOGGER: Logger = new Logger(this.constructor.name)
-    // private readonly REDIS: Redis = Redis.fromEnv()
     private readonly REDIS_DISABLED: boolean = false
+    private tursoClient: Client
 
     constructor(private readonly configService: ConfigService) {
         this.REDIS_DISABLED = configService.get<string>('UPSTASH_REDIS_REST_DISABLE') === 'true'
         is_redis_disabled = this.REDIS_DISABLED
     }
-    /**
-     * /database/reset
-     */
-    @Wrapper(false)
-    async deleteAll(): Promise<boolean> {
-        // const keys = await this.REDIS.keys('*')
 
-        // this.LOGGER.log(`REDIS: Deleting all ${keys.length} keys...`)
-        // await this.REDIS.flushdb()
-        return true
+    onModuleInit() {
+        this.tursoClient = createClient({
+            url: String(this.configService.get<string>('TURSO_DATABASE_URL')),
+            authToken: String(this.configService.get<string>('TURSO_AUTH_TOKEN')),
+        })
+    }
+
+    getUsers() {
+        this.LOGGER.log('Getting all users...')
+        return this.tursoClient.execute('SELECT * FROM Account')
+    }
+
+    getUserById(id: number) {
+        this.LOGGER.log(`Getting user with id ${id}...`)
+        return this.tursoClient.execute({
+            sql: 'SELECT * FROM Account WHERE id = ?',
+            args: [id],
+        })
     }
 
     /**
      * /database/delete/:key
      */
-    @Wrapper(false)
-    async deleteOne(key: string): Promise<boolean> {
-        this.LOGGER.log(`REDIS: Deleting single key ${key}...`)
-        // await this.REDIS.del(key)
-        return true
-    }
+    // @Wrapper(false)
+    // async deleteOne(key: string): Promise<boolean> {
+    //     this.LOGGER.log(`REDIS: Deleting single key ${key}...`)
+    //     // await this.REDIS.del(key)
+    //     return true
+    // }
 }
