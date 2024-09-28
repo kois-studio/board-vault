@@ -26,8 +26,8 @@ export class DatabaseController {
         status: 200,
         type: Boolean,
     })
-    async reset(): Promise<boolean> {
-        return this.databaseService.deleteAll()
+    async reset() {
+        // return this.databaseService.deleteAll()
     }
 
     /**
@@ -46,7 +46,8 @@ export class DatabaseController {
         name: 'key',
         type: String,
     })
-    async delete(@Param('key') key: string): Promise<boolean> {
-        return this.databaseService.deleteOne(key)
+    async delete(@Param('key') key: string) {
+        console.log('key', key)
+        // return this.databaseService.deleteOne(key)
     }
 }
