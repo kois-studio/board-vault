@@ -16,4 +16,19 @@ export class UsersService {
         this.LOGGER.log(`Getting user with id ${id}...`)
         return this.databaseService.getUserById(id)
     }
+
+    createUser(email: string, password: string, alias: string, imageUrl: string) {
+        this.LOGGER.log(`Creating user with ${email}`)
+        return this.databaseService.createUser(email, password, alias, imageUrl)
+    }
+
+    deleteUserById(id: number) {
+        this.LOGGER.log(`Deleting user with id ${id}`)
+        return this.databaseService.deleteUserById(id)
+    }
+
+    updateUser(id: number, email: string, password: string, alias: string, imageUrl: string) {
+        this.LOGGER.log(`Updating user with id ${id}`)
+        return this.databaseService.updateUser(id, email, password, alias, imageUrl)
+    }
 }
