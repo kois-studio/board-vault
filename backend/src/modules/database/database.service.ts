@@ -65,6 +65,39 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    getUserByEmail(email: string) {
+        this.LOGGER.log(`Getting user with email ${email}...`)
+        return this.tursoClient.execute({
+            sql: 'SELECT * FROM Account WHERE email = ?',
+            args: [email],
+        })
+    }
+
+    createUser(email: string, password: string, alias: string, imageUrl: string) {
+        this.LOGGER.log(`Creating user with ${email}`)
+        return this.tursoClient.execute({
+            sql: 'INSERT INTO Account (email, password, alias, imageUrl) VALUES (?, ?, ?, ?)',
+            args: [email, password, alias, imageUrl],
+        })
+    }
+
+    //by email, by id or by what?
+    deleteUserById(id: number) {
+        this.LOGGER.log(`Deleting user with id ${id}`)
+        return this.tursoClient.execute({
+            sql: 'DELETE FROM Account WHERE id = ?',
+            args: [id],
+        })
+    }
+
+    updateUser(id: number, email: string, password: string, alias: string, imageUrl: string) {
+        this.LOGGER.log(`Update user based on id ${id}`)
+        return this.tursoClient.execute({
+            sql: 'UPDATE Account SET email = ?, password = ?, alias = ?, imageUrl = ? WHERE id = ?',
+            args: [email, password, alias, imageUrl, id],
+        })
+    }
+
     /**
      * /database/delete/:key
      */
