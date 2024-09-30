@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, Logger, OnModuleInit } from '@nestjs/c
 import { ConfigService } from '@nestjs/config'
 import { Client, createClient } from '@libsql/client'
 import { CreateUserDto, UpdateUserDto } from 'src/common/types/shared/user.type'
+import * as bcrypt from 'bcrypt'
 
 let is_redis_disabled = false
 
@@ -74,13 +75,14 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
-    createUser(userDto: CreateUserDto) {
+    async createUser(userDto: CreateUserDto) {
         this.LOGGER.log(`Creating user with ${userDto.email}`)
         const { email, password, alias, imageUrl } = userDto
+        const hashedPassword = await bcrypt.hash(password, 10)
 
         return this.tursoClient.execute({
             sql: 'INSERT INTO Account (email, password, alias, imageUrl) VALUES (?, ?, ?, ?)',
-            args: [email, password, alias, imageUrl],
+            args: [email, hashedPassword, alias, imageUrl],
         })
     }
 

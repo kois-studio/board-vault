@@ -43,7 +43,7 @@ export class UserDto {
 // CreateUserDto for POST requests
 export class CreateUserDto {
     @ApiProperty({
-        example: 'david@test.com',
+        example: 'example@test.com',
         description: "The user's email address.",
     })
     @IsEmail()
@@ -67,7 +67,7 @@ export class CreateUserDto {
     alias: string
 
     @ApiProperty({
-        example: 'https://example.com/profile.jpg',
+        example: 'https://pbs.twimg.com/profile_images/1833050358479826944/A2qj0e6Z_400x400.jpg',
         description: "The URL of the user's profile image.",
     })
     @IsUrl()
