@@ -1,8 +1,8 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { DatabaseService } from '../database/database.service'
-import { CreateUserDto, UpdateUserDto, UserDto } from 'src/common/types/shared/user.type'
+import { CreateUserDto, UpdateUserDto, UserDto } from '../../common/types/shared/user.type'
 import { ResultSet } from '@libsql/client/.'
-import { usersSchema } from 'src/common/schemas/user.schema'
+import { usersSchema } from '../../common/schemas/user.schema'
 
 @Injectable()
 export class UsersService {
