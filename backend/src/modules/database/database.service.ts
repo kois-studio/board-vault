@@ -1,6 +1,7 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common'
+import { BadRequestException, Injectable, Logger, OnModuleInit } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { Client, createClient } from '@libsql/client'
+import { CreateUserDto, UpdateUserDto } from 'src/common/types/shared/user.type'
 
 let is_redis_disabled = false
 
@@ -73,28 +74,70 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
-    createUser(email: string, password: string, alias: string, imageUrl: string) {
-        this.LOGGER.log(`Creating user with ${email}`)
+    createUser(userDto: CreateUserDto) {
+        this.LOGGER.log(`Creating user with ${userDto.email}`)
+        const { email, password, alias, imageUrl } = userDto
+
         return this.tursoClient.execute({
             sql: 'INSERT INTO Account (email, password, alias, imageUrl) VALUES (?, ?, ?, ?)',
             args: [email, password, alias, imageUrl],
         })
     }
 
-    //by email, by id or by what?
+    async updateUser(id: number, partialUserDto: UpdateUserDto) {
+        this.LOGGER.log(`Updating user with id ${id}...`)
+
+        // Array to store fields to update
+        const fields = []
+        const args = []
+
+        // Dynamically build the update query based on the provided properties
+        if (partialUserDto.email) {
+            fields.push('email = ?')
+            args.push(partialUserDto.email)
+        }
+        if (partialUserDto.password) {
+            fields.push('password = ?')
+            args.push(partialUserDto.password)
+        }
+        if (partialUserDto.alias) {
+            fields.push('alias = ?')
+            args.push(partialUserDto.alias)
+        }
+        if (partialUserDto.imageUrl) {
+            fields.push('imageUrl = ?')
+            args.push(partialUserDto.imageUrl)
+        }
+
+        // Error if no fields are provided
+        if (fields.length === 0) {
+            throw new BadRequestException('No fields to update')
+        }
+
+        // Add user id as the last argument
+        args.push(id)
+
+        // Construct the final query
+        const sql = `
+          UPDATE Account
+          SET ${fields.join(', ')}
+          WHERE id = ?
+        `
+
+        this.LOGGER.log(`Executing query: ${sql}`)
+
+        // Execute the query
+        await this.tursoClient.execute({ sql, args })
+
+        // Return the updated user (assuming you want to fetch the user after updating)
+        return this.getUserById(id)
+    }
+
     deleteUserById(id: number) {
         this.LOGGER.log(`Deleting user with id ${id}`)
         return this.tursoClient.execute({
             sql: 'DELETE FROM Account WHERE id = ?',
             args: [id],
-        })
-    }
-
-    updateUser(id: number, email: string, password: string, alias: string, imageUrl: string) {
-        this.LOGGER.log(`Update user based on id ${id}`)
-        return this.tursoClient.execute({
-            sql: 'UPDATE Account SET email = ?, password = ?, alias = ?, imageUrl = ? WHERE id = ?',
-            args: [email, password, alias, imageUrl, id],
         })
     }
 

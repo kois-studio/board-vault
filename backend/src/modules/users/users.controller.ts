@@ -1,20 +1,7 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post, Put } from '@nestjs/common'
-import { ApiBody, ApiOperation, ApiParam, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { Body, Controller, Delete, Get, Logger, Param, ParseIntPipe, Post, Put } from '@nestjs/common'
+import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { UsersService } from './users.service'
-
-class CreateUserType {
-    @ApiProperty()
-    email: string
-
-    @ApiProperty()
-    password: string
-
-    @ApiProperty()
-    alias: string
-
-    @ApiProperty()
-    imageUrl: string
-}
+import { CreateUserDto, UpdateUserDto } from 'src/common/types/shared/user.type'
 
 @ApiTags('users')
 @Controller('users')
@@ -59,9 +46,8 @@ export class UsersController {
         name: 'userId',
         type: String,
     })
-    async getUserById(@Param('userId') userId: string) {
-        // TODO: use pipe to validate userId and confirm its a number
-        return this.usersService.getUserById(Number(userId))
+    async getUserById(@Param('userId', ParseIntPipe) userId: number) {
+        return this.usersService.getUserById(userId)
     }
 
     /**
@@ -77,11 +63,22 @@ export class UsersController {
         status: 201,
         description: 'The user has been succesfully created',
     })
-    async createUser(@Body() createUserBody: CreateUserType) {
-        const { email, password, alias, imageUrl } = createUserBody
+    async createUser(@Body() userDto: CreateUserDto) {
+        return this.usersService.createUser(userDto)
+    }
 
-        console.log(email, password, alias, imageUrl)
-        return this.usersService.createUser(email, password, alias, imageUrl)
+    /**
+     * ## Modify a user
+     * @returns
+     */
+    @Put(':userId')
+    @ApiOperation({ summary: 'Update a user by ID' })
+    @ApiParam({ name: 'userId', required: true, description: 'User ID' })
+    @ApiBody({ type: UpdateUserDto, description: 'Partial or full user object to update' })
+    @ApiResponse({ status: 200, description: 'The user has been successfully updated.' })
+    @ApiResponse({ status: 404, description: 'User not found.' })
+    updateUser(@Param('userId', ParseIntPipe) id: number, @Body() partialUserDto: UpdateUserDto) {
+        return this.usersService.updateUser(id, partialUserDto)
     }
 
     /**
@@ -102,24 +99,8 @@ export class UsersController {
         type: String,
         description: 'ID of the user to be deleted',
     })
-    async deleteUserById(@Param('userId') userId: string) {
+    async deleteUserById(@Param('userId', ParseIntPipe) userId: number) {
         // TODO: use pipe to validate userId and confirm its a number
-        return this.usersService.deleteUserById(Number(userId))
-    }
-
-    /**
-     * ## Modify a user
-     * @returns
-     */
-    @Put(':id')
-    @ApiOperation({ summary: 'Update a user by ID' })
-    @ApiParam({ name: 'id', required: true, description: 'User ID' })
-    @ApiBody({ type: CreateUserType, description: 'Partial or full user object to update' })
-    @ApiResponse({ status: 200, description: 'The user has been successfully updated.' })
-    @ApiResponse({ status: 404, description: 'User not found.' })
-    updateUser(@Param('id') id: string, @Body() userDto: Partial<CreateUserType>) {
-        const { email, password, alias, imageUrl } = userDto
-
-        return this.usersService.updateUser(Number(id), email, password, alias, imageUrl)
+        return this.usersService.deleteUserById(userId)
     }
 }
