@@ -1,7 +1,7 @@
-import { Body, Controller, Delete, Get, Logger, Param, ParseIntPipe, Post, Put } from '@nestjs/common'
+import { BadRequestException, Body, Controller, Delete, Get, Logger, Param, ParseIntPipe, Post, Put } from '@nestjs/common'
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { UsersService } from './users.service'
-import { CreateUserDto, UpdateUserDto } from 'src/common/types/shared/user.type'
+import { CreateUserDto, UpdateUserDto, UserDto } from 'src/common/types/shared/user.type'
 
 @ApiTags('users')
 @Controller('users')
@@ -17,14 +17,8 @@ export class UsersController {
      * @returns Confirmation that the database was deleted
      */
     @Get('/')
-    @ApiOperation({
-        summary: 'Get all users',
-        description: 'Get a list of all users in the database',
-    })
-    @ApiResponse({
-        status: 200,
-        type: Boolean,
-    })
+    @ApiOperation({ summary: 'Get all users' })
+    @ApiResponse({ status: 200, type: [UserDto], description: 'List of all users' })
     async getUsers() {
         return this.usersService.getUsers()
     }
@@ -34,18 +28,10 @@ export class UsersController {
      * @returns Confirmation that the database was deleted
      */
     @Get('/:userId')
-    @ApiOperation({
-        summary: 'Get user by id',
-        description: 'Get a user by its id',
-    })
-    @ApiResponse({
-        status: 200,
-        type: Boolean,
-    })
-    @ApiParam({
-        name: 'userId',
-        type: String,
-    })
+    @ApiOperation({ summary: 'Get user by id' })
+    @ApiResponse({ status: 200, type: UserDto, description: 'User found' })
+    @ApiResponse({ status: 404, description: 'User not found' })
+    @ApiParam({ name: 'userId', type: String })
     getUserById(@Param('userId', ParseIntPipe) userId: number) {
         return this.usersService.getUserById(userId)
     }
@@ -55,14 +41,8 @@ export class UsersController {
      * @returns
      */
     @Post('/')
-    @ApiOperation({
-        summary: 'Create a new user',
-        description: 'Create a new user with email, password, alias and imageUrl',
-    })
-    @ApiResponse({
-        status: 201,
-        description: 'The user has been succesfully created',
-    })
+    @ApiOperation({ summary: 'Create a new user' })
+    @ApiResponse({ status: 201, description: 'The user has been succesfully created' })
     async createUser(@Body() userDto: CreateUserDto) {
         return this.usersService.createUser(userDto)
     }
@@ -86,21 +66,10 @@ export class UsersController {
      * @returns
      */
     @Delete('/:userId')
-    @ApiOperation({
-        summary: 'Delete a user by Id',
-        description: 'Delete a user from the databased based on its id',
-    })
-    @ApiResponse({
-        status: 200,
-        description: 'The user has been succesfully deleted',
-    })
-    @ApiParam({
-        name: 'userId',
-        type: String,
-        description: 'ID of the user to be deleted',
-    })
+    @ApiOperation({ summary: 'Delete a user by Id' })
+    @ApiResponse({ status: 200, description: 'The user has been succesfully deleted' })
+    @ApiParam({ name: 'userId', type: String, description: 'ID of the user to be deleted' })
     async deleteUserById(@Param('userId', ParseIntPipe) userId: number) {
-        // TODO: use pipe to validate userId and confirm its a number
         return this.usersService.deleteUserById(userId)
     }
 }
