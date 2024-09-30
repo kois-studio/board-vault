@@ -1,0 +1,48 @@
+<header class="p-2 border-b border-zinc-500">
+    <nav class="animate__animated animate__fadeIn relative flex items-center justify-between px-4">
+        <!-- href: `/${Astro.currentLocale}` -->
+        <a href="/{{ currentLocale }}" aria-label="Home">
+            <span class="hidden">Home</span>
+            <img src="/images/logo.webp" alt="logo" class="w-16" />
+        </a>
+
+        <!-- DESKTOP MENU -->
+        <div class="hidden lg:block">
+            <a href="/{{ currentLocale }}/dashboard" class="{{ styles.link }} {{ isSessionValid ? '' : 'hidden' }}"
+                >Dashboard</a
+            >
+            <!-- <a class={styles_link} href={`/${lang}/games`}>Games list</a> -->
+            <a
+                href="/{{ currentLocale }}/login"
+                class="rounded bg-green-600 px-4 py-2 text-xl font-bold hover:bg-green-700 {{
+                    isSessionValid ? 'hidden' : ''
+                }}"
+            >
+                Log in
+            </a>
+
+            <button
+                id="signout"
+                class="rounded bg-red-600 px-4 py-2 text-xl font-bold hover:bg-red-700 {{
+                    isSessionValid ? '' : 'hidden'
+                }}"
+            >
+                Sign out
+            </button>
+        </div>
+
+        <div class="absolute left-0 top-20 lg:relative lg:top-0">
+            <!-- TODO: do this -->
+            <!-- <Language lang={lang} /> -->
+        </div>
+
+        <!-- MOBILE MENU -->
+        <button id="menu-btn" class="block text-4xl lg:hidden" aria-label="menu">
+            <i class="bi bi-list"></i>
+        </button>
+
+        <div id="menu" class="absolute right-0 top-20 hidden flex-col items-end lg:hidden">
+            <a href="/{{ currentLocale }}/games" class="{{ styles.link }}">Games list</a>
+        </div>
+    </nav>
+</header>
