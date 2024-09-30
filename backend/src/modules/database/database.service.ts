@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, Logger, OnModuleInit } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { Client, createClient } from '@libsql/client'
-import { CreateUserDto, UpdateUserDto } from 'src/common/types/shared/user.type'
+import { CreateUserDto, UpdateUserDto } from '../../common/types/shared/user.type'
 import * as bcrypt from 'bcrypt'
 
 let is_redis_disabled = false

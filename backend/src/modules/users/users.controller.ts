@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Logger, Param, ParseIntPipe, Post, Put } from '@nestjs/common'
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { UsersService } from './users.service'
-import { CreateUserDto, UpdateUserDto, UserDto } from 'src/common/types/shared/user.type'
+import { CreateUserDto, UpdateUserDto, UserDto } from '../../common/types/shared/user.type'
 
 @ApiTags('users')
 @Controller('users')
