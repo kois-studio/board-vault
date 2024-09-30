@@ -46,7 +46,7 @@ export class UsersController {
         name: 'userId',
         type: String,
     })
-    async getUserById(@Param('userId', ParseIntPipe) userId: number) {
+    getUserById(@Param('userId', ParseIntPipe) userId: number) {
         return this.usersService.getUserById(userId)
     }
 
