@@ -1,6 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common'
+import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { DatabaseService } from '../database/database.service'
-import { CreateUserDto, UpdateUserDto } from 'src/common/types/shared/user.type'
+import { CreateUserDto, UpdateUserDto, UserDto } from 'src/common/types/shared/user.type'
+import { ResultSet } from '@libsql/client/.'
+import { usersSchema } from 'src/common/schemas/user.schema'
 
 @Injectable()
 export class UsersService {
@@ -8,14 +10,42 @@ export class UsersService {
 
     constructor(private readonly databaseService: DatabaseService) {}
 
-    getUsers() {
-        this.LOGGER.log('Getting all users...')
-        return this.databaseService.getUsers()
+    private _parseResultSet(resultSet: ResultSet): Array<UserDto> {
+        const users = resultSet.rows.map(row => ({
+            id: Number(row[0]),
+            email: String(row[1]),
+            password: String(row[2]),
+            createdAt: String(row[3]),
+            alias: String(row[4]),
+            imageUrl: String(row[5]),
+        }))
+
+        const result = usersSchema.safeParse(users)
+
+        if (!result.success) {
+            this.LOGGER.error('Failed to parse users from database')
+            this.LOGGER.error(result.error)
+            return []
+        }
+        return result.data
     }
 
-    getUserById(id: number) {
+    async getUsers(): Promise<Array<UserDto>> {
+        this.LOGGER.log('Getting all users...')
+        const resultSet = await this.databaseService.getUsers()
+
+        return this._parseResultSet(resultSet)
+    }
+
+    async getUserById(id: number) {
         this.LOGGER.log(`Getting user with id ${id}...`)
-        return this.databaseService.getUserById(id)
+        const resultSet = await this.databaseService.getUserById(id)
+        const users = this._parseResultSet(resultSet)
+
+        if (users.length === 0) {
+            return new NotFoundException(`User with id ${id} not found`)
+        }
+        return users[0]
     }
 
     createUser(userDto: CreateUserDto) {
