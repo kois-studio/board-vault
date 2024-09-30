@@ -1,6 +1,9 @@
 <header class="p-2 border-b border-zinc-500">
     <nav class="animate__animated animate__fadeIn relative flex items-center justify-between px-4">
-        <!-- href: `/${Astro.currentLocale}` -->
+        <!-- test -->
+        <li><a routerLink="/login" routerLinkActive="bg-red-200" ariaCurrentWhenActive="page">Login</a></li>
+        <li><a routerLink="/register" routerLinkActive="bg-red-200" ariaCurrentWhenActive="page">Register</a></li>
+        <!-- endtest -->
         <a href="/{{ currentLocale }}" aria-label="Home">
             <span class="hidden">Home</span>
             <img src="/images/logo.webp" alt="logo" class="w-16" />
@@ -8,9 +11,7 @@
 
         <!-- DESKTOP MENU -->
         <div class="hidden lg:block">
-            <a href="/{{ currentLocale }}/dashboard" class="{{ styles.link }} {{ isSessionValid ? '' : 'hidden' }}"
-                >Dashboard</a
-            >
+            <a href="/{{ currentLocale }}/dashboard" class="{{ styles.link }} {{ isSessionValid ? '' : 'hidden' }}">Dashboard</a>
             <!-- <a class={styles_link} href={`/${lang}/games`}>Games list</a> -->
             <a
                 href="/{{ currentLocale }}/login"
