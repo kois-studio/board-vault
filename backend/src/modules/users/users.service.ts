@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { DatabaseService } from '../database/database.service'
+import { CreateUserDto, UpdateUserDto } from 'src/common/types/shared/user.type'
 
 @Injectable()
 export class UsersService {
@@ -17,9 +18,9 @@ export class UsersService {
         return this.databaseService.getUserById(id)
     }
 
-    createUser(email: string, password: string, alias: string, imageUrl: string) {
-        this.LOGGER.log(`Creating user with ${email}`)
-        return this.databaseService.createUser(email, password, alias, imageUrl)
+    createUser(userDto: CreateUserDto) {
+        this.LOGGER.log(`Creating user with ${userDto.email}`)
+        return this.databaseService.createUser(userDto)
     }
 
     deleteUserById(id: number) {
@@ -27,8 +28,8 @@ export class UsersService {
         return this.databaseService.deleteUserById(id)
     }
 
-    updateUser(id: number, email: string, password: string, alias: string, imageUrl: string) {
+    updateUser(id: number, partialUserDto: UpdateUserDto) {
         this.LOGGER.log(`Updating user with id ${id}`)
-        return this.databaseService.updateUser(id, email, password, alias, imageUrl)
+        return this.databaseService.updateUser(id, partialUserDto)
     }
 }
