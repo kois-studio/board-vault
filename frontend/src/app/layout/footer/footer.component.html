@@ -1,0 +1,23 @@
+<footer class="mt-8 bg-zinc-800 text-white">
+    <div class="container mx-auto grid gap-y-8 px-4 pb-40 pt-8 xl:grid-cols-4">
+        <div class="mx-auto pb-8 xl:mx-0 xl:pb-0">
+            <img src="/images/logo.webp" alt="logo" class="w-32" />
+        </div>
+        <div class="flex flex-col items-start">
+            <h2 class="pb-4 text-3xl font-bold tracking-wider">{{ t.test }}</h2>
+            <a class="pb-2 hover:underline" href="/{{ currentLocale }}/services">{{ t.test }}</a>
+            <a class="pb-2 hover:underline" href="/{{ currentLocale }}/about">{{ t.test }}</a>
+        </div>
+        <div class="flex flex-col items-start">
+            <h2 class="pb-4 text-3xl font-bold tracking-wider">{{ t.test }}</h2>
+            <a class="pb-2 hover:underline" href="{{ currentLocale }}#faq">{{ t.test }}</a>
+            <a class="pb-2 hover:underline" href="{{ currentLocale }}/terms">{{ t.test }}</a>
+        </div>
+        <div class="flex flex-col items-start">
+            <h2 class="pb-4 text-3xl font-bold tracking-wider">{{ t.test }}</h2>
+            <a class="pb-2 hover:underline" href="/{{ currentLocale }}/contact">{{ t.test }}</a>
+            <p class="pb-2">{{ "hola@gmail.com" }}</p>
+        </div>
+    </div>
+    <div class="bg-zinc-900 p-4 text-center text-xl">newver.com &copy; {{ date }}</div>
+</footer>
