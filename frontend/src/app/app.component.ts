@@ -8,7 +8,6 @@ import { LayoutFooterComponent } from './layout/footer/footer.component';
     standalone: true,
     imports: [RouterOutlet, LayoutHeaderComponent, LayoutFooterComponent],
     templateUrl: './app.component.html',
-    styleUrl: './app.component.scss',
 })
 export class AppComponent {
     title = 'frontend';
