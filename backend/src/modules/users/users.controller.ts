@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Logger, Param, ParseIntPipe, Post, Put } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from '@nestjs/common'
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { UsersService } from './users.service'
 import { CreateUserDto, UpdateUserDto, UserDto } from '../../common/types/shared/user.type'
@@ -6,11 +6,7 @@ import { CreateUserDto, UpdateUserDto, UserDto } from '../../common/types/shared
 @ApiTags('users')
 @Controller('users')
 export class UsersController {
-    private readonly logger: Logger
-
-    constructor(private readonly usersService: UsersService) {
-        this.logger = new Logger(this.constructor.name)
-    }
+    constructor(private readonly usersService: UsersService) {}
 
     /**
      * ## Reset all database registers
