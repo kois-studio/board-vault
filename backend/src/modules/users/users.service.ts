@@ -31,14 +31,14 @@ export class UsersService {
     }
 
     async getUsers(): Promise<Array<UserDto>> {
-        this.LOGGER.log('Getting all users...')
+        this.LOGGER.log('Getting all users')
         const resultSet = await this.databaseService.getUsers()
 
         return this._parseResultSet(resultSet)
     }
 
     async getUserById(id: number) {
-        this.LOGGER.log(`Getting user with id ${id}...`)
+        this.LOGGER.log(`Getting user with id ${id}`)
         const resultSet = await this.databaseService.getUserById(id)
         const users = this._parseResultSet(resultSet)
 

@@ -19,12 +19,12 @@ export class DatabaseService implements OnModuleInit {
     }
 
     getUsers() {
-        this.LOGGER.log('Getting all users...')
+        this.LOGGER.log('Getting all users')
         return this.tursoClient.execute('SELECT * FROM Account')
     }
 
     getUserById(id: number) {
-        this.LOGGER.log(`Getting user with id ${id}...`)
+        this.LOGGER.log(`Getting user with id ${id}`)
         return this.tursoClient.execute({
             sql: 'SELECT * FROM Account WHERE id = ?',
             args: [id],
@@ -32,7 +32,7 @@ export class DatabaseService implements OnModuleInit {
     }
 
     getUserByEmail(email: string) {
-        this.LOGGER.log(`Getting user with email ${email}...`)
+        this.LOGGER.log(`Getting user with email ${email}`)
         return this.tursoClient.execute({
             sql: 'SELECT * FROM Account WHERE email = ?',
             args: [email],
@@ -55,7 +55,7 @@ export class DatabaseService implements OnModuleInit {
     }
 
     async updateUser(id: number, partialUserDto: UpdateUserDto) {
-        this.LOGGER.log(`Updating user with id ${id}...`)
+        this.LOGGER.log(`Updating user with id ${id}`)
 
         // Array to store fields to update
         const fields = []
@@ -116,7 +116,7 @@ export class DatabaseService implements OnModuleInit {
      */
     // @Wrapper(false)
     // async deleteOne(key: string): Promise<boolean> {
-    //     this.LOGGER.log(`REDIS: Deleting single key ${key}...`)
+    //     this.LOGGER.log(`REDIS: Deleting single key ${key}`)
     //     // await this.REDIS.del(key)
     //     return true
     // }
