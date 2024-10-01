@@ -22,6 +22,16 @@ export class LocalStorageService {
         localStorage.clear()
     }
 
+    // Custom methods
+    setToken(token: string): void {
+        this.setItem('access_token', token)
+        this.token = token
+    }
+    deleteToken(): void {
+        this.removeItem('access_token')
+        this.token = null
+    }
+
     getToken(): string | null {
         const token = this.getItem('access_token')
         this.token = token

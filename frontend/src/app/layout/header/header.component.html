@@ -7,21 +7,21 @@
 
         <!-- DESKTOP MENU -->
         <div class="hidden lg:block">
-            <a href="/dashboard" class="{{ styles.link }} {{ isSessionValid ? '' : 'hidden' }}">Dashboard</a>
+            <a routerLink="/dashboard" class="{{ styles.link }} {{ getIsLogged ? '' : 'hidden' }}">Dashboard</a>
             <!-- <a class={styles_link} href={`/${lang}/games`}>Games list</a> -->
             <a
                 routerLink="/login"
                 class="rounded bg-green-600 px-4 py-2 text-xl font-bold hover:bg-green-700 {{
-                    isSessionValid ? 'hidden' : ''
+                    getIsLogged ? 'hidden' : ''
                 }}"
             >
                 Log in
             </a>
 
             <button
-                id="signout"
+                (click)="logout()"
                 class="rounded bg-red-600 px-4 py-2 text-xl font-bold hover:bg-red-700 {{
-                    isSessionValid ? '' : 'hidden'
+                    getIsLogged ? '' : 'hidden'
                 }}"
             >
                 Sign out
