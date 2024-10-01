@@ -24,7 +24,10 @@ async function bootstrap() {
     // Create the Nest application
     const app = await NestFactory.create(AppModule)
 
-    app.enableCors({})
+    app.enableCors({
+        origin: ['https://board-vault-front.vercel.app', 'http://localhost:4200'],
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    })
 
     // Create the swagger documentation
     const swaggerConfig = new DocumentBuilder()
