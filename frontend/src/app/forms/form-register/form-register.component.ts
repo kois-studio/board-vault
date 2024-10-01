@@ -67,7 +67,7 @@ export class FormRegisterComponent {
     async handleRegister() {
         this.isLoading = true
 
-        const endpoint = `${environment.apiUrl}auth/register`
+        const endpoint = `${environment.apiUrl}/auth/register`
         const options = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

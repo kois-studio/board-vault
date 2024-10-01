@@ -53,7 +53,7 @@ export class FormLoginComponent {
     async handleLogin() {
         this.isLoading = true
 
-        const endpoint = `${environment.apiUrl}auth/login`
+        const endpoint = `${environment.apiUrl}/auth/login`
         const options = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
