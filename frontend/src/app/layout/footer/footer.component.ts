@@ -8,8 +8,4 @@ import { Component } from '@angular/core';
 export class LayoutFooterComponent {
     public currentLocale = 'en';
     public date = new Date().getFullYear().toString();
-    // TODO: translations
-    public t = {
-        test: 'test',
-    }
 }
