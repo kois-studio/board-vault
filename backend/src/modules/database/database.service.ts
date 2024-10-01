@@ -4,48 +4,12 @@ import { Client, createClient } from '@libsql/client'
 import { CreateUserDto, UpdateUserDto } from '../../common/types/shared/user.type'
 import * as bcrypt from 'bcrypt'
 
-let is_redis_disabled = false
-
-/**
- * This decorator wraps all the methods providing:
- * - A default response in case of redis being disabled in .env
- * - Error catching wrapping the method
- *
- * @param response_on_error If not provided, it will return null
- */
-function Wrapper(response_on_error: any = null) {
-    return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
-        const originalMethod = descriptor.value
-        const LOGGER = new Logger(target.constructor.name)
-
-        descriptor.value = async function (...args: any[]) {
-            // Before running any method, check if redis is disabled
-            if (is_redis_disabled) {
-                LOGGER.warn('REDIS: Redis is disabled')
-                return response_on_error
-            }
-
-            // Wraps the method, catching any error
-            try {
-                return originalMethod.apply(this, args)
-            } catch (err) {
-                LOGGER.error('Error with Redis!', err)
-                return response_on_error
-            }
-        }
-    }
-}
-
 @Injectable()
 export class DatabaseService implements OnModuleInit {
     private readonly LOGGER: Logger = new Logger(this.constructor.name)
-    private readonly REDIS_DISABLED: boolean = false
     private tursoClient: Client
 
-    constructor(private readonly configService: ConfigService) {
-        this.REDIS_DISABLED = configService.get<string>('UPSTASH_REDIS_REST_DISABLE') === 'true'
-        is_redis_disabled = this.REDIS_DISABLED
-    }
+    constructor(private readonly configService: ConfigService) {}
 
     onModuleInit() {
         this.tursoClient = createClient({
@@ -76,14 +40,18 @@ export class DatabaseService implements OnModuleInit {
     }
 
     async createUser(userDto: CreateUserDto) {
-        this.LOGGER.log(`Creating user with ${userDto.email}`)
+        this.LOGGER.log(`Creating user ${userDto.alias} - ${userDto.email}`)
         const { email, password, alias, imageUrl } = userDto
         const hashedPassword = await bcrypt.hash(password, 10)
 
-        return this.tursoClient.execute({
+        // Execute the query
+        await this.tursoClient.execute({
             sql: 'INSERT INTO Account (email, password, alias, imageUrl) VALUES (?, ?, ?, ?)',
             args: [email, hashedPassword, alias, imageUrl],
         })
+
+        // Return the newly created user
+        return this.getUserByEmail(email)
     }
 
     async updateUser(id: number, partialUserDto: UpdateUserDto) {
@@ -131,7 +99,7 @@ export class DatabaseService implements OnModuleInit {
         // Execute the query
         await this.tursoClient.execute({ sql, args })
 
-        // Return the updated user (assuming you want to fetch the user after updating)
+        // Return the updated user
         return this.getUserById(id)
     }
 
