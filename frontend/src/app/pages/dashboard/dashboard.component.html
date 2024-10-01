@@ -1,3 +1,10 @@
 <div>
     dashboard works!
 </div>
+<br />
+
+@for (user of users; track $index) {
+    <div>
+        {{ user.alias }} - {{ user.email }}
+    </div>
+}

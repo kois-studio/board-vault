@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { environment } from '../../../environments/environment';
 
 @Component({
     selector: 'app-dashboard',
@@ -6,5 +7,19 @@ import { Component } from '@angular/core';
     standalone: true,
 })
 
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {   
+    getUsersApi = `${environment.apiUrl}/users`;
+    users: any[] = [];
+
+    ngOnInit() {
+        this.getUsers();
+    }
+
+    getUsers() {
+        fetch(this.getUsersApi)
+            .then(response => response.json())
+            .then(data => {
+                this.users = data;
+            });
+    }
 }
