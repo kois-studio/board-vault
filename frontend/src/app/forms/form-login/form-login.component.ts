@@ -3,6 +3,8 @@ import { Component } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router } from '@angular/router'
 import { environment } from '../../../environments/environment'
+import { ToastComponent } from "../../components/toast/toast.component";
+import { ToastService } from '../../components/toast/toast.service'
 
 @Component({
     standalone: true,
@@ -19,7 +21,10 @@ export class FormLoginComponent {
         password: new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(48)]),
     })
 
-    constructor(private readonly router: Router) {}
+    constructor(
+        private readonly router: Router,
+        private readonly toastServicee: ToastService,
+    ) {}
 
     // Form controls
     get disableSubmit() {
@@ -62,11 +67,15 @@ export class FormLoginComponent {
         const data = await response.json()
 
         if (response.ok) {
-            this.router.navigate(['/dashboard'])
+            // TODO: instead of toast -> redirect to dashboard
+            // this.router.navigate(['/dashboard'])
+            this.toastServicee.success("Login successful!")
         } else {
-            alert(data.message)
+            this.toastServicee.error(data.message)
         }
 
+        // Reset the form and loading state
+        this.loginFormGroup.reset()
         this.isLoading = false
     }
 }
