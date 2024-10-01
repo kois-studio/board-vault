@@ -1,63 +1,72 @@
-import { Component, OnInit } from '@angular/core'
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
+import { CommonModule } from '@angular/common'
+import { Component } from '@angular/core'
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
+import { Router } from '@angular/router'
+import { environment } from '../../../environments/environment'
 
 @Component({
     standalone: true,
-    imports: [ReactiveFormsModule],
+    imports: [ReactiveFormsModule, CommonModule],
     selector: 'app-form-login',
     templateUrl: 'form-login.component.html',
 })
-export class FormLoginComponent implements OnInit {
+export class FormLoginComponent {
     public isLoading = false
 
     // Form inputs
-    public emailControl = new FormControl('')
-    public passwordControl = new FormControl('')
+    public loginFormGroup = new FormGroup({
+        email: new FormControl('', [Validators.required, Validators.email, Validators.maxLength(128)]),
+        password: new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(48)]),
+    })
 
-    ngOnInit() {
-        // add the validations required to the form controls
-        this.emailControl.addValidators([Validators.required, Validators.maxLength(128)])
-        this.passwordControl.addValidators([Validators.required, Validators.minLength(8), Validators.maxLength(48)])
+    constructor(private readonly router: Router) {}
+
+    // Form controls
+    get disableSubmit() {
+        return this.isLoading || this.loginFormGroup.invalid
     }
 
-    private _validateEmail(email: string): boolean {
-        const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/
-        return regex.test(email)
+    // Getters for form controls (shorthands)
+    get email() {
+        return this.loginFormGroup.get('email')
+    }
+    get password() {
+        return this.loginFormGroup.get('password')
     }
 
-    public handleLogin() {
+    // Input classes
+    get emailClass() {
+        if (!this.email?.dirty && !this.email?.touched) return ''
+        return this.email?.valid ? 'border-green-500' : 'border-red-500'
+    }
+    get passwordClass() {
+        if (!this.password?.dirty && !this.password?.touched) return ''
+        return this.password?.valid ? 'border-green-500' : 'border-red-500'
+    }
+
+    // Handle the user login
+    async handleLogin() {
         this.isLoading = true
 
-        if (!this.emailControl.value || !this.passwordControl.value) {
-            alert('Please fill in all fields')
-            this.isLoading = false
-            return
+        const endpoint = `${environment.apiUrl}auth/login`
+        const options = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                email: this.email?.value,
+                password: this.password?.value,
+            }),
         }
 
-        if (!this._validateEmail(this.emailControl.value) || this.emailControl.value.length > 128) {
-            alert('Please enter a valid email')
-            this.isLoading = false
-            return
+        const response = await fetch(endpoint, options)
+        const data = await response.json()
+
+        if (response.ok) {
+            this.router.navigate(['/dashboard'])
+        } else {
+            alert(data.message)
         }
 
-        if (this.passwordControl.value.length < 4 || this.passwordControl.value.length > 48) {
-            alert('Password must be at least 4 characters long')
-            this.isLoading = false
-            return
-        }
-
-        const endpoint = '/api/auth/login'
-        // const options = {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify({ email, password }),
-        // };
-
-        // const response = await fetch(endpoint, options);
-        // const data = await response.json();
-
-        // response.ok ? (window.location.href = `/${lang}/dashboard`) : alert(data.error);
-
-        // return (loading = false);
+        this.isLoading = false
     }
 }

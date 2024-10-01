@@ -48,6 +48,17 @@ export class UsersService {
         return users[0]
     }
 
+    async getUserByEmail(email: string) {
+        this.LOGGER.log(`Getting user with email ${email}`)
+        const resultSet = await this.databaseService.getUserByEmail(email)
+        const users = this._parseResultSet(resultSet)
+
+        if (users.length === 0) {
+            return new NotFoundException(`User with email ${email} not found`)
+        }
+        return users[0]
+    }
+
     createUser(userDto: CreateUserDto) {
         this.LOGGER.log(`Creating user ${userDto.alias} - ${userDto.email}`)
         return this.databaseService.createUser(userDto)
