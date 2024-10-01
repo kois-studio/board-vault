@@ -49,7 +49,7 @@ export class UsersService {
     }
 
     createUser(userDto: CreateUserDto) {
-        this.LOGGER.log(`Creating user with ${userDto.email}`)
+        this.LOGGER.log(`Creating user ${userDto.alias} - ${userDto.email}`)
         return this.databaseService.createUser(userDto)
     }
 
