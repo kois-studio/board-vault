@@ -3,8 +3,10 @@ import { Component } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router } from '@angular/router'
 import { environment } from '../../../environments/environment'
-import { ToastComponent } from "../../components/toast/toast.component";
+import { ToastComponent } from '../../components/toast/toast.component'
 import { ToastService } from '../../components/toast/toast.service'
+import { HttpClient } from '@angular/common/http'
+import { LocalStorageService } from '../../core/services/local-storage.service'
 
 @Component({
     standalone: true,
@@ -23,7 +25,9 @@ export class FormLoginComponent {
 
     constructor(
         private readonly router: Router,
+        private readonly http: HttpClient,
         private readonly toastServicee: ToastService,
+        private readonly localStorageService: LocalStorageService,
     ) {}
 
     // Form controls
@@ -54,31 +58,24 @@ export class FormLoginComponent {
         this.isLoading = true
 
         const endpoint = `${environment.apiUrl}/auth/login`
-        const options = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                email: this.email?.value,
-                password: this.password?.value,
-            }),
+        const requestBody = {
+            email: this.email?.value,
+            password: this.password?.value,
         }
 
-        const response = await fetch(endpoint, options)
-        const data = await response.json()
-
-        if (response.ok) {
-            // Store the token in localStorage
-            localStorage.setItem('access_token', data.access_token);
-
-            // TODO: instead of toast -> redirect to dashboard
-            // this.router.navigate(['/dashboard'])
-            this.toastServicee.success("Login successful!")
-        } else {
-            this.toastServicee.error(data.message)
-        }
-
-        // Reset the form and loading state
-        this.loginFormGroup.reset()
-        this.isLoading = false
+        this.http.post<{ access_token: string }>(endpoint, requestBody).subscribe({
+            next: (data) => {
+                // Store the token in localStorage
+                this.localStorageService.setToken(data.access_token)
+                this.toastServicee.success('Login successful!')
+                this.router.navigate(['/dashboard'])
+            },
+            error: (error) => {
+                this.toastServicee.error(error.error.message)
+        
+                // Reset the form and loading state
+                this.isLoading = false
+            },
+        })
     }
 }

@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
-import { LanguageSelectorComponent } from "../../components/language-selector/language-selector.component";
+import { Component } from '@angular/core'
+import { Router, RouterLink, RouterLinkActive } from '@angular/router'
+import { LanguageSelectorComponent } from '../../components/language-selector/language-selector.component'
+import { LocalStorageService } from '../../core/services/local-storage.service'
 
 @Component({
     selector: 'app-layout-header',
@@ -8,12 +9,23 @@ import { LanguageSelectorComponent } from "../../components/language-selector/la
     standalone: true,
     imports: [RouterLink, RouterLinkActive, LanguageSelectorComponent],
 })
-export class LayoutHeaderComponent implements OnInit {
-    public currentLocale = 'en';
+export class LayoutHeaderComponent {
+    public currentLocale = 'en'
     public styles = {
         link: 'b-0 cursor-pointer p-2 text-xl font-bold tracking-wider hover:text-green-600',
-    };
-    public isSessionValid = false;
+    }
 
-    ngOnInit() {}
+    constructor(
+        private readonly localStorageService: LocalStorageService,
+        private readonly router: Router,
+    ) {}
+
+    get getIsLogged(): boolean {
+        return !!this.localStorageService.token
+    }
+
+    public logout() {
+        this.localStorageService.deleteToken()
+        this.router.navigate(['/login'])
+    }
 }
