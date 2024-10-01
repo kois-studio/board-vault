@@ -67,6 +67,9 @@ export class FormLoginComponent {
         const data = await response.json()
 
         if (response.ok) {
+            // Store the token in localStorage
+            localStorage.setItem('access_token', data.access_token);
+
             // TODO: instead of toast -> redirect to dashboard
             // this.router.navigate(['/dashboard'])
             this.toastServicee.success("Login successful!")
