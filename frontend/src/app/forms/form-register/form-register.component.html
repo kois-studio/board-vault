@@ -1,33 +1,101 @@
-<div class="flex flex-col gap-4 rounded bg-zinc-800 p-8 w-96 mx-auto">
-    <input
-        type="email"
-        [formControl]="emailControl"
-        placeholder="Email ..."
-        class="rounded border border-zinc-700 bg-zinc-800 px-4 py-2"
-    />
-    <input
-        type="text"
-        [formControl]="aliasControl"
-        placeholder="Alias (username) ..."
-        class="rounded border border-zinc-700 bg-zinc-800 px-4 py-2"
-    />
-    <input
-        type="password"
-        [formControl]="passwordControl"
-        placeholder="Password ..."
-        class="rounded border border-zinc-700 bg-zinc-800 px-4 py-2"
-    />
-    <input
-        type="password"
-        [formControl]="confirmPasswordControl"
-        placeholder="Confirm password ..."
-        class="rounded border border-zinc-700 bg-zinc-800 px-4 py-2"
-    />
+<form
+    [formGroup]="registerFormGroup"
+    (ngSubmit)="handleRegister()"
+    class="flex flex-col gap-4 rounded bg-zinc-800 p-8 w-96 mx-auto"
+>
+    <!-- 1. EMAIL -->
+    <div>
+        <input
+            type="email"
+            formControlName="email"
+            placeholder="Email ..."
+            class="app-input"
+            [class]="emailClass"
+            required
+        />
+        <div *ngIf="email?.invalid && (email?.dirty || email?.touched)">
+            <div *ngIf="email?.hasError('required')" class="text-sm text-red-500 py-1">
+                <i class="bi bi-exclamation-circle-fill"></i> Email is required.
+            </div>
+            <div *ngIf="email?.hasError('email')" class="text-sm text-red-500 py-1">
+                <i class="bi bi-exclamation-circle-fill"></i> Email format is wrong.
+            </div>
+            <div *ngIf="email?.hasError('maxlength')" class="text-sm text-red-500 py-1">
+                <i class="bi bi-exclamation-circle-fill"></i> Email is too long.
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. ALIAS -->
+    <div>
+        <input
+            type="text"
+            formControlName="alias"
+            placeholder="Alias (username) ..."
+            class="app-input"
+            [class]="aliasClass"
+            required
+        />
+        <div *ngIf="alias?.invalid && (alias?.dirty || alias?.touched)">
+            <div *ngIf="alias?.hasError('required')" class="text-sm text-red-500 py-1">
+                <i class="bi bi-exclamation-circle-fill"></i> Alias is required.
+            </div>
+            <div *ngIf="alias?.hasError('minlength')" class="text-sm text-red-500 py-1">
+                <i class="bi bi-exclamation-circle-fill"></i> Alias is too short.
+            </div>
+            <div *ngIf="alias?.hasError('maxlength')" class="text-sm text-red-500 py-1">
+                <i class="bi bi-exclamation-circle-fill"></i> Alias is too long.
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. PASSWORD -->
+    <div>
+        <input
+            type="password"
+            formControlName="password"
+            placeholder="Password ..."
+            class="app-input"
+            [class]="passwordClass"
+            required
+        />
+        <div *ngIf="password?.invalid && (password?.dirty || password?.touched)">
+            <div *ngIf="password?.hasError('required')" class="text-sm text-red-500 py-1">
+                <i class="bi bi-exclamation-circle-fill"></i> Password is required.
+            </div>
+            <div *ngIf="password?.hasError('minlength')" class="text-sm text-red-500 py-1">
+                <i class="bi bi-exclamation-circle-fill"></i> Password is too short.
+            </div>
+            <div *ngIf="password?.hasError('maxlength')" class="text-sm text-red-500 py-1">
+                <i class="bi bi-exclamation-circle-fill"></i> Password is too long.
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. CONFIRM PASSWORD -->
+    <div>
+        <input
+            type="password"
+            formControlName="confirmPassword"
+            placeholder="Confirm password ..."
+            class="app-input"
+            [class]="confirmPasswordClass"
+            required
+        />
+        <div *ngIf="confirmPassword?.dirty || confirmPassword?.touched">
+            <div *ngIf="passwordsDoNotMatch" class="text-sm text-red-500 py-1">
+                <i class="bi bi-exclamation-circle-fill"></i> Passwords do not match.
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. SUBMIT -->
     <button
-        (click)="handleRegister()"
-        disabled="{{ isLoading }}"
+        type="submit"
+        [disabled]="disableSubmit"
         class="rounded bg-green-600 px-6 py-4 text-xl font-bold hover:bg-green-700 lg:col-span-3 disabled:cursor-not-allowed disabled:bg-green-400 disabled:hover:bg-green-400 disabled:opacity-50"
+        required
     >
         Register
     </button>
-</div>
+</form>
