@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common'
-import { Component, OnInit } from '@angular/core'
+import { Component } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
+import { environment } from '../../../environments/environment'
+import { Router } from '@angular/router'
 
 @Component({
     standalone: true,
@@ -8,7 +10,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
     selector: 'app-form-register',
     templateUrl: 'form-register.component.html',
 })
-export class FormRegisterComponent implements OnInit {
+export class FormRegisterComponent {
     public isLoading = false
 
     // Form inputs
@@ -19,12 +21,12 @@ export class FormRegisterComponent implements OnInit {
         confirmPassword: new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(48)]),
     })
 
+    constructor(private readonly router: Router) {}
+
     // Form controls
     get disableSubmit() {
         return this.isLoading || this.registerFormGroup.invalid
     }
-
-    ngOnInit() {}
 
     // Getters for form controls (shorthands)
     get email() {
@@ -64,7 +66,8 @@ export class FormRegisterComponent implements OnInit {
     // Handle the user registration
     async handleRegister() {
         this.isLoading = true
-        const endpoint = '/api/auth/register'
+
+        const endpoint = `${environment.apiUrl}auth/register`
         const options = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -75,11 +78,15 @@ export class FormRegisterComponent implements OnInit {
             }),
         }
 
-        // const response = await fetch(endpoint, options)
-        // const data = await response.json()
+        const response = await fetch(endpoint, options)
+        const data = await response.json()
 
-        // response.ok ? (window.location.href = `/${lang}/dashboard`) : alert(data.error)
+        if (response.ok) {
+            this.router.navigate(['/dashboard'])
+        } else {
+            alert(data.message)
+        }
 
-        // return (loading = false)
+        this.isLoading = false
     }
 }

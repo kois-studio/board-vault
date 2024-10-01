@@ -1,21 +1,61 @@
-<div class="flex flex-col gap-4 rounded bg-zinc-800 p-8 w-96 mx-auto">
-    <input
-        type="email"
-        [formControl]="emailControl"
-        placeholder="Email ..."
-        class="rounded border border-zinc-700 bg-zinc-800 px-4 py-2"
-    />
-    <input
-        type="password"
-        [formControl]="passwordControl"
-        placeholder="Password ..."
-        class="rounded border border-zinc-700 bg-zinc-800 px-4 py-2"
-    />
+<form
+    [formGroup]="loginFormGroup"
+    (ngSubmit)="handleLogin()"
+    class="flex flex-col gap-4 rounded bg-zinc-800 p-8 w-96 mx-auto"
+>
+    <!-- 1. EMAIL -->
+    <div>
+        <input
+            type="email"
+            formControlName="email"
+            placeholder="Email ..."
+            class="app-input"
+            [class]="emailClass"
+            required
+        />
+        <div *ngIf="email?.invalid && (email?.dirty || email?.touched)">
+            <div *ngIf="email?.hasError('required')" class="text-sm text-red-500 py-1">
+                <i class="bi bi-exclamation-circle-fill"></i> Email is required.
+            </div>
+            <div *ngIf="email?.hasError('email')" class="text-sm text-red-500 py-1">
+                <i class="bi bi-exclamation-circle-fill"></i> Email format is wrong.
+            </div>
+            <div *ngIf="email?.hasError('maxlength')" class="text-sm text-red-500 py-1">
+                <i class="bi bi-exclamation-circle-fill"></i> Email is too long.
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. PASSWORD -->
+    <div>
+        <input
+            type="password"
+            formControlName="password"
+            placeholder="Password ..."
+            class="app-input"
+            [class]="passwordClass"
+            required
+        />
+        <div *ngIf="password?.invalid && (password?.dirty || password?.touched)">
+            <div *ngIf="password?.hasError('required')" class="text-sm text-red-500 py-1">
+                <i class="bi bi-exclamation-circle-fill"></i> Password is required.
+            </div>
+            <div *ngIf="password?.hasError('minlength')" class="text-sm text-red-500 py-1">
+                <i class="bi bi-exclamation-circle-fill"></i> Password is too short.
+            </div>
+            <div *ngIf="password?.hasError('maxlength')" class="text-sm text-red-500 py-1">
+                <i class="bi bi-exclamation-circle-fill"></i> Password is too long.
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. SUBMIT -->
     <button
-        (click)="handleLogin()"
-        disabled="{{ isLoading }}"
+        type="submit"
+        [disabled]="disableSubmit"
         class="rounded bg-green-600 px-6 py-4 text-xl font-bold hover:bg-green-700 lg:col-span-3 disabled:cursor-not-allowed disabled:bg-green-400 disabled:hover:bg-green-400 disabled:opacity-50"
+        required
     >
-        Access
+        Register
     </button>
-</div>
+</form>

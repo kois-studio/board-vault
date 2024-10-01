@@ -1,4 +1,4 @@
-import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger'
+import { ApiProperty, OmitType, PartialType, PickType } from '@nestjs/swagger'
 import { IsEmail, IsNotEmpty, IsString, IsUrl } from 'class-validator'
 
 // UserDto for GET requests
@@ -79,4 +79,5 @@ export class CreateUserDto {
 export class UpdateUserDto extends PartialType(CreateUserDto) {}
 
 // Createe user but without imageUrl
-export class RegisterUserDto extends OmitType(CreateUserDto, ['imageUrl']) {}
+export class RegisterUserDto extends PickType(CreateUserDto, ['email', 'alias', 'password']) {}
+export class LoginUserDto extends PickType(CreateUserDto, ['email', 'password']) {}
