@@ -4,6 +4,7 @@ import { NestFactory } from '@nestjs/core'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { AppModule } from './app.module'
 import { validateEnv } from './common/validators'
+import { NextFunction, Request, Response } from 'express'
 
 const port = process.env.PORT || 3000
 const logger = new Logger('Init')
@@ -26,7 +27,21 @@ async function bootstrap() {
 
     app.enableCors({
         origin: ['https://board-vault-front.vercel.app', 'http://localhost:4200'],
-        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+        allowedHeaders: ['Content-Type', 'Authorization'],
+        credentials: true,
+    })
+
+    app.use((req: Request, res: Response, next: NextFunction) => {
+        if (req.method === 'OPTIONS') {
+            res.setHeader('Access-Control-Allow-Origin', 'https://board-vault-front.vercel.app')
+            res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS')
+            res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+            res.setHeader('Access-Control-Allow-Credentials', 'true')
+            res.status(204).end() // End response for OPTIONS preflight
+        } else {
+            next()
+        }
     })
 
     // Create the swagger documentation
