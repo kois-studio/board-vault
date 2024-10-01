@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { RouterLink, RouterLinkActive } from '@angular/router';
+import { LanguageSelectorComponent } from "../../components/language-selector/language-selector.component";
 
 @Component({
     selector: 'app-layout-header',
     templateUrl: './header.component.html',
     standalone: true,
-    imports: [RouterOutlet, RouterLink, RouterLinkActive],
+    imports: [RouterLink, RouterLinkActive, LanguageSelectorComponent],
 })
 export class LayoutHeaderComponent implements OnInit {
     public currentLocale = 'en';
