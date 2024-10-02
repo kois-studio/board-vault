@@ -1,25 +1,30 @@
-import { Component, OnInit } from '@angular/core';
-import { environment } from '../../../environments/environment';
+import { Component, OnInit } from '@angular/core'
+import { environment } from '../../../environments/environment'
+import { HttpClient } from '@angular/common/http'
 
 @Component({
     selector: 'app-dashboard',
     templateUrl: 'dashboard.component.html',
     standalone: true,
 })
+export class DashboardComponent implements OnInit {
+    public users: any[] = []
 
-export class DashboardComponent implements OnInit {   
-    getUsersApi = `${environment.apiUrl}/users`;
-    users: any[] = [];
+    constructor(private readonly http: HttpClient) {}
 
     ngOnInit() {
-        this.getUsers();
+        this.getUsers()
     }
 
     getUsers() {
-        fetch(this.getUsersApi)
-            .then(response => response.json())
-            .then(data => {
-                this.users = data;
-            });
+        const url = `${environment.apiUrl}/users`
+        this.http.get(url).subscribe({
+            next: (data: any) => {
+                this.users = data
+            },
+            error: (error) => {
+                console.error('error', error)
+            },
+        })
     }
 }
