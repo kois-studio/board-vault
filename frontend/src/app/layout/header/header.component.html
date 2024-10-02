@@ -7,16 +7,18 @@
 
         <!-- DESKTOP MENU -->
         <div class="hidden lg:block">
-            <a routerLink="/dashboard" class="{{ styles.link }} {{ getIsLogged ? '' : 'hidden' }}">Dashboard</a>
             <!-- <a class={styles_link} href={`/${lang}/games`}>Games list</a> -->
             <a
                 routerLink="/login"
+                routerLinkActive="text-green-600"
                 class="rounded bg-green-600 px-4 py-2 text-xl font-bold hover:bg-green-700 {{
                     getIsLogged ? 'hidden' : ''
                 }}"
             >
                 Log in
             </a>
+            <a routerLink="/dashboard" routerLinkActive="text-green-600" class="{{ styles.link }} {{ getIsLogged ? '' : 'hidden' }}">Dashboard</a>
+            <a routerLink="/profile" routerLinkActive="text-green-600" class="{{ styles.link }} {{ getIsLogged ? '' : 'hidden' }}">Profile</a>
 
             <button
                 (click)="logout()"
@@ -26,6 +28,7 @@
             >
                 Sign out
             </button>
+
         </div>
 
         <div class="absolute left-0 top-20 lg:relative lg:top-0">

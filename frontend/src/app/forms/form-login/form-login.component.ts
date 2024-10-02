@@ -67,12 +67,16 @@ export class FormLoginComponent {
             next: (data) => {
                 // Store the token in localStorage
                 this.localStorageService.setToken(data.access_token)
+                if (this.email?.value) {
+                    this.localStorageService.setItem('email', this.email?.value)
+                }
+
                 this.toastServicee.success('Login successful!')
                 this.router.navigate(['/dashboard'])
             },
             error: (error) => {
                 this.toastServicee.error(error.error.message)
-        
+
                 // Reset the form and loading state
                 this.isLoading = false
             },
