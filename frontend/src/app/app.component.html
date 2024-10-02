@@ -1,9 +1,11 @@
 <app-layout-header />
 
-{{ getToken }}
+<div class="bg-zinc-800 flex items-center justify-between p-2">
+    <span>a</span>
+    <app-profile />
+</div>
 
 <main>
-    <button class="p-2 bg-blue-500 my-8" (click)="testGetUsers()">test get users</button>
     <router-outlet />
 </main>
 
