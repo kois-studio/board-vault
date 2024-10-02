@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, Logger, OnModuleInit } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { Client, createClient } from '@libsql/client'
-import { CreateUserDto, UpdateUserDto } from '../../common/types/shared/user.type'
+import { CreateUserBody, UpdateUserBody } from '../../common/types/shared/user.type'
 import * as bcrypt from 'bcrypt'
 
 @Injectable()
@@ -39,7 +39,7 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
-    async createUser(userDto: CreateUserDto) {
+    async createUser(userDto: CreateUserBody) {
         this.LOGGER.log(`Creating user ${userDto.alias} - ${userDto.email}`)
         const { email, password, alias, imageUrl } = userDto
         const hashedPassword = await bcrypt.hash(password, 10)
@@ -54,7 +54,7 @@ export class DatabaseService implements OnModuleInit {
         return this.getUserByEmail(email)
     }
 
-    async updateUser(id: number, partialUserDto: UpdateUserDto) {
+    async updateUser(id: number, partialUserDto: UpdateUserBody) {
         this.LOGGER.log(`Updating user with id ${id}`)
 
         // Array to store fields to update
