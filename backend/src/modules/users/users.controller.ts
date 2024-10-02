@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common'
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { UsersService } from './users.service'
-import { CreateUserDto, UpdateUserDto, UserDto } from '../../common/types/shared/user.type'
+import { CreateUserBody, UpdateUserBody, UserGetDto } from '../../common/types/shared/user.type'
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard'
 
 @UseGuards(JwtAuthGuard)
@@ -12,14 +12,14 @@ export class UsersController {
 
     @Get('/')
     @ApiOperation({ summary: 'Get all users' })
-    @ApiResponse({ status: 200, type: [UserDto], description: 'List of all users' })
+    @ApiResponse({ status: 200, type: [UserGetDto], description: 'List of all users' })
     async getUsers() {
         return this.usersService.getUsers()
     }
 
     @Get('/:userId')
     @ApiOperation({ summary: 'Get user by id' })
-    @ApiResponse({ status: 200, type: UserDto, description: 'User found' })
+    @ApiResponse({ status: 200, type: UserGetDto, description: 'User found' })
     @ApiResponse({ status: 404, description: 'User not found' })
     @ApiParam({ name: 'userId', type: String })
     getUserById(@Param('userId', ParseIntPipe) userId: number) {
@@ -28,7 +28,7 @@ export class UsersController {
 
     @Get('/byEmail/:email')
     @ApiOperation({ summary: 'Get user by email' })
-    @ApiResponse({ status: 200, type: UserDto, description: 'User found' })
+    @ApiResponse({ status: 200, type: UserGetDto, description: 'User found' })
     @ApiResponse({ status: 404, description: 'User not found' })
     @ApiParam({ name: 'email', type: String })
     getUserByEmail(@Param('email') email: string) {
@@ -38,17 +38,17 @@ export class UsersController {
     @Post('/')
     @ApiOperation({ summary: 'Create a new user' })
     @ApiResponse({ status: 201, description: 'The user has been succesfully created' })
-    async createUser(@Body() userDto: CreateUserDto) {
+    async createUser(@Body() userDto: CreateUserBody) {
         return this.usersService.createUser(userDto)
     }
 
     @Put(':userId')
     @ApiOperation({ summary: 'Update a user by ID' })
     @ApiParam({ name: 'userId', required: true, description: 'User ID' })
-    @ApiBody({ type: UpdateUserDto, description: 'Partial or full user object to update' })
+    @ApiBody({ type: UpdateUserBody, description: 'Partial or full user object to update' })
     @ApiResponse({ status: 200, description: 'The user has been successfully updated.' })
     @ApiResponse({ status: 404, description: 'User not found.' })
-    updateUser(@Param('userId', ParseIntPipe) id: number, @Body() partialUserDto: UpdateUserDto) {
+    updateUser(@Param('userId', ParseIntPipe) id: number, @Body() partialUserDto: UpdateUserBody) {
         return this.usersService.updateUser(id, partialUserDto)
     }
 
