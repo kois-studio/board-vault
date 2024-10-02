@@ -1,4 +1,4 @@
-export const supported_locales = ['en', 'es', /**, 'fr', 'de', 'it", 'pt-br'*/] as const
+export const supported_locales = ['en', 'es' /**, 'fr', 'de', 'it", 'pt-br'*/] as const
 
 export const language_titles: Record<TranslationLangs, string> = {
     en: 'English',
@@ -100,7 +100,10 @@ const raw_translations: Record<keyof TranslationKeys, Record<TranslationLangs, s
 
 // Util line to extract the translations by language
 function _generateTranslations(lang: TranslationLangs) {
-    return Object.fromEntries(Object.entries(raw_translations).map(([key, value]) => [key, value[lang]])) as Record<keyof TranslationKeys, string>
+    return Object.fromEntries(Object.entries(raw_translations).map(([key, value]) => [key, value[lang]])) as Record<
+        keyof TranslationKeys,
+        string
+    >
 }
 
 export const translations: Record<TranslationLangs, Record<keyof TranslationKeys, string>> = {

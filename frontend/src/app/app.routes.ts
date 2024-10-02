@@ -1,11 +1,11 @@
 import { Routes } from '@angular/router'
 
+import { DashboardComponent } from './pages/dashboard/dashboard.component'
 // Components
 import { LandingComponent } from './pages/landing/landing.component'
 import { LoginComponent } from './pages/login/login.component'
-import { RegisterComponent } from './pages/register/register.component'
-import { DashboardComponent } from './pages/dashboard/dashboard.component'
 import { ProfileComponent } from './pages/profile/profile.component'
+import { RegisterComponent } from './pages/register/register.component'
 
 // Guards
 import { AuthRedirectGuard } from './core/guards/auth-redirect.guard'

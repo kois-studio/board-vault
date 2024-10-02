@@ -20,11 +20,19 @@
                 <h3 class="text-gray-500 text-sm">Manage your account info.</h3>
 
                 <div class="pt-4 grid gap-2">
-                    <button class="flex gap-2 py-2 px-4 rounded-lg hover:bg-zinc-900 w-full">
+                    <button
+                        (click)="tabView = 0"
+                        [class]="tabView === 0 ? 'bg-zinc-900' : ''"
+                        class="flex gap-2 py-2 px-4 rounded-lg hover:bg-zinc-900 w-full"
+                    >
                         <i class="bi bi-person-circle"></i>
                         <span>Profile</span>
                     </button>
-                    <button class="flex gap-2 py-2 px-4 rounded-lg hover:bg-zinc-900 w-full">
+                    <button
+                        (click)="tabView = 1"
+                        [class]="tabView === 1 ? 'bg-zinc-900' : ''"
+                        class="flex gap-2 py-2 px-4 rounded-lg hover:bg-zinc-900 w-full"
+                    >
                         <i class="bi bi-shield-lock-fill"></i>
                         <span>Security</span>
                     </button>
@@ -32,10 +40,12 @@
             </div>
             <!-- Right content area -->
             <div class="w-3/4 p-8">
+                <!-- TABVIEW 0 - PROFILE DETAILS -->
+                @if (tabView === 0) {
                 <h3 class="text-lg font-semibold border-b border-zinc-500 pb-4">Profile details</h3>
 
                 <!-- Profile Picture and Name -->
-                <div class="flex gap-x-2 items-center mb-6 border-b border-zinc-500 py-4">
+                <div class="flex gap-x-2 items-center border-b border-zinc-500 py-4">
                     <h3 class="w-48 text-gray-500">Profile</h3>
                     <div class="w-full flex justify-between items-center">
                         <div class="flex items-center">
@@ -46,18 +56,42 @@
                             />
                             <p class="text-lg font-semibold">example-user M. example-contributor</p>
                         </div>
-                        <button class="py-2 px-4 rounded-lg bg-zinc-700 hover:bg-zinc-800">Update profile</button>
+                        <button class="app-btn-primary">Update profile</button>
                     </div>
                 </div>
 
                 <!-- Email addresses -->
-                <div class="flex gap-x-2 items-center mb-6 border-b border-zinc-500 py-4">
+                <div class="flex gap-x-2 items-center border-b border-zinc-500 py-4">
                     <h3 class="w-48 text-gray-500">Email address</h3>
                     <div class="w-full flex justify-between items-center">
                         <p class="text-lg mr-4">{{ "example-usermf99@gmail.com" }}</p>
-                        <button class="py-2 px-4 rounded-lg bg-zinc-700 hover:bg-zinc-800">Change email</button>
+                        <button class="app-btn-primary">Change email</button>
                     </div>
                 </div>
+                }
+
+                <!-- TABVIEW 1 - SECURITY -->
+                @if (tabView === 1) {
+                <h3 class="text-lg font-semibold border-b border-zinc-500 pb-4">Security</h3>
+
+                <!-- Password -->
+                <div class="flex gap-x-2 items-center border-b border-zinc-500 py-4">
+                    <h3 class="w-48 text-gray-500">Password</h3>
+                    <button class="app-btn-primary">Change password</button>
+                </div>
+
+                <!-- Delete account -->
+                <div class="flex gap-x-2 items-center border-b border-zinc-500 py-4">
+                    <h3 class="w-48 text-gray-500">Delete account</h3>
+                    <div>
+                        <button
+                            class="flex gap-2 py-2 px-4 rounded-lg hover:bg-red-400/20 w-full text-red-400 font-bold tracking-wide"
+                        >
+                            Delete account
+                        </button>
+                    </div>
+                </div>
+                }
             </div>
         </div>
     </div>
