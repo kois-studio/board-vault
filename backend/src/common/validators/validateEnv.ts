@@ -19,6 +19,11 @@ export function validateEnv(): void {
         err.push('Example value: "eyJfdjsbrEzr..."\n')
     }
 
+    if (!process.env.JWT_SECRET) {
+        err.push('Missing in .env file: JWT_SECRET')
+        err.push('Example value: "eyJfdjsbrEzr..."\n')
+    }
+
     // Validate if the redis is disabled
     // if (!process.env.UPSTASH_REDIS_REST_DISABLE) {
     //     err.push('Missing in .env file: UPSTASH_REDIS_REST_DISABLE')
