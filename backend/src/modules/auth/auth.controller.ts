@@ -8,10 +8,6 @@ import { LoginUserDto, RegisterUserDto } from 'src/common/types/shared/user.type
 export class AuthController {
     constructor(private readonly authService: AuthService) {}
 
-    /**
-     * ## Create a user
-     * @returns
-     */
     @Post('/register')
     @ApiOperation({ summary: 'Create a new user' })
     @ApiResponse({ status: 201, description: 'The user has been succesfully created' })
@@ -19,10 +15,6 @@ export class AuthController {
         return this.authService.register(userDto.email, userDto.alias, userDto.password)
     }
 
-    /**
-     * ## Login a user
-     * @returns JWT token
-     */
     @Post('/login')
     @ApiOperation({ summary: 'Log in a user' })
     @ApiResponse({ status: 200, description: 'Successfully logged in' })

@@ -1,4 +1,4 @@
-import { ApiProperty, OmitType, PartialType, PickType } from '@nestjs/swagger'
+import { ApiProperty, PartialType, PickType } from '@nestjs/swagger'
 import { IsEmail, IsNotEmpty, IsString, IsUrl } from 'class-validator'
 
 // UserDto for GET requests
@@ -14,12 +14,6 @@ export class UserDto {
         description: "The user's email address.",
     })
     email: string
-
-    @ApiProperty({
-        example: '$2a$14$.nywJt3bPWo7f2tpuGOjWu1.rBpJX2kpU94yQoIzcnyzwlAexEsRe',
-        description: "The user's hashed password.",
-    })
-    password: string
 
     @ApiProperty({
         example: '2024-09-28 10:02:39',

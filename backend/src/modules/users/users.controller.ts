@@ -10,10 +10,6 @@ import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard'
 export class UsersController {
     constructor(private readonly usersService: UsersService) {}
 
-    /**
-     * ## Reset all database registers
-     * @returns Confirmation that the database was deleted
-     */
     @Get('/')
     @ApiOperation({ summary: 'Get all users' })
     @ApiResponse({ status: 200, type: [UserDto], description: 'List of all users' })
@@ -21,10 +17,6 @@ export class UsersController {
         return this.usersService.getUsers()
     }
 
-    /**
-     * ## Reset all database registers
-     * @returns Confirmation that the database was deleted
-     */
     @Get('/:userId')
     @ApiOperation({ summary: 'Get user by id' })
     @ApiResponse({ status: 200, type: UserDto, description: 'User found' })
@@ -34,10 +26,15 @@ export class UsersController {
         return this.usersService.getUserById(userId)
     }
 
-    /**
-     * ## Create a user
-     * @returns
-     */
+    @Get('/byEmail/:email')
+    @ApiOperation({ summary: 'Get user by email' })
+    @ApiResponse({ status: 200, type: UserDto, description: 'User found' })
+    @ApiResponse({ status: 404, description: 'User not found' })
+    @ApiParam({ name: 'email', type: String })
+    getUserByEmail(@Param('email') email: string) {
+        return this.usersService.getUserByEmail(email)
+    }
+
     @Post('/')
     @ApiOperation({ summary: 'Create a new user' })
     @ApiResponse({ status: 201, description: 'The user has been succesfully created' })
@@ -45,10 +42,6 @@ export class UsersController {
         return this.usersService.createUser(userDto)
     }
 
-    /**
-     * ## Modify a user
-     * @returns
-     */
     @Put(':userId')
     @ApiOperation({ summary: 'Update a user by ID' })
     @ApiParam({ name: 'userId', required: true, description: 'User ID' })
@@ -59,10 +52,6 @@ export class UsersController {
         return this.usersService.updateUser(id, partialUserDto)
     }
 
-    /**
-     * ## Delete a user by id
-     * @returns
-     */
     @Delete('/:userId')
     @ApiOperation({ summary: 'Delete a user by Id' })
     @ApiResponse({ status: 200, description: 'The user has been succesfully deleted' })
