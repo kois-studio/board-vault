@@ -13,15 +13,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
             ignoreExpiration: false,
             secretOrKey: configService.get('JWT_SECRET'),
         })
-        this.LOGGER.debug('JwtStrategy instantiated')
     }
 
-    async validate(payload: { sub: string; email: string }) {
-        this.LOGGER.debug(`JWT Payload: ${JSON.stringify(payload)}`)
-        if (!payload) {
-            this.LOGGER.error('Invalid JWT payload')
-            return null
-        }
+    async validate(payload: { sub: string; email: string; iat: number; exp: number }) {
         return { userId: payload.sub, email: payload.email }
     }
 }
