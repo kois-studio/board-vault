@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common'
 import { Component } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
-import { environment } from '../../../environments/environment'
 import { Router } from '@angular/router'
+import { Api } from '../../api/api'
+import { ToastService } from '../../components/toast/toast.service'
 
 @Component({
     standalone: true,
@@ -21,7 +22,11 @@ export class FormRegisterComponent {
         confirmPassword: new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(48)]),
     })
 
-    constructor(private readonly router: Router) {}
+    constructor(
+        private readonly router: Router,
+        private readonly api: Api,
+        private readonly toastService: ToastService,
+    ) {}
 
     // Form controls
     get disableSubmit() {
@@ -67,25 +72,21 @@ export class FormRegisterComponent {
     async handleRegister() {
         this.isLoading = true
 
-        const endpoint = `${environment.apiUrl}/auth/register`
-        const options = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                email: this.email?.value,
-                alias: this.alias?.value,
-                password: this.password?.value,
-            }),
+        if (!this.email?.value || !this.alias?.value || !this.password?.value || !this.confirmPassword?.value) {
+            // should never happen due to form validation, just for ts
+            this.toastService.error('Please fill in all fields')
+            this.isLoading = false
+            return
         }
 
-        const response = await fetch(endpoint, options)
-        const data = await response.json()
-
-        if (response.ok) {
-            this.router.navigate(['/dashboard'])
-        } else {
-            alert(data.message)
-        }
+        this.api.register(this.email?.value, this.alias?.value, this.password?.value).subscribe({
+            next: (data) => {
+                this.router.navigate(['/dashboard'])
+            },
+            error: (error) => {
+                this.toastService.error('Error registering user')
+            },
+        })
 
         this.isLoading = false
     }

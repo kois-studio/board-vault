@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component } from '@angular/core'
 
 @Component({
     selector: 'app-layout-footer',
@@ -6,6 +6,6 @@ import { Component } from '@angular/core';
     standalone: true,
 })
 export class LayoutFooterComponent {
-    public currentLocale = 'en';
-    public date = new Date().getFullYear().toString();
+    public currentLocale = 'en'
+    public date = new Date().getFullYear().toString()
 }

@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core'
-import { environment } from '../../../environments/environment'
-import { HttpClient } from '@angular/common/http'
+import { Api } from '../../api/api'
 
 @Component({
     selector: 'app-dashboard',
@@ -10,15 +9,14 @@ import { HttpClient } from '@angular/common/http'
 export class DashboardComponent implements OnInit {
     public users: any[] = []
 
-    constructor(private readonly http: HttpClient) {}
+    constructor(private readonly api: Api) {}
 
     ngOnInit() {
         this.getUsers()
     }
 
     getUsers() {
-        const url = `${environment.apiUrl}/users`
-        this.http.get(url).subscribe({
+        this.api.getUsers().subscribe({
             next: (data: any) => {
                 this.users = data
             },
