@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
-import { ToastService } from './toast.service';
-import { CommonModule } from '@angular/common';
+import { CommonModule } from '@angular/common'
+import { Component } from '@angular/core'
+import { ToastService } from './toast.service'
 
 @Component({
     standalone: true,
@@ -12,6 +12,6 @@ export class ToastComponent {
     constructor(public toastService: ToastService) {}
 
     closeToast(index: number): void {
-        this.toastService.removeToast(index);
+        this.toastService.removeToast(index)
     }
 }

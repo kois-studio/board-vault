@@ -2,10 +2,8 @@ import { CommonModule } from '@angular/common'
 import { Component } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router } from '@angular/router'
-import { environment } from '../../../environments/environment'
-import { ToastComponent } from '../../components/toast/toast.component'
+import { Api } from '../../api/api'
 import { ToastService } from '../../components/toast/toast.service'
-import { HttpClient } from '@angular/common/http'
 import { LocalStorageService } from '../../core/services/local-storage.service'
 
 @Component({
@@ -24,8 +22,8 @@ export class FormLoginComponent {
     })
 
     constructor(
+        private readonly api: Api,
         private readonly router: Router,
-        private readonly http: HttpClient,
         private readonly toastServicee: ToastService,
         private readonly localStorageService: LocalStorageService,
     ) {}
@@ -57,13 +55,14 @@ export class FormLoginComponent {
     async handleLogin() {
         this.isLoading = true
 
-        const endpoint = `${environment.apiUrl}/auth/login`
-        const requestBody = {
-            email: this.email?.value,
-            password: this.password?.value,
+        if (!this.email?.value || !this.password?.value) {
+            // should never happen due to form validation, just for ts
+            this.toastServicee.error('Please fill in all fields')
+            this.isLoading = false
+            return
         }
 
-        this.http.post<{ access_token: string }>(endpoint, requestBody).subscribe({
+        this.api.login(this.email?.value, this.password?.value).subscribe({
             next: (data) => {
                 // Store the token in localStorage
                 this.localStorageService.setToken(data.access_token)

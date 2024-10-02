@@ -1,20 +1,20 @@
-import { Component } from '@angular/core';
-import { language_titles } from './translations';
+import { Component } from '@angular/core'
+import { language_titles } from './translations'
 
 @Component({
     standalone: true,
     imports: [],
     selector: 'language-selector',
-    templateUrl: 'language-selector.component.html'
+    templateUrl: 'language-selector.component.html',
 })
 export class LanguageSelectorComponent {
     public currentLanguage = 'English'
-    public isListVisible = false;
-    public language_titles = Object.keys(language_titles);
+    public isListVisible = false
+    public language_titles = Object.keys(language_titles)
 
     onClick() {
         // toggle the dropdown
-        this.isListVisible = !this.isListVisible;
+        this.isListVisible = !this.isListVisible
     }
 
     getLabel(lang_key: string) {
@@ -22,14 +22,14 @@ export class LanguageSelectorComponent {
     }
 
     redirectToLocale(locale: string) {
-        console.log('Redirecting to locale:', locale);
+        console.log('Redirecting to locale:', locale)
         const currentLang = window.location.pathname.split('/')[1]
 
         if (currentLang !== locale) {
             window.location.href = window.location.pathname.replace(`/${currentLang}`, `/${locale}`)
         } else {
             // close the dropdown
-            this.isListVisible = !this.isListVisible;
+            this.isListVisible = !this.isListVisible
         }
     }
 }
