@@ -12,7 +12,7 @@ export class AuthService {
         private readonly jwtService: JwtService,
     ) {}
 
-    private async _validateUser(email: string, password: string) {
+    async validateUser(email: string, password: string) {
         const user = await this.usersService.getUserByEmail(email)
 
         if (!(user instanceof Error) && (await bcrypt.compare(password, user.password))) {
@@ -23,7 +23,7 @@ export class AuthService {
 
     async login(email: string, password: string) {
         this.LOGGER.log(`Logging in user ${email}`)
-        const user = await this._validateUser(email, password)
+        const user = await this.validateUser(email, password)
 
         if (!user) {
             throw new UnauthorizedException('Invalid credentials')
