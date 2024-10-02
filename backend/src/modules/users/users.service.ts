@@ -14,7 +14,7 @@ export class UsersService {
         const users = resultSet.rows.map(row => ({
             id: Number(row[0]),
             email: String(row[1]),
-            password: String(row[2]),
+            // password: String(row[2]), // don't send the password hash to the client
             createdAt: String(row[3]),
             alias: String(row[4]),
             imageUrl: String(row[5]),
