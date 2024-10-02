@@ -7,7 +7,10 @@
 
         <!-- DESKTOP MENU -->
         <div class="hidden lg:block">
-            <!-- <a class={styles_link} href={`/${lang}/games`}>Games list</a> -->
+            @if (!getIsLogged) {
+                <a routerLink="/login" class="app-btn-secondary mr-4">Log In</a>
+                <a routerLink="/register" class="app-btn-primary mr-4">Get it free</a>
+            }
             <a
                 routerLink="/login"
                 routerLinkActive="text-green-600"
@@ -31,9 +34,9 @@
 
         </div>
 
-        <div class="absolute left-0 top-20 lg:relative lg:top-0">
+        <!-- <div class="absolute left-0 top-20 lg:relative lg:top-0">
              <language-selector />
-        </div>
+        </div> -->
 
         <!-- MOBILE MENU -->
         <button id="menu-btn" class="block text-4xl lg:hidden" aria-label="menu">
@@ -45,10 +48,3 @@
         </div>
     </nav>
 </header>
-
-
-<!-- test -->
-<a routerLink="/login" routerLinkActive="text-blue-600" class="p-4 border inline-block">Login</a>
-<a routerLink="/register" routerLinkActive="text-blue-600" class="p-4 border inline-block">Register</a>
-<hr/>
-<!-- endtest -->
