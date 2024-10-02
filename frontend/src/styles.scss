@@ -3,17 +3,27 @@
 @tailwind components;
 @tailwind utilities;
 
+$color-primary: #006CBE;
+$color-primary-hover: #0078d4;
+
 @layer components {
     .app-input {
         @apply rounded border border-zinc-700 bg-zinc-900 px-4 py-2 w-full;
     }
 
     .app-btn-primary {
-        @apply py-2 px-4 font-bold rounded-lg bg-zinc-700 hover:bg-zinc-800 shadow shadow-zinc-500 tracking-wide;
+        @apply py-2 px-4 font-bold rounded shadow shadow-blue-500 tracking-wide cursor-pointer;
+        background-color: $color-primary;
+        &:hover {
+            background-color: $color-primary-hover;
+        }        
+    }
+
+    .app-btn-secondary {
+        @apply py-2 px-4 font-bold rounded shadow shadow-zinc-500 tracking-wide cursor-pointer bg-zinc-700 hover:bg-zinc-800;
     }
 }
 
-$color-primary: #16a34a;
 
 html,
 body {

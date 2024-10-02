@@ -1,0 +1,11 @@
+<app-layout-header />
+
+@if (getIsLogged) {
+<app-layout-top-bar />
+}
+
+<main>
+    <router-outlet />
+</main>
+
+<app-layout-footer />
