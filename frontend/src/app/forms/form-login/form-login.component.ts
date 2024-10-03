@@ -5,6 +5,7 @@ import { Router } from '@angular/router'
 import { Api } from '../../api/api'
 import { ToastService } from '../../components/toast/toast.service'
 import { LocalStorageService } from '../../core/services/local-storage.service'
+import { UserService } from '../../core/services/user.service'
 
 @Component({
     standalone: true,
@@ -24,6 +25,7 @@ export class FormLoginComponent {
     constructor(
         private readonly api: Api,
         private readonly router: Router,
+        private readonly userService: UserService,
         private readonly toastServicee: ToastService,
         private readonly localStorageService: LocalStorageService,
     ) {}
@@ -54,24 +56,35 @@ export class FormLoginComponent {
     // Handle the user login
     async handleLogin() {
         this.isLoading = true
+        const email = this.email?.value
+        const password = this.password?.value
 
-        if (!this.email?.value || !this.password?.value) {
+        if (!email || !password) {
             // should never happen due to form validation, just for ts
             this.toastServicee.error('Please fill in all fields')
             this.isLoading = false
             return
         }
 
-        this.api.login(this.email?.value, this.password?.value).subscribe({
+        this.api.login(email, password).subscribe({
             next: (data) => {
                 // Store the token in localStorage
                 this.localStorageService.setToken(data.access_token)
-                if (this.email?.value) {
-                    this.localStorageService.setItem('email', this.email?.value)
+                if (email) {
+                    this.localStorageService.setItem('email', email)
                 }
 
-                this.toastServicee.success('Login successful!')
-                this.router.navigate(['/dashboard'])
+                // Fetch the user data
+                this.api.getUserByEmail(email).subscribe({
+                    next: (res) => {
+                        this.userService.setCurrentUser(res.data)
+                        this.toastServicee.success('Login successful!')
+                        this.router.navigate(['/dashboard'])
+                    },
+                    error: (error) => {
+                        this.toastServicee.error("Error retrieving user's data")
+                    },
+                })
             },
             error: (error) => {
                 this.toastServicee.error(error.error.message)
