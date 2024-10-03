@@ -61,14 +61,25 @@ export class GroupsService {
         }
     }
 
-    // TODO: check responses here, probably need a try/catch as create
-    deleteGroupById(id: number): Promise<ResultSet> {
+    async deleteGroupById(id: number): Promise<{ success: boolean }> {
         this.LOGGER.log(`Deleting user with id ${id}`)
-        return this.databaseService.softDeleteGroupById(id)
+        const resultSet = await this.databaseService.softDeleteGroupById(id)
+
+        if (resultSet.rowsAffected === 0) {
+            throw new NotFoundException(`Group with id ${id} not found`)
+        }
+
+        return { success: true }
     }
 
-    updateGroup(id: number, partialGroupDto: UpdateGroupBody): Promise<ResultSet> {
+    async updateGroup(id: number, partialGroupDto: UpdateGroupBody): Promise<{ success: boolean }> {
         this.LOGGER.log(`Updating group with id ${id}`)
-        return this.databaseService.updateGroup(id, partialGroupDto)
+        const resultSet = await this.databaseService.updateGroup(id, partialGroupDto)
+
+        if (resultSet.rows.length === 0) {
+            throw new NotFoundException(`Group with id ${id} not found`)
+        }
+
+        return { success: true }
     }
 }

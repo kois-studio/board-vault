@@ -116,6 +116,7 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    // avoid deleting users -> soft delete instead
     deleteUserById(id: number) {
         this.LOGGER.log(`Deleting user with id ${id}`)
         return this.tursoClient.execute({
@@ -194,6 +195,7 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    // avoid deleting groups -> soft delete instead
     deleteGroupById(id: number) {
         this.LOGGER.log(`Deleting user with id ${id}`)
         return this.tursoClient.execute({
