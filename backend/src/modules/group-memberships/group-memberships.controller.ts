@@ -5,9 +5,9 @@ import { GroupMembershipsService } from './group-memberships.service'
 import { CreateGroupMembershipBody, GroupMembershipDto } from 'src/common/types/shared/group-membership.type'
 
 @UseGuards(JwtAuthGuard)
-@ApiTags('users')
+@ApiTags('memberships')
 @ApiBearerAuth()
-@Controller('users')
+@Controller('memberships')
 export class GroupMembershipsController {
     constructor(private readonly groupMembershipsService: GroupMembershipsService) {}
 
