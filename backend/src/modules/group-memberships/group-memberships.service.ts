@@ -59,9 +59,14 @@ export class GroupMembershipsService {
         }
     }
 
-    // TODO: check responses here, probably need a try/catch as create
-    deleteGroupMembershipById(accountId: number, groupId: number): Promise<ResultSet> {
-        this.LOGGER.log(`Deleting user with id ${accountId} ${groupId}`)
-        return this.databaseService.deleteGroupMembershipById(accountId, groupId)
+    async deleteGroupMembershipById(accountId: number, groupId: number): Promise<{ success: boolean }> {
+        this.LOGGER.log(`Deleting membership with id ${accountId} ${groupId}`)
+        const resultSet = await this.databaseService.deleteGroupMembershipById(accountId, groupId)
+
+        if (resultSet.rowsAffected === 0) {
+            throw new NotFoundException(`Membership with id ${accountId} ${groupId} not found`)
+        }
+
+        return { success: true }
     }
 }
