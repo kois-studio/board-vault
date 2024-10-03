@@ -14,7 +14,7 @@ export class UsersService {
         const users = resultSet.rows.map(row => ({
             id: Number(row[0]),
             email: String(row[1]),
-            password: include_password ? String(row[2]) : undefined,
+            password: String(row[2]),
             createdAt: String(row[3]),
             alias: String(row[4]),
             imageUrl: String(row[5]),
@@ -27,7 +27,8 @@ export class UsersService {
             this.LOGGER.error(result.error)
             return []
         }
-        return result.data
+
+        return include_password ? result.data : result.data.map(user => ({ ...user, password: undefined! }))
     }
 
     async getUsers(): Promise<Array<UserCompleteDto>> {
