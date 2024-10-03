@@ -1,6 +1,8 @@
 import { Component, ElementRef, Renderer2, ViewChild } from '@angular/core'
 import { Router } from '@angular/router'
 import { LocalStorageService } from '../../core/services/local-storage.service'
+import { UserService } from '../../core/services/user.service'
+import { UserType } from '../../types/user.type'
 import { ProfileSettingsComponent } from '../profile-settings/profile-settings.component'
 
 @Component({
@@ -18,12 +20,18 @@ export class ProfileMenuComponent {
     private clickListener!: (() => void) | null
 
     constructor(
-        private readonly localStorageService: LocalStorageService,
         private readonly router: Router,
+        private readonly userService: UserService,
+        private readonly localStorageService: LocalStorageService,
         // these 2 are used to being able to close the dropdown when clicking outside of it
         private readonly renderer: Renderer2,
         private readonly elementRef: ElementRef,
     ) {}
+
+    get getUserData(): UserType | null {
+        console.log('this.userService.currentUser', this.userService.currentUser)
+        return this.userService.currentUser
+    }
 
     // Method to toggle the dropdown
     toggleDropdown() {

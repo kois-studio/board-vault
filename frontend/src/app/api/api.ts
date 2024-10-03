@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { environment } from '../../environments/environment'
-import { ResponseGetUser, ResponseGetUsers } from './api.types'
+import { UserType } from '../types/user.type'
 
 @Injectable({ providedIn: 'root' })
 export class Api {
@@ -18,10 +18,10 @@ export class Api {
     }
 
     getUsers() {
-        return this.http.get<ResponseGetUsers>(`${this.url}/users`)
+        return this.http.get<Array<UserType>>(`${this.url}/users`)
     }
 
     getUserByEmail(email: string) {
-        return this.http.get<ResponseGetUser>(`${this.url}/users/byEmail/${email}`)
+        return this.http.get<UserType>(`${this.url}/users/byEmail/${email}`)
     }
 }

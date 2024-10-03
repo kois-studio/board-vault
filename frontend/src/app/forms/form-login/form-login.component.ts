@@ -26,7 +26,7 @@ export class FormLoginComponent {
         private readonly api: Api,
         private readonly router: Router,
         private readonly userService: UserService,
-        private readonly toastServicee: ToastService,
+        private readonly toastService: ToastService,
         private readonly localStorageService: LocalStorageService,
     ) {}
 
@@ -61,33 +61,31 @@ export class FormLoginComponent {
 
         if (!email || !password) {
             // should never happen due to form validation, just for ts
-            this.toastServicee.error('Please fill in all fields')
+            this.toastService.error('Please fill in all fields')
             this.isLoading = false
             return
         }
 
         this.api.login(email, password).subscribe({
-            next: (data) => {
+            next: (res) => {
                 // Store the token in localStorage
-                this.localStorageService.setToken(data.access_token)
-                if (email) {
-                    this.localStorageService.setItem('email', email)
-                }
+                this.localStorageService.setToken(res.access_token)
+                this.localStorageService.setItem('email', email)
 
                 // Fetch the user data
                 this.api.getUserByEmail(email).subscribe({
-                    next: (res) => {
-                        this.userService.setCurrentUser(res.data)
-                        this.toastServicee.success('Login successful!')
+                    next: (userType) => {
+                        this.userService.setCurrentUser(userType)
+                        this.toastService.success('Login successful!')
                         this.router.navigate(['/dashboard'])
                     },
                     error: (error) => {
-                        this.toastServicee.error("Error retrieving user's data")
+                        this.toastService.error("Error retrieving user's data")
                     },
                 })
             },
             error: (error) => {
-                this.toastServicee.error(error.error.message)
+                this.toastService.error(error.error.message)
 
                 // Reset the form and loading state
                 this.isLoading = false
