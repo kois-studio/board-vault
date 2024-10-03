@@ -23,8 +23,8 @@ export class AuthGuard implements CanActivate {
             return true
         }
 
-        // If no token, redirect to login page
-        this.router.navigate(['/login'])
+        // If no token, redirect to landing page
+        this.router.navigate(['/'])
         return false
     }
 }
