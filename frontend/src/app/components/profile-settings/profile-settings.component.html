@@ -8,9 +8,9 @@
             <i class="bi bi-x-lg"></i>
         </button>
         <!-- Dialog content -->
-        <div class="flex">
+        <div class="flex flex-col md:flex-row">
             <!-- Left sidebar -->
-            <div class="w-1/4 border-r border-zinc-700 p-4 bg-zinc-800 rounded-l-2xl min-h-[30rem]">
+            <div class="md:w-1/4 border-r border-zinc-700 p-4 bg-zinc-800 rounded-l-2xl md:min-h-[30rem]">
                 <h2 class="text-2xl">Account</h2>
                 <h3 class="text-gray-500 text-sm">Manage your account info.</h3>
 
@@ -34,19 +34,19 @@
                 </div>
             </div>
             <!-- Right content area -->
-            <div class="w-3/4 p-8">
+            <div class="md:w-3/4 p-8">
                 <!-- TABVIEW 0 - PROFILE DETAILS -->
                 @if (tabView === 0) {
                 <h3 class="text-lg font-semibold border-b border-zinc-500 pb-4">Profile details</h3>
 
                 <!-- Profile Picture and Name -->
-                <div class="flex gap-x-2 items-center border-b border-zinc-500 py-4">
+                <div class="flex flex-col lg:flex-row gap-2 lg:items-center items-start border-b border-zinc-500 py-4">
                     <h3 class="w-48 text-gray-500">Profile</h3>
                     <form-update-profile class="w-full" />
                 </div>
 
                 <!-- Username -->
-                <div class="flex gap-x-2 items-center border-b border-zinc-500 py-4">
+                <div class="flex flex-col lg:flex-row gap-2 lg:items-center items-start border-b border-zinc-500 py-4">
                     <h3 class="w-48 text-gray-500">Username</h3>
                     <div class="w-full flex justify-between items-center">
                         <p class="text-lg mr-4">{{ userData?.username }}</p>
@@ -55,7 +55,7 @@
                 </div>
 
                 <!-- Email addresses -->
-                <div class="flex gap-x-2 items-center border-b border-zinc-500 py-4">
+                <div class="flex flex-col lg:flex-row gap-2 lg:items-center items-start border-b border-zinc-500 py-4">
                     <h3 class="w-48 text-gray-500">Email address</h3>
                     <div class="w-full flex justify-between items-center">
                         <p class="text-lg mr-4">{{ userData?.email }}</p>
@@ -69,13 +69,13 @@
                 <h3 class="text-lg font-semibold border-b border-zinc-500 pb-4">Security</h3>
 
                 <!-- Password -->
-                <div class="flex gap-x-2 items-center border-b border-zinc-500 py-4">
+                <div class="flex flex-col lg:flex-row gap-2 lg:items-center items-start border-b border-zinc-500 py-4">
                     <h3 class="w-48 text-gray-500">Password</h3>
                     <button class="app-btn-secondary">Change password</button>
                 </div>
 
                 <!-- Delete account -->
-                <div class="flex gap-x-2 items-center border-b border-zinc-500 py-4">
+                <div class="flex flex-col lg:flex-row gap-2 lg:items-center items-start border-b border-zinc-500 py-4">
                     <h3 class="w-48 text-gray-500">Delete account</h3>
                     <div>
                         <button

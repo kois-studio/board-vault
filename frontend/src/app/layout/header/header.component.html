@@ -6,7 +6,7 @@
         </a>
 
         <!-- DESKTOP MENU -->
-        <div class="hidden lg:block">
+        <div>
             <div class="flex items-center justify-between gap-6">
                 @if (!getIsLogged) {
                 <a routerLink="/login" class="app-btn-secondary mr-4">Log In</a>
@@ -20,14 +20,5 @@
         <!-- <div class="absolute left-0 top-20 lg:relative lg:top-0">
              <language-selector />
         </div> -->
-
-        <!-- MOBILE MENU -->
-        <button id="menu-btn" class="block text-4xl lg:hidden" aria-label="menu">
-            <i class="bi bi-list"></i>
-        </button>
-
-        <div id="menu" class="absolute right-0 top-20 hidden flex-col items-end lg:hidden">
-            <a href="/games" class="app-btn-secondary">Games list</a>
-        </div>
     </nav>
 </header>
