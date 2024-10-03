@@ -9,7 +9,7 @@ export class UserCompleteDto {
     id: number
 
     @ApiProperty({
-        example: 'email@test.com',
+        example: 'test@test.com',
         description: "The user's email address.",
     })
     email: string

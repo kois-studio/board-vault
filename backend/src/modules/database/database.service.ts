@@ -128,6 +128,26 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    getUserGroups(userId: number) {
+        this.LOGGER.log(`Getting all groups for user ${userId}`)
+        return this.tursoClient.execute({
+            sql: `
+                SELECT
+                    g.id,
+                    g.name,
+                    g.createdBy,
+                    g.createdAt,
+                    gm.joinedAt,
+                    gm.accountId
+                FROM UserGroup g
+                JOIN GroupMembership gm
+                ON g.id = gm.groupId
+                WHERE gm.accountId = ?
+            `,
+            args: [userId],
+        })
+    }
+
     // #region Group
 
     getGroups() {
@@ -204,6 +224,19 @@ export class DatabaseService implements OnModuleInit {
         return this.tursoClient.execute({
             sql: 'DELETE FROM UserGroup WHERE id = ?',
             args: [id],
+        })
+    }
+
+    getGroupMembers(groupId: number) {
+        this.LOGGER.log(`Getting all members for group ${groupId}`)
+        return this.tursoClient.execute({
+            sql: `
+                SELECT a.id AS accountId, a.username, a.display_name, a.email, a.imageUrl
+                FROM GroupMembership gm
+                JOIN Account a ON gm.accountId = a.id
+                WHERE gm.groupId = ?;
+            `,
+            args: [groupId],
         })
     }
 
@@ -331,26 +364,4 @@ export class DatabaseService implements OnModuleInit {
     }
 
     // #region OwnedGame
-
-    // #region Dashboard
-
-    dashboardGetGroupsWithMembers(userId: number) {
-        this.LOGGER.log(`Getting all groups with members for user ${userId}`)
-        return this.tursoClient.execute({
-            sql: `
-                SELECT
-                    g.id,
-                    g.name,
-                    g.createdBy,
-                    g.createdAt,
-                    gm.joinedAt,
-                    gm.accountId
-                FROM UserGroup g
-                JOIN GroupMembership gm
-                ON g.id = gm.groupId
-                WHERE gm.accountId = ?
-            `,
-            args: [userId],
-        })
-    }
 }

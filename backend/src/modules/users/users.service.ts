@@ -88,6 +88,17 @@ export class UsersService {
         }
     }
 
+    async updateUser(id: number, partialUserDto: UpdateUserBody): Promise<{ success: boolean }> {
+        this.LOGGER.log(`Updating user with id ${id}`)
+        const resultSet = await this.databaseService.updateUser(id, partialUserDto)
+
+        if (resultSet.rows.length === 0) {
+            throw new NotFoundException(`User with id ${id} not found`)
+        }
+
+        return { success: true }
+    }
+
     async deleteUserById(id: number): Promise<{ success: boolean }> {
         this.LOGGER.log(`Deleting user with id ${id}`)
         const resultSet = await this.databaseService.softDeleteUserById(id)
@@ -99,14 +110,16 @@ export class UsersService {
         return { success: true }
     }
 
-    async updateUser(id: number, partialUserDto: UpdateUserBody): Promise<{ success: boolean }> {
-        this.LOGGER.log(`Updating user with id ${id}`)
-        const resultSet = await this.databaseService.updateUser(id, partialUserDto)
+    async getUserGroups(userId: number) {
+        this.LOGGER.log('Getting groups for user')
+        const resultSet = await this.databaseService.getUserGroups(userId)
 
-        if (resultSet.rows.length === 0) {
-            throw new NotFoundException(`User with id ${id} not found`)
-        }
-
-        return { success: true }
+        return resultSet.rows.map(row => ({
+            groupId: Number(row[0]),
+            groupName: String(row[1]),
+            groupCreatedBy: Number(row[2]),
+            groupCreatedAt: String(row[3]),
+            membershipJoinedAt: String(row[4]),
+        }))
     }
 }
