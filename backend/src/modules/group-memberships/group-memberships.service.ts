@@ -1,0 +1,67 @@
+import { Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common'
+import { DatabaseService } from '../database/database.service'
+import { ResultSet } from '@libsql/client/.'
+import { groupMembreshipsSchema } from '../../common/schemas'
+import { CreateGroupMembershipBody, GroupMembershipDto } from 'src/common/types/shared/group-membership.type'
+
+@Injectable()
+export class GroupMembershipsService {
+    private readonly LOGGER: Logger = new Logger(this.constructor.name)
+
+    constructor(private readonly databaseService: DatabaseService) {}
+
+    private _parseResultSet(resultSet: ResultSet): Array<GroupMembershipDto> {
+        const groupMemberships = resultSet.rows.map(row => ({
+            accountId: Number(row[0]),
+            groupId: String(row[1]),
+            joinedAt: String(row[2]),
+        }))
+
+        const result = groupMembreshipsSchema.safeParse(groupMemberships)
+
+        if (!result.success) {
+            this.LOGGER.error('Failed to parse groupMemberships from database')
+            this.LOGGER.error(result.error)
+            return []
+        }
+
+        return result.data
+    }
+
+    async getGroupMemberships(): Promise<Array<GroupMembershipDto>> {
+        this.LOGGER.log('Getting all users')
+        const resultSet = await this.databaseService.getGroupMemberships()
+
+        return this._parseResultSet(resultSet)
+    }
+
+    async getGroupMembershipById(accountId: number, groupId: number): Promise<GroupMembershipDto | NotFoundException> {
+        this.LOGGER.log(`Getting user with id ${accountId} ${groupId}`)
+        const resultSet = await this.databaseService.getGroupMembershipById(accountId, groupId)
+        const users = this._parseResultSet(resultSet)
+
+        if (users.length === 0) {
+            return new NotFoundException(`Membership with id ${accountId} ${groupId} not found`)
+        }
+
+        return users[0]
+    }
+
+    async createGroupMembership(userDto: CreateGroupMembershipBody) {
+        this.LOGGER.log(`Creating membership ${userDto.accountId} - ${userDto.groupId}`)
+        try {
+            await this.databaseService.createGroupMembership(userDto)
+
+            return { success: true }
+        } catch (error) {
+            this.LOGGER.error('Failed to create membership', error)
+            return new InternalServerErrorException('Failed to create membership')
+        }
+    }
+
+    // TODO: check responses here, probably need a try/catch as create
+    deleteGroupMembershipById(accountId: number, groupId: number): Promise<ResultSet> {
+        this.LOGGER.log(`Deleting user with id ${accountId} ${groupId}`)
+        return this.databaseService.deleteGroupMembershipById(accountId, groupId)
+    }
+}
