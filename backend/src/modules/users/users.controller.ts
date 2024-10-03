@@ -49,8 +49,8 @@ export class UsersController {
     @ApiBody({ type: UpdateUserBody, description: 'Partial or full user object to update' })
     @ApiResponse({ status: 200, description: 'The user has been successfully updated.' })
     @ApiResponse({ status: 404, description: 'User not found.' })
-    updateUser(@Param('userId', ParseIntPipe) id: number, @Body() partialUserDto: UpdateUserBody) {
-        return this.usersService.updateUser(id, partialUserDto)
+    updateUser(@Param('userId', ParseIntPipe) userId: number, @Body() partialUserDto: UpdateUserBody) {
+        return this.usersService.updateUser(userId, partialUserDto)
     }
 
     @Delete('/:userId')
