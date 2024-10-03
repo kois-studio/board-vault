@@ -1,8 +1,8 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common'
+import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { DatabaseService } from '../database/database.service'
 import { CreateUserBody, UpdateUserBody, UserCompleteDto } from '../../common/types/shared/user.type'
 import { ResultSet } from '@libsql/client/.'
-import { usersSchema } from '../../common/schemas/user.schema'
+import { usersSchema } from '../../common/schemas'
 
 @Injectable()
 export class UsersService {
@@ -10,7 +10,7 @@ export class UsersService {
 
     constructor(private readonly databaseService: DatabaseService) {}
 
-    private _parseResultSet(resultSet: ResultSet, include_password = false): Array<UserCompleteDto> {
+    private _parseResultSet(resultSet: ResultSet): Array<UserCompleteDto> {
         const users = resultSet.rows.map(row => ({
             id: Number(row[0]),
             email: String(row[1]),
@@ -18,6 +18,7 @@ export class UsersService {
             createdAt: String(row[3]),
             alias: String(row[4]),
             imageUrl: String(row[5]),
+            is_deleted: Boolean(row[6]),
         }))
 
         const result = usersSchema.safeParse(users)
@@ -28,7 +29,7 @@ export class UsersService {
             return []
         }
 
-        return include_password ? result.data : result.data.map(user => ({ ...user, password: undefined! }))
+        return result.data
     }
 
     async getUsers(): Promise<Array<UserCompleteDto>> {
@@ -52,17 +53,28 @@ export class UsersService {
     async getUserByEmail(email: string, include_password = false): Promise<UserCompleteDto | NotFoundException> {
         this.LOGGER.log(`Getting user with email ${email}`)
         const resultSet = await this.databaseService.getUserByEmail(email)
-        const users = this._parseResultSet(resultSet, include_password)
+        const users = this._parseResultSet(resultSet)
 
         if (users.length === 0) {
             return new NotFoundException(`User with email ${email} not found`)
         }
-        return users[0]
+
+        return {
+            ...users[0],
+            password: include_password ? users[0].password : undefined!,
+        }
     }
 
-    createUser(userDto: CreateUserBody): Promise<ResultSet> {
+    async createUser(userDto: CreateUserBody) {
         this.LOGGER.log(`Creating user ${userDto.alias} - ${userDto.email}`)
-        return this.databaseService.createUser(userDto)
+        try {
+            await this.databaseService.createUser(userDto)
+
+            return { success: true }
+        } catch (error) {
+            this.LOGGER.error('Failed to create user', error)
+            return new ConflictException('Email or Username already in use')
+        }
     }
 
     deleteUserById(id: number): Promise<ResultSet> {

@@ -49,9 +49,6 @@ export class DatabaseService implements OnModuleInit {
             sql: 'INSERT INTO Account (email, password, alias, imageUrl) VALUES (?, ?, ?, ?)',
             args: [email, hashedPassword, alias, imageUrl],
         })
-
-        // Return the newly created user
-        return this.getUserByEmail(email)
     }
 
     async updateUser(id: number, partialUserDto: UpdateUserBody) {
