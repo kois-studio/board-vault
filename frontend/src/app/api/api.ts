@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { environment } from '../../environments/environment'
-import { UserType } from '../types/user.type'
-import { GameType } from '../types/game.type'
+import type { UserType } from '../types/user.type'
+import type { GameType } from '../types/game.type'
+import type { GroupWithMembersType } from '../types/group-with-members.type'
 
 @Injectable({ providedIn: 'root' })
 export class Api {
@@ -44,7 +45,14 @@ export class Api {
     }
 
     // #region games
+
     getGames() {
         return this.http.get<Array<GameType>>(`${this.url}/games`)
+    }
+
+    // #region dashboard
+
+    getDashboardGroupWithMembers(userId: number) {
+        return this.http.get<Array<GroupWithMembersType>>(`${this.url}/dashboard/groupWithMembers/${userId}`)
     }
 }

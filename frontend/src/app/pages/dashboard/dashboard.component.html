@@ -1,3 +1,62 @@
-<div>
-    dashboard works!
+<div class="container mx-auto pt-8 lg:pt-16">
+    <!-- GROUPS -->
+    <h1 class="text-2xl font-bold text-center mb-8">My Groups</h1>
+
+    @for (group of groupDetails; track $index) {
+    <div>
+        <div class="flex items-center justify-start mb-2 gap-4">
+            <button title="Edit group" class="block rounded bg-green-600 px-2 hover:bg-green-700">
+                <i class="bi bi-pencil-square"></i>
+            </button>
+            <div class="flex justify-between w-full">
+                <span class="text-lg font-bold">{{ group.groupName }}</span>
+                <span title="creation date">
+                    {{ group.groupCreatedAt }}
+                </span>
+            </div>
+        </div>
+        <hr class="mb-4" />
+        <div
+            class="md:grid-4 container mx-auto mb-24 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6 lg:gap-4 xl:grid-cols-8"
+        >
+            <!-- @for (member of group.members; track $index) {
+            <button class="dx-ownerCard rounded border-2 bg-zinc-800 p-2 hover:bg-zinc-700 border-zinc-800 relative">
+                <div class="flex items-center gap-2">
+                    <div class="h-20 w-20">
+                        <div
+                            class="bg-cover bg-no-repeat bg-center h-full w-full overflow-hidden"
+                            style="background-image: url(member.imageUrl);"
+                        ></div>
+                    </div>
+                    @if (group.createdBy === member.id) {
+                    <i title="Creator of the group" class="bi bi-star-fill text-yellow-400 absolute -top-3 -left-2"></i>
+                    }
+                    <div class="flex flex-col items-start">
+                        <span class="text-xl">{{ member.alias }}</span>
+                        <span> <i class="bi bi-joystick"></i> 420 </span>
+                    </div>
+                </div>
+            </button>
+            } -->
+        </div>
+    </div>
+    }
+
+    <!-- GAMES -->
+    <h1 class="text-2xl font-bold text-center mb-8">My Games</h1>
+
+    <!-- <div class='flex gap-2 flex-wrap'>
+        {gameDetails.map(game =>
+            <GameCard
+                title={game.title}
+                imageUrl={'game.imageUrl'}
+                gameAvgDuration={game.gameAvgDuration}
+                minPlayers={game.minPlayers}
+                maxPlayers={game.maxPlayers}
+            />
+        )}
+        <a href={`/${lang}/add-games`} class="h-50 bg-zinc-700 hover:bg-zinc-800 hover:cursor-pointer p-2 min-w-40 rounded flex items-center justify-center">
+            <i class="bi bi-plus-lg"/>
+        </a>
+    </div> -->
 </div>
