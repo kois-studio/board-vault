@@ -1,4 +1,4 @@
-import { ApiProperty, PartialType, PickType } from '@nestjs/swagger'
+import { ApiProperty, OmitType, PartialType, PickType } from '@nestjs/swagger'
 
 // Base User as it comes from the database
 export class UserCompleteDto {
@@ -27,10 +27,16 @@ export class UserCompleteDto {
     createdAt: string
 
     @ApiProperty({
-        example: 'David',
-        description: "The user's display alias.",
+        example: 'dawichi',
+        description: "The user's username.",
     })
-    alias: string
+    username: string
+
+    @ApiProperty({
+        example: 'David F.',
+        description: "The user's display name.",
+    })
+    display_name: string
 
     @ApiProperty({
         example: 'https://example.com/profile.jpg',
@@ -46,14 +52,14 @@ export class UserCompleteDto {
 }
 
 // GET requests --> no password hash included
-export class UserGetDto extends PickType(UserCompleteDto, ['id', 'email', 'alias', 'imageUrl']) {}
+export class UserGetDto extends PickType(UserCompleteDto, ['id', 'email', 'username', 'display_name', 'imageUrl']) {}
 
-// POST requests --> no id or createdAt
-export class CreateUserBody extends PickType(UserCompleteDto, ['email', 'alias', 'password', 'imageUrl']) {}
+// POST requests --> no db generated props
+export class CreateUserBody extends OmitType(UserCompleteDto, ['id', 'createdAt', 'is_deleted']) {}
 
 // PUT requests --> editable fields
-export class UpdateUserBody extends PartialType(PickType(UserCompleteDto, ['email', 'alias', 'password', 'imageUrl'])) {}
+export class UpdateUserBody extends PartialType(PickType(UserCompleteDto, ['email', 'username', 'password', 'display_name', 'imageUrl'])) {}
 
 // POST /auth/register and POST /auth/login
-export class RegisterUserDto extends PickType(UserCompleteDto, ['email', 'alias', 'password']) {}
+export class RegisterUserDto extends PickType(UserCompleteDto, ['email', 'username', 'password', 'display_name']) {}
 export class LoginUserDto extends PickType(UserCompleteDto, ['email', 'password']) {}

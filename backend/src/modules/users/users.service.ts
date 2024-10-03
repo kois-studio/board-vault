@@ -66,7 +66,7 @@ export class UsersService {
     }
 
     async createUser(userDto: CreateUserBody) {
-        this.LOGGER.log(`Creating user ${userDto.alias} - ${userDto.email}`)
+        this.LOGGER.log(`Creating user ${userDto.username} - ${userDto.email}`)
         try {
             await this.databaseService.createUser(userDto)
 
@@ -79,7 +79,7 @@ export class UsersService {
 
     deleteUserById(id: number): Promise<ResultSet> {
         this.LOGGER.log(`Deleting user with id ${id}`)
-        return this.databaseService.deleteUserById(id)
+        return this.databaseService.softDeleteUserById(id)
     }
 
     updateUser(id: number, partialUserDto: UpdateUserBody): Promise<ResultSet> {
