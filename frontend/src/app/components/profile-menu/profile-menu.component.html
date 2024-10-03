@@ -1,14 +1,14 @@
 <!-- Profile Picture and Dropdown Trigger -->
 <div class="relative">
     <button (click)="toggleDropdown()">
-        <img src="https://via.placeholder.com/40" alt="Profile Picture" class="rounded-full w-10 h-10 cursor-pointer" />
+        <img [src]="userData?.imageUrl" alt="Profile Picture" class="rounded-full w-10 h-10 cursor-pointer" />
     </button>
 
     <!-- Dropdown Menu -->
     @if (isDropdownVisible) {
     <div class="absolute right-0 mt-2 w-56 bg-zinc-900 border border-zinc-700 rounded-lg shadow-xl">
         <div class="flex items-center p-4">
-            <img src="https://via.placeholder.com/40" alt="Profile Picture" class="rounded-full w-10 h-10 mr-3" />
+            <img [src]="userData?.imageUrl" alt="Profile Picture" class="rounded-full w-10 h-10 mr-3" />
             <div>
                 <p class="font-semibold text-white">{{ userData?.display_name }}</p>
                 <p class="text-gray-400 text-sm">{{ userData?.display_name }}</p>

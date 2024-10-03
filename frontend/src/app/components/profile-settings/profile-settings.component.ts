@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core'
+import { Component, effect } from '@angular/core'
 import { Api } from '../../api/api'
+import { UserService } from '../../core/services/user.service'
+import { UserType } from '../../types/user.type'
 import { ToastService } from '../toast/toast.service'
 
 @Component({
@@ -8,23 +10,18 @@ import { ToastService } from '../toast/toast.service'
     selector: 'app-profile-settings',
     templateUrl: 'profile-settings.component.html',
 })
-export class ProfileSettingsComponent implements OnInit {
+export class ProfileSettingsComponent {
     public isVisible = false
     public tabView = 0 // manages which tab is active
+    public userData: UserType | null = null
 
     constructor(
         private readonly api: Api,
+        private readonly userService: UserService,
         private readonly toastService: ToastService,
-    ) {}
-
-    ngOnInit() {
-        this.api.getUserByEmail('dasdadasdasda').subscribe({
-            next: (data: any) => {
-                // this.user = data
-            },
-            error: (error) => {
-                this.toastService.error("Error retrieving user's data")
-            },
+    ) {
+        effect(() => {
+            this.userData = this.userService.currentUser()
         })
     }
 

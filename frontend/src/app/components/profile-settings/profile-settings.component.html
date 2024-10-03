@@ -45,13 +45,22 @@
                     <div class="w-full flex justify-between items-center">
                         <div class="flex items-center">
                             <img
-                                src="https://via.placeholder.com/50"
+                                [src]="userData?.imageUrl"
                                 alt="Profile Picture"
                                 class="rounded-full w-12 h-12 mr-4"
                             />
-                            <p class="text-lg font-semibold">David M. Fajardo</p>
+                            <p class="text-lg font-semibold">{{ userData?.display_name }}</p>
                         </div>
                         <button class="app-btn-secondary">Update profile</button>
+                    </div>
+                </div>
+
+                <!-- Username -->
+                <div class="flex gap-x-2 items-center border-b border-zinc-500 py-4">
+                    <h3 class="w-48 text-gray-500">Username</h3>
+                    <div class="w-full flex justify-between items-center">
+                        <p class="text-lg mr-4">{{ userData?.username }}</p>
+                        <button class="app-btn-secondary">Change username</button>
                     </div>
                 </div>
 
@@ -59,7 +68,7 @@
                 <div class="flex gap-x-2 items-center border-b border-zinc-500 py-4">
                     <h3 class="w-48 text-gray-500">Email address</h3>
                     <div class="w-full flex justify-between items-center">
-                        <p class="text-lg mr-4">{{ "davidmf99@gmail.com" }}</p>
+                        <p class="text-lg mr-4">{{ userData?.email }}</p>
                         <button class="app-btn-secondary">Change email</button>
                     </div>
                 </div>
