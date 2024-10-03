@@ -1,0 +1,15 @@
+<div class="w-full flex justify-between items-center">
+    <div class="flex items-center">
+        @if (!isEditingProfileData){
+        <img [src]="userData?.imageUrl" alt="Profile Picture" class="rounded-full w-12 h-12 mr-4" />
+        <p class="text-lg font-semibold">{{ userData?.display_name }}</p>
+        } @else {
+        <div>patataaaa</div>
+        }
+    </div>
+    @if (!isEditingProfileData){
+    <button class="app-btn-secondary" (click)="isEditingProfileData = true">Update profile</button>
+    }@else {
+    <button class="app-btn-primary" (click)="isEditingProfileData = false">Save</button>
+    }
+</div>
