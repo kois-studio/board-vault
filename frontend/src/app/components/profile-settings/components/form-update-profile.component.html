@@ -6,16 +6,15 @@
         } @else {
         <form
             [formGroup]="updateProfileFormGroup"
-            (ngSubmit)="onSave()"
             class="flex flex-col gap-4 rounded bg-zinc-800 p-8 w-96 mx-auto"
         > 
             <div>
                 <input
                     type="text"
                     formControlName="display_name"
-                    placeholder="display_name ..."
+                    placeholder="Name ..."
                     class="app-input"
-                    [class]="display_name"
+                    [class]="displayNameClass"
                     required
                 />
                 <div *ngIf="display_name?.invalid && (display_name?.dirty || display_name?.touched)">
@@ -35,9 +34,9 @@
                 <input
                     type="text"
                     formControlName="imageUrl"
-                    placeholder="imageUrl ..."
+                    placeholder="Image URL"
                     class="app-input"
-                    [class]="imageUrl"
+                    [class]="imageUrlClass"
                     required
                 />
                 <div *ngIf="imageUrl?.invalid && (imageUrl?.dirty || imageUrl?.touched)">
@@ -60,6 +59,6 @@
     @if (!isEditingProfileData){
     <button class="app-btn-secondary" (click)="isEditingProfileData = true">Update profile</button>
     }@else {
-    <button class="app-btn-primary" (click)="onSave()">Save</button>
+    <button class="app-btn-primary" [disabled]="disableSubmit" (click)="onSave()">Save</button>
     }
 </div>
