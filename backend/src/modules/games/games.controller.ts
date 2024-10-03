@@ -51,4 +51,6 @@ export class GamesController {
     async deleteGameById(@Param('gameId', ParseIntPipe) gameId: number) {
         return this.gamesService.deleteGameById(gameId)
     }
+
+    // TODO: for a userId -> get all games owned
 }
