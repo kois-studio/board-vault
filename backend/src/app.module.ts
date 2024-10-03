@@ -5,9 +5,10 @@ import { DatabaseModule } from './modules/database/database.module'
 import { UsersModule } from './modules/users/users.module'
 import { AuthModule } from './modules/auth/auth.module'
 import { GroupsModule } from './modules/groups/groups.module'
+import { GroupMembershipsModule } from './modules/group-memberships/group-memberships.module'
 
 @Module({
-    imports: [ConfigModule.forRoot({ isGlobal: true }), DatabaseModule, AuthModule, UsersModule, GroupsModule],
+    imports: [ConfigModule.forRoot({ isGlobal: true }), DatabaseModule, AuthModule, UsersModule, GroupsModule, GroupMembershipsModule],
     controllers: [],
     providers: [],
 })
