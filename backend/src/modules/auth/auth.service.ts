@@ -36,13 +36,13 @@ export class AuthService {
         }
     }
 
-    async register(email: string, username: string, password: string, display_name: string) {
+    async register(email: string, username: string, password: string) {
         this.LOGGER.log(`Creating user ${username} - ${email}`)
         return this.usersService.createUser({
             email,
             password,
             username,
-            display_name,
+            display_name: username,
             imageUrl: 'https://pbs.twimg.com/profile_images/1833050358479826944/A2qj0e6Z_400x400.jpg',
         })
     }
