@@ -61,5 +61,5 @@ export class CreateUserBody extends OmitType(UserCompleteDto, ['id', 'createdAt'
 export class UpdateUserBody extends PartialType(PickType(UserCompleteDto, ['email', 'username', 'password', 'display_name', 'imageUrl'])) {}
 
 // POST /auth/register and POST /auth/login
-export class RegisterUserDto extends PickType(UserCompleteDto, ['email', 'username', 'password', 'display_name']) {}
+export class RegisterUserDto extends PickType(UserCompleteDto, ['email', 'username', 'password']) {}
 export class LoginUserDto extends PickType(UserCompleteDto, ['email', 'password']) {}

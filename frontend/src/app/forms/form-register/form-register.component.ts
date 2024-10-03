@@ -17,7 +17,7 @@ export class FormRegisterComponent {
     // Form inputs
     public registerFormGroup = new FormGroup({
         email: new FormControl('', [Validators.required, Validators.email, Validators.maxLength(128)]),
-        alias: new FormControl('', [Validators.required, Validators.minLength(4), Validators.maxLength(20)]),
+        username: new FormControl('', [Validators.required, Validators.minLength(4), Validators.maxLength(20)]),
         password: new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(48)]),
         confirmPassword: new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(48)]),
     })
@@ -37,8 +37,8 @@ export class FormRegisterComponent {
     get email() {
         return this.registerFormGroup.get('email')
     }
-    get alias() {
-        return this.registerFormGroup.get('alias')
+    get username() {
+        return this.registerFormGroup.get('username')
     }
     get password() {
         return this.registerFormGroup.get('password')
@@ -55,9 +55,9 @@ export class FormRegisterComponent {
         if (!this.email?.dirty && !this.email?.touched) return ''
         return this.email?.valid ? 'border-green-500' : 'border-red-500'
     }
-    get aliasClass() {
-        if (!this.alias?.dirty && !this.alias?.touched) return ''
-        return this.alias?.valid ? 'border-green-500' : 'border-red-500'
+    get usernameClass() {
+        if (!this.username?.dirty && !this.username?.touched) return ''
+        return this.username?.valid ? 'border-green-500' : 'border-red-500'
     }
     get passwordClass() {
         if (!this.password?.dirty && !this.password?.touched) return ''
@@ -72,16 +72,17 @@ export class FormRegisterComponent {
     async handleRegister() {
         this.isLoading = true
 
-        if (!this.email?.value || !this.alias?.value || !this.password?.value || !this.confirmPassword?.value) {
+        if (!this.email?.value || !this.username?.value || !this.password?.value || !this.confirmPassword?.value) {
             // should never happen due to form validation, just for ts
             this.toastService.error('Please fill in all fields')
             this.isLoading = false
             return
         }
 
-        this.api.register(this.email?.value, this.alias?.value, this.password?.value).subscribe({
+        this.api.register(this.email?.value, this.username?.value, this.password?.value).subscribe({
             next: (data) => {
-                this.router.navigate(['/dashboard'])
+                this.toastService.success('User registered successfully!')
+                this.router.navigate(['/login'])
             },
             error: (error) => {
                 this.toastService.error('Error registering user')

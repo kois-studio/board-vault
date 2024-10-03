@@ -12,7 +12,7 @@ export class AuthController {
     @ApiOperation({ summary: 'Create a new user' })
     @ApiResponse({ status: 201, description: 'The user has been succesfully created' })
     async createUser(@Body() userDto: RegisterUserDto) {
-        return this.authService.register(userDto.email, userDto.username, userDto.password, userDto.display_name)
+        return this.authService.register(userDto.email, userDto.username, userDto.password)
     }
 
     @Post('/login')
