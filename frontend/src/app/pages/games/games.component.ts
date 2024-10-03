@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { GameType } from '../../types/game.type';
-import { Api } from '../../api/api';
-import { GameCardComponent } from '../../components/game-card/game-card.component';
+import { Component, OnInit } from '@angular/core'
+import { Api } from '../../api/api'
+import { GameCardComponent } from '../../components/game-card/game-card.component'
+import { GameType } from '../../types/game.type'
 
 @Component({
     standalone: true,
@@ -10,13 +10,13 @@ import { GameCardComponent } from '../../components/game-card/game-card.componen
     templateUrl: 'games.component.html',
 })
 export class GamesComponent implements OnInit {
-    public gamesList: GameType[] = [];
+    public gamesList: GameType[] = []
 
     constructor(private readonly api: Api) {}
 
     ngOnInit() {
         this.api.getGames().subscribe((games) => {
-            this.gamesList = games;
-        });
+            this.gamesList = games
+        })
     }
 }

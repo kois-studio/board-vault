@@ -1,8 +1,8 @@
 import { Component, effect } from '@angular/core'
-import { UserService } from '../../core/services/user.service';
-import { UserType } from '../../types/user.type';
-import { Api } from '../../api/api';
-import { GroupWithMembersType } from '../../types/group-with-members.type';
+import { Api } from '../../api/api'
+import { UserService } from '../../core/services/user.service'
+import { GroupWithMembersType } from '../../types/group-with-members.type'
+import { GroupMemberType, UserType } from '../../types/user.type'
 
 @Component({
     selector: 'app-dashboard',
@@ -11,8 +11,9 @@ import { GroupWithMembersType } from '../../types/group-with-members.type';
 })
 export class DashboardComponent {
     public userData: UserType | null = null
-    public groupDetails: GroupWithMembersType[] = []
-    
+    public groupDetails: Array<GroupWithMembersType> = []
+    public membersIndex: Record<GroupWithMembersType['groupId'], Array<GroupMemberType>> = {}
+
     constructor(
         private readonly userService: UserService,
         private readonly api: Api,
@@ -24,7 +25,7 @@ export class DashboardComponent {
             }
 
             // STEP 1: Fetch the group details
-            this.api.getDashboardGroupWithMembers(this.userData.id).subscribe({
+            this.api.getUserGroups(this.userData.id).subscribe({
                 next: (data) => {
                     this.groupDetails = data.map((group) => ({
                         groupId: group.groupId,
@@ -34,7 +35,17 @@ export class DashboardComponent {
                         membershipJoinedAt: new Date(group.membershipJoinedAt).toLocaleDateString(),
                     }))
 
-                    // STEP 2: Fetch the members data
+                    // STEP 2: Fetch the members data for each group
+                    for (const group of this.groupDetails) {
+                        this.api.getGroupMembers(group.groupId).subscribe({
+                            next: (data) => {
+                                this.membersIndex[group.groupId] = data
+                            },
+                            error: (error) => {
+                                console.error(error)
+                            },
+                        })
+                    }
                 },
                 error: (error) => {
                     console.error(error)

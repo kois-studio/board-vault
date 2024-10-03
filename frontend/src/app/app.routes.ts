@@ -4,10 +4,10 @@ import { LayoutBasicComponent } from './layout/layout-basic/layout-basic.compone
 // Layouts
 import { LayoutCompleteComponent } from './layout/layout-complete/layout-complete.component'
 
-// Components
-import { LandingComponent } from './pages/landing/landing.component'
 import { DashboardComponent } from './pages/dashboard/dashboard.component'
 import { GamesComponent } from './pages/games/games.component'
+// Components
+import { LandingComponent } from './pages/landing/landing.component'
 import { LoginComponent } from './pages/login/login.component'
 import { RegisterComponent } from './pages/register/register.component'
 
