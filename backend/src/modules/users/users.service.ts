@@ -1,6 +1,6 @@
 import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { DatabaseService } from '../database/database.service'
-import { CreateUserBody, UpdateUserBody, UserCompleteDto } from '../../common/types/shared/user.type'
+import { CreateUserBody, UpdateUserBody, UserCompleteDto, UserGetDto } from '../../common/types/shared/user.type'
 import { ResultSet } from '@libsql/client/.'
 import { usersSchema } from '../../common/schemas'
 
@@ -33,14 +33,18 @@ export class UsersService {
         return result.data
     }
 
-    async getUsers(): Promise<Array<UserCompleteDto>> {
+    async getUsers(): Promise<Array<UserGetDto>> {
         this.LOGGER.log('Getting all users')
         const resultSet = await this.databaseService.getUsers()
+        const users = this._parseResultSet(resultSet)
 
-        return this._parseResultSet(resultSet)
+        return users.map(user => ({
+            ...user,
+            password: undefined,
+        }))
     }
 
-    async getUserById(id: number): Promise<UserCompleteDto | NotFoundException> {
+    async getUserById(id: number): Promise<UserGetDto | NotFoundException> {
         this.LOGGER.log(`Getting user with id ${id}`)
         const resultSet = await this.databaseService.getUserById(id)
         const users = this._parseResultSet(resultSet)
@@ -48,10 +52,16 @@ export class UsersService {
         if (users.length === 0) {
             return new NotFoundException(`User with id ${id} not found`)
         }
+        users[0].password = undefined!
+
         return users[0]
     }
 
-    async getUserByEmail(email: string, include_password = false): Promise<UserCompleteDto | NotFoundException> {
+    /**
+     * password is needed for auth.service,
+     * thats why `include_password` option available
+     */
+    async getUserByEmail(email: string, include_password = false): Promise<UserGetDto | UserCompleteDto | NotFoundException> {
         this.LOGGER.log(`Getting user with email ${email}`)
         const resultSet = await this.databaseService.getUserByEmail(email)
         const users = this._parseResultSet(resultSet)
@@ -78,6 +88,7 @@ export class UsersService {
         }
     }
 
+    // TODO: check responses here
     deleteUserById(id: number): Promise<ResultSet> {
         this.LOGGER.log(`Deleting user with id ${id}`)
         return this.databaseService.softDeleteUserById(id)

@@ -52,7 +52,7 @@ export class UserCompleteDto {
 }
 
 // GET requests --> no password hash included
-export class UserGetDto extends PickType(UserCompleteDto, ['id', 'email', 'username', 'display_name', 'imageUrl']) {}
+export class UserGetDto extends OmitType(UserCompleteDto, ['password']) {}
 
 // POST requests --> no db generated props
 export class CreateUserBody extends OmitType(UserCompleteDto, ['id', 'createdAt', 'is_deleted']) {}
