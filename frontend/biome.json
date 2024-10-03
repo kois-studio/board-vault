@@ -28,9 +28,6 @@
             },
             "suspicious": {
                 "noExplicitAny": "off"
-            },
-            "nursery": {
-                "useSortedClasses": "warn"
             }
         }
     },
