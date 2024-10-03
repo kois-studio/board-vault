@@ -7,14 +7,12 @@ import { AuthModule } from './modules/auth/auth.module'
 import { GroupsModule } from './modules/groups/groups.module'
 import { GroupMembershipsModule } from './modules/group-memberships/group-memberships.module'
 import { GamesModule } from './modules/games/games.module'
-import { DashboardModule } from './modules/dashboard/dashboard.module'
 
 @Module({
     imports: [
         ConfigModule.forRoot({ isGlobal: true }),
         DatabaseModule,
         AuthModule,
-        DashboardModule,
         UsersModule,
         GroupsModule,
         GroupMembershipsModule,
