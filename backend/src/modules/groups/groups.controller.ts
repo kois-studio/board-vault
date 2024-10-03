@@ -3,6 +3,7 @@ import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } 
 import { CreateGroupBody, GroupDto, UpdateGroupBody } from '../../common/types/shared/group.type'
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
 import { GroupsService } from './groups.service'
+import { GroupWithMembers } from 'src/common/types/shared/group-with-members.type'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('groups')
@@ -34,7 +35,7 @@ export class GroupsController {
         return this.groupsService.createGroup(groupBody)
     }
 
-    @Put(':groupId')
+    @Put('/:groupId')
     @ApiOperation({ summary: 'Update a group by ID' })
     @ApiParam({ name: 'groupId', required: true, description: 'Group ID' })
     @ApiBody({ type: UpdateGroupBody, description: 'Partial or full group object to update' })
@@ -50,5 +51,13 @@ export class GroupsController {
     @ApiParam({ name: 'groupId', type: String, description: 'ID of the group to be deleted' })
     async deleteGroupById(@Param('groupId', ParseIntPipe) groupId: number) {
         return this.groupsService.deleteGroupById(groupId)
+    }
+
+    @Get('/:groupId/members')
+    @ApiOperation({ summary: 'Get all members in a group' })
+    @ApiResponse({ status: 200, type: [GroupWithMembers] })
+    @ApiParam({ name: 'groupId', type: String })
+    getGroupMembers(@Param('groupId', ParseIntPipe) groupId: number) {
+        return this.groupsService.getGroupMembers(groupId)
     }
 }

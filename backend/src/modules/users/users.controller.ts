@@ -3,6 +3,7 @@ import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } 
 import { UsersService } from './users.service'
 import { CreateUserBody, UpdateUserBody, UserGetDto } from '../../common/types/shared/user.type'
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
+import { GroupWithMembers } from 'src/common/types/shared/group-with-members.type'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('users')
@@ -59,5 +60,13 @@ export class UsersController {
     @ApiParam({ name: 'userId', type: String, description: 'ID of the user to be deleted' })
     async deleteUserById(@Param('userId', ParseIntPipe) userId: number) {
         return this.usersService.deleteUserById(userId)
+    }
+
+    @Get(':userId/groups')
+    @ApiOperation({ summary: 'Get groups with members' })
+    @ApiResponse({ status: 200, type: [GroupWithMembers] })
+    @ApiParam({ name: 'userId', type: String })
+    getUserGroups(@Param('userId', ParseIntPipe) userId: number) {
+        return this.usersService.getUserGroups(userId)
     }
 }
