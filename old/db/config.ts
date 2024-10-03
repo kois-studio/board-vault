@@ -7,8 +7,10 @@ const Account = defineTable({
         email: column.text(),
         password: column.text(),
         created_at: column.date({ default: NOW }),
-        alias: column.text({ unique: true }), // Display name
+        username: column.text({ unique: true }),
+        display_name: column.text(),
         imageUrl: column.text(), // Profile picture
+        is_deleted: column.boolean({ default: false }),
     },
 })
 
@@ -48,6 +50,7 @@ const Group = defineTable({
         name: column.text(),
         createdBy: column.number({ references: () => Account.columns.id }),
         createdAt: column.date({ default: NOW }),
+        is_deleted: column.boolean({ default: false }),
     },
 })
 
