@@ -23,7 +23,7 @@ export class UserService {
                 },
                 error: (error) => {
                     if (error.status === 401) {
-                        this.toastServicee.error("Session expired, please log in again")
+                        this.toastServicee.error('Session expired, please log in again')
                         this.localStorageService.clear()
                         this.currentUser.set(null)
                         return
