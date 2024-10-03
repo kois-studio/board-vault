@@ -1,6 +1,5 @@
 import { z } from 'zod'
 
-// Zod schema for validating a single user
 export const groupSchema = z.object({
     id: z.number().int().nonnegative(),
     name: z.string().min(4),
@@ -9,5 +8,4 @@ export const groupSchema = z.object({
     is_deleted: z.boolean(),
 })
 
-// Schema for validating an array of users
 export const groupsSchema = z.array(groupSchema)
