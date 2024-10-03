@@ -1,5 +1,3 @@
-import { UserType } from '../types/user.type'
-
 // wrapper type
 export type ResponseDto<T> = {
     statusOk: boolean
@@ -7,6 +5,3 @@ export type ResponseDto<T> = {
     code: number
     data: T
 }
-
-export type ResponseGetUsers = ResponseDto<UserType[]>
-export type ResponseGetUser = ResponseDto<UserType>
