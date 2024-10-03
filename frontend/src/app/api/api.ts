@@ -13,9 +13,8 @@ export class Api {
         return this.http.post<{ access_token: string }>(`${this.url}/auth/login`, { email, password })
     }
 
-    // TODO: type me
-    register(email: string, alias: string, password: string) {
-        return this.http.post(`${this.url}/auth/register`, { email, alias, password })
+    register(email: string, username: string, password: string) {
+        return this.http.post<{ success: true }>(`${this.url}/auth/register`, { email, username, password })
     }
 
     getUsers() {

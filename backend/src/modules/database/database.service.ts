@@ -41,13 +41,13 @@ export class DatabaseService implements OnModuleInit {
 
     async createUser(userDto: CreateUserBody) {
         this.LOGGER.log(`Creating user ${userDto.username} - ${userDto.email}`)
-        const { email, password, username, imageUrl } = userDto
+        const { email, password, username, display_name, imageUrl } = userDto
         const hashedPassword = await bcrypt.hash(password, 10)
 
         // Execute the query
         await this.tursoClient.execute({
-            sql: 'INSERT INTO Account (email, password, username, imageUrl) VALUES (?, ?, ?, ?)',
-            args: [email, hashedPassword, username, imageUrl],
+            sql: 'INSERT INTO Account (email, password, username, display_name, imageUrl) VALUES (?, ?, ?, ?, ?)',
+            args: [email, hashedPassword, username, display_name, imageUrl],
         })
     }
 

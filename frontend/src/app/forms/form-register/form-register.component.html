@@ -26,25 +26,25 @@
         </div>
     </div>
 
-    <!-- 2. ALIAS -->
+    <!-- 2. Username -->
     <div>
         <input
             type="text"
-            formControlName="alias"
-            placeholder="Alias (username) ..."
+            formControlName="username"
+            placeholder="username ..."
             class="app-input"
-            [class]="aliasClass"
+            [class]="usernameClass"
             required
         />
-        <div *ngIf="alias?.invalid && (alias?.dirty || alias?.touched)">
-            <div *ngIf="alias?.hasError('required')" class="text-sm text-red-500 py-1">
-                <i class="bi bi-exclamation-circle-fill"></i> Alias is required.
+        <div *ngIf="username?.invalid && (username?.dirty || username?.touched)">
+            <div *ngIf="username?.hasError('required')" class="text-sm text-red-500 py-1">
+                <i class="bi bi-exclamation-circle-fill"></i> Username is required.
             </div>
-            <div *ngIf="alias?.hasError('minlength')" class="text-sm text-red-500 py-1">
-                <i class="bi bi-exclamation-circle-fill"></i> Alias is too short.
+            <div *ngIf="username?.hasError('minlength')" class="text-sm text-red-500 py-1">
+                <i class="bi bi-exclamation-circle-fill"></i> Username is too short.
             </div>
-            <div *ngIf="alias?.hasError('maxlength')" class="text-sm text-red-500 py-1">
-                <i class="bi bi-exclamation-circle-fill"></i> Alias is too long.
+            <div *ngIf="username?.hasError('maxlength')" class="text-sm text-red-500 py-1">
+                <i class="bi bi-exclamation-circle-fill"></i> Username is too long.
             </div>
         </div>
     </div>
