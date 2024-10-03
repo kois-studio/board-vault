@@ -88,14 +88,25 @@ export class UsersService {
         }
     }
 
-    // TODO: check responses here, probably need a try/catch as create
-    deleteUserById(id: number): Promise<ResultSet> {
+    async deleteUserById(id: number): Promise<{ success: boolean }> {
         this.LOGGER.log(`Deleting user with id ${id}`)
-        return this.databaseService.softDeleteUserById(id)
+        const resultSet = await this.databaseService.softDeleteUserById(id)
+
+        if (resultSet.rowsAffected === 0) {
+            throw new NotFoundException(`User with id ${id} not found`)
+        }
+
+        return { success: true }
     }
 
-    updateUser(id: number, partialUserDto: UpdateUserBody): Promise<ResultSet> {
+    async updateUser(id: number, partialUserDto: UpdateUserBody): Promise<{ success: boolean }> {
         this.LOGGER.log(`Updating user with id ${id}`)
-        return this.databaseService.updateUser(id, partialUserDto)
+        const resultSet = await this.databaseService.updateUser(id, partialUserDto)
+
+        if (resultSet.rows.length === 0) {
+            throw new NotFoundException(`User with id ${id} not found`)
+        }
+
+        return { success: true }
     }
 }
