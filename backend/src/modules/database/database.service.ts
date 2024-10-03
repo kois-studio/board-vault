@@ -331,4 +331,26 @@ export class DatabaseService implements OnModuleInit {
     }
 
     // #region OwnedGame
+
+    // #region Dashboard
+
+    dashboardGetGroupsWithMembers(userId: number) {
+        this.LOGGER.log(`Getting all groups with members for user ${userId}`)
+        return this.tursoClient.execute({
+            sql: `
+                SELECT
+                    g.id,
+                    g.name,
+                    g.createdBy,
+                    g.createdAt,
+                    gm.joinedAt,
+                    gm.accountId
+                FROM UserGroup g
+                JOIN GroupMembership gm
+                ON g.id = gm.groupId
+                WHERE gm.accountId = ?
+            `,
+            args: [userId],
+        })
+    }
 }
