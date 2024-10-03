@@ -1,5 +1,5 @@
 import { Component } from '@angular/core'
-import { ProfileComponent } from '../../pages/profile/profile.component'
+import { RouterLink, RouterLinkActive } from '@angular/router'
 
 /**
  * Top bar - is like a second header under the main header
@@ -7,7 +7,7 @@ import { ProfileComponent } from '../../pages/profile/profile.component'
  */
 @Component({
     standalone: true,
-    imports: [ProfileComponent],
+    imports: [RouterLink, RouterLinkActive],
     selector: 'app-layout-top-bar',
     templateUrl: 'top-bar.component.html',
 })
