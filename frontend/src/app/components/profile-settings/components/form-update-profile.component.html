@@ -4,7 +4,57 @@
         <img [src]="userData?.imageUrl" alt="Profile Picture" class="rounded-full w-12 h-12 mr-4" />
         <p class="text-lg font-semibold">{{ userData?.display_name }}</p>
         } @else {
-        <div>patataaaa</div>
+        <form
+            [formGroup]="updateProfileFormGroup"
+            (ngSubmit)="onSave()"
+            class="flex flex-col gap-4 rounded bg-zinc-800 p-8 w-96 mx-auto"
+        > 
+            <div>
+                <input
+                    type="text"
+                    formControlName="display_name"
+                    placeholder="display_name ..."
+                    class="app-input"
+                    [class]="display_name"
+                    required
+                />
+                <div *ngIf="display_name?.invalid && (display_name?.dirty || display_name?.touched)">
+                    <div *ngIf="display_name?.hasError('required')" class="text-sm text-red-500 py-1">
+                        <i class="bi bi-exclamation-circle-fill"></i> display_name is required.
+                    </div>
+                    <div *ngIf="display_name?.hasError('minlength')" class="text-sm text-red-500 py-1">
+                        <i class="bi bi-exclamation-circle-fill"></i> display_name is too short.
+                    </div>
+                    <div *ngIf="display_name?.hasError('maxlength')" class="text-sm text-red-500 py-1">
+                        <i class="bi bi-exclamation-circle-fill"></i> display_name is too long.
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <input
+                    type="text"
+                    formControlName="imageUrl"
+                    placeholder="imageUrl ..."
+                    class="app-input"
+                    [class]="imageUrl"
+                    required
+                />
+                <div *ngIf="imageUrl?.invalid && (imageUrl?.dirty || imageUrl?.touched)">
+                    <div *ngIf="imageUrl?.hasError('required')" class="text-sm text-red-500 py-1">
+                        <i class="bi bi-exclamation-circle-fill"></i> imageUrl is required.
+                    </div>
+                    <div *ngIf="imageUrl?.hasError('minlength')" class="text-sm text-red-500 py-1">
+                        <i class="bi bi-exclamation-circle-fill"></i> imageUrl is too short.
+                    </div>
+                    <div *ngIf="imageUrl?.hasError('maxlength')" class="text-sm text-red-500 py-1">
+                        <i class="bi bi-exclamation-circle-fill"></i> imageUrl is too long.
+                    </div>
+                </div>
+            </div>
+            
+        </form>
+
         }
     </div>
     @if (!isEditingProfileData){
