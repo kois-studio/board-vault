@@ -6,7 +6,7 @@ export class GroupMembershipDto {
     accountId: number
 
     @ApiProperty({ example: 12345, description: 'The unique identifier for the group.' })
-    groupId: number
+    groupId: string
 
     @ApiProperty({ example: '2024-09-28 10:02:39', description: 'The date and time the membership was created.' })
     joinedAt: string
