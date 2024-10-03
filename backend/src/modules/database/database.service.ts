@@ -5,6 +5,7 @@ import { CreateUserBody, UpdateUserBody } from '../../common/types/shared/user.t
 import * as bcrypt from 'bcrypt'
 import { CreateGroupBody, UpdateGroupBody } from '../../common/types/shared/group.type'
 import { CreateGroupMembershipBody } from '../../common/types/shared/group-membership.type'
+import { CreateGameBody, UpdateGameBody } from 'src/common/types/shared/game.type'
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
@@ -206,7 +207,7 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
-    // #region Group Membership
+    // #region Membership
 
     getGroupMemberships() {
         this.LOGGER.log('Getting all memberships')
@@ -240,4 +241,94 @@ export class DatabaseService implements OnModuleInit {
     }
 
     // #region Game
+
+    getGames() {
+        this.LOGGER.log('Getting all games')
+        return this.tursoClient.execute('SELECT * FROM Game')
+    }
+
+    getGameById(id: number) {
+        this.LOGGER.log(`Getting game with id ${id}`)
+        return this.tursoClient.execute({
+            sql: 'SELECT * FROM Game WHERE id = ?',
+            args: [id],
+        })
+    }
+
+    async createGame(gameDto: CreateGameBody) {
+        this.LOGGER.log(`Creating game ${gameDto.title}`)
+
+        // Execute the query
+        await this.tursoClient.execute({
+            sql: 'INSERT INTO Game (title, imageUrl, gameAvgDuration, minPlayers, maxPlayers) VALUES (?, ?, ?, ?, ?)',
+            args: [gameDto.title, gameDto.imageUrl, gameDto.gameAvgDuration, gameDto.minPlayers, gameDto.maxPlayers],
+        })
+    }
+
+    async updateGame(id: number, partialGameDto: UpdateGameBody) {
+        this.LOGGER.log(`Updating gamee with id ${id}`)
+
+        // Array to store fields to update
+        const fields = []
+        const args = []
+
+        // Dynamically build the update query based on the provided properties
+        if (partialGameDto.title) {
+            fields.push('title = ?')
+            args.push(partialGameDto.title)
+        }
+
+        if (partialGameDto.imageUrl) {
+            fields.push('imageUrl = ?')
+            args.push(partialGameDto.imageUrl)
+        }
+
+        if (partialGameDto.gameAvgDuration) {
+            fields.push('gameAvgDuration = ?')
+            args.push(partialGameDto.gameAvgDuration)
+        }
+
+        if (partialGameDto.minPlayers) {
+            fields.push('minPlayers = ?')
+            args.push(partialGameDto.minPlayers)
+        }
+
+        if (partialGameDto.maxPlayers) {
+            fields.push('maxPlayers = ?')
+            args.push(partialGameDto.maxPlayers)
+        }
+
+        // Error if no fields are provided
+        if (fields.length === 0) {
+            throw new BadRequestException('No fields to update')
+        }
+
+        // Add user id as the last argument
+        args.push(id)
+
+        // Construct the final query
+        const sql = `
+          UPDATE Game
+          SET ${fields.join(', ')}
+          WHERE id = ?
+        `
+
+        this.LOGGER.log(`Executing query: ${sql}`)
+
+        // Execute the query
+        await this.tursoClient.execute({ sql, args })
+
+        // Return the updated user
+        return this.getGameById(id)
+    }
+
+    deleteGameById(id: number) {
+        this.LOGGER.log(`Deleting game with id ${id}`)
+        return this.tursoClient.execute({
+            sql: 'DELETE FROM Game WHERE id = ?',
+            args: [id],
+        })
+    }
+
+    // #region OwnedGame
 }

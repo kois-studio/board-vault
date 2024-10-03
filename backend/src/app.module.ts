@@ -6,9 +6,18 @@ import { UsersModule } from './modules/users/users.module'
 import { AuthModule } from './modules/auth/auth.module'
 import { GroupsModule } from './modules/groups/groups.module'
 import { GroupMembershipsModule } from './modules/group-memberships/group-memberships.module'
+import { GamesModule } from './modules/games/games.module'
 
 @Module({
-    imports: [ConfigModule.forRoot({ isGlobal: true }), DatabaseModule, AuthModule, UsersModule, GroupsModule, GroupMembershipsModule],
+    imports: [
+        ConfigModule.forRoot({ isGlobal: true }),
+        DatabaseModule,
+        AuthModule,
+        UsersModule,
+        GroupsModule,
+        GroupMembershipsModule,
+        GamesModule,
+    ],
     controllers: [],
     providers: [],
 })

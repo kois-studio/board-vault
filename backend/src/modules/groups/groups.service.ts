@@ -32,7 +32,7 @@ export class GroupsService {
 
     async getGroups(): Promise<Array<GroupDto>> {
         this.LOGGER.log('Getting all users')
-        const resultSet = await this.databaseService.getGroups()
+        const resultSet = await this.databaseService.getGames()
 
         return this._parseResultSet(resultSet)
     }
