@@ -1,16 +1,16 @@
 import { Component, OnInit } from '@angular/core'
 import { Api } from '../../api/api'
-import { ToastService } from '../../components/toast/toast.service'
+import { ToastService } from '../toast/toast.service'
 
 @Component({
     standalone: true,
     imports: [],
-    selector: 'app-profile',
-    templateUrl: 'profile.component.html',
+    selector: 'app-profile-settings',
+    templateUrl: 'profile-settings.component.html',
 })
-export class ProfileComponent implements OnInit {
+export class ProfileSettingsComponent implements OnInit {
     public isVisible = false
-    public tabView = 1 // manages which tab is active
+    public tabView = 0 // manages which tab is active
 
     constructor(
         private readonly api: Api,
