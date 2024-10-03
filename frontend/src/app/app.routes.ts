@@ -8,7 +8,6 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component'
 // Components
 import { LandingComponent } from './pages/landing/landing.component'
 import { LoginComponent } from './pages/login/login.component'
-import { ProfileComponent } from './pages/profile/profile.component'
 import { RegisterComponent } from './pages/register/register.component'
 
 // Guards
@@ -24,7 +23,6 @@ export const routes: Routes = [
             { path: '', component: LandingComponent },
             // accessible to authenticated users
             { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
-            { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
         ],
     },
     {
