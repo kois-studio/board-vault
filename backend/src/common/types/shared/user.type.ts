@@ -1,6 +1,6 @@
-import { ApiProperty, OmitType, PartialType, PickType } from '@nestjs/swagger'
+import { ApiProperty, PartialType, PickType } from '@nestjs/swagger'
 
-// Base UserDto as it comes from the database
+// Base User as it comes from the database
 export class UserCompleteDto {
     @ApiProperty({
         example: 1,
@@ -9,13 +9,13 @@ export class UserCompleteDto {
     id: number
 
     @ApiProperty({
-        example: 'david@test.com',
+        example: 'email@test.com',
         description: "The user's email address.",
     })
     email: string
 
     @ApiProperty({
-        example: '$2a$14$.nywJt3bPWo7f2tpuGOjWu1.rBpJX2kpU94yQoIzcnyzwlAexEsRe',
+        example: '12345678',
         description: "The user's hashed password.",
     })
     password: string
@@ -37,10 +37,16 @@ export class UserCompleteDto {
         description: "The user's profile image URL.",
     })
     imageUrl: string
+
+    @ApiProperty({
+        example: false,
+        description: 'Whether the user has been deleted.',
+    })
+    is_deleted: boolean
 }
 
 // GET requests --> no password hash included
-export class UserGetDto extends OmitType(UserCompleteDto, ['password']) {}
+export class UserGetDto extends PickType(UserCompleteDto, ['id', 'email', 'alias', 'imageUrl']) {}
 
 // POST requests --> no id or createdAt
 export class CreateUserBody extends PickType(UserCompleteDto, ['email', 'alias', 'password', 'imageUrl']) {}

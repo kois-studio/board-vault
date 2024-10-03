@@ -1,11 +1,12 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common'
-import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { UsersService } from './users.service'
 import { CreateUserBody, UpdateUserBody, UserGetDto } from '../../common/types/shared/user.type'
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('users')
+@ApiBearerAuth()
 @Controller('users')
 export class UsersController {
     constructor(private readonly usersService: UsersService) {}

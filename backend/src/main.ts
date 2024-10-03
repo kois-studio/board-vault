@@ -31,6 +31,7 @@ async function bootstrap() {
         .setTitle('BoardVault Swagger API')
         .setDescription('Test the BoardVault endpoints.')
         .setVersion('1.0')
+        .addBearerAuth()
         .build()
     const document = SwaggerModule.createDocument(app, swaggerConfig)
 
