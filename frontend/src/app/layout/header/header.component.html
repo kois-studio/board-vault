@@ -7,31 +7,15 @@
 
         <!-- DESKTOP MENU -->
         <div class="hidden lg:block">
-            @if (!getIsLogged) {
+            <div class="flex items-center justify-between gap-6">
+                @if (!getIsLogged) {
                 <a routerLink="/login" class="app-btn-secondary mr-4">Log In</a>
                 <a routerLink="/register" class="app-btn-primary mr-4">Get it free</a>
-            }
-            <a
-                routerLink="/login"
-                routerLinkActive="text-green-600"
-                class="rounded bg-green-600 px-4 py-2 text-xl font-bold hover:bg-green-700 {{
-                    getIsLogged ? 'hidden' : ''
-                }}"
-            >
-                Log in
-            </a>
-            <a routerLink="/dashboard" routerLinkActive="text-green-600" class="{{ styles.link }} {{ getIsLogged ? '' : 'hidden' }}">Dashboard</a>
-            <a routerLink="/profile" routerLinkActive="text-green-600" class="{{ styles.link }} {{ getIsLogged ? '' : 'hidden' }}">Profile</a>
-
-            <button
-                (click)="logout()"
-                class="rounded bg-red-600 px-4 py-2 text-xl font-bold hover:bg-red-700 {{
-                    getIsLogged ? '' : 'hidden'
-                }}"
-            >
-                Sign out
-            </button>
-
+                } @if (getIsLogged) {
+                <app-profile-menu />
+                <!-- <app-profile-settings /> -->
+                }
+            </div>
         </div>
 
         <!-- <div class="absolute left-0 top-20 lg:relative lg:top-0">
@@ -44,7 +28,7 @@
         </button>
 
         <div id="menu" class="absolute right-0 top-20 hidden flex-col items-end lg:hidden">
-            <a href="/games" class="{{ styles.link }}">Games list</a>
+            <a href="/games" class="app-btn-secondary">Games list</a>
         </div>
     </nav>
 </header>

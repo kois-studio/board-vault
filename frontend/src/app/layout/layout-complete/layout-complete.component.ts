@@ -2,7 +2,6 @@ import { Component } from '@angular/core'
 import { RouterOutlet } from '@angular/router'
 import { ToastComponent } from '../../components/toast/toast.component'
 import { LocalStorageService } from '../../core/services/local-storage.service'
-import { ProfileComponent } from '../../pages/profile/profile.component'
 import { LayoutFooterComponent } from '../footer/footer.component'
 import { LayoutHeaderComponent } from '../header/header.component'
 import { LayoutTopBarComponent } from '../top-bar/top-bar.component'
@@ -12,7 +11,7 @@ import { LayoutTopBarComponent } from '../top-bar/top-bar.component'
  */
 @Component({
     standalone: true,
-    imports: [RouterOutlet, LayoutHeaderComponent, LayoutFooterComponent, ToastComponent, ProfileComponent, LayoutTopBarComponent],
+    imports: [RouterOutlet, LayoutHeaderComponent, LayoutFooterComponent, ToastComponent, LayoutTopBarComponent],
     selector: 'app-layout-complete',
     templateUrl: 'layout-complete.component.html',
 })
