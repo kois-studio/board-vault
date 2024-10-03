@@ -24,4 +24,17 @@ export class Api {
     getUserByEmail(email: string) {
         return this.http.get<UserType>(`${this.url}/users/byEmail/${email}`)
     }
+
+    updateUser(
+        userId: number,
+        requesBody: {
+            email?: string
+            password?: string
+            username?: string
+            display_name?: string
+            imageUrl?: string
+        },
+    ) {
+        return this.http.put<{ success: true }>(`${this.url}/users/${userId}`, requesBody)
+    }
 }
