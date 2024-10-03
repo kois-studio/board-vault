@@ -1,4 +1,4 @@
-import { Component, ElementRef, Renderer2, ViewChild } from '@angular/core'
+import { Component, ElementRef, Renderer2, ViewChild, effect } from '@angular/core'
 import { Router } from '@angular/router'
 import { LocalStorageService } from '../../core/services/local-storage.service'
 import { UserService } from '../../core/services/user.service'
@@ -13,6 +13,7 @@ import { ProfileSettingsComponent } from '../profile-settings/profile-settings.c
 })
 export class ProfileMenuComponent {
     public isDropdownVisible = false
+    public userData: UserType | null = null
 
     // Get the child component to be able to call its methods
     @ViewChild(ProfileSettingsComponent) profileSettingsComponent!: ProfileSettingsComponent
@@ -26,11 +27,10 @@ export class ProfileMenuComponent {
         // these 2 are used to being able to close the dropdown when clicking outside of it
         private readonly renderer: Renderer2,
         private readonly elementRef: ElementRef,
-    ) {}
-
-    get getUserData(): UserType | null {
-        console.log('this.userService.currentUser', this.userService.currentUser)
-        return this.userService.currentUser
+    ) {
+        effect(() => {
+            this.userData = this.userService.currentUser()
+        })
     }
 
     // Method to toggle the dropdown
