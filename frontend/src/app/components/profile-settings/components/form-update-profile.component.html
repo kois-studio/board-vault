@@ -10,6 +10,6 @@
     @if (!isEditingProfileData){
     <button class="app-btn-secondary" (click)="isEditingProfileData = true">Update profile</button>
     }@else {
-    <button class="app-btn-primary" (click)="isEditingProfileData = false">Save</button>
+    <button class="app-btn-primary" (click)="onSave()">Save</button>
     }
 </div>
