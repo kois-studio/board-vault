@@ -2,7 +2,7 @@ import { Injectable, InternalServerErrorException, Logger, NotFoundException } f
 import { DatabaseService } from '../database/database.service'
 import { ResultSet } from '@libsql/client/.'
 import { groupMembreshipsSchema } from '../../common/schemas'
-import { CreateGroupMembershipBody, GroupMembershipDto } from 'src/common/types/shared/group-membership.type'
+import { CreateGroupMembershipBody, GroupMembershipDto } from '../../common/types/shared/group-membership.type'
 
 @Injectable()
 export class GroupMembershipsService {
