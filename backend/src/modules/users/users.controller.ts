@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuard
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { UsersService } from './users.service'
 import { CreateUserBody, UpdateUserBody, UserGetDto } from '../../common/types/shared/user.type'
-import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard'
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('users')
