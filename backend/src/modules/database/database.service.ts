@@ -69,7 +69,9 @@ export class DatabaseService implements OnModuleInit {
         }
         if (partialUserDto.password) {
             fields.push('password = ?')
-            args.push(partialUserDto.password)
+            const hashedPassword = await bcrypt.hash(partialUserDto.password, 10)
+
+            args.push(hashedPassword)
         }
         if (partialUserDto.username) {
             fields.push('username = ?')
