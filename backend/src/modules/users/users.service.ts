@@ -88,7 +88,7 @@ export class UsersService {
         }
     }
 
-    // TODO: check responses here
+    // TODO: check responses here, probably need a try/catch as create
     deleteUserById(id: number): Promise<ResultSet> {
         this.LOGGER.log(`Deleting user with id ${id}`)
         return this.databaseService.softDeleteUserById(id)

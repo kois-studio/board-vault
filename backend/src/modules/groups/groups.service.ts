@@ -51,12 +51,17 @@ export class GroupsService {
 
     async createGroup(groupBody: CreateGroupBody) {
         this.LOGGER.log(`Creating user ${groupBody.name} - by ${groupBody.createdBy}`)
-        await this.databaseService.createGroup(groupBody)
+        try {
+            await this.databaseService.createGroup(groupBody)
 
-        return { success: true }
+            return { success: true }
+        } catch (error) {
+            this.LOGGER.error('Failed to create group', error)
+            return new NotFoundException('User not found')
+        }
     }
 
-    // TODO: check responses here
+    // TODO: check responses here, probably need a try/catch as create
     deleteGroupById(id: number): Promise<ResultSet> {
         this.LOGGER.log(`Deleting user with id ${id}`)
         return this.databaseService.softDeleteGroupById(id)

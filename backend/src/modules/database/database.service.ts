@@ -4,6 +4,7 @@ import { Client, createClient } from '@libsql/client'
 import { CreateUserBody, UpdateUserBody } from '../../common/types/shared/user.type'
 import * as bcrypt from 'bcrypt'
 import { CreateGroupBody, UpdateGroupBody } from 'src/common/types/shared/group.type'
+import { CreateGroupMembershipBody } from 'src/common/types/shared/group-membership.type'
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
@@ -19,7 +20,7 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
-    // #region Users
+    // #region User
 
     getUsers() {
         this.LOGGER.log('Getting all users')
@@ -123,7 +124,7 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
-    // #region Groups
+    // #region Group
 
     getGroups() {
         this.LOGGER.log('Getting all groups')
@@ -200,4 +201,39 @@ export class DatabaseService implements OnModuleInit {
             args: [id],
         })
     }
+
+    // #region Group Membership
+
+    getGroupMemberships() {
+        this.LOGGER.log('Getting all memberships')
+        return this.tursoClient.execute('SELECT * FROM GroupMembership')
+    }
+
+    getGroupMembershipById(accountId: number, groupId: number) {
+        this.LOGGER.log(`Getting membership with id ${accountId} ${groupId}`)
+        return this.tursoClient.execute({
+            sql: 'SELECT * FROM GroupMembership WHERE accountId = ? AND groupId = ?',
+            args: [accountId, groupId],
+        })
+    }
+
+    async createGroupMembership(groupDto: CreateGroupMembershipBody) {
+        this.LOGGER.log(`Creating membership ${groupDto.accountId} - by ${groupDto.groupId}`)
+
+        // Execute the query
+        await this.tursoClient.execute({
+            sql: 'INSERT INTO GroupMembership (accountId, groupId) VALUES (?, ?)',
+            args: [groupDto.accountId, groupDto.groupId],
+        })
+    }
+
+    deleteGroupMembershipById(accountId: number, groupId: number) {
+        this.LOGGER.log(`Deleting user with id ${accountId} ${groupId}`)
+        return this.tursoClient.execute({
+            sql: 'DELETE FROM GroupMembership WHERE accountId = ? AND groupId = ?',
+            args: [accountId, groupId],
+        })
+    }
+
+    // #region Game
 }
