@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config'
 import { Client, createClient } from '@libsql/client'
 import { CreateUserBody, UpdateUserBody } from '../../common/types/shared/user.type'
 import * as bcrypt from 'bcrypt'
+import { CreateGroupBody, UpdateGroupBody } from 'src/common/types/shared/group.type'
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
@@ -17,6 +18,8 @@ export class DatabaseService implements OnModuleInit {
             authToken: String(this.configService.get<string>('TURSO_AUTH_TOKEN')),
         })
     }
+
+    // #region Users
 
     getUsers() {
         this.LOGGER.log('Getting all users')
@@ -120,13 +123,81 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
-    /**
-     * /database/delete/:key
-     */
-    // @Wrapper(false)
-    // async deleteOne(key: string): Promise<boolean> {
-    //     this.LOGGER.log(`REDIS: Deleting single key ${key}`)
-    //     // await this.REDIS.del(key)
-    //     return true
-    // }
+    // #region Groups
+
+    getGroups() {
+        this.LOGGER.log('Getting all groups')
+        return this.tursoClient.execute('SELECT * FROM UserGroup')
+    }
+
+    getGroupById(id: number) {
+        this.LOGGER.log(`Getting group with id ${id}`)
+        return this.tursoClient.execute({
+            sql: 'SELECT * FROM UserGroup WHERE id = ?',
+            args: [id],
+        })
+    }
+
+    async createGroup(groupDto: CreateGroupBody) {
+        this.LOGGER.log(`Creating group ${groupDto.name} - by ${groupDto.createdBy}`)
+
+        // Execute the query
+        await this.tursoClient.execute({
+            sql: 'INSERT INTO UserGroup (name, createdBy) VALUES (?, ?)',
+            args: [groupDto.name, groupDto.createdBy],
+        })
+    }
+
+    async updateGroup(id: number, partialGroupDto: UpdateGroupBody) {
+        this.LOGGER.log(`Updating user with id ${id}`)
+
+        // Array to store fields to update
+        const fields = []
+        const args = []
+
+        // Dynamically build the update query based on the provided properties
+        if (partialGroupDto.name) {
+            fields.push('name = ?')
+            args.push(partialGroupDto.name)
+        }
+
+        // Error if no fields are provided
+        if (fields.length === 0) {
+            throw new BadRequestException('No fields to update')
+        }
+
+        // Add user id as the last argument
+        args.push(id)
+
+        // Construct the final query
+        const sql = `
+          UPDATE UserGroup
+          SET ${fields.join(', ')}
+          WHERE id = ?
+        `
+
+        this.LOGGER.log(`Executing query: ${sql}`)
+
+        // Execute the query
+        await this.tursoClient.execute({ sql, args })
+
+        // Return the updated user
+        return this.getGroupById(id)
+    }
+
+    softDeleteGroupById(id: number) {
+        this.LOGGER.log(`Soft deleting user with id ${id}`)
+        return this.tursoClient.execute({
+            sql: 'UPDATE UserGroup SET is_deleted = true WHERE id = ?',
+            args: [id],
+        })
+    }
+
+    deleteGroupById(id: number) {
+        this.LOGGER.log(`Deleting user with id ${id}`)
+        return this.tursoClient.execute({
+            sql: 'DELETE FROM UserGroup WHERE id = ?',
+            args: [id],
+        })
+    }
 }
