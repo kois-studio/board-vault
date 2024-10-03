@@ -40,14 +40,14 @@ export class DatabaseService implements OnModuleInit {
     }
 
     async createUser(userDto: CreateUserBody) {
-        this.LOGGER.log(`Creating user ${userDto.alias} - ${userDto.email}`)
-        const { email, password, alias, imageUrl } = userDto
+        this.LOGGER.log(`Creating user ${userDto.username} - ${userDto.email}`)
+        const { email, password, username, imageUrl } = userDto
         const hashedPassword = await bcrypt.hash(password, 10)
 
         // Execute the query
         await this.tursoClient.execute({
-            sql: 'INSERT INTO Account (email, password, alias, imageUrl) VALUES (?, ?, ?, ?)',
-            args: [email, hashedPassword, alias, imageUrl],
+            sql: 'INSERT INTO Account (email, password, username, imageUrl) VALUES (?, ?, ?, ?)',
+            args: [email, hashedPassword, username, imageUrl],
         })
     }
 
@@ -67,9 +67,13 @@ export class DatabaseService implements OnModuleInit {
             fields.push('password = ?')
             args.push(partialUserDto.password)
         }
-        if (partialUserDto.alias) {
-            fields.push('alias = ?')
-            args.push(partialUserDto.alias)
+        if (partialUserDto.username) {
+            fields.push('username = ?')
+            args.push(partialUserDto.username)
+        }
+        if (partialUserDto.display_name) {
+            fields.push('display_name = ?')
+            args.push(partialUserDto.display_name)
         }
         if (partialUserDto.imageUrl) {
             fields.push('imageUrl = ?')
@@ -98,6 +102,14 @@ export class DatabaseService implements OnModuleInit {
 
         // Return the updated user
         return this.getUserById(id)
+    }
+
+    softDeleteUserById(id: number) {
+        this.LOGGER.log(`Soft deleting user with id ${id}`)
+        return this.tursoClient.execute({
+            sql: 'UPDATE Account SET is_deleted = true WHERE id = ?',
+            args: [id],
+        })
     }
 
     deleteUserById(id: number) {
