@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, UseGuards } f
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
 import { GroupMembershipsService } from './group-memberships.service'
-import { CreateGroupMembershipBody, GroupMembershipDto } from 'src/common/types/shared/group-membership.type'
+import { CreateGroupMembershipBody, GroupMembershipDto } from '../../common/types/shared/group-membership.type'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('memberships')

@@ -3,8 +3,8 @@ import { ConfigService } from '@nestjs/config'
 import { Client, createClient } from '@libsql/client'
 import { CreateUserBody, UpdateUserBody } from '../../common/types/shared/user.type'
 import * as bcrypt from 'bcrypt'
-import { CreateGroupBody, UpdateGroupBody } from 'src/common/types/shared/group.type'
-import { CreateGroupMembershipBody } from 'src/common/types/shared/group-membership.type'
+import { CreateGroupBody, UpdateGroupBody } from '../../common/types/shared/group.type'
+import { CreateGroupMembershipBody } from '../../common/types/shared/group-membership.type'
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
