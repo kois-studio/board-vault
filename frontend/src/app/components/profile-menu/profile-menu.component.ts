@@ -12,7 +12,8 @@ import { ProfileSettingsComponent } from '../profile-settings/profile-settings.c
 export class ProfileMenuComponent {
     public isDropdownVisible = false
 
-    // @ViewChild(ProfileSettingsComponent) profileSettingsComponent!: ProfileSettingsComponent;
+    // Get the child component to be able to call its methods
+    @ViewChild(ProfileSettingsComponent) profileSettingsComponent!: ProfileSettingsComponent
 
     private clickListener!: (() => void) | null
 
@@ -57,7 +58,8 @@ export class ProfileMenuComponent {
 
     // #region Methods
     public onClickProfileSettings() {
-        // this.profileSettingsComponent.showDialog();
+        this.profileSettingsComponent.showDialog()
+        this.isDropdownVisible = false
     }
 
     public onClickSignOut() {
