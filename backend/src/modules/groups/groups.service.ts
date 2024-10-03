@@ -32,7 +32,7 @@ export class GroupsService {
 
     async getGroups(): Promise<Array<GroupDto>> {
         this.LOGGER.log('Getting all users')
-        const resultSet = await this.databaseService.getGames()
+        const resultSet = await this.databaseService.getGroups()
 
         return this._parseResultSet(resultSet)
     }
@@ -81,5 +81,18 @@ export class GroupsService {
         }
 
         return { success: true }
+    }
+
+    async getGroupMembers(groupId: number) {
+        this.LOGGER.log(`Getting all members for group ${groupId}`)
+        const resultSet = await this.databaseService.getGroupMembers(groupId)
+
+        return resultSet.rows.map(row => ({
+            accountId: Number(row[0]),
+            username: String(row[1]),
+            display_name: String(row[2]),
+            email: String(row[3]),
+            imageUrl: String(row[4]),
+        }))
     }
 }
