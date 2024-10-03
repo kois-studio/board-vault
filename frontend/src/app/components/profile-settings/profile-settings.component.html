@@ -42,17 +42,7 @@
                 <!-- Profile Picture and Name -->
                 <div class="flex gap-x-2 items-center border-b border-zinc-500 py-4">
                     <h3 class="w-48 text-gray-500">Profile</h3>
-                    <div class="w-full flex justify-between items-center">
-                        <div class="flex items-center">
-                            <img
-                                [src]="userData?.imageUrl"
-                                alt="Profile Picture"
-                                class="rounded-full w-12 h-12 mr-4"
-                            />
-                            <p class="text-lg font-semibold">{{ userData?.display_name }}</p>
-                        </div>
-                        <button class="app-btn-secondary">Update profile</button>
-                    </div>
+                    <form-update-profile class="w-full" />
                 </div>
 
                 <!-- Username -->
