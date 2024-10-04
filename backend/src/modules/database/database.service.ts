@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, Logger, OnModuleInit } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import { Client, createClient } from '@libsql/client'
+import { Client, createClient, type InStatement } from '@libsql/client'
 import { CreateUserBody, UpdateUserBody } from '../../common/types/shared/user.type'
 import * as bcrypt from 'bcrypt'
 import { CreateGroupBody, UpdateGroupBody } from '../../common/types/shared/group.type'
@@ -21,44 +21,72 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    /**
+     * Helper function to format the SQL string by replacing '?' with the actual arguments
+     */
+    private _formatSqlWithArgs(sql: string, args: any[] = []): string {
+        let i = 0
+
+        return sql.replace(/\?/g, () => {
+            const value = args[i++]
+
+            if (typeof value === 'string') {
+                return `'${value.replace(/'/g, "''")}'`
+            }
+            return String(value)
+        })
+    }
+
+    /**
+     * Use this instead of directly calling `tursoClient.execute` to log the SQL query before executing it
+     */
+    private _tursoExecute(stmt: InStatement) {
+        let sql: string = ''
+
+        if (typeof stmt === 'string') {
+            sql = stmt
+        } else {
+            sql = this._formatSqlWithArgs(stmt.sql, stmt.args as any[])
+        }
+
+        // Log the formatted SQL
+        this.LOGGER.log(sql)
+
+        // Execute the query
+        return this.tursoClient.execute(stmt)
+    }
+
     // #region User
 
     getUsers() {
-        this.LOGGER.log('Getting all users')
-        return this.tursoClient.execute('SELECT * FROM Account')
+        return this._tursoExecute('SELECT * FROM Account')
     }
 
     getUserById(id: number) {
-        this.LOGGER.log(`Getting user with id ${id}`)
-        return this.tursoClient.execute({
+        return this._tursoExecute({
             sql: 'SELECT * FROM Account WHERE id = ?',
             args: [id],
         })
     }
 
     getUserByEmail(email: string) {
-        this.LOGGER.log(`Getting user with email ${email}`)
-        return this.tursoClient.execute({
+        return this._tursoExecute({
             sql: 'SELECT * FROM Account WHERE email = ?',
             args: [email],
         })
     }
 
     async createUser(userDto: CreateUserBody) {
-        this.LOGGER.log(`Creating user ${userDto.username} - ${userDto.email}`)
         const { email, password, username, display_name, imageUrl } = userDto
         const hashedPassword = await bcrypt.hash(password, 10)
 
-        // Execute the query
-        await this.tursoClient.execute({
+        await this._tursoExecute({
             sql: 'INSERT INTO Account (email, password, username, display_name, imageUrl) VALUES (?, ?, ?, ?, ?)',
             args: [email, hashedPassword, username, display_name, imageUrl],
         })
     }
 
     async updateUser(id: number, partialUserDto: UpdateUserBody) {
-        this.LOGGER.log(`Updating user with id ${id}`)
-
         // Array to store fields to update
         const fields = []
         const args = []
@@ -102,18 +130,15 @@ export class DatabaseService implements OnModuleInit {
           WHERE id = ?
         `
 
-        this.LOGGER.log(`Executing query: ${sql}`)
-
         // Execute the query
-        await this.tursoClient.execute({ sql, args })
+        await this._tursoExecute({ sql, args })
 
         // Return the updated user
         return this.getUserById(id)
     }
 
     softDeleteUserById(id: number) {
-        this.LOGGER.log(`Soft deleting user with id ${id}`)
-        return this.tursoClient.execute({
+        return this._tursoExecute({
             sql: 'UPDATE Account SET is_deleted = true WHERE id = ?',
             args: [id],
         })
@@ -121,24 +146,16 @@ export class DatabaseService implements OnModuleInit {
 
     // avoid deleting users -> soft delete instead
     deleteUserById(id: number) {
-        this.LOGGER.log(`Deleting user with id ${id}`)
-        return this.tursoClient.execute({
+        return this._tursoExecute({
             sql: 'DELETE FROM Account WHERE id = ?',
             args: [id],
         })
     }
 
     getUserGroups(userId: number) {
-        this.LOGGER.log(`Getting all groups for user ${userId}`)
-        return this.tursoClient.execute({
+        return this._tursoExecute({
             sql: `
-                SELECT
-                    g.id,
-                    g.name,
-                    g.createdBy,
-                    g.createdAt,
-                    gm.joinedAt,
-                    gm.accountId
+                SELECT g.id, g.name, g.createdBy, g.createdAt, gm.joinedAt, gm.accountId
                 FROM UserGroup g
                 JOIN GroupMembership gm
                 ON g.id = gm.groupId
@@ -149,16 +166,9 @@ export class DatabaseService implements OnModuleInit {
     }
 
     getUserGames(userId: number) {
-        this.LOGGER.log(`Getting all games for user ${userId}`)
-        return this.tursoClient.execute({
+        return this._tursoExecute({
             sql: `
-                SELECT
-                    g.id,
-                    g.title,
-                    g.imageUrl,
-                    g.gameAvgDuration,
-                    g.minPlayers,
-                    g.maxPlayers
+                SELECT g.id, g.title, g.imageUrl, g.gameAvgDuration, g.minPlayers, g.maxPlayers
                 FROM Game g
                 JOIN OwnedGame og
                 ON g.id = og.gameId
@@ -171,31 +181,24 @@ export class DatabaseService implements OnModuleInit {
     // #region Group
 
     getGroups() {
-        this.LOGGER.log('Getting all groups')
-        return this.tursoClient.execute('SELECT * FROM UserGroup')
+        return this._tursoExecute('SELECT * FROM UserGroup')
     }
 
     getGroupById(id: number) {
-        this.LOGGER.log(`Getting group with id ${id}`)
-        return this.tursoClient.execute({
+        return this._tursoExecute({
             sql: 'SELECT * FROM UserGroup WHERE id = ?',
             args: [id],
         })
     }
 
     async createGroup(groupDto: CreateGroupBody) {
-        this.LOGGER.log(`Creating group ${groupDto.name} - by ${groupDto.createdBy}`)
-
-        // Execute the query
-        await this.tursoClient.execute({
+        await this._tursoExecute({
             sql: 'INSERT INTO UserGroup (name, createdBy) VALUES (?, ?)',
             args: [groupDto.name, groupDto.createdBy],
         })
     }
 
     async updateGroup(id: number, partialGroupDto: UpdateGroupBody) {
-        this.LOGGER.log(`Updating user with id ${id}`)
-
         // Array to store fields to update
         const fields = []
         const args = []
@@ -221,18 +224,15 @@ export class DatabaseService implements OnModuleInit {
           WHERE id = ?
         `
 
-        this.LOGGER.log(`Executing query: ${sql}`)
-
         // Execute the query
-        await this.tursoClient.execute({ sql, args })
+        await this._tursoExecute({ sql, args })
 
         // Return the updated user
         return this.getGroupById(id)
     }
 
     softDeleteGroupById(id: number) {
-        this.LOGGER.log(`Soft deleting user with id ${id}`)
-        return this.tursoClient.execute({
+        return this._tursoExecute({
             sql: 'UPDATE UserGroup SET is_deleted = true WHERE id = ?',
             args: [id],
         })
@@ -240,16 +240,14 @@ export class DatabaseService implements OnModuleInit {
 
     // avoid deleting groups -> soft delete instead
     deleteGroupById(id: number) {
-        this.LOGGER.log(`Deleting user with id ${id}`)
-        return this.tursoClient.execute({
+        return this._tursoExecute({
             sql: 'DELETE FROM UserGroup WHERE id = ?',
             args: [id],
         })
     }
 
     getGroupMembers(groupId: number) {
-        this.LOGGER.log(`Getting all members for group ${groupId}`)
-        return this.tursoClient.execute({
+        return this._tursoExecute({
             sql: `
                 SELECT a.id AS accountId, a.username, a.display_name, a.email, a.imageUrl
                 FROM GroupMembership gm
@@ -263,31 +261,25 @@ export class DatabaseService implements OnModuleInit {
     // #region Membership
 
     getGroupMemberships() {
-        this.LOGGER.log('Getting all memberships')
-        return this.tursoClient.execute('SELECT * FROM GroupMembership')
+        return this._tursoExecute('SELECT * FROM GroupMembership')
     }
 
     getGroupMembershipById(accountId: number, groupId: number) {
-        this.LOGGER.log(`Getting membership with id ${accountId} ${groupId}`)
-        return this.tursoClient.execute({
+        return this._tursoExecute({
             sql: 'SELECT * FROM GroupMembership WHERE accountId = ? AND groupId = ?',
             args: [accountId, groupId],
         })
     }
 
     async createGroupMembership(groupDto: CreateGroupMembershipBody) {
-        this.LOGGER.log(`Creating membership ${groupDto.accountId} - by ${groupDto.groupId}`)
-
-        // Execute the query
-        await this.tursoClient.execute({
+        await this._tursoExecute({
             sql: 'INSERT INTO GroupMembership (accountId, groupId) VALUES (?, ?)',
             args: [groupDto.accountId, groupDto.groupId],
         })
     }
 
     deleteGroupMembershipById(accountId: number, groupId: number) {
-        this.LOGGER.log(`Deleting user with id ${accountId} ${groupId}`)
-        return this.tursoClient.execute({
+        return this._tursoExecute({
             sql: 'DELETE FROM GroupMembership WHERE accountId = ? AND groupId = ?',
             args: [accountId, groupId],
         })
@@ -296,31 +288,24 @@ export class DatabaseService implements OnModuleInit {
     // #region Game
 
     getGames() {
-        this.LOGGER.log('Getting all games')
-        return this.tursoClient.execute('SELECT * FROM Game')
+        return this._tursoExecute('SELECT * FROM Game')
     }
 
     getGameById(id: number) {
-        this.LOGGER.log(`Getting game with id ${id}`)
-        return this.tursoClient.execute({
+        return this._tursoExecute({
             sql: 'SELECT * FROM Game WHERE id = ?',
             args: [id],
         })
     }
 
     async createGame(gameDto: CreateGameBody) {
-        this.LOGGER.log(`Creating game ${gameDto.title}`)
-
-        // Execute the query
-        await this.tursoClient.execute({
+        await this._tursoExecute({
             sql: 'INSERT INTO Game (title, imageUrl, gameAvgDuration, minPlayers, maxPlayers) VALUES (?, ?, ?, ?, ?)',
             args: [gameDto.title, gameDto.imageUrl, gameDto.gameAvgDuration, gameDto.minPlayers, gameDto.maxPlayers],
         })
     }
 
     async updateGame(id: number, partialGameDto: UpdateGameBody) {
-        this.LOGGER.log(`Updating gamee with id ${id}`)
-
         // Array to store fields to update
         const fields = []
         const args = []
@@ -366,18 +351,15 @@ export class DatabaseService implements OnModuleInit {
           WHERE id = ?
         `
 
-        this.LOGGER.log(`Executing query: ${sql}`)
-
         // Execute the query
-        await this.tursoClient.execute({ sql, args })
+        await this._tursoExecute({ sql, args })
 
         // Return the updated user
         return this.getGameById(id)
     }
 
     deleteGameById(id: number) {
-        this.LOGGER.log(`Deleting game with id ${id}`)
-        return this.tursoClient.execute({
+        return this._tursoExecute({
             sql: 'DELETE FROM Game WHERE id = ?',
             args: [id],
         })
