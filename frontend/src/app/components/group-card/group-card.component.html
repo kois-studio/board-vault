@@ -1,6 +1,20 @@
 <div class="shadow-md rounded-lg p-6 bg-zinc-800 relative">
+    <!-- TOP RIGHT BUTTONS -->
+    <div class="flex gap-4 absolute top-3 right-3">
+        <button class="app-btn-primary py-1 px-2" title="Add a member">
+            <i class="bi bi-plus-circle"></i>
+        </button>
+    
+        <button class="app-btn-primary py-1 px-2" title="Edit group">
+            <i class="bi bi-pencil"></i>
+        </button>
+    </div>
+
+    <!-- GROUP CARD -->
     <h2 class="text-xl font-semibold mb-4">{{ group.groupName }}</h2>
     <hr />
+
+    <!-- MEMBERS DATA -->
     <ul class="space-y-4 pt-8">
         @if (membersIndex[group.groupId]) {
             @for (member of membersIndex[group.groupId]; track $index) {
@@ -26,14 +40,15 @@
             }
         }
     </ul>
+    <hr />
 
-    <div class="flex gap-4 absolute top-3 right-3">
-        <button class="app-btn-primary py-1 px-2" title="Add a member">
-            <i class="bi bi-plus-circle"></i>
-        </button>
-    
-        <button class="app-btn-primary py-1 px-2" title="Edit group">
-            <i class="bi bi-pencil"></i>
-        </button>
+    <!-- GROUP DATA -->
+    <div class="flex justify-between pt-4">
+        <p class="text-gray-400 text-sm">
+            <span class="font-semibold">Created:</span> {{ group.groupCreatedAt }}
+        </p>
+        <p class="text-gray-400">
+            <span class="font-semibold">Total games:</span> {{ totalGames.length }}
+        </p>
     </div>
 </div>
