@@ -1,4 +1,4 @@
-<div class="container mx-auto pt-8 lg:pt-16">
+<div class="container mx-auto pt-8 lg:pt-16 px-4">
     <!-- GROUPS -->
     <h1 class="text-2xl font-bold text-center">My Groups</h1>
 
@@ -10,10 +10,16 @@
       
     <section class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         @for (group of groupDetails; track $index) {
-            <app-group-card [group]="group" [membersIndex]="membersIndex" />
+            <app-group-card [group]="group" [membersIndex]="membersIndex" [gamesIndex]="gamesIndex" />
         }
     </section>
       
+
+    <!-- TODO: lower part will be deleted -->
+    <br />
+    <br />
+    <br />
+    <br />
 
     @for (group of groupDetails; track $index) {
     <div>

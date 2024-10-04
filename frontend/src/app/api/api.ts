@@ -48,6 +48,10 @@ export class Api {
         return this.http.get<Array<GroupWithMembersType>>(`${this.url}/users/${userId}/groups`)
     }
 
+    getUserGames(userId: number) {
+        return this.http.get<Array<GameType>>(`${this.url}/users/${userId}/games`)
+    }
+
     // #region groups
 
     getGroupMembers(groupId: number) {
