@@ -3,6 +3,7 @@ import { DatabaseService } from '../database/database.service'
 import { CreateUserBody, UpdateUserBody, UserCompleteDto, UserGetDto } from '../../common/types/shared/user.type'
 import { ResultSet } from '@libsql/client/.'
 import { usersSchema } from '../../common/schemas'
+import { GameDto } from 'src/common/types/shared/game.type'
 
 @Injectable()
 export class UsersService {
@@ -120,6 +121,20 @@ export class UsersService {
             groupCreatedBy: Number(row[2]),
             groupCreatedAt: String(row[3]),
             membershipJoinedAt: String(row[4]),
+        }))
+    }
+
+    async getUserGames(userId: number): Promise<Array<GameDto>> {
+        this.LOGGER.log(`Getting all games for user ${userId}`)
+        const resultSet = await this.databaseService.getUserGames(userId)
+
+        return resultSet.rows.map(row => ({
+            id: Number(row[0]),
+            title: String(row[1]),
+            imageUrl: String(row[2]),
+            gameAvgDuration: Number(row[3]),
+            minPlayers: Number(row[4]),
+            maxPlayers: Number(row[5]),
         }))
     }
 }
