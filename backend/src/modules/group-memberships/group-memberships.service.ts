@@ -29,28 +29,28 @@ export class GroupMembershipsService {
     }
 
     async getGroupMemberships(): Promise<Array<GroupMembershipDto>> {
-        this.LOGGER.log('Getting all users')
+        this.LOGGER.log('Getting all memberships')
         const resultSet = await this.databaseService.getGroupMemberships()
 
         return this._parseResultSet(resultSet)
     }
 
     async getGroupMembershipById(accountId: number, groupId: number): Promise<GroupMembershipDto | NotFoundException> {
-        this.LOGGER.log(`Getting user with id ${accountId} ${groupId}`)
+        this.LOGGER.log(`Getting membership with id ${accountId} ${groupId}`)
         const resultSet = await this.databaseService.getGroupMembershipById(accountId, groupId)
-        const users = this._parseResultSet(resultSet)
+        const memberships = this._parseResultSet(resultSet)
 
-        if (users.length === 0) {
+        if (memberships.length === 0) {
             return new NotFoundException(`Membership with id ${accountId} ${groupId} not found`)
         }
 
-        return users[0]
+        return memberships[0]
     }
 
-    async createGroupMembership(userDto: CreateGroupMembershipBody) {
-        this.LOGGER.log(`Creating membership ${userDto.accountId} - ${userDto.groupId}`)
+    async createGroupMembership(membershipDto: CreateGroupMembershipBody) {
+        this.LOGGER.log(`Creating membership ${membershipDto.accountId} - ${membershipDto.groupId}`)
         try {
-            await this.databaseService.createGroupMembership(userDto)
+            await this.databaseService.createGroupMembership(membershipDto)
 
             return { success: true }
         } catch (error) {

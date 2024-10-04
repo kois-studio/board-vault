@@ -12,16 +12,16 @@ export class GroupMembershipsController {
     constructor(private readonly groupMembershipsService: GroupMembershipsService) {}
 
     @Get('/')
-    @ApiOperation({ summary: 'Get all users' })
-    @ApiResponse({ status: 200, type: [GroupMembershipDto], description: 'List of all users' })
+    @ApiOperation({ summary: 'Get all memberships' })
+    @ApiResponse({ status: 200, type: [GroupMembershipDto], description: 'List of all memberships' })
     async getGroupMemberships() {
         return this.groupMembershipsService.getGroupMemberships()
     }
 
     @Get('/:accountId/:groupId')
-    @ApiOperation({ summary: 'Get user by id' })
-    @ApiResponse({ status: 200, type: GroupMembershipDto, description: 'User found' })
-    @ApiResponse({ status: 404, description: 'User not found' })
+    @ApiOperation({ summary: 'Get membership by id' })
+    @ApiResponse({ status: 200, type: GroupMembershipDto, description: 'Membership found' })
+    @ApiResponse({ status: 404, description: 'Membership not found' })
     @ApiParam({ name: 'accountId', type: String })
     @ApiParam({ name: 'groupId', type: String })
     getGroupMembershipById(@Param('accountId', ParseIntPipe) accountId: number, @Param('groupId', ParseIntPipe) groupId: number) {
@@ -29,15 +29,15 @@ export class GroupMembershipsController {
     }
 
     @Post('/')
-    @ApiOperation({ summary: 'Create a new user' })
-    @ApiResponse({ status: 201, description: 'The user has been succesfully created' })
-    async createGroupMembership(@Body() userDto: CreateGroupMembershipBody) {
-        return this.groupMembershipsService.createGroupMembership(userDto)
+    @ApiOperation({ summary: 'Create a new membership' })
+    @ApiResponse({ status: 201, description: 'The membership has been succesfully created' })
+    async createGroupMembership(@Body() membershipDto: CreateGroupMembershipBody) {
+        return this.groupMembershipsService.createGroupMembership(membershipDto)
     }
 
     @Delete('/:accountId/:groupId')
-    @ApiOperation({ summary: 'Delete a user by Id' })
-    @ApiResponse({ status: 200, description: 'The user has been succesfully deleted' })
+    @ApiOperation({ summary: 'Delete a membership by Id' })
+    @ApiResponse({ status: 200, description: 'The membership has been succesfully deleted' })
     @ApiParam({ name: 'accountId', type: String })
     @ApiParam({ name: 'groupId', type: String })
     async deleteGroupMembershipById(@Param('accountId', ParseIntPipe) accountId: number, @Param('groupId', ParseIntPipe) groupId: number) {

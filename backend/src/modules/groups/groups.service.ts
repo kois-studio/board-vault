@@ -31,7 +31,7 @@ export class GroupsService {
     }
 
     async getGroups(): Promise<Array<GroupDto>> {
-        this.LOGGER.log('Getting all users')
+        this.LOGGER.log('Getting all groups')
         const resultSet = await this.databaseService.getGroups()
 
         return this._parseResultSet(resultSet)
@@ -50,7 +50,7 @@ export class GroupsService {
     }
 
     async createGroup(groupBody: CreateGroupBody) {
-        this.LOGGER.log(`Creating user ${groupBody.name} - by ${groupBody.createdBy}`)
+        this.LOGGER.log(`Creating group: ${groupBody.name} - by ${groupBody.createdBy}`)
         try {
             await this.databaseService.createGroup(groupBody)
 
@@ -62,7 +62,7 @@ export class GroupsService {
     }
 
     async deleteGroupById(id: number): Promise<{ success: boolean }> {
-        this.LOGGER.log(`Deleting user with id ${id}`)
+        this.LOGGER.log(`Deleting group with id ${id}`)
         const resultSet = await this.databaseService.softDeleteGroupById(id)
 
         if (resultSet.rowsAffected === 0) {
