@@ -1,7 +1,8 @@
 import { Component, Input } from '@angular/core'
-import { GroupWithMembersType } from '../../types/group-with-members.type'
-import { GroupMemberType } from '../../types/user.type'
-import { ImageProfileComponent } from "../image-profile/image-profile.component";
+import type { GameType } from '../../types/game.type'
+import type { GroupWithMembersType } from '../../types/group-with-members.type'
+import type { GroupMemberType } from '../../types/user.type'
+import { ImageProfileComponent } from '../image-profile/image-profile.component'
 
 @Component({
     standalone: true,
@@ -12,4 +13,5 @@ import { ImageProfileComponent } from "../image-profile/image-profile.component"
 export class GroupCardComponent {
     @Input({ required: true }) group!: GroupWithMembersType
     @Input({ required: true }) membersIndex: Record<GroupWithMembersType['groupId'], Array<GroupMemberType>> = {}
+    @Input({ required: true }) gamesIndex: Record<GroupMemberType['accountId'], Array<GameType>> = {}
 }
