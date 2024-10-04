@@ -4,7 +4,7 @@
     <ul class="space-y-4 pt-8">
         @if (membersIndex[group.groupId]) {
             @for (member of membersIndex[group.groupId]; track $index) {
-                <li class="pb-6">
+                <li class="pb-6 flex justify-between">
                     <div class="flex items-center p-4">
                         <app-image-profile [imageUrl]="member.imageUrl" />
                         <div class="ml-3">
@@ -16,6 +16,11 @@
                                 }
                             </p>
                         </div>
+                    </div>
+                    <div>
+                        @if (gamesIndex[member.accountId]) {
+                            has {{ gamesIndex[member.accountId].length }} games
+                        }
                     </div>
                 </li>
             }

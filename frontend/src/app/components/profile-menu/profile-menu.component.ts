@@ -3,8 +3,8 @@ import { Router } from '@angular/router'
 import { LocalStorageService } from '../../core/services/local-storage.service'
 import { UserService } from '../../core/services/user.service'
 import { UserType } from '../../types/user.type'
+import { ImageProfileComponent } from '../image-profile/image-profile.component'
 import { ProfileSettingsComponent } from '../profile-settings/profile-settings.component'
-import { ImageProfileComponent } from "../image-profile/image-profile.component";
 
 @Component({
     standalone: true,
