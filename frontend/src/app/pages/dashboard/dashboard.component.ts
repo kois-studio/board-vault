@@ -3,11 +3,13 @@ import { Api } from '../../api/api'
 import { UserService } from '../../core/services/user.service'
 import { GroupWithMembersType } from '../../types/group-with-members.type'
 import { GroupMemberType, UserType } from '../../types/user.type'
+import { GroupCardComponent } from "../../components/group-card/group-card.component";
 
 @Component({
     selector: 'app-dashboard',
     templateUrl: 'dashboard.component.html',
     standalone: true,
+    imports: [GroupCardComponent],
 })
 export class DashboardComponent {
     public userData: UserType | null = null
