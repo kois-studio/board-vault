@@ -4,6 +4,7 @@ import { UsersService } from './users.service'
 import { CreateUserBody, UpdateUserBody, UserGetDto } from '../../common/types/shared/user.type'
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
 import { GroupWithMembers } from 'src/common/types/shared/group-with-members.type'
+import { GameDto } from 'src/common/types/shared/game.type'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('users')
@@ -62,11 +63,19 @@ export class UsersController {
         return this.usersService.deleteUserById(userId)
     }
 
-    @Get(':userId/groups')
+    @Get('/:userId/groups')
     @ApiOperation({ summary: 'Get groups with members' })
     @ApiResponse({ status: 200, type: [GroupWithMembers] })
     @ApiParam({ name: 'userId', type: String })
     getUserGroups(@Param('userId', ParseIntPipe) userId: number) {
         return this.usersService.getUserGroups(userId)
+    }
+
+    @Get('/:userId/games')
+    @ApiOperation({ summary: 'Get games owned by user' })
+    @ApiResponse({ status: 200, type: [GameDto] })
+    @ApiParam({ name: 'userId', type: String })
+    getUserGames(@Param('userId', ParseIntPipe) userId: number) {
+        return this.usersService.getUserGames(userId)
     }
 }
