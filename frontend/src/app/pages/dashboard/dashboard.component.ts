@@ -1,4 +1,5 @@
 import { Component, effect } from '@angular/core'
+import { concatMap, from, of, tap } from 'rxjs'
 import { Api } from '../../api/api'
 import { GroupCardComponent } from '../../components/group-card/group-card.component'
 import { UserService } from '../../core/services/user.service'
@@ -29,47 +30,47 @@ export class DashboardComponent {
 
             // STEP 1: Fetch the group details
             this.api.getUserGroups(this.userData.id).subscribe({
-                next: (data) => {
-                    this.groupDetails = data.map((group) => ({
+                next: (groups) => {
+                    this.groupDetails = groups.map((group) => ({
                         groupId: group.groupId,
                         groupName: group.groupName,
                         groupCreatedBy: group.groupCreatedBy,
                         groupCreatedAt: new Date(group.groupCreatedAt).toLocaleDateString(),
                         membershipJoinedAt: new Date(group.membershipJoinedAt).toLocaleDateString(),
                     }))
-                    console.log(`STEP 1: fetched ${this.groupDetails.length} groups`)
 
                     // STEP 2: Fetch the members data for each group
-                    for (const group of this.groupDetails) {
-                        this.api.getGroupMembers(group.groupId).subscribe({
-                            next: (data) => {
-                                this.membersIndex[group.groupId] = data
-                                console.log(`STEP 2: fetched ${data.length} members for group ${group.groupName}`)
+                    // Use concatMap to ensure sequential fetching of group members and their games
+                    from(this.groupDetails)
+                        .pipe(
+                            concatMap((group) =>
+                                this.api.getGroupMembers(group.groupId).pipe(
+                                    tap((members) => {
+                                        this.membersIndex[group.groupId] = members
+                                    }),
+                                    concatMap((members) =>
+                                        from(members).pipe(
+                                            concatMap((member) => {
+                                                if (this.gamesIndex[member.accountId]) {
+                                                    return of(null) // Skip the request
+                                                }
 
-                                // STEP 3: Fetch the games each member has
-                                for (const member of data) {
-                                    if (this.gamesIndex[member.accountId]) {
-                                        // then we already fetched the games for this member
-                                        console.log(`STEP 3❌: skipping ${member.username}`)
-                                        continue
-                                    }
-                                    console.log(`STEP 3✅: fetching games for ${member.username}`)
-                                    this.api.getUserGames(member.accountId).subscribe({
-                                        next: (data) => {
-                                            this.gamesIndex[member.accountId] = data
-                                            console.log(this.gamesIndex)
-                                        },
-                                        error: (error) => {
-                                            console.error(error)
-                                        },
-                                    })
-                                }
-                            },
+                                                return this.api.getUserGames(member.accountId).pipe(
+                                                    tap((games) => {
+                                                        this.gamesIndex[member.accountId] = games
+                                                    }),
+                                                )
+                                            }),
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        )
+                        .subscribe({
                             error: (error) => {
                                 console.error(error)
                             },
                         })
-                    }
                 },
                 error: (error) => {
                     console.error(error)
