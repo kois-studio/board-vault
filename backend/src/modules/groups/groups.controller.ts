@@ -54,7 +54,7 @@ export class GroupsController {
     }
 
     @Get('/:groupId/members')
-    @ApiOperation({ summary: 'Get all members in a group' })
+    @ApiOperation({ summary: 'Get all group members' })
     @ApiResponse({ status: 200, type: [GroupWithMembers] })
     @ApiParam({ name: 'groupId', type: String })
     getGroupMembers(@Param('groupId', ParseIntPipe) groupId: number) {
