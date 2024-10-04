@@ -4,10 +4,11 @@ import { LocalStorageService } from '../../core/services/local-storage.service'
 import { UserService } from '../../core/services/user.service'
 import { UserType } from '../../types/user.type'
 import { ProfileSettingsComponent } from '../profile-settings/profile-settings.component'
+import { ImageProfileComponent } from "../image-profile/image-profile.component";
 
 @Component({
     standalone: true,
-    imports: [ProfileSettingsComponent],
+    imports: [ProfileSettingsComponent, ImageProfileComponent],
     selector: 'app-profile-menu',
     templateUrl: 'profile-menu.component.html',
 })
