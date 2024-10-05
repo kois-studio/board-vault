@@ -1,7 +1,7 @@
 import { Component, effect } from '@angular/core'
 import { Api } from '../../api/api'
-import { DataService } from '../../core/services/data.service'
 import { GameCardComponent } from '../../components/game-card/game-card.component'
+import { DataService } from '../../core/services/data.service'
 
 @Component({
     standalone: true,
