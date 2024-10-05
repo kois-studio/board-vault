@@ -2,10 +2,8 @@ import { Component, effect } from '@angular/core'
 import { concatMap, from, of, tap } from 'rxjs'
 import { Api } from '../../api/api'
 import { GroupCardComponent } from '../../components/group-card/group-card.component'
+import { DataService } from '../../core/services/data.service'
 import { UserService } from '../../core/services/user.service'
-import type { GameType } from '../../types/game.type'
-import type { GroupWithMembersType } from '../../types/group-with-members.type'
-import type { GroupMemberType, UserType } from '../../types/user.type'
 
 @Component({
     selector: 'app-dashboard',
@@ -14,23 +12,24 @@ import type { GroupMemberType, UserType } from '../../types/user.type'
     imports: [GroupCardComponent],
 })
 export class DashboardComponent {
-    public userData: UserType | null = null
-    public userGroups: Array<GroupWithMembersType> = []
+    public userData: ReturnType<typeof this.userService.currentUser> = null
+    public userGroups: ReturnType<typeof this.userService.userGroups> = []
+    public groupMembersIndex: ReturnType<typeof this.dataService.groupMembersIndex> = {}
+    public membersIndex: ReturnType<typeof this.dataService.membersIndex> = {}
+    public gamesIndex: ReturnType<typeof this.dataService.gamesIndex> = {}
 
-    // (this {groupId} which {accountId[]} are member)
-    public groupMembersIndex: Record<GroupWithMembersType['groupId'], Array<GroupMemberType['accountId']>> = {}
-
-    // (this {accountId} which {UserData} has)
-    public membersIndex: Record<GroupMemberType['accountId'], GroupMemberType> = {}
-
-    // (this {accountId} which {Game[]} has)
-    public gamesIndex: Record<GroupMemberType['accountId'], Array<GameType>> = {}
     constructor(
         private readonly userService: UserService,
+        private readonly dataService: DataService,
         private readonly api: Api,
     ) {
         effect(() => {
             this.userData = this.userService.currentUser()
+            this.userGroups = this.userService.userGroups()
+
+            this.groupMembersIndex = this.dataService.groupMembersIndex()
+            this.membersIndex = this.dataService.membersIndex()
+            this.gamesIndex = this.dataService.gamesIndex()
 
             /**
              * There are 2 options of userData changing:
