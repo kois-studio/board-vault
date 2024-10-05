@@ -18,7 +18,7 @@ export class GroupCardComponent {
     get totalGames(): Array<GameType> {
         // index all games by gameId so we don't duplicate games
         const games: Record<GameType['id'], GameType> = {}
-        
+
         for (const [accountId, gamesList] of Object.entries(this.gamesIndex)) {
             for (const game of gamesList) {
                 games[game.id] = game

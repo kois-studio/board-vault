@@ -40,7 +40,10 @@ export class FormUpdateProfileComponent {
 
     // Form controls
     get disableSubmit() {
-        return this.updateProfileFormGroup.invalid
+        const valuesAreUnchanged =
+            this.updateProfileFormGroup.value.display_name === this.userData?.display_name &&
+            this.updateProfileFormGroup.value.imageUrl === this.userData?.imageUrl
+        return this.updateProfileFormGroup.invalid || valuesAreUnchanged
     }
 
     // Getters for form controls (shorthands)
@@ -59,6 +62,14 @@ export class FormUpdateProfileComponent {
     get imageUrlClass() {
         if (!this.imageUrl?.dirty && !this.imageUrl?.touched) return ''
         return this.imageUrl?.valid ? 'border-green-500' : 'border-red-500'
+    }
+
+    public onCancel() {
+        this.isEditingProfileData = false
+        this.updateProfileFormGroup.setValue({
+            display_name: this.userData?.display_name,
+            imageUrl: this.userData?.imageUrl,
+        })
     }
 
     public onSave() {

@@ -28,6 +28,11 @@ export class DashboardComponent {
                 return
             }
 
+            // Don't refetch each time the userData changes
+            if (this.groupDetails.length) {
+                return
+            }
+
             // STEP 1: Fetch the group details
             this.api.getUserGroups(this.userData.id).subscribe({
                 next: (groups) => {
