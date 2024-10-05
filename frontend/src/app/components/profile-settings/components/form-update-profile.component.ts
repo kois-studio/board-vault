@@ -89,7 +89,7 @@ export class FormUpdateProfileComponent {
                     this.api.getUserByEmail(userData.email).subscribe({
                         next: (user) => {
                             if (user.email) {
-                                this.userService.setCurrentUser(user)
+                                this.userService.currentUser.set(user)
                             }
                         },
                     })
