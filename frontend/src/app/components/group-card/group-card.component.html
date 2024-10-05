@@ -16,27 +16,29 @@
 
     <!-- MEMBERS DATA -->
     <ul class="space-y-4 pt-8">
-        @if (membersIndex[group.groupId]) {
-            @for (member of membersIndex[group.groupId]; track $index) {
-                <li class="pb-6 flex justify-between">
-                    <div class="flex items-center p-4">
-                        <app-image-profile [imageUrl]="member.imageUrl" />
-                        <div class="ml-3">
-                            <p class="font-semibold text-white">{{ member.display_name }}</p>
-                            <p class="text-gray-400 text-sm">
-                                <span>{{ member.username }}</span>
-                                @if (group.groupCreatedBy === member.accountId) {
-                                    <span class="text-blue-500 pl-2">owner</span>
-                                }
-                            </p>
+        @if (groupMembersIndex[group.groupId]) {
+            @for (memberId of groupMembersIndex[group.groupId]; track $index) {
+                @if (membersIndex[memberId]) {
+                    <li class="pb-6 flex justify-between">
+                        <div class="flex items-center p-4">
+                            <app-image-profile [imageUrl]="membersIndex[memberId].imageUrl" />
+                            <div class="ml-3">
+                                <p class="font-semibold text-white">{{ membersIndex[memberId].display_name }}</p>
+                                <p class="text-gray-400 text-sm">
+                                    <span>{{ membersIndex[memberId].username }}</span>
+                                    @if (group.groupCreatedBy === membersIndex[memberId].accountId) {
+                                        <span class="text-blue-500 pl-2">owner</span>
+                                    }
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                    <div>
-                        @if (gamesIndex[member.accountId]) {
-                            has {{ gamesIndex[member.accountId].length }} games
-                        }
-                    </div>
-                </li>
+                        <div>
+                            @if (gamesIndex[membersIndex[memberId].accountId]) {
+                                has {{ gamesIndex[membersIndex[memberId].accountId].length }} games
+                            }
+                        </div>
+                    </li>
+                }
             }
         }
     </ul>

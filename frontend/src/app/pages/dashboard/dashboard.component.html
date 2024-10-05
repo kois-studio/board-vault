@@ -9,8 +9,8 @@
     </div>
       
     <section class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        @for (group of groupDetails; track $index) {
-            <app-group-card [group]="group" [membersIndex]="membersIndex" [gamesIndex]="gamesIndex" />
+        @for (group of userGroups; track $index) {
+            <app-group-card [group]="group"  [groupMembersIndex]="groupMembersIndex" [membersIndex]="membersIndex" [gamesIndex]="gamesIndex" />
         }
     </section>
       
@@ -21,7 +21,7 @@
     <br />
     <br />
 
-    @for (group of groupDetails; track $index) {
+    @for (group of userGroups; track $index) {
     <div>
         <div class="flex items-center justify-start mb-2 gap-4">
             <button title="Edit group" class="block rounded bg-green-600 px-2 hover:bg-green-700">
@@ -38,7 +38,7 @@
         <div
             class="md:grid-4 container mx-auto mb-24 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6 lg:gap-4 xl:grid-cols-8"
         >
-            @for (member of membersIndex[group.groupId]; track $index) {
+            @for (memberId of groupMembersIndex[group.groupId]; track $index) {
             <button class="dx-ownerCard rounded border-2 bg-zinc-800 p-2 hover:bg-zinc-700 border-zinc-800 relative">
                 <div class="flex items-center gap-2">
                     <div class="h-20 w-20">
@@ -47,11 +47,11 @@
                             style="background-image: url(member.imageUrl);"
                         ></div>
                     </div>
-                    @if (group.groupCreatedBy === member.accountId) {
+                    @if (group.groupCreatedBy === membersIndex[memberId].accountId) {
                     <i title="Creator of the group" class="bi bi-star-fill text-yellow-400 absolute -top-3 -left-2"></i>
                     }
                     <div class="flex flex-col items-start">
-                        <span class="text-xl">{{ member.username }}</span>
+                        <span class="text-xl">{{ membersIndex[memberId].username }}</span>
                         <span> <i class="bi bi-joystick"></i> 420 </span>
                     </div>
                 </div>
