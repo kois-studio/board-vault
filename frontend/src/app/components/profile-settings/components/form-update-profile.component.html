@@ -1,13 +1,16 @@
 <div class="w-full flex justify-between items-center gap-4">
-    <div class="flex items-center">
+    <div
+        class="flex items-center transition-all"
+        [ngClass]="{
+            'h-14': !isEditingProfileData,
+            'h-44': isEditingProfileData
+        }"
+    >
         @if (!isEditingProfileData){
         <img [src]="userData?.imageUrl" alt="Profile Picture" class="rounded-full w-12 h-12 mr-4" />
         <p class="text-lg font-semibold">{{ userData?.display_name }}</p>
         } @else {
-        <form
-            [formGroup]="updateProfileFormGroup"
-            class="flex flex-col gap-4 rounded bg-zinc-800 p-8 w-96 mx-auto"
-        > 
+        <form [formGroup]="updateProfileFormGroup" class="flex flex-col gap-4 rounded bg-zinc-800 p-8 w-96 mx-auto">
             <div>
                 <input
                     type="text"
@@ -51,7 +54,6 @@
                     </div>
                 </div>
             </div>
-            
         </form>
 
         }
