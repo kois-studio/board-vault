@@ -11,15 +11,26 @@ $color-primary-hover: #0078d4;
         @apply rounded border border-zinc-700 bg-zinc-900 px-4 py-2 w-full;
     }
 
-    .app-btn-primary {
-        @apply py-2 px-4 font-bold rounded shadow shadow-blue-500 tracking-wide cursor-pointer disabled:opacity-50 bg-blue-600 hover:bg-blue-500;
+    // Base button styles (common styles for all buttons)
+    .app-btn {
+        @apply py-2 px-4 font-bold rounded shadow tracking-wide cursor-pointer disabled:opacity-50;
     }
-    
+
+    .app-btn-primary {
+        @extend .app-btn;
+        @apply shadow-blue-500 bg-blue-600 hover:bg-blue-500;
+    }
+
     .app-btn-secondary {
-        @apply py-2 px-4 font-bold rounded shadow shadow-zinc-500 tracking-wide cursor-pointer bg-zinc-700 hover:bg-zinc-800;
+        @extend .app-btn;
+        @apply shadow-zinc-500 bg-zinc-700 hover:bg-zinc-800;
+    }
+
+    .app-btn-error {
+        @extend .app-btn;
+        @apply shadow-red-500 bg-red-700 hover:bg-red-800;
     }
 }
-
 
 html,
 body {
