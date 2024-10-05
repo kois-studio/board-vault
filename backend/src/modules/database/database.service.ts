@@ -5,7 +5,7 @@ import { CreateUserBody, UpdateUserBody } from '../../common/types/shared/user.t
 import * as bcrypt from 'bcrypt'
 import { CreateGroupBody, UpdateGroupBody } from '../../common/types/shared/group.type'
 import { CreateGroupMembershipBody } from '../../common/types/shared/group-membership.type'
-import { CreateGameBody, UpdateGameBody } from 'src/common/types/shared/game.type'
+import { CreateGameBody, UpdateGameBody } from '../../common/types/shared/game.type'
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {

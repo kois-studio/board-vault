@@ -3,8 +3,8 @@ import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } 
 import { UsersService } from './users.service'
 import { CreateUserBody, UpdateUserBody, UserGetDto } from '../../common/types/shared/user.type'
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
-import { GroupWithMembers } from 'src/common/types/shared/group-with-members.type'
-import { GameDto } from 'src/common/types/shared/game.type'
+import { GroupWithMembers } from '../../common/types/shared/group-with-members.type'
+import { GameDto } from '../../common/types/shared/game.type'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('users')
