@@ -12,7 +12,8 @@ import { ImageProfileComponent } from '../image-profile/image-profile.component'
 })
 export class GroupCardComponent {
     @Input({ required: true }) group!: GroupWithMembersType
-    @Input({ required: true }) membersIndex: Record<GroupWithMembersType['groupId'], Array<GroupMemberType>> = {}
+    @Input({ required: true }) groupMembersIndex: Record<GroupWithMembersType['groupId'], Array<GroupMemberType['accountId']>> = {}
+    @Input({ required: true }) membersIndex: Record<GroupMemberType['accountId'], GroupMemberType> = {}
     @Input({ required: true }) gamesIndex: Record<GroupMemberType['accountId'], Array<GameType>> = {}
 
     get totalGames(): Array<GameType> {
