@@ -59,6 +59,9 @@
     @if (!isEditingProfileData){
     <button class="app-btn-secondary" (click)="isEditingProfileData = true">Update profile</button>
     }@else {
-    <button class="app-btn-primary" [disabled]="disableSubmit" (click)="onSave()">Save</button>
+    <div class="flex flex-col gap-4">
+        <button class="app-btn-primary" [disabled]="disableSubmit" (click)="onSave()">Save</button>
+        <button class="app-btn-error" (click)="onCancel()">Cancel</button>
+    </div>
     }
 </div>
