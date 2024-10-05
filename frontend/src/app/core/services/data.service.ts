@@ -8,6 +8,14 @@ type AccountId = GroupMemberType['accountId']
 
 @Injectable({ providedIn: 'root' })
 export class DataService {
+    // --------------------------------------------------------------------------
+    //         ARRAYS OF DATA
+    // --------------------------------------------------------------------------
+    public gamesList: WritableSignal<Array<GameType>> = signal([])
+
+    // --------------------------------------------------------------------------
+    //         INDEXES (for fast access to data)
+    // --------------------------------------------------------------------------
     // (this {groupId} which {accountId[]} are member)
     public groupMembersIndex: WritableSignal<Record<GroupId, Array<AccountId>>> = signal({})
 
