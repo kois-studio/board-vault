@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuard
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { GamesService } from './games.service'
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
-import { CreateGameBody, GameDto, UpdateGameBody } from 'src/common/types/shared/game.type'
+import { CreateGameBody, GameDto, UpdateGameBody } from '../../common/types/shared/game.type'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('games')

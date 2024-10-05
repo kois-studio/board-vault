@@ -3,7 +3,7 @@ import { DatabaseService } from '../database/database.service'
 import { CreateUserBody, UpdateUserBody, UserCompleteDto, UserGetDto } from '../../common/types/shared/user.type'
 import { ResultSet } from '@libsql/client/.'
 import { usersSchema } from '../../common/schemas'
-import { GameDto } from 'src/common/types/shared/game.type'
+import { GameDto } from '../../common/types/shared/game.type'
 
 @Injectable()
 export class UsersService {
