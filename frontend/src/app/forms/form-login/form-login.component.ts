@@ -75,7 +75,7 @@ export class FormLoginComponent {
                 // Fetch the user data
                 this.api.getUserByEmail(email).subscribe({
                     next: (userType) => {
-                        this.userService.setCurrentUser(userType)
+                        this.userService.currentUser.set(userType)
                         this.toastService.success('Login successful!')
                         this.router.navigate(['/dashboard'])
                     },
