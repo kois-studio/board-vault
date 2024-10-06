@@ -60,8 +60,30 @@
     <div class="pt-8 pb-2 grid lg:grid-cols-2">
         <span></span>
         <div class="grid md:grid-cols-2 gap-4">
-            <input type="text" class="app-input" placeholder="Search by username" />
-            <button class="app-btn-primary" title="Invite user">Invite</button>
+            <div>
+                <input
+                    type="text"
+                    [formControl]="usernameToInvite"
+                    placeholder="Search by username"
+                    class="app-input"
+                    [class]="usernameClass"
+                    required
+                />
+                <div *ngIf="username?.invalid && (username?.dirty || username?.touched)">
+                    <div *ngIf="username?.hasError('required')" class="text-sm text-red-500 py-1">
+                        <i class="bi bi-exclamation-circle-fill"></i> Username is required.
+                    </div>
+                    <div *ngIf="username?.hasError('minlength')" class="text-sm text-red-500 py-1">
+                        <i class="bi bi-exclamation-circle-fill"></i> Username is too short.
+                    </div>
+                    <div *ngIf="username?.hasError('maxlength')" class="text-sm text-red-500 py-1">
+                        <i class="bi bi-exclamation-circle-fill"></i> Username is too long.
+                    </div>
+                </div>
+            </div>
+            <button class="app-btn-primary" title="Invite user" (click)="onInviteUser()" [disabled]="disableSubmit">
+                Invite
+            </button>
         </div>
     </div>
 </div>
