@@ -4,6 +4,7 @@ import { CreateUserBody, UpdateUserBody, UserCompleteDto, UserGetDto } from '../
 import { ResultSet } from '@libsql/client/.'
 import { usersSchema } from '../../common/schemas'
 import { GameDto } from '../../common/types/shared/game.type'
+import { InvitationDto } from 'src/common/types/shared/invitation.type'
 
 @Injectable()
 export class UsersService {
@@ -135,6 +136,34 @@ export class UsersService {
             gameAvgDuration: Number(row[3]),
             minPlayers: Number(row[4]),
             maxPlayers: Number(row[5]),
+        }))
+    }
+
+    async getUserInvitationsReceived(userId: number): Promise<Array<InvitationDto>> {
+        this.LOGGER.log('Getting invitations for user')
+        const resultSet = await this.databaseService.getUserInvitationsReceived(userId)
+
+        return resultSet.rows.map(row => ({
+            id: Number(row[0]),
+            groupId: Number(row[1]),
+            fromAccountId: Number(row[2]),
+            toAccountId: Number(row[3]),
+            status: String(row[4]),
+            sentAt: String(row[5]),
+        }))
+    }
+
+    async getUserInvitationsSent(userId: number): Promise<Array<InvitationDto>> {
+        this.LOGGER.log('Getting invitations sent by user')
+        const resultSet = await this.databaseService.getUserInvitationsSent(userId)
+
+        return resultSet.rows.map(row => ({
+            id: Number(row[0]),
+            groupId: Number(row[1]),
+            fromAccountId: Number(row[2]),
+            toAccountId: Number(row[3]),
+            status: String(row[4]),
+            sentAt: String(row[5]),
         }))
     }
 }

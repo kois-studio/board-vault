@@ -15,7 +15,7 @@ export class InvitationDto {
     toAccountId: number
 
     @ApiProperty({ example: 'pending', description: 'The status of the invitation.' })
-    status: 'pending' | 'accepted' | 'rejected'
+    status: string // enum: ['pending', 'accepted', 'rejected']
 
     @ApiProperty({ example: '2021-10-10T12:00:00Z', description: 'The date the invitation was sent.' })
     sentAt: string

@@ -5,6 +5,7 @@ import { CreateUserBody, UpdateUserBody, UserGetDto } from '../../common/types/s
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
 import { GroupWithMembers } from '../../common/types/shared/group-with-members.type'
 import { GameDto } from '../../common/types/shared/game.type'
+import { InvitationDto } from 'src/common/types/shared/invitation.type'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('users')
@@ -77,5 +78,21 @@ export class UsersController {
     @ApiParam({ name: 'userId', type: String })
     getUserGames(@Param('userId', ParseIntPipe) userId: number) {
         return this.usersService.getUserGames(userId)
+    }
+
+    @Get('/:userId/invitationsReceived')
+    @ApiOperation({ summary: 'Get invitations received by user' })
+    @ApiResponse({ status: 200, type: [InvitationDto] })
+    @ApiParam({ name: 'userId', type: String })
+    getUserInvitationsReceived(@Param('userId', ParseIntPipe) userId: number) {
+        return this.usersService.getUserInvitationsReceived(userId)
+    }
+
+    @Get('/:userId/invitationsSent')
+    @ApiOperation({ summary: 'Get invitations sent by user' })
+    @ApiResponse({ status: 200, type: [InvitationDto] })
+    @ApiParam({ name: 'userId', type: String })
+    getUserInvitationsSent(@Param('userId', ParseIntPipe) userId: number) {
+        return this.usersService.getUserInvitationsSent(userId)
     }
 }
