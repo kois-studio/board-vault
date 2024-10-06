@@ -1,7 +1,7 @@
 <div class="shadow-md rounded-lg p-6 bg-zinc-800 relative mt-24 lg:mt-48 mb-96 mx-2 max-w-5xl md:mx-auto">
     <!-- TOP RIGHT BUTTONS -->
     <div class="flex gap-4 absolute -top-16 left-0">    
-        <button (click)="onCancel()" class="app-btn-primary" title="Cancel editing">
+        <button (click)="onCancel()" class="app-btn-error" title="Cancel editing">
             <i class="bi bi-arrow-left"></i> Back
         </button>
     </div>
@@ -9,7 +9,7 @@
     <div class="flex gap-4 absolute -top-16 right-0">
         <button
             (click)="onCancel()"
-            class="app-btn-success"
+            class="app-btn-primary"
             title="Save changes"
             [disabled]="membersToRemoveFromGroup.length === 0"
         >
