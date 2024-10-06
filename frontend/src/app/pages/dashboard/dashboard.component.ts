@@ -1,6 +1,4 @@
 import { Component, effect } from '@angular/core'
-import { concatMap, firstValueFrom, from, lastValueFrom, of, tap } from 'rxjs'
-import { Api } from '../../api/api'
 import { GroupCardComponent } from '../../components/group-card/group-card.component'
 import { DataService } from '../../core/services/data.service'
 import { UserService } from '../../core/services/user.service'
@@ -21,7 +19,6 @@ export class DashboardComponent {
     constructor(
         private readonly userService: UserService,
         private readonly dataService: DataService,
-        private readonly api: Api,
     ) {
         effect(async () => {
             this.userData = this.userService.currentUser()
@@ -48,8 +45,7 @@ export class DashboardComponent {
                 this._refreshUserDataInMembersIndex(this.userData)
             } else {
                 // case 1
-                await this._getUserGroups(this.userData)
-                this._getGroupMembers()
+                // this._getGroupMembers()
             }
         })
     }
@@ -62,63 +58,5 @@ export class DashboardComponent {
             email: user.email,
             imageUrl: user.imageUrl,
         }
-    }
-
-    private async _getUserGroups(user: NonNullable<typeof this.userData>) {
-        // STEP 1: Fetch the group details
-        const groups = await firstValueFrom(this.api.getUserGroups(user.id))
-        const formattedGroups = groups.map((group) => ({
-            groupId: group.groupId,
-            groupName: group.groupName,
-            groupCreatedBy: group.groupCreatedBy,
-            groupCreatedAt: new Date(group.groupCreatedAt).toLocaleDateString(),
-            membershipJoinedAt: new Date(group.membershipJoinedAt).toLocaleDateString(),
-        }))
-
-        // assign both local variable and the service
-        this.userGroups = formattedGroups
-        this.userService.userGroups.set(formattedGroups)
-    }
-
-    private _getGroupMembers() {
-        // STEP 2: Fetch the members data for each group
-        // Use concatMap to ensure sequential fetching of group members and their games
-        from(this.userGroups)
-            .pipe(
-                concatMap((group) =>
-                    this.api.getGroupMembers(group.groupId).pipe(
-                        tap((members) => {
-                            this.groupMembersIndex[group.groupId] = members.map((member) => member.accountId)
-
-                            for (const member of members) {
-                                if (this.membersIndex[member.accountId]) {
-                                    continue
-                                }
-                                this.membersIndex[member.accountId] = member
-                            }
-                        }),
-                        concatMap((members) =>
-                            from(members).pipe(
-                                concatMap((member) => {
-                                    if (this.gamesIndex[member.accountId]) {
-                                        return of(null) // Skip the request
-                                    }
-
-                                    return this.api.getUserGames(member.accountId).pipe(
-                                        tap((games) => {
-                                            this.gamesIndex[member.accountId] = games
-                                        }),
-                                    )
-                                }),
-                            ),
-                        ),
-                    ),
-                ),
-            )
-            .subscribe({
-                error: (error) => {
-                    console.error(error)
-                },
-            })
     }
 }
