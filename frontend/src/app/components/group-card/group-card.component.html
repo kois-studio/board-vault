@@ -15,7 +15,7 @@
         @if (groupMembersIndex[group.groupId]) {
             @for (memberId of groupMembersIndex[group.groupId]; track $index) {
                 @if (membersIndex[memberId]) {
-                    <li class="pb-6 flex justify-between">
+                    <li class="flex justify-between">
                         <div class="flex items-center p-4">
                             <app-image-profile [imageUrl]="membersIndex[memberId].imageUrl" />
                             <div class="ml-3">
@@ -28,7 +28,7 @@
                                 </p>
                             </div>
                         </div>
-                        <div>
+                        <div class="flex items-center justify-center">
                             @if (gamesIndex[membersIndex[memberId].accountId]) {
                                 has {{ gamesIndex[membersIndex[memberId].accountId].length }} games
                             }
