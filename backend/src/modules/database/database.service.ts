@@ -180,6 +180,28 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    getUserInvitationsReceived(userId: number) {
+        return this._tursoExecute({
+            sql: `
+                SELECT i.id, i.groupId, i.fromAccountId, i.toAccountId, i.status, i.sentAt
+                FROM Invitation i
+                WHERE i.toAccountId = ?
+            `,
+            args: [userId],
+        })
+    }
+
+    getUserInvitationsSent(userId: number) {
+        return this._tursoExecute({
+            sql: `
+                SELECT i.id, i.groupId, i.fromAccountId, i.toAccountId, i.status, i.sentAt
+                FROM Invitation i
+                WHERE i.fromAccountId = ?
+            `,
+            args: [userId],
+        })
+    }
+
     // #region Group
 
     getGroups() {
