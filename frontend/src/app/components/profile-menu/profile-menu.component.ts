@@ -71,6 +71,10 @@ export class ProfileMenuComponent {
         this.isDropdownVisible = false
     }
 
+    public onClickNotifications() {
+        console.log('TODO: Implement notifications')
+    }
+
     public onClickSignOut() {
         this.localStorageService.deleteToken()
         this.router.navigate(['/'])

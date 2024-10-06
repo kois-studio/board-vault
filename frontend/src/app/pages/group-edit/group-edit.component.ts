@@ -26,7 +26,7 @@ export class GroupEditComponent {
     //        DATA for this component
     // --------------------------------------------------------------------------
     public groupData: null | (typeof this.userGroups)[number] = null
-    public membersToRemoveFromGroup: Array<number> = [19]
+    public membersToRemoveFromGroup: Array<number> = []
 
     constructor(
         private readonly router: Router,
