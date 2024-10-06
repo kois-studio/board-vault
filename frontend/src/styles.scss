@@ -28,7 +28,7 @@ $color-primary-hover: #0078d4;
 
     .app-btn-error {
         @extend .app-btn;
-        @apply shadow-red-500 bg-red-700 hover:bg-red-800;
+        @apply shadow-red-500 bg-red-600 hover:bg-red-800;
     }
 }
 
