@@ -1,8 +1,8 @@
-import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common'
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { DatabaseService } from '../database/database.service'
 import { ResultSet } from '@libsql/client/.'
 import { invitationsSchema } from '../../common/schemas'
-import { CreateInvitationBody, InvitationDto } from 'src/common/types/shared/invitation.type'
+import { CreateInvitationBody, CreateInvitationByUsernameBody, InvitationDto } from 'src/common/types/shared/invitation.type'
 
 @Injectable()
 export class InvitationsService {
@@ -58,8 +58,22 @@ export class InvitationsService {
 
             return { success: true }
         } catch (error) {
-            this.LOGGER.error('Failed to create invitation', error)
-            return new ConflictException('Invitation title already in use')
+            this.LOGGER.error('Invitation creation failed', error)
+            return new BadRequestException('Invitation creation failed')
+        }
+    }
+
+    async createInvitationByUsername(invitationDto: CreateInvitationByUsernameBody) {
+        this.LOGGER.log(
+            `Creating invitation to group ${invitationDto.groupId}: ${invitationDto.fromAccountId} -> ${invitationDto.username}`,
+        )
+        try {
+            await this.databaseService.createInvitationByUsername(invitationDto)
+
+            return { success: true }
+        } catch (error) {
+            this.LOGGER.error('Invitation creation failed', error)
+            return new BadRequestException('Invitation creation failed')
         }
     }
 

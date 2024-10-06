@@ -23,3 +23,8 @@ export class InvitationDto {
 
 // POST requests --> no db generated props
 export class CreateInvitationBody extends OmitType(InvitationDto, ['id', 'sentAt']) {}
+
+export class CreateInvitationByUsernameBody extends OmitType(InvitationDto, ['id', 'toAccountId', 'status', 'sentAt']) {
+    @ApiProperty({ example: 'username', description: 'The username of the user to invite.' })
+    username: string
+}
