@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common'
 import { Component, effect } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
@@ -7,17 +8,25 @@ import { GameType } from '../../types/game.type'
 
 @Component({
     standalone: true,
-    imports: [ImageProfileComponent],
+    imports: [CommonModule, ImageProfileComponent],
     selector: 'group-edit',
     templateUrl: 'group-edit.component.html',
 })
 export class GroupEditComponent {
+    // --------------------------------------------------------------------------
+    //        DATA from services
+    // --------------------------------------------------------------------------
     public userData: ReturnType<typeof this.userService.currentUser> = null
     public userGroups: ReturnType<typeof this.userService.userGroups> = []
     public groupMembersIndex: ReturnType<typeof this.dataService.groupMembersIndex> = {}
     public membersIndex: ReturnType<typeof this.dataService.membersIndex> = {}
     public gamesIndex: ReturnType<typeof this.dataService.gamesIndex> = {}
+
+    // --------------------------------------------------------------------------
+    //        DATA for this component
+    // --------------------------------------------------------------------------
     public groupData: null | (typeof this.userGroups)[number] = null
+    public membersToRemoveFromGroup: Array<number> = [19]
 
     constructor(
         private readonly router: Router,
@@ -54,6 +63,14 @@ export class GroupEditComponent {
         }
 
         return Object.values(games)
+    }
+
+    markAsToRemove(accountId: number) {
+        if (this.membersToRemoveFromGroup.includes(accountId)) {
+            this.membersToRemoveFromGroup = this.membersToRemoveFromGroup.filter((id) => id !== accountId)
+        } else {
+            this.membersToRemoveFromGroup.push(accountId)
+        }
     }
 
     onCancel() {

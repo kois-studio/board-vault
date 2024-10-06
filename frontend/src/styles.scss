@@ -13,7 +13,7 @@ $color-primary-hover: #0078d4;
 
     // Base button styles (common styles for all buttons)
     .app-btn {
-        @apply py-2 px-4 font-bold rounded shadow tracking-wide cursor-pointer disabled:opacity-50;
+        @apply py-2 px-4 font-bold rounded shadow tracking-wide cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed;
     }
 
     .app-btn-primary {
@@ -29,6 +29,11 @@ $color-primary-hover: #0078d4;
     .app-btn-error {
         @extend .app-btn;
         @apply shadow-red-500 bg-red-600 hover:bg-red-800;
+    }
+
+    .app-btn-success {
+        @extend .app-btn;
+        @apply shadow-green-500 bg-green-600 hover:bg-green-800;
     }
 }
 

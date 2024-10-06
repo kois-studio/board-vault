@@ -11,7 +11,7 @@
     <hr />
 
     <!-- MEMBERS DATA -->
-    <ul class="space-y-4 pt-8">
+    <ul class="py-8">
         @if (groupMembersIndex[group.groupId]) {
             @for (memberId of groupMembersIndex[group.groupId]; track $index) {
                 @if (membersIndex[memberId]) {
