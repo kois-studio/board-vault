@@ -1,17 +1,19 @@
-<h1 class="text-4xl text-center pt-24 lg:pt-48">{{ groupData?.groupName }}</h1>
-<p class="text-gray-400 text-center py-8">
-    Edit group members
-</p>
-
-<div class="flex flex-col gap-4 rounded bg-zinc-800 p-8 w-96 mx-auto">
-hola wey
-</div>
-
-<div class="shadow-md rounded-lg p-6 bg-zinc-800 relative">
+<div class="shadow-md rounded-lg p-6 bg-zinc-800 relative mt-24 lg:mt-48 mb-96 mx-2 max-w-5xl md:mx-auto">
     <!-- TOP RIGHT BUTTONS -->
-    <div class="flex gap-4 absolute top-3 right-3">    
-        <button (click)="onCancel()" class="app-btn-errors py-1 px-2" title="Cancel editing">
-            <i class="bi bi-x"></i> Cancel
+    <div class="flex gap-4 absolute -top-16 left-0">    
+        <button (click)="onCancel()" class="app-btn-primary" title="Cancel editing">
+            <i class="bi bi-arrow-left"></i> Back
+        </button>
+    </div>
+
+    <div class="flex gap-4 absolute -top-16 right-0">
+        <button
+            (click)="onCancel()"
+            class="app-btn-success"
+            title="Save changes"
+            [disabled]="membersToRemoveFromGroup.length === 0"
+        >
+            Save changes
         </button>
     </div>
 
@@ -20,11 +22,16 @@ hola wey
     <hr />
 
     <!-- MEMBERS DATA -->
-    <ul class="space-y-4 pt-8">
+    <ul class="py-8 grid lg:grid-cols-2 gap-4">
         @if (groupData && groupMembersIndex[groupData.groupId]) {
             @for (memberId of groupMembersIndex[groupData.groupId]; track $index) {
                 @if (membersIndex[memberId]) {
-                    <li class="pb-6 flex justify-between">
+                    <li class="flex justify-between items-center relative">
+                        @if (membersToRemoveFromGroup.includes(memberId)) {
+                            <button (click)="markAsToRemove(memberId)" class="absolute top-0 right-0 left-0 bottom-0 bg-red-800/50 rounded-lg p-2 border-2 border-red-600">
+                                <span class="font-bold text-xl tracking-wideer text-red-500">Cancel</span>
+                            </button>
+                        }
                         <div class="flex items-center p-4">
                             <app-image-profile [imageUrl]="membersIndex[memberId].imageUrl" />
                             <div class="ml-3">
@@ -37,11 +44,11 @@ hola wey
                                 </p>
                             </div>
                         </div>
-                        <div>
-                            @if (gamesIndex[membersIndex[memberId].accountId]) {
-                                has {{ gamesIndex[membersIndex[memberId].accountId].length }} games
-                            }
-                        </div>
+                        @if (!membersToRemoveFromGroup.includes(memberId)) {
+                            <button (click)="markAsToRemove(memberId)" class="app-btn-error py-1 px-2 mr-2" title="Cancel editing">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        }
                     </li>
                 }
             }
@@ -49,13 +56,12 @@ hola wey
     </ul>
     <hr />
 
-    <!-- GROUP DATA -->
-    <div class="flex justify-between pt-4">
-        <p class="text-gray-400 text-sm">
-            <span class="font-semibold">Created:</span> {{ groupData?.groupCreatedAt }}
-        </p>
-        <p class="text-gray-400">
-            <span class="font-semibold">Total games:</span> {{ totalGames.length }}
-        </p>
+    <!-- INVITE PEOPLE -->
+    <div class="pt-8 pb-2 grid lg:grid-cols-2">
+        <span></span>
+        <div class="grid md:grid-cols-2 gap-4">
+            <input type="text" class="app-input" placeholder="Search by username" />
+            <button class="app-btn-primary" title="Invite user">Invite</button>
+        </div>
     </div>
 </div>
