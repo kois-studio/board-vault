@@ -63,4 +63,10 @@ export class Api {
     getGames() {
         return this.http.get<Array<GameType>>(`${this.url}/games`)
     }
+
+    // #region invitations
+
+    createInvitation(groupId: number, fromAccountId: number, toUsername: string) {
+        return this.http.post<{ success: true }>(`${this.url}/invitations/byUsername`, { groupId, fromAccountId, toUsername })
+    }
 }

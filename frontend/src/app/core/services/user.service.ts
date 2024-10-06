@@ -36,6 +36,7 @@ export class UserService {
                     this.toastService.error('Session expired, please log in again')
                     this.localStorageService.clear()
                     this.currentUser.set(null)
+                    // TODO: when token expired, the user experience is not good
                     return
                 }
 

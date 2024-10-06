@@ -5,10 +5,12 @@ import { ImageProfileComponent } from '../../components/image-profile/image-prof
 import { DataService } from '../../core/services/data.service'
 import { UserService } from '../../core/services/user.service'
 import { GameType } from '../../types/game.type'
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
+import { Api } from '../../api/api'
 
 @Component({
     standalone: true,
-    imports: [CommonModule, ImageProfileComponent],
+    imports: [CommonModule, ImageProfileComponent, ReactiveFormsModule],
     selector: 'group-edit',
     templateUrl: 'group-edit.component.html',
 })
@@ -27,8 +29,31 @@ export class GroupEditComponent {
     // --------------------------------------------------------------------------
     public groupData: null | (typeof this.userGroups)[number] = null
     public membersToRemoveFromGroup: Array<number> = []
+    public usernameToInvite = new FormControl('', [Validators.required, Validators.minLength(4), Validators.maxLength(20)])
+    public isLoading = false
+
+    get disableSubmit() {
+        if (!this.groupData || !this.usernameToInvite.value) {
+            return true
+        }
+        const userIds = this.groupMembersIndex[this.groupData.groupId]
+        const usernames = userIds.map((userId) => this.membersIndex[userId].username)
+
+        const isUserAlreadyInGroup = usernames.includes(this.usernameToInvite.value)
+        return this.isLoading || this.usernameToInvite.invalid || isUserAlreadyInGroup
+    }
+
+    get username() {
+        return this.usernameToInvite.get('username')
+    }
+
+    get usernameClass() {
+        if (!this.usernameToInvite.dirty && !this.usernameToInvite.touched) return ''
+        return this.usernameToInvite.valid ? 'border-green-500' : 'border-red-500'
+    }
 
     constructor(
+        private readonly api: Api,
         private readonly router: Router,
         private readonly route: ActivatedRoute,
         private readonly userService: UserService,
@@ -75,5 +100,30 @@ export class GroupEditComponent {
 
     onCancel() {
         this.router.navigate(['/dashboard'])
+    }
+
+    onInviteUser() {
+        if (!this.groupData || !this.userData || !this.usernameToInvite.value) return
+        this.isLoading = true
+
+        this.api.createInvitation(this.groupData.groupId, this.userData?.id, this.usernameToInvite.value).subscribe({
+            next: (res) => {
+                this.isLoading = false
+                this.usernameToInvite.reset()
+                if (res.success) {
+                    console.log('all good')
+                } else {
+                    console.log('bad request')
+                }
+                // this.dataService.refreshInvitations()
+            },
+            error: () => {
+                this.isLoading = false
+                this.usernameToInvite.reset()
+            }
+        })
+        // 1. check if the user exists
+        // 2. send the invitation (this already checks 1.)
+        // 3. refresh in dataService everything needed
     }
 }
