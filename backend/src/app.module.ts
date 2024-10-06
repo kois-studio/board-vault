@@ -7,6 +7,8 @@ import { AuthModule } from './modules/auth/auth.module'
 import { GroupsModule } from './modules/groups/groups.module'
 import { GroupMembershipsModule } from './modules/group-memberships/group-memberships.module'
 import { GamesModule } from './modules/games/games.module'
+import { GamesOwnedModule } from './modules/games-owned/games-owned.module'
+import { InvitationsModule } from './modules/invitations/invitations.module'
 
 @Module({
     imports: [
@@ -17,6 +19,8 @@ import { GamesModule } from './modules/games/games.module'
         GroupsModule,
         GroupMembershipsModule,
         GamesModule,
+        GamesOwnedModule,
+        InvitationsModule,
     ],
     controllers: [],
     providers: [],
