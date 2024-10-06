@@ -14,6 +14,7 @@ import { RegisterComponent } from './pages/register/register.component'
 // Guards
 import { AuthRedirectGuard } from './core/guards/auth-redirect.guard'
 import { AuthGuard } from './core/guards/auth.guard'
+import { GroupEditComponent } from './pages/group-edit/group-edit.component'
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component'
 
 export const routes: Routes = [
@@ -35,6 +36,7 @@ export const routes: Routes = [
             // accessible to unauthenticated users
             { path: 'login', component: LoginComponent, canActivate: [AuthRedirectGuard] },
             { path: 'register', component: RegisterComponent, canActivate: [AuthRedirectGuard] },
+            { path: 'group/:groupId/edit', component: GroupEditComponent, canActivate: [AuthGuard] },
         ],
     },
     { path: '**', component: PageNotFoundComponent }, // Wildcard route for a 404 page
