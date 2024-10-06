@@ -6,6 +6,8 @@ import * as bcrypt from 'bcrypt'
 import { CreateGroupBody, UpdateGroupBody } from '../../common/types/shared/group.type'
 import { CreateGroupMembershipBody } from '../../common/types/shared/group-membership.type'
 import { CreateGameBody, UpdateGameBody } from '../../common/types/shared/game.type'
+import { CreateInvitationBody } from 'src/common/types/shared/invitation.type'
+import { GameOwnedDto } from 'src/common/types/shared/game-owned.type'
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
@@ -366,4 +368,56 @@ export class DatabaseService implements OnModuleInit {
     }
 
     // #region OwnedGame
+
+    getOwnedGames() {
+        return this._tursoExecute('SELECT * FROM OwnedGame')
+    }
+
+    getOwnedGameById(accountId: number, gameId: number) {
+        return this._tursoExecute({
+            sql: 'SELECT * FROM OwnedGame WHERE accountId = ? AND gameId = ?',
+            args: [accountId, gameId],
+        })
+    }
+
+    async createOwnedGame(groupDto: GameOwnedDto) {
+        await this._tursoExecute({
+            sql: 'INSERT INTO OwnedGame (accountId, gameId) VALUES (?, ?)',
+            args: [groupDto.accountId, groupDto.gameId],
+        })
+    }
+
+    deleteOwnedGameById(accountId: number, gameId: number) {
+        return this._tursoExecute({
+            sql: 'DELETE FROM OwnedGame WHERE accountId = ? AND gameId = ?',
+            args: [accountId, gameId],
+        })
+    }
+
+    // #region Invitation
+
+    getInvitations() {
+        return this._tursoExecute('SELECT * FROM Invitation')
+    }
+
+    getInvitationById(id: number) {
+        return this._tursoExecute({
+            sql: 'SELECT * FROM Invitation WHERE id = ?',
+            args: [id],
+        })
+    }
+
+    async createInvitation(gameDto: CreateInvitationBody) {
+        await this._tursoExecute({
+            sql: 'INSERT INTO Invitation (groupId, fromAccountId, toAccountId, status) VALUES (?, ?, ?, ?)',
+            args: [gameDto.groupId, gameDto.fromAccountId, gameDto.toAccountId, gameDto.status],
+        })
+    }
+
+    deleteInvitationById(id: number) {
+        return this._tursoExecute({
+            sql: 'DELETE FROM Invitation WHERE id = ?',
+            args: [id],
+        })
+    }
 }
