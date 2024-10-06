@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core'
+import { Router } from '@angular/router'
 import type { GameType } from '../../types/game.type'
 import type { GroupWithMembersType } from '../../types/group-with-members.type'
 import type { GroupMemberType } from '../../types/user.type'
@@ -16,6 +17,8 @@ export class GroupCardComponent {
     @Input({ required: true }) membersIndex: Record<GroupMemberType['accountId'], GroupMemberType> = {}
     @Input({ required: true }) gamesIndex: Record<GroupMemberType['accountId'], Array<GameType>> = {}
 
+    constructor(private readonly router: Router) {}
+
     get totalGames(): Array<GameType> {
         // index all games by gameId so we don't duplicate games
         const games: Record<GameType['id'], GameType> = {}
@@ -27,5 +30,9 @@ export class GroupCardComponent {
         }
 
         return Object.values(games)
+    }
+
+    onEditGroup() {
+        this.router.navigate(['/group', this.group.groupId, 'edit'])
     }
 }

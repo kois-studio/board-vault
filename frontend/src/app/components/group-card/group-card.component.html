@@ -1,11 +1,7 @@
 <div class="shadow-md rounded-lg p-6 bg-zinc-800 relative">
     <!-- TOP RIGHT BUTTONS -->
-    <div class="flex gap-4 absolute top-3 right-3">
-        <button class="app-btn-primary py-1 px-2" title="Add a member">
-            <i class="bi bi-plus-circle"></i>
-        </button>
-    
-        <button class="app-btn-primary py-1 px-2" title="Edit group">
+    <div class="flex gap-4 absolute top-3 right-3">    
+        <button (click)="onEditGroup()" class="app-btn-primary py-1 px-2" title="Manage group">
             <i class="bi bi-pencil"></i>
         </button>
     </div>
