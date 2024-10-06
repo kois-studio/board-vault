@@ -6,7 +6,7 @@ import * as bcrypt from 'bcrypt'
 import { CreateGroupBody, UpdateGroupBody } from '../../common/types/shared/group.type'
 import { CreateGroupMembershipBody } from '../../common/types/shared/group-membership.type'
 import { CreateGameBody, UpdateGameBody } from '../../common/types/shared/game.type'
-import { CreateInvitationBody } from 'src/common/types/shared/invitation.type'
+import { CreateInvitationBody, CreateInvitationByUsernameBody } from 'src/common/types/shared/invitation.type'
 import { GameOwnedDto } from 'src/common/types/shared/game-owned.type'
 
 @Injectable()
@@ -429,10 +429,26 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
-    async createInvitation(gameDto: CreateInvitationBody) {
+    async createInvitation(invitationDto: CreateInvitationBody) {
         await this._tursoExecute({
             sql: 'INSERT INTO Invitation (groupId, fromAccountId, toAccountId, status) VALUES (?, ?, ?, ?)',
-            args: [gameDto.groupId, gameDto.fromAccountId, gameDto.toAccountId, gameDto.status],
+            args: [invitationDto.groupId, invitationDto.fromAccountId, invitationDto.toAccountId, invitationDto.status],
+        })
+    }
+
+    async createInvitationByUsername(invitationDto: CreateInvitationByUsernameBody) {
+        const toAccount = await this._tursoExecute({
+            sql: 'SELECT * FROM Account WHERE username = ?',
+            args: [invitationDto.username],
+        })
+
+        if (toAccount.rows.length === 0) {
+            throw new BadRequestException('User not found')
+        }
+
+        await this._tursoExecute({
+            sql: 'INSERT INTO Invitation (groupId, fromAccountId, toAccountId, status) VALUES (?, ?, ?, ?)',
+            args: [invitationDto.groupId, invitationDto.fromAccountId, toAccount.rows[0].id, 'pending'],
         })
     }
 

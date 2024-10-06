@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, UseGuards } f
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { InvitationsService } from './invitations.service'
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
-import { CreateInvitationBody, InvitationDto } from 'src/common/types/shared/invitation.type'
+import { CreateInvitationBody, CreateInvitationByUsernameBody, InvitationDto } from 'src/common/types/shared/invitation.type'
 import { SuccessDto } from 'src/common/types/shared/auth.type'
 
 @UseGuards(JwtAuthGuard)
@@ -33,6 +33,13 @@ export class InvitationsController {
     @ApiResponse({ status: 201, type: SuccessDto, description: 'The invitation has been succesfully created' })
     async createInvitation(@Body() invitationDto: CreateInvitationBody) {
         return this.invitationsService.createInvitation(invitationDto)
+    }
+
+    @Post('/byUsername')
+    @ApiOperation({ summary: 'Create a new invitation' })
+    @ApiResponse({ status: 201, type: SuccessDto, description: 'The invitation has been succesfully created' })
+    async createInvitationByUsername(@Body() invitationDto: CreateInvitationByUsernameBody) {
+        return this.invitationsService.createInvitationByUsername(invitationDto)
     }
 
     @Delete('/:invitationId')
