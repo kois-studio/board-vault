@@ -4,8 +4,8 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router } from '@angular/router'
 import { Api } from '../../api/api'
 import { ToastService } from '../../components/toast/toast.service'
+import { DataService } from '../../core/services/data.service'
 import { LocalStorageService } from '../../core/services/local-storage.service'
-import { UserService } from '../../core/services/user.service'
 
 @Component({
     standalone: true,
@@ -25,7 +25,7 @@ export class FormLoginComponent {
     constructor(
         private readonly api: Api,
         private readonly router: Router,
-        private readonly userService: UserService,
+        private readonly dataService: DataService,
         private readonly toastService: ToastService,
         private readonly localStorageService: LocalStorageService,
     ) {}
@@ -75,7 +75,7 @@ export class FormLoginComponent {
                 // Fetch the user data
                 this.api.getUserByEmail(email).subscribe({
                     next: (userType) => {
-                        this.userService.currentUser.set(userType)
+                        this.dataService.currentUser.set(userType)
                         this.toastService.success('Login successful!')
                         this.router.navigate(['/dashboard'])
                     },

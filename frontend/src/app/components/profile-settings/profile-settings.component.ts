@@ -1,6 +1,6 @@
 import { Component, effect } from '@angular/core'
-import { UserService } from '../../core/services/user.service'
-import { UserType } from '../../types/user.type'
+import { DataService } from '../../core/services/data.service'
+import type { UserType } from '../../types/user.type'
 import { FormUpdateProfileComponent } from './components/form-update-profile.component'
 
 @Component({
@@ -14,9 +14,9 @@ export class ProfileSettingsComponent {
     public tabView = 0 // manages which tab is active
     public userData: UserType | null = null
 
-    constructor(private readonly userService: UserService) {
+    constructor(private readonly dataService: DataService) {
         effect(() => {
-            this.userData = this.userService.currentUser()
+            this.userData = this.dataService.currentUser()
         })
     }
 

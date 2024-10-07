@@ -1,7 +1,6 @@
 import { Component, effect } from '@angular/core'
 import { GroupCardComponent } from '../../components/group-card/group-card.component'
 import { DataService } from '../../core/services/data.service'
-import { UserService } from '../../core/services/user.service'
 
 @Component({
     selector: 'app-dashboard',
@@ -10,20 +9,17 @@ import { UserService } from '../../core/services/user.service'
     imports: [GroupCardComponent],
 })
 export class DashboardComponent {
-    public userData: ReturnType<typeof this.userService.currentUser> = null
-    public userGroups: ReturnType<typeof this.userService.userGroups> = []
+    public userData: ReturnType<typeof this.dataService.currentUser> = null
+    public userGroups: ReturnType<typeof this.dataService.userGroups> = []
     public groupMembersIndex: ReturnType<typeof this.dataService.groupMembersIndex> = {}
     public membersIndex: ReturnType<typeof this.dataService.membersIndex> = {}
     public gamesIndex: ReturnType<typeof this.dataService.gamesIndex> = {}
     public invitationsGroupIndex: ReturnType<typeof this.dataService.invitationsGroupIndex> = {}
 
-    constructor(
-        private readonly userService: UserService,
-        private readonly dataService: DataService,
-    ) {
+    constructor(private readonly dataService: DataService) {
         effect(async () => {
-            this.userData = this.userService.currentUser()
-            this.userGroups = this.userService.userGroups()
+            this.userData = this.dataService.currentUser()
+            this.userGroups = this.dataService.userGroups()
             this.groupMembersIndex = this.dataService.groupMembersIndex()
             this.membersIndex = this.dataService.membersIndex()
             this.gamesIndex = this.dataService.gamesIndex()
