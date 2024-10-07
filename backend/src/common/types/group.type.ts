@@ -42,7 +42,7 @@ export class GroupMemberWithGames extends UserWithGames {
 /**
  * Group with members and their games
  */
-export class GroupWithMembersAndGames extends GroupDto {
+export class GroupWithMembersAndGames extends OmitType(GroupDto, ['is_deleted']) {
     // add
     @ApiProperty({ type: [GroupMemberWithGames], description: 'The members of the group.' })
     members: Array<GroupMemberWithGames>

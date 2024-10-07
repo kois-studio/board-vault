@@ -1,5 +1,5 @@
-// wrapper type
-export type ResponseDto<T> = {
+// wrapper type - unused
+type ResponseDto<T> = {
     statusOk: boolean
     message: string
     code: number
@@ -29,15 +29,6 @@ export type GameType = {
     maxPlayers: number
 }
 
-// TODO: delete this
-export type GroupWithMembersType = {
-    groupId: number
-    groupName: string
-    groupCreatedBy: number
-    groupCreatedAt: string
-    membershipJoinedAt: string
-}
-
 // #region Group
 
 export type GroupWithMembersAndGames = {
@@ -45,7 +36,6 @@ export type GroupWithMembersAndGames = {
     name: string
     createdBy: number
     createdAt: string
-    is_deleted: boolean
     members: Array<
         UserType & {
             joinedAt: string
