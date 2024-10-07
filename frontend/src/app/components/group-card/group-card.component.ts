@@ -2,8 +2,8 @@ import { Component, Input } from '@angular/core'
 import { Router } from '@angular/router'
 import type { GameType } from '../../types/game.type'
 import type { GroupWithMembersType } from '../../types/group-with-members.type'
-import type { GroupMemberType } from '../../types/user.type'
 import type { InvitationWithAccountsData } from '../../types/invitation.type'
+import type { GroupMemberType } from '../../types/user.type'
 import { ImageProfileComponent } from '../image-profile/image-profile.component'
 
 @Component({

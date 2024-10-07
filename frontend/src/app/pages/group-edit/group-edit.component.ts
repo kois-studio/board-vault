@@ -23,6 +23,7 @@ export class GroupEditComponent {
     public groupMembersIndex: ReturnType<typeof this.dataService.groupMembersIndex> = {}
     public membersIndex: ReturnType<typeof this.dataService.membersIndex> = {}
     public gamesIndex: ReturnType<typeof this.dataService.gamesIndex> = {}
+    public invitationsGroup: ReturnType<typeof this.dataService.invitationsGroupIndex> = []
 
     // --------------------------------------------------------------------------
     //        DATA for this component
@@ -40,7 +41,10 @@ export class GroupEditComponent {
         const usernames = userIds.map((userId) => this.membersIndex[userId].username)
 
         const isUserAlreadyInGroup = usernames.includes(this.usernameToInvite.value)
-        return this.isLoading || this.usernameToInvite.invalid || isUserAlreadyInGroup
+        const isUserAlreadyInvited = this.invitationsGroup[this.groupData.groupId].some(
+            (invitation) => invitation.toAccount.username === this.usernameToInvite.value,
+        )
+        return this.isLoading || this.usernameToInvite.invalid || isUserAlreadyInGroup || isUserAlreadyInvited
     }
 
     get username() {
@@ -65,6 +69,7 @@ export class GroupEditComponent {
             this.groupMembersIndex = this.dataService.groupMembersIndex()
             this.membersIndex = this.dataService.membersIndex()
             this.gamesIndex = this.dataService.gamesIndex()
+            this.invitationsGroup = this.dataService.invitationsGroupIndex()
 
             const groupId = Number.parseInt(this.route.snapshot.paramMap.get('groupId') || '')
             const groupData = this.userGroups.find((group) => group.groupId === groupId)
