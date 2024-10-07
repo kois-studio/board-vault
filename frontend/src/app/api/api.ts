@@ -56,7 +56,6 @@ export class Api {
     }
 
     getGroupWithMembersAndGames(groupId: number) {
-        console.log('getGroupWithMembersAndGames', groupId)
         return this.http.get<GroupWithMembersAndGames>(`${this.url}/groups/${groupId}/withMembersAndGames`)
     }
 
