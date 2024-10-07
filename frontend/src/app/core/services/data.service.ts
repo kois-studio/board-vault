@@ -38,13 +38,30 @@ export class DataService {
             }
         })
     }
+
+    public updateCurrentUserInGroups(display_name: string, imageUrl: string) {
+        const currentUser = this.currentUser()
+        if (!currentUser) return
+
+        this.userGroups.update((groups) =>
+            groups.map((group) => {
+                const userIndex = group.members.findIndex((member) => member.id === currentUser.id)
+                if (userIndex === -1) return group
+
+                group.members[userIndex].display_name = display_name
+                group.members[userIndex].imageUrl = imageUrl
+                return group
+            }),
+        )
+    }
+
     private _getUserData(email: string) {
         this.api.getUserByEmail(email).subscribe({
             next: (userType) => {
                 this.currentUser.set(userType)
 
                 // 2. Get the user's groups
-                this._getUserGroups(userType)
+                this._getUserGroups(userType.id)
             },
             error: (error) => {
                 if (error.status === 401) {
@@ -60,9 +77,9 @@ export class DataService {
         })
     }
 
-    private _getUserGroups(user: UserType) {
+    private _getUserGroups(userId: number) {
         this.api
-            .getUserGroups(user.id)
+            .getUserGroups(userId)
             .pipe(
                 catchError((err) => {
                     this.toastService.error("Error retrieving user's groups")

@@ -277,7 +277,7 @@ export class DatabaseService implements OnModuleInit {
                 g.createdAt,
                 json_group_array(
                     json_object(
-                        'accountId', a.id,
+                        'id', a.id,
                         'username', a.username,
                         'display_name', a.display_name,
                         'email', a.email,

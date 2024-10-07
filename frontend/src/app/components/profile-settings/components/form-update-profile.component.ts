@@ -90,6 +90,7 @@ export class FormUpdateProfileComponent {
                         next: (user) => {
                             if (user.email) {
                                 this.dataService.currentUser.set(user)
+                                this.dataService.updateCurrentUserInGroups(display_name, imageUrl)
                             }
                         },
                     })
