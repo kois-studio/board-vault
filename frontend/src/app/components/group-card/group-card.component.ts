@@ -1,12 +1,13 @@
+import { CommonModule } from '@angular/common'
 import { Component, Input } from '@angular/core'
 import { Router } from '@angular/router'
-import type { GameType, InvitationWithAccountsData } from '../../api/api.types'
 import type { GroupWithMembersAndGames } from '../../api/api.types'
+import type { GameType, InvitationWithAccountsData } from '../../api/api.types'
 import { ImageProfileComponent } from '../image-profile/image-profile.component'
 
 @Component({
     standalone: true,
-    imports: [ImageProfileComponent],
+    imports: [ImageProfileComponent, CommonModule],
     selector: 'app-group-card',
     templateUrl: 'group-card.component.html',
 })
@@ -31,5 +32,9 @@ export class GroupCardComponent {
 
     onEditGroup() {
         this.router.navigate(['/group', this.group.id, 'edit'])
+    }
+
+    onNewMeet() {
+        this.router.navigate(['/group', this.group.id, 'meet', 'new'])
     }
 }
