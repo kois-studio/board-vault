@@ -1,4 +1,5 @@
 import { ApiProperty, OmitType, PartialType, PickType } from '@nestjs/swagger'
+import { GameDto } from './game.type'
 
 // Base User as it comes from the database
 export class UserCompleteDto {
@@ -63,3 +64,9 @@ export class UpdateUserBody extends PartialType(PickType(UserCompleteDto, ['emai
 // POST /auth/register and POST /auth/login
 export class RegisterUserDto extends PickType(UserCompleteDto, ['email', 'username', 'password']) {}
 export class LoginUserDto extends PickType(UserCompleteDto, ['email', 'password']) {}
+
+// Other custom structures apart from the CRUD operations
+export class UserWithGames extends UserGetDto {
+    @ApiProperty({ type: [GameDto], description: 'The games the user has.' })
+    games: Array<GameDto>
+}
