@@ -5,3 +5,67 @@ export type ResponseDto<T> = {
     code: number
     data: T
 }
+
+// #region User
+
+export type UserType = {
+    id: number
+    email: string
+    username: string
+    display_name: string
+    imageUrl: string
+    createdAt: string
+    is_deleted: boolean
+}
+
+// #region Game
+
+export type GameType = {
+    id: number
+    title: string
+    imageUrl: string
+    gameAvgDuration: number
+    minPlayers: number
+    maxPlayers: number
+}
+
+// TODO: delete this
+export type GroupWithMembersType = {
+    groupId: number
+    groupName: string
+    groupCreatedBy: number
+    groupCreatedAt: string
+    membershipJoinedAt: string
+}
+
+// #region Group
+
+export type GroupWithMembersAndGames = {
+    id: number
+    name: string
+    createdBy: number
+    createdAt: string
+    is_deleted: boolean
+    members: Array<
+        UserType & {
+            joinedAt: string
+            games: Array<GameType>
+        }
+    >
+}
+
+// #region Invitation
+
+export type InvitationType = {
+    id: number
+    groupId: number
+    fromAccountId: number
+    toAccountId: number
+    status: string // enum: ['pending', 'accepted', 'rejected']
+    sentAt: string
+}
+
+export type InvitationWithAccountsData = InvitationType & {
+    fromAccount: UserType
+    toAccount: UserType
+}

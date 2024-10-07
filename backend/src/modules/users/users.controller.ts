@@ -5,7 +5,6 @@ import { CreateUserBody, UpdateUserBody, UserGetDto } from '../../common/types/u
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
 import { GameDto } from '../../common/types/game.type'
 import { InvitationDto } from '../../common/types/invitation.type'
-import { GroupDto } from '../../common/types/group.type'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('users')
@@ -66,7 +65,7 @@ export class UsersController {
 
     @Get('/:userId/groups')
     @ApiOperation({ summary: 'Get groups with members' })
-    @ApiResponse({ status: 200, type: [GroupDto] })
+    @ApiResponse({ status: 200, type: [Number] })
     @ApiParam({ name: 'userId', type: String })
     getUserGroups(@Param('userId', ParseIntPipe) userId: number) {
         return this.usersService.getUserGroups(userId)

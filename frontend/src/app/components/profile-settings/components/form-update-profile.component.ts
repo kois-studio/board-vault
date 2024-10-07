@@ -2,9 +2,9 @@ import { CommonModule } from '@angular/common'
 import { Component, effect } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Api } from '../../../api/api'
+import { UserType } from '../../../api/api.types'
 import { DataService } from '../../../core/services/data.service'
 import { urlValidator } from '../../../core/validators/url.validator'
-import { UserType } from '../../../types/user.type'
 
 @Component({
     standalone: true,

@@ -1,9 +1,7 @@
 import { Component, Input } from '@angular/core'
 import { Router } from '@angular/router'
-import type { GameType } from '../../types/game.type'
-import type { GroupWithMembersType } from '../../types/group-with-members.type'
-import type { InvitationWithAccountsData } from '../../types/invitation.type'
-import type { GroupMemberType } from '../../types/user.type'
+import type { GameType, InvitationWithAccountsData } from '../../api/api.types'
+import type { GroupWithMembersAndGames } from '../../api/api.types'
 import { ImageProfileComponent } from '../image-profile/image-profile.component'
 
 @Component({
@@ -13,9 +11,7 @@ import { ImageProfileComponent } from '../image-profile/image-profile.component'
     templateUrl: 'group-card.component.html',
 })
 export class GroupCardComponent {
-    @Input({ required: true }) group!: GroupWithMembersType
-    @Input({ required: true }) members: Array<GroupMemberType> = []
-    @Input({ required: true }) gamesIndex: Record<GroupMemberType['accountId'], Array<GameType>> = {}
+    @Input({ required: true }) group!: GroupWithMembersAndGames
     @Input({ required: true }) invitations: undefined | Array<InvitationWithAccountsData> = []
 
     constructor(private readonly router: Router) {}
@@ -24,8 +20,8 @@ export class GroupCardComponent {
         // index all games by gameId so we don't duplicate games
         const games: Record<GameType['id'], GameType> = {}
 
-        for (const [accountId, gamesList] of Object.entries(this.gamesIndex)) {
-            for (const game of gamesList) {
+        for (const member of this.group.members) {
+            for (const game of member.games) {
                 games[game.id] = game
             }
         }
@@ -34,6 +30,6 @@ export class GroupCardComponent {
     }
 
     onEditGroup() {
-        this.router.navigate(['/group', this.group.groupId, 'edit'])
+        this.router.navigate(['/group', this.group.id, 'edit'])
     }
 }
