@@ -15,6 +15,7 @@ export class DashboardComponent {
     public groupMembersIndex: ReturnType<typeof this.dataService.groupMembersIndex> = {}
     public membersIndex: ReturnType<typeof this.dataService.membersIndex> = {}
     public gamesIndex: ReturnType<typeof this.dataService.gamesIndex> = {}
+    public invitationsGroupIndex: ReturnType<typeof this.dataService.invitationsGroupIndex> = {}
 
     constructor(
         private readonly userService: UserService,
@@ -26,6 +27,7 @@ export class DashboardComponent {
             this.groupMembersIndex = this.dataService.groupMembersIndex()
             this.membersIndex = this.dataService.membersIndex()
             this.gamesIndex = this.dataService.gamesIndex()
+            this.invitationsGroupIndex = this.dataService.invitationsGroupIndex()
 
             // data may not be available yet
             if (!this.userData) {
@@ -58,5 +60,13 @@ export class DashboardComponent {
             email: user.email,
             imageUrl: user.imageUrl,
         }
+    }
+
+    public membersInGroup(groupId: number) {
+        const members = this.groupMembersIndex[groupId]
+        if (!members) {
+            return []
+        }
+        return members.map(memberId => this.membersIndex[memberId])
     }
 }
