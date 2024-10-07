@@ -1,13 +1,13 @@
 import { BadRequestException, Injectable, Logger, OnModuleInit } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { Client, createClient, type InStatement } from '@libsql/client'
-import { CreateUserBody, UpdateUserBody } from '../../common/types/shared/user.type'
+import { CreateUserBody, UpdateUserBody } from '../../common/types/user.type'
 import * as bcrypt from 'bcrypt'
-import { CreateGroupBody, UpdateGroupBody } from '../../common/types/shared/group.type'
-import { CreateGroupMembershipBody } from '../../common/types/shared/group-membership.type'
-import { CreateGameBody, UpdateGameBody } from '../../common/types/shared/game.type'
-import { CreateInvitationBody, CreateInvitationByUsernameBody } from 'src/common/types/shared/invitation.type'
-import { GameOwnedDto } from 'src/common/types/shared/game-owned.type'
+import { CreateGroupBody, UpdateGroupBody } from '../../common/types/group.type'
+import { CreateGroupMembershipBody } from '../../common/types/group-membership.type'
+import { CreateGameBody, UpdateGameBody } from '../../common/types/game.type'
+import { CreateInvitationBody, CreateInvitationByUsernameBody } from '../../common/types/invitation.type'
+import { GameOwnedDto } from '../../common/types/game-owned.type'
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
@@ -267,18 +267,6 @@ export class DatabaseService implements OnModuleInit {
         return this._tursoExecute({
             sql: 'DELETE FROM UserGroup WHERE id = ?',
             args: [id],
-        })
-    }
-
-    getGroupMembers(groupId: number) {
-        return this._tursoExecute({
-            sql: `
-                SELECT a.id AS accountId, a.username, a.display_name, a.email, a.imageUrl
-                FROM GroupMembership gm
-                JOIN Account a ON gm.accountId = a.id
-                WHERE gm.groupId = ?;
-            `,
-            args: [groupId],
         })
     }
 

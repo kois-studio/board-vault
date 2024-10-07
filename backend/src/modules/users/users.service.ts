@@ -1,10 +1,10 @@
 import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { DatabaseService } from '../database/database.service'
-import { CreateUserBody, UpdateUserBody, UserCompleteDto, UserGetDto } from '../../common/types/shared/user.type'
+import { CreateUserBody, UpdateUserBody, UserCompleteDto, UserGetDto } from '../../common/types/user.type'
 import { ResultSet } from '@libsql/client/.'
 import { usersSchema } from '../../common/schemas'
-import { GameDto } from '../../common/types/shared/game.type'
-import { InvitationDto } from 'src/common/types/shared/invitation.type'
+import { GameDto } from '../../common/types/game.type'
+import { InvitationDto } from '../../common/types/invitation.type'
 
 @Injectable()
 export class UsersService {
@@ -117,11 +117,10 @@ export class UsersService {
         const resultSet = await this.databaseService.getUserGroups(userId)
 
         return resultSet.rows.map(row => ({
-            groupId: Number(row[0]),
-            groupName: String(row[1]),
-            groupCreatedBy: Number(row[2]),
-            groupCreatedAt: String(row[3]),
-            membershipJoinedAt: String(row[4]),
+            id: Number(row[0]),
+            name: String(row[1]),
+            createdBy: Number(row[2]),
+            createdAt: String(row[3]),
         }))
     }
 
