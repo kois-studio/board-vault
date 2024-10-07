@@ -67,6 +67,6 @@ export class DashboardComponent {
         if (!members) {
             return []
         }
-        return members.map(memberId => this.membersIndex[memberId])
+        return members.map((memberId) => this.membersIndex[memberId])
     }
 }
