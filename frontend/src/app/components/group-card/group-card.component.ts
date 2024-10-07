@@ -16,7 +16,7 @@ export class GroupCardComponent {
     @Input({ required: true }) group!: GroupWithMembersType
     @Input({ required: true }) members: Array<GroupMemberType> = []
     @Input({ required: true }) gamesIndex: Record<GroupMemberType['accountId'], Array<GameType>> = {}
-    @Input({ required: true }) invitations: Array<InvitationWithAccountsData> = []
+    @Input({ required: true }) invitations: undefined | Array<InvitationWithAccountsData> = []
 
     constructor(private readonly router: Router) {}
 
