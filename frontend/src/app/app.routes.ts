@@ -1,21 +1,16 @@
 import { Routes } from '@angular/router'
-
-import { LayoutBasicComponent } from './layout/layout-basic/layout-basic.component'
-// Layouts
-import { LayoutCompleteComponent } from './layout/layout-complete/layout-complete.component'
-
-import { DashboardComponent } from './pages/dashboard/dashboard.component'
-import { GamesComponent } from './pages/games/games.component'
-// Components
-import { LandingComponent } from './pages/landing/landing.component'
-import { LoginComponent } from './pages/login/login.component'
-import { RegisterComponent } from './pages/register/register.component'
-
-// Guards
 import { AuthRedirectGuard } from './core/guards/auth-redirect.guard'
 import { AuthGuard } from './core/guards/auth.guard'
+import { LayoutBasicComponent } from './layout/layout-basic/layout-basic.component'
+import { LayoutCompleteComponent } from './layout/layout-complete/layout-complete.component'
+import { DashboardComponent } from './pages/dashboard/dashboard.component'
+import { GamesComponent } from './pages/games/games.component'
 import { GroupEditComponent } from './pages/group-edit/group-edit.component'
+import { LandingComponent } from './pages/landing/landing.component'
+import { LoginComponent } from './pages/login/login.component'
+import { MeetNewComponent } from './pages/meet-new/meet-new.component'
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component'
+import { RegisterComponent } from './pages/register/register.component'
 
 export const routes: Routes = [
     {
@@ -37,6 +32,7 @@ export const routes: Routes = [
             { path: 'login', component: LoginComponent, canActivate: [AuthRedirectGuard] },
             { path: 'register', component: RegisterComponent, canActivate: [AuthRedirectGuard] },
             { path: 'group/:groupId/edit', component: GroupEditComponent, canActivate: [AuthGuard] },
+            { path: 'group/:groupId/meet/new', component: MeetNewComponent, canActivate: [AuthGuard] },
         ],
     },
     { path: '**', component: PageNotFoundComponent }, // Wildcard route for a 404 page
