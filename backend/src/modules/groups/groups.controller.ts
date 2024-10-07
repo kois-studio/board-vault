@@ -1,10 +1,9 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
-import { CreateGroupBody, GroupDto, GroupWithMembersAndGames, UpdateGroupBody } from '../../common/types/shared/group.type'
+import { CreateGroupBody, GroupDto, GroupWithMembersAndGames, UpdateGroupBody } from '../../common/types/group.type'
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
 import { GroupsService } from './groups.service'
-import { GroupWithMembers } from '../../common/types/shared/group-with-members.type'
-import { InvitationWithAccountsData } from 'src/common/types/shared/invitation.type'
+import { InvitationWithAccountsData } from '../../common/types/invitation.type'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('groups')
@@ -52,14 +51,6 @@ export class GroupsController {
     @ApiParam({ name: 'groupId', type: String, description: 'ID of the group to be deleted' })
     async deleteGroupById(@Param('groupId', ParseIntPipe) groupId: number) {
         return this.groupsService.deleteGroupById(groupId)
-    }
-
-    @Get('/:groupId/members')
-    @ApiOperation({ summary: 'Get all group members' })
-    @ApiResponse({ status: 200, type: [GroupWithMembers] })
-    @ApiParam({ name: 'groupId', type: String })
-    getGroupMembers(@Param('groupId', ParseIntPipe) groupId: number) {
-        return this.groupsService.getGroupMembers(groupId)
     }
 
     @Get('/:groupId/withMembersAndGames')

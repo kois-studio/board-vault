@@ -1,11 +1,11 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { UsersService } from './users.service'
-import { CreateUserBody, UpdateUserBody, UserGetDto } from '../../common/types/shared/user.type'
+import { CreateUserBody, UpdateUserBody, UserGetDto } from '../../common/types/user.type'
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
-import { GroupWithMembers } from '../../common/types/shared/group-with-members.type'
-import { GameDto } from '../../common/types/shared/game.type'
-import { InvitationDto } from 'src/common/types/shared/invitation.type'
+import { GameDto } from '../../common/types/game.type'
+import { InvitationDto } from '../../common/types/invitation.type'
+import { GroupDto } from '../../common/types/group.type'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('users')
@@ -66,7 +66,7 @@ export class UsersController {
 
     @Get('/:userId/groups')
     @ApiOperation({ summary: 'Get groups with members' })
-    @ApiResponse({ status: 200, type: [GroupWithMembers] })
+    @ApiResponse({ status: 200, type: [GroupDto] })
     @ApiParam({ name: 'userId', type: String })
     getUserGroups(@Param('userId', ParseIntPipe) userId: number) {
         return this.usersService.getUserGroups(userId)

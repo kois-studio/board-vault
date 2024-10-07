@@ -1,14 +1,16 @@
 import { ApiProperty, OmitType, PartialType, PickType } from '@nestjs/swagger'
 
-// Base User as it comes from the database
+/**
+ * base Game as it comes from db
+ */
 export class GameDto {
-    @ApiProperty({ example: 12345, description: 'The unique identifier for the game.' })
+    @ApiProperty({ example: 12345 })
     id: number
 
-    @ApiProperty({ example: 'Catan', description: "The game's title." })
+    @ApiProperty({ example: 'Catan' })
     title: string
 
-    @ApiProperty({ example: 'https://www.example.com/image.jpg', description: 'The URL of the game image.' })
+    @ApiProperty({ example: 'https://www.example.com/image.jpg' })
     imageUrl: string
 
     @ApiProperty({ example: 120, description: 'The average duration of the game in minutes.' })
@@ -21,8 +23,12 @@ export class GameDto {
     maxPlayers: number
 }
 
-// POST requests --> no db generated props
+/**
+ * POST requests --> no db generated props
+ */
 export class CreateGameBody extends OmitType(GameDto, ['id']) {}
 
-// PUT requests --> you can only update the game name
+/**
+ * PUT requests --> editable fields
+ */
 export class UpdateGameBody extends PartialType(PickType(GameDto, ['title', 'imageUrl', 'gameAvgDuration', 'minPlayers', 'maxPlayers'])) {}

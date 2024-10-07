@@ -1,7 +1,7 @@
 import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { DatabaseService } from '../database/database.service'
 import { ResultSet } from '@libsql/client/.'
-import { CreateGameBody, GameDto, UpdateGameBody } from '../../common/types/shared/game.type'
+import { CreateGameBody, GameDto, UpdateGameBody } from '../../common/types/game.type'
 import { gamesSchema } from '../../common/schemas'
 
 @Injectable()
