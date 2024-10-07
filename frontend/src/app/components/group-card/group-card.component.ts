@@ -3,7 +3,7 @@ import { Router } from '@angular/router'
 import type { GameType } from '../../types/game.type'
 import type { GroupWithMembersType } from '../../types/group-with-members.type'
 import type { GroupMemberType } from '../../types/user.type'
-import type { InvitationType } from '../../types/invitation.type'
+import type { InvitationWithAccountsData } from '../../types/invitation.type'
 import { ImageProfileComponent } from '../image-profile/image-profile.component'
 
 @Component({
@@ -16,7 +16,7 @@ export class GroupCardComponent {
     @Input({ required: true }) group!: GroupWithMembersType
     @Input({ required: true }) members: Array<GroupMemberType> = []
     @Input({ required: true }) gamesIndex: Record<GroupMemberType['accountId'], Array<GameType>> = {}
-    @Input({ required: true }) invitations: Array<InvitationType> = []
+    @Input({ required: true }) invitations: Array<InvitationWithAccountsData> = []
 
     constructor(private readonly router: Router) {}
 

@@ -4,7 +4,7 @@ import { CreateGroupBody, GroupDto, UpdateGroupBody } from '../../common/types/s
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
 import { GroupsService } from './groups.service'
 import { GroupWithMembers } from '../../common/types/shared/group-with-members.type'
-import { InvitationDto } from 'src/common/types/shared/invitation.type'
+import { InvitationWithAccountsData } from 'src/common/types/shared/invitation.type'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('groups')
@@ -64,7 +64,7 @@ export class GroupsController {
 
     @Get('/:groupId/invitations')
     @ApiOperation({ summary: 'Get all group invitations' })
-    @ApiResponse({ status: 200, type: [InvitationDto] })
+    @ApiResponse({ status: 200, type: [InvitationWithAccountsData] })
     @ApiParam({ name: 'groupId', type: String })
     getGroupInvitations(@Param('groupId', ParseIntPipe) groupId: number) {
         return this.groupsService.getGroupInvitations(groupId)

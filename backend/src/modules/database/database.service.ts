@@ -285,9 +285,32 @@ export class DatabaseService implements OnModuleInit {
     getGroupInvitations(groupId: number) {
         return this._tursoExecute({
             sql: `
-                SELECT i.id, i.groupId, i.fromAccountId, i.toAccountId, i.status, i.sentAt
-                FROM Invitation i
-                WHERE i.groupId = ?
+            SELECT 
+                i.id, i.groupId, i.fromAccountId, i.toAccountId, i.status, i.sentAt,
+                -- Selecting all properties for the fromAccount
+                json_object(
+                    'id', fa.id,
+                    'email', fa.email,
+                    'username', fa.username,
+                    'display_name', fa.display_name,
+                    'imageUrl', fa.imageUrl,
+                    'createdAt', fa.created_at,
+                    'is_deleted', fa.is_deleted
+                ) as fromAccount,
+                -- Selecting all properties for the toAccount
+                json_object(
+                    'id', ta.id,
+                    'email', ta.email,
+                    'username', ta.username,
+                    'display_name', ta.display_name,
+                    'imageUrl', ta.imageUrl,
+                    'createdAt', ta.created_at,
+                    'is_deleted', ta.is_deleted
+                ) as toAccount
+            FROM Invitation i
+            JOIN Account fa ON i.fromAccountId = fa.id AND fa.is_deleted = 0
+            JOIN Account ta ON i.toAccountId = ta.id AND ta.is_deleted = 0
+            WHERE i.groupId = ?
             `,
             args: [groupId],
         })
