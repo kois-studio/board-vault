@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core'
 import { environment } from '../../environments/environment'
 import type { GameType } from '../types/game.type'
 import type { GroupWithMembersType } from '../types/group-with-members.type'
-import { InvitationType } from '../types/invitation.type'
+import type { InvitationWithAccountsData } from '../types/invitation.type'
 import type { GroupMemberType, UserType } from '../types/user.type'
 
 @Injectable({ providedIn: 'root' })
@@ -60,7 +60,7 @@ export class Api {
     }
 
     getGroupInvitations(groupId: number) {
-        return this.http.get<Array<InvitationType>>(`${this.url}/groups/${groupId}/invitations`)
+        return this.http.get<Array<InvitationWithAccountsData>>(`${this.url}/groups/${groupId}/invitations`)
     }
 
     // #region games

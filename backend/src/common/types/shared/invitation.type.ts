@@ -1,4 +1,5 @@
 import { ApiProperty, OmitType } from '@nestjs/swagger'
+import type { UserGetDto } from './user.type'
 
 // Base Invitation as it comes from the database
 export class InvitationDto {
@@ -27,4 +28,12 @@ export class CreateInvitationBody extends OmitType(InvitationDto, ['id', 'sentAt
 export class CreateInvitationByUsernameBody extends OmitType(InvitationDto, ['id', 'toAccountId', 'status', 'sentAt']) {
     @ApiProperty({ example: 'username', description: 'The username of the user to invite.' })
     username: string
+}
+
+export class InvitationWithAccountsData extends InvitationDto {
+    @ApiProperty({ description: 'The account data of the user who invited.' })
+    fromAccount: UserGetDto
+
+    @ApiProperty({ description: 'The account data of the user to invite.' })
+    toAccount: UserGetDto
 }
