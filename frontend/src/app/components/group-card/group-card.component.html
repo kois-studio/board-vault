@@ -11,7 +11,8 @@
     <hr />
 
     <!-- MEMBERS DATA -->
-    <ul class="py-8">
+    <h3 class="pt-8 font-bold tracking-wider">Members</h3>
+    <ul class="pb-8">
         @for (member of members; track $index) {
             <li class="flex justify-between">
                 <div class="flex items-center p-4">
@@ -33,12 +34,30 @@
                 </div>
             </li>
         }
+    </ul>
+
+    <!-- INVITED MEMBERS -->
+    @if (invitations.length > 0) {
+        <hr />
+        <h3 class="pt-8 font-bold tracking-wider">Invitations pending</h3>
+        <ul class="pb-8 grid md:grid-cols-2">
         @for (invitation of invitations; track $index) {
-            <li class="flex justify-between">
-                <div>{{ invitation.toAccountId }}</div>
+            <li class="flex items-center p-4 opacity-40">
+                <app-image-profile [imageUrl]="invitation.toAccount.imageUrl" />
+                <div class="ml-3">
+                    <p class="font-semibold text-white">{{ invitation.toAccount.display_name }}</p>
+                    <p class="text-gray-400 text-sm">
+                        <span>{{ invitation.toAccount.username }}</span>
+                        @if (group.groupCreatedBy === invitation.toAccount.id) {
+                            <span class="text-blue-500 pl-2">owner</span>
+                        }
+                    </p>
+                </div>
             </li>
         }
-    </ul>
+        </ul>
+    }
+
     <hr />
 
     <!-- GROUP DATA -->

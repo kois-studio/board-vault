@@ -3,7 +3,7 @@ import { concatMap, from, of, tap } from 'rxjs'
 import { Api } from '../../api/api'
 import type { GameType } from '../../types/game.type'
 import type { GroupWithMembersType } from '../../types/group-with-members.type'
-import type { InvitationType } from '../../types/invitation.type'
+import type { InvitationType, InvitationWithAccountsData } from '../../types/invitation.type'
 import type { GroupMemberType } from '../../types/user.type'
 import { UserService } from './user.service'
 
@@ -30,7 +30,7 @@ export class DataService {
     public gamesIndex: WritableSignal<Record<AccountId, Array<GameType>>> = signal({})
 
     // (this {groupId} which {Invitation[]} has pending)
-    public invitationsGroupIndex: WritableSignal<Record<GroupId, Array<InvitationType>>> = signal({})
+    public invitationsGroupIndex: WritableSignal<Record<GroupId, Array<InvitationWithAccountsData>>> = signal({})
 
     // (this {accountId} which {Invitation[]} has received)
     public invitationsUserReceivedIndex: WritableSignal<Record<AccountId, Array<InvitationType>>> = signal({}) // TODO: needed?
