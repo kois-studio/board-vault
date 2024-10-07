@@ -1,8 +1,8 @@
 import { Component, ElementRef, Renderer2, ViewChild, effect } from '@angular/core'
 import { Router } from '@angular/router'
+import { UserType } from '../../api/api.types'
 import { DataService } from '../../core/services/data.service'
 import { LocalStorageService } from '../../core/services/local-storage.service'
-import { UserType } from '../../types/user.type'
 import { ImageProfileComponent } from '../image-profile/image-profile.component'
 import { ProfileSettingsComponent } from '../profile-settings/profile-settings.component'
 

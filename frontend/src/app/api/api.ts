@@ -1,10 +1,7 @@
 import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { environment } from '../../environments/environment'
-import type { GameType } from '../types/game.type'
-import type { GroupWithMembersType } from '../types/group-with-members.type'
-import type { InvitationWithAccountsData } from '../types/invitation.type'
-import type { GroupMemberType, UserType } from '../types/user.type'
+import type { GameType, GroupWithMembersAndGames, InvitationWithAccountsData, UserType } from './api.types'
 
 @Injectable({ providedIn: 'root' })
 export class Api {
@@ -24,7 +21,7 @@ export class Api {
 
     // #region users
 
-    getUsers() {
+    private getUsers() {
         return this.http.get<Array<UserType>>(`${this.url}/users`)
     }
 
@@ -46,7 +43,7 @@ export class Api {
     }
 
     getUserGroups(userId: number) {
-        return this.http.get<Array<GroupWithMembersType>>(`${this.url}/users/${userId}/groups`)
+        return this.http.get<Array<number>>(`${this.url}/users/${userId}/groups`)
     }
 
     getUserGames(userId: number) {
@@ -54,13 +51,13 @@ export class Api {
     }
 
     // #region groups
-
-    getGroupMembers(groupId: number) {
-        return this.http.get<Array<GroupMemberType>>(`${this.url}/groups/${groupId}/members`)
-    }
-
     getGroupInvitations(groupId: number) {
         return this.http.get<Array<InvitationWithAccountsData>>(`${this.url}/groups/${groupId}/invitations`)
+    }
+
+    getGroupWithMembersAndGames(groupId: number) {
+        console.log('getGroupWithMembersAndGames', groupId)
+        return this.http.get<GroupWithMembersAndGames>(`${this.url}/groups/${groupId}/withMembersAndGames`)
     }
 
     // #region games

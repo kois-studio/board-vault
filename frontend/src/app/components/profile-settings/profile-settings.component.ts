@@ -1,6 +1,6 @@
 import { Component, effect } from '@angular/core'
+import type { UserType } from '../../api/api.types'
 import { DataService } from '../../core/services/data.service'
-import type { UserType } from '../../types/user.type'
 import { FormUpdateProfileComponent } from './components/form-update-profile.component'
 
 @Component({

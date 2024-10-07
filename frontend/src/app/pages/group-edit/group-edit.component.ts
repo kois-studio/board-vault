@@ -3,9 +3,9 @@ import { Component, effect } from '@angular/core'
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router'
 import { Api } from '../../api/api'
+import { GameType } from '../../api/api.types'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
 import { DataService } from '../../core/services/data.service'
-import { GameType } from '../../types/game.type'
 
 @Component({
     standalone: true,
@@ -19,10 +19,7 @@ export class GroupEditComponent {
     // --------------------------------------------------------------------------
     public userData: ReturnType<typeof this.dataService.currentUser> = null
     public userGroups: ReturnType<typeof this.dataService.userGroups> = []
-    public groupMembersIndex: ReturnType<typeof this.dataService.groupMembersIndex> = {}
-    public membersIndex: ReturnType<typeof this.dataService.membersIndex> = {}
-    public gamesIndex: ReturnType<typeof this.dataService.gamesIndex> = {}
-    public invitationsGroup: ReturnType<typeof this.dataService.invitationsGroupIndex> = []
+    public invitationsGroupIndex: ReturnType<typeof this.dataService.invitationsGroupIndex> = {}
 
     // --------------------------------------------------------------------------
     //        DATA for this component
@@ -36,11 +33,10 @@ export class GroupEditComponent {
         if (!this.groupData || !this.usernameToInvite.value) {
             return true
         }
-        const userIds = this.groupMembersIndex[this.groupData.groupId]
-        const usernames = userIds.map((userId) => this.membersIndex[userId].username)
+        const usernames = this.groupData.members.map((member) => member.username)
 
         const isUserAlreadyInGroup = usernames.includes(this.usernameToInvite.value)
-        const isUserAlreadyInvited = this.invitationsGroup[this.groupData.groupId].some(
+        const isUserAlreadyInvited = this.invitationsGroupIndex[this.groupData.id].some(
             (invitation) => invitation.toAccount.username === this.usernameToInvite.value,
         )
         return this.isLoading || this.usernameToInvite.invalid || isUserAlreadyInGroup || isUserAlreadyInvited
@@ -64,13 +60,10 @@ export class GroupEditComponent {
         effect(() => {
             this.userData = this.dataService.currentUser()
             this.userGroups = this.dataService.userGroups()
-            this.groupMembersIndex = this.dataService.groupMembersIndex()
-            this.membersIndex = this.dataService.membersIndex()
-            this.gamesIndex = this.dataService.gamesIndex()
-            this.invitationsGroup = this.dataService.invitationsGroupIndex()
+            this.invitationsGroupIndex = this.dataService.invitationsGroupIndex()
 
             const groupId = Number.parseInt(this.route.snapshot.paramMap.get('groupId') || '')
-            const groupData = this.userGroups.find((group) => group.groupId === groupId)
+            const groupData = this.userGroups.find((group) => group.id === groupId)
 
             if (Number.isNaN(groupId) || !this.userData || !groupData) {
                 return
@@ -81,11 +74,15 @@ export class GroupEditComponent {
     }
 
     get totalGames(): Array<GameType> {
+        if (!this.groupData) {
+            return []
+        }
+
         // index all games by gameId so we don't duplicate games
         const games: Record<GameType['id'], GameType> = {}
 
-        for (const [accountId, gamesList] of Object.entries(this.gamesIndex)) {
-            for (const game of gamesList) {
+        for (const member of this.groupData.members) {
+            for (const game of member.games) {
                 games[game.id] = game
             }
         }
@@ -109,7 +106,7 @@ export class GroupEditComponent {
         if (!this.groupData || !this.userData || !this.usernameToInvite.value) return
         this.isLoading = true
 
-        this.api.createInvitation(this.groupData.groupId, this.userData?.id, this.usernameToInvite.value).subscribe({
+        this.api.createInvitation(this.groupData.id, this.userData?.id, this.usernameToInvite.value).subscribe({
             next: (res) => {
                 this.isLoading = false
                 this.usernameToInvite.reset()

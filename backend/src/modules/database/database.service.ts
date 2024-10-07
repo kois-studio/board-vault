@@ -157,10 +157,8 @@ export class DatabaseService implements OnModuleInit {
     getUserGroups(userId: number) {
         return this._tursoExecute({
             sql: `
-                SELECT g.id, g.name, g.createdBy, g.createdAt, gm.joinedAt, gm.accountId
-                FROM UserGroup g
-                JOIN GroupMembership gm
-                ON g.id = gm.groupId
+                SELECT gm.groupId
+                FROM GroupMembership gm
                 WHERE gm.accountId = ?
             `,
             args: [userId],
