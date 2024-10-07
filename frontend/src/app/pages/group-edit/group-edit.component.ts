@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common'
 import { Component, effect } from '@angular/core'
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router'
+import { Api } from '../../api/api'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
 import { DataService } from '../../core/services/data.service'
 import { UserService } from '../../core/services/user.service'
 import { GameType } from '../../types/game.type'
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
-import { Api } from '../../api/api'
 
 @Component({
     standalone: true,
@@ -120,7 +120,7 @@ export class GroupEditComponent {
             error: () => {
                 this.isLoading = false
                 this.usernameToInvite.reset()
-            }
+            },
         })
         // 1. check if the user exists
         // 2. send the invitation (this already checks 1.)

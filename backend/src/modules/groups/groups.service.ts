@@ -3,6 +3,7 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { CreateGroupBody, GroupDto, UpdateGroupBody } from '../../common/types/shared/group.type'
 import { DatabaseService } from '../database/database.service'
 import { groupsSchema } from '../../common/schemas'
+import { InvitationDto } from 'src/common/types/shared/invitation.type'
 
 @Injectable()
 export class GroupsService {
@@ -93,6 +94,20 @@ export class GroupsService {
             display_name: String(row[2]),
             email: String(row[3]),
             imageUrl: String(row[4]),
+        }))
+    }
+
+    async getGroupInvitations(groupId: number): Promise<Array<InvitationDto>> {
+        this.LOGGER.log(`Getting all invitations for group ${groupId}`)
+        const resultSet = await this.databaseService.getGroupInvitations(groupId)
+
+        return resultSet.rows.map(row => ({
+            id: Number(row[0]),
+            groupId: Number(row[1]),
+            fromAccountId: Number(row[2]),
+            toAccountId: Number(row[3]),
+            status: String(row[4]),
+            sentAt: String(row[5]),
         }))
     }
 }
