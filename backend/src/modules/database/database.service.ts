@@ -282,6 +282,49 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    getGroupWithMembersAndGames(groupId: number) {
+        return this._tursoExecute({
+            sql: `SELECT 
+                g.id,
+                g.name,
+                g.createdBy,
+                g.createdAt,
+                json_group_array(
+                    json_object(
+                        'accountId', a.id,
+                        'username', a.username,
+                        'display_name', a.display_name,
+                        'email', a.email,
+                        'imageUrl', a.imageUrl,
+                        'joinedAt', gm.joinedAt,
+                        'games', (
+                            SELECT json_group_array(
+                                json_object(
+                                    'id', og.gameId,
+                                    'title', ga.title,
+                                    'imageUrl', ga.imageUrl,
+                                    'gameAvgDuration', ga.gameAvgDuration,
+                                    'minPlayers', ga.minPlayers,
+                                    'maxPlayers', ga.maxPlayers
+                                )
+                            )
+                            FROM OwnedGame og
+                            JOIN Game ga ON og.gameId = ga.id
+                            WHERE og.accountId = a.id
+                        )
+                    )
+                ) AS members
+            FROM UserGroup g
+            JOIN GroupMembership gm ON gm.groupId = g.id
+            JOIN Account a ON a.id = gm.accountId
+            WHERE g.id = ?
+            GROUP BY g.id
+            ORDER BY g.id;
+            `,
+            args: [groupId],
+        })
+    }
+
     getGroupInvitations(groupId: number) {
         return this._tursoExecute({
             sql: `

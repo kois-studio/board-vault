@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
-import { CreateGroupBody, GroupDto, UpdateGroupBody } from '../../common/types/shared/group.type'
+import { CreateGroupBody, GroupDto, GroupWithMembersAndGames, UpdateGroupBody } from '../../common/types/shared/group.type'
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
 import { GroupsService } from './groups.service'
 import { GroupWithMembers } from '../../common/types/shared/group-with-members.type'
@@ -60,6 +60,14 @@ export class GroupsController {
     @ApiParam({ name: 'groupId', type: String })
     getGroupMembers(@Param('groupId', ParseIntPipe) groupId: number) {
         return this.groupsService.getGroupMembers(groupId)
+    }
+
+    @Get('/:groupId/withMembersAndGames')
+    @ApiOperation({ summary: 'Get group data with members and games inserted' })
+    @ApiResponse({ status: 200, type: [GroupWithMembersAndGames] })
+    @ApiParam({ name: 'groupId', type: String })
+    getGroupWithMembersAndGames(@Param('groupId', ParseIntPipe) groupId: number) {
+        return this.groupsService.getGroupWithMembersAndGames(groupId)
     }
 
     @Get('/:groupId/invitations')
