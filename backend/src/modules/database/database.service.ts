@@ -282,6 +282,17 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    getGroupInvitations(groupId: number) {
+        return this._tursoExecute({
+            sql: `
+                SELECT i.id, i.groupId, i.fromAccountId, i.toAccountId, i.status, i.sentAt
+                FROM Invitation i
+                WHERE i.groupId = ?
+            `,
+            args: [groupId],
+        })
+    }
+
     // #region Membership
 
     getGroupMemberships() {

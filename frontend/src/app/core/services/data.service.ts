@@ -3,6 +3,7 @@ import { concatMap, from, of, tap } from 'rxjs'
 import { Api } from '../../api/api'
 import type { GameType } from '../../types/game.type'
 import type { GroupWithMembersType } from '../../types/group-with-members.type'
+import type { InvitationType } from '../../types/invitation.type'
 import type { GroupMemberType } from '../../types/user.type'
 import { UserService } from './user.service'
 
@@ -28,6 +29,15 @@ export class DataService {
     // (this {accountId} which {Game[]} has)
     public gamesIndex: WritableSignal<Record<AccountId, Array<GameType>>> = signal({})
 
+    // (this {groupId} which {Invitation[]} has pending)
+    public invitationsGroupIndex: WritableSignal<Record<GroupId, Array<InvitationType>>> = signal({})
+
+    // (this {accountId} which {Invitation[]} has received)
+    public invitationsUserReceivedIndex: WritableSignal<Record<AccountId, Array<InvitationType>>> = signal({}) // TODO: needed?
+
+    // (this {accountId} which {Invitation[]} has sent)
+    public invitationsUserSentIndex: WritableSignal<Record<AccountId, Array<InvitationType>>> = signal({}) // TODO: needed?
+
     // --------------------------------------------------------------------------
     // --------------------------------------------------------------------------
     public userGroups: ReturnType<typeof this.userService.userGroups> = []
@@ -50,18 +60,16 @@ export class DataService {
     }
 
     private _getGroupMembers() {
-        // Use concatMap to ensure sequential fetching of group members and their games
+        // Use concatMap to ensure sequential fetching of group members, their games, and group invitations
         from(this.userGroups)
             .pipe(
                 concatMap((group) =>
                     this.api.getGroupMembers(group.groupId).pipe(
                         tap((members) => {
-                            const currentGroupMembersIndex = this.groupMembersIndex()
-                            const updatedIndex = {
-                                ...currentGroupMembersIndex,
+                            this.groupMembersIndex.update((index) => ({
+                                ...index,
                                 [group.groupId]: members.map((member) => member.accountId),
-                            }
-                            this.groupMembersIndex.set(updatedIndex)
+                            }))
 
                             for (const member of members) {
                                 const currentMembersIndex = this.membersIndex()
@@ -71,20 +79,32 @@ export class DataService {
                                 currentMembersIndex[member.accountId] = member
                             }
                         }),
+                        // Fetch group invitations for each group and log the result
                         concatMap((members) =>
-                            from(members).pipe(
-                                concatMap((member) => {
-                                    const currentGamesIndex = this.gamesIndex()
-                                    if (currentGamesIndex[member.accountId]) {
-                                        return of(null) // Skip the request
-                                    }
-
-                                    return this.api.getUserGames(member.accountId).pipe(
-                                        tap((games) => {
-                                            currentGamesIndex[member.accountId] = games
-                                        }),
-                                    )
+                            this.api.getGroupInvitations(group.groupId).pipe(
+                                tap((invitations) => {
+                                    this.invitationsGroupIndex.update((index) => ({
+                                        ...index,
+                                        [group.groupId]: invitations,
+                                    }))
                                 }),
+                                // Proceed with fetching user games after logging invitations
+                                concatMap(() =>
+                                    from(members).pipe(
+                                        concatMap((member) => {
+                                            const currentGamesIndex = this.gamesIndex()
+                                            if (currentGamesIndex[member.accountId]) {
+                                                return of(null) // Skip the request
+                                            }
+
+                                            return this.api.getUserGames(member.accountId).pipe(
+                                                tap((games) => {
+                                                    currentGamesIndex[member.accountId] = games
+                                                }),
+                                            )
+                                        }),
+                                    ),
+                                ),
                             ),
                         ),
                     ),
