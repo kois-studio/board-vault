@@ -19,57 +19,55 @@
         </div>
 
         <!-- GROUP CARD -->
-        <h2 class="text-xl font-semibold mb-4">{{ groupData?.groupName }}</h2>
+        <h2 class="text-xl font-semibold mb-4">{{ groupData?.name }}</h2>
         <hr />
 
         <!-- MEMBERS DATA -->
         <h3 class="pt-8 font-bold tracking-wider">Members</h3>
         <ul class="pb-8 grid lg:grid-cols-2 gap-4">
-            @if (groupData && groupMembersIndex[groupData.groupId]) {
-                @for (memberId of groupMembersIndex[groupData.groupId]; track $index) {
-                    @if (membersIndex[memberId]) {
-                        <li class="flex justify-between items-center relative">
-                            @if (membersToRemoveFromGroup.includes(memberId)) {
-                                <button (click)="markAsToRemove(memberId)" class="absolute top-0 right-0 left-0 bottom-0 bg-red-800/50 rounded-lg p-2 border-2 border-red-600">
-                                    <span class="font-bold text-xl tracking-wideer text-red-500">Cancel</span>
-                                </button>
-                            }
-                            <div class="flex items-center p-4">
-                                <app-image-profile [imageUrl]="membersIndex[memberId].imageUrl" />
-                                <div class="ml-3">
-                                    <p class="font-semibold text-white">{{ membersIndex[memberId].display_name }}</p>
-                                    <p class="text-gray-400 text-sm">
-                                        <span>{{ membersIndex[memberId].username }}</span>
-                                        @if (groupData.groupCreatedBy === membersIndex[memberId].accountId) {
-                                            <span class="text-blue-500 pl-2">owner</span>
-                                        }
-                                    </p>
-                                </div>
+            @if (groupData && groupData.members) {
+                @for (member of groupData.members; track $index) {
+                    <li class="flex justify-between items-center relative">
+                        @if (membersToRemoveFromGroup.includes(member.id)) {
+                            <button (click)="markAsToRemove(member.id)" class="absolute top-0 right-0 left-0 bottom-0 bg-red-800/50 rounded-lg p-2 border-2 border-red-600">
+                                <span class="font-bold text-xl tracking-wideer text-red-500">Cancel</span>
+                            </button>
+                        }
+                        <div class="flex items-center p-4">
+                            <app-image-profile [imageUrl]="member.imageUrl" />
+                            <div class="ml-3">
+                                <p class="font-semibold text-white">{{ member.display_name }}</p>
+                                <p class="text-gray-400 text-sm">
+                                    <span>{{ member.username }}</span>
+                                    @if (groupData.createdBy === member.id) {
+                                        <span class="text-blue-500 pl-2">owner</span>
+                                    }
+                                </p>
                             </div>
-                            @if (!membersToRemoveFromGroup.includes(memberId)) {
-                                <button (click)="markAsToRemove(memberId)" class="app-btn-error py-1 px-2 mr-2" title="Cancel editing">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            }
-                        </li>
-                    }
+                        </div>
+                        @if (!membersToRemoveFromGroup.includes(member.id)) {
+                            <button (click)="markAsToRemove(member.id)" class="app-btn-error py-1 px-2 mr-2" title="Cancel editing">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        }
+                    </li>
                 }
             }
         </ul>
 
         <!-- INVITED MEMBERS -->
-        @if (groupData && invitationsGroup[groupData.groupId] && invitationsGroup[groupData.groupId].length > 0) {
+        @if (groupData && invitationsGroupIndex[groupData.id] && invitationsGroupIndex[groupData.id].length > 0) {
             <hr />
             <h3 class="pt-8 font-bold tracking-wider">Invitations pending</h3>
             <ul class="pb-8 grid md:grid-cols-2">
-            @for (invitation of invitationsGroup[groupData.groupId]; track $index) {
+            @for (invitation of invitationsGroupIndex[groupData.id]; track $index) {
                 <li class="flex items-center p-4 opacity-40">
                     <app-image-profile [imageUrl]="invitation.toAccount.imageUrl" />
                     <div class="ml-3">
                         <p class="font-semibold text-white">{{ invitation.toAccount.display_name }}</p>
                         <p class="text-gray-400 text-sm">
                             <span>{{ invitation.toAccount.username }}</span>
-                            @if (groupData.groupCreatedBy === invitation.toAccount.id) {
+                            @if (groupData.createdBy === invitation.toAccount.id) {
                                 <span class="text-blue-500 pl-2">owner</span>
                             }
                         </p>

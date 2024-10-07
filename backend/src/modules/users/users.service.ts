@@ -116,12 +116,7 @@ export class UsersService {
         this.LOGGER.log('Getting groups for user')
         const resultSet = await this.databaseService.getUserGroups(userId)
 
-        return resultSet.rows.map(row => ({
-            id: Number(row[0]),
-            name: String(row[1]),
-            createdBy: Number(row[2]),
-            createdAt: String(row[3]),
-        }))
+        return resultSet.rows.map(row => Number(row[0]))
     }
 
     async getUserGames(userId: number): Promise<Array<GameDto>> {
