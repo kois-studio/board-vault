@@ -55,7 +55,7 @@ export class GroupsController {
 
     @Get('/:groupId/withMembersAndGames')
     @ApiOperation({ summary: 'Get group data with members and games inserted' })
-    @ApiResponse({ status: 200, type: [GroupWithMembersAndGames] })
+    @ApiResponse({ status: 200, type: GroupWithMembersAndGames })
     @ApiParam({ name: 'groupId', type: String })
     getGroupWithMembersAndGames(@Param('groupId', ParseIntPipe) groupId: number) {
         return this.groupsService.getGroupWithMembersAndGames(groupId)

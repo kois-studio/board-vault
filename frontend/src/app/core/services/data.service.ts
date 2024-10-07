@@ -1,5 +1,6 @@
 import { Injectable, type WritableSignal, effect, signal } from '@angular/core'
-import { concatMap, from, of, tap } from 'rxjs'
+import { Router } from '@angular/router'
+import { catchError, concatMap, from, of, tap } from 'rxjs'
 import { Api } from '../../api/api'
 import type { GameType, GroupWithMembersAndGames, InvitationWithAccountsData, UserType } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
@@ -24,6 +25,7 @@ export class DataService {
     // --------------------------------------------------------------------------
     constructor(
         private readonly api: Api,
+        private readonly router: Router,
         private readonly toastService: ToastService,
         private readonly localStorageService: LocalStorageService,
     ) {
@@ -36,7 +38,6 @@ export class DataService {
             }
         })
     }
-
     private _getUserData(email: string) {
         this.api.getUserByEmail(email).subscribe({
             next: (userType) => {
@@ -50,7 +51,7 @@ export class DataService {
                     this.toastService.error('Session expired, please log in again')
                     this.localStorageService.clear()
                     this.currentUser.set(null)
-                    // TODO: when token expired, the user experience is not good
+                    this.router.navigate(['/login'])
                     return
                 }
 
@@ -59,30 +60,46 @@ export class DataService {
         })
     }
 
-    private async _getUserGroups(user: UserType) {
-        this.api.getUserGroups(user.id).subscribe({
-            next: (groupIds) => {
-                from(groupIds)
-                    .pipe(
+    private _getUserGroups(user: UserType) {
+        this.api
+            .getUserGroups(user.id)
+            .pipe(
+                catchError((err) => {
+                    this.toastService.error("Error retrieving user's groups")
+                    return of([]) // Return an empty array to allow the process to continue
+                }),
+                concatMap((groupIds) =>
+                    from(groupIds).pipe(
                         concatMap((groupId) =>
                             this.api.getGroupWithMembersAndGames(groupId).pipe(
-                                tap((group) => this.userGroups.update((groups) => [...groups, group])),
-                                // Fetch group invitations for each group and log the result
+                                tap((group) => {
+                                    this.userGroups.update((groups) => [...groups, group])
+                                }),
+                                catchError((err) => {
+                                    this.toastService.error(`Error retrieving group data for groupId: ${groupId}`)
+                                    return of(null) // Returning null or empty to continue fetching other groups
+                                }),
                                 concatMap((group) =>
-                                    this.api.getGroupInvitations(groupId).pipe(
-                                        tap((invitations) => {
-                                            this.invitationsGroupIndex.update((index) => ({
-                                                ...index,
-                                                [groupId]: invitations,
-                                            }))
-                                        }),
-                                    ),
+                                    group
+                                        ? this.api.getGroupInvitations(groupId).pipe(
+                                              tap((invitations) => {
+                                                  this.invitationsGroupIndex.update((index) => ({
+                                                      ...index,
+                                                      [groupId]: invitations,
+                                                  }))
+                                              }),
+                                              catchError((err) => {
+                                                  this.toastService.error(`Error retrieving invitations for groupId: ${groupId}`)
+                                                  return of([]) // Return empty invitations to continue
+                                              }),
+                                          )
+                                        : of(null),
                                 ),
                             ),
                         ),
-                    )
-                    .subscribe()
-            },
-        })
+                    ),
+                ),
+            )
+            .subscribe()
     }
 }

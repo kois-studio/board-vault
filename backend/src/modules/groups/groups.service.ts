@@ -1,6 +1,6 @@
 import { ResultSet } from '@libsql/client/.'
 import { Injectable, Logger, NotFoundException } from '@nestjs/common'
-import { CreateGroupBody, GroupDto, GroupMemberWithGames, UpdateGroupBody } from '../../common/types/group.type'
+import { CreateGroupBody, GroupDto, GroupMemberWithGames, GroupWithMembersAndGames, UpdateGroupBody } from '../../common/types/group.type'
 import { DatabaseService } from '../database/database.service'
 import { groupsSchema } from '../../common/schemas'
 import { InvitationWithAccountsData } from '../../common/types/invitation.type'
@@ -85,7 +85,7 @@ export class GroupsService {
         return { success: true }
     }
 
-    async getGroupWithMembersAndGames(groupId: number) {
+    async getGroupWithMembersAndGames(groupId: number): Promise<GroupWithMembersAndGames> {
         this.LOGGER.log(`Getting group with members and games for group ${groupId}`)
         const resultSet = await this.databaseService.getGroupWithMembersAndGames(groupId)
 
@@ -95,7 +95,7 @@ export class GroupsService {
             createdBy: Number(row[2]),
             createdAt: String(row[3]),
             members: JSON.parse(String(row[4])) as Array<GroupMemberWithGames>,
-        }))
+        }))[0]
     }
 
     async getGroupInvitations(groupId: number): Promise<Array<InvitationWithAccountsData>> {

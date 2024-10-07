@@ -14,7 +14,7 @@ export class DashboardComponent {
     public invitationsGroupIndex: ReturnType<typeof this.dataService.invitationsGroupIndex> = {}
 
     constructor(private readonly dataService: DataService) {
-        effect(async () => {
+        effect(() => {
             this.userData = this.dataService.currentUser()
             this.userGroups = this.dataService.userGroups()
             this.invitationsGroupIndex = this.dataService.invitationsGroupIndex()
