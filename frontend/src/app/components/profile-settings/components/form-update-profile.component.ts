@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { Component, effect } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Api } from '../../../api/api'
-import { UserService } from '../../../core/services/user.service'
+import { DataService } from '../../../core/services/data.service'
 import { urlValidator } from '../../../core/validators/url.validator'
 import { UserType } from '../../../types/user.type'
 
@@ -26,11 +26,11 @@ export class FormUpdateProfileComponent {
     })
 
     constructor(
-        private readonly userService: UserService,
+        private readonly dataService: DataService,
         private readonly api: Api,
     ) {
         effect(() => {
-            this.userData = this.userService.currentUser()
+            this.userData = this.dataService.currentUser()
             this.updateProfileFormGroup.setValue({
                 display_name: this.userData?.display_name,
                 imageUrl: this.userData?.imageUrl,
@@ -89,7 +89,7 @@ export class FormUpdateProfileComponent {
                     this.api.getUserByEmail(userData.email).subscribe({
                         next: (user) => {
                             if (user.email) {
-                                this.userService.currentUser.set(user)
+                                this.dataService.currentUser.set(user)
                             }
                         },
                     })

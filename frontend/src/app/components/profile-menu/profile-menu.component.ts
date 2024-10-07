@@ -1,7 +1,7 @@
 import { Component, ElementRef, Renderer2, ViewChild, effect } from '@angular/core'
 import { Router } from '@angular/router'
+import { DataService } from '../../core/services/data.service'
 import { LocalStorageService } from '../../core/services/local-storage.service'
-import { UserService } from '../../core/services/user.service'
 import { UserType } from '../../types/user.type'
 import { ImageProfileComponent } from '../image-profile/image-profile.component'
 import { ProfileSettingsComponent } from '../profile-settings/profile-settings.component'
@@ -23,14 +23,14 @@ export class ProfileMenuComponent {
 
     constructor(
         private readonly router: Router,
-        private readonly userService: UserService,
+        private readonly dataService: DataService,
         private readonly localStorageService: LocalStorageService,
         // these 2 are used to being able to close the dropdown when clicking outside of it
         private readonly renderer: Renderer2,
         private readonly elementRef: ElementRef,
     ) {
         effect(() => {
-            this.userData = this.userService.currentUser()
+            this.userData = this.dataService.currentUser()
         })
     }
 

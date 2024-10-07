@@ -5,7 +5,6 @@ import { ActivatedRoute, Router } from '@angular/router'
 import { Api } from '../../api/api'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
 import { DataService } from '../../core/services/data.service'
-import { UserService } from '../../core/services/user.service'
 import { GameType } from '../../types/game.type'
 
 @Component({
@@ -18,8 +17,8 @@ export class GroupEditComponent {
     // --------------------------------------------------------------------------
     //        DATA from services
     // --------------------------------------------------------------------------
-    public userData: ReturnType<typeof this.userService.currentUser> = null
-    public userGroups: ReturnType<typeof this.userService.userGroups> = []
+    public userData: ReturnType<typeof this.dataService.currentUser> = null
+    public userGroups: ReturnType<typeof this.dataService.userGroups> = []
     public groupMembersIndex: ReturnType<typeof this.dataService.groupMembersIndex> = {}
     public membersIndex: ReturnType<typeof this.dataService.membersIndex> = {}
     public gamesIndex: ReturnType<typeof this.dataService.gamesIndex> = {}
@@ -60,12 +59,11 @@ export class GroupEditComponent {
         private readonly api: Api,
         private readonly router: Router,
         private readonly route: ActivatedRoute,
-        private readonly userService: UserService,
         private readonly dataService: DataService,
     ) {
         effect(() => {
-            this.userData = this.userService.currentUser()
-            this.userGroups = this.userService.userGroups()
+            this.userData = this.dataService.currentUser()
+            this.userGroups = this.dataService.userGroups()
             this.groupMembersIndex = this.dataService.groupMembersIndex()
             this.membersIndex = this.dataService.membersIndex()
             this.gamesIndex = this.dataService.gamesIndex()
