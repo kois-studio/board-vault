@@ -1,8 +1,8 @@
 import { Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common'
 import { DatabaseService } from '../database/database.service'
 import { ResultSet } from '@libsql/client/.'
-import { GameOwnedDto } from 'src/common/types/shared/game-owned.type'
-import { gameOwnedsSchema } from 'src/common/schemas'
+import { GameOwnedDto } from '../../common/types/game-owned.type'
+import { gameOwnedsSchema } from '../../common/schemas'
 
 @Injectable()
 export class GamesOwnedService {

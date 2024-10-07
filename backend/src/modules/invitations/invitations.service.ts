@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, Logger, NotFoundException } from '@nes
 import { DatabaseService } from '../database/database.service'
 import { ResultSet } from '@libsql/client/.'
 import { invitationsSchema } from '../../common/schemas'
-import { CreateInvitationBody, CreateInvitationByUsernameBody, InvitationDto } from 'src/common/types/shared/invitation.type'
+import { CreateInvitationBody, CreateInvitationByUsernameBody, InvitationDto } from '../../common/types/invitation.type'
 
 @Injectable()
 export class InvitationsService {

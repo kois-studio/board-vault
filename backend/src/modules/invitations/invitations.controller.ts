@@ -2,8 +2,8 @@ import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, UseGuards } f
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { InvitationsService } from './invitations.service'
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
-import { CreateInvitationBody, CreateInvitationByUsernameBody, InvitationDto } from 'src/common/types/shared/invitation.type'
-import { SuccessDto } from 'src/common/types/shared/auth.type'
+import { CreateInvitationBody, CreateInvitationByUsernameBody, InvitationDto } from '../../common/types/invitation.type'
+import { SuccessDto } from '../../common/types/auth.type'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('invitations')
