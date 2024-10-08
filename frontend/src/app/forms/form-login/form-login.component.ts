@@ -72,17 +72,10 @@ export class FormLoginComponent {
                 this.localStorageService.setToken(res.access_token)
                 this.localStorageService.setItem('email', email)
 
-                // Fetch the user data
-                this.api.getUserByEmail(email).subscribe({
-                    next: (userType) => {
-                        this.dataService.currentUser.set(userType)
-                        this.toastService.success('Login successful!')
-                        this.router.navigate(['/dashboard'])
-                    },
-                    error: (error) => {
-                        this.toastService.error("Error retrieving user's data")
-                    },
-                })
+                // Load the app's data
+                this.dataService.init(email)
+                this.toastService.success('Login successful!')
+                this.router.navigate(['/dashboard'])
             },
             error: (error) => {
                 this.toastService.error(error.error.message)

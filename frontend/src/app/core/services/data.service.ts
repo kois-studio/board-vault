@@ -13,8 +13,11 @@ export class DataService {
     //         ARRAYS OF DATA
     // --------------------------------------------------------------------------
     public userGroups: WritableSignal<Array<GroupWithMembersAndGames>> = signal([])
-    public gamesList: WritableSignal<Array<GameType>> = signal([])
+    public userGames: WritableSignal<Array<GameType>> = signal([])
     public invitationsReceived: WritableSignal<Array<InvitationType>> = signal([])
+
+    // list of all games available to select
+    public gamesList: WritableSignal<Array<GameType>> = signal([])
 
     // --------------------------------------------------------------------------
     //         INDEXES (for fast access to data)
@@ -51,7 +54,7 @@ export class DataService {
             },
             error: (error) => {
                 if (error.status === 401) {
-                    this.toastService.error('Session expired, please log in again')
+                    this.toastService.error('Your session has expired, please log in again')
                     this.localStorageService.clear()
                     this.currentUser.set(null)
                     this.router.navigate(['/login'])
@@ -101,6 +104,14 @@ export class DataService {
                                                       ...index,
                                                       [groupId]: invitations,
                                                   }))
+
+                                                  // after all, add the currentUser games list
+                                                  for (const member of group.members) {
+                                                      if (member.id === userId) {
+                                                          this.userGames.update((games) => member.games)
+                                                          break
+                                                      }
+                                                  }
                                               }),
                                               catchError((err) => {
                                                   this.toastService.error(`Error retrieving invitations for groupId: ${groupId}`)
@@ -125,6 +136,18 @@ export class DataService {
     //      2. Update the local data (without reloading everything)
     //      3. Give feedback to the user with toasts
     // --------------------------------------------------------------------------
+
+    public init(email: string) {
+        this._getUserData(email)
+    }
+
+    public clearState() {
+        this.currentUser.set(null)
+        this.userGroups.set([])
+        this.gamesList.set([])
+        this.invitationsReceived.set([])
+        this.invitationsGroupIndex.set({})
+    }
 
     // #region form-update-profile
 
