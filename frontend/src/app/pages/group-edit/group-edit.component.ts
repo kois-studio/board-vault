@@ -29,28 +29,6 @@ export class GroupEditComponent {
     public usernameToInvite = new FormControl('', [Validators.required, Validators.minLength(4), Validators.maxLength(20)])
     public isLoading = false
 
-    get disableSubmit() {
-        if (!this.groupData || !this.usernameToInvite.value) {
-            return true
-        }
-        const usernames = this.groupData.members.map((member) => member.username)
-
-        const isUserAlreadyInGroup = usernames.includes(this.usernameToInvite.value)
-        const isUserAlreadyInvited = this.invitationsGroupIndex[this.groupData.id].some(
-            (invitation) => invitation.toAccount.username === this.usernameToInvite.value,
-        )
-        return this.isLoading || this.usernameToInvite.invalid || isUserAlreadyInGroup || isUserAlreadyInvited
-    }
-
-    get username() {
-        return this.usernameToInvite.get('username')
-    }
-
-    get usernameClass() {
-        if (!this.usernameToInvite.dirty && !this.usernameToInvite.touched) return ''
-        return this.usernameToInvite.valid ? 'border-green-500' : 'border-red-500'
-    }
-
     constructor(
         private readonly api: Api,
         private readonly router: Router,
@@ -71,6 +49,28 @@ export class GroupEditComponent {
 
             this.groupData = groupData
         })
+    }
+
+    get username() {
+        return this.usernameToInvite.get('username')
+    }
+
+    get usernameClass() {
+        if (!this.usernameToInvite.dirty && !this.usernameToInvite.touched) return ''
+        return this.usernameToInvite.valid ? 'border-green-500' : 'border-red-500'
+    }
+
+    get disableInviteButton() {
+        if (!this.groupData || !this.usernameToInvite.value) {
+            return true
+        }
+        const usernames = this.groupData.members.map((member) => member.username)
+
+        const isUserAlreadyInGroup = usernames.includes(this.usernameToInvite.value)
+        const isUserAlreadyInvited = this.invitationsGroupIndex[this.groupData.id].some(
+            (invitation) => invitation.toAccount.username === this.usernameToInvite.value,
+        )
+        return this.isLoading || this.usernameToInvite.invalid || isUserAlreadyInGroup || isUserAlreadyInvited
     }
 
     get totalGames(): Array<GameType> {
@@ -98,19 +98,43 @@ export class GroupEditComponent {
         }
     }
 
-    onCancel() {
+    onGoBack() {
         this.router.navigate(['/dashboard'])
+    }
+
+
+    onSaveChanges() {
+        if (!this.groupData || !this.userData) return
+        this.isLoading = true
+
+        for (const accountId of this.membersToRemoveFromGroup) {
+            // 1. its being removed from invited zone
+            const invitedMemberIds = this.invitationsGroupIndex[this.groupData.id].map((invitation) => invitation.toAccountId)
+            if (invitedMemberIds.includes(accountId)) {
+                this.dataService.removeInvitedFromGroup(this.groupData.id, accountId)
+                continue
+            }
+
+            // 2. its being removed from the group members
+            this.dataService.removeMemberFromGroup(this.groupData.id, accountId)
+            
+        }
+
+        // clear selection
+        this.membersToRemoveFromGroup = []
+        this.isLoading = false
     }
 
     onInviteUser() {
         if (!this.groupData || !this.userData || !this.usernameToInvite.value) return
         this.isLoading = true
 
+        // TODO: move this to dataService and handle local state
         this.api.createInvitation(this.groupData.id, this.userData?.id, this.usernameToInvite.value).subscribe({
             next: (res) => {
                 this.isLoading = false
                 this.usernameToInvite.reset()
-                if (res.success) {
+                if (res.email) {
                     console.log('all good')
                 } else {
                     console.log('bad request')

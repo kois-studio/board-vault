@@ -68,6 +68,6 @@ export class Api {
     // #region invitations
 
     createInvitation(groupId: number, fromAccountId: number, username: string) {
-        return this.http.post<{ success: true }>(`${this.url}/invitations/byUsername`, { groupId, fromAccountId, username })
+        return this.http.post<UserType>(`${this.url}/invitations/byUsername`, { groupId, fromAccountId, username })
     }
 }
