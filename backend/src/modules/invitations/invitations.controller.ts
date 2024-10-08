@@ -39,6 +39,7 @@ export class InvitationsController {
     @Post('/byUsername')
     @ApiOperation({ summary: 'Create a new invitation' })
     @ApiResponse({ status: 201, type: UserGetDto, description: 'The invitation has been succesfully created' })
+    @ApiResponse({ status: 404, description: 'User not found' })
     async createInvitationByUsername(@Body() invitationDto: CreateInvitationByUsernameBody) {
         return this.invitationsService.createInvitationByUsername(invitationDto)
     }
