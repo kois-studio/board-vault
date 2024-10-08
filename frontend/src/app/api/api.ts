@@ -51,6 +51,7 @@ export class Api {
     }
 
     // #region groups
+
     getGroupInvitations(groupId: number) {
         return this.http.get<Array<InvitationWithAccountsData>>(`${this.url}/groups/${groupId}/invitations`)
     }
@@ -69,5 +70,9 @@ export class Api {
 
     createInvitation(groupId: number, fromAccountId: number, username: string) {
         return this.http.post<UserType>(`${this.url}/invitations/byUsername`, { groupId, fromAccountId, username })
+    }
+
+    deletInvitation(invitationId: number) {
+        return this.http.delete<{ success: true }>(`${this.url}/invitations/${invitationId}`)
     }
 }
