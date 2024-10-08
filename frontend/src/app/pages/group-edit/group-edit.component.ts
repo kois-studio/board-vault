@@ -102,6 +102,17 @@ export class GroupEditComponent {
         this.router.navigate(['/dashboard'])
     }
 
+    onInviteUser() {
+        if (!this.groupData || !this.userData || !this.usernameToInvite.value) return
+        this.isLoading = true
+
+        this.dataService.addInvitedToGroup(this.groupData.id, this.userData.id, this.usernameToInvite.value)
+
+        // clear input
+        this.usernameToInvite.reset()
+        this.isLoading = false
+    }
+
     onSaveChanges() {
         if (!this.groupData || !this.userData) return
         this.isLoading = true
@@ -122,31 +133,5 @@ export class GroupEditComponent {
         // clear selection
         this.membersToRemoveFromGroup = []
         this.isLoading = false
-    }
-
-    onInviteUser() {
-        if (!this.groupData || !this.userData || !this.usernameToInvite.value) return
-        this.isLoading = true
-
-        // TODO: move this to dataService and handle local state
-        this.api.createInvitation(this.groupData.id, this.userData?.id, this.usernameToInvite.value).subscribe({
-            next: (res) => {
-                this.isLoading = false
-                this.usernameToInvite.reset()
-                if (res.email) {
-                    console.log('all good')
-                } else {
-                    console.log('bad request')
-                }
-                // this.dataService.refreshInvitations()
-            },
-            error: () => {
-                this.isLoading = false
-                this.usernameToInvite.reset()
-            },
-        })
-        // 1. check if the user exists
-        // 2. send the invitation (this already checks 1.)
-        // 3. refresh in dataService everything needed
     }
 }
