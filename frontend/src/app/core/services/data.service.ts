@@ -104,7 +104,8 @@ export class DataService {
             .subscribe()
     }
 
-    // #region public methods
+    // #region ## public methods ##
+
     // --------------------------------------------------------------------------
     //   These methods are meant to follow this flow:
     //      1. Update the DB
@@ -112,22 +113,50 @@ export class DataService {
     //      3. Give feedback to the user with toasts
     // --------------------------------------------------------------------------
 
-    public updateCurrentUserInGroups(display_name: string, imageUrl: string) {
+    // #region form-update-profile
+
+    public updateCurrentUserData(requestBody: {
+        email?: string
+        username?: string
+        display_name?: string
+        imageUrl?: string
+    }) {
         const currentUser = this.currentUser()
-        if (!currentUser) return
+        if (!currentUser) {
+            return
+        }
 
-        this.userGroups.update((groups) =>
-            groups.map((group) => {
-                const userIndex = group.members.findIndex((member) => member.id === currentUser.id)
-                if (userIndex === -1) return group
+        // 1.
+        this.api
+            .updateUser(currentUser.id, requestBody)
+            .pipe(concatMap((res) => this.api.getUserByEmail(currentUser.email)))
+            .subscribe({
+                next: (updatedUser) => {
+                    // 2.
+                    this.currentUser.set(updatedUser)
+                    this.userGroups.update((groups) =>
+                        groups.map((group) => {
+                            const userIndex = group.members.findIndex((member) => member.id === currentUser.id)
+                            if (userIndex === -1) return group
 
-                group.members[userIndex].display_name = display_name
-                group.members[userIndex].imageUrl = imageUrl
-                return group
-            }),
-        )
+                            for (const [key, value] of Object.entries(requestBody) as Array<[keyof typeof requestBody, string]>) {
+                                if (requestBody[key] === updatedUser[key]) {
+                                    // extra check
+                                    group.members[userIndex][key] = value
+                                }
+                            }
+                            return group
+                        }),
+                    )
+                    this.toastService.success('User data updated')
+                },
+                error: () => {
+                    this.toastService.error('Error updating user data')
+                },
+            })
     }
 
+    // #region group-edit
     public removeMemberFromGroup(groupId: number, memberId: number) {
         this.toastService.info('Removing member from group...')
     }
