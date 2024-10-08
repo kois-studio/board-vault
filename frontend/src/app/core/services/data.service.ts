@@ -2,7 +2,7 @@ import { Injectable, type WritableSignal, effect, signal } from '@angular/core'
 import { Router } from '@angular/router'
 import { catchError, concatMap, from, of, tap } from 'rxjs'
 import { Api } from '../../api/api'
-import type { GameType, GroupWithMembersAndGames, InvitationWithAccountsData, UserType } from '../../api/api.types'
+import type { GameType, GroupWithMembersAndGames, InvitationType, InvitationWithAccountsData, UserType } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
 import { LocalStorageService } from './local-storage.service'
 
@@ -14,6 +14,7 @@ export class DataService {
     // --------------------------------------------------------------------------
     public userGroups: WritableSignal<Array<GroupWithMembersAndGames>> = signal([])
     public gamesList: WritableSignal<Array<GameType>> = signal([])
+    public invitationsReceived: WritableSignal<Array<InvitationType>> = signal([])
 
     // --------------------------------------------------------------------------
     //         INDEXES (for fast access to data)
@@ -44,8 +45,9 @@ export class DataService {
             next: (userType) => {
                 this.currentUser.set(userType)
 
-                // 2. Get the user's groups
+                // 2. Get the user's groups and invitations
                 this._getUserGroups(userType.id)
+                this._getUserInvitations(userType.id)
             },
             error: (error) => {
                 if (error.status === 401) {
@@ -57,6 +59,17 @@ export class DataService {
                 }
 
                 this.toastService.error("Error retrieving user's data")
+            },
+        })
+    }
+
+    private _getUserInvitations(userId: number) {
+        this.api.getInvitationsReceived(userId).subscribe({
+            next: (invitations) => {
+                this.invitationsReceived.set(invitations)
+            },
+            error: () => {
+                this.toastService.error("Error retrieving user's invitations")
             },
         })
     }

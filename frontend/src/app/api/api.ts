@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { environment } from '../../environments/environment'
-import type { GameType, GroupWithMembersAndGames, InvitationWithAccountsData, UserType } from './api.types'
+import type { GameType, GroupWithMembersAndGames, InvitationType, InvitationWithAccountsData, UserType } from './api.types'
 
 @Injectable({ providedIn: 'root' })
 export class Api {
@@ -67,6 +67,10 @@ export class Api {
     }
 
     // #region invitations
+
+    getInvitationsReceived(accountId: number) {
+        return this.http.get<Array<InvitationType>>(`${this.url}/users/${accountId}/invitationsReceived`)
+    }
 
     createInvitation(groupId: number, fromAccountId: number, username: string) {
         return this.http.post<UserType>(`${this.url}/invitations/byUsername`, { groupId, fromAccountId, username })
