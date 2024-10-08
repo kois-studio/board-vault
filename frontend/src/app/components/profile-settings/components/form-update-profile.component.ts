@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { Component, effect } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
-import { Api } from '../../../api/api'
 import { UserType } from '../../../api/api.types'
 import { DataService } from '../../../core/services/data.service'
 import { urlValidator } from '../../../core/validators/url.validator'
@@ -25,10 +24,7 @@ export class FormUpdateProfileComponent {
         imageUrl: new FormControl(this.userData?.imageUrl, [Validators.required, urlValidator()]),
     })
 
-    constructor(
-        private readonly dataService: DataService,
-        private readonly api: Api,
-    ) {
+    constructor(private readonly dataService: DataService) {
         effect(() => {
             this.userData = this.dataService.currentUser()
             this.updateProfileFormGroup.setValue({
@@ -79,23 +75,8 @@ export class FormUpdateProfileComponent {
 
         if (!userData || !display_name || !imageUrl) return
 
-        this.api
-            .updateUser(userData.id, {
-                display_name,
-                imageUrl,
-            })
-            .subscribe({
-                next: () => {
-                    this.api.getUserByEmail(userData.email).subscribe({
-                        next: (user) => {
-                            if (user.email) {
-                                this.dataService.currentUser.set(user)
-                                this.dataService.updateCurrentUserInGroups(display_name, imageUrl)
-                            }
-                        },
-                    })
-                },
-            })
+        this.dataService.updateCurrentUserData({ display_name, imageUrl })
+
         this.isEditingProfileData = false
     }
 }
