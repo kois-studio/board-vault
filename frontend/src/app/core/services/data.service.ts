@@ -106,7 +106,7 @@ export class DataService {
 
     // #region public methods
     // --------------------------------------------------------------------------
-    //   These methods are meant to:
+    //   These methods are meant to follow this flow:
     //      1. Update the DB
     //      2. Update the local data (without reloading everything)
     //      3. Give feedback to the user with toasts
@@ -129,10 +129,28 @@ export class DataService {
     }
 
     public removeMemberFromGroup(groupId: number, memberId: number) {
-        this.toastService.info(`Removing member from group...`)
+        this.toastService.info('Removing member from group...')
     }
 
-    public removeInvitedFromGroup(groupId: number, invitedId: number) {
-        this.toastService.info(`Removing invited member from group...`)
+    public removeInvitedFromGroup(invitationId: number) {
+        // 1.
+        this.api.deletInvitation(invitationId).subscribe({
+            next: (res) => {
+                // 2.
+                this.invitationsGroupIndex.update((index) => {
+                    const groupIds = Object.keys(index).map(Number)
+                    for (const groupId of groupIds) {
+                        index[groupId] = index[groupId].filter((invitation) => invitation.id !== invitationId)
+                    }
+                    return index
+                })
+
+                // 3.
+                this.toastService.success('Invitation removed')
+            },
+            error: () => {
+                this.toastService.error('Error removing invitation')
+            },
+        })
     }
 }
