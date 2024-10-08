@@ -3,6 +3,7 @@ import { DatabaseService } from '../database/database.service'
 import { ResultSet } from '@libsql/client/.'
 import { invitationsSchema } from '../../common/schemas'
 import { CreateInvitationBody, CreateInvitationByUsernameBody, InvitationDto } from '../../common/types/invitation.type'
+import { UserGetDto } from 'src/common/types/user.type'
 
 @Injectable()
 export class InvitationsService {
@@ -63,14 +64,23 @@ export class InvitationsService {
         }
     }
 
-    async createInvitationByUsername(invitationDto: CreateInvitationByUsernameBody) {
+    async createInvitationByUsername(invitationDto: CreateInvitationByUsernameBody): Promise<BadRequestException | UserGetDto> {
         this.LOGGER.log(
             `Creating invitation to group ${invitationDto.groupId}: ${invitationDto.fromAccountId} -> ${invitationDto.username}`,
         )
         try {
-            await this.databaseService.createInvitationByUsername(invitationDto)
+            const row = await this.databaseService.createInvitationByUsername(invitationDto)
 
-            return { success: true }
+            return {
+                id: Number(row[0]),
+                email: String(row[1]),
+                // password: String(row[2]), // Do not return password
+                createdAt: String(row[3]),
+                username: String(row[4]),
+                imageUrl: String(row[5]),
+                is_deleted: Boolean(row[6]),
+                display_name: String(row[7]),
+            }
         } catch (error) {
             this.LOGGER.error('Invitation creation failed', error)
             return new BadRequestException('Invitation creation failed')

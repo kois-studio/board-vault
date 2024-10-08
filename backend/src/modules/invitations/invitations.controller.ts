@@ -4,6 +4,7 @@ import { InvitationsService } from './invitations.service'
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
 import { CreateInvitationBody, CreateInvitationByUsernameBody, InvitationDto } from '../../common/types/invitation.type'
 import { SuccessDto } from '../../common/types/auth.type'
+import { UserGetDto } from 'src/common/types/user.type'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('invitations')
@@ -37,7 +38,7 @@ export class InvitationsController {
 
     @Post('/byUsername')
     @ApiOperation({ summary: 'Create a new invitation' })
-    @ApiResponse({ status: 201, type: SuccessDto, description: 'The invitation has been succesfully created' })
+    @ApiResponse({ status: 201, type: UserGetDto, description: 'The invitation has been succesfully created' })
     async createInvitationByUsername(@Body() invitationDto: CreateInvitationByUsernameBody) {
         return this.invitationsService.createInvitationByUsername(invitationDto)
     }
