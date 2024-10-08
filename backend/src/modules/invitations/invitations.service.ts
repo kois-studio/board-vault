@@ -45,7 +45,7 @@ export class InvitationsService {
         const invitations = this._parseResultSet(resultSet)
 
         if (invitations.length === 0) {
-            return new NotFoundException(`Invitation with id ${id} not found`)
+            throw new NotFoundException(`Invitation with id ${id} not found`)
         }
         return invitations[0]
     }
@@ -60,30 +60,25 @@ export class InvitationsService {
             return { success: true }
         } catch (error) {
             this.LOGGER.error('Invitation creation failed', error)
-            return new BadRequestException('Invitation creation failed')
+            throw new BadRequestException('Invitation creation failed')
         }
     }
 
-    async createInvitationByUsername(invitationDto: CreateInvitationByUsernameBody): Promise<BadRequestException | UserGetDto> {
+    async createInvitationByUsername(invitationDto: CreateInvitationByUsernameBody): Promise<UserGetDto> {
         this.LOGGER.log(
             `Creating invitation to group ${invitationDto.groupId}: ${invitationDto.fromAccountId} -> ${invitationDto.username}`,
         )
-        try {
-            const row = await this.databaseService.createInvitationByUsername(invitationDto)
+        const row = await this.databaseService.createInvitationByUsername(invitationDto)
 
-            return {
-                id: Number(row[0]),
-                email: String(row[1]),
-                // password: String(row[2]), // Do not return password
-                createdAt: String(row[3]),
-                username: String(row[4]),
-                imageUrl: String(row[5]),
-                is_deleted: Boolean(row[6]),
-                display_name: String(row[7]),
-            }
-        } catch (error) {
-            this.LOGGER.error('Invitation creation failed', error)
-            return new BadRequestException('Invitation creation failed')
+        return {
+            id: Number(row[0]),
+            email: String(row[1]),
+            // password: String(row[2]), // Do not return password
+            createdAt: String(row[3]),
+            username: String(row[4]),
+            imageUrl: String(row[5]),
+            is_deleted: Boolean(row[6]),
+            display_name: String(row[7]),
         }
     }
 
