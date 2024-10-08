@@ -2,17 +2,17 @@
     <div class="shadow-md rounded-lg p-6 bg-zinc-800 relative">
         <!-- TOP RIGHT BUTTONS -->
         <div class="flex gap-4 absolute -top-16 left-0">    
-            <button (click)="onCancel()" class="app-btn-error" title="Cancel editing">
+            <button (click)="onGoBack()" class="app-btn-error" title="Cancel editing">
                 <i class="bi bi-arrow-left"></i> Back
             </button>
         </div>
 
         <div class="flex gap-4 absolute -top-16 right-0">
             <button
-                (click)="onCancel()"
+                (click)="onSaveChanges()"
                 class="app-btn-primary"
                 title="Save changes"
-                [disabled]="membersToRemoveFromGroup.length === 0"
+                [disabled]="isLoading || membersToRemoveFromGroup.length === 0"
             >
                 Save changes
             </button>
@@ -28,11 +28,6 @@
             @if (groupData && groupData.members) {
                 @for (member of groupData.members; track $index) {
                     <li class="flex justify-between items-center relative">
-                        @if (membersToRemoveFromGroup.includes(member.id)) {
-                            <button (click)="markAsToRemove(member.id)" class="absolute top-0 right-0 left-0 bottom-0 bg-red-800/50 rounded-lg p-2 border-2 border-red-600">
-                                <span class="font-bold text-xl tracking-wideer text-red-500">Cancel</span>
-                            </button>
-                        }
                         <div class="flex items-center p-4">
                             <app-image-profile [imageUrl]="member.imageUrl" />
                             <div class="ml-3">
@@ -45,10 +40,16 @@
                                 </p>
                             </div>
                         </div>
-                        @if (!membersToRemoveFromGroup.includes(member.id)) {
-                            <button (click)="markAsToRemove(member.id)" class="app-btn-error py-1 px-2 mr-2" title="Cancel editing">
-                                <i class="bi bi-trash"></i>
-                            </button>
+                        @if (groupData.createdBy !== member.id) {
+                            @if (membersToRemoveFromGroup.includes(member.id)) {
+                                <button (click)="markAsToRemove(member.id)" class="absolute top-0 right-0 left-0 bottom-0 bg-red-800/50 rounded-lg p-2 border-2 border-red-600">
+                                    <span class="font-bold text-xl tracking-wideer text-red-500">Cancel</span>
+                                </button>
+                            } @else {
+                                <button (click)="markAsToRemove(member.id)" class="app-btn-error py-1 px-2 mr-2" title="Remove member">
+                                    <i class="bi bi-x"></i>
+                                </button>
+                            }
                         }
                     </li>
                 }
@@ -59,19 +60,25 @@
         @if (groupData && invitationsGroupIndex[groupData.id] && invitationsGroupIndex[groupData.id].length > 0) {
             <hr />
             <h3 class="pt-8 font-bold tracking-wider">Invitations pending</h3>
-            <ul class="pb-8 grid md:grid-cols-2">
+            <ul class="pb-8 grid lg:grid-cols-2 gap-4">
             @for (invitation of invitationsGroupIndex[groupData.id]; track $index) {
-                <li class="flex items-center p-4 opacity-40">
-                    <app-image-profile [imageUrl]="invitation.toAccount.imageUrl" />
-                    <div class="ml-3">
-                        <p class="font-semibold text-white">{{ invitation.toAccount.display_name }}</p>
-                        <p class="text-gray-400 text-sm">
-                            <span>{{ invitation.toAccount.username }}</span>
-                            @if (groupData.createdBy === invitation.toAccount.id) {
-                                <span class="text-blue-500 pl-2">owner</span>
-                            }
-                        </p>
+                <li class="flex justify-between items-center relative">
+                    <div class="flex items-center p-4 opacity-40">
+                        <app-image-profile [imageUrl]="invitation.toAccount.imageUrl" />
+                        <div class="ml-3">
+                            <p class="font-semibold text-white">{{ invitation.toAccount.display_name }}</p>
+                            <p class="text-gray-400 text-sm">{{ invitation.toAccount.username }}</p>
+                        </div>
                     </div>
+                    @if (membersToRemoveFromGroup.includes(invitation.toAccountId)) {
+                        <button (click)="markAsToRemove(invitation.toAccountId)" class="absolute top-0 right-0 left-0 bottom-0 bg-red-800/50 rounded-lg p-2 border-2 border-red-600">
+                            <span class="font-bold text-xl tracking-wideer text-red-500">Cancel</span>
+                        </button>
+                    } @else {
+                        <button (click)="markAsToRemove(invitation.toAccountId)" class="app-btn-error py-1 px-2 mr-2" title="Remove member">
+                            <i class="bi bi-x"></i>
+                        </button>
+                    }
                 </li>
             }
             </ul>
@@ -105,7 +112,7 @@
                     </div>
                 </div>
             </div>
-            <button class="app-btn-primary" title="Invite user" (click)="onInviteUser()" [disabled]="disableSubmit">
+            <button class="app-btn-primary" title="Invite user" (click)="onInviteUser()" [disabled]="disableInviteButton">
                 Invite
             </button>
         </div>

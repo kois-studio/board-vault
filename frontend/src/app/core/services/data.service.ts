@@ -39,22 +39,6 @@ export class DataService {
         })
     }
 
-    public updateCurrentUserInGroups(display_name: string, imageUrl: string) {
-        const currentUser = this.currentUser()
-        if (!currentUser) return
-
-        this.userGroups.update((groups) =>
-            groups.map((group) => {
-                const userIndex = group.members.findIndex((member) => member.id === currentUser.id)
-                if (userIndex === -1) return group
-
-                group.members[userIndex].display_name = display_name
-                group.members[userIndex].imageUrl = imageUrl
-                return group
-            }),
-        )
-    }
-
     private _getUserData(email: string) {
         this.api.getUserByEmail(email).subscribe({
             next: (userType) => {
@@ -118,5 +102,37 @@ export class DataService {
                 ),
             )
             .subscribe()
+    }
+
+    // #region public methods
+    // --------------------------------------------------------------------------
+    //   These methods are meant to:
+    //      1. Update the DB
+    //      2. Update the local data (without reloading everything)
+    //      3. Give feedback to the user with toasts
+    // --------------------------------------------------------------------------
+
+    public updateCurrentUserInGroups(display_name: string, imageUrl: string) {
+        const currentUser = this.currentUser()
+        if (!currentUser) return
+
+        this.userGroups.update((groups) =>
+            groups.map((group) => {
+                const userIndex = group.members.findIndex((member) => member.id === currentUser.id)
+                if (userIndex === -1) return group
+
+                group.members[userIndex].display_name = display_name
+                group.members[userIndex].imageUrl = imageUrl
+                return group
+            }),
+        )
+    }
+
+    public removeMemberFromGroup(groupId: number, memberId: number) {
+        this.toastService.info(`Removing member from group...`)
+    }
+
+    public removeInvitedFromGroup(groupId: number, invitedId: number) {
+        this.toastService.info(`Removing invited member from group...`)
     }
 }
