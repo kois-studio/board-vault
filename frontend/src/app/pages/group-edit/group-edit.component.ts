@@ -102,22 +102,21 @@ export class GroupEditComponent {
         this.router.navigate(['/dashboard'])
     }
 
-
     onSaveChanges() {
         if (!this.groupData || !this.userData) return
         this.isLoading = true
 
         for (const accountId of this.membersToRemoveFromGroup) {
             // 1. its being removed from invited zone
-            const invitedMemberIds = this.invitationsGroupIndex[this.groupData.id].map((invitation) => invitation.toAccountId)
-            if (invitedMemberIds.includes(accountId)) {
-                this.dataService.removeInvitedFromGroup(this.groupData.id, accountId)
+            const invitations = this.invitationsGroupIndex[this.groupData.id]
+            const invitation = invitations.find((invitation) => invitation.toAccount.id === accountId)
+            if (invitation) {
+                this.dataService.removeInvitedFromGroup(invitation.id)
                 continue
             }
 
             // 2. its being removed from the group members
             this.dataService.removeMemberFromGroup(this.groupData.id, accountId)
-            
         }
 
         // clear selection

@@ -45,7 +45,7 @@ export class InvitationsController {
 
     @Delete('/:invitationId')
     @ApiOperation({ summary: 'Delete a invitation by Id' })
-    @ApiResponse({ status: 200, description: 'The invitation has been succesfully deleted' })
+    @ApiResponse({ status: 200, type: SuccessDto, description: 'The invitation has been succesfully deleted' })
     @ApiParam({ name: 'invitationId', type: String, description: 'ID of the invitation to be deleted' })
     async deleteInvitationById(@Param('invitationId', ParseIntPipe) invitationId: number) {
         return this.invitationsService.deleteInvitationById(invitationId)
