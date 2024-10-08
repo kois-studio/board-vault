@@ -43,7 +43,7 @@
                         @if (groupData.createdBy !== member.id) {
                             @if (membersToRemoveFromGroup.includes(member.id)) {
                                 <button (click)="markAsToRemove(member.id)" class="absolute top-0 right-0 left-0 bottom-0 bg-red-800/50 rounded-lg p-2 border-2 border-red-600">
-                                    <span class="font-bold text-xl tracking-wideer text-red-500">Cancel</span>
+                                    <span class="font-bold text-xl tracking-wider text-red-500">Cancel</span>
                                 </button>
                             } @else {
                                 <button (click)="markAsToRemove(member.id)" class="app-btn-error py-1 px-2 mr-2" title="Remove member">
@@ -72,7 +72,7 @@
                     </div>
                     @if (membersToRemoveFromGroup.includes(invitation.toAccountId)) {
                         <button (click)="markAsToRemove(invitation.toAccountId)" class="absolute top-0 right-0 left-0 bottom-0 bg-red-800/50 rounded-lg p-2 border-2 border-red-600">
-                            <span class="font-bold text-xl tracking-wideer text-red-500">Cancel</span>
+                            <span class="font-bold text-xl tracking-wider text-red-500">Cancel</span>
                         </button>
                     } @else {
                         <button (click)="markAsToRemove(invitation.toAccountId)" class="app-btn-error py-1 px-2 mr-2" title="Remove member">

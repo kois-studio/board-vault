@@ -78,6 +78,7 @@ export class ProfileMenuComponent {
 
     public onClickSignOut() {
         this.localStorageService.deleteToken()
+        this.dataService.clearState()
         this.router.navigate(['/'])
     }
 
