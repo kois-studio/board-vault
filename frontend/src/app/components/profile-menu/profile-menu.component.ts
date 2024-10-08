@@ -1,6 +1,5 @@
 import { Component, ElementRef, Renderer2, ViewChild, effect } from '@angular/core'
 import { Router } from '@angular/router'
-import { UserType } from '../../api/api.types'
 import { DataService } from '../../core/services/data.service'
 import { LocalStorageService } from '../../core/services/local-storage.service'
 import { ImageProfileComponent } from '../image-profile/image-profile.component'
@@ -14,7 +13,8 @@ import { ProfileSettingsComponent } from '../profile-settings/profile-settings.c
 })
 export class ProfileMenuComponent {
     public isDropdownVisible = false
-    public userData: UserType | null = null
+    public userData: ReturnType<typeof this.dataService.currentUser> = null
+    public invitationsReceived: ReturnType<typeof this.dataService.invitationsReceived> = []
 
     // Get the child component to be able to call its methods
     @ViewChild(ProfileSettingsComponent) profileSettingsComponent!: ProfileSettingsComponent
@@ -31,6 +31,7 @@ export class ProfileMenuComponent {
     ) {
         effect(() => {
             this.userData = this.dataService.currentUser()
+            this.invitationsReceived = this.dataService.invitationsReceived()
         })
     }
 
