@@ -153,4 +153,30 @@ export class DataService {
             },
         })
     }
+
+    public addInvitedToGroup(groupId: number, userId: number, invitedUsername: string) {
+        // 1.
+        this.api.createInvitation(groupId, userId, invitedUsername).subscribe({
+            next: (res) => {
+                // 2.
+                this.api.getGroupInvitations(groupId).subscribe({
+                    next: (invitations) => {
+                        this.invitationsGroupIndex.update((index) => ({
+                            ...index,
+                            [groupId]: invitations,
+                        }))
+
+                        // 3.
+                        this.toastService.success('Invitation sent')
+                    },
+                    error: () => {
+                        this.toastService.error('Error updating invitations')
+                    },
+                })
+            },
+            error: () => {
+                this.toastService.error('Error sending invitation')
+            },
+        })
+    }
 }
