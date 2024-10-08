@@ -174,7 +174,10 @@ export class DataService {
                     },
                 })
             },
-            error: () => {
+            error: (error) => {
+                if (error.status === 404) {
+                    return this.toastService.error('User not found')
+                }
                 this.toastService.error('Error sending invitation')
             },
         })

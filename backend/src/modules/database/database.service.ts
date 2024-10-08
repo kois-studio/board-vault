@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Logger, OnModuleInit } from '@nestjs/common'
+import { BadRequestException, Injectable, Logger, NotFoundException, OnModuleInit } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { Client, createClient, type InStatement } from '@libsql/client'
 import { CreateUserBody, UpdateUserBody } from '../../common/types/user.type'
@@ -506,7 +506,7 @@ export class DatabaseService implements OnModuleInit {
         })
 
         if (toAccount.rows.length === 0) {
-            throw new BadRequestException('User not found')
+            throw new NotFoundException('User not found')
         }
 
         await this._tursoExecute({
