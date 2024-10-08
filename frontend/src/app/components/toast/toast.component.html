@@ -17,8 +17,8 @@
             <i *ngIf="toast.type === 'success'" class="bi bi-check-circle-fill"></i>
             <i *ngIf="toast.type === 'generic'" class="bi bi-info-circle-fill"></i>
             
-            <span>{{ toast.message }}</span>
-            <button (click)="closeToast($index)" class="ml-4 text-white">&times;</button>
+            <span class="px-4">{{ toast.message }}</span>
+            <button (click)="closeToast($index)">&times;</button>
         </div>
     </div>
     }
