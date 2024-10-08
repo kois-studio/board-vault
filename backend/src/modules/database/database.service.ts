@@ -513,6 +513,9 @@ export class DatabaseService implements OnModuleInit {
             sql: 'INSERT INTO Invitation (groupId, fromAccountId, toAccountId, status) VALUES (?, ?, ?, ?)',
             args: [invitationDto.groupId, invitationDto.fromAccountId, toAccount.rows[0].id, 'pending'],
         })
+
+        // return the invited user
+        return toAccount.rows[0]
     }
 
     deleteInvitationById(id: number) {
