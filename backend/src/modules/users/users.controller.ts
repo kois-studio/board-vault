@@ -15,35 +15,26 @@ export class UsersController {
     constructor(private readonly usersService: UsersService) {}
 
     @Get('/')
-    @ApiOperation({ summary: 'Get all users' })
+    @ApiOperation({ summary: 'Get all users', deprecated: true })
     @ApiResponse({ status: 200, type: [UserGetDto], description: 'List of all users' })
     async getUsers() {
         return this.usersService.getUsers()
     }
 
+    @Post('/')
+    @ApiOperation({ summary: 'Create a new user', deprecated: true })
+    @ApiResponse({ status: 201, description: 'The user has been succesfully created' })
+    async createUser(@Body() userDto: CreateUserBody) {
+        return this.usersService.createUser(userDto)
+    }
+
     @Get('/:userId')
-    @ApiOperation({ summary: 'Get user by id' })
+    @ApiOperation({ summary: 'Get user by id', deprecated: true })
     @ApiResponse({ status: 200, type: UserGetDto, description: 'User found' })
     @ApiResponse({ status: 404, description: 'User not found' })
     @ApiParam({ name: 'userId', type: String })
     getUserById(@Param('userId', ParseIntPipe) userId: number) {
         return this.usersService.getUserById(userId)
-    }
-
-    @Get('/byEmail/:email')
-    @ApiOperation({ summary: 'Get user by email' })
-    @ApiResponse({ status: 200, type: UserGetDto, description: 'User found' })
-    @ApiResponse({ status: 404, description: 'User not found' })
-    @ApiParam({ name: 'email', type: String })
-    getUserByEmail(@Param('email') email: string) {
-        return this.usersService.getUserByEmail(email)
-    }
-
-    @Post('/')
-    @ApiOperation({ summary: 'Create a new user' })
-    @ApiResponse({ status: 201, description: 'The user has been succesfully created' })
-    async createUser(@Body() userDto: CreateUserBody) {
-        return this.usersService.createUser(userDto)
     }
 
     @Put(':userId')
@@ -57,11 +48,20 @@ export class UsersController {
     }
 
     @Delete('/:userId')
-    @ApiOperation({ summary: 'Delete a user by Id' })
+    @ApiOperation({ summary: 'Delete a user by Id', deprecated: true })
     @ApiResponse({ status: 200, description: 'The user has been succesfully deleted' })
     @ApiParam({ name: 'userId', type: String, description: 'ID of the user to be deleted' })
     async deleteUserById(@Param('userId', ParseIntPipe) userId: number) {
         return this.usersService.deleteUserById(userId)
+    }
+
+    @Get('/byEmail/:email')
+    @ApiOperation({ summary: 'Get user by email' })
+    @ApiResponse({ status: 200, type: UserGetDto, description: 'User found' })
+    @ApiResponse({ status: 404, description: 'User not found' })
+    @ApiParam({ name: 'email', type: String })
+    getUserByEmail(@Param('email') email: string) {
+        return this.usersService.getUserByEmail(email)
     }
 
     @Get('/:userId/groups')
@@ -99,7 +99,7 @@ export class UsersController {
     }
 
     @Get('/:userId/invitationsSent')
-    @ApiOperation({ summary: 'Get invitations sent by user' })
+    @ApiOperation({ summary: 'Get invitations sent by user', deprecated: true })
     @ApiResponse({ status: 200, type: [InvitationDto] })
     @ApiParam({ name: 'userId', type: String })
     getUserInvitationsSent(@Param('userId', ParseIntPipe) userId: number) {
