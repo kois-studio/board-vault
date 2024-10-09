@@ -160,4 +160,16 @@ export class UsersService {
             sentAt: String(row[5]),
         }))
     }
+
+    async updateGames(accountId: number, gamesToAdd: number[], gamesToRemove: number[]): Promise<{ success: boolean }> {
+        this.LOGGER.log(`Updating games for user with id ${accountId}`)
+        try {
+            await this.databaseService.updateGames(accountId, gamesToAdd, gamesToRemove)
+
+            return { success: true }
+        } catch (error) {
+            this.LOGGER.error('Failed to update games for user', error)
+            throw new NotFoundException('Failed to update games for user')
+        }
+    }
 }

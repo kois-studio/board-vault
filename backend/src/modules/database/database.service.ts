@@ -200,6 +200,24 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    async updateGames(accountId: number, gamesToAdd: number[], gamesToRemove: number[]): Promise<void> {
+        // Remove games
+        for (const gameId of gamesToRemove) {
+            await this._tursoExecute({
+                sql: 'DELETE FROM OwnedGame WHERE accountId = ? AND gameId = ?',
+                args: [accountId, gameId],
+            })
+        }
+
+        // Add games
+        for (const gameId of gamesToAdd) {
+            await this._tursoExecute({
+                sql: 'INSERT INTO OwnedGame (accountId, gameId) VALUES (?, ?)',
+                args: [accountId, gameId],
+            })
+        }
+    }
+
     // #region Group
 
     getGroups() {
