@@ -1,19 +1,66 @@
-<div class="container mx-auto pt-8 lg:pt-16">
+<div class="container mx-auto px-2 pt-8 lg:pt-16">
     <h1 class="text-4xl text-center">Games list</h1>
-    <p class="text-gray-400 text-center py-8">
+    <p class="text-gray-400 text-center">
         These are all the games registered so far <br />
         You may add to request new ones here
     </p>
+    
+    <!-- MY GAMES -->
+    <h2 class="text-2xl font-bold py-8">My Games</h2>
+    <div class="flex gap-2 flex-wrap">
+        @for (game of userGames; track $index) {
+            <div class="relative">
+                <app-game-card
+                    [title]="game.title"
+                    [imageUrl]="game.imageUrl"
+                    [gameAvgDuration]="game.gameAvgDuration"
+                    [minPlayers]="game.minPlayers"
+                    [maxPlayers]="game.maxPlayers"
+                />
+
+                <!-- overlay on hover to delete -->
+                <button (click)="onClickGame(game.id)" class="absolute top-0 right-0 left-0 bottom-0 bg-red-800/70 rounded-lg p-2 border-2 border-red-600">
+                    <span class="font-bold text-xl tracking-wider">Remove</span>
+                </button>
+            </div>
+        }
+    </div>
+
+
+    <!-- ALL GAMES -->
+    <h2 class="text-2xl font-bold pb-2 pt-24">Games available</h2>
+    <p class="text-gray-400 pb-8">Select from here all the games that you own</p>
+
+    <!-- SEARCH BAR -->
+    <div class="py-4 md:flex items-start justify-start gap-4">
+        <input
+            type="text"
+            [formControl]="gameTitleForm"
+            placeholder="Search by username"
+            class="app-input max-w-96 mb-2"
+            required
+        />
+        <button class="app-btn-primary block" title="Invite user" (click)="onRequestNewGame()">
+            I don't find my game
+        </button>
+    </div>
 
     <div class="flex gap-2 flex-wrap">
         @for (game of gamesList; track $index) {
-        <app-game-card
-            [title]="game.title"
-            [imageUrl]="game.imageUrl"
-            [gameAvgDuration]="game.gameAvgDuration"
-            [minPlayers]="game.minPlayers"
-            [maxPlayers]="game.maxPlayers"
-        />
+            <div class="relative">
+                <app-game-card
+                    [title]="game.title"
+                    [imageUrl]="game.imageUrl"
+                    [gameAvgDuration]="game.gameAvgDuration"
+                    [minPlayers]="game.minPlayers"
+                    [maxPlayers]="game.maxPlayers"
+                />
+
+                <!-- overlay on hover to add -->
+                <button (click)="onClickGame(game.id)" class="absolute top-0 right-0 left-0 bottom-0 bg-green-800/70 rounded-lg p-2 border-2 border-green-600">
+                    <span class="font-bold text-xl tracking-wider">Add to <br/> my list</span>
+                </button>
+            </div>
         }
     </div>
 </div>
