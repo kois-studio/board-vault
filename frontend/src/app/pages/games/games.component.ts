@@ -54,6 +54,11 @@ export class GamesComponent {
         }
     }
 
+    public saveSelection() {
+        this.dataService.updateUserGames(this.userGamesIds, this.gameIdsToToggle)
+        this.gameIdsToToggle = []
+    }
+
     public onRequestNewGame() {
         console.log('Requesting new game')
     }

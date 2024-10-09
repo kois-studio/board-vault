@@ -247,4 +247,42 @@ export class DataService {
             },
         })
     }
+
+    // #region games
+
+    public updateUserGames(userGameIds: Array<number>, gameIdsToToggle: Array<number>) {
+        const currentUser = this.currentUser()
+        if (!currentUser) return
+        const gamesToAdd = gameIdsToToggle.filter((id) => !userGameIds.includes(id))
+        const gamesToRemove = userGameIds.filter((id) => gameIdsToToggle.includes(id))
+
+        // 1.
+        this.api
+            .updateUserGames(currentUser.id, gamesToAdd, gamesToRemove)
+            .pipe(
+                concatMap(() =>
+                    // 2.
+                    this.api
+                        .getUserGames(currentUser.id)
+                        .pipe(
+                            catchError(() => {
+                                this.toastService.error('Error fetching updated games')
+                                return of([]) // Return an empty array if fetching fails
+                            }),
+                        ),
+                ),
+                catchError(() => {
+                    this.toastService.error('Error updating games')
+                    return of(null)
+                }),
+            )
+            .subscribe({
+                next: (games) => {
+                    if (games) {
+                        this.userGames.set(games)
+                        this.toastService.success('Games updated')
+                    }
+                },
+            })
+    }
 }

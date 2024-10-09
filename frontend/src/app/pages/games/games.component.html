@@ -4,6 +4,12 @@
         These are all the games registered so far <br />
         You may add to request new ones here
     </p>
+    
+    @if (gameIdsToToggle.length > 0) {
+        <button class="app-btn-primary block" title="Invite user" (click)="saveSelection()">
+            Save changes
+        </button>
+    }
 
     <!-- MY GAMES -->
     <h2 class="text-2xl font-bold py-8">My Games</h2>
