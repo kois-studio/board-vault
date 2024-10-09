@@ -50,6 +50,10 @@ export class Api {
         return this.http.get<Array<GameType>>(`${this.url}/users/${userId}/games`)
     }
 
+    updateUserGames(userId: number, gamesToAdd: Array<number>, gamesToRemove: Array<number>) {
+        return this.http.put<{ success: true }>(`${this.url}/users/${userId}/games`, { gamesToAdd, gamesToRemove })
+    }
+
     // #region groups
 
     getGroupInvitations(groupId: number) {
