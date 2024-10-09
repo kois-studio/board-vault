@@ -21,14 +21,6 @@ export class Api {
 
     // #region users
 
-    private getUsers() {
-        return this.http.get<Array<UserType>>(`${this.url}/users`)
-    }
-
-    getUserByEmail(email: string) {
-        return this.http.get<UserType>(`${this.url}/users/byEmail/${email}`)
-    }
-
     updateUser(
         userId: number,
         requesBody: {
@@ -42,6 +34,10 @@ export class Api {
         return this.http.put<{ success: true }>(`${this.url}/users/${userId}`, requesBody)
     }
 
+    getUserByEmail(email: string) {
+        return this.http.get<UserType>(`${this.url}/users/byEmail/${email}`)
+    }
+
     getUserGroups(userId: number) {
         return this.http.get<Array<number>>(`${this.url}/users/${userId}/groups`)
     }
@@ -52,6 +48,10 @@ export class Api {
 
     updateUserGames(userId: number, gamesToAdd: Array<number>, gamesToRemove: Array<number>) {
         return this.http.put<{ success: true }>(`${this.url}/users/${userId}/games`, { gamesToAdd, gamesToRemove })
+    }
+
+    getInvitationsReceived(accountId: number) {
+        return this.http.get<Array<InvitationType>>(`${this.url}/users/${accountId}/invitationsReceived`)
     }
 
     // #region groups
@@ -72,15 +72,11 @@ export class Api {
 
     // #region invitations
 
-    getInvitationsReceived(accountId: number) {
-        return this.http.get<Array<InvitationType>>(`${this.url}/users/${accountId}/invitationsReceived`)
+    deletInvitation(invitationId: number) {
+        return this.http.delete<{ success: true }>(`${this.url}/invitations/${invitationId}`)
     }
 
     createInvitation(groupId: number, fromAccountId: number, username: string) {
         return this.http.post<UserType>(`${this.url}/invitations/byUsername`, { groupId, fromAccountId, username })
-    }
-
-    deletInvitation(invitationId: number) {
-        return this.http.delete<{ success: true }>(`${this.url}/invitations/${invitationId}`)
     }
 }

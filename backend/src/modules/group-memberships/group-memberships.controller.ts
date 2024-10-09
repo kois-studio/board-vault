@@ -12,14 +12,21 @@ export class GroupMembershipsController {
     constructor(private readonly groupMembershipsService: GroupMembershipsService) {}
 
     @Get('/')
-    @ApiOperation({ summary: 'Get all memberships' })
+    @ApiOperation({ summary: 'Get all memberships', deprecated: true })
     @ApiResponse({ status: 200, type: [GroupMembershipDto], description: 'List of all memberships' })
     async getGroupMemberships() {
         return this.groupMembershipsService.getGroupMemberships()
     }
 
+    @Post('/')
+    @ApiOperation({ summary: 'Create a new membership', deprecated: true })
+    @ApiResponse({ status: 201, description: 'The membership has been succesfully created' })
+    async createGroupMembership(@Body() membershipDto: CreateGroupMembershipBody) {
+        return this.groupMembershipsService.createGroupMembership(membershipDto)
+    }
+
     @Get('/:accountId/:groupId')
-    @ApiOperation({ summary: 'Get membership by id' })
+    @ApiOperation({ summary: 'Get membership by id', deprecated: true })
     @ApiResponse({ status: 200, type: GroupMembershipDto, description: 'Membership found' })
     @ApiResponse({ status: 404, description: 'Membership not found' })
     @ApiParam({ name: 'accountId', type: String })
@@ -28,15 +35,8 @@ export class GroupMembershipsController {
         return this.groupMembershipsService.getGroupMembershipById(accountId, groupId)
     }
 
-    @Post('/')
-    @ApiOperation({ summary: 'Create a new membership' })
-    @ApiResponse({ status: 201, description: 'The membership has been succesfully created' })
-    async createGroupMembership(@Body() membershipDto: CreateGroupMembershipBody) {
-        return this.groupMembershipsService.createGroupMembership(membershipDto)
-    }
-
     @Delete('/:accountId/:groupId')
-    @ApiOperation({ summary: 'Delete a membership by Id' })
+    @ApiOperation({ summary: 'Delete a membership by Id', deprecated: true })
     @ApiResponse({ status: 200, description: 'The membership has been succesfully deleted' })
     @ApiParam({ name: 'accountId', type: String })
     @ApiParam({ name: 'groupId', type: String })
