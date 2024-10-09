@@ -12,14 +12,21 @@ export class GamesOwnedController {
     constructor(private readonly gamesOwnedService: GamesOwnedService) {}
 
     @Get('/')
-    @ApiOperation({ summary: 'Get all owned games' })
+    @ApiOperation({ summary: 'Get all owned games', deprecated: true })
     @ApiResponse({ status: 200, type: [GameOwnedDto], description: 'List of all owned games' })
     async getGamesOwneds() {
         return this.gamesOwnedService.getGamesOwneds()
     }
 
+    @Post('/')
+    @ApiOperation({ summary: 'Create a new membership', deprecated: true })
+    @ApiResponse({ status: 201, description: 'The owned game has been succesfully created' })
+    async createGamesOwned(@Body() gameOwnedDto: GameOwnedDto) {
+        return this.gamesOwnedService.createGamesOwned(gameOwnedDto)
+    }
+
     @Get('/:accountId/:gameId')
-    @ApiOperation({ summary: 'Get owned game by id' })
+    @ApiOperation({ summary: 'Get owned game by id', deprecated: true })
     @ApiResponse({ status: 200, type: GameOwnedDto, description: 'OwnedGame found' })
     @ApiResponse({ status: 404, description: 'OwnedGame not found' })
     @ApiParam({ name: 'accountId', type: String })
@@ -28,15 +35,8 @@ export class GamesOwnedController {
         return this.gamesOwnedService.getGamesOwnedById(accountId, gameId)
     }
 
-    @Post('/')
-    @ApiOperation({ summary: 'Create a new membership' })
-    @ApiResponse({ status: 201, description: 'The owned game has been succesfully created' })
-    async createGamesOwned(@Body() gameOwnedDto: GameOwnedDto) {
-        return this.gamesOwnedService.createGamesOwned(gameOwnedDto)
-    }
-
     @Delete('/:accountId/:gameId')
-    @ApiOperation({ summary: 'Delete a owned game by Id' })
+    @ApiOperation({ summary: 'Delete a owned game by Id', deprecated: true })
     @ApiResponse({ status: 200, description: 'The owned game has been succesfully deleted' })
     @ApiParam({ name: 'accountId', type: String })
     @ApiParam({ name: 'gameId', type: String })

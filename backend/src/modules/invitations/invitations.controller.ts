@@ -14,26 +14,26 @@ export class InvitationsController {
     constructor(private readonly invitationsService: InvitationsService) {}
 
     @Get('/')
-    @ApiOperation({ summary: 'Get all invitations' })
+    @ApiOperation({ summary: 'Get all invitations', deprecated: true })
     @ApiResponse({ status: 200, type: [InvitationDto], description: 'List of all invitations' })
     async getInvitations() {
         return this.invitationsService.getInvitations()
     }
 
+    @Post('/')
+    @ApiOperation({ summary: 'Create a new invitation', deprecated: true })
+    @ApiResponse({ status: 201, type: SuccessDto, description: 'The invitation has been succesfully created' })
+    async createInvitation(@Body() invitationDto: CreateInvitationBody) {
+        return this.invitationsService.createInvitation(invitationDto)
+    }
+
     @Get('/:invitationId')
-    @ApiOperation({ summary: 'Get invitation by id' })
+    @ApiOperation({ summary: 'Get invitation by id', deprecated: true })
     @ApiResponse({ status: 200, type: InvitationDto, description: 'Invitation found' })
     @ApiResponse({ status: 404, description: 'Invitation not found' })
     @ApiParam({ name: 'invitationId', type: String })
     getInvitationById(@Param('invitationId', ParseIntPipe) invitationId: number) {
         return this.invitationsService.getInvitationById(invitationId)
-    }
-
-    @Post('/')
-    @ApiOperation({ summary: 'Create a new invitation' })
-    @ApiResponse({ status: 201, type: SuccessDto, description: 'The invitation has been succesfully created' })
-    async createInvitation(@Body() invitationDto: CreateInvitationBody) {
-        return this.invitationsService.createInvitation(invitationDto)
     }
 
     @Post('/byUsername')

@@ -18,8 +18,15 @@ export class GamesController {
         return this.gamesService.getGames()
     }
 
+    @Post('/')
+    @ApiOperation({ summary: 'Create a new game', deprecated: true })
+    @ApiResponse({ status: 201, description: 'The game has been succesfully created' })
+    async createGame(@Body() gameDto: CreateGameBody) {
+        return this.gamesService.createGame(gameDto)
+    }
+
     @Get('/:gameId')
-    @ApiOperation({ summary: 'Get game by id' })
+    @ApiOperation({ summary: 'Get game by id', deprecated: true })
     @ApiResponse({ status: 200, type: GameDto, description: 'Game found' })
     @ApiResponse({ status: 404, description: 'Game not found' })
     @ApiParam({ name: 'gameId', type: String })
@@ -27,15 +34,8 @@ export class GamesController {
         return this.gamesService.getGameById(gameId)
     }
 
-    @Post('/')
-    @ApiOperation({ summary: 'Create a new game' })
-    @ApiResponse({ status: 201, description: 'The game has been succesfully created' })
-    async createGame(@Body() gameDto: CreateGameBody) {
-        return this.gamesService.createGame(gameDto)
-    }
-
     @Put(':gameId')
-    @ApiOperation({ summary: 'Update a game by ID' })
+    @ApiOperation({ summary: 'Update a game by ID', deprecated: true })
     @ApiParam({ name: 'gameId', required: true, description: 'Game ID' })
     @ApiBody({ type: UpdateGameBody, description: 'Partial or full game object to update' })
     @ApiResponse({ status: 200, description: 'The game has been successfully updated.' })
@@ -45,12 +45,10 @@ export class GamesController {
     }
 
     @Delete('/:gameId')
-    @ApiOperation({ summary: 'Delete a game by Id' })
+    @ApiOperation({ summary: 'Delete a game by Id', deprecated: true })
     @ApiResponse({ status: 200, description: 'The game has been succesfully deleted' })
     @ApiParam({ name: 'gameId', type: String, description: 'ID of the game to be deleted' })
     async deleteGameById(@Param('gameId', ParseIntPipe) gameId: number) {
         return this.gamesService.deleteGameById(gameId)
     }
-
-    // TODO: for a userId -> get all games owned
 }
