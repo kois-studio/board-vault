@@ -1,10 +1,11 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { UsersService } from './users.service'
-import { CreateUserBody, UpdateUserBody, UserGetDto } from '../../common/types/user.type'
+import { CreateUserBody, UpdateUserBody, UserGetDto, UserUpdateGamesBody } from '../../common/types/user.type'
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
 import { GameDto } from '../../common/types/game.type'
 import { InvitationDto } from '../../common/types/invitation.type'
+import { SuccessDto } from 'src/common/types/auth.type'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('users')
@@ -77,6 +78,16 @@ export class UsersController {
     @ApiParam({ name: 'userId', type: String })
     getUserGames(@Param('userId', ParseIntPipe) userId: number) {
         return this.usersService.getUserGames(userId)
+    }
+
+    @Put('/:userId/games')
+    @ApiOperation({ summary: 'Modify games owned by user' })
+    @ApiParam({ name: 'userId', type: String })
+    @ApiBody({ type: UserUpdateGamesBody, description: 'Game IDs to add and remove from user' })
+    @ApiResponse({ status: 200, type: SuccessDto, description: 'The games have been successfully updated.' })
+    @ApiResponse({ status: 404, description: 'User not found.' })
+    updateUserGames(@Param('userId', ParseIntPipe) userId: number, @Body() userUpdateGamesBody: UserUpdateGamesBody) {
+        return this.usersService.updateGames(userId, userUpdateGamesBody.gamesToAdd, userUpdateGamesBody.gamesToRemove)
     }
 
     @Get('/:userId/invitationsReceived')

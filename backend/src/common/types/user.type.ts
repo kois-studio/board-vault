@@ -62,3 +62,11 @@ export class UserWithGames extends UserGetDto {
     @ApiProperty({ type: [GameDto], description: 'The games the user has.' })
     games: Array<GameDto>
 }
+
+export class UserUpdateGamesBody {
+    @ApiProperty({ type: [Number], description: 'The games to add to user' })
+    gamesToAdd: Array<number>
+
+    @ApiProperty({ type: [Number], description: 'The games to remove from user' })
+    gamesToRemove: Array<number>
+}
