@@ -11,8 +11,16 @@ import { DataService } from '../../core/services/data.service'
     templateUrl: 'games.component.html',
 })
 export class GamesComponent {
-    public gamesList: ReturnType<typeof this.dataService.gamesList> = []
+    public allGames: ReturnType<typeof this.dataService.gamesList> = []
+    public allGamesIds: Array<number> = []
+
     public userGames: ReturnType<typeof this.dataService.userGames> = []
+    public userGamesIds: Array<number> = []
+
+    // here we stor the GameType.id of the games that the user wants to toggle
+    public gameIdsToToggle: Array<number> = []
+
+    // the title of the game that the user wants to create
     public gameTitleForm = new FormControl('')
 
     constructor(
@@ -20,10 +28,12 @@ export class GamesComponent {
         private readonly dataService: DataService,
     ) {
         effect(() => {
-            this.gamesList = this.dataService.gamesList()
+            this.allGames = this.dataService.gamesList()
+            this.allGamesIds = this.allGames.map((game) => game.id)
             this.userGames = this.dataService.userGames()
+            this.userGamesIds = this.userGames.map((game) => game.id)
 
-            if (this.gamesList.length === 0) {
+            if (this.allGames.length === 0) {
                 // TODO: handle in dataService
                 this.api.getGames().subscribe((games) => {
                     this.dataService.gamesList.set(games)
@@ -37,7 +47,11 @@ export class GamesComponent {
     }
 
     public onClickGame(gameId: number) {
-        console.log('Clicked game:', gameId)
+        if (this.gameIdsToToggle.includes(gameId)) {
+            this.gameIdsToToggle = this.gameIdsToToggle.filter((id) => id !== gameId)
+        } else {
+            this.gameIdsToToggle.push(gameId)
+        }
     }
 
     public onRequestNewGame() {

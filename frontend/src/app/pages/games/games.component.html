@@ -4,7 +4,7 @@
         These are all the games registered so far <br />
         You may add to request new ones here
     </p>
-    
+
     <!-- MY GAMES -->
     <h2 class="text-2xl font-bold py-8">My Games</h2>
     <div class="flex gap-2 flex-wrap">
@@ -18,14 +18,24 @@
                     [maxPlayers]="game.maxPlayers"
                 />
 
-                <!-- overlay on hover to delete -->
-                <button (click)="onClickGame(game.id)" class="absolute top-0 right-0 left-0 bottom-0 bg-red-800/70 rounded-lg p-2 border-2 border-red-600">
-                    <span class="font-bold text-xl tracking-wider">Remove</span>
-                </button>
+                @if (gameIdsToToggle.includes(game.id)) {
+                    <!-- overlay on hover to delete -->
+                    <button
+                        (click)="onClickGame(game.id)"
+                        class="absolute top-0 right-0 left-0 bottom-0 bg-red-800/70 rounded-lg p-2 border-2 border-red-600"
+                    >
+                        <span class="font-bold text-xl tracking-wider">Remove</span>
+                    </button>
+                } @else {
+                    <button
+                        (click)="onClickGame(game.id)"
+                        class="absolute top-0 right-0 left-0 bottom-0"
+                        title="Remove game from my list"
+                    ></button>
+                }
             </div>
         }
     </div>
-
 
     <!-- ALL GAMES -->
     <h2 class="text-2xl font-bold pb-2 pt-24">Games available</h2>
@@ -46,21 +56,37 @@
     </div>
 
     <div class="flex gap-2 flex-wrap">
-        @for (game of gamesList; track $index) {
-            <div class="relative">
-                <app-game-card
-                    [title]="game.title"
-                    [imageUrl]="game.imageUrl"
-                    [gameAvgDuration]="game.gameAvgDuration"
-                    [minPlayers]="game.minPlayers"
-                    [maxPlayers]="game.maxPlayers"
-                />
-
-                <!-- overlay on hover to add -->
-                <button (click)="onClickGame(game.id)" class="absolute top-0 right-0 left-0 bottom-0 bg-green-800/70 rounded-lg p-2 border-2 border-green-600">
-                    <span class="font-bold text-xl tracking-wider">Add to <br/> my list</span>
-                </button>
-            </div>
+        @for (game of allGames; track $index) {
+            @if (!userGamesIds.includes(game.id)) {
+                <div class="relative">
+                    <app-game-card
+                        [title]="game.title"
+                        [imageUrl]="game.imageUrl"
+                        [gameAvgDuration]="game.gameAvgDuration"
+                        [minPlayers]="game.minPlayers"
+                        [maxPlayers]="game.maxPlayers"
+                    />
+    
+                    @if (gameIdsToToggle.includes(game.id)) {
+                        <!-- overlay on hover to add -->
+                        <button
+                            (click)="onClickGame(game.id)"
+                            class="absolute top-0 right-0 left-0 bottom-0 bg-green-800/70 rounded-lg p-2 border-2 border-green-600"
+                        >
+                            <span class="font-bold text-xl tracking-wider"
+                                >Add to <br />
+                                my list</span
+                            >
+                        </button>
+                    } @else {
+                        <button
+                            (click)="onClickGame(game.id)"
+                            class="absolute top-0 right-0 left-0 bottom-0"
+                            title="Add game to my list"
+                        ></button>
+                    }
+                </div>
+            }
         }
     </div>
 </div>
