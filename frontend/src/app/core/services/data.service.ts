@@ -184,6 +184,7 @@ export class DataService {
                             return group
                         }),
                     )
+                    // 3.
                     this.toastService.success('User data updated')
                 },
                 error: () => {
@@ -280,6 +281,16 @@ export class DataService {
                 next: (games) => {
                     if (games) {
                         this.userGames.set(games)
+                        this.userGroups.update((groups) =>
+                            groups.map((group) => {
+                                const userIndex = group.members.findIndex((member) => member.id === currentUser.id)
+                                if (userIndex === -1) return group
+
+                                group.members[userIndex].games = games
+                                return group
+                            }),
+                        )
+                        // 3.
                         this.toastService.success('Games updated')
                     }
                 },
