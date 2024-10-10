@@ -1,0 +1,46 @@
+<div class="w-full flex justify-between items-center gap-4">
+    <div
+        class="flex items-center transition-all"
+        [ngClass]="{
+            'h-14': !isEditingUsernameData,
+            'h-44': isEditingUsernameData
+        }"
+    >
+        @if (!isEditingUsernameData){
+        <p class="text-lg font-semibold">{{ userData?.username }}</p>
+        } @else {
+        <form [formGroup]="updateUsernameFormGroup" class="flex flex-col gap-4 rounded bg-zinc-800 p-8 w-96 mx-auto">
+            <div>
+                <input
+                    type="text"
+                    formControlName="username"
+                    placeholder="Name ..."
+                    class="app-input"
+                    [class]="usernameClass"
+                    required
+                />
+                <div *ngIf="username?.invalid && (username?.dirty || username?.touched)">
+                    <div *ngIf="username?.hasError('required')" class="text-sm text-red-500 py-1">
+                        <i class="bi bi-exclamation-circle-fill"></i> username is required.
+                    </div>
+                    <div *ngIf="username?.hasError('minlength')" class="text-sm text-red-500 py-1">
+                        <i class="bi bi-exclamation-circle-fill"></i> username is too short.
+                    </div>
+                    <div *ngIf="username?.hasError('maxlength')" class="text-sm text-red-500 py-1">
+                        <i class="bi bi-exclamation-circle-fill"></i> username is too long.
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        }
+    </div>
+    @if (!isEditingUsernameData){
+    <button class="app-btn-secondary" (click)="isEditingUsernameData = true">Change username</button>
+    }@else {
+    <div class="flex flex-col gap-4">
+        <button class="app-btn-primary" [disabled]="disableSubmit" (click)="onSave()">Save</button>
+        <button class="app-btn-error" (click)="onCancel()">Cancel</button>
+    </div>
+    }
+</div>
