@@ -29,7 +29,7 @@ export class GamesController {
     @ApiOperation({ summary: 'Get game by id', deprecated: true })
     @ApiResponse({ status: 200, type: GameDto, description: 'Game found' })
     @ApiResponse({ status: 404, description: 'Game not found' })
-    @ApiParam({ name: 'gameId', type: String })
+    @ApiParam({ name: 'gameId', type: Number })
     getGameById(@Param('gameId', ParseIntPipe) gameId: number) {
         return this.gamesService.getGameById(gameId)
     }
@@ -47,7 +47,7 @@ export class GamesController {
     @Delete('/:gameId')
     @ApiOperation({ summary: 'Delete a game by Id', deprecated: true })
     @ApiResponse({ status: 200, description: 'The game has been succesfully deleted' })
-    @ApiParam({ name: 'gameId', type: String, description: 'ID of the game to be deleted' })
+    @ApiParam({ name: 'gameId', type: Number, description: 'ID of the game to be deleted' })
     async deleteGameById(@Param('gameId', ParseIntPipe) gameId: number) {
         return this.gamesService.deleteGameById(gameId)
     }
