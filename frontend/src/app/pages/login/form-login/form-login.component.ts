@@ -2,10 +2,10 @@ import { CommonModule } from '@angular/common'
 import { Component } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router } from '@angular/router'
-import { Api } from '../../api/api'
-import { ToastService } from '../../components/toast/toast.service'
-import { DataService } from '../../core/services/data.service'
-import { LocalStorageService } from '../../core/services/local-storage.service'
+import { Api } from '../../../api/api'
+import { ToastService } from '../../../components/toast/toast.service'
+import { DataService } from '../../../core/services/data.service'
+import { LocalStorageService } from '../../../core/services/local-storage.service'
 
 @Component({
     standalone: true,
