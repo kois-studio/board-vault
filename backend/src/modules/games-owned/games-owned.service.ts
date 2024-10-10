@@ -13,7 +13,7 @@ export class GamesOwnedService {
     private _parseResultSet(resultSet: ResultSet): Array<GameOwnedDto> {
         const ownedGames = resultSet.rows.map(row => ({
             accountId: Number(row[0]),
-            gameId: String(row[1]),
+            gameId: Number(row[1]),
         }))
 
         const result = gameOwnedsSchema.safeParse(ownedGames)
