@@ -1,11 +1,12 @@
 import { Component, effect } from '@angular/core'
 import type { UserType } from '../../api/api.types'
 import { DataService } from '../../core/services/data.service'
-import { FormUpdateProfileComponent } from './components/form-update-profile.component'
+import { FormUpdateProfileComponent } from './components/form-update-profile/form-update-profile.component'
+import { FormUpdateUsernameComponent } from "./components/form-update-username/form-update-username.component";
 
 @Component({
     standalone: true,
-    imports: [FormUpdateProfileComponent],
+    imports: [FormUpdateProfileComponent, FormUpdateUsernameComponent],
     selector: 'app-profile-settings',
     templateUrl: 'profile-settings.component.html',
 })
