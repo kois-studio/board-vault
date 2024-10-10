@@ -50,23 +50,20 @@
                     <h3 class="w-48 text-gray-500">Username</h3>
                     <form-update-username class="w-full" />
                 </div>
-
-                <!-- Email addresses -->
-                <div class="flex flex-col lg:flex-row gap-2 lg:items-center items-start border-b border-zinc-500 py-4">
-                    <h3 class="w-48 text-gray-500">Email address</h3>
-                    <div class="w-full flex justify-between items-center">
-                        <p class="text-lg mr-4">{{ userData?.email }}</p>
-                        <button class="app-btn-secondary">Change email</button>
-                    </div>
-                </div>
                 }
 
                 <!-- TABVIEW 1 - SECURITY -->
                 @if (tabView === 1) {
                 <h3 class="text-lg font-semibold border-b border-zinc-500 pb-4">Security</h3>
 
-                <!-- Password -->
+                <!-- Email addresses -->
                 <div class="flex flex-col lg:flex-row gap-2 lg:items-center items-start border-b border-zinc-500 py-4">
+                    <h3 class="w-48 text-gray-500">Email address</h3>
+                    <form-update-email class="w-full" />
+                </div>
+
+                <!-- Password -->
+                <div class="flex flex-col lg:flex-row gap-2 lg:justify-items-center justify-items-end border-b border-zinc-500 py-4">
                     <h3 class="w-48 text-gray-500">Password</h3>
                     <button class="app-btn-secondary">Change password</button>
                 </div>
