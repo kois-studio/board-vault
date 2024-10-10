@@ -8,6 +8,7 @@ import { CreateGroupMembershipBody } from '../../common/types/group-membership.t
 import { CreateGameBody, UpdateGameBody } from '../../common/types/game.type'
 import { CreateInvitationBody, CreateInvitationByUsernameBody } from '../../common/types/invitation.type'
 import { GameOwnedDto } from '../../common/types/game-owned.type'
+import { CreateNotificationBody, UpdateNotificationBody } from 'src/common/types/notification.type'
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
@@ -539,6 +540,94 @@ export class DatabaseService implements OnModuleInit {
     deleteInvitationById(id: number) {
         return this._tursoExecute({
             sql: 'DELETE FROM Invitation WHERE id = ?',
+            args: [id],
+        })
+    }
+
+    // #region Notification
+
+    getNotifications() {
+        return this._tursoExecute('SELECT * FROM Notification')
+    }
+
+    getNotificationById(id: number) {
+        return this._tursoExecute({
+            sql: 'SELECT * FROM Notification WHERE id = ?',
+            args: [id],
+        })
+    }
+
+    createNotification(notificationDto: CreateNotificationBody) {
+        return this._tursoExecute({
+            sql: 'INSERT INTO Notification (accountId, type, relatedUserGroupId, relatedGameId, message) VALUES (?, ?, ?, ?, ?)',
+            args: [
+                notificationDto.accountId,
+                notificationDto.type,
+                notificationDto.relatedUserGroupId,
+                notificationDto.relatedGameId,
+                notificationDto.message,
+            ],
+        })
+    }
+
+    updateNotification(id: number, partialNotificationDto: UpdateNotificationBody) {
+        // Array to store fields to update
+        const fields = []
+        const args = []
+
+        // Dynamically build the update query based on the provided properties
+        if (partialNotificationDto.accountId) {
+            fields.push('accountId = ?')
+            args.push(partialNotificationDto.accountId)
+        }
+
+        if (partialNotificationDto.type) {
+            fields.push('type = ?')
+            args.push(partialNotificationDto.type)
+        }
+
+        if (partialNotificationDto.relatedUserGroupId) {
+            fields.push('relatedUserGroupId = ?')
+            args.push(partialNotificationDto.relatedUserGroupId)
+        }
+
+        if (partialNotificationDto.relatedGameId) {
+            fields.push('relatedGameId = ?')
+            args.push(partialNotificationDto.relatedGameId)
+        }
+
+        if (partialNotificationDto.message) {
+            fields.push('message = ?')
+            args.push(partialNotificationDto.message)
+        }
+
+        if (partialNotificationDto.isRead) {
+            fields.push('isRead = ?')
+            args.push(partialNotificationDto.isRead)
+        }
+
+        // Error if no fields are provided
+        if (fields.length === 0) {
+            throw new BadRequestException('No fields to update')
+        }
+
+        // Add user id as the last argument
+        args.push(id)
+
+        // Construct the final query
+        const sql = `
+          UPDATE Notification
+          SET ${fields.join(', ')}
+          WHERE id = ?
+        `
+
+        // Execute the query
+        return this._tursoExecute({ sql, args })
+    }
+
+    deleteNotificationById(id: number) {
+        return this._tursoExecute({
+            sql: 'DELETE FROM Notification WHERE id = ?',
             args: [id],
         })
     }

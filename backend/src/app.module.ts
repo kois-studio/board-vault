@@ -9,6 +9,7 @@ import { GroupMembershipsModule } from './modules/group-memberships/group-member
 import { GamesModule } from './modules/games/games.module'
 import { GamesOwnedModule } from './modules/games-owned/games-owned.module'
 import { InvitationsModule } from './modules/invitations/invitations.module'
+import { NotificationsModule } from './modules/notifications/notifications.module'
 
 @Module({
     imports: [
@@ -21,6 +22,7 @@ import { InvitationsModule } from './modules/invitations/invitations.module'
         GamesModule,
         GamesOwnedModule,
         InvitationsModule,
+        NotificationsModule,
     ],
     controllers: [],
     providers: [],
