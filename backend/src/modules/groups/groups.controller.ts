@@ -30,7 +30,7 @@ export class GroupsController {
     @ApiOperation({ summary: 'Get group by id', deprecated: true })
     @ApiResponse({ status: 200, type: GroupDto, description: 'Group found' })
     @ApiResponse({ status: 404, description: 'Group not found' })
-    @ApiParam({ name: 'groupId', type: String })
+    @ApiParam({ name: 'groupId', type: Number })
     getGroupById(@Param('groupId', ParseIntPipe) groupId: number) {
         return this.groupsService.getGroupById(groupId)
     }
@@ -48,7 +48,7 @@ export class GroupsController {
     @Delete('/:groupId')
     @ApiOperation({ summary: 'Delete a group by Id', deprecated: true })
     @ApiResponse({ status: 200, description: 'The group has been succesfully deleted' })
-    @ApiParam({ name: 'groupId', type: String, description: 'ID of the group to be deleted' })
+    @ApiParam({ name: 'groupId', type: Number, description: 'ID of the group to be deleted' })
     async deleteGroupById(@Param('groupId', ParseIntPipe) groupId: number) {
         return this.groupsService.deleteGroupById(groupId)
     }
@@ -56,7 +56,7 @@ export class GroupsController {
     @Get('/:groupId/withMembersAndGames')
     @ApiOperation({ summary: 'Get group data with members and games inserted' })
     @ApiResponse({ status: 200, type: GroupWithMembersAndGames })
-    @ApiParam({ name: 'groupId', type: String })
+    @ApiParam({ name: 'groupId', type: Number })
     getGroupWithMembersAndGames(@Param('groupId', ParseIntPipe) groupId: number) {
         return this.groupsService.getGroupWithMembersAndGames(groupId)
     }
@@ -64,7 +64,7 @@ export class GroupsController {
     @Get('/:groupId/invitations')
     @ApiOperation({ summary: 'Get all group invitations' })
     @ApiResponse({ status: 200, type: [InvitationWithAccountsData] })
-    @ApiParam({ name: 'groupId', type: String })
+    @ApiParam({ name: 'groupId', type: Number })
     getGroupInvitations(@Param('groupId', ParseIntPipe) groupId: number) {
         return this.groupsService.getGroupInvitations(groupId)
     }

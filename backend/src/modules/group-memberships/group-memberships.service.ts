@@ -13,7 +13,7 @@ export class GroupMembershipsService {
     private _parseResultSet(resultSet: ResultSet): Array<GroupMembershipDto> {
         const groupMemberships = resultSet.rows.map(row => ({
             accountId: Number(row[0]),
-            groupId: String(row[1]),
+            groupId: Number(row[1]),
             joinedAt: String(row[2]),
         }))
 

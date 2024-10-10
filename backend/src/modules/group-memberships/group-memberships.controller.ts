@@ -29,8 +29,8 @@ export class GroupMembershipsController {
     @ApiOperation({ summary: 'Get membership by id', deprecated: true })
     @ApiResponse({ status: 200, type: GroupMembershipDto, description: 'Membership found' })
     @ApiResponse({ status: 404, description: 'Membership not found' })
-    @ApiParam({ name: 'accountId', type: String })
-    @ApiParam({ name: 'groupId', type: String })
+    @ApiParam({ name: 'accountId', type: Number })
+    @ApiParam({ name: 'groupId', type: Number })
     getGroupMembershipById(@Param('accountId', ParseIntPipe) accountId: number, @Param('groupId', ParseIntPipe) groupId: number) {
         return this.groupMembershipsService.getGroupMembershipById(accountId, groupId)
     }
@@ -38,8 +38,8 @@ export class GroupMembershipsController {
     @Delete('/:accountId/:groupId')
     @ApiOperation({ summary: 'Delete a membership by Id', deprecated: true })
     @ApiResponse({ status: 200, description: 'The membership has been succesfully deleted' })
-    @ApiParam({ name: 'accountId', type: String })
-    @ApiParam({ name: 'groupId', type: String })
+    @ApiParam({ name: 'accountId', type: Number })
+    @ApiParam({ name: 'groupId', type: Number })
     async deleteGroupMembershipById(@Param('accountId', ParseIntPipe) accountId: number, @Param('groupId', ParseIntPipe) groupId: number) {
         return this.groupMembershipsService.deleteGroupMembershipById(accountId, groupId)
     }
