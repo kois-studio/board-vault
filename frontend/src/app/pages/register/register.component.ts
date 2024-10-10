@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core'
 import { RouterLink } from '@angular/router'
-import { FormRegisterComponent } from '../../forms/form-register/form-register.component'
+import { FormRegisterComponent } from './form-register/form-register.component'
 
 @Component({
     selector: 'app-register',
