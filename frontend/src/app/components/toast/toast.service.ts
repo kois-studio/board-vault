@@ -13,11 +13,11 @@ interface Toast {
 export class ToastService {
     toasts: Toast[] = [
         // Testing toasts
-        { id: uuidv4(), message: 'This is a success message!', type: 'success' },
-        { id: uuidv4(), message: 'This is a info message.', type: 'info' },
-        { id: uuidv4(), message: 'This is a warning message.', type: 'warning' },
-        { id: uuidv4(), message: 'This is an error message!', type: 'error' },
-        { id: uuidv4(), message: 'This is a generic message.', type: 'generic' },
+        // { id: uuidv4(), message: 'This is a success message!', type: 'success' },
+        // { id: uuidv4(), message: 'This is a info message.', type: 'info' },
+        // { id: uuidv4(), message: 'This is a warning message.', type: 'warning' },
+        // { id: uuidv4(), message: 'This is an error message!', type: 'error' },
+        // { id: uuidv4(), message: 'This is a generic message.', type: 'generic' },
     ]
 
     private _addToast(message: string, type: Toast['type']): void {
