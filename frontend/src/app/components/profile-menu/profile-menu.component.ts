@@ -4,10 +4,11 @@ import { DataService } from '../../core/services/data.service'
 import { LocalStorageService } from '../../core/services/local-storage.service'
 import { ImageProfileComponent } from '../image-profile/image-profile.component'
 import { ProfileSettingsComponent } from '../profile-settings/profile-settings.component'
+import { ProfileInvitationsComponent } from "../profile-invitations/profile-invitations.component";
 
 @Component({
     standalone: true,
-    imports: [ProfileSettingsComponent, ImageProfileComponent],
+    imports: [ProfileSettingsComponent, ImageProfileComponent, ProfileInvitationsComponent],
     selector: 'app-profile-menu',
     templateUrl: 'profile-menu.component.html',
 })
@@ -18,6 +19,7 @@ export class ProfileMenuComponent {
 
     // Get the child component to be able to call its methods
     @ViewChild(ProfileSettingsComponent) profileSettingsComponent!: ProfileSettingsComponent
+    @ViewChild(ProfileInvitationsComponent) profileInvitationsComponent!: ProfileInvitationsComponent
 
     private clickListener!: (() => void) | null
 
@@ -73,7 +75,8 @@ export class ProfileMenuComponent {
     }
 
     public onClickNotifications() {
-        console.log('TODO: Implement notifications')
+        this.profileInvitationsComponent.showDialog()
+        this.isDropdownVisible = false
     }
 
     public onClickSignOut() {
