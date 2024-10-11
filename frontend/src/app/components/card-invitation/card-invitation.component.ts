@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core'
 import { CardAccountComponent } from '../card-account/card-account.component'
 import { InvitationWithExtraData } from '../../api/api.types'
+import { DataService } from '../../core/services/data.service'
 
 @Component({
     standalone: true,
@@ -11,6 +12,8 @@ import { InvitationWithExtraData } from '../../api/api.types'
 export class CardInvitationComponent {
     @Input({ required: true }) invitation: null | InvitationWithExtraData = null
 
+    constructor(private readonly dataService: DataService) {}
+
     get groupGamesCount(): number {
         if (!this.invitation) {
             return 0
@@ -20,7 +23,8 @@ export class CardInvitationComponent {
     }
 
     acceptInvitation() {
-        console.log('accept invitation')
+        if (!this.invitation) return
+        this.dataService.acceptInvitation(this.invitation.id)
     }
 
     rejectInvitation() {

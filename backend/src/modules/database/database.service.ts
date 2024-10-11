@@ -548,7 +548,7 @@ export class DatabaseService implements OnModuleInit {
 
     createNotification(notificationDto: CreateNotificationBody) {
         return this._tursoExecute({
-            sql: 'INSERT INTO Notification (accountId, type, relatedUserGroupId, relatedGameId, message) VALUES (?, ?, ?, ?, ?)',
+            sql: 'INSERT INTO Notification (accountId, type, relatedGroupId, relatedGameId, message) VALUES (?, ?, ?, ?, ?)',
             args: [
                 notificationDto.accountId,
                 notificationDto.type,
