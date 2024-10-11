@@ -3,12 +3,12 @@ import { DatabaseService } from '../database/database.service'
 import { ResultSet } from '@libsql/client/.'
 import { invitationsSchema } from '../../common/schemas'
 import { CreateInvitationBody, CreateInvitationByUsernameBody, InvitationDto } from '../../common/types/invitation.type'
-import { UserGetDto } from 'src/common/types/user.type'
+import { UserGetDto } from '../../common/types/user.type'
 import { GroupsService } from '../groups/groups.service'
 import { GroupMembershipsService } from '../group-memberships/group-memberships.service'
 import { UsersService } from '../users/users.service'
 import { NotificationsService } from '../notifications/notifications.service'
-import { NotificationTypeEnum } from 'src/common/types/notification.type'
+import { NotificationTypeEnum } from '../../common/types/notification.type'
 
 @Injectable()
 export class InvitationsService {

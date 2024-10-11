@@ -5,8 +5,8 @@ import { CreateUserBody, UpdateUserBody, UserGetDto, UserUpdateGamesBody } from 
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
 import { GameDto } from '../../common/types/game.type'
 import { InvitationWithExtraData } from '../../common/types/invitation.type'
-import { SuccessDto } from 'src/common/types/auth.type'
-import { NotificationDto } from 'src/common/types/notification.type'
+import { SuccessDto } from '../../common/types/auth.type'
+import { NotificationDto } from '../../common/types/notification.type'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('users')
