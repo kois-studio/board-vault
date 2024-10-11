@@ -1,7 +1,7 @@
 <div class="shadow-md rounded-lg p-6 bg-zinc-800 relative">
     <!-- TOP RIGHT BUTTONS -->
-    <div class="flex gap-4 absolute top-3 right-3">
-        @if (group.createdBy !== userData?.id) {
+    <div class="absolute top-3 right-3">
+        @if (group.createdBy === userData?.id) {
         <button (click)="onEditGroup()" class="app-btn-primary py-1 px-2" title="Edit group">
             <i class="bi bi-pencil"></i>
         </button>

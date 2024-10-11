@@ -22,6 +22,8 @@ export const routes: Routes = [
             // accessible to authenticated users
             { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
             { path: 'games', component: GamesComponent, canActivate: [AuthGuard] },
+            // { path: 'group/:groupId/leave', component: GroupLeaveComponent, canActivate: [AuthGuard] },
+            // { path: 'group/:groupId/delete', component: GroupDeleteComponent, canActivate: [AuthGuard] },
         ],
     },
     {
@@ -31,6 +33,7 @@ export const routes: Routes = [
             // accessible to unauthenticated users
             { path: 'login', component: LoginComponent, canActivate: [AuthRedirectGuard] },
             { path: 'register', component: RegisterComponent, canActivate: [AuthRedirectGuard] },
+            // accessible to authenticated users
             { path: 'group/:groupId/edit', component: GroupEditComponent, canActivate: [AuthGuard] },
             { path: 'group/:groupId/meet/new', component: MeetNewComponent, canActivate: [AuthGuard] },
         ],
