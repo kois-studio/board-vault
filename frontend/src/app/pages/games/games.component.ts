@@ -7,7 +7,6 @@ import { DataService } from '../../core/services/data.service'
 @Component({
     standalone: true,
     imports: [CardGameComponent, ReactiveFormsModule],
-    selector: 'app-games',
     templateUrl: 'games.component.html',
 })
 export class GamesComponent {
