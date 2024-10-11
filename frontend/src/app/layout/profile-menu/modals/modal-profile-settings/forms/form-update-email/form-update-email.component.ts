@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common'
 import { Component, effect } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
-import { UserType } from '../../../../api/api.types'
-import { DataService } from '../../../../core/services/data.service'
+import type { UserType } from '../../../../../../api/api.types'
+import { DataService } from '../../../../../../core/services/data.service'
 
 @Component({
     standalone: true,
@@ -15,11 +15,7 @@ export class FormUpdateEmailComponent {
     public userData: UserType | null = null
 
     public updateEmailFormGroup = new FormGroup({
-        email: new FormControl(this.userData?.email, [
-            Validators.required,
-            Validators.email,
-            Validators.maxLength(128),
-        ]),
+        email: new FormControl(this.userData?.email, [Validators.required, Validators.email, Validators.maxLength(128)]),
     })
 
     constructor(private readonly dataService: DataService) {
@@ -33,8 +29,7 @@ export class FormUpdateEmailComponent {
 
     // Form controls
     get disableSubmit() {
-        const valuesAreUnchanged =
-            this.updateEmailFormGroup.value.email === this.userData?.email
+        const valuesAreUnchanged = this.updateEmailFormGroup.value.email === this.userData?.email
         return this.updateEmailFormGroup.invalid || valuesAreUnchanged
     }
 
@@ -42,7 +37,7 @@ export class FormUpdateEmailComponent {
     get email() {
         return this.updateEmailFormGroup.get('email')
     }
-    
+
     // Input classes
     get emailClass() {
         if (!this.email?.dirty && !this.email?.touched) return ''
@@ -60,7 +55,7 @@ export class FormUpdateEmailComponent {
         const userData = this.userData
         const email = this.updateEmailFormGroup.value.email
 
-        if (!userData || !email ) return
+        if (!userData || !email) return
 
         this.dataService.updateCurrentUserData({ email })
 
