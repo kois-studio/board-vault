@@ -64,3 +64,20 @@ export type InvitationWithAccountsData = InvitationType & {
     fromAccount: UserType
     toAccount: UserType
 }
+
+// #region Notification
+
+export type NotificationType = {
+    id: number
+    accountId: number
+    type: string
+    relatedGroupId: null | number
+    relatedGameId: null | number
+    message: string
+    createdAt: string
+    isRead: boolean
+}
+
+export const NotificationTypeEnum = {
+    InvitationAccepted: 'invitation_accepted',
+}

@@ -15,7 +15,7 @@ import { ProfileInvitationsComponent } from "../profile-invitations/profile-invi
 export class ProfileMenuComponent {
     public isDropdownVisible = false
     public userData: ReturnType<typeof this.dataService.currentUser> = null
-    public invitationsReceived: ReturnType<typeof this.dataService.invitationsReceived> = []
+    public userInvitations: ReturnType<typeof this.dataService.userInvitations> = []
 
     // Get the child component to be able to call its methods
     @ViewChild(ProfileSettingsComponent) profileSettingsComponent!: ProfileSettingsComponent
@@ -33,7 +33,7 @@ export class ProfileMenuComponent {
     ) {
         effect(() => {
             this.userData = this.dataService.currentUser()
-            this.invitationsReceived = this.dataService.invitationsReceived()
+            this.userInvitations = this.dataService.userInvitations()
         })
     }
 

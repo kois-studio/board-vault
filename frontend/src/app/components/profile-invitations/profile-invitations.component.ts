@@ -11,11 +11,11 @@ import { CardInvitationComponent } from "../card-invitation/card-invitation.comp
 
 export class ProfileInvitationsComponent {
     public isVisible = false
-    public invitationsReceived: ReturnType<typeof this.dataService.invitationsReceived> = []
+    public userInvitations: ReturnType<typeof this.dataService.userInvitations> = []
 
     constructor(private readonly dataService: DataService) {
         effect(() => {
-            this.invitationsReceived = this.dataService.invitationsReceived()
+            this.userInvitations = this.dataService.userInvitations()
         })
     }
 
