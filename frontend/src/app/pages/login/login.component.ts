@@ -3,7 +3,6 @@ import { RouterLink, RouterOutlet } from '@angular/router'
 import { FormLoginComponent } from './form-login/form-login.component'
 
 @Component({
-    selector: 'app-login',
     templateUrl: 'login.component.html',
     standalone: true,
     imports: [RouterLink, FormLoginComponent],

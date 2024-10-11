@@ -3,7 +3,6 @@ import { CardGroupComponent } from '../../components/card-group/card-group.compo
 import { DataService } from '../../core/services/data.service'
 
 @Component({
-    selector: 'app-dashboard',
     templateUrl: 'dashboard.component.html',
     standalone: true,
     imports: [CardGroupComponent],

@@ -3,7 +3,6 @@ import { RouterLink } from '@angular/router'
 import { FormRegisterComponent } from './form-register/form-register.component'
 
 @Component({
-    selector: 'app-register',
     templateUrl: 'register.component.html',
     standalone: true,
     imports: [RouterLink, FormRegisterComponent],
