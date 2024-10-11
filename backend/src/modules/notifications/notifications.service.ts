@@ -60,7 +60,7 @@ export class NotificationsService {
             return { success: true }
         } catch (error) {
             this.LOGGER.error('Failed to create notification', error)
-            return new ConflictException('Notification title already in use')
+            throw new ConflictException('Notification title already in use')
         }
     }
 

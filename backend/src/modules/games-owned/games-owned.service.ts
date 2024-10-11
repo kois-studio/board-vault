@@ -34,13 +34,13 @@ export class GamesOwnedService {
         return this._parseResultSet(resultSet)
     }
 
-    async getGamesOwnedById(accountId: number, gameId: number): Promise<GameOwnedDto | NotFoundException> {
+    async getGamesOwnedById(accountId: number, gameId: number): Promise<GameOwnedDto> {
         this.LOGGER.log(`Getting ownedGame with id ${accountId} ${gameId}`)
         const resultSet = await this.databaseService.getOwnedGameById(accountId, gameId)
         const ownedGames = this._parseResultSet(resultSet)
 
         if (ownedGames.length === 0) {
-            return new NotFoundException(`OwnedGame with id ${accountId} ${gameId} not found`)
+            throw new NotFoundException(`OwnedGame with id ${accountId} ${gameId} not found`)
         }
 
         return ownedGames[0]
@@ -54,7 +54,7 @@ export class GamesOwnedService {
             return { success: true }
         } catch (error) {
             this.LOGGER.error('Failed to create ownedGame', error)
-            return new InternalServerErrorException('Failed to create ownedGame')
+            throw new InternalServerErrorException('Failed to create ownedGame')
         }
     }
 
