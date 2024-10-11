@@ -15,11 +15,11 @@
             </h3>
 
             <ul class="pt-4 grid gap-y-4">
-                @for (invitation of invitationsReceived; track $index) {
+                @for (invitation of userInvitations; track $index) {
                 <li>
                     <app-card-invitation [invitation]="invitation" />
                 </li>
-                } @if (invitationsReceived.length === 0) {
+                } @if (userInvitations.length === 0) {
                 <li class="text-center pt-2">No invitations pending.</li>
                 }
             </ul>
