@@ -39,13 +39,13 @@ export class GroupsService {
         return this._parseResultSet(resultSet)
     }
 
-    async getGroupById(id: number): Promise<GroupDto | NotFoundException> {
+    async getGroupById(id: number): Promise<GroupDto> {
         this.LOGGER.log(`Getting group with id ${id}`)
         const resultSet = await this.databaseService.getGroupById(id)
         const groups = this._parseResultSet(resultSet)
 
         if (groups.length === 0) {
-            return new NotFoundException(`Group with id ${id} not found`)
+            throw new NotFoundException(`Group with id ${id} not found`)
         }
 
         return groups[0]
@@ -59,7 +59,7 @@ export class GroupsService {
             return { success: true }
         } catch (error) {
             this.LOGGER.error('Failed to create group', error)
-            return new NotFoundException('User not found')
+            throw new NotFoundException('User not found')
         }
     }
 

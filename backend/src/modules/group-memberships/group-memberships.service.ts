@@ -35,13 +35,13 @@ export class GroupMembershipsService {
         return this._parseResultSet(resultSet)
     }
 
-    async getGroupMembershipById(accountId: number, groupId: number): Promise<GroupMembershipDto | NotFoundException> {
+    async getGroupMembershipById(accountId: number, groupId: number): Promise<GroupMembershipDto> {
         this.LOGGER.log(`Getting membership with id ${accountId} ${groupId}`)
         const resultSet = await this.databaseService.getGroupMembershipById(accountId, groupId)
         const memberships = this._parseResultSet(resultSet)
 
         if (memberships.length === 0) {
-            return new NotFoundException(`Membership with id ${accountId} ${groupId} not found`)
+            throw new NotFoundException(`Membership with id ${accountId} ${groupId} not found`)
         }
 
         return memberships[0]
@@ -55,7 +55,7 @@ export class GroupMembershipsService {
             return { success: true }
         } catch (error) {
             this.LOGGER.error('Failed to create membership', error)
-            return new InternalServerErrorException('Failed to create membership')
+            throw new InternalServerErrorException('Failed to create membership')
         }
     }
 
