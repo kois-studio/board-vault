@@ -2,7 +2,15 @@ import { Injectable, type WritableSignal, effect, signal } from '@angular/core'
 import { Router } from '@angular/router'
 import { catchError, concatMap, from, of, tap } from 'rxjs'
 import { Api } from '../../api/api'
-import type { GameType, GroupWithMembersAndGames, InvitationType, InvitationWithAccountsData, InvitationWithExtraData, NotificationType, UserType } from '../../api/api.types'
+import type {
+    GameType,
+    GroupWithMembersAndGames,
+    InvitationType,
+    InvitationWithAccountsData,
+    InvitationWithExtraData,
+    NotificationType,
+    UserType,
+} from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
 import { LocalStorageService } from './local-storage.service'
 
@@ -328,7 +336,8 @@ export class DataService {
             error: (error) => {
                 if (error.status === 404) {
                     return this.toastService.error('User or Group not found')
-                } else if (error.status === 400) {
+                }
+                if (error.status === 400) {
                     return this.toastService.error('You are the group creator, you cannot leave!')
                 }
                 this.toastService.error('Error leaving group')
@@ -341,7 +350,7 @@ export class DataService {
     public acceptInvitation(invitationId: number) {
         const currentUser = this.currentUser()
         if (!currentUser) return
-        
+
         // 1.
         this.api.acceptInvitation(invitationId).subscribe({
             next: (res) => {

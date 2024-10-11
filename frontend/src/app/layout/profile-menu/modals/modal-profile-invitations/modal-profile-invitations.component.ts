@@ -1,15 +1,14 @@
-import { Component, effect } from '@angular/core';
-import { DataService } from '../../core/services/data.service';
-import { CardInvitationComponent } from "../card-invitation/card-invitation.component";
+import { Component, effect } from '@angular/core'
+import { CardInvitationComponent } from '../../../../components/card-invitation/card-invitation.component'
+import { DataService } from '../../../../core/services/data.service'
 
 @Component({
     standalone: true,
     imports: [CardInvitationComponent],
-    selector: 'app-profile-invitations',
-    templateUrl: 'profile-invitations.component.html'
+    selector: 'app-modal-profile-invitations',
+    templateUrl: 'modal-profile-invitations.component.html',
 })
-
-export class ProfileInvitationsComponent {
+export class ModalProfileInvitationsComponent {
     public isVisible = false
     public userInvitations: ReturnType<typeof this.dataService.userInvitations> = []
 

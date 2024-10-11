@@ -6,12 +6,12 @@ import { LayoutCompleteComponent } from './layout/layout-complete/layout-complet
 import { DashboardComponent } from './pages/dashboard/dashboard.component'
 import { GamesComponent } from './pages/games/games.component'
 import { GroupEditComponent } from './pages/group-edit/group-edit.component'
+import { GroupLeaveComponent } from './pages/group-leave/group-leave.component'
 import { LandingComponent } from './pages/landing/landing.component'
 import { LoginComponent } from './pages/login/login.component'
 import { MeetNewComponent } from './pages/meet-new/meet-new.component'
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component'
 import { RegisterComponent } from './pages/register/register.component'
-import { GroupLeaveComponent } from './pages/group-leave/group-leave.component'
 
 export const routes: Routes = [
     {

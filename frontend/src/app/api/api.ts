@@ -1,7 +1,15 @@
 import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { environment } from '../../environments/environment'
-import type { GameType, GroupWithMembersAndGames, InvitationType, InvitationWithAccountsData, InvitationWithExtraData, NotificationType, UserType } from './api.types'
+import type {
+    GameType,
+    GroupWithMembersAndGames,
+    InvitationType,
+    InvitationWithAccountsData,
+    InvitationWithExtraData,
+    NotificationType,
+    UserType,
+} from './api.types'
 
 @Injectable({ providedIn: 'root' })
 export class Api {
