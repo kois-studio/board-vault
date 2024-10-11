@@ -15,13 +15,12 @@
             </h3>
 
             <ul class="pt-4 grid gap-y-4">
-                @for (invitation of userNotifications; track $index) {
+                @for (notification of userNotifications; track $index) {
                 <li>
-                    <!-- TODO: write a <card-invitation /> that handles invitation.type as <i> -->
-                    {{ invitation.message }}
+                    <app-card-notification [notification]="notification" />
                 </li>
                 } @if (userNotifications.length === 0) {
-                <li class="text-center pt-2">No invitations pending.</li>
+                <li class="text-center pt-2">No notifications pending.</li>
                 }
             </ul>
         </div>
