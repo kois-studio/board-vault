@@ -179,6 +179,17 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    getUserNotifications(userId: number) {
+        return this._tursoExecute({
+            sql: `
+                SELECT n.id, n.accountId, n.type, n.relatedGroupId, n.relatedGameId, n.message, n.createdAt, n.isRead
+                FROM Notification n
+                WHERE n.accountId = ?
+            `,
+            args: [userId],
+        })
+    }
+
     getUserInvitationsReceived(userId: number) {
         return this._tursoExecute({
             sql: `
@@ -552,7 +563,7 @@ export class DatabaseService implements OnModuleInit {
             args: [
                 notificationDto.accountId,
                 notificationDto.type,
-                notificationDto.relatedUserGroupId,
+                notificationDto.relatedGroupId,
                 notificationDto.relatedGameId,
                 notificationDto.message,
             ],
@@ -575,9 +586,9 @@ export class DatabaseService implements OnModuleInit {
             args.push(partialNotificationDto.type)
         }
 
-        if (partialNotificationDto.relatedUserGroupId) {
-            fields.push('relatedUserGroupId = ?')
-            args.push(partialNotificationDto.relatedUserGroupId)
+        if (partialNotificationDto.relatedGroupId) {
+            fields.push('relatedGroupId = ?')
+            args.push(partialNotificationDto.relatedGroupId)
         }
 
         if (partialNotificationDto.relatedGameId) {
