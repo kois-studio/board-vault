@@ -79,4 +79,8 @@ export class Api {
     createInvitation(groupId: number, fromAccountId: number, username: string) {
         return this.http.post<UserType>(`${this.url}/invitations/byUsername`, { groupId, fromAccountId, username })
     }
+
+    acceptInvitation(invitationId: number) {
+        return this.http.post<{ success: true }>(`${this.url}/invitations/${invitationId}/accept`, {})
+    }
 }
