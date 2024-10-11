@@ -32,7 +32,7 @@ export class UsersController {
     @ApiOperation({ summary: 'Get user by id', deprecated: true })
     @ApiResponse({ status: 200, type: UserGetDto, description: 'User found' })
     @ApiResponse({ status: 404, description: 'User not found' })
-    @ApiParam({ name: 'userId', type: String })
+    @ApiParam({ name: 'userId', type: Number })
     getUserById(@Param('userId', ParseIntPipe) userId: number) {
         return this.usersService.getUserById(userId)
     }
@@ -50,7 +50,7 @@ export class UsersController {
     @Delete('/:userId')
     @ApiOperation({ summary: 'Delete a user by Id', deprecated: true })
     @ApiResponse({ status: 200, description: 'The user has been succesfully deleted' })
-    @ApiParam({ name: 'userId', type: String, description: 'ID of the user to be deleted' })
+    @ApiParam({ name: 'userId', type: Number, description: 'ID of the user to be deleted' })
     async deleteUserById(@Param('userId', ParseIntPipe) userId: number) {
         return this.usersService.deleteUserById(userId)
     }
@@ -67,7 +67,7 @@ export class UsersController {
     @Get('/:userId/groups')
     @ApiOperation({ summary: 'Get groups with members' })
     @ApiResponse({ status: 200, type: [Number] })
-    @ApiParam({ name: 'userId', type: String })
+    @ApiParam({ name: 'userId', type: Number })
     getUserGroups(@Param('userId', ParseIntPipe) userId: number) {
         return this.usersService.getUserGroups(userId)
     }
@@ -75,14 +75,14 @@ export class UsersController {
     @Get('/:userId/games')
     @ApiOperation({ summary: 'Get games owned by user' })
     @ApiResponse({ status: 200, type: [GameDto] })
-    @ApiParam({ name: 'userId', type: String })
+    @ApiParam({ name: 'userId', type: Number })
     getUserGames(@Param('userId', ParseIntPipe) userId: number) {
         return this.usersService.getUserGames(userId)
     }
 
     @Put('/:userId/games')
     @ApiOperation({ summary: 'Modify games owned by user' })
-    @ApiParam({ name: 'userId', type: String })
+    @ApiParam({ name: 'userId', type: Number })
     @ApiBody({ type: UserUpdateGamesBody, description: 'Game IDs to add and remove from user' })
     @ApiResponse({ status: 200, type: SuccessDto, description: 'The games have been successfully updated.' })
     @ApiResponse({ status: 404, description: 'User not found.' })
@@ -93,7 +93,7 @@ export class UsersController {
     @Get('/:userId/invitationsReceived')
     @ApiOperation({ summary: 'Get invitations received by user' })
     @ApiResponse({ status: 200, type: [InvitationWithExtraData] })
-    @ApiParam({ name: 'userId', type: String })
+    @ApiParam({ name: 'userId', type: Number })
     getUserInvitationsReceived(@Param('userId', ParseIntPipe) userId: number) {
         // TODO: in a future, trim unnecessary data from the response
         return this.usersService.getUserInvitationsReceived(userId)
