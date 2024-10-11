@@ -4,13 +4,17 @@ import { CreateUserBody, UpdateUserBody, UserCompleteDto, UserGetDto } from '../
 import { ResultSet } from '@libsql/client/.'
 import { usersSchema } from '../../common/schemas'
 import { GameDto } from '../../common/types/game.type'
-import { InvitationDto } from '../../common/types/invitation.type'
+import { InvitationDto, InvitationWithExtraData } from '../../common/types/invitation.type'
+import { GroupsService } from '../groups/groups.service'
 
 @Injectable()
 export class UsersService {
     private readonly LOGGER: Logger = new Logger(this.constructor.name)
 
-    constructor(private readonly databaseService: DatabaseService) {}
+    constructor(
+        private readonly databaseService: DatabaseService,
+        private readonly groupsService: GroupsService,
+    ) {}
 
     private _parseResultSet(resultSet: ResultSet): Array<UserCompleteDto> {
         const users = resultSet.rows.map(row => ({
@@ -46,13 +50,13 @@ export class UsersService {
         }))
     }
 
-    async getUserById(id: number): Promise<UserGetDto | NotFoundException> {
+    async getUserById(id: number): Promise<UserGetDto> {
         this.LOGGER.log(`Getting user with id ${id}`)
         const resultSet = await this.databaseService.getUserById(id)
         const users = this._parseResultSet(resultSet)
 
         if (users.length === 0) {
-            return new NotFoundException(`User with id ${id} not found`)
+            throw new NotFoundException(`User with id ${id} not found`)
         }
         users[0].password = undefined!
 
@@ -63,13 +67,13 @@ export class UsersService {
      * password is needed for auth.service,
      * thats why `include_password` option available
      */
-    async getUserByEmail(email: string, include_password = false): Promise<UserGetDto | UserCompleteDto | NotFoundException> {
+    async getUserByEmail(email: string, include_password = false): Promise<UserGetDto | UserCompleteDto> {
         this.LOGGER.log(`Getting user with email ${email}`)
         const resultSet = await this.databaseService.getUserByEmail(email)
         const users = this._parseResultSet(resultSet)
 
         if (users.length === 0) {
-            return new NotFoundException(`User with email ${email} not found`)
+            throw new NotFoundException(`User with email ${email} not found`)
         }
 
         return {
@@ -86,7 +90,7 @@ export class UsersService {
             return { success: true }
         } catch (error) {
             this.LOGGER.error('Failed to create user', error)
-            return new ConflictException('Email or Username already in use')
+            throw new ConflictException('Email or Username already in use')
         }
     }
 
@@ -133,18 +137,26 @@ export class UsersService {
         }))
     }
 
-    async getUserInvitationsReceived(userId: number): Promise<Array<InvitationDto>> {
+    async getUserInvitationsReceived(userId: number): Promise<Array<InvitationWithExtraData>> {
         this.LOGGER.log('Getting invitations for user')
-        const resultSet = await this.databaseService.getUserInvitationsReceived(userId)
-
-        return resultSet.rows.map(row => ({
+        const resultSet1 = await this.databaseService.getUserInvitationsReceived(userId)
+        const invitations: Array<InvitationWithExtraData> = resultSet1.rows.map(row => ({
             id: Number(row[0]),
             groupId: Number(row[1]),
             fromAccountId: Number(row[2]),
             toAccountId: Number(row[3]),
             status: String(row[4]),
             sentAt: String(row[5]),
+            fromAccount: undefined!,
+            group: undefined!,
         }))
+
+        for (const invitation of invitations) {
+            invitation.group = await this.groupsService.getGroupWithMembersAndGames(invitation.groupId)
+            invitation.fromAccount = await this.getUserById(invitation.fromAccountId)
+        }
+
+        return invitations
     }
 
     async getUserInvitationsSent(userId: number): Promise<Array<InvitationDto>> {
