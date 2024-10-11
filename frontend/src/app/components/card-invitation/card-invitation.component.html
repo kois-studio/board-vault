@@ -1,0 +1,17 @@
+@if (invitation) {
+<div class="bg-zinc-800 px-4 py-2 rounded-lg">
+    <h2 class="font-bold text-lg tracking-wider text-center">{{ invitation.group.name }}</h2>
+    <div class="flex justify-between items-center">
+        <!-- LEFT COL: user and group data -->
+        <div>
+            <app-card-account [member]="invitation.fromAccount" [isOwner]="true" />
+        </div>
+    
+        <!-- RIGHT COL: buttons -->
+        <div class="flex p-2 gap-4">
+            <button class="app-btn-primary"><i class="bi bi-check"></i> Accept</button>
+            <button class="app-btn-error"><i class="bi bi-x"></i> Decline</button>
+        </div>
+    </div>
+</div>
+}
