@@ -296,4 +296,30 @@ export class DataService {
                 },
             })
     }
+
+    // #region invitations
+
+    public acceptInvitation(invitationId: number) {
+        const currentUser = this.currentUser()
+        if (!currentUser) return
+        
+        // 1.
+        this.api.acceptInvitation(invitationId).subscribe({
+            next: (res) => {
+                // 2.
+                this.invitationsReceived.update((invitations) => invitations.filter((invitation) => invitation.id !== invitationId))
+
+                // refresh groups (you have a new one now)
+                // TODO: smoother way to update the groups (don't reload everything)
+                this.userGroups.set([])
+                this._getUserGroups(currentUser.id)
+
+                // 3.
+                this.toastService.success('You have joined the group!')
+            },
+            error: () => {
+                this.toastService.error('Error accepting invitation')
+            },
+        })
+    }
 }
