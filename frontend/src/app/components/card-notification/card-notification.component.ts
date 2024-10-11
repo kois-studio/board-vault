@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, Input } from '@angular/core'
+import { Component, Input, OnInit } from '@angular/core'
 import type { NotificationType } from '../../api/api.types'
 import { formatDate } from '../../core/utils/formatDate'
 
@@ -9,13 +9,16 @@ import { formatDate } from '../../core/utils/formatDate'
     selector: 'app-card-notification',
     templateUrl: 'card-notification.component.html',
 })
-export class CardNotificationComponent {
+export class CardNotificationComponent implements OnInit {
     @Input({ required: true }) notification: null | NotificationType = null
 
-    get notificationDate() {
-        if (!this.notification) return ''
-        const date = new Date(this.notification?.createdAt)
-        return formatDate(date.getTime())
+    public notificationDate = ''
+
+    ngOnInit() {
+        if (this.notification) {
+            const date = new Date(this.notification?.createdAt)
+            this.notificationDate = formatDate(date.getTime())
+        }
     }
 
     markAsRead(notificationId: number) {
