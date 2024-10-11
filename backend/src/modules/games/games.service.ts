@@ -38,13 +38,13 @@ export class GamesService {
         return this._parseResultSet(resultSet)
     }
 
-    async getGameById(id: number): Promise<GameDto | NotFoundException> {
+    async getGameById(id: number): Promise<GameDto> {
         this.LOGGER.log(`Getting game with id ${id}`)
         const resultSet = await this.databaseService.getGameById(id)
         const games = this._parseResultSet(resultSet)
 
         if (games.length === 0) {
-            return new NotFoundException(`Game with id ${id} not found`)
+            throw new NotFoundException(`Game with id ${id} not found`)
         }
         return games[0]
     }
@@ -57,7 +57,7 @@ export class GamesService {
             return { success: true }
         } catch (error) {
             this.LOGGER.error('Failed to create game', error)
-            return new ConflictException('Game title already in use')
+            throw new ConflictException('Game title already in use')
         }
     }
 
