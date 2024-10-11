@@ -1,9 +1,10 @@
 import { Component, effect } from '@angular/core'
+import { CardNotificationComponent } from '../../../../components/card-notification/card-notification.component'
 import { DataService } from '../../../../core/services/data.service'
 
 @Component({
     standalone: true,
-    imports: [],
+    imports: [CardNotificationComponent],
     selector: 'app-modal-profile-notifications',
     templateUrl: 'modal-profile-notifications.component.html',
 })
