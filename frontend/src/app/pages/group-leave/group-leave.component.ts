@@ -41,6 +41,6 @@ export class GroupLeaveComponent {
     }
 
     onConfirmLeaveGroup() {
-        console.log('onConfirmLeaveGroup')
+        this.dataService.leaveGroup(this.groupData!.id)
     }
 }

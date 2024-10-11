@@ -64,6 +64,10 @@ export class Api {
         return this.http.get<GroupWithMembersAndGames>(`${this.url}/groups/${groupId}/withMembersAndGames`)
     }
 
+    leaveGroup(accountId: number, groupId: number) {
+        return this.http.post<{ success: true }>(`${this.url}/users/${accountId}/group/${groupId}/leave`, {})
+    }
+
     // #region games
 
     getGames() {
