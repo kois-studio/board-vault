@@ -1,4 +1,4 @@
-import { Component, effect, OnInit } from '@angular/core';
+import { Component, effect } from '@angular/core';
 import { DataService } from '../../core/services/data.service';
 import { CardInvitationComponent } from "../card-invitation/card-invitation.component";
 
