@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const nnotificationSchema = z.object({
+export const notificationSchema = z.object({
     id: z.number().int(),
     accountId: z.number().int(), // ref: Account
     type: z.string().min(1), // Type of notification, e.g., 'expelled', 'member_left'
@@ -11,4 +11,4 @@ export const nnotificationSchema = z.object({
     isRead: z.boolean(),
 })
 
-export const nnotificationsSchema = z.array(nnotificationSchema)
+export const notificationsSchema = z.array(notificationSchema)
