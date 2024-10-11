@@ -297,6 +297,27 @@ export class DataService {
             })
     }
 
+    // #region leave group
+
+    public leaveGroup(groupId: number) {
+        const currentUser = this.currentUser()
+        if (!currentUser) return
+
+        // 1.
+        this.api.leaveGroup(currentUser.id, groupId).subscribe({
+            next: (res) => {
+                // 2.
+                this.userGroups.update((groups) => groups.filter((group) => group.id !== groupId))
+
+                // 3.
+                this.toastService.success('You have left the group')
+            },
+            error: () => {
+                this.toastService.error('Error leaving group')
+            },
+        })
+    }
+
     // #region invitations
 
     public acceptInvitation(invitationId: number) {
