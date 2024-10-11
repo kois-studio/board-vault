@@ -1,8 +1,8 @@
 import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { DatabaseService } from '../database/database.service'
 import { ResultSet } from '@libsql/client/.'
-import { CreateNotificationBody, NotificationDto, UpdateNotificationBody } from 'src/common/types/notification.type'
-import { notificationsSchema } from 'src/common/schemas'
+import { CreateNotificationBody, NotificationDto, UpdateNotificationBody } from '../../common/types/notification.type'
+import { notificationsSchema } from '../../common/schemas'
 
 @Injectable()
 export class NotificationsService {
@@ -16,7 +16,7 @@ export class NotificationsService {
             id: Number(row[0]),
             accountId: Number(row[1]),
             type: String(row[2]),
-            relatedUserGroupId: row[3],
+            relatedGroupId: row[3],
             relatedGameId: row[4],
             message: String(row[5]),
             createdAt: String(row[6]),

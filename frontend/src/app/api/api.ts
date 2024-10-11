@@ -1,7 +1,15 @@
 import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { environment } from '../../environments/environment'
-import type { GameType, GroupWithMembersAndGames, InvitationType, InvitationWithAccountsData, InvitationWithExtraData, UserType } from './api.types'
+import type {
+    GameType,
+    GroupWithMembersAndGames,
+    InvitationType,
+    InvitationWithAccountsData,
+    InvitationWithExtraData,
+    NotificationType,
+    UserType,
+} from './api.types'
 
 @Injectable({ providedIn: 'root' })
 export class Api {
@@ -54,6 +62,10 @@ export class Api {
         return this.http.get<Array<InvitationWithExtraData>>(`${this.url}/users/${accountId}/invitationsReceived`)
     }
 
+    getUserNotifications(accountId: number) {
+        return this.http.get<Array<NotificationType>>(`${this.url}/users/${accountId}/notifications`)
+    }
+
     // #region groups
 
     getGroupInvitations(groupId: number) {
@@ -62,6 +74,10 @@ export class Api {
 
     getGroupWithMembersAndGames(groupId: number) {
         return this.http.get<GroupWithMembersAndGames>(`${this.url}/groups/${groupId}/withMembersAndGames`)
+    }
+
+    leaveGroup(accountId: number, groupId: number) {
+        return this.http.post<{ success: true }>(`${this.url}/users/${accountId}/group/${groupId}/leave`, {})
     }
 
     // #region games

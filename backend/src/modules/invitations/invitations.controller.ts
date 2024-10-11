@@ -4,7 +4,7 @@ import { InvitationsService } from './invitations.service'
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
 import { CreateInvitationBody, CreateInvitationByUsernameBody, InvitationDto } from '../../common/types/invitation.type'
 import { SuccessDto } from '../../common/types/auth.type'
-import { UserGetDto } from 'src/common/types/user.type'
+import { UserGetDto } from '../../common/types/user.type'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('invitations')

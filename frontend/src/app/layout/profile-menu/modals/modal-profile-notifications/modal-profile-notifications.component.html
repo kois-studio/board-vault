@@ -1,0 +1,30 @@
+<!-- Dialog overlay -->
+@if (isVisible) {
+<div class="fixed inset-0 bg-zinc-900 bg-opacity-50 flex justify-center items-center">
+    <!-- Dialog box -->
+    <div class="bg-zinc-900 rounded-2xl border border-zinc-700 w-3/4 max-w-xl relative">
+        <!-- Close button -->
+        <button (click)="hideDialog()" class="py-2 px-4 rounded-lg hover:bg-zinc-800 absolute top-2 right-2">
+            <i class="bi bi-x-lg"></i>
+        </button>
+        <!-- Dialog content -->
+        <div class="p-8">
+            <h2 class="text-2xl font-bold tracking-wider"><i class="bi bi-bell"></i> Notifications</h2>
+            <h3 class="text-gray-400 text-sm border-b border-zinc-500 py-4">
+                Important updates and changes in your groups.
+            </h3>
+
+            <ul class="pt-4 grid gap-y-4">
+                @for (invitation of userNotifications; track $index) {
+                <li>
+                    <!-- TODO: write a <card-invitation /> that handles invitation.type as <i> -->
+                    {{ invitation.message }}
+                </li>
+                } @if (userNotifications.length === 0) {
+                <li class="text-center pt-2">No invitations pending.</li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+}

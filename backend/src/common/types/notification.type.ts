@@ -14,7 +14,7 @@ export class NotificationDto {
     type: string
 
     @ApiProperty({ example: 12345 })
-    relatedUserGroupId: null | number
+    relatedGroupId: null | number
 
     @ApiProperty({ example: 12345 })
     relatedGameId: null | number
@@ -38,7 +38,7 @@ export class CreateNotificationBody extends OmitType(NotificationDto, ['id', 'cr
  * PUT requests --> editable fields
  */
 export class UpdateNotificationBody extends PartialType(
-    PickType(NotificationDto, ['accountId', 'type', 'relatedUserGroupId', 'relatedGameId', 'message', 'isRead']),
+    PickType(NotificationDto, ['accountId', 'type', 'relatedGroupId', 'relatedGameId', 'message', 'isRead']),
 ) {}
 
 export const NotificationTypeEnum = {

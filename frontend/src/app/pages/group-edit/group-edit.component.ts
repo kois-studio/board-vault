@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common'
 import { Component, effect } from '@angular/core'
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router'
-import { Api } from '../../api/api'
 import { GameType } from '../../api/api.types'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
 import { DataService } from '../../core/services/data.service'
@@ -10,7 +9,6 @@ import { DataService } from '../../core/services/data.service'
 @Component({
     standalone: true,
     imports: [CommonModule, ImageProfileComponent, ReactiveFormsModule],
-    selector: 'group-edit',
     templateUrl: 'group-edit.component.html',
 })
 export class GroupEditComponent {
@@ -30,7 +28,6 @@ export class GroupEditComponent {
     public isLoading = false
 
     constructor(
-        private readonly api: Api,
         private readonly router: Router,
         private readonly route: ActivatedRoute,
         private readonly dataService: DataService,
