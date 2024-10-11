@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common'
-import { Component, effect, Input } from '@angular/core'
+import { Component, Input, effect } from '@angular/core'
 import { Router } from '@angular/router'
-import { CardAccountComponent } from "../card-account/card-account.component"
-import { DataService } from '../../core/services/data.service'
 import type { GroupWithMembersAndGames } from '../../api/api.types'
 import type { GameType, InvitationWithAccountsData } from '../../api/api.types'
+import { DataService } from '../../core/services/data.service'
+import { CardAccountComponent } from '../card-account/card-account.component'
 
 @Component({
     standalone: true,
@@ -42,7 +42,7 @@ export class CardGroupComponent {
     onEditGroup() {
         this.router.navigate(['/group', this.group.id, 'edit'])
     }
-    
+
     onLeaveGroup() {
         this.router.navigate(['/group', this.group.id, 'leave'])
     }

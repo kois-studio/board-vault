@@ -6,6 +6,7 @@ import { LayoutCompleteComponent } from './layout/layout-complete/layout-complet
 import { DashboardComponent } from './pages/dashboard/dashboard.component'
 import { GamesComponent } from './pages/games/games.component'
 import { GroupEditComponent } from './pages/group-edit/group-edit.component'
+import { GroupLeaveComponent } from './pages/group-leave/group-leave.component'
 import { LandingComponent } from './pages/landing/landing.component'
 import { LoginComponent } from './pages/login/login.component'
 import { MeetNewComponent } from './pages/meet-new/meet-new.component'
@@ -22,8 +23,6 @@ export const routes: Routes = [
             // accessible to authenticated users
             { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
             { path: 'games', component: GamesComponent, canActivate: [AuthGuard] },
-            // { path: 'group/:groupId/leave', component: GroupLeaveComponent, canActivate: [AuthGuard] },
-            // { path: 'group/:groupId/delete', component: GroupDeleteComponent, canActivate: [AuthGuard] },
         ],
     },
     {
@@ -35,6 +34,8 @@ export const routes: Routes = [
             { path: 'register', component: RegisterComponent, canActivate: [AuthRedirectGuard] },
             // accessible to authenticated users
             { path: 'group/:groupId/edit', component: GroupEditComponent, canActivate: [AuthGuard] },
+            { path: 'group/:groupId/leave', component: GroupLeaveComponent, canActivate: [AuthGuard] },
+            // { path: 'group/:groupId/delete', component: GroupDeleteComponent, canActivate: [AuthGuard] },
             { path: 'group/:groupId/meet/new', component: MeetNewComponent, canActivate: [AuthGuard] },
         ],
     },

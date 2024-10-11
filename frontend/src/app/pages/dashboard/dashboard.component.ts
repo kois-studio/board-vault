@@ -4,7 +4,6 @@ import { DataService } from '../../core/services/data.service'
 import { RouterLink } from '@angular/router'
 
 @Component({
-    selector: 'app-dashboard',
     templateUrl: 'dashboard.component.html',
     standalone: true,
     imports: [CardGroupComponent, RouterLink],

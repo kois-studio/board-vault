@@ -2,7 +2,15 @@ import { Injectable, type WritableSignal, effect, signal } from '@angular/core'
 import { Router } from '@angular/router'
 import { catchError, concatMap, from, of, tap } from 'rxjs'
 import { Api } from '../../api/api'
-import type { GameType, GroupWithMembersAndGames, InvitationType, InvitationWithAccountsData, InvitationWithExtraData, UserType } from '../../api/api.types'
+import type {
+    GameType,
+    GroupWithMembersAndGames,
+    InvitationType,
+    InvitationWithAccountsData,
+    InvitationWithExtraData,
+    NotificationType,
+    UserType,
+} from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
 import { LocalStorageService } from './local-storage.service'
 
@@ -12,9 +20,10 @@ export class DataService {
     // --------------------------------------------------------------------------
     //         ARRAYS OF DATA
     // --------------------------------------------------------------------------
-    public userGroups: WritableSignal<Array<GroupWithMembersAndGames>> = signal([])
     public userGames: WritableSignal<Array<GameType>> = signal([])
-    public invitationsReceived: WritableSignal<Array<InvitationWithExtraData>> = signal([])
+    public userGroups: WritableSignal<Array<GroupWithMembersAndGames>> = signal([])
+    public userNotifications: WritableSignal<Array<NotificationType>> = signal([])
+    public userInvitations: WritableSignal<Array<InvitationWithExtraData>> = signal([])
 
     // list of all games available to select
     public gamesList: WritableSignal<Array<GameType>> = signal([])
@@ -51,6 +60,7 @@ export class DataService {
                 // 2. Get the user's groups and invitations
                 this._getUserGroups(userType.id)
                 this._getUserInvitations(userType.id)
+                this._getUserNotifications(userType.id)
             },
             error: (error) => {
                 if (error.status === 401) {
@@ -69,10 +79,21 @@ export class DataService {
     private _getUserInvitations(userId: number) {
         this.api.getInvitationsReceived(userId).subscribe({
             next: (invitations) => {
-                this.invitationsReceived.set(invitations)
+                this.userInvitations.set(invitations)
             },
             error: () => {
                 this.toastService.error("Error retrieving user's invitations")
+            },
+        })
+    }
+
+    private _getUserNotifications(userId: number) {
+        this.api.getUserNotifications(userId).subscribe({
+            next: (notifications) => {
+                this.userNotifications.set(notifications)
+            },
+            error: () => {
+                this.toastService.error("Error retrieving user's notifications")
             },
         })
     }
@@ -145,7 +166,7 @@ export class DataService {
         this.currentUser.set(null)
         this.userGroups.set([])
         this.gamesList.set([])
-        this.invitationsReceived.set([])
+        this.userInvitations.set([])
         this.invitationsGroupIndex.set({})
     }
 
@@ -297,17 +318,44 @@ export class DataService {
             })
     }
 
+    // #region leave group
+
+    public leaveGroup(groupId: number) {
+        const currentUser = this.currentUser()
+        if (!currentUser) return
+
+        // 1.
+        this.api.leaveGroup(currentUser.id, groupId).subscribe({
+            next: (res) => {
+                // 2.
+                this.userGroups.update((groups) => groups.filter((group) => group.id !== groupId))
+
+                // 3.
+                this.toastService.success('You have left the group')
+            },
+            error: (error) => {
+                if (error.status === 404) {
+                    return this.toastService.error('User or Group not found')
+                }
+                if (error.status === 400) {
+                    return this.toastService.error('You are the group creator, you cannot leave!')
+                }
+                this.toastService.error('Error leaving group')
+            },
+        })
+    }
+
     // #region invitations
 
     public acceptInvitation(invitationId: number) {
         const currentUser = this.currentUser()
         if (!currentUser) return
-        
+
         // 1.
         this.api.acceptInvitation(invitationId).subscribe({
             next: (res) => {
                 // 2.
-                this.invitationsReceived.update((invitations) => invitations.filter((invitation) => invitation.id !== invitationId))
+                this.userInvitations.update((invitations) => invitations.filter((invitation) => invitation.id !== invitationId))
 
                 // refresh groups (you have a new one now)
                 // TODO: smoother way to update the groups (don't reload everything)

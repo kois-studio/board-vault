@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common'
+import { BadRequestException, ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { DatabaseService } from '../database/database.service'
 import { CreateUserBody, UpdateUserBody, UserCompleteDto, UserGetDto } from '../../common/types/user.type'
 import { ResultSet } from '@libsql/client/.'
@@ -6,6 +6,7 @@ import { usersSchema } from '../../common/schemas'
 import { GameDto } from '../../common/types/game.type'
 import { InvitationWithExtraData } from '../../common/types/invitation.type'
 import { GroupsService } from '../groups/groups.service'
+import { NotificationDto } from '../../common/types/notification.type'
 
 @Injectable()
 export class UsersService {
@@ -137,6 +138,23 @@ export class UsersService {
         }))
     }
 
+    async getUserNotifications(userId: number): Promise<Array<NotificationDto>> {
+        this.LOGGER.log(`Getting all notifications for user ${userId}`)
+        const userData = await this.getUserById(userId)
+        const resultSet = await this.databaseService.getUserNotifications(userData.id)
+
+        return resultSet.rows.map(row => ({
+            id: Number(row[0]),
+            accountId: Number(row[1]),
+            type: String(row[2]),
+            relatedGroupId: row[3] === null ? null : Number(row[3]),
+            relatedGameId: row[4] === null ? null : Number(row[4]),
+            message: String(row[5]),
+            createdAt: String(row[6]),
+            isRead: Boolean(row[7]),
+        }))
+    }
+
     async getUserInvitationsReceived(userId: number): Promise<Array<InvitationWithExtraData>> {
         this.LOGGER.log('Getting invitations for user')
         const resultSet1 = await this.databaseService.getUserInvitationsReceived(userId)
@@ -169,5 +187,25 @@ export class UsersService {
             this.LOGGER.error('Failed to update games for user', error)
             throw new NotFoundException('Failed to update games for user')
         }
+    }
+
+    async leaveGroup(userId: number, groupId: number): Promise<{ success: boolean }> {
+        this.LOGGER.log(`User with id ${userId} leaving group with id ${groupId}`)
+
+        // Step 1: Get user data
+        const userData = await this.getUserById(userId)
+
+        // Step 2: Get group data
+        const groupData = await this.groupsService.getGroupWithMembersAndGames(groupId)
+
+        // Step 3: Check if user is owner
+        if (groupData.createdBy === userData.id) {
+            throw new BadRequestException('Owner cannot leave group')
+        }
+
+        // Step 4: Leave group
+        await this.databaseService.deleteGroupMembershipById(userId, groupId)
+
+        return { success: true }
     }
 }
