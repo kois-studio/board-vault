@@ -5,10 +5,11 @@ import { LocalStorageService } from '../../core/services/local-storage.service'
 import { ImageProfileComponent } from '../image-profile/image-profile.component'
 import { ProfileSettingsComponent } from '../profile-settings/profile-settings.component'
 import { ProfileInvitationsComponent } from "../profile-invitations/profile-invitations.component";
+import { ProfileNotificationsComponent } from '../profile-notifications/profile-notifications.component'
 
 @Component({
     standalone: true,
-    imports: [ProfileSettingsComponent, ImageProfileComponent, ProfileInvitationsComponent],
+    imports: [ProfileSettingsComponent, ImageProfileComponent, ProfileInvitationsComponent, ProfileNotificationsComponent],
     selector: 'app-profile-menu',
     templateUrl: 'profile-menu.component.html',
 })
@@ -16,10 +17,12 @@ export class ProfileMenuComponent {
     public isDropdownVisible = false
     public userData: ReturnType<typeof this.dataService.currentUser> = null
     public userInvitations: ReturnType<typeof this.dataService.userInvitations> = []
+    public userNotifications: ReturnType<typeof this.dataService.userNotifications> = []
 
     // Get the child component to be able to call its methods
     @ViewChild(ProfileSettingsComponent) profileSettingsComponent!: ProfileSettingsComponent
     @ViewChild(ProfileInvitationsComponent) profileInvitationsComponent!: ProfileInvitationsComponent
+    @ViewChild(ProfileNotificationsComponent) profileNotificationsComponent!: ProfileNotificationsComponent
 
     private clickListener!: (() => void) | null
 
@@ -34,6 +37,7 @@ export class ProfileMenuComponent {
         effect(() => {
             this.userData = this.dataService.currentUser()
             this.userInvitations = this.dataService.userInvitations()
+            this.userNotifications = this.dataService.userNotifications()
         })
     }
 
@@ -74,8 +78,13 @@ export class ProfileMenuComponent {
         this.isDropdownVisible = false
     }
 
-    public onClickNotifications() {
+    public onClickInvitations() {
         this.profileInvitationsComponent.showDialog()
+        this.isDropdownVisible = false
+    }
+
+    public onClickNotifications() {
+        this.profileNotificationsComponent.showDialog()
         this.isDropdownVisible = false
     }
 

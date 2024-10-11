@@ -1,5 +1,5 @@
 <!-- Dialog overlay -->
-@if (isVisible) {
+@if (!isVisible) {
 <div class="fixed inset-0 bg-zinc-900 bg-opacity-50 flex justify-center items-center">
     <!-- Dialog box -->
     <div class="bg-zinc-900 rounded-2xl border border-zinc-700 w-3/4 max-w-xl relative">
@@ -9,17 +9,18 @@
         </button>
         <!-- Dialog content -->
         <div class="p-8">
-            <h2 class="text-2xl font-bold tracking-wider"><i class="bi bi-envelope"></i> Invitations</h2>
+            <h2 class="text-2xl font-bold tracking-wider"><i class="bi bi-bell"></i> Notifications</h2>
             <h3 class="text-gray-400 text-sm border-b border-zinc-500 py-4">
-                Accept or decline invitations to groups.
+                Important updates and changes in your groups.
             </h3>
 
             <ul class="pt-4 grid gap-y-4">
-                @for (invitation of userInvitations; track $index) {
+                @for (invitation of userNotifications; track $index) {
                 <li>
-                    <app-card-invitation [invitation]="invitation" />
+                    <!-- TODO: write a <card-invitation /> that handles invitation.type as <i> -->
+                    {{ invitation.message }}
                 </li>
-                } @if (userInvitations.length === 0) {
+                } @if (userNotifications.length === 0) {
                 <li class="text-center pt-2">No invitations pending.</li>
                 }
             </ul>
