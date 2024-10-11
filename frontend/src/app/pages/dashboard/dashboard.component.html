@@ -11,7 +11,7 @@
             <p class="text-gray-400 text-center col-span-2">You don't have any groups yet.</p>
         } @else {
             @for (group of userGroups; track $index) {
-            <app-group-card [group]="group" [invitations]="invitationsGroupIndex[group.id]" />
+            <app-card-group [group]="group" [invitations]="invitationsGroupIndex[group.id]" />
             }
         }
     </section>
