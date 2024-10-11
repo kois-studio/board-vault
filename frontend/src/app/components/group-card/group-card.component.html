@@ -14,46 +14,24 @@
     <h3 class="pt-8 font-bold tracking-wider">Members</h3>
     <ul class="pb-8">
         @for (member of group.members; track $index) {
-            <li class="flex justify-between">
-                <div class="flex items-center p-4">
-                    <app-image-profile [imageUrl]="member.imageUrl" />
-                    <div class="ml-3">
-                        <p class="font-semibold text-white">{{ member.display_name }}</p>
-                        <p class="text-gray-400 text-sm">
-                            <span>{{ member.username }}</span>
-                            @if (group.createdBy === member.id) {
-                                <span class="text-blue-500 pl-2">owner</span>
-                            }
-                        </p>
-                    </div>
-                </div>
-                <div class="flex items-center justify-center">
-                    has {{ member.games.length }} games
-                </div>
-            </li>
+        <li class="flex justify-between">
+            <app-card-account [member]="member" [isOwner]="group.createdBy === member.id" />
+            <div class="flex items-center justify-center">has {{ member.games.length }} games</div>
+        </li>
         }
     </ul>
 
     <!-- INVITED MEMBERS -->
     @if (invitations && invitations.length > 0) {
-        <hr />
-        <h3 class="pt-8 font-bold tracking-wider">Invitations pending</h3>
-        <ul class="pb-8 grid md:grid-cols-2">
+    <hr />
+    <h3 class="pt-8 font-bold tracking-wider">Invitations pending</h3>
+    <ul class="pb-8 grid md:grid-cols-2">
         @for (invitation of invitations; track $index) {
-            <li class="flex items-center p-4 opacity-40">
-                <app-image-profile [imageUrl]="invitation.toAccount.imageUrl" />
-                <div class="ml-3">
-                    <p class="font-semibold text-white">{{ invitation.toAccount.display_name }}</p>
-                    <p class="text-gray-400 text-sm">
-                        <span>{{ invitation.toAccount.username }}</span>
-                        @if (group.createdBy === invitation.toAccount.id) {
-                            <span class="text-blue-500 pl-2">owner</span>
-                        }
-                    </p>
-                </div>
-            </li>
+        <li class="opacity-40">
+            <app-card-account [member]="invitation.toAccount" />
+        </li>
         }
-        </ul>
+    </ul>
     }
 
     <hr />
@@ -63,11 +41,9 @@
         <button (click)="onNewMeet()" class="app-btn-primary">New meet</button>
         <div>
             <p class="text-gray-400 text-sm">
-                <span class="font-semibold">Created:</span> {{ group.createdAt | date: 'dd/MM/yyyy' }}
+                <span class="font-semibold">Created:</span> {{ group.createdAt | date : "dd/MM/yyyy" }}
             </p>
-            <p class="text-gray-400">
-                <span class="font-semibold">Total games:</span> {{ totalGames.length }}
-            </p>
+            <p class="text-gray-400"><span class="font-semibold">Total games:</span> {{ totalGames.length }}</p>
         </div>
     </div>
 </div>
