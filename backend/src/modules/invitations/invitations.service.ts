@@ -127,7 +127,7 @@ export class InvitationsService {
         await this.notificationsService.createNotification({
             accountId: owner.id,
             type: NotificationTypeEnum.InvitationAccepted,
-            relatedUserGroupId: groupId,
+            relatedGroupId: groupId,
             relatedGameId: null,
             message: `${invited.display_name} joined your group ${groupData.name}`,
         })

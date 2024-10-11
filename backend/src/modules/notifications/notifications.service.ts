@@ -16,7 +16,7 @@ export class NotificationsService {
             id: Number(row[0]),
             accountId: Number(row[1]),
             type: String(row[2]),
-            relatedUserGroupId: row[3],
+            relatedGroupId: row[3],
             relatedGameId: row[4],
             message: String(row[5]),
             createdAt: String(row[6]),
