@@ -1,0 +1,29 @@
+@if (notification) {
+<div class="bg-zinc-800 rounded-lg p-4 text-sm flex items-center justify-between">
+    <!-- LEFF: icon + text -->
+    <div>
+        <div class="flex items-center justify-start gap-x-2">
+            <i
+                class="text-xl"
+                [ngClass]="{
+                    'bi bi-person-fill-add': notification.type === 'invitation_accepted',
+                    'fa fa-ban': notification.type === 'expulsion',
+                    'fa fa-sign-out-alt': notification.type === 'member_left',
+                    'fa fa-gamepad': notification.type === 'new_games'
+                }"
+            ></i>
+            <p>{{ notification.message }}</p>
+        </div>
+        <p>{{ notification.createdAt | date : "short" }}</p>
+    </div>
+    <!-- RIGHT: buttons -->
+    <div class="text-lg">
+        <button class="app-button p-2 mr-2">
+            <i class="bi bi-check"></i>
+        </button>
+        <button class="app-button p-2">
+            <i class="bi bi-trash"></i>
+        </button>
+    </div>
+</div>
+}
