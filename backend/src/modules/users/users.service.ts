@@ -6,7 +6,7 @@ import { usersSchema } from '../../common/schemas'
 import { GameDto } from '../../common/types/game.type'
 import { InvitationWithExtraData } from '../../common/types/invitation.type'
 import { GroupsService } from '../groups/groups.service'
-import { NotificationDto } from 'src/common/types/notification.type'
+import { NotificationDto } from '../../common/types/notification.type'
 
 @Injectable()
 export class UsersService {

@@ -8,7 +8,7 @@ import { CreateGroupMembershipBody } from '../../common/types/group-membership.t
 import { CreateGameBody, UpdateGameBody } from '../../common/types/game.type'
 import { CreateInvitationBody, CreateInvitationByUsernameBody } from '../../common/types/invitation.type'
 import { GameOwnedDto } from '../../common/types/game-owned.type'
-import { CreateNotificationBody, UpdateNotificationBody } from 'src/common/types/notification.type'
+import { CreateNotificationBody, UpdateNotificationBody } from '../../common/types/notification.type'
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
