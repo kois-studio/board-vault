@@ -1,12 +1,12 @@
 import { Component, effect } from '@angular/core'
 import { FormControl, ReactiveFormsModule } from '@angular/forms'
 import { Api } from '../../api/api'
-import { GameCardComponent } from '../../components/game-card/game-card.component'
+import { CardGameComponent } from '../../components/card-game/card-game.component'
 import { DataService } from '../../core/services/data.service'
 
 @Component({
     standalone: true,
-    imports: [GameCardComponent, ReactiveFormsModule],
+    imports: [CardGameComponent, ReactiveFormsModule],
     selector: 'app-games',
     templateUrl: 'games.component.html',
 })
