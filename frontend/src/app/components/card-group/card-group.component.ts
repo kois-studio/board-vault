@@ -9,10 +9,10 @@ import type { GameType, InvitationWithAccountsData } from '../../api/api.types'
 @Component({
     standalone: true,
     imports: [CommonModule, CardAccountComponent],
-    selector: 'app-group-card',
-    templateUrl: 'group-card.component.html',
+    selector: 'app-card-group',
+    templateUrl: 'card-group.component.html',
 })
-export class GroupCardComponent {
+export class CardGroupComponent {
     public userData: ReturnType<typeof this.dataService.currentUser> = null
     @Input({ required: true }) group!: GroupWithMembersAndGames
     @Input({ required: true }) invitations: undefined | Array<InvitationWithAccountsData> = []

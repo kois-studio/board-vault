@@ -16,7 +16,7 @@
     <div class="flex gap-2 flex-wrap">
         @for (game of userGames; track $index) {
             <div class="relative">
-                <app-game-card
+                <app-card-game
                     [title]="game.title"
                     [imageUrl]="game.imageUrl"
                     [gameAvgDuration]="game.gameAvgDuration"
@@ -65,7 +65,7 @@
         @for (game of allGames; track $index) {
             @if (!userGamesIds.includes(game.id)) {
                 <div class="relative">
-                    <app-game-card
+                    <app-card-game
                         [title]="game.title"
                         [imageUrl]="game.imageUrl"
                         [gameAvgDuration]="game.gameAvgDuration"

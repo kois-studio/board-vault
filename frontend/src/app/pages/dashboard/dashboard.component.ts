@@ -1,12 +1,12 @@
 import { Component, effect } from '@angular/core'
-import { GroupCardComponent } from '../../components/group-card/group-card.component'
+import { CardGroupComponent } from '../../components/card-group/card-group.component'
 import { DataService } from '../../core/services/data.service'
 
 @Component({
     selector: 'app-dashboard',
     templateUrl: 'dashboard.component.html',
     standalone: true,
-    imports: [GroupCardComponent],
+    imports: [CardGroupComponent],
 })
 export class DashboardComponent {
     public userData: ReturnType<typeof this.dataService.currentUser> = null
