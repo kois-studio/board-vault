@@ -134,4 +134,9 @@ export class GroupEditComponent {
         this.membersToRemoveFromGroup = []
         this.isLoading = false
     }
+
+    onDeleteGroup() {
+        if (!this.groupData) return
+        this.router.navigate(['/group', this.groupData.id, 'delete'])
+    }
 }
