@@ -6,6 +6,7 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
 import { GameDto } from '../../common/types/game.type'
 import { InvitationWithExtraData } from '../../common/types/invitation.type'
 import { SuccessDto } from 'src/common/types/auth.type'
+import { NotificationDto } from 'src/common/types/notification.type'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('users')
@@ -88,6 +89,15 @@ export class UsersController {
     @ApiResponse({ status: 404, description: 'User not found.' })
     updateUserGames(@Param('userId', ParseIntPipe) userId: number, @Body() userUpdateGamesBody: UserUpdateGamesBody) {
         return this.usersService.updateGames(userId, userUpdateGamesBody.gamesToAdd, userUpdateGamesBody.gamesToRemove)
+    }
+
+    @Get('/:userId/notifications')
+    @ApiOperation({ summary: 'Get notifications for user' })
+    @ApiResponse({ status: 200, type: [NotificationDto] })
+    @ApiResponse({ status: 404, description: 'User not found.' })
+    @ApiParam({ name: 'userId', type: Number })
+    getUserNotifications(@Param('userId', ParseIntPipe) userId: number) {
+        return this.usersService.getUserNotifications(userId)
     }
 
     @Get('/:userId/invitationsReceived')
