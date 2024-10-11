@@ -4,7 +4,7 @@ import { CreateUserBody, UpdateUserBody, UserCompleteDto, UserGetDto } from '../
 import { ResultSet } from '@libsql/client/.'
 import { usersSchema } from '../../common/schemas'
 import { GameDto } from '../../common/types/game.type'
-import { InvitationDto, InvitationWithExtraData } from '../../common/types/invitation.type'
+import { InvitationWithExtraData } from '../../common/types/invitation.type'
 import { GroupsService } from '../groups/groups.service'
 
 @Injectable()
@@ -157,20 +157,6 @@ export class UsersService {
         }
 
         return invitations
-    }
-
-    async getUserInvitationsSent(userId: number): Promise<Array<InvitationDto>> {
-        this.LOGGER.log('Getting invitations sent by user')
-        const resultSet = await this.databaseService.getUserInvitationsSent(userId)
-
-        return resultSet.rows.map(row => ({
-            id: Number(row[0]),
-            groupId: Number(row[1]),
-            fromAccountId: Number(row[2]),
-            toAccountId: Number(row[3]),
-            status: String(row[4]),
-            sentAt: String(row[5]),
-        }))
     }
 
     async updateGames(accountId: number, gamesToAdd: number[], gamesToRemove: number[]): Promise<{ success: boolean }> {
