@@ -1,11 +1,12 @@
 import { Component, effect } from '@angular/core'
 import { CardGroupComponent } from '../../components/card-group/card-group.component'
 import { DataService } from '../../core/services/data.service'
+import { RouterLink } from '@angular/router'
 
 @Component({
     templateUrl: 'dashboard.component.html',
     standalone: true,
-    imports: [CardGroupComponent],
+    imports: [CardGroupComponent, RouterLink],
 })
 export class DashboardComponent {
     public userData: ReturnType<typeof this.dataService.currentUser> = null
