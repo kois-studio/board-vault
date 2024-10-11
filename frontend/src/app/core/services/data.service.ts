@@ -2,7 +2,7 @@ import { Injectable, type WritableSignal, effect, signal } from '@angular/core'
 import { Router } from '@angular/router'
 import { catchError, concatMap, from, of, tap } from 'rxjs'
 import { Api } from '../../api/api'
-import type { GameType, GroupWithMembersAndGames, InvitationType, InvitationWithAccountsData, UserType } from '../../api/api.types'
+import type { GameType, GroupWithMembersAndGames, InvitationType, InvitationWithAccountsData, InvitationWithExtraData, UserType } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
 import { LocalStorageService } from './local-storage.service'
 
@@ -14,7 +14,7 @@ export class DataService {
     // --------------------------------------------------------------------------
     public userGroups: WritableSignal<Array<GroupWithMembersAndGames>> = signal([])
     public userGames: WritableSignal<Array<GameType>> = signal([])
-    public invitationsReceived: WritableSignal<Array<InvitationType>> = signal([])
+    public invitationsReceived: WritableSignal<Array<InvitationWithExtraData>> = signal([])
 
     // list of all games available to select
     public gamesList: WritableSignal<Array<GameType>> = signal([])

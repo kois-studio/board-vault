@@ -55,6 +55,11 @@ export type InvitationType = {
     sentAt: string
 }
 
+export type InvitationWithExtraData = InvitationType & {
+    fromAccount: UserType
+    group: GroupWithMembersAndGames
+}
+
 export type InvitationWithAccountsData = InvitationType & {
     fromAccount: UserType
     toAccount: UserType
