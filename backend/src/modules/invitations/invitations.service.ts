@@ -4,12 +4,23 @@ import { ResultSet } from '@libsql/client/.'
 import { invitationsSchema } from '../../common/schemas'
 import { CreateInvitationBody, CreateInvitationByUsernameBody, InvitationDto } from '../../common/types/invitation.type'
 import { UserGetDto } from 'src/common/types/user.type'
+import { GroupsService } from '../groups/groups.service'
+import { GroupMembershipsService } from '../group-memberships/group-memberships.service'
+import { UsersService } from '../users/users.service'
+import { NotificationsService } from '../notifications/notifications.service'
+import { NotificationTypeEnum } from 'src/common/types/notification.type'
 
 @Injectable()
 export class InvitationsService {
     private readonly LOGGER: Logger = new Logger(this.constructor.name)
 
-    constructor(private readonly databaseService: DatabaseService) {}
+    constructor(
+        private readonly databaseService: DatabaseService,
+        private readonly usersService: UsersService,
+        private readonly notificationsService: NotificationsService,
+        private readonly groupsService: GroupsService,
+        private readonly groupMembershipsService: GroupMembershipsService,
+    ) {}
 
     private _parseResultSet(resultSet: ResultSet): Array<InvitationDto> {
         const invitations = resultSet.rows.map(row => ({
@@ -39,7 +50,7 @@ export class InvitationsService {
         return this._parseResultSet(resultSet)
     }
 
-    async getInvitationById(id: number): Promise<InvitationDto | NotFoundException> {
+    async getInvitationById(id: number): Promise<InvitationDto> {
         this.LOGGER.log(`Getting invitation with id ${id}`)
         const resultSet = await this.databaseService.getInvitationById(id)
         const invitations = this._parseResultSet(resultSet)
@@ -89,6 +100,43 @@ export class InvitationsService {
         if (resultSet.rowsAffected === 0) {
             throw new NotFoundException(`Invitation with id ${id} not found`)
         }
+
+        return { success: true }
+    }
+
+    async acceptInvitation(invitationId: number): Promise<{ success: boolean }> {
+        this.LOGGER.log(`Accepting invitation with id ${invitationId}`)
+
+        // Step 1: get invitation data
+        const invitationData = await this.getInvitationById(invitationId)
+
+        // Step 2: get group data (it may have been deleted)
+        const groupId = invitationData.groupId
+        const groupData = await this.groupsService.getGroupById(groupId)
+
+        // Step 3: create the membership to the group
+        await this.groupMembershipsService.createGroupMembership({ accountId: invitationData.toAccountId, groupId })
+
+        // Step 4: delete the invitation
+        await this.deleteInvitationById(invitationId)
+
+        // Step 5: create the notification for the group owner
+        const invited = await this.usersService.getUserById(invitationData.toAccountId)
+        const owner = await this.usersService.getUserById(groupData.createdBy)
+
+        await this.notificationsService.createNotification({
+            accountId: owner.id,
+            type: NotificationTypeEnum.InvitationAccepted,
+            relatedUserGroupId: groupId,
+            relatedGameId: null,
+            message: `${invited.display_name} joined your group ${groupData.name}`,
+        })
+
+        return { success: true }
+    }
+
+    async rejectInvitation(invitationId: number): Promise<{ success: boolean }> {
+        this.LOGGER.log(`Rejecting invitation with id ${invitationId}`)
 
         return { success: true }
     }
