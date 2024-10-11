@@ -2,7 +2,7 @@ import { ConflictException, Injectable, Logger, NotFoundException } from '@nestj
 import { DatabaseService } from '../database/database.service'
 import { ResultSet } from '@libsql/client/.'
 import { CreateNotificationBody, NotificationDto, UpdateNotificationBody } from 'src/common/types/notification.type'
-import { nnotificationsSchema } from 'src/common/schemas'
+import { notificationsSchema } from 'src/common/schemas'
 
 @Injectable()
 export class NotificationsService {
@@ -23,7 +23,7 @@ export class NotificationsService {
             isRead: Boolean(row[7]),
         }))
 
-        const result = nnotificationsSchema.safeParse(notifications)
+        const result = notificationsSchema.safeParse(notifications)
 
         if (!result.success) {
             this.LOGGER.error('Failed to parse notifications from database')
