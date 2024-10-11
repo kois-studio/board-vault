@@ -1,7 +1,7 @@
 import { Component, effect } from '@angular/core'
+import { RouterLink } from '@angular/router'
 import { CardGroupComponent } from '../../components/card-group/card-group.component'
 import { DataService } from '../../core/services/data.service'
-import { RouterLink } from '@angular/router'
 
 @Component({
     templateUrl: 'dashboard.component.html',
