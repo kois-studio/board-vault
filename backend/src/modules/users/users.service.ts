@@ -170,4 +170,24 @@ export class UsersService {
             throw new NotFoundException('Failed to update games for user')
         }
     }
+
+    async leaveGroup(userId: number, groupId: number): Promise<{ success: boolean }> {
+        this.LOGGER.log(`User with id ${userId} leaving group with id ${groupId}`)
+
+        // Step 1: Get user data
+        const userData = await this.getUserById(userId)
+
+        // Step 2: Get group data
+        const groupData = await this.groupsService.getGroupWithMembersAndGames(groupId)
+
+        // Step 3: Check if user is owner
+        if (groupData.createdBy === userData.id) {
+            throw new ConflictException('Owner cannot leave group')
+        }
+
+        // Step 4: Leave group
+        await this.databaseService.deleteGroupMembershipById(userId, groupId)
+
+        return { success: true }
+    }
 }
