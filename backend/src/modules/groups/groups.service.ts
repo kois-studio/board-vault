@@ -89,6 +89,10 @@ export class GroupsService {
         this.LOGGER.log(`Getting group with members and games for group ${groupId}`)
         const resultSet = await this.databaseService.getGroupWithMembersAndGames(groupId)
 
+        if (resultSet.rows.length === 0) {
+            throw new NotFoundException(`Group with id ${groupId} not found`)
+        }
+
         return resultSet.rows.map(row => ({
             id: Number(row[0]),
             name: String(row[1]),

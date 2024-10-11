@@ -8,7 +8,7 @@ import { CreateGroupMembershipBody } from '../../common/types/group-membership.t
 import { CreateGameBody, UpdateGameBody } from '../../common/types/game.type'
 import { CreateInvitationBody, CreateInvitationByUsernameBody } from '../../common/types/invitation.type'
 import { GameOwnedDto } from '../../common/types/game-owned.type'
-import { CreateNotificationBody, UpdateNotificationBody } from 'src/common/types/notification.type'
+import { CreateNotificationBody, UpdateNotificationBody } from '../../common/types/notification.type'
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
@@ -174,6 +174,17 @@ export class DatabaseService implements OnModuleInit {
                 JOIN OwnedGame og
                 ON g.id = og.gameId
                 WHERE og.accountId = ?
+            `,
+            args: [userId],
+        })
+    }
+
+    getUserNotifications(userId: number) {
+        return this._tursoExecute({
+            sql: `
+                SELECT n.id, n.accountId, n.type, n.relatedGroupId, n.relatedGameId, n.message, n.createdAt, n.isRead
+                FROM Notification n
+                WHERE n.accountId = ?
             `,
             args: [userId],
         })
@@ -552,7 +563,7 @@ export class DatabaseService implements OnModuleInit {
             args: [
                 notificationDto.accountId,
                 notificationDto.type,
-                notificationDto.relatedUserGroupId,
+                notificationDto.relatedGroupId,
                 notificationDto.relatedGameId,
                 notificationDto.message,
             ],
@@ -575,9 +586,9 @@ export class DatabaseService implements OnModuleInit {
             args.push(partialNotificationDto.type)
         }
 
-        if (partialNotificationDto.relatedUserGroupId) {
-            fields.push('relatedUserGroupId = ?')
-            args.push(partialNotificationDto.relatedUserGroupId)
+        if (partialNotificationDto.relatedGroupId) {
+            fields.push('relatedGroupId = ?')
+            args.push(partialNotificationDto.relatedGroupId)
         }
 
         if (partialNotificationDto.relatedGameId) {
