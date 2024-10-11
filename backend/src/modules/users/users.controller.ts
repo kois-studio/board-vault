@@ -98,4 +98,14 @@ export class UsersController {
         // TODO: in a future, trim unnecessary data from the response
         return this.usersService.getUserInvitationsReceived(userId)
     }
+
+    @Post('/:userId/group/:groupId/leave')
+    @ApiOperation({ summary: 'Leave a group (you CANNOT be the owner)' })
+    @ApiResponse({ status: 200, type: SuccessDto, description: 'You have left the group.' })
+    @ApiResponse({ status: 404, description: 'User or group not found.' })
+    @ApiParam({ name: 'userId', type: Number })
+    @ApiParam({ name: 'groupId', type: Number })
+    leaveGroup(@Param('userId', ParseIntPipe) userId: number, @Param('groupId', ParseIntPipe) groupId: number) {
+        return this.usersService.leaveGroup(userId, groupId)
+    }
 }
