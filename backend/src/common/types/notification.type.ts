@@ -40,3 +40,7 @@ export class CreateNotificationBody extends OmitType(NotificationDto, ['id', 'cr
 export class UpdateNotificationBody extends PartialType(
     PickType(NotificationDto, ['accountId', 'type', 'relatedUserGroupId', 'relatedGameId', 'message', 'isRead']),
 ) {}
+
+export const NotificationTypeEnum = {
+    InvitationAccepted: 'invitation_accepted',
+}
