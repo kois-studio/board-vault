@@ -4,7 +4,7 @@ import { UsersService } from './users.service'
 import { CreateUserBody, UpdateUserBody, UserGetDto, UserUpdateGamesBody } from '../../common/types/user.type'
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
 import { GameDto } from '../../common/types/game.type'
-import { InvitationDto } from '../../common/types/invitation.type'
+import { InvitationWithExtraData } from '../../common/types/invitation.type'
 import { SuccessDto } from 'src/common/types/auth.type'
 
 @UseGuards(JwtAuthGuard)
@@ -92,17 +92,10 @@ export class UsersController {
 
     @Get('/:userId/invitationsReceived')
     @ApiOperation({ summary: 'Get invitations received by user' })
-    @ApiResponse({ status: 200, type: [InvitationDto] })
+    @ApiResponse({ status: 200, type: [InvitationWithExtraData] })
     @ApiParam({ name: 'userId', type: String })
     getUserInvitationsReceived(@Param('userId', ParseIntPipe) userId: number) {
+        // TODO: in a future, trim unnecessary data from the response
         return this.usersService.getUserInvitationsReceived(userId)
-    }
-
-    @Get('/:userId/invitationsSent')
-    @ApiOperation({ summary: 'Get invitations sent by user', deprecated: true })
-    @ApiResponse({ status: 200, type: [InvitationDto] })
-    @ApiParam({ name: 'userId', type: String })
-    getUserInvitationsSent(@Param('userId', ParseIntPipe) userId: number) {
-        return this.usersService.getUserInvitationsSent(userId)
     }
 }
