@@ -312,7 +312,12 @@ export class DataService {
                 // 3.
                 this.toastService.success('You have left the group')
             },
-            error: () => {
+            error: (error) => {
+                if (error.status === 404) {
+                    return this.toastService.error('User or Group not found')
+                } else if (error.status === 400) {
+                    return this.toastService.error('You are the group creator, you cannot leave!')
+                }
                 this.toastService.error('Error leaving group')
             },
         })
