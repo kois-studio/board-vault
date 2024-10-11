@@ -1,5 +1,6 @@
 import { ApiProperty, OmitType } from '@nestjs/swagger'
 import type { UserGetDto } from './user.type'
+import { GroupWithMembersAndGames } from './group.type'
 
 /**
  * base Invitation as it comes from db
@@ -37,9 +38,17 @@ export class CreateInvitationByUsernameBody extends OmitType(InvitationDto, ['id
  * Invitation with accounts data inserted
  */
 export class InvitationWithAccountsData extends InvitationDto {
-    @ApiProperty({ description: 'The account data of the user who invited.' })
+    @ApiProperty({ description: 'The account data of the user who made the invitation.' })
     fromAccount: UserGetDto
 
     @ApiProperty({ description: 'The account data of the user to invite.' })
     toAccount: UserGetDto
+}
+
+export class InvitationWithExtraData extends InvitationDto {
+    @ApiProperty({ description: 'The account data of the user who was invited.' })
+    fromAccount: UserGetDto
+
+    @ApiProperty({ description: 'The group data of the group the user was invited to.' })
+    group: GroupWithMembersAndGames
 }
