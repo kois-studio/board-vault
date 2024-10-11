@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common'
+import { BadRequestException, ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { DatabaseService } from '../database/database.service'
 import { CreateUserBody, UpdateUserBody, UserCompleteDto, UserGetDto } from '../../common/types/user.type'
 import { ResultSet } from '@libsql/client/.'
@@ -182,7 +182,7 @@ export class UsersService {
 
         // Step 3: Check if user is owner
         if (groupData.createdBy === userData.id) {
-            throw new ConflictException('Owner cannot leave group')
+            throw new BadRequestException('Owner cannot leave group')
         }
 
         // Step 4: Leave group
