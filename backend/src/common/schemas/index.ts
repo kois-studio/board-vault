@@ -4,4 +4,4 @@ export { groupMembreshipSchema, groupMembreshipsSchema } from './db-group-member
 export { gameSchema, gamesSchema } from './db-game.schema'
 export { gameOwnedSchema, gameOwnedsSchema } from './db-game-owned.schema'
 export { invitationSchema, invitationsSchema } from './db-invitation.schema'
-export { nnotificationSchema, nnotificationsSchema } from './db-notification.schema'
+export { notificationSchema, notificationsSchema } from './db-notification.schema'
