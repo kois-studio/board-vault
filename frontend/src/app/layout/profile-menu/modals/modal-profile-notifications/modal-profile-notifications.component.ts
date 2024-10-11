@@ -1,14 +1,13 @@
-import { Component, effect } from '@angular/core';
-import { DataService } from '../../core/services/data.service';
+import { Component, effect } from '@angular/core'
+import { DataService } from '../../../../core/services/data.service'
 
 @Component({
     standalone: true,
     imports: [],
-    selector: 'app-profile-notifications',
-    templateUrl: 'profile-notifications.component.html'
+    selector: 'app-modal-profile-notifications',
+    templateUrl: 'modal-profile-notifications.component.html',
 })
-
-export class ProfileNotificationsComponent {
+export class ModalProfileNotificationsComponent {
     public isVisible = false
     public userNotifications: ReturnType<typeof this.dataService.userNotifications> = []
 

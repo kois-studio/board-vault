@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common'
 import { Component, effect } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
-import { UserType } from '../../../../api/api.types'
-import { DataService } from '../../../../core/services/data.service'
+import type { UserType } from '../../../../../../api/api.types'
+import { DataService } from '../../../../../../core/services/data.service'
 
 @Component({
     standalone: true,
@@ -15,11 +15,7 @@ export class FormUpdateUsernameComponent {
     public userData: UserType | null = null
 
     public updateUsernameFormGroup = new FormGroup({
-        username: new FormControl(this.userData?.username, [
-            Validators.required,
-            Validators.minLength(4),
-            Validators.maxLength(20),
-        ]),
+        username: new FormControl(this.userData?.username, [Validators.required, Validators.minLength(4), Validators.maxLength(20)]),
     })
 
     constructor(private readonly dataService: DataService) {
@@ -33,8 +29,7 @@ export class FormUpdateUsernameComponent {
 
     // Form controls
     get disableSubmit() {
-        const valuesAreUnchanged =
-            this.updateUsernameFormGroup.value.username === this.userData?.username
+        const valuesAreUnchanged = this.updateUsernameFormGroup.value.username === this.userData?.username
         return this.updateUsernameFormGroup.invalid || valuesAreUnchanged
     }
 
@@ -42,7 +37,7 @@ export class FormUpdateUsernameComponent {
     get username() {
         return this.updateUsernameFormGroup.get('username')
     }
-    
+
     // Input classes
     get usernameClass() {
         if (!this.username?.dirty && !this.username?.touched) return ''
@@ -60,7 +55,7 @@ export class FormUpdateUsernameComponent {
         const userData = this.userData
         const username = this.updateUsernameFormGroup.value.username
 
-        if (!userData || !username ) return
+        if (!userData || !username) return
 
         this.dataService.updateCurrentUserData({ username })
 

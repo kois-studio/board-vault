@@ -1,15 +1,15 @@
 import { Component, ElementRef, Renderer2, ViewChild, effect } from '@angular/core'
 import { Router } from '@angular/router'
+import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
 import { DataService } from '../../core/services/data.service'
 import { LocalStorageService } from '../../core/services/local-storage.service'
-import { ImageProfileComponent } from '../image-profile/image-profile.component'
-import { ProfileSettingsComponent } from '../profile-settings/profile-settings.component'
-import { ProfileInvitationsComponent } from "../profile-invitations/profile-invitations.component";
-import { ProfileNotificationsComponent } from '../profile-notifications/profile-notifications.component'
+import { ModalProfileInvitationsComponent } from './modals/modal-profile-invitations/modal-profile-invitations.component'
+import { ModalProfileNotificationsComponent } from './modals/modal-profile-notifications/modal-profile-notifications.component'
+import { ModalProfileSettingsComponent } from './modals/modal-profile-settings/modal-profile-settings.component'
 
 @Component({
     standalone: true,
-    imports: [ProfileSettingsComponent, ImageProfileComponent, ProfileInvitationsComponent, ProfileNotificationsComponent],
+    imports: [ImageProfileComponent, ModalProfileSettingsComponent, ModalProfileInvitationsComponent, ModalProfileNotificationsComponent],
     selector: 'app-profile-menu',
     templateUrl: 'profile-menu.component.html',
 })
@@ -20,9 +20,9 @@ export class ProfileMenuComponent {
     public userNotifications: ReturnType<typeof this.dataService.userNotifications> = []
 
     // Get the child component to be able to call its methods
-    @ViewChild(ProfileSettingsComponent) profileSettingsComponent!: ProfileSettingsComponent
-    @ViewChild(ProfileInvitationsComponent) profileInvitationsComponent!: ProfileInvitationsComponent
-    @ViewChild(ProfileNotificationsComponent) profileNotificationsComponent!: ProfileNotificationsComponent
+    @ViewChild(ModalProfileSettingsComponent) modalProfileSettingsComponent!: ModalProfileSettingsComponent
+    @ViewChild(ModalProfileInvitationsComponent) modalProfileInvitationsComponent!: ModalProfileInvitationsComponent
+    @ViewChild(ModalProfileNotificationsComponent) modalProfileNotificationsComponent!: ModalProfileNotificationsComponent
 
     private clickListener!: (() => void) | null
 
@@ -74,17 +74,17 @@ export class ProfileMenuComponent {
 
     // #region Methods
     public onClickProfileSettings() {
-        this.profileSettingsComponent.showDialog()
+        this.modalProfileSettingsComponent.showDialog()
         this.isDropdownVisible = false
     }
 
     public onClickInvitations() {
-        this.profileInvitationsComponent.showDialog()
+        this.modalProfileInvitationsComponent.showDialog()
         this.isDropdownVisible = false
     }
 
     public onClickNotifications() {
-        this.profileNotificationsComponent.showDialog()
+        this.modalProfileNotificationsComponent.showDialog()
         this.isDropdownVisible = false
     }
 
