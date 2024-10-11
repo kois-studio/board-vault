@@ -3,10 +3,10 @@ import { Component, Input } from '@angular/core'
 @Component({
     standalone: true,
     imports: [],
-    selector: 'app-game-card',
-    templateUrl: 'game-card.component.html',
+    selector: 'app-card-game',
+    templateUrl: 'card-game.component.html',
 })
-export class GameCardComponent {
+export class CardGameComponent {
     @Input({ required: true }) title = ''
     @Input({ required: true }) imageUrl = ''
     @Input({ required: true }) gameAvgDuration = 0
