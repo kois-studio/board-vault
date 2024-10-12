@@ -1,24 +1,37 @@
 <div class="fixed bottom-5 right-5">
     @for (toast of toastService.toasts; track $index) {
-    <div class="w-80 animate__animated animate__fadeIn">
+    <div class="w-80 animate__animated animate__fadeIn bg-zinc-900">
         <div
-            class="text-white border-l-4 p-4 mb-4 rounded-lg shadow-lg flex justify-between items-center"
+            class="text-white border-l-4 p-4 mb-4 rounded-lg shadow-lg relative"
             [ngClass]="{
-                'bg-red-500 border-red-700 shadow-red-700': toast.type === 'error',
-                'bg-yellow-500 border-yellow-700 shadow-yellow-700': toast.type === 'warning',
-                'bg-blue-500 border-blue-700 shadow-blue-700': toast.type === 'info',
-                'bg-green-500 border-green-700 shadow-green-700': toast.type === 'success',
-                'bg-gray-500 border-gray-700 shadow-gray-700': toast.type === 'generic'
+                'bg-red-500/80 border-red-700 shadow-red-700': toast.type === 'error',
+                'bg-yellow-500/80 border-yellow-700 shadow-yellow-700': toast.type === 'warning',
+                'bg-blue-500/80 border-blue-700 shadow-blue-700': toast.type === 'info',
+                'bg-green-500/80 border-green-700 shadow-green-700': toast.type === 'success',
+                'bg-gray-500/80 border-gray-700 shadow-gray-700': toast.type === 'generic'
             }"
         >
-            <i *ngIf="toast.type === 'error'" class="bi bi-exclamation-triangle-fill"></i>
-            <i *ngIf="toast.type === 'warning'" class="bi bi-exclamation-circle-fill"></i>
-            <i *ngIf="toast.type === 'info'" class="bi bi-info-circle-fill"></i>
-            <i *ngIf="toast.type === 'success'" class="bi bi-check-circle-fill"></i>
-            <i *ngIf="toast.type === 'generic'" class="bi bi-info-circle-fill"></i>
-            
-            <span class="px-4">{{ toast.message }}</span>
-            <button (click)="closeToast($index)">&times;</button>
+            <div class="flex justify-between items-center">
+                <i *ngIf="toast.type === 'error'" class="bi bi-exclamation-triangle-fill"></i>
+                <i *ngIf="toast.type === 'warning'" class="bi bi-exclamation-circle-fill"></i>
+                <i *ngIf="toast.type === 'info'" class="bi bi-info-circle-fill"></i>
+                <i *ngIf="toast.type === 'success'" class="bi bi-check-circle-fill"></i>
+                <i *ngIf="toast.type === 'generic'" class="bi bi-info-circle-fill"></i>
+
+                <span class="px-4">{{ toast.message }}</span>
+                <button (click)="closeToast($index)">&times;</button>
+            </div>
+            <div
+                class="h-1 absolute bottom-1 m-auto opacity-0 rounded-full bg-gradient-to-r origin-left animate-toast-progress"
+                [ngStyle]="{ 'width': 'calc(100% - 2rem)' }"
+                [ngClass]="{
+                    'from-red-100/20 to-red-100': toast.type === 'error',
+                    'from-yellow-100/20 to-yellow-100': toast.type === 'warning',
+                    'from-blue-100/20 to-blue-100': toast.type === 'info',
+                    'from-green-100/20 to-green-100': toast.type === 'success',
+                    'from-gray-100/20 to-gray-100': toast.type === 'generic'
+                }"
+            ></div>
         </div>
     </div>
     }
