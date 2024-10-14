@@ -7,6 +7,7 @@ import { GameDto } from '../../common/types/game.type'
 import { InvitationWithExtraData } from '../../common/types/invitation.type'
 import { GroupsService } from '../groups/groups.service'
 import { NotificationDto } from '../../common/types/notification.type'
+import { GroupMembershipsService } from '../group-memberships/group-memberships.service'
 
 @Injectable()
 export class UsersService {
@@ -15,6 +16,7 @@ export class UsersService {
     constructor(
         private readonly databaseService: DatabaseService,
         private readonly groupsService: GroupsService,
+        private readonly groupMembershipsService: GroupMembershipsService,
     ) {}
 
     private _parseResultSet(resultSet: ResultSet): Array<UserCompleteDto> {
@@ -205,6 +207,29 @@ export class UsersService {
 
         // Step 4: Leave group
         await this.databaseService.deleteGroupMembershipById(userId, groupId)
+
+        return { success: true }
+    }
+
+    async createGroup(userId: number, groupName: string): Promise<{ success: boolean }> {
+        this.LOGGER.log(`${userId} is creating group ${groupName}`)
+        // Step 1: Get user data(to be the owner)
+        const userData = await this.getUserById(userId)
+
+        // Step 2: Create group
+        await this.groupsService.createGroup({
+            name: groupName,
+            createdBy: userData.id,
+        })
+
+        // Step 3:Get groupId by GroupName
+        const groupData = await this.groupsService.getGroupByName(groupName)
+
+        // Step 4: Put the owner in the group
+        await this.groupMembershipsService.createGroupMembership({
+            accountId: userData.id,
+            groupId: groupData.id,
+        })
 
         return { success: true }
     }
