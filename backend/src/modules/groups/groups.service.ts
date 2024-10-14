@@ -51,6 +51,18 @@ export class GroupsService {
         return groups[0]
     }
 
+    async getGroupByName(name: string): Promise<GroupDto> {
+        this.LOGGER.log(`Getting group with name ${name}`)
+        const resultSet = await this.databaseService.getGroupByName(name)
+        const groups = this._parseResultSet(resultSet)
+
+        if (groups.length === 0) {
+            throw new NotFoundException(`Group with name ${name} not found`)
+        }
+
+        return groups[0]
+    }
+
     async createGroup(groupBody: CreateGroupBody) {
         this.LOGGER.log(`Creating group: ${groupBody.name} - by ${groupBody.createdBy}`)
         try {

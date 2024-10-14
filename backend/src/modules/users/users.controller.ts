@@ -118,4 +118,13 @@ export class UsersController {
     leaveGroup(@Param('userId', ParseIntPipe) userId: number, @Param('groupId', ParseIntPipe) groupId: number) {
         return this.usersService.leaveGroup(userId, groupId)
     }
+
+    @Post('/:userId/group/create/:groupName')
+    @ApiOperation({ summary: 'Create and assign owner to group' })
+    @ApiResponse({ status: 200, type: SuccessDto, description: 'You create the group.' })
+    @ApiParam({ name: 'userId', type: Number })
+    @ApiParam({ name: 'groupName', type: String })
+    createGroup(@Param('userId', ParseIntPipe) userId: number, @Param('groupName') groupName: string) {
+        return this.usersService.createGroup(userId, groupName)
+    }
 }
