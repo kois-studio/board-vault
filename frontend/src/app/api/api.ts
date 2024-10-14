@@ -80,6 +80,10 @@ export class Api {
         return this.http.post<{ success: true }>(`${this.url}/users/${accountId}/group/${groupId}/leave`, {})
     }
 
+    createGroup(accountId: number, groupName: string) {
+        return this.http.post<{ success: true }>(`${this.url}/users/${accountId}/group/create/${groupName}`, {})
+    }
+
     // #region games
 
     getGames() {
