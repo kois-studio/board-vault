@@ -1,0 +1,46 @@
+<div class="mt-24 lg:mt-48 mb-96 mx-2 max-w-xl md:mx-auto p-6">
+    <div class="shadow-md rounded-lg p-6 bg-zinc-800 relative">
+        <!-- TOP RIGHT BUTTONS -->
+        <div class="flex gap-4 absolute -top-16 left-0">    
+            <button (click)="onGoBack()" class="app-btn-error" title="Cancel editing">
+                <i class="bi bi-arrow-left"></i> Back
+            </button>
+        </div>
+
+        <!-- GROUP CARD -->
+        <h2 class="text-xl font-semibold mb-4">New group name:</h2>
+        <hr />
+
+        <!-- DATA -->
+        <div class="pt-8 pb-2 grid lg:grid-cols-2">
+            <div class="grid md:grid-cols-2 gap-4 w-96">
+                <div>
+                    <input
+                        type="text"
+                        [formControl]="groupNameForm"
+                        placeholder="Group name"
+                        class="app-input"
+                        [class]="groupNameClass"
+                        required
+                    />
+                    <div *ngIf="groupName?.invalid && (groupName?.dirty || groupName?.touched)">
+                        <div *ngIf="groupName?.hasError('required')" class="text-sm text-red-500 py-1">
+                            <i class="bi bi-exclamation-circle-fill"></i> Group name is required.
+                        </div>
+                        <div *ngIf="groupName?.hasError('minlength')" class="text-sm text-red-500 py-1">
+                            <i class="bi bi-exclamation-circle-fill"></i> Group name is too short.
+                        </div>
+                        <div *ngIf="groupName?.hasError('maxlength')" class="text-sm text-red-500 py-1">
+                            <i class="bi bi-exclamation-circle-fill"></i> Group name is too long.
+                        </div>
+                    </div>
+                </div>
+                <button class="app-btn-primary" title="Invite user" (click)="onCreateGroup()" [disabled]="disableCreateButton">
+                    Create
+                </button>
+            </div>
+        </div>
+        
+        <hr />
+    </div>
+</div>

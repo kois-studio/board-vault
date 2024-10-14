@@ -5,7 +5,6 @@ import { Api } from '../../api/api'
 import type {
     GameType,
     GroupWithMembersAndGames,
-    InvitationType,
     InvitationWithAccountsData,
     InvitationWithExtraData,
     NotificationType,
@@ -316,6 +315,31 @@ export class DataService {
                     }
                 },
             })
+    }
+
+    // #region create group
+
+    public createGroup(groupName: string) {
+        const currentUser = this.currentUser()
+        if (!currentUser) return
+
+        // 1.
+        this.api.createGroup(currentUser.id, groupName).subscribe({
+            next: (res) => {
+                // 2.
+                this.userGroups.set([])
+                this._getUserGroups(currentUser.id)
+
+                // 3.
+                this.toastService.success(`You have created the group ${groupName}`)
+            },
+            error: (error) => {
+                if (error.status === 404) {
+                    return this.toastService.error('User not found')
+                }
+                this.toastService.error('Error creating group')
+            },
+        })
     }
 
     // #region leave group

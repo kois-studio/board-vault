@@ -12,6 +12,7 @@ import { LoginComponent } from './pages/login/login.component'
 import { MeetNewComponent } from './pages/meet-new/meet-new.component'
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component'
 import { RegisterComponent } from './pages/register/register.component'
+import { GroupNewComponent } from './pages/group-new/group-new.component'
 
 export const routes: Routes = [
     {
@@ -33,6 +34,7 @@ export const routes: Routes = [
             { path: 'login', component: LoginComponent, canActivate: [AuthRedirectGuard] },
             { path: 'register', component: RegisterComponent, canActivate: [AuthRedirectGuard] },
             // accessible to authenticated users
+            { path: 'group/new', component: GroupNewComponent, canActivate: [AuthGuard] },
             { path: 'group/:groupId/edit', component: GroupEditComponent, canActivate: [AuthGuard] },
             { path: 'group/:groupId/leave', component: GroupLeaveComponent, canActivate: [AuthGuard] },
             // { path: 'group/:groupId/delete', component: GroupDeleteComponent, canActivate: [AuthGuard] },
