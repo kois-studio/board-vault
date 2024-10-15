@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core'
-import { v4 as uuidv4 } from 'uuid'
 
 interface Toast {
     id: string
@@ -13,15 +12,15 @@ interface Toast {
 export class ToastService {
     toasts: Toast[] = [
         // Testing toasts
-        // { id: uuidv4(), message: 'This is a success message!', type: 'success' },
-        // { id: uuidv4(), message: 'This is a info message.', type: 'info' },
-        // { id: uuidv4(), message: 'This is a warning message.', type: 'warning' },
-        // { id: uuidv4(), message: 'This is an error message!', type: 'error' },
-        // { id: uuidv4(), message: 'This is a generic message.', type: 'generic' },
+        // { id: crypto.randomUUID(), message: 'This is a success message!', type: 'success' },
+        // { id: crypto.randomUUID(), message: 'This is a info message.', type: 'info' },
+        // { id: crypto.randomUUID(), message: 'This is a warning message.', type: 'warning' },
+        // { id: crypto.randomUUID(), message: 'This is an error message!', type: 'error' },
+        // { id: crypto.randomUUID(), message: 'This is a generic message.', type: 'generic' },
     ]
 
     private _addToast(message: string, type: Toast['type']): void {
-        const id = uuidv4()
+        const id = crypto.randomUUID()
         this.toasts.push({ id, message, type })
 
         // Automatically remove the toast after 5 seconds

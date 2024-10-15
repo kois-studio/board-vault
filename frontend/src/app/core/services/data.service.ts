@@ -5,7 +5,6 @@ import { Api } from '../../api/api'
 import type {
     GameType,
     GroupWithMembersAndGames,
-    InvitationType,
     InvitationWithAccountsData,
     InvitationWithExtraData,
     NotificationType,
@@ -318,6 +317,31 @@ export class DataService {
             })
     }
 
+    // #region create group
+
+    public createGroup(groupName: string) {
+        const currentUser = this.currentUser()
+        if (!currentUser) return
+
+        // 1.
+        this.api.createGroup(currentUser.id, groupName).subscribe({
+            next: (res) => {
+                // 2.
+                this.userGroups.set([])
+                this._getUserGroups(currentUser.id)
+
+                // 3.
+                this.toastService.success(`You have created the group ${groupName}`)
+            },
+            error: (error) => {
+                if (error.status === 404) {
+                    return this.toastService.error('User not found')
+                }
+                this.toastService.error('Error creating group')
+            },
+        })
+    }
+
     // #region leave group
 
     public leaveGroup(groupId: number) {
@@ -341,6 +365,30 @@ export class DataService {
                     return this.toastService.error('You are the group creator, you cannot leave!')
                 }
                 this.toastService.error('Error leaving group')
+            },
+        })
+    }
+
+    // #region delete group
+
+    public deleteGroup(groupId: number) {
+        const currentUser = this.currentUser()
+        if (!currentUser) return
+
+        // 1.
+        this.api.deleteGroup(currentUser.id, groupId).subscribe({
+            next: (res) => {
+                // 2.
+                this.userGroups.update((groups) => groups.filter((group) => group.id !== groupId))
+
+                // 3.
+                this.toastService.success('You have deleted the group')
+            },
+            error: (error) => {
+                if (error.status === 404) {
+                    return this.toastService.error('Group not found')
+                }
+                this.toastService.error('Error deleting group')
             },
         })
     }
