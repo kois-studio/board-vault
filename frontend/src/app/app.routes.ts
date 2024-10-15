@@ -13,6 +13,7 @@ import { MeetNewComponent } from './pages/meet-new/meet-new.component'
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component'
 import { RegisterComponent } from './pages/register/register.component'
 import { GroupNewComponent } from './pages/group-new/group-new.component'
+import { GroupDeleteComponent } from './pages/group-delete/group-delete.component'
 
 export const routes: Routes = [
     {
@@ -37,7 +38,7 @@ export const routes: Routes = [
             { path: 'group/new', component: GroupNewComponent, canActivate: [AuthGuard] },
             { path: 'group/:groupId/edit', component: GroupEditComponent, canActivate: [AuthGuard] },
             { path: 'group/:groupId/leave', component: GroupLeaveComponent, canActivate: [AuthGuard] },
-            // { path: 'group/:groupId/delete', component: GroupDeleteComponent, canActivate: [AuthGuard] },
+            { path: 'group/:groupId/delete', component: GroupDeleteComponent, canActivate: [AuthGuard] },
             { path: 'group/:groupId/meet/new', component: MeetNewComponent, canActivate: [AuthGuard] },
         ],
     },

@@ -369,6 +369,30 @@ export class DataService {
         })
     }
 
+    // #region delete group
+
+    public deleteGroup(groupId: number) {
+        const currentUser = this.currentUser()
+        if (!currentUser) return
+
+        // 1.
+        this.api.deleteGroup(currentUser.id, groupId).subscribe({
+            next: (res) => {
+                // 2.
+                this.userGroups.update((groups) => groups.filter((group) => group.id !== groupId))
+
+                // 3.
+                this.toastService.success('You have deleted the group')
+            },
+            error: (error) => {
+                if (error.status === 404) {
+                    return this.toastService.error('Group not found')
+                }
+                this.toastService.error('Error deleting group')
+            },
+        })
+    }
+
     // #region invitations
 
     public acceptInvitation(invitationId: number) {
