@@ -127,4 +127,14 @@ export class UsersController {
     createGroup(@Param('userId', ParseIntPipe) userId: number, @Param('groupName') groupName: string) {
         return this.usersService.createGroup(userId, groupName)
     }
+
+    @Delete('/:userId/group/:groupId/delete')
+    @ApiOperation({ summary: 'Delete a group and delete all memberships' })
+    @ApiResponse({ status: 200, type: SuccessDto, description: 'You have deleted the group.' })
+    @ApiResponse({ status: 404, description: 'User or group not found.' })
+    @ApiParam({ name: 'userId', type: Number })
+    @ApiParam({ name: 'groupId', type: Number })
+    deleteGroup(@Param('userId', ParseIntPipe) userId: number, @Param('groupId', ParseIntPipe) groupId: number) {
+        return this.usersService.deleteGroup(userId, groupId)
+    }
 }

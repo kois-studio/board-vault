@@ -77,7 +77,7 @@ export class GroupsService {
 
     async deleteGroupById(id: number): Promise<{ success: boolean }> {
         this.LOGGER.log(`Deleting group with id ${id}`)
-        const resultSet = await this.databaseService.softDeleteGroupById(id)
+        const resultSet = await this.databaseService.deleteGroupById(id)
 
         if (resultSet.rowsAffected === 0) {
             throw new NotFoundException(`Group with id ${id} not found`)
