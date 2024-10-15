@@ -233,4 +233,21 @@ export class UsersService {
 
         return { success: true }
     }
+
+    async deleteGroup(userId: number, groupId: number): Promise<{ success: boolean }> {
+        this.LOGGER.log(`User with id ${userId} deleting group with id ${groupId}`)
+
+        // Step 1: Validate user and group exists.
+        await this.getUserById(userId)
+        await this.groupsService.getGroupWithMembersAndGames(groupId)
+
+        // Step 2: Clear related tables
+        await this.databaseService.deleteAllGroupMembershipByGroupId(groupId)
+        await this.databaseService.deleteAllInvitationsByGroupId(groupId)
+
+        // Step 3: Delete Group
+        await this.groupsService.deleteGroupById(groupId)
+
+        return { success: true }
+    }
 }
