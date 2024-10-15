@@ -122,10 +122,9 @@ export class GroupsService {
             groupId: Number(row[1]),
             fromAccountId: Number(row[2]),
             toAccountId: Number(row[3]),
-            status: String(row[4]),
-            sentAt: String(row[5]),
-            fromAccount: JSON.parse(String(row[6])) as UserGetDto,
-            toAccount: JSON.parse(String(row[7])) as UserGetDto,
+            sentAt: String(row[4]),
+            fromAccount: JSON.parse(String(row[5])) as UserGetDto,
+            toAccount: JSON.parse(String(row[6])) as UserGetDto,
         }))
     }
 }
