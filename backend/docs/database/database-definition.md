@@ -1,4 +1,4 @@
-# Database
+# Database Definition
 
 The main database is a SQLite hosted in turso.tech.
 
