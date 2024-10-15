@@ -279,14 +279,6 @@ export class DatabaseService implements OnModuleInit {
         return this.getGroupById(id)
     }
 
-    softDeleteGroupById(id: number) {
-        return this._tursoExecute({
-            sql: 'UPDATE UserGroup SET is_deleted = true WHERE id = ?',
-            args: [id],
-        })
-    }
-
-    // avoid deleting groups -> soft delete instead
     deleteGroupById(id: number) {
         return this._tursoExecute({
             sql: 'DELETE FROM UserGroup WHERE id = ?',
@@ -395,6 +387,13 @@ export class DatabaseService implements OnModuleInit {
         return this._tursoExecute({
             sql: 'DELETE FROM GroupMembership WHERE accountId = ? AND groupId = ?',
             args: [accountId, groupId],
+        })
+    }
+
+    deleteAllGroupMembershipByGroupId(groupId: number) {
+        return this._tursoExecute({
+            sql: 'DELETE FROM GroupMembership WHERE groupId = ?',
+            args: [groupId],
         })
     }
 
@@ -548,6 +547,13 @@ export class DatabaseService implements OnModuleInit {
         return this._tursoExecute({
             sql: 'DELETE FROM Invitation WHERE id = ?',
             args: [id],
+        })
+    }
+
+    deleteAllInvitationsByGroupId(groupId: number) {
+        return this._tursoExecute({
+            sql: 'DELETE FROM Invitation WHERE groupId = ?',
+            args: [groupId],
         })
     }
 
