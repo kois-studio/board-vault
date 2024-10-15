@@ -4,9 +4,24 @@ Here are the docs to manage the DB from Turso CLI:
 
 https://docs.turso.tech/cli/db/shell
 
-## DUMP
+## CREATE DUMP
 
-To make tests in a brand new SQLite DB, you can use the following dump.
+To make a dump run:
+
+```shell
+turso db list # to see the <database-name> 
+turso db shell <database-name> .dump > dump.sql
+```
+
+## RESTORE DUMP
+
+Create a brand new DB in Turso. Then create a `dump.sql` file with the content below and run:
+
+```shell
+turso db shell <database-name> < dump.sql
+```    
+
+Copy this inside the `dump.sql` file before.
 
 ```sql
 PRAGMA foreign_keys=OFF;
@@ -25,9 +40,9 @@ CREATE TABLE IF NOT EXISTS Account (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP, -- auto set to current time
     is_deleted BOOLEAN DEFAULT FALSE -- soft delete
 );
-INSERT INTO Account VALUES(1, 'david@test.com', '$2b$10$CpIDmTErYFytqH2DWripr.xN60wARDTHwkvpPUmQUJxe1iHIvEYeu','2024-10-04 13:08:19','dawichi','https://pbs.twimg.com/profile_images/1332020756033712130/ZXD9wpQR_400x400.jpg',0,'David M. Fajardo');
-INSERT INTO Account VALUES(2,'alex@test.com','$2b$10$It2eJ2E6deeU7UBbti9tUOpZGq0J9HnmtS1qquUcEDcxKNHruz2ca','2024-10-03 10:32:18','alexwwe','https://pbs.twimg.com/profile_images/991696745418711040/17X66VeI_400x400.jpg',0,'alexwwe');
-INSERT INTO Account VALUES(3,'test@test.com','$2b$10$aO6PuKn0.VDQ.PkAXpw9Sen1DH7T/wtmkeAhv7iy/NGA.JsmC7bT.','2024-10-03 09:57:58','test','https://pbs.twimg.com/profile_images/1833050358479826944/A2qj0e6Z_400x400.jpg',0,'test 1');
+INSERT INTO Account VALUES(1,'david@test.com','dawichi','$2b$10$CpIDmTErYFytqH2DWripr.xN60wARDTHwkvpPUmQUJxe1iHIvEYeu','https://pbs.twimg.com/profile_images/1332020756033712130/ZXD9wpQR_400x400.jpg','David M. Fajardo','2024-10-04 13:08:19',0);
+INSERT INTO Account VALUES(2,'alex@test.com','alexwwe','$2b$10$It2eJ2E6deeU7UBbti9tUOpZGq0J9HnmtS1qquUcEDcxKNHruz2ca','https://pbs.twimg.com/profile_images/991696745418711040/17X66VeI_400x400.jpg','alexwwe','2024-10-03 10:32:18',0);
+INSERT INTO Account VALUES(3,'test@test.com','test','$2b$10$aO6PuKn0.VDQ.PkAXpw9Sen1DH7T/wtmkeAhv7iy/NGA.JsmC7bT.','https://pbs.twimg.com/profile_images/1833050358479826944/A2qj0e6Z_400x400.jpg','test 1','2024-10-03 09:57:58',0);
 
 -- -----------------------------------------------------
 -- Table 'Game'
@@ -168,7 +183,7 @@ CREATE TABLE IF NOT EXISTS Notification (
     message TEXT NOT NULL, -- Description of the notification
     createdAt DATETIME DEFAULT CURRENT_TIMESTAMP, -- Timestamp when the notification was created
     isRead BOOLEAN DEFAULT 0, -- 0 = Unread, 1 = Read
-    FOREIGN KEY (accountId) REFERENCES Account(id) ON DELETE CASCADE,
+    FOREIGN KEY (accountId) REFERENCES Account(id) ON DELETE CASCADE
 );
 INSERT INTO Notification VALUES(1,2,'invitation_accepted','David M. Fajardo joined your group Alex''s Group','2024-10-11 11:28:44',0);
 INSERT INTO Notification VALUES(2,2,'invitation_accepted','David M. Fajardo joined your group Alex''s Group','2024-10-11 11:31:02',0);
