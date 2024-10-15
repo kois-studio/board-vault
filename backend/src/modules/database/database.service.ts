@@ -519,7 +519,7 @@ export class DatabaseService implements OnModuleInit {
 
     async createInvitation(invitationDto: CreateInvitationBody) {
         await this._tursoExecute({
-            sql: 'INSERT INTO Invitation (groupId, fromAccountId, toAccountId) VALUES (?, ?, ?, ?)',
+            sql: 'INSERT INTO Invitation (groupId, fromAccountId, toAccountId) VALUES (?, ?, ?)',
             args: [invitationDto.groupId, invitationDto.fromAccountId, invitationDto.toAccountId],
         })
     }
@@ -535,8 +535,8 @@ export class DatabaseService implements OnModuleInit {
         }
 
         await this._tursoExecute({
-            sql: 'INSERT INTO Invitation (groupId, fromAccountId, toAccountId, status) VALUES (?, ?, ?, ?)',
-            args: [invitationDto.groupId, invitationDto.fromAccountId, toAccount.rows[0].id, 'pending'],
+            sql: 'INSERT INTO Invitation (groupId, fromAccountId, toAccountId) VALUES (?, ?, ?)',
+            args: [invitationDto.groupId, invitationDto.fromAccountId, toAccount.rows[0].id],
         })
 
         // return the invited user
@@ -572,7 +572,7 @@ export class DatabaseService implements OnModuleInit {
 
     createNotification(notificationDto: CreateNotificationBody) {
         return this._tursoExecute({
-            sql: 'INSERT INTO Notification (accountId, type, message) VALUES (?, ?, ?, ?, ?)',
+            sql: 'INSERT INTO Notification (accountId, type, message) VALUES (?, ?, ?)',
             args: [notificationDto.accountId, notificationDto.type, notificationDto.message],
         })
     }
