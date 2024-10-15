@@ -13,12 +13,6 @@ export class NotificationDto {
     @ApiProperty({ example: 'expelled' })
     type: string
 
-    @ApiProperty({ example: 12345 })
-    relatedGroupId: null | number
-
-    @ApiProperty({ example: 12345 })
-    relatedGameId: null | number
-
     @ApiProperty({ example: 'message' })
     message: string
 
@@ -37,9 +31,7 @@ export class CreateNotificationBody extends OmitType(NotificationDto, ['id', 'cr
 /**
  * PUT requests --> editable fields
  */
-export class UpdateNotificationBody extends PartialType(
-    PickType(NotificationDto, ['accountId', 'type', 'relatedGroupId', 'relatedGameId', 'message', 'isRead']),
-) {}
+export class UpdateNotificationBody extends PartialType(PickType(NotificationDto, ['accountId', 'type', 'message', 'isRead'])) {}
 
 export const NotificationTypeEnum = {
     InvitationAccepted: 'invitation_accepted',

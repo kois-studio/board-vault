@@ -71,8 +71,6 @@ export type NotificationType = {
     id: number
     accountId: number
     type: string
-    relatedGroupId: null | number
-    relatedGameId: null | number
     message: string
     createdAt: string
     isRead: boolean

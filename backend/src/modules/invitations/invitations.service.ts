@@ -79,17 +79,17 @@ export class InvitationsService {
         this.LOGGER.log(
             `Creating invitation to group ${invitationDto.groupId}: ${invitationDto.fromAccountId} -> ${invitationDto.username}`,
         )
-        const row = await this.databaseService.createInvitationByUsername(invitationDto)
+        const userRow = await this.databaseService.createInvitationByUsername(invitationDto)
 
         return {
-            id: Number(row[0]),
-            email: String(row[1]),
-            // password: String(row[2]), // Do not return password
-            createdAt: String(row[3]),
-            username: String(row[4]),
-            imageUrl: String(row[5]),
-            is_deleted: Boolean(row[6]),
-            display_name: String(row[7]),
+            id: Number(userRow[0]),
+            email: String(userRow[1]),
+            username: String(userRow[2]),
+            // password: String(userRow[3]), // Do not return password
+            imageUrl: String(userRow[4]),
+            display_name: String(userRow[5]),
+            createdAt: String(userRow[6]),
+            is_deleted: Boolean(userRow[7]),
         }
     }
 
@@ -127,8 +127,6 @@ export class InvitationsService {
         await this.notificationsService.createNotification({
             accountId: owner.id,
             type: NotificationTypeEnum.InvitationAccepted,
-            relatedGroupId: groupId,
-            relatedGameId: null,
             message: `${invited.display_name} joined your group ${groupData.name}`,
         })
 

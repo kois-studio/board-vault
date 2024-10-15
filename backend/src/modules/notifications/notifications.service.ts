@@ -16,11 +16,9 @@ export class NotificationsService {
             id: Number(row[0]),
             accountId: Number(row[1]),
             type: String(row[2]),
-            relatedGroupId: row[3],
-            relatedGameId: row[4],
-            message: String(row[5]),
-            createdAt: String(row[6]),
-            isRead: Boolean(row[7]),
+            message: String(row[3]),
+            createdAt: String(row[4]),
+            isRead: Boolean(row[5]),
         }))
 
         const result = notificationsSchema.safeParse(notifications)

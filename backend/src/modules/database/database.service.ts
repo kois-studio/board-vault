@@ -182,7 +182,7 @@ export class DatabaseService implements OnModuleInit {
     getUserNotifications(userId: number) {
         return this._tursoExecute({
             sql: `
-                SELECT n.id, n.accountId, n.type, n.relatedGroupId, n.relatedGameId, n.message, n.createdAt, n.isRead
+                SELECT n.id, n.accountId, n.type, n.message, n.createdAt, n.isRead
                 FROM Notification n
                 WHERE n.accountId = ?
             `,
@@ -572,14 +572,8 @@ export class DatabaseService implements OnModuleInit {
 
     createNotification(notificationDto: CreateNotificationBody) {
         return this._tursoExecute({
-            sql: 'INSERT INTO Notification (accountId, type, relatedGroupId, relatedGameId, message) VALUES (?, ?, ?, ?, ?)',
-            args: [
-                notificationDto.accountId,
-                notificationDto.type,
-                notificationDto.relatedGroupId,
-                notificationDto.relatedGameId,
-                notificationDto.message,
-            ],
+            sql: 'INSERT INTO Notification (accountId, type, message) VALUES (?, ?, ?, ?, ?)',
+            args: [notificationDto.accountId, notificationDto.type, notificationDto.message],
         })
     }
 
@@ -597,16 +591,6 @@ export class DatabaseService implements OnModuleInit {
         if (partialNotificationDto.type) {
             fields.push('type = ?')
             args.push(partialNotificationDto.type)
-        }
-
-        if (partialNotificationDto.relatedGroupId) {
-            fields.push('relatedGroupId = ?')
-            args.push(partialNotificationDto.relatedGroupId)
-        }
-
-        if (partialNotificationDto.relatedGameId) {
-            fields.push('relatedGameId = ?')
-            args.push(partialNotificationDto.relatedGameId)
         }
 
         if (partialNotificationDto.message) {
