@@ -16,15 +16,12 @@ export class GroupDto {
 
     @ApiProperty({ example: '2024-09-28 10:02:39' })
     createdAt: string
-
-    @ApiProperty({ example: false })
-    is_deleted: boolean
 }
 
 /**
  * POST requests --> no db generated props
  */
-export class CreateGroupBody extends OmitType(GroupDto, ['id', 'createdAt', 'is_deleted']) {}
+export class CreateGroupBody extends OmitType(GroupDto, ['id', 'createdAt']) {}
 
 /**
  * PUT requests --> you can only update the group name
@@ -42,7 +39,7 @@ export class GroupMemberWithGames extends UserWithGames {
 /**
  * Group with members and their games
  */
-export class GroupWithMembersAndGames extends OmitType(GroupDto, ['is_deleted']) {
+export class GroupWithMembersAndGames extends GroupDto {
     // add
     @ApiProperty({ type: [GroupMemberWithGames], description: 'The members of the group.' })
     members: Array<GroupMemberWithGames>

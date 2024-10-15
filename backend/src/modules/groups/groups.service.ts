@@ -18,7 +18,6 @@ export class GroupsService {
             name: String(row[1]),
             createdBy: Number(row[2]),
             createdAt: String(row[3]),
-            is_deleted: Boolean(row[4]),
         }))
 
         const result = groupsSchema.safeParse(groups)
