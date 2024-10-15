@@ -193,7 +193,7 @@ export class DatabaseService implements OnModuleInit {
     getUserInvitationsReceived(userId: number) {
         return this._tursoExecute({
             sql: `
-                SELECT i.id, i.groupId, i.fromAccountId, i.toAccountId, i.status, i.sentAt
+                SELECT i.id, i.groupId, i.fromAccountId, i.toAccountId, i.sentAt
                 FROM Invitation i
                 WHERE i.toAccountId = ?
             `,
@@ -333,7 +333,7 @@ export class DatabaseService implements OnModuleInit {
         return this._tursoExecute({
             sql: `
             SELECT 
-                i.id, i.groupId, i.fromAccountId, i.toAccountId, i.status, i.sentAt,
+                i.id, i.groupId, i.fromAccountId, i.toAccountId, i.sentAt,
                 -- Selecting all properties for the fromAccount
                 json_object(
                     'id', fa.id,
@@ -519,8 +519,8 @@ export class DatabaseService implements OnModuleInit {
 
     async createInvitation(invitationDto: CreateInvitationBody) {
         await this._tursoExecute({
-            sql: 'INSERT INTO Invitation (groupId, fromAccountId, toAccountId, status) VALUES (?, ?, ?, ?)',
-            args: [invitationDto.groupId, invitationDto.fromAccountId, invitationDto.toAccountId, invitationDto.status],
+            sql: 'INSERT INTO Invitation (groupId, fromAccountId, toAccountId) VALUES (?, ?, ?, ?)',
+            args: [invitationDto.groupId, invitationDto.fromAccountId, invitationDto.toAccountId],
         })
     }
 
