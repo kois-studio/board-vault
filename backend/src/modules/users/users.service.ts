@@ -23,12 +23,12 @@ export class UsersService {
         const users = resultSet.rows.map(row => ({
             id: Number(row[0]),
             email: String(row[1]),
-            password: String(row[2]),
-            createdAt: String(row[3]),
-            username: String(row[4]),
-            imageUrl: String(row[5]),
-            is_deleted: Boolean(row[6]),
-            display_name: String(row[7]),
+            username: String(row[2]),
+            password: String(row[3]),
+            imageUrl: String(row[4]),
+            display_name: String(row[5]),
+            createdAt: String(row[6]),
+            is_deleted: Boolean(row[7]),
         }))
 
         const result = usersSchema.safeParse(users)
@@ -149,11 +149,9 @@ export class UsersService {
             id: Number(row[0]),
             accountId: Number(row[1]),
             type: String(row[2]),
-            relatedGroupId: row[3] === null ? null : Number(row[3]),
-            relatedGameId: row[4] === null ? null : Number(row[4]),
-            message: String(row[5]),
-            createdAt: String(row[6]),
-            isRead: Boolean(row[7]),
+            message: String(row[3]),
+            createdAt: String(row[4]),
+            isRead: Boolean(row[5]),
         }))
     }
 
