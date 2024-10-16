@@ -5,7 +5,6 @@ export const invitationSchema = z.object({
     groupId: z.number().int().nonnegative(), // ref: Group
     fromAccountId: z.number().int().nonnegative(), // ref: Account
     toAccountId: z.number().int().nonnegative(), // ref: Account
-    status: z.enum(['pending', 'accepted', 'rejected']),
     sentAt: z.string().refine(date => !isNaN(Date.parse(date)), { message: 'Invalid date format' }),
 })
 
