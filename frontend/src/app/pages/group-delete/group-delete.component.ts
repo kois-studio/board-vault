@@ -43,5 +43,6 @@ export class GroupDeleteComponent {
     onConfirmDeleteGroup() {
         if (!this.groupData) return
         this.dataService.deleteGroup(this.groupData.id)
+        this.router.navigate(['/dashboard'])
     }
 }

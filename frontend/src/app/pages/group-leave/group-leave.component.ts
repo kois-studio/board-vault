@@ -43,5 +43,6 @@ export class GroupLeaveComponent {
     onConfirmLeaveGroup() {
         if (!this.groupData) return
         this.dataService.leaveGroup(this.groupData.id)
+        this.router.navigate(['/dashboard'])
     }
 }

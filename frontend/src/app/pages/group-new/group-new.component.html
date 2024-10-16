@@ -21,6 +21,8 @@
                         placeholder="Group name"
                         class="app-input"
                         [class]="groupNameClass"
+                        autofocus
+                        (keydown.enter)="onCreateGroup()"
                         required
                     />
                     <div *ngIf="groupName?.invalid && (groupName?.dirty || groupName?.touched)">
