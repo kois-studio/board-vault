@@ -28,10 +28,8 @@ export class InvitationsService {
             groupId: Number(row[1]),
             fromAccountId: Number(row[2]),
             toAccountId: Number(row[3]),
-            status: String(row[4]),
-            sentAt: String(row[5]),
+            sentAt: String(row[4]),
         }))
-
         const result = invitationsSchema.safeParse(invitations)
 
         if (!result.success) {
