@@ -104,6 +104,7 @@
                     placeholder="Search by username"
                     class="app-input"
                     [class]="usernameClass"
+                    (keydown.enter)="onInviteUser()"
                     required
                 />
                 <div *ngIf="username?.invalid && (username?.dirty || username?.touched)">
