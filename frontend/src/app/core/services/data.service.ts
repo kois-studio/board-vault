@@ -215,12 +215,30 @@ export class DataService {
 
     // #region group-edit
     public removeMemberFromGroup(groupId: number, memberId: number) {
-        this.toastService.info('Removing member from group...')
+        // 1.
+        this.api.removeMember(groupId, memberId).subscribe({
+            next: (res) => {
+                // 2.
+                        this.userGroups.update((groups) =>
+                        groups.map((group) => {
+                            if (group.id === groupId) {
+                                group.members = group.members.filter(member => member.id !== memberId)
+                            }
+                            return group
+                        }))
+                // 3.
+                this.toastService.success('Member removed from group')
+            },
+            error: () => {
+                this.toastService.error('Error removing member')
+            },
+        })
+        this.toastService.info('Removing group member...')
     }
 
     public removeInvitedFromGroup(invitationId: number) {
         // 1.
-        this.api.deletInvitation(invitationId).subscribe({
+        this.api.deleteInvitation(invitationId).subscribe({
             next: (res) => {
                 // 2.
                 this.invitationsGroupIndex.update((index) => {

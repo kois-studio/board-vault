@@ -36,7 +36,7 @@ export class GroupMembershipsController {
     }
 
     @Delete('/:accountId/:groupId')
-    @ApiOperation({ summary: 'Delete a membership by Id', deprecated: true })
+    @ApiOperation({ summary: 'Delete a membership by Id' })
     @ApiResponse({ status: 200, description: 'The membership has been succesfully deleted' })
     @ApiParam({ name: 'accountId', type: Number })
     @ApiParam({ name: 'groupId', type: Number })
