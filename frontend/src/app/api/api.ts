@@ -4,7 +4,6 @@ import { environment } from '../../environments/environment'
 import type {
     GameType,
     GroupWithMembersAndGames,
-    InvitationType,
     InvitationWithAccountsData,
     InvitationWithExtraData,
     NotificationType,
@@ -88,6 +87,10 @@ export class Api {
         return this.http.post<{ success: true }>(`${this.url}/users/${accountId}/group/create/${groupName}`, {})
     }
 
+    removeMember(groupId: number, memberId: number) {
+        return this.http.delete<{ success: true }>(`${this.url}/memberships/${memberId}/${groupId}`, {})
+    }
+
     // #region games
 
     getGames() {
@@ -96,7 +99,7 @@ export class Api {
 
     // #region invitations
 
-    deletInvitation(invitationId: number) {
+    deleteInvitation(invitationId: number) {
         return this.http.delete<{ success: true }>(`${this.url}/invitations/${invitationId}`)
     }
 
