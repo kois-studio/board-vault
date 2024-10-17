@@ -5,15 +5,15 @@ import { LayoutBasicComponent } from './layout/layout-basic/layout-basic.compone
 import { LayoutCompleteComponent } from './layout/layout-complete/layout-complete.component'
 import { DashboardComponent } from './pages/dashboard/dashboard.component'
 import { GamesComponent } from './pages/games/games.component'
+import { GroupDeleteComponent } from './pages/group-delete/group-delete.component'
 import { GroupEditComponent } from './pages/group-edit/group-edit.component'
 import { GroupLeaveComponent } from './pages/group-leave/group-leave.component'
+import { GroupNewComponent } from './pages/group-new/group-new.component'
 import { LandingComponent } from './pages/landing/landing.component'
 import { LoginComponent } from './pages/login/login.component'
 import { MeetNewComponent } from './pages/meet-new/meet-new.component'
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component'
 import { RegisterComponent } from './pages/register/register.component'
-import { GroupNewComponent } from './pages/group-new/group-new.component'
-import { GroupDeleteComponent } from './pages/group-delete/group-delete.component'
 
 export const routes: Routes = [
     {
