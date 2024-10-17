@@ -219,13 +219,14 @@ export class DataService {
         this.api.removeMember(groupId, memberId).subscribe({
             next: (res) => {
                 // 2.
-                        this.userGroups.update((groups) =>
-                        groups.map((group) => {
-                            if (group.id === groupId) {
-                                group.members = group.members.filter(member => member.id !== memberId)
-                            }
-                            return group
-                        }))
+                this.userGroups.update((groups) =>
+                    groups.map((group) => {
+                        if (group.id === groupId) {
+                            group.members = group.members.filter((member) => member.id !== memberId)
+                        }
+                        return group
+                    }),
+                )
                 // 3.
                 this.toastService.success('Member removed from group')
             },
