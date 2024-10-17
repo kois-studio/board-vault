@@ -14,7 +14,7 @@
                 Important updates and changes in your groups.
             </h3>
 
-            <ul class="pt-4 grid gap-y-4 max-h-[70vh] overflow-y-auto">
+            <ul class="pt-4 grid gap-y-4 max-h-[70vh] pr-4 overflow-y-auto">
                 @for (notification of userNotifications | sortByDate; track $index) {
                 <li>
                     <app-card-notification [notification]="notification" />

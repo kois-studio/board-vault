@@ -35,7 +35,7 @@ export class NotificationsController {
     }
 
     @Put(':notificationId')
-    @ApiOperation({ summary: 'Update a notification by ID', deprecated: true })
+    @ApiOperation({ summary: 'Update a notification by ID' })
     @ApiParam({ name: 'notificationId', required: true, description: 'Notification ID' })
     @ApiBody({ type: UpdateNotificationBody, description: 'Partial or full notification object to update' })
     @ApiResponse({ status: 200, description: 'The notification has been successfully updated.' })
@@ -48,7 +48,7 @@ export class NotificationsController {
     }
 
     @Delete('/:notificationId')
-    @ApiOperation({ summary: 'Delete a notification by Id', deprecated: true })
+    @ApiOperation({ summary: 'Delete a notification by Id' })
     @ApiResponse({ status: 200, description: 'The notification has been succesfully deleted' })
     @ApiParam({ name: 'notificationId', type: String, description: 'ID of the notification to be deleted' })
     async deleteNotificationById(@Param('notificationId', ParseIntPipe) notificationId: number) {

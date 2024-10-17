@@ -437,4 +437,25 @@ export class DataService {
             },
         })
     }
+
+    // #region notifications
+
+    public deleteNotification(notificationId: number) {
+        // 1.
+        this.api.deleteNotification(notificationId).subscribe({
+            next: (res) => {
+                // 2.
+                this.userNotifications.update((notifications) => notifications.filter((notification) => notification.id !== notificationId))
+
+                // 3.
+                this.toastService.success('You have deleted the notification')
+            },
+            error: (error) => {
+                if (error.status === 404) {
+                    return this.toastService.error('Notification not found')
+                }
+                this.toastService.error('Error deleting notification')
+            },
+        })
+    }
 }
