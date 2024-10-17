@@ -110,4 +110,11 @@ export class Api {
     acceptInvitation(invitationId: number) {
         return this.http.post<{ success: true }>(`${this.url}/invitations/${invitationId}/accept`, {})
     }
+
+    // #region notifications
+
+    deleteNotification(notificationId: number) {
+        return this.http.delete<{ success: true }>(`${this.url}/notifications/${notificationId}`)
+    }
+
 }

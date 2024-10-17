@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common'
 import { Component, Input, OnInit } from '@angular/core'
 import type { NotificationType } from '../../api/api.types'
 import { formatDate } from '../../core/utils/formatDate'
+import { DataService } from '../../core/services/data.service'
 
 @Component({
     standalone: true,
@@ -12,6 +13,8 @@ import { formatDate } from '../../core/utils/formatDate'
 export class CardNotificationComponent implements OnInit {
     @Input({ required: true }) notification: null | NotificationType = null
 
+    constructor(private readonly dataService: DataService) {}
+
     public notificationDate = ''
 
     ngOnInit() {
@@ -21,11 +24,14 @@ export class CardNotificationComponent implements OnInit {
         }
     }
 
-    markAsRead(notificationId: number) {
+    markAsRead() {
         console.log('Marking as read:', this.notification)
     }
 
-    deleteNotification(notificationId: number) {
-        console.log('Deleting:', this.notification)
+    deleteNotification() {
+        if(this.notification) {
+            const notificationId = this.notification.id
+            this.dataService.deleteNotification(notificationId)
+        }
     }
 }
