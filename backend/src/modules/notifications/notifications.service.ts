@@ -66,7 +66,7 @@ export class NotificationsService {
         this.LOGGER.log(`Updating notification with id ${id}`)
         const resultSet = await this.databaseService.updateNotification(id, partialNotificationDto)
 
-        if (resultSet.rows.length === 0) {
+        if (resultSet.rowsAffected === 0) {
             throw new NotFoundException(`Notification with id ${id} not found`)
         }
 

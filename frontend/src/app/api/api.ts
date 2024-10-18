@@ -117,4 +117,7 @@ export class Api {
         return this.http.delete<{ success: true }>(`${this.url}/notifications/${notificationId}`)
     }
 
+    updateNotification(notificationId: number, partialNotification: Partial<NotificationType>) {
+        return this.http.put<{ success: true }>(`${this.url}/notifications/${notificationId}`, { isRead: partialNotification.isRead })
+    }
 }

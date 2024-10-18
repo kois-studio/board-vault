@@ -1,5 +1,5 @@
 @if (notification) {
-<div class="bg-zinc-800 rounded-lg p-4 text-sm flex items-center justify-between">
+    <div class="rounded-lg p-4 text-sm flex items-center justify-between bg-zinc-800 {{notification.isRead ? 'opacity-50' : ''}}">
     <!-- LEFF: icon + text -->
     <div>
         <div class="flex items-center justify-start gap-x-2">
@@ -18,9 +18,11 @@
     </div>
     <!-- RIGHT: buttons -->
     <div class="text-lg">
-        <button class="app-button p-2 mr-2">
-            <i class="bi bi-check"></i>
-        </button>
+        @if(!notification.isRead){
+            <button class="app-button p-2 mr-2" (click)="markAsRead()">
+                <i class="bi bi-check"></i>
+            </button>
+        }
         <button class="app-button p-2" (click)="deleteNotification()">
             <i class="bi bi-trash"></i>
         </button>

@@ -458,4 +458,24 @@ export class DataService {
             },
         })
     }
+
+    public updateNotification(notificationId: number) {
+        this.api.updateNotification(notificationId, { isRead: true }).subscribe({
+            next: (res) => {
+                this.userNotifications.update((notifications) =>
+                    notifications.map((notification) =>
+                        notification.id === notificationId ? { ...notification, isRead: true } : notification
+                    )
+                )
+                
+                this.toastService.success('Notification marked as read');
+            },
+            error: (error) => {
+                if (error.status === 404) {
+                    return this.toastService.error('Notification not found');
+                }
+                this.toastService.error('Error updating notification');
+            },
+        })
+    }
 }
