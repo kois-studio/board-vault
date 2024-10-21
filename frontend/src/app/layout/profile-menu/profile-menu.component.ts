@@ -17,7 +17,7 @@ export class ProfileMenuComponent {
     public isDropdownVisible = false
     public userData: ReturnType<typeof this.dataService.currentUser> = null
     public userInvitations: ReturnType<typeof this.dataService.userInvitations> = []
-    public userNotifications: ReturnType<typeof this.dataService.userNotifications> = []
+    public userUnreadNotifications: ReturnType<typeof this.dataService.userNotifications> = []
 
     // Get the child component to be able to call its methods
     @ViewChild(ModalProfileSettingsComponent) modalProfileSettingsComponent!: ModalProfileSettingsComponent
@@ -37,7 +37,7 @@ export class ProfileMenuComponent {
         effect(() => {
             this.userData = this.dataService.currentUser()
             this.userInvitations = this.dataService.userInvitations()
-            this.userNotifications = this.dataService.userNotifications()
+            this.userUnreadNotifications = this.dataService.userNotifications().filter(notifications => !notifications.isRead)
         })
     }
 
