@@ -7,6 +7,7 @@ import { GameDto } from '../../common/types/game.type'
 import { InvitationWithExtraData } from '../../common/types/invitation.type'
 import { SuccessDto } from '../../common/types/auth.type'
 import { NotificationDto } from '../../common/types/notification.type'
+import { UserOwnershipGuard } from 'src/common/guards/ownership.guard'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('users')
@@ -38,7 +39,8 @@ export class UsersController {
         return this.usersService.getUserById(userId)
     }
 
-    @Put(':userId')
+    @UseGuards(UserOwnershipGuard)
+    @Put('/:userId')
     @ApiOperation({ summary: 'Update a user by ID' })
     @ApiParam({ name: 'userId', required: true, description: 'User ID' })
     @ApiBody({ type: UpdateUserBody, description: 'Partial or full user object to update' })
@@ -48,6 +50,7 @@ export class UsersController {
         return this.usersService.updateUser(userId, partialUserDto)
     }
 
+    @UseGuards(UserOwnershipGuard)
     @Delete('/:userId')
     @ApiOperation({ summary: 'Delete a user by Id', deprecated: true })
     @ApiResponse({ status: 200, description: 'The user has been succesfully deleted' })
@@ -81,6 +84,7 @@ export class UsersController {
         return this.usersService.getUserGames(userId)
     }
 
+    @UseGuards(UserOwnershipGuard)
     @Put('/:userId/games')
     @ApiOperation({ summary: 'Modify games owned by user' })
     @ApiParam({ name: 'userId', type: Number })
@@ -109,6 +113,7 @@ export class UsersController {
         return this.usersService.getUserInvitationsReceived(userId)
     }
 
+    @UseGuards(UserOwnershipGuard)
     @Post('/:userId/group/:groupId/leave')
     @ApiOperation({ summary: 'Leave a group (you CANNOT be the owner)' })
     @ApiResponse({ status: 200, type: SuccessDto, description: 'You have left the group.' })
@@ -119,6 +124,7 @@ export class UsersController {
         return this.usersService.leaveGroup(userId, groupId)
     }
 
+    @UseGuards(UserOwnershipGuard)
     @Post('/:userId/group/create/:groupName')
     @ApiOperation({ summary: 'Create and assign owner to group' })
     @ApiResponse({ status: 200, type: SuccessDto, description: 'You create the group.' })
@@ -128,6 +134,7 @@ export class UsersController {
         return this.usersService.createGroup(userId, groupName)
     }
 
+    @UseGuards(UserOwnershipGuard)
     @Delete('/:userId/group/:groupId/delete')
     @ApiOperation({ summary: 'Delete a group and delete all memberships' })
     @ApiResponse({ status: 200, type: SuccessDto, description: 'You have deleted the group.' })
