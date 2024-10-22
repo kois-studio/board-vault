@@ -10,24 +10,20 @@
         <hr />
 
         <!-- MEMBERS DATA -->
-        <h3 class="pt-8 font-bold tracking-wider">Members</h3>
-        <ul class="pb-8">
+        <h3 class="pt-8 font-bold">Members</h3>
+        <div class="grid grid-cols-4">
             @for (member of groupData?.members; track $index) {
-            <li>
-                <button
-                    (click)="onClickMember(member.id)"
-                    [ngClass]="{
-                        'bg-green-800/70 rounded-lg  border-2 border-green-600 ': selectedUserIds.includes(member.id),
-                        'flex items-center justify-between rounded-lg cursor-pointer my-2 w-full pr-6': true
-                    }"
-                    class="w-full text-left pr-6"
-                >
-                    <app-card-account [member]="member"></app-card-account>
-                    <div class="flex items-center justify-center">{{ member.games.length }} games</div>
-                </button>
-            </li>
+            <button
+                (click)="onClickMember(member.id)"
+                [ngClass]="{
+                    'bg-green-800/70 rounded-lg  border-2 border-green-600 ': selectedUserIds.includes(member.id),
+                    ' rounded-lg cursor-pointer my-2': true
+                }"
+            >
+                <app-card-account [member]="member" />
+            </button>
             }
-        </ul>
+        </div>
 
         <hr />
 
@@ -41,6 +37,25 @@
                     <span class="font-semibold">Total games:</span> {{ totalGames.length }}
                 </p>
             </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mx-auto max-w-6xl justify-center items-center mt-2">
+    <div class="shadow-md rounded-lg p-6 bg-zinc-800">
+        <h3>Available Games</h3>
+        <div class="flex gap-2 flex-wrap">
+            @for (game of totalGames ; track $index) {
+            <div>
+                <app-card-game
+                    [title]="game.title"
+                    [imageUrl]="game.imageUrl"
+                    [gameAvgDuration]="game.gameAvgDuration"
+                    [minPlayers]="game.minPlayers"
+                    [maxPlayers]="game.maxPlayers"
+                />
+            </div>
+            }
         </div>
     </div>
 </div>
