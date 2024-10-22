@@ -4,10 +4,11 @@ import { CardAccountComponent } from "../../components/card-account/card-account
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { GameType } from '../../api/api.types';
+import { CardGameComponent } from "../../components/card-game/card-game.component";
 
 @Component({
     standalone: true,
-    imports: [CardAccountComponent, CommonModule],
+    imports: [CardAccountComponent, CommonModule, CardGameComponent],
     templateUrl: 'meet-new.component.html',
 })
 export class MeetNewComponent {
@@ -41,7 +42,11 @@ export class MeetNewComponent {
         // index all games by gameId so we don't duplicate games
         const games: Record<GameType['id'], GameType> = {}
 
-        for (const member of this.groupData!.members) {
+        if(!this.groupData){ 
+            return []
+        }
+
+        for (const member of this.groupData.members) {
             if(this.selectedUserIds.includes(member.id)){
                 for (const game of member.games) {
                     games[game.id] = game
