@@ -70,7 +70,7 @@ export class DataService {
                     return
                 }
 
-                this.toastService.error("Error retrieving user's data")
+                this.toastService.error("Error retrieving user's data, login again")
             },
         })
     }
@@ -208,7 +208,7 @@ export class DataService {
                     this.toastService.success('User data updated')
                 },
                 error: () => {
-                    this.toastService.error('Error updating user data')
+                    this.toastService.error('Error getting users email, log again')
                 },
             })
     }
