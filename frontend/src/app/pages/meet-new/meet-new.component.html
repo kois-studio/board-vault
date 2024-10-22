@@ -1,3 +1,46 @@
-<div>
-    new meet works!
+<div class="container mx-auto max-w-6xl justify-center items-center">
+    <div class="shadow-md rounded-lg p-6 bg-zinc-800 relative">
+        <!-- GROUP CARD -->
+        <div class="flex justify-between mb-2">
+            <h2 class="text-xl font-semibold mb-4">{{ groupData?.name }}</h2>
+            <button (click)="onGoBack()" class="app-btn-error" title="Home button">
+                <i class="bi bi-arrow-left"></i> Back
+            </button>
+        </div>
+        <hr />
+
+        <!-- MEMBERS DATA -->
+        <h3 class="pt-8 font-bold tracking-wider">Members</h3>
+        <ul class="pb-8">
+            @for (member of groupData?.members; track $index) {
+            <li>
+                <button
+                    (click)="onClickMember(member.id)"
+                    [ngClass]="{
+                        'bg-green-800/70 rounded-lg  border-2 border-green-600 ': selectedUserIds.includes(member.id),
+                        'flex items-center justify-between rounded-lg cursor-pointer my-2 w-full pr-6': true
+                    }"
+                    class="w-full text-left pr-6"
+                >
+                    <app-card-account [member]="member"></app-card-account>
+                    <div class="flex items-center justify-center">{{ member.games.length }} games</div>
+                </button>
+            </li>
+            }
+        </ul>
+
+        <hr />
+
+        <!-- GROUP DATA -->
+        <div class="flex justify-between pt-6">
+            <div>
+                <p class="text-gray-400 text-sm">
+                    <span class="font-semibold">Created:</span> {{ groupData?.createdAt | date : "dd/MM/yyyy" }}
+                </p>
+                <p *ngIf="groupData && totalGames" class="text-gray-400">
+                    <span class="font-semibold">Total games:</span> {{ totalGames.length }}
+                </p>
+            </div>
+        </div>
+    </div>
 </div>
