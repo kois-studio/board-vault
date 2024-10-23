@@ -3,6 +3,8 @@ import { Component, effect } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import type { UserType } from '../../../../../../api/api.types'
 import { DataService } from '../../../../../../core/services/data.service'
+import { Router } from '@angular/router'
+import { LocalStorageService } from '../../../../../../core/services/local-storage.service'
 
 @Component({
     standalone: true,
@@ -18,7 +20,12 @@ export class FormUpdateEmailComponent {
         email: new FormControl(this.userData?.email, [Validators.required, Validators.email, Validators.maxLength(128)]),
     })
 
-    constructor(private readonly dataService: DataService) {
+    constructor(
+        private readonly dataService: DataService,
+        private readonly router: Router,
+        private readonly localStorageService: LocalStorageService,
+
+    ) {
         effect(() => {
             this.userData = this.dataService.currentUser()
             this.updateEmailFormGroup.setValue({
@@ -54,10 +61,14 @@ export class FormUpdateEmailComponent {
     public onSave() {
         const userData = this.userData
         const email = this.updateEmailFormGroup.value.email
-
+        
         if (!userData || !email) return
-
+        
         this.dataService.updateCurrentUserData({ email })
+
+        this.localStorageService.deleteToken()
+        this.dataService.clearState()
+        this.router.navigate(['/login'])
 
         this.isEditingEmailData = false
     }

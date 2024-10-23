@@ -1,3 +1,61 @@
-<div>
-    new meet works!
+<div class="container mx-auto max-w-6xl justify-center items-center">
+    <div class="shadow-md rounded-lg p-6 bg-zinc-800 relative">
+        <!-- GROUP CARD -->
+        <div class="flex justify-between mb-2">
+            <h2 class="text-xl font-semibold mb-4">{{ groupData?.name }}</h2>
+            <button (click)="onGoBack()" class="app-btn-error" title="Home button">
+                <i class="bi bi-arrow-left"></i> Back
+            </button>
+        </div>
+        <hr />
+
+        <!-- MEMBERS DATA -->
+        <h3 class="pt-8 font-bold">Members</h3>
+        <div class="grid grid-cols-4">
+            @for (member of groupData?.members; track $index) {
+            <button
+                (click)="onClickMember(member.id)"
+                [ngClass]="{
+                    'bg-green-800/70 rounded-lg  border-2 border-green-600 ': selectedUserIds.includes(member.id),
+                    ' rounded-lg cursor-pointer my-2': true
+                }"
+            >
+                <app-card-account [member]="member" />
+            </button>
+            }
+        </div>
+
+        <hr />
+
+        <!-- GROUP DATA -->
+        <div class="flex justify-between pt-6">
+            <div>
+                <p class="text-gray-400 text-sm">
+                    <span class="font-semibold">Created:</span> {{ groupData?.createdAt | date : "dd/MM/yyyy" }}
+                </p>
+                <p *ngIf="groupData && totalGames" class="text-gray-400">
+                    <span class="font-semibold">Total games:</span> {{ totalGames.length }}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mx-auto max-w-6xl justify-center items-center mt-2">
+    <div class="shadow-md rounded-lg p-6 bg-zinc-800">
+        <h3>Available Games</h3>
+        <div class="flex gap-2 flex-wrap">
+            @for (game of totalGames ; track $index) {
+            <div>
+                <app-card-game
+                    [title]="game.title"
+                    [imageUrl]="game.imageUrl"
+                    [gameAvgDuration]="game.gameAvgDuration"
+                    [minPlayers]="game.minPlayers"
+                    [maxPlayers]="game.maxPlayers"
+                />
+            </div>
+            }
+        </div>
+    </div>
 </div>

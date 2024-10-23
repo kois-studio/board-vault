@@ -10,7 +10,8 @@ export function formatDate(dateInMiliseconds: number): string {
 
     // FIXME: turso creates Date.now() with -2h vs the Spain timezone
     const twoHours = 60 * 60 * 2
-    const seconds = Number((diff / 1000).toFixed(0)) - twoHours
+    const correctionSeconds = 80
+    const seconds = Number((diff / 1000).toFixed(0)) - twoHours + correctionSeconds
 
     const text = (divisor: number, text: string) =>
         `${Math.floor(seconds / divisor)} ${text}${Math.floor(seconds / divisor) > 1 ? 's' : ''} ago`
