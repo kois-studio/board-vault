@@ -10,6 +10,7 @@ import { GamesModule } from './modules/games/games.module'
 import { GamesOwnedModule } from './modules/games-owned/games-owned.module'
 import { InvitationsModule } from './modules/invitations/invitations.module'
 import { NotificationsModule } from './modules/notifications/notifications.module'
+import { GameReviewsModule } from './modules/reviews/reviews.module'
 
 @Module({
     imports: [
@@ -23,6 +24,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
         GamesOwnedModule,
         InvitationsModule,
         NotificationsModule,
+        GameReviewsModule,
     ],
     controllers: [],
     providers: [],
