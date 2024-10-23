@@ -197,6 +197,19 @@ INSERT INTO Notification VALUES(9,2,'invitation_accepted','David M. Fajardo join
 INSERT INTO Notification VALUES(10,2,'invitation_accepted','David M. Fajardo joined your group prueba2','2024-10-15 12:25:58',0);
 
 -- -----------------------------------------------------
+-- Table 'GameReview' (Account-Game n:m with a review value)
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS GameReview (
+    accountId INTEGER NOT NULL,
+    gameId INTEGER NOT NULL,
+    review INTEGER NOT NULL CHECK (review >= 0 AND review <= 10), -- Assuming a review scale from 1 to 5
+    reviewDate DATETIME DEFAULT CURRENT_TIMESTAMP, -- Timestamp when the review was made
+    FOREIGN KEY (accountId) REFERENCES Account(id) ON DELETE CASCADE,
+    FOREIGN KEY (gameId) REFERENCES Game(id) ON DELETE CASCADE,
+    PRIMARY KEY (accountId, gameId) -- Ensures one review per account per game
+);
+
+-- -----------------------------------------------------
 -- Indexes for faster access to the data
 -- -----------------------------------------------------
 CREATE INDEX idx_notification_accountId ON Notification(accountId);

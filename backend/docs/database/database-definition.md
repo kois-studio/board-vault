@@ -91,4 +91,17 @@ CREATE TABLE IF NOT EXISTS Notification (
     isRead BOOLEAN DEFAULT 0, -- 0 = Unread, 1 = Read
     FOREIGN KEY (accountId) REFERENCES Account(id) ON DELETE CASCADE,
 );
+
+-- -----------------------------------------------------
+-- Table 'GameReview' (Account-Game n:m with a review value)
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS GameReview (
+    accountId INTEGER NOT NULL,
+    gameId INTEGER NOT NULL,
+    review INTEGER NOT NULL CHECK (review >= 0 AND review <= 10), -- Assuming a review scale from 1 to 5
+    reviewDate DATETIME DEFAULT CURRENT_TIMESTAMP, -- Timestamp when the review was made
+    FOREIGN KEY (accountId) REFERENCES Account(id) ON DELETE CASCADE,
+    FOREIGN KEY (gameId) REFERENCES Game(id) ON DELETE CASCADE,
+    PRIMARY KEY (accountId, gameId) -- Ensures one review per account per game
+);
 ```
