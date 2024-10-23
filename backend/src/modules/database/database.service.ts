@@ -9,6 +9,7 @@ import { CreateGameBody, UpdateGameBody } from '../../common/types/game.type'
 import { CreateInvitationBody, CreateInvitationByUsernameBody } from '../../common/types/invitation.type'
 import { GameOwnedDto } from '../../common/types/game-owned.type'
 import { CreateNotificationBody, UpdateNotificationBody } from '../../common/types/notification.type'
+import { CreateGameReviewBody, UpdateGameReviewBody } from '../../common/types/game-review.type'
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
@@ -626,6 +627,68 @@ export class DatabaseService implements OnModuleInit {
         return this._tursoExecute({
             sql: 'DELETE FROM Notification WHERE id = ?',
             args: [id],
+        })
+    }
+
+    // #region GameReview
+
+    getGameReviews() {
+        return this._tursoExecute('SELECT * FROM GameReview')
+    }
+
+    getGameReviewById(accountId: number, gameId: number) {
+        return this._tursoExecute({
+            sql: 'SELECT * FROM GameReview WHERE accountId = ? AND gameId = ?',
+            args: [accountId, gameId],
+        })
+    }
+
+    createGameReview(gameReviewDto: CreateGameReviewBody) {
+        return this._tursoExecute({
+            sql: 'INSERT INTO GameReview (accountId, gameId, review) VALUES (?, ?, ?)',
+            args: [gameReviewDto.accountId, gameReviewDto.gameId, gameReviewDto.review],
+        })
+    }
+
+    updateGameReview(accountId: number, gameId: number, partialGameReviewDto: UpdateGameReviewBody) {
+        // Array to store fields to update
+        const fields = []
+        const args = []
+
+        // Dynamically build the update query based on the provided properties
+        if (partialGameReviewDto.review) {
+            fields.push('review = ?')
+            args.push(partialGameReviewDto.review)
+        }
+
+        if (partialGameReviewDto.reviewDate) {
+            fields.push('reviewDate = ?')
+            args.push(partialGameReviewDto.reviewDate)
+        }
+
+        // Error if no fields are provided
+        if (fields.length === 0) {
+            throw new BadRequestException('No fields to update')
+        }
+
+        // Add user id as the last argument
+        args.push(accountId, gameId)
+
+        // Construct the final query
+        const sql = `
+          UPDATE GameReview
+          SET ${fields.join(', ')}
+          WHERE accountId = ? AND gameId = ?
+        `
+
+        // Execute the query
+        return this._tursoExecute({ sql, args })
+    }
+
+    deleteGameReviewById(accountId: number, gameId: number) {
+        return this._tursoExecute({
+            sql: 'DELETE FROM GameReview WHERE accountId = ? AND gameId = ?',
+            args: [accountId, gameId],
         })
     }
 }
