@@ -8,6 +8,7 @@ import { InvitationWithExtraData } from '../../common/types/invitation.type'
 import { GroupsService } from '../groups/groups.service'
 import { NotificationDto } from '../../common/types/notification.type'
 import { GroupMembershipsService } from '../group-memberships/group-memberships.service'
+import { GameReviewAndGameData } from '../../common/types/game-review.type'
 
 @Injectable()
 export class UsersService {
@@ -137,6 +138,19 @@ export class UsersService {
             gameAvgDuration: Number(row[3]),
             minPlayers: Number(row[4]),
             maxPlayers: Number(row[5]),
+        }))
+    }
+
+    async getUserReviews(userId: number): Promise<Array<GameReviewAndGameData>> {
+        this.LOGGER.log(`Getting reviews for user ${userId}`)
+        const resultSet = await this.databaseService.getUserReviews(userId)
+
+        return resultSet.rows.map(row => ({
+            accountId: Number(row[0]),
+            gameId: Number(row[1]),
+            review: Number(row[2]),
+            reviewDate: String(row[3]),
+            gameData: JSON.parse(String(row[4])) as GameDto,
         }))
     }
 
