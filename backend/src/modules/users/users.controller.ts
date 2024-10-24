@@ -85,7 +85,7 @@ export class UsersController {
         return this.usersService.getUserGames(userId)
     }
 
-    @Get('/:userId/review')
+    @Get('/:userId/reviews')
     @ApiOperation({ summary: 'Get reviews by user' })
     @ApiResponse({ status: 200, type: [GameReviewAndGameData] })
     @ApiParam({ name: 'userId', type: Number })

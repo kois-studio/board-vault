@@ -14,6 +14,7 @@ import { LoginComponent } from './pages/login/login.component'
 import { MeetNewComponent } from './pages/meet-new/meet-new.component'
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component'
 import { RegisterComponent } from './pages/register/register.component'
+import { ReviewComponent } from './pages/reviews/reviews.component'
 
 export const routes: Routes = [
     {
@@ -25,6 +26,7 @@ export const routes: Routes = [
             // accessible to authenticated users
             { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
             { path: 'games', component: GamesComponent, canActivate: [AuthGuard] },
+            { path: 'reviews', component: ReviewComponent, canActivate: [AuthGuard] },
         ],
     },
     {
