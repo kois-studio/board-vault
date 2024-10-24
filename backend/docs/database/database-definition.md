@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS Notification (
 );
 
 -- -----------------------------------------------------
--- Table 'GameReview' (Account-Game n:m with a review value)
+-- Table 'GameReview' (Account-Game n:m)
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS GameReview (
     accountId INTEGER NOT NULL,
@@ -103,5 +103,16 @@ CREATE TABLE IF NOT EXISTS GameReview (
     FOREIGN KEY (accountId) REFERENCES Account(id) ON DELETE CASCADE,
     FOREIGN KEY (gameId) REFERENCES Game(id) ON DELETE CASCADE,
     PRIMARY KEY (accountId, gameId) -- Ensures one review per account per game
+);
+
+-- -----------------------------------------------------
+-- Table 'GamePlaySession' (Tracks each play session)
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS GamePlaySession (
+    accountId INTEGER NOT NULL,
+    gameId INTEGER NOT NULL,
+    playedAt DATETIME DEFAULT CURRENT_TIMESTAMP, -- Timestamp when the user played the game
+    FOREIGN KEY (accountId) REFERENCES Account(id) ON DELETE CASCADE,
+    FOREIGN KEY (gameId) REFERENCES Game(id) ON DELETE CASCADE
 );
 ```
