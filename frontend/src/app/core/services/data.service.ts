@@ -3,6 +3,7 @@ import { Router } from '@angular/router'
 import { catchError, concatMap, from, of, tap } from 'rxjs'
 import { Api } from '../../api/api'
 import type {
+    GameReviewType,
     GameType,
     GroupWithMembersAndGames,
     InvitationWithAccountsData,
@@ -23,6 +24,7 @@ export class DataService {
     public userGroups: WritableSignal<Array<GroupWithMembersAndGames>> = signal([])
     public userNotifications: WritableSignal<Array<NotificationType>> = signal([])
     public userInvitations: WritableSignal<Array<InvitationWithExtraData>> = signal([])
+    public userReviews: WritableSignal<Array<GameReviewType>> = signal([])
 
     // list of all games available to select
     public gamesList: WritableSignal<Array<GameType>> = signal([])
@@ -60,6 +62,7 @@ export class DataService {
                 this._getUserGroups(userType.id)
                 this._getUserInvitations(userType.id)
                 this._getUserNotifications(userType.id)
+                this._getUserReviews(userType.id)
             },
             error: (error) => {
                 if (error.status === 401) {
@@ -93,6 +96,17 @@ export class DataService {
             },
             error: () => {
                 this.toastService.error("Error retrieving user's notifications")
+            },
+        })
+    }
+
+    private _getUserReviews(accountId: number) {
+        this.api.getUserReviews(accountId).subscribe({
+            next: (res) => {
+                this.userReviews.set(res)
+            },
+            error: () => {
+                this.toastService.error("Error retrieving user's reviews")
             },
         })
     }

@@ -79,3 +79,13 @@ export type NotificationType = {
 export const NotificationTypeEnum = {
     InvitationAccepted: 'invitation_accepted',
 }
+
+// #region GameReview
+
+export type GameReviewType = {
+    accountId: number
+    gameId: number
+    review: number
+    reviewDate: string
+    gameData: GameType
+}

@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { environment } from '../../environments/environment'
 import type {
+    GameReviewType,
     GameType,
     GroupWithMembersAndGames,
     InvitationWithAccountsData,
@@ -51,6 +52,10 @@ export class Api {
 
     getUserGames(userId: number) {
         return this.http.get<Array<GameType>>(`${this.url}/users/${userId}/games`)
+    }
+
+    getUserReviews(userId: number) {
+        return this.http.get<Array<GameReviewType>>(`${this.url}/users/${userId}/reviews`)
     }
 
     updateUserGames(userId: number, gamesToAdd: Array<number>, gamesToRemove: Array<number>) {
