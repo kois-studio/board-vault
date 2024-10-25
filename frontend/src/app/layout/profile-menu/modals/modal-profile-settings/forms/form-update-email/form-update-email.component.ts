@@ -24,7 +24,6 @@ export class FormUpdateEmailComponent {
         private readonly dataService: DataService,
         private readonly router: Router,
         private readonly localStorageService: LocalStorageService,
-
     ) {
         effect(() => {
             this.userData = this.dataService.currentUser()
@@ -61,9 +60,9 @@ export class FormUpdateEmailComponent {
     public onSave() {
         const userData = this.userData
         const email = this.updateEmailFormGroup.value.email
-        
+
         if (!userData || !email) return
-        
+
         this.dataService.updateCurrentUserData({ email })
 
         this.localStorageService.deleteToken()

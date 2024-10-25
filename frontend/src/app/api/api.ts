@@ -125,4 +125,14 @@ export class Api {
     updateNotification(notificationId: number, partialNotification: Partial<NotificationType>) {
         return this.http.put<{ success: true }>(`${this.url}/notifications/${notificationId}`, { isRead: partialNotification.isRead })
     }
+
+    // #region Game Reviews
+
+    createGameReview(accountId: number, gameId: number, review: number) {
+        return this.http.post<{ success: true }>(`${this.url}/reviews/`, { accountId, gameId, review })
+    }
+
+    deleteGameReview(accountId: number, gameId: number) {
+        return this.http.delete<{ success: true }>(`${this.url}/reviews/${accountId}/${gameId}`)
+    }
 }

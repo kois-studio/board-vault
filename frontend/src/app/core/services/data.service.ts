@@ -478,17 +478,89 @@ export class DataService {
             next: (res) => {
                 this.userNotifications.update((notifications) =>
                     notifications.map((notification) =>
-                        notification.id === notificationId ? { ...notification, isRead: true } : notification
-                    )
+                        notification.id === notificationId ? { ...notification, isRead: true } : notification,
+                    ),
                 )
-                
-                this.toastService.success('Notification marked as read');
+
+                this.toastService.success('Notification marked as read')
             },
             error: (error) => {
                 if (error.status === 404) {
-                    return this.toastService.error('Notification not found');
+                    return this.toastService.error('Notification not found')
                 }
-                this.toastService.error('Error updating notification');
+                this.toastService.error('Error updating notification')
+            },
+        })
+    }
+
+    // #region Game Reviews
+
+    public updateGameReview(accountId: number, gameId: number, newReview: number) {
+        // 1.
+        this.api.deleteGameReview(accountId, gameId).subscribe({
+            next: (res) => {
+                // 1.
+                this.api.createGameReview(accountId, gameId, newReview).subscribe({
+                    next: (res) => {
+                        // 2.
+                        this.userReviews.set([])
+                        this._getUserReviews(accountId)
+
+                        // 3.
+                        this.toastService.success('You have created the review')
+                    },
+                    error: (error) => {
+                        if (error.status === 404) {
+                            return this.toastService.error('Not found')
+                        }
+                        this.toastService.error('Error creating review')
+                    },
+                })
+            },
+            error: (error) => {
+                if (error.status === 404) {
+                    return this.toastService.error('Review not found')
+                }
+                this.toastService.error('Error deleting review')
+            },
+        })
+    }
+
+    public deleteGameReview(accountId: number, gameId: number) {
+        // 1.
+        this.api.deleteGameReview(accountId, gameId).subscribe({
+            next: (res) => {
+                // 2.
+                this.userReviews.update((reviews) => reviews.filter((review) => review.gameId !== gameId))
+
+                // 3.
+                this.toastService.success('You have deleted the review')
+            },
+            error: (error) => {
+                if (error.status === 404) {
+                    return this.toastService.error('Review not found')
+                }
+                this.toastService.error('Error deleting review')
+            },
+        })
+    }
+
+    public createGameReview(accountId: number, gameId: number, review: number) {
+        // 1.
+        this.api.createGameReview(accountId, gameId, review).subscribe({
+            next: (res) => {
+                // 2.
+                this.userReviews.set([])
+                this._getUserReviews(accountId)
+
+                // 3.
+                this.toastService.success('You have created the review')
+            },
+            error: (error) => {
+                if (error.status === 404) {
+                    return this.toastService.error('Not found')
+                }
+                this.toastService.error('Error creating review')
             },
         })
     }

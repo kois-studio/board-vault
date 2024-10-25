@@ -1,10 +1,10 @@
-import { Component, effect, Input } from '@angular/core'
+import { CommonModule } from '@angular/common'
+import { Component, Input, effect } from '@angular/core'
+import { ActivatedRoute, Router } from '@angular/router'
+import { GameType } from '../../api/api.types'
+import { CardAccountComponent } from '../../components/card-account/card-account.component'
+import { CardGameComponent } from '../../components/card-game/card-game.component'
 import { DataService } from '../../core/services/data.service'
-import { CardAccountComponent } from "../../components/card-account/card-account.component";
-import { ActivatedRoute, Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { GameType } from '../../api/api.types';
-import { CardGameComponent } from "../../components/card-game/card-game.component";
 
 @Component({
     standalone: true,
@@ -42,12 +42,12 @@ export class MeetNewComponent {
         // index all games by gameId so we don't duplicate games
         const games: Record<GameType['id'], GameType> = {}
 
-        if(!this.groupData){ 
+        if (!this.groupData) {
             return []
         }
 
         for (const member of this.groupData.members) {
-            if(this.selectedUserIds.includes(member.id)){
+            if (this.selectedUserIds.includes(member.id)) {
                 for (const game of member.games) {
                     games[game.id] = game
                 }
@@ -58,9 +58,8 @@ export class MeetNewComponent {
     }
 
     public onClickMember(memberId: number) {
-
-        if(this.selectedUserIds.includes(memberId)) {
-            this.selectedUserIds = this.selectedUserIds.filter(id => id !== memberId)
+        if (this.selectedUserIds.includes(memberId)) {
+            this.selectedUserIds = this.selectedUserIds.filter((id) => id !== memberId)
         } else {
             this.selectedUserIds.push(memberId)
         }

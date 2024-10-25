@@ -25,13 +25,13 @@ export class CardNotificationComponent implements OnInit {
     }
 
     markAsRead() {
-        if (!this.notification) return;
-        const notificationId = this.notification.id;
-        this.dataService.updateNotification(notificationId);
+        if (!this.notification) return
+        const notificationId = this.notification.id
+        this.dataService.updateNotification(notificationId)
     }
 
     deleteNotification() {
-        if(this.notification) {
+        if (this.notification) {
             const notificationId = this.notification.id
             this.dataService.deleteNotification(notificationId)
         }
