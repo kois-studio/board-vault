@@ -1,4 +1,4 @@
-import { ApiProperty, OmitType, PartialType, PickType } from '@nestjs/swagger'
+import { ApiProperty, OmitType } from '@nestjs/swagger'
 import { GameDto } from './game.type'
 
 /**
@@ -22,11 +22,6 @@ export class GameReviewDto {
  * POST requests --> no db generated props
  */
 export class CreateGameReviewBody extends OmitType(GameReviewDto, ['reviewDate']) {}
-
-/**
- * PUT requests --> editable fields
- */
-export class UpdateGameReviewBody extends PartialType(PickType(GameReviewDto, ['review', 'reviewDate'])) {}
 
 export class GameReviewAndGameData extends GameReviewDto {
     @ApiProperty({})

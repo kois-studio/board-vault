@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { DatabaseService } from '../database/database.service'
 import { ResultSet } from '@libsql/client/.'
-import { CreateGameReviewBody, GameReviewDto, UpdateGameReviewBody } from '../../common/types/game-review.type'
+import { CreateGameReviewBody, GameReviewDto } from '../../common/types/game-review.type'
 import { gameReviewsSchema } from '../../common/schemas/db-game-review.schema'
 
 @Injectable()
@@ -56,17 +56,6 @@ export class ReviewsService {
             this.LOGGER.error('Review creation failed', error)
             throw new BadRequestException('Review creation failed')
         }
-    }
-
-    async updateGameReview(accountId: number, gameId: number, partialGameReviewDto: UpdateGameReviewBody): Promise<{ success: boolean }> {
-        this.LOGGER.log(`Updating Game Review with accountId ${accountId} and gameId ${gameId}`)
-        const resultSet = await this.databaseService.updateGameReview(accountId, gameId, partialGameReviewDto)
-
-        if (resultSet.rowsAffected === 0) {
-            throw new NotFoundException(`Game Review with accountId ${accountId} and gameId ${gameId} not found`)
-        }
-
-        return { success: true }
     }
 
     async deleteGameReviewById(accountId: number, gameId: number): Promise<{ success: boolean }> {

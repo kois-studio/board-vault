@@ -1,9 +1,9 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common'
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common'
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
 import { SuccessDto } from '../../common/types/auth.type'
 import { ReviewsService } from './reviews.service'
-import { CreateGameReviewBody, GameReviewDto, UpdateGameReviewBody } from '../../common/types/game-review.type'
+import { CreateGameReviewBody, GameReviewDto } from '../../common/types/game-review.type'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('reviews')
@@ -34,21 +34,6 @@ export class ReviewsController {
     @ApiParam({ name: 'gameId', type: Number })
     getGameReviewById(@Param('accountId', ParseIntPipe) accountId: number, @Param('gameId', ParseIntPipe) gameId: number) {
         return this.reviewsService.getGameReviewsById(accountId, gameId)
-    }
-
-    @Put(':accountId/:gameId')
-    @ApiOperation({ summary: 'Update a Game Review by ID', deprecated: true })
-    @ApiParam({ name: 'accountId', type: Number })
-    @ApiParam({ name: 'gameId', type: Number })
-    @ApiBody({ type: UpdateGameReviewBody, description: 'Partial or full gameReview object to update' })
-    @ApiResponse({ status: 200, description: 'The Game Review has been successfully updated.' })
-    @ApiResponse({ status: 404, description: 'Game Review not found.' })
-    updateGameReview(
-        @Param('accountId', ParseIntPipe) accountId: number,
-        @Param('gameId', ParseIntPipe) gameId: number,
-        @Body() partialGameReviewDto: UpdateGameReviewBody,
-    ) {
-        return this.reviewsService.updateGameReview(accountId, gameId, partialGameReviewDto)
     }
 
     @Delete('/:accountId/:gameId')
