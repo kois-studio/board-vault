@@ -37,7 +37,7 @@ export class ProfileMenuComponent {
         effect(() => {
             this.userData = this.dataService.currentUser()
             this.userInvitations = this.dataService.userInvitations()
-            this.userUnreadNotifications = this.dataService.userNotifications().filter(notifications => !notifications.isRead)
+            this.userUnreadNotifications = this.dataService.userNotifications().filter((notifications) => !notifications.isRead)
         })
     }
 
