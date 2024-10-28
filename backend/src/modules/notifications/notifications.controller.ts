@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common'
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { NotificationsService } from './notifications.service'
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
 import { CreateNotificationBody, NotificationDto, UpdateNotificationBody } from '../../common/types/notification.type'
@@ -29,15 +29,12 @@ export class NotificationsController {
     @ApiOperation({ summary: 'Get notification by id', deprecated: true })
     @ApiResponse({ status: 200, type: NotificationDto, description: 'Notification found' })
     @ApiResponse({ status: 404, description: 'Notification not found' })
-    @ApiParam({ name: 'notificationId', type: String })
     getNotificationById(@Param('notificationId', ParseIntPipe) notificationId: number) {
         return this.notificationsService.getNotificationById(notificationId)
     }
 
     @Put(':notificationId')
     @ApiOperation({ summary: 'Update a notification by ID' })
-    @ApiParam({ name: 'notificationId', required: true, description: 'Notification ID' })
-    @ApiBody({ type: UpdateNotificationBody, description: 'Partial or full notification object to update' })
     @ApiResponse({ status: 200, description: 'The notification has been successfully updated.' })
     @ApiResponse({ status: 404, description: 'Notification not found.' })
     updateNotification(
@@ -50,7 +47,6 @@ export class NotificationsController {
     @Delete('/:notificationId')
     @ApiOperation({ summary: 'Delete a notification by Id' })
     @ApiResponse({ status: 200, description: 'The notification has been succesfully deleted' })
-    @ApiParam({ name: 'notificationId', type: String, description: 'ID of the notification to be deleted' })
     async deleteNotificationById(@Param('notificationId', ParseIntPipe) notificationId: number) {
         return this.notificationsService.deleteNotificationById(notificationId)
     }

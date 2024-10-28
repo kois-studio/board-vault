@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common'
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { GamesService } from './games.service'
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
 import { CreateGameBody, GameDto, UpdateGameBody } from '../../common/types/game.type'
@@ -29,15 +29,12 @@ export class GamesController {
     @ApiOperation({ summary: 'Get game by id', deprecated: true })
     @ApiResponse({ status: 200, type: GameDto, description: 'Game found' })
     @ApiResponse({ status: 404, description: 'Game not found' })
-    @ApiParam({ name: 'gameId', type: Number })
     getGameById(@Param('gameId', ParseIntPipe) gameId: number) {
         return this.gamesService.getGameById(gameId)
     }
 
     @Put(':gameId')
     @ApiOperation({ summary: 'Update a game by ID', deprecated: true })
-    @ApiParam({ name: 'gameId', required: true, description: 'Game ID' })
-    @ApiBody({ type: UpdateGameBody, description: 'Partial or full game object to update' })
     @ApiResponse({ status: 200, description: 'The game has been successfully updated.' })
     @ApiResponse({ status: 404, description: 'Game not found.' })
     updateGame(@Param('gameId', ParseIntPipe) gameId: number, @Body() partialGameDto: UpdateGameBody) {
@@ -47,7 +44,6 @@ export class GamesController {
     @Delete('/:gameId')
     @ApiOperation({ summary: 'Delete a game by Id', deprecated: true })
     @ApiResponse({ status: 200, description: 'The game has been succesfully deleted' })
-    @ApiParam({ name: 'gameId', type: Number, description: 'ID of the game to be deleted' })
     async deleteGameById(@Param('gameId', ParseIntPipe) gameId: number) {
         return this.gamesService.deleteGameById(gameId)
     }
