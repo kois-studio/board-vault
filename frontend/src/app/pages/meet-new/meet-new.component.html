@@ -41,21 +41,56 @@
     </div>
 </div>
 
-<div class="container mx-auto max-w-6xl justify-center items-center mt-2">
-    <div class="shadow-md rounded-lg p-6 bg-zinc-800">
-        <h3>Available Games</h3>
-        <div class="flex gap-2 flex-wrap">
-            @for (game of totalGames ; track $index) {
-            <div>
-                <app-card-game
-                    [title]="game.title"
-                    [imageUrl]="game.imageUrl"
-                    [gameAvgDuration]="game.gameAvgDuration"
-                    [minPlayers]="game.minPlayers"
-                    [maxPlayers]="game.maxPlayers"
-                />
+<div class="container mx-auto max-w-6xl justify-center items-center pt-8">
+    <h2 class="text-xl font-semibold mb-4">Available Games</h2>
+    <div class="flex gap-2 flex-wrap">
+        @for (game of totalGames ; track $index) {
+        <div>
+            <app-card-game
+                [title]="game.title"
+                [imageUrl]="game.imageUrl"
+                [gameAvgDuration]="game.gameAvgDuration"
+                [minPlayers]="game.minPlayers"
+                [maxPlayers]="game.maxPlayers"
+            />
+            <div class="px-4 flex items-center justify-between">
+                <div class="flex items-center justify-start">
+                    @if (avgReviewsIndex[game.id] >= 1 && avgReviewsIndex[game.id] < 2) {
+                        <i class="bi bi-star-half text-yellow-400"></i>
+                    }
+                    @if (avgReviewsIndex[game.id] >= 2) {
+                        <i class="bi bi-star-fill text-yellow-400"></i>
+                    }
+                    @if (avgReviewsIndex[game.id] >= 3 && avgReviewsIndex[game.id] < 4) {
+                        <i class="bi bi-star-half text-yellow-400"></i>
+                    }
+                    @if (avgReviewsIndex[game.id] >= 4) {
+                        <i class="bi bi-star-fill text-yellow-400"></i>
+                    }
+                    @if (avgReviewsIndex[game.id] >= 5 && avgReviewsIndex[game.id] < 6) {
+                        <i class="bi bi-star-half text-yellow-400"></i>
+                    }
+                    @if (avgReviewsIndex[game.id] >= 6) {
+                        <i class="bi bi-star-fill text-yellow-400"></i>
+                    }
+                    @if (avgReviewsIndex[game.id] >= 7 && avgReviewsIndex[game.id] < 8) {
+                        <i class="bi bi-star-half text-yellow-400"></i>
+                    }
+                    @if (avgReviewsIndex[game.id] >= 8) {
+                        <i class="bi bi-star-fill text-yellow-400"></i>
+                    }
+                    @if (avgReviewsIndex[game.id] >= 9 && avgReviewsIndex[game.id] < 10) {
+                        <i class="bi bi-star-half text-yellow-400"></i>
+                    }
+                    @if (avgReviewsIndex[game.id] >= 10) {
+                        <i class="bi bi-star-fill text-yellow-400"></i>
+                    }
+                </div>
+                <div>
+                    {{ avgReviewsIndex[game.id] }}
+                </div>
             </div>
-            }
         </div>
+        }
     </div>
 </div>

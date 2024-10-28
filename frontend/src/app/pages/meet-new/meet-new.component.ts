@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
-import { Component, Input, effect } from '@angular/core'
+import { Component, effect } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
-import { GameType } from '../../api/api.types'
+import { GameType, GroupWithMembersAndGames, UserType } from '../../api/api.types'
 import { CardAccountComponent } from '../../components/card-account/card-account.component'
 import { CardGameComponent } from '../../components/card-game/card-game.component'
 import { DataService } from '../../core/services/data.service'
@@ -12,11 +12,15 @@ import { DataService } from '../../core/services/data.service'
     templateUrl: 'meet-new.component.html',
 })
 export class MeetNewComponent {
-    private userGroups: ReturnType<typeof this.dataService.userGroups> = []
+    // DataService data
     public userData: ReturnType<typeof this.dataService.currentUser> = null
+    private userGroups: ReturnType<typeof this.dataService.userGroups> = []
     public groupData: null | (typeof this.userGroups)[number] = null
 
+    // Component state
     public selectedUserIds: number[] = []
+    public gameReviews: Record<GameType['id'], Record<UserType['id'], number>> = {}
+    public avgReviewsIndex: Record<GameType['id'], number> = {}
 
     constructor(
         private readonly router: Router,
@@ -35,12 +39,34 @@ export class MeetNewComponent {
             }
 
             this.groupData = groupData
+            
+            // After getting group data, index all reviews by gameId
+            this._indexReviews(groupData)
         })
     }
 
+    private _indexReviews(groupData: GroupWithMembersAndGames) {
+        // Step 1: Index all reviews by gameId and userId
+        for (const member of groupData.members) {
+            for (const review of member.reviews) {
+                if (this.gameReviews[review.gameId] === undefined) {
+                    this.gameReviews[review.gameId] = {}
+                }
+
+                this.gameReviews[review.gameId][member.id] = review.review
+            }
+        }
+
+        // Step 2: Calculate average review for each game
+        for (const [gameId, value] of Object.entries(this.gameReviews)) {
+            const reviews = Object.values(value)
+            const sum = reviews.reduce((acc, review) => acc + review, 0)
+            this.avgReviewsIndex[Number(gameId)] = Number((sum / reviews.length).toFixed(2))
+        }
+    }
+
     get totalGames(): Array<GameType> {
-        // index all games by gameId so we don't duplicate games
-        const games: Record<GameType['id'], GameType> = {}
+        const games: Array<GameType> = []
 
         if (!this.groupData) {
             return []
@@ -49,12 +75,18 @@ export class MeetNewComponent {
         for (const member of this.groupData.members) {
             if (this.selectedUserIds.includes(member.id)) {
                 for (const game of member.games) {
-                    games[game.id] = game
+                    if (!games.find((g) => g.id === game.id)) {
+                        games.push(game)
+                    }
                 }
             }
         }
 
-        return Object.values(games)
+        return games.sort((a, b) => {
+            const a_review = this.avgReviewsIndex[a.id] ?? -1
+            const b_review = this.avgReviewsIndex[b.id] ?? -1
+            return b_review - a_review
+        })
     }
 
     public onClickMember(memberId: number) {
