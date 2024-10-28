@@ -213,6 +213,7 @@ CREATE TABLE IF NOT EXISTS GameReview (
 -- Table 'GamePlaySession' (Tracks each play session)
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS GamePlaySession (
+    id INTEGER PRIMARY KEY AUTOINCREMENT, -- Unique identifier for each session
     accountId INTEGER NOT NULL,
     gameId INTEGER NOT NULL,
     playedAt DATETIME DEFAULT CURRENT_TIMESTAMP, -- Timestamp when the user played the game
