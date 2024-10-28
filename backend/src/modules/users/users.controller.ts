@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common'
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { UsersService } from './users.service'
 import { CreateUserBody, UpdateUserBody, UserGetDto, UserUpdateGamesBody } from '../../common/types/user.type'
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
@@ -35,7 +35,6 @@ export class UsersController {
     @ApiOperation({ summary: 'Get user by id', deprecated: true })
     @ApiResponse({ status: 200, type: UserGetDto, description: 'User found' })
     @ApiResponse({ status: 404, description: 'User not found' })
-    @ApiParam({ name: 'userId', type: Number })
     getUserById(@Param('userId', ParseIntPipe) userId: number) {
         return this.usersService.getUserById(userId)
     }
@@ -43,8 +42,6 @@ export class UsersController {
     @UseGuards(UserOwnershipGuard)
     @Put('/:userId')
     @ApiOperation({ summary: 'Update a user by ID' })
-    @ApiParam({ name: 'userId', required: true, description: 'User ID' })
-    @ApiBody({ type: UpdateUserBody, description: 'Partial or full user object to update' })
     @ApiResponse({ status: 200, description: 'The user has been successfully updated.' })
     @ApiResponse({ status: 404, description: 'User not found.' })
     updateUser(@Param('userId', ParseIntPipe) userId: number, @Body() partialUserDto: UpdateUserBody) {
@@ -55,7 +52,6 @@ export class UsersController {
     @Delete('/:userId')
     @ApiOperation({ summary: 'Delete a user by Id', deprecated: true })
     @ApiResponse({ status: 200, description: 'The user has been succesfully deleted' })
-    @ApiParam({ name: 'userId', type: Number, description: 'ID of the user to be deleted' })
     async deleteUserById(@Param('userId', ParseIntPipe) userId: number) {
         return this.usersService.deleteUserById(userId)
     }
@@ -64,7 +60,6 @@ export class UsersController {
     @ApiOperation({ summary: 'Get user by email' })
     @ApiResponse({ status: 200, type: UserGetDto, description: 'User found' })
     @ApiResponse({ status: 404, description: 'User not found' })
-    @ApiParam({ name: 'email', type: String })
     getUserByEmail(@Param('email') email: string) {
         return this.usersService.getUserByEmail(email)
     }
@@ -72,7 +67,6 @@ export class UsersController {
     @Get('/:userId/groups')
     @ApiOperation({ summary: 'Get groups with members' })
     @ApiResponse({ status: 200, type: [Number] })
-    @ApiParam({ name: 'userId', type: Number })
     getUserGroups(@Param('userId', ParseIntPipe) userId: number) {
         return this.usersService.getUserGroups(userId)
     }
@@ -80,7 +74,6 @@ export class UsersController {
     @Get('/:userId/games')
     @ApiOperation({ summary: 'Get games owned by user' })
     @ApiResponse({ status: 200, type: [GameDto] })
-    @ApiParam({ name: 'userId', type: Number })
     getUserGames(@Param('userId', ParseIntPipe) userId: number) {
         return this.usersService.getUserGames(userId)
     }
@@ -88,7 +81,6 @@ export class UsersController {
     @Get('/:userId/reviews')
     @ApiOperation({ summary: 'Get reviews by user' })
     @ApiResponse({ status: 200, type: [GameReviewAndGameData] })
-    @ApiParam({ name: 'userId', type: Number })
     getUserReviews(@Param('userId', ParseIntPipe) userId: number) {
         return this.usersService.getUserReviews(userId)
     }
@@ -96,8 +88,6 @@ export class UsersController {
     @UseGuards(UserOwnershipGuard)
     @Put('/:userId/games')
     @ApiOperation({ summary: 'Modify games owned by user' })
-    @ApiParam({ name: 'userId', type: Number })
-    @ApiBody({ type: UserUpdateGamesBody, description: 'Game IDs to add and remove from user' })
     @ApiResponse({ status: 200, type: SuccessDto, description: 'The games have been successfully updated.' })
     @ApiResponse({ status: 404, description: 'User not found.' })
     updateUserGames(@Param('userId', ParseIntPipe) userId: number, @Body() userUpdateGamesBody: UserUpdateGamesBody) {
@@ -108,7 +98,6 @@ export class UsersController {
     @ApiOperation({ summary: 'Get notifications for user' })
     @ApiResponse({ status: 200, type: [NotificationDto] })
     @ApiResponse({ status: 404, description: 'User not found.' })
-    @ApiParam({ name: 'userId', type: Number })
     getUserNotifications(@Param('userId', ParseIntPipe) userId: number) {
         return this.usersService.getUserNotifications(userId)
     }
@@ -116,7 +105,6 @@ export class UsersController {
     @Get('/:userId/invitationsReceived')
     @ApiOperation({ summary: 'Get invitations received by user' })
     @ApiResponse({ status: 200, type: [InvitationWithExtraData] })
-    @ApiParam({ name: 'userId', type: Number })
     getUserInvitationsReceived(@Param('userId', ParseIntPipe) userId: number) {
         // TODO: in a future, trim unnecessary data from the response
         return this.usersService.getUserInvitationsReceived(userId)
@@ -127,8 +115,6 @@ export class UsersController {
     @ApiOperation({ summary: 'Leave a group (you CANNOT be the owner)' })
     @ApiResponse({ status: 200, type: SuccessDto, description: 'You have left the group.' })
     @ApiResponse({ status: 404, description: 'User or group not found.' })
-    @ApiParam({ name: 'userId', type: Number })
-    @ApiParam({ name: 'groupId', type: Number })
     leaveGroup(@Param('userId', ParseIntPipe) userId: number, @Param('groupId', ParseIntPipe) groupId: number) {
         return this.usersService.leaveGroup(userId, groupId)
     }
@@ -137,8 +123,6 @@ export class UsersController {
     @Post('/:userId/group/create/:groupName')
     @ApiOperation({ summary: 'Create and assign owner to group' })
     @ApiResponse({ status: 200, type: SuccessDto, description: 'You create the group.' })
-    @ApiParam({ name: 'userId', type: Number })
-    @ApiParam({ name: 'groupName', type: String })
     createGroup(@Param('userId', ParseIntPipe) userId: number, @Param('groupName') groupName: string) {
         return this.usersService.createGroup(userId, groupName)
     }
@@ -148,8 +132,6 @@ export class UsersController {
     @ApiOperation({ summary: 'Delete a group and delete all memberships' })
     @ApiResponse({ status: 200, type: SuccessDto, description: 'You have deleted the group.' })
     @ApiResponse({ status: 404, description: 'User or group not found.' })
-    @ApiParam({ name: 'userId', type: Number })
-    @ApiParam({ name: 'groupId', type: Number })
     deleteGroup(@Param('userId', ParseIntPipe) userId: number, @Param('groupId', ParseIntPipe) groupId: number) {
         return this.usersService.deleteGroup(userId, groupId)
     }

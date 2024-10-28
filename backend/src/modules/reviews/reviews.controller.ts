@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common'
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
 import { SuccessDto } from '../../common/types/auth.type'
 import { ReviewsService } from './reviews.service'
@@ -30,8 +30,6 @@ export class ReviewsController {
     @ApiOperation({ summary: 'Get gameReview by accountId and gameId', deprecated: true })
     @ApiResponse({ status: 200, type: GameReviewDto, description: 'Game Review found' })
     @ApiResponse({ status: 404, description: 'Game Review not found' })
-    @ApiParam({ name: 'accountId', type: Number })
-    @ApiParam({ name: 'gameId', type: Number })
     getGameReviewById(@Param('accountId', ParseIntPipe) accountId: number, @Param('gameId', ParseIntPipe) gameId: number) {
         return this.reviewsService.getGameReviewsById(accountId, gameId)
     }
@@ -39,8 +37,6 @@ export class ReviewsController {
     @Delete('/:accountId/:gameId')
     @ApiOperation({ summary: 'Delete a Game Review by Id', deprecated: true })
     @ApiResponse({ status: 200, type: SuccessDto, description: 'The Game Review has been succesfully deleted' })
-    @ApiParam({ name: 'accountId', type: Number })
-    @ApiParam({ name: 'gameId', type: Number })
     async deleteGameReviewById(@Param('accountId', ParseIntPipe) accountId: number, @Param('gameId', ParseIntPipe) gameId: number) {
         return this.reviewsService.deleteGameReviewById(accountId, gameId)
     }

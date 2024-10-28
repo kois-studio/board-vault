@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common'
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { InvitationsService } from './invitations.service'
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
 import { CreateInvitationBody, CreateInvitationByUsernameBody, InvitationDto } from '../../common/types/invitation.type'
@@ -31,7 +31,6 @@ export class InvitationsController {
     @ApiOperation({ summary: 'Get invitation by id', deprecated: true })
     @ApiResponse({ status: 200, type: InvitationDto, description: 'Invitation found' })
     @ApiResponse({ status: 404, description: 'Invitation not found' })
-    @ApiParam({ name: 'invitationId', type: String })
     getInvitationById(@Param('invitationId', ParseIntPipe) invitationId: number) {
         return this.invitationsService.getInvitationById(invitationId)
     }
@@ -47,7 +46,6 @@ export class InvitationsController {
     @Delete('/:invitationId')
     @ApiOperation({ summary: 'Delete a invitation by Id' })
     @ApiResponse({ status: 200, type: SuccessDto, description: 'The invitation has been succesfully deleted' })
-    @ApiParam({ name: 'invitationId', type: String, description: 'ID of the invitation to be deleted' })
     async deleteInvitationById(@Param('invitationId', ParseIntPipe) invitationId: number) {
         return this.invitationsService.deleteInvitationById(invitationId)
     }
@@ -55,7 +53,6 @@ export class InvitationsController {
     @Post('/:invitationId/accept')
     @ApiOperation({ summary: 'Accept -> add to group -> notify' })
     @ApiResponse({ status: 200, type: SuccessDto, description: 'The invitation has been accepted' })
-    @ApiParam({ name: 'invitationId', type: String, description: 'ID of the invitation to be accepted' })
     async acceptInvitation(@Param('invitationId', ParseIntPipe) invitationId: number) {
         return this.invitationsService.acceptInvitation(invitationId)
     }
@@ -63,7 +60,6 @@ export class InvitationsController {
     @Post('/:invitationId/reject')
     @ApiOperation({ summary: 'Reject -> add to group -> notify' })
     @ApiResponse({ status: 200, type: SuccessDto, description: 'The invitation has been rejected' })
-    @ApiParam({ name: 'invitationId', type: String, description: 'ID of the invitation to be rejected' })
     async rejectInvitation(@Param('invitationId', ParseIntPipe) invitationId: number) {
         return this.invitationsService.rejectInvitation(invitationId)
     }
