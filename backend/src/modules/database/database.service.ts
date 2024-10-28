@@ -342,6 +342,18 @@ export class DatabaseService implements OnModuleInit {
                             FROM OwnedGame og
                             JOIN Game ga ON og.gameId = ga.id
                             WHERE og.accountId = a.id
+                        ),
+                        'reviews', (
+                            SELECT json_group_array(
+                                json_object(
+                                    'accountId', gr.accountId,
+                                    'gameId', gr.gameId,
+                                    'review', gr.review,
+                                    'reviewDate', gr.reviewDate
+                                )
+                            )
+                            FROM GameReview gr
+                            WHERE gr.accountId = a.id
                         )
                     )
                 ) AS members
