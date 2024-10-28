@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common'
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
 import { GamesOwnedService } from './games-owned.service'
 import { GameOwnedDto } from '../../common/types/game-owned.type'
@@ -29,8 +29,6 @@ export class GamesOwnedController {
     @ApiOperation({ summary: 'Get owned game by id', deprecated: true })
     @ApiResponse({ status: 200, type: GameOwnedDto, description: 'OwnedGame found' })
     @ApiResponse({ status: 404, description: 'OwnedGame not found' })
-    @ApiParam({ name: 'accountId', type: Number })
-    @ApiParam({ name: 'gameId', type: Number })
     getGamesOwnedById(@Param('accountId', ParseIntPipe) accountId: number, @Param('gameId', ParseIntPipe) gameId: number) {
         return this.gamesOwnedService.getGamesOwnedById(accountId, gameId)
     }
@@ -38,8 +36,6 @@ export class GamesOwnedController {
     @Delete('/:accountId/:gameId')
     @ApiOperation({ summary: 'Delete a owned game by Id', deprecated: true })
     @ApiResponse({ status: 200, description: 'The owned game has been succesfully deleted' })
-    @ApiParam({ name: 'accountId', type: Number })
-    @ApiParam({ name: 'gameId', type: Number })
     async deleteGamesOwnedById(@Param('accountId', ParseIntPipe) accountId: number, @Param('gameId', ParseIntPipe) gameId: number) {
         return this.gamesOwnedService.deleteGamesOwnedById(accountId, gameId)
     }
