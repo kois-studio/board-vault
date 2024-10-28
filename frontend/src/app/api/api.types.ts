@@ -31,6 +31,13 @@ export type GameType = {
 
 // #region Group
 
+export type GameReviewDto = {
+    accountId: number
+    gameId: number
+    review: number
+    reviewDate: string
+}
+
 export type GroupWithMembersAndGames = {
     id: number
     name: string
@@ -40,6 +47,7 @@ export type GroupWithMembersAndGames = {
         UserType & {
             joinedAt: string
             games: Array<GameType>
+            reviews: Array<GameReviewDto>
         }
     >
 }
