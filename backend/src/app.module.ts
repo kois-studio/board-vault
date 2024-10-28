@@ -11,6 +11,7 @@ import { GamesOwnedModule } from './modules/games-owned/games-owned.module'
 import { InvitationsModule } from './modules/invitations/invitations.module'
 import { NotificationsModule } from './modules/notifications/notifications.module'
 import { GameReviewsModule } from './modules/reviews/reviews.module'
+import { GamePlaySessionModule } from './modules/game-play-session/game-play-session.module'
 
 @Module({
     imports: [
@@ -25,6 +26,7 @@ import { GameReviewsModule } from './modules/reviews/reviews.module'
         InvitationsModule,
         NotificationsModule,
         GameReviewsModule,
+        GamePlaySessionModule,
     ],
     controllers: [],
     providers: [],
