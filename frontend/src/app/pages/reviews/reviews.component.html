@@ -1,6 +1,3 @@
-<div>
-    {{ userReviews | json }}
-</div>
 <div class="container mx-auto px-2 pt-8 lg:pt-16">
     <h1 class="text-4xl text-center">Reviews</h1>
     <p class="text-gray-400 text-center">Reviews... <br /></p>
@@ -10,40 +7,39 @@
 <div class="text-gray-500 text-center">No reviews available</div>
 }
 
-<div class="container mx-auto grid grid-cols-3 text-center">
-    <p>Game</p>
-    <p>Rating</p>
-    <p>Last time played</p>
-    <hr class="col-span-3" />
-
-    @for (game of userGames; track $index) {
-    <div class="flex items-center gap-1 p-2">
-        <div class="h-8 w-8">
+<div class="container mx-auto grid grid-cols-2 gap-1">
+    <section class="grid grid-cols-4">
+        @for (game of gamesList; track $index) {
+        <div class="flex justify-start items-center p-2 col-span-3">
             <div
-                class="bg-cover bg-no-repeat bg-center h-full w-full overflow-hidden"
+                class="h-16 w-16 border overflow-hidden bg-cover bg-no-repeat bg-center aspect-square"
                 [style]="{ 'background-image': 'url(' + game.imageUrl + ')' }"
             ></div>
+            <div class="ml-3">
+                <p class="font-semibold text-white">{{ game.title }}</p>
+                <div class="text-gray-400 text-sm">
+                    <p><i class="bi bi-clock-fill"></i> {{ game.gameAvgDuration }} mins</p>
+                    <p><i class="bi bi-people-fill"></i> {{ game.minPlayers }} - {{ game.maxPlayers }}</p>
+                </div>
+            </div>
         </div>
-        <div [title]="game.title" class="overflow-hidden text-ellipsis whitespace-nowrap text-sm">{{ game.title }}</div>
-    </div>
-
-    <div>
-        @for (star of [2, 4, 6, 8, 10]; track $index) {
-        <button
-            (click)="setReview(game.id, star)"
-            (mouseover)="hoverRating[game.id] = star"
-            (mouseleave)="hoverRating[game.id] = 0"
-        >
-            <i
-                class="{{
-                    star <= (hoverRating[game.id] || getReview(game.id))
-                        ? 'bi bi-star-fill text-yellow-400'
-                        : 'bi bi-star'
-                }}"
-            ></i>
-        </button>
+        <div class="flex items-center justify-center">
+            @for (star of [2, 4, 6, 8, 10]; track $index) {
+            <button
+                (click)="setReview(game.id, star)"
+                (mouseover)="hoverRating[game.id] = star"
+                (mouseleave)="hoverRating[game.id] = 0"
+            >
+                <i
+                    class="{{
+                        star <= (hoverRating[game.id] || getReview(game.id))
+                            ? 'bi bi-star-fill text-yellow-400'
+                            : 'bi bi-star'
+                    }}"
+                ></i>
+            </button>
+            }
+        </div>
         }
-    </div>
-    <p>WIP</p>
-    }
+    </section>
 </div>

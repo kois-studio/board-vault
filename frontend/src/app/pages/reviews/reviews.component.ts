@@ -9,17 +9,34 @@ import { DataService } from '../../core/services/data.service';
     templateUrl: 'reviews.component.html',
 })
 export class ReviewComponent {
-    public userGames: ReturnType<typeof this.dataService.userGames> = [];
+    // From dataService
     public userReviews: ReturnType<typeof this.dataService.userReviews> = [];
     public userData: UserType | null = null;
+
+    // Component props
+    public allGroupGames: Record<GameType['id'], GameType> = {};
     public hoverRating: Record<GameType['id'], number> = {};
 
     constructor(private readonly dataService: DataService) {
         effect(() => {
-            this.userGames = this.dataService.userGames();
             this.userReviews = this.dataService.userReviews();
             this.userData = this.dataService.currentUser();
+
+            // from each group, get all the games
+            const userGroups = this.dataService.userGroups()
+            for (const group of userGroups) {
+                for (const member of group.members) {
+                    for (const game of member.games) {
+                        this.allGroupGames[game.id] = game;
+                    }
+                    
+                }
+            }
         });
+    }
+
+    get gamesList() {
+        return Object.values(this.allGroupGames);
     }
 
     public getReview(gameId: number): number {
