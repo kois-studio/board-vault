@@ -721,4 +721,31 @@ export class DatabaseService implements OnModuleInit {
             args: [id],
         })
     }
+
+    // #region gamePlaySession
+
+    async createMeeting(groupId: number, createdBy: number) {
+        return this._tursoExecute({
+            sql: 'INSERT INTO Meet (groupId, createdBy) VALUES (?, ?)',
+            args: [groupId, createdBy],
+        })
+    }
+
+    async addGroupMembersToMeeting(meetId: number, groupId: number) {
+        // TODO: something like this? no idea
+        return this._tursoExecute({
+            sql: `
+            INSERT INTO MeetAttendee (meetId, accountId)
+            SELECT ?, gm.accountId, FALSE
+            FROM GroupMembership gm
+            WHERE gm.groupId = ?;
+            `,
+            args: [meetId, groupId],
+        })
+    }
+
+    async addGroupGamesToMeeting(meetId: number, groupId: number) {
+        // TODO: lo mismo que arriba, pero con games, supoongo
+        console.log(meetId, groupId)
+    }
 }
