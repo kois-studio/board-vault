@@ -7,32 +7,37 @@
 <div class="text-gray-500 text-center">No reviews available</div>
 }
 
-<div class="container mx-auto grid grid-cols-2 gap-1">
+<div class="container mx-auto grid grid-cols-2 gap-x-16">
     <section class="grid grid-cols-4">
-        @for (game of gamesList; track $index) {
-        <div class="flex justify-start items-center p-2 col-span-3">
+        @for (gameData of gamesList; track $index) {
+        <div class="flex justify-start items-center p-2 col-span-3 relative">
+            <div class="absolute top-3 -left-5 flex flex-col items-center justify-center gap-y-1">
+                @for (ownerId of gameData.owners; track $index) {
+                    <app-image-profile [imageUrl]="getOwnerData(ownerId).imageUrl" size="small" />
+                }
+            </div>
             <div
                 class="h-16 w-16 border overflow-hidden bg-cover bg-no-repeat bg-center aspect-square"
-                [style]="{ 'background-image': 'url(' + game.imageUrl + ')' }"
+                [style]="{ 'background-image': 'url(' + gameData.data.imageUrl + ')' }"
             ></div>
             <div class="ml-3">
-                <p class="font-semibold text-white">{{ game.title }}</p>
+                <p class="font-semibold text-white">{{ gameData.data.title }}</p>
                 <div class="text-gray-400 text-sm">
-                    <p><i class="bi bi-clock-fill"></i> {{ game.gameAvgDuration }} mins</p>
-                    <p><i class="bi bi-people-fill"></i> {{ game.minPlayers }} - {{ game.maxPlayers }}</p>
+                    <p><i class="bi bi-clock-fill"></i> {{ gameData.data.gameAvgDuration }} mins</p>
+                    <p><i class="bi bi-people-fill"></i> {{ gameData.data.minPlayers }} - {{ gameData.data.maxPlayers }}</p>
                 </div>
             </div>
         </div>
         <div class="flex items-center justify-center">
             @for (star of [2, 4, 6, 8, 10]; track $index) {
             <button
-                (click)="setReview(game.id, star)"
-                (mouseover)="hoverRating[game.id] = star"
-                (mouseleave)="hoverRating[game.id] = 0"
+                (click)="setReview(gameData.data.id, star)"
+                (mouseover)="hoverRating[gameData.data.id] = star"
+                (mouseleave)="hoverRating[gameData.data.id] = 0"
             >
                 <i
                     class="{{
-                        star <= (hoverRating[game.id] || getReview(game.id))
+                        star <= (hoverRating[gameData.data.id] || getReview(gameData.data.id))
                             ? 'bi bi-star-fill text-yellow-400'
                             : 'bi bi-star'
                     }}"
