@@ -120,6 +120,15 @@ export class UsersController {
     }
 
     @UseGuards(UserOwnershipGuard)
+    @Post('/:userId/group/:groupId/newMeeting')
+    @ApiOperation({ summary: 'Create a new empty meeting for today' })
+    @ApiResponse({ status: 200, type: SuccessDto, description: 'Meeting created.' })
+    @ApiResponse({ status: 404, description: 'User or group not found.' })
+    createMeeting(@Param('userId', ParseIntPipe) userId: number, @Param('groupId', ParseIntPipe) groupId: number) {
+        return this.usersService.createMeeting(userId, groupId)
+    }
+
+    @UseGuards(UserOwnershipGuard)
     @Post('/:userId/group/create/:groupName')
     @ApiOperation({ summary: 'Create and assign owner to group' })
     @ApiResponse({ status: 200, type: SuccessDto, description: 'You create the group.' })
