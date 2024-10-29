@@ -1,11 +1,13 @@
+import { CommonModule } from '@angular/common'
 import { Component, Input } from '@angular/core'
 
 @Component({
     standalone: true,
-    imports: [],
+    imports: [CommonModule],
     selector: 'app-image-profile',
     templateUrl: 'image-profile.component.html',
 })
 export class ImageProfileComponent {
     @Input() imageUrl: null | undefined | string = null
+    @Input() size: 'small' | 'medium' | 'large' = 'medium'
 }
