@@ -222,6 +222,33 @@ export class UsersService {
         return { success: true }
     }
 
+    async createMeeting(userId: number, groupId: number): Promise<{ success: boolean }> {
+        this.LOGGER.log(`User with id ${userId} creating meeting for group with id ${groupId}`)
+
+        // Step 1: Get user data
+        const userData = await this.getUserById(userId)
+
+        // Step 2: Get group data
+        const groupData = await this.groupsService.getGroupWithMembersAndGames(groupId)
+
+        // Step 3: Create meeting
+        await this.databaseService.createMeeting(groupData.id, userData.id)
+
+        // TODO: CRUD operations for meeting + db-meeting.ts + meeting.ts types
+        // const meetingData = await this.meetingsService.getMeetingByGroupId(groupId)
+
+        // Step 4: Add all members from the group to MeetAttendee table
+        // await this.databaseService.addGroupMembersToMeeting(meetingData.id, groupId)
+
+        // Step 5: Add all games from the group to MeetGame table
+        // await this.databaseService.addGroupGamesToMeeting(meetingData.id, groupId)
+
+        // Step 6: Notify all members of the group
+        // TODO:
+        // await this.databaseService.notifyGroupMembers(groupId, 'Meeting created')
+        return { success: true }
+    }
+
     async createGroup(userId: number, groupName: string): Promise<{ success: boolean }> {
         this.LOGGER.log(`${userId} is creating group ${groupName}`)
         // Step 1: Get user data(to be the owner)
