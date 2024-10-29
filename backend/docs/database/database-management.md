@@ -222,6 +222,44 @@ CREATE TABLE IF NOT EXISTS GamePlaySession (
 );
 
 -- -----------------------------------------------------
+-- Table 'Meet'
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS Meet (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    groupId INTEGER NOT NULL,
+    createdBy INTEGER NOT NULL,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    isConfirmed BOOLEAN DEFAULT FALSE, -- Pre-meeting if FALSE, post-meeting if TRUE
+    confirmedAt DATETIME, -- Only set when isConfirmed is TRUE
+    FOREIGN KEY (groupId) REFERENCES UserGroup(id) ON DELETE CASCADE,
+    FOREIGN KEY (createdBy) REFERENCES Account(id) ON DELETE CASCADE
+);
+
+-- -----------------------------------------------------
+-- Table 'MeetAttendee' (Tracks each member in a meet)
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS MeetAttendee (
+    meetId INTEGER NOT NULL,
+    accountId INTEGER NOT NULL,
+    isAttending BOOLEAN DEFAULT FALSE, -- Attending or not based on final confirmation
+    FOREIGN KEY (meetId) REFERENCES Meet(id) ON DELETE CASCADE,
+    FOREIGN KEY (accountId) REFERENCES Account(id) ON DELETE CASCADE,
+    PRIMARY KEY (meetId, accountId)
+);
+
+-- -----------------------------------------------------
+-- Table 'MeetGame' (Games selected for the meet)
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS MeetGame (
+    meetId INTEGER NOT NULL,
+    gameId INTEGER NOT NULL,
+    isPlayed BOOLEAN DEFAULT FALSE, -- Marked true if confirmed as played
+    FOREIGN KEY (meetId) REFERENCES Meet(id) ON DELETE CASCADE,
+    FOREIGN KEY (gameId) REFERENCES Game(id) ON DELETE CASCADE,
+    PRIMARY KEY (meetId, gameId)
+);
+
+-- -----------------------------------------------------
 -- Indexes for faster access to the data
 -- -----------------------------------------------------
 CREATE INDEX idx_notification_accountId ON Notification(accountId);
