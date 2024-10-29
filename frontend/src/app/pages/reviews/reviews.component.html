@@ -9,18 +9,41 @@
 @if(userReviews.length === 0) {
 <div class="text-gray-500 text-center">No reviews available</div>
 }
-<div>
+
+<div class="container mx-auto grid grid-cols-3 text-center">
+    <p>Game</p>
+    <p>Rating</p>
+    <p>Last time played</p>
+    <hr class="col-span-3" />
+
     @for (game of userGames; track $index) {
-    <div class="container mx-auto grid grid-cols-9">
-        <div>id:{{ game.id }}</div>
-        <div>{{ game.title }}</div>
-        <div>time:{{ game.gameAvgDuration }}</div>
-        <div>-P:{{ game.minPlayers }}</div>
-        <div>+P:{{ game.maxPlayers }}</div>
-        <div>nota:{{ getReview(game.id) }}</div>
-        <button class="app-btn-error" (click)="deleteReview( game.id )">X</button>
-        <button class="app-btn-primary" (click)="setReview( game.id, 5 )">Set to 5</button>
-        <button class="app-btn-primary" (click)="setReview( game.id, 10 )">Set to 10</button>
+    <div class="flex items-center gap-1 p-2">
+        <div class="h-8 w-8">
+            <div
+                class="bg-cover bg-no-repeat bg-center h-full w-full overflow-hidden"
+                [style]="{ 'background-image': 'url(' + game.imageUrl + ')' }"
+            ></div>
+        </div>
+        <div [title]="game.title" class="overflow-hidden text-ellipsis whitespace-nowrap text-sm">{{ game.title }}</div>
     </div>
+
+    <div>
+        @for (star of [2, 4, 6, 8, 10]; track $index) {
+        <button
+            (click)="setReview(game.id, star)"
+            (mouseover)="hoverRating[game.id] = star"
+            (mouseleave)="hoverRating[game.id] = 0"
+        >
+            <i
+                class="{{
+                    star <= (hoverRating[game.id] || getReview(game.id))
+                        ? 'bi bi-star-fill text-yellow-400'
+                        : 'bi bi-star'
+                }}"
+            ></i>
+        </button>
+        }
+    </div>
+    <p>WIP</p>
     }
 </div>
