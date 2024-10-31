@@ -12,6 +12,9 @@ import { InvitationsModule } from './modules/invitations/invitations.module'
 import { NotificationsModule } from './modules/notifications/notifications.module'
 import { GameReviewsModule } from './modules/reviews/reviews.module'
 import { GamePlaySessionModule } from './modules/game-play-session/game-play-session.module'
+import { MeetsModule } from './modules/meets/meets.module'
+import { MeetAttendeesModule } from './modules/meet-attendees/meet-attendees.module'
+import { MeetGamesModule } from './modules/meet-games/meet-games.module'
 
 @Module({
     imports: [
@@ -27,6 +30,9 @@ import { GamePlaySessionModule } from './modules/game-play-session/game-play-ses
         NotificationsModule,
         GameReviewsModule,
         GamePlaySessionModule,
+        MeetsModule,
+        MeetAttendeesModule,
+        MeetGamesModule,
     ],
     controllers: [],
     providers: [],
