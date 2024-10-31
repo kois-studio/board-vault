@@ -9,6 +9,7 @@ import { GroupsService } from '../groups/groups.service'
 import { NotificationDto } from '../../common/types/notification.type'
 import { GroupMembershipsService } from '../group-memberships/group-memberships.service'
 import { GameReviewAndGameData } from '../../common/types/game-review.type'
+import { MeetsService } from '../meets/meets.service'
 
 @Injectable()
 export class UsersService {
@@ -18,6 +19,7 @@ export class UsersService {
         private readonly databaseService: DatabaseService,
         private readonly groupsService: GroupsService,
         private readonly groupMembershipsService: GroupMembershipsService,
+        private readonly meetsService: MeetsService,
     ) {}
 
     private _parseResultSet(resultSet: ResultSet): Array<UserCompleteDto> {
@@ -232,16 +234,16 @@ export class UsersService {
         const groupData = await this.groupsService.getGroupWithMembersAndGames(groupId)
 
         // Step 3: Create meeting
-        await this.databaseService.createMeeting(groupData.id, userData.id)
+        const createResultSet = await this.databaseService.createMeeting(groupData.id, userData.id)
 
         // TODO: CRUD operations for meeting + db-meeting.ts + meeting.ts types
-        // const meetingData = await this.meetingsService.getMeetingByGroupId(groupId)
+        const meetingData = await this.meetsService.getMeetById(Number(createResultSet.lastInsertRowid))
 
         // Step 4: Add all members from the group to MeetAttendee table
-        // await this.databaseService.addGroupMembersToMeeting(meetingData.id, groupId)
+        await this.databaseService.addGroupMembersToMeeting(meetingData.id, groupId)
 
         // Step 5: Add all games from the group to MeetGame table
-        // await this.databaseService.addGroupGamesToMeeting(meetingData.id, groupId)
+        await this.databaseService.addGroupGamesToMeeting(meetingData.id, groupId)
 
         // Step 6: Notify all members of the group
         // TODO:
