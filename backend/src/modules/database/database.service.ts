@@ -722,7 +722,26 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
-    // #region gamePlaySession
+    // #region Meetings
+
+    getMeets() {
+        return this._tursoExecute('SELECT * FROM Meet')
+    }
+
+    getMeetAttendees() {
+        return this._tursoExecute('SELECT * FROM MeetAttendee')
+    }
+
+    getMeetGames() {
+        return this._tursoExecute('SELECT * FROM MeetGame')
+    }
+
+    getMeetById(meetId: number) {
+        return this._tursoExecute({
+            sql: 'SELECT * FROM Meet WHERE id = ?',
+            args: [meetId],
+        })
+    }
 
     async createMeeting(groupId: number, createdBy: number) {
         return this._tursoExecute({
@@ -732,11 +751,10 @@ export class DatabaseService implements OnModuleInit {
     }
 
     async addGroupMembersToMeeting(meetId: number, groupId: number) {
-        // TODO: something like this? no idea
         return this._tursoExecute({
             sql: `
             INSERT INTO MeetAttendee (meetId, accountId)
-            SELECT ?, gm.accountId, FALSE
+            SELECT ?, gm.accountId
             FROM GroupMembership gm
             WHERE gm.groupId = ?;
             `,
@@ -745,7 +763,15 @@ export class DatabaseService implements OnModuleInit {
     }
 
     async addGroupGamesToMeeting(meetId: number, groupId: number) {
-        // TODO: lo mismo que arriba, pero con games, supoongo
-        console.log(meetId, groupId)
+        return this._tursoExecute({
+            sql: `
+            INSERT OR IGNORE INTO MeetGame (meetId, gameId, isPlayed)
+            SELECT ?, og.gameId, FALSE
+            FROM OwnedGame og
+            INNER JOIN GroupMembership gm ON og.accountId = gm.accountId
+            WHERE gm.groupId = ?
+            `,
+            args: [meetId, groupId],
+        })
     }
 }
