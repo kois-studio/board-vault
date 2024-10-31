@@ -102,8 +102,8 @@ export class DataService {
 
     private _getUserReviews(accountId: number) {
         this.api.getUserReviews(accountId).subscribe({
-            next: (res) => {
-                this.userReviews.set(res)
+            next: (reviews) => {
+                this.userReviews.set(reviews)
             },
             error: () => {
                 this.toastService.error("Error retrieving user's reviews")
