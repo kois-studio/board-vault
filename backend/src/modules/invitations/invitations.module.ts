@@ -6,9 +6,18 @@ import { GroupsService } from '../groups/groups.service'
 import { GroupMembershipsService } from '../group-memberships/group-memberships.service'
 import { UsersService } from '../users/users.service'
 import { NotificationsService } from '../notifications/notifications.service'
+import { MeetsService } from '../meets/meets.service'
 
 @Module({
-    providers: [InvitationsService, DatabaseService, GroupsService, GroupMembershipsService, UsersService, NotificationsService],
+    providers: [
+        InvitationsService,
+        DatabaseService,
+        GroupsService,
+        GroupMembershipsService,
+        UsersService,
+        NotificationsService,
+        MeetsService,
+    ],
     exports: [InvitationsService],
     controllers: [InvitationsController],
 })
