@@ -97,3 +97,26 @@ export type GameReviewType = {
     reviewDate: string
     gameData: GameType
 }
+
+// #region Meeting
+
+export type MeetType = {
+    id: number
+    groupId: number
+    createdBy: number
+    createdAt: string
+    isConfirmed: boolean
+    confirmedAt: string | null
+}
+
+export type MeetAttendeeType = {
+    meetId: number
+    accountId: number
+    isAttending: boolean
+}
+
+export type MeetGameType = {
+    meetId: number
+    gameId: number
+    isPlayed: boolean
+}
