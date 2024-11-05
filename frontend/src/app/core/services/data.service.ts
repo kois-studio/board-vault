@@ -8,6 +8,7 @@ import type {
     GroupWithMembersAndGames,
     InvitationWithAccountsData,
     InvitationWithExtraData,
+    MeetType,
     NotificationType,
     UserType,
 } from '../../api/api.types'
@@ -25,6 +26,7 @@ export class DataService {
     public userNotifications: WritableSignal<Array<NotificationType>> = signal([])
     public userInvitations: WritableSignal<Array<InvitationWithExtraData>> = signal([])
     public userReviews: WritableSignal<Array<GameReviewType>> = signal([])
+    public userMeets: WritableSignal<Array<MeetType>> = signal([])
 
     // list of all games available to select
     public gamesList: WritableSignal<Array<GameType>> = signal([])
@@ -63,6 +65,7 @@ export class DataService {
                 this._getUserInvitations(userType.id)
                 this._getUserNotifications(userType.id)
                 this._getUserReviews(userType.id)
+                this._getUserMeets(userType.id)
             },
             error: (error) => {
                 if (error.status === 401) {
@@ -160,6 +163,17 @@ export class DataService {
                 ),
             )
             .subscribe()
+    }
+
+    private _getUserMeets(userId: number) {
+        this.api.getUserMeets(userId).subscribe({
+            next: (meets) => {
+                this.userMeets.set(meets)
+            },
+            error: () => {
+                this.toastService.error("Error retrieving user's meets")
+            },
+        })
     }
 
     // #region ## public methods ##
@@ -564,4 +578,24 @@ export class DataService {
             },
         })
     }
+
+    // #region Meetings
+
+    public createMeeting(accountId: number, groupId: number) {
+        console.log(accountId,groupId)
+    // 1.
+    this.api.createMeeting(accountId, groupId).subscribe({
+        next: (res) => {
+            // 2.
+            this.userMeets.set([])
+            this._getUserMeets(accountId)
+
+            // 3.
+            this.toastService.success(`You have created the meet`)
+        },
+        error: () => {
+            this.toastService.error('Error creating meeting')
+        },
+    })
+}
 }
