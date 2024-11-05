@@ -10,6 +10,7 @@ import { NotificationDto } from '../../common/types/notification.type'
 import { GroupMembershipsService } from '../group-memberships/group-memberships.service'
 import { GameReviewAndGameData } from '../../common/types/game-review.type'
 import { MeetsService } from '../meets/meets.service'
+import { MeetDto } from 'src/common/types/meet.type'
 
 @Injectable()
 export class UsersService {
@@ -168,6 +169,20 @@ export class UsersService {
             message: String(row[3]),
             createdAt: String(row[4]),
             isRead: Boolean(row[5]),
+        }))
+    }
+
+    async getUserMeets(userId: number): Promise<Array<MeetDto>> {
+        this.LOGGER.log(`Getting all meets for user ${userId}`)
+        const resultSet = await this.databaseService.getUserMeets(userId)
+
+        return resultSet.rows.map(row => ({
+            id: Number(row[0]),
+            groupId: Number(row[1]),
+            createdBy: Number(row[2]),
+            createdAt: String(row[3]),
+            isConfirmed: Boolean(row[4]),
+            confirmedAt: String(row[5]),
         }))
     }
 
