@@ -97,6 +97,14 @@ export class MeetNewComponent {
         }
     }
 
+    public onSaveDraft() {
+        const accountId = this.userData?.id
+        const groupId = this.groupData?.id
+        if(accountId && groupId){
+            this.dataService.createMeeting(accountId, groupId)
+        }
+    }
+
     onGoBack() {
         this.router.navigate(['/dashboard'])
     }

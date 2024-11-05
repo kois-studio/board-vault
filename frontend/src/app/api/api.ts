@@ -7,6 +7,7 @@ import type {
     GroupWithMembersAndGames,
     InvitationWithAccountsData,
     InvitationWithExtraData,
+    MeetType,
     NotificationType,
     UserType,
 } from './api.types'
@@ -56,6 +57,10 @@ export class Api {
 
     getUserReviews(userId: number) {
         return this.http.get<Array<GameReviewType>>(`${this.url}/users/${userId}/reviews`)
+    }
+
+    getUserMeets(userId: number) {
+        return this.http.get<Array<MeetType>>(`${this.url}/users/${userId}/meets`)
     }
 
     updateUserGames(userId: number, gamesToAdd: Array<number>, gamesToRemove: Array<number>) {
@@ -134,5 +139,11 @@ export class Api {
 
     deleteGameReview(accountId: number, gameId: number) {
         return this.http.delete<{ success: true }>(`${this.url}/reviews/${accountId}/${gameId}`)
+    }
+
+    // #region Meetings
+
+    createMeeting(accountId: number, groupId: number) {
+        return this.http.post<{ success: true }>(`${this.url}/users/${accountId}/group/${groupId}/newMeeting`, { accountId, groupId })
     }
 }
