@@ -16,6 +16,7 @@ import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.com
 import { RegisterComponent } from './pages/register/register.component'
 import { ReviewComponent } from './pages/reviews/reviews.component'
 import { GroupViewComponent } from './pages/group-view/group-view.component'
+import { MeetEditComponent } from './pages/meet-edit/meet-edit.component'
 
 export const routes: Routes = [
     {
@@ -29,6 +30,7 @@ export const routes: Routes = [
             { path: 'games', component: GamesComponent, canActivate: [AuthGuard] },
             { path: 'reviews', component: ReviewComponent, canActivate: [AuthGuard] },
             { path: 'group/:groupId', component: GroupViewComponent, canActivate: [AuthGuard] },
+            { path: 'meets/:meetId', component: MeetNewComponent, canActivate: [AuthGuard] },
         ],
     },
     {

@@ -98,6 +98,7 @@ export class MeetNewComponent {
     }
 
     public onSaveDraft() {
+    onCreateDraft() {
         const accountId = this.userData?.id
         const groupId = this.groupData?.id
         if(accountId && groupId){

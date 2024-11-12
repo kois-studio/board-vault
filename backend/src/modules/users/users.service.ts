@@ -239,7 +239,7 @@ export class UsersService {
         return { success: true }
     }
 
-    async createMeeting(userId: number, groupId: number): Promise<{ success: boolean }> {
+    async createMeeting(userId: number, groupId: number): Promise<{ success: boolean; meetId: number }> {
         this.LOGGER.log(`User with id ${userId} creating meeting for group with id ${groupId}`)
 
         // Step 1: Get user data
@@ -263,7 +263,7 @@ export class UsersService {
         // Step 6: Notify all members of the group
         // TODO:
         // await this.databaseService.notifyGroupMembers(groupId, 'Meeting created')
-        return { success: true }
+        return { success: true, meetId: meetingData.id }
     }
 
     async createGroup(userId: number, groupName: string): Promise<{ success: boolean }> {
