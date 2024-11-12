@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common'
 import { Component, Input, OnInit } from '@angular/core'
 import type { NotificationType } from '../../api/api.types'
-import { formatDate } from '../../core/utils/formatDate'
 import { DataService } from '../../core/services/data.service'
+import { formatDate } from '../../core/utils/formatDate'
 
 @Component({
     standalone: true,

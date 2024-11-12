@@ -582,20 +582,20 @@ export class DataService {
     // #region Meetings
 
     public createMeeting(accountId: number, groupId: number) {
-    // 1.
-    this.api.createMeeting(accountId, groupId).subscribe({
-        next: (res) => {
-            // 2.
-            this.userMeets.set([])
-            this._getUserMeets(accountId)
+        // 1.
+        this.api.createMeeting(accountId, groupId).subscribe({
+            next: (res) => {
+                // 2.
+                this.userMeets.set([])
+                this._getUserMeets(accountId)
 
-            // 3.
-            this.toastService.success(`You have created the meet`)
-            this.router.navigate([`/meets/${res.meetId}`])
-        },
-        error: () => {
-            this.toastService.error('Error creating meeting')
-        },
-    })
-}
+                // 3.
+                this.toastService.success('You have created the meet')
+                this.router.navigate([`/meets/${res.meetId}`])
+            },
+            error: () => {
+                this.toastService.error('Error creating meeting')
+            },
+        })
+    }
 }
