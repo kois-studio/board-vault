@@ -582,7 +582,6 @@ export class DataService {
     // #region Meetings
 
     public createMeeting(accountId: number, groupId: number) {
-        console.log(accountId,groupId)
     // 1.
     this.api.createMeeting(accountId, groupId).subscribe({
         next: (res) => {
@@ -592,6 +591,7 @@ export class DataService {
 
             // 3.
             this.toastService.success(`You have created the meet`)
+            this.router.navigate([`/meets/${res.meetId}`])
         },
         error: () => {
             this.toastService.error('Error creating meeting')
