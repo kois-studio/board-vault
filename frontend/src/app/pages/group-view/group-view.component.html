@@ -1,0 +1,69 @@
+<div class="mb-96 mx-2 max-w-5xl md:mx-auto p-6">
+    <!-- GROUP CARD -->
+    <div class="shadow-md rounded-lg p-6 bg-zinc-800 relative">
+        <h2 class="text-xl font-semibold mb-4">{{ groupData?.name }}</h2>
+        <hr />
+
+        <!-- MEMBERS DATA -->
+        <h3 class="pt-8 font-bold tracking-wider">Members</h3>
+        <ul class="pb-8 grid lg:grid-cols-2 gap-4">
+            @if (groupData && groupData.members) {
+                @for (member of groupData.members; track $index) {
+                    <li class="flex justify-between items-center relative">
+                        <div class="flex items-center p-4">
+                            <app-image-profile [imageUrl]="member.imageUrl" />
+                            <div class="ml-3">
+                                <p class="font-semibold text-white">{{ member.display_name }}</p>
+                                <p class="text-gray-400 text-sm">
+                                    <span>{{ member.username }}</span>
+                                    @if (groupData.createdBy === member.id) {
+                                        <span class="text-blue-500 pl-2">owner</span>
+                                    }
+                                </p>
+                            </div>
+                        </div>
+                    </li>
+                }
+            }
+        </ul>
+
+        <!-- INVITED MEMBERS -->
+        @if (groupData && invitationsGroupIndex[groupData.id] && invitationsGroupIndex[groupData.id].length > 0) {
+            <hr />
+            <h3 class="pt-8 font-bold tracking-wider">Invitations pending</h3>
+            <ul class="pb-8 grid lg:grid-cols-2 gap-4">
+            @for (invitation of invitationsGroupIndex[groupData.id]; track $index) {
+                <li class="flex justify-between items-center relative">
+                    <div class="flex items-center p-4 opacity-40">
+                        <app-image-profile [imageUrl]="invitation.toAccount.imageUrl" />
+                        <div class="ml-3">
+                            <p class="font-semibold text-white">{{ invitation.toAccount.display_name }}</p>
+                            <p class="text-gray-400 text-sm">{{ invitation.toAccount.username }}</p>
+                        </div>
+                    </div>
+                </li>
+            }
+            </ul>
+        }
+
+        <hr />
+    </div>
+
+    <div>
+        <!-- TODO: show the list of meetings of this group -->
+        <!-- if a meeting is pending confirmation, highlight it on top in blue color
+            the rest of confirmed meetings, show them below with gray bg
+        -->
+        <!-- it should be a @for that passes the data to a <card-meeting /> new component
+            that coomponent will show:
+            - the meeting's data (when it was, who created it, etc)
+            - the meeting's attendees (with all its data)
+            - the meeting's games (with all its data)
+
+            to show all this stuff you should create a new endpoint
+            meets/:meetId/full o meets/:meetId/complete or somethingg like that,
+            to differ from basic meets/:meetId structure (which would returns only the Meet table's data)
+        -->
+        meetings history 
+    </div>
+</div>
