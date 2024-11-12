@@ -144,7 +144,10 @@ export class Api {
     // #region Meetings
 
     createMeeting(accountId: number, groupId: number) {
-        return this.http.post<{ success: true, meetId: number }>(`${this.url}/users/${accountId}/group/${groupId}/newMeeting`, { accountId, groupId })
+        return this.http.post<{ success: true; meetId: number }>(`${this.url}/users/${accountId}/group/${groupId}/newMeeting`, {
+            accountId,
+            groupId,
+        })
     }
 
     getMeetById(meetId: number) {

@@ -13,7 +13,7 @@
         <div class="flex justify-start items-center p-2 col-span-3 relative">
             <div class="absolute top-3 -left-5 flex flex-col items-center justify-center gap-y-1">
                 @for (ownerId of gameData.owners; track $index) {
-                    <app-image-profile [imageUrl]="getOwnerData(ownerId).imageUrl" size="small" />
+                    <app-image-profile [imageUrl]="getOwnerData(ownerId)?.imageUrl" size="small" title="{{getOwnerData(ownerId)?.username}}" />
                 }
             </div>
             <div

@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common'
 import { Component, effect } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
+import { Router } from '@angular/router'
 import type { UserType } from '../../../../../../api/api.types'
 import { DataService } from '../../../../../../core/services/data.service'
-import { Router } from '@angular/router'
 import { LocalStorageService } from '../../../../../../core/services/local-storage.service'
 
 @Component({
