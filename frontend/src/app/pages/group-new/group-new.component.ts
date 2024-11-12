@@ -8,7 +8,6 @@ import { DataService } from '../../core/services/data.service'
 @Component({
     standalone: true,
     imports: [CommonModule, ImageProfileComponent, ReactiveFormsModule],
-    selector: 'group-new',
     templateUrl: 'group-new.component.html',
 })
 export class GroupNewComponent {
