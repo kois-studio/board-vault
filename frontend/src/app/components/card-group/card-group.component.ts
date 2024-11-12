@@ -39,6 +39,10 @@ export class CardGroupComponent {
         return Object.values(games)
     }
 
+    onOpenGroup() {
+        this.router.navigate(['/group', this.group.id])
+    }
+
     onEditGroup() {
         this.router.navigate(['/group', this.group.id, 'edit'])
     }
