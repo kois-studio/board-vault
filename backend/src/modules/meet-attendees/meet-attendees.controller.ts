@@ -2,7 +2,7 @@ import { Controller, Get, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
 import { MeetAttendeesService } from './meet-attendees.service'
-import { MeetDto } from '../../common/types/meet.type'
+import { MeetAttendeeDto } from '../../common/types/meet-attendee.type'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('meetAttendees')
@@ -13,8 +13,8 @@ export class MeetAttendeesController {
 
     @Get('/')
     @ApiOperation({ summary: 'Get all meet attendees', deprecated: true })
-    @ApiResponse({ status: 200, type: [MeetDto], description: 'List of all meet attendees' })
-    async getMeets() {
+    @ApiResponse({ status: 200, type: [MeetAttendeeDto], description: 'List of all meet attendees' })
+    async getMeetAttendees() {
         return this.meetAttendeesService.getMeetAttendees()
     }
 }
