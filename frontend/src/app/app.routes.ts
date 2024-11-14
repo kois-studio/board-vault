@@ -30,7 +30,7 @@ export const routes: Routes = [
             { path: 'games', component: GamesComponent, canActivate: [AuthGuard] },
             { path: 'reviews', component: ReviewComponent, canActivate: [AuthGuard] },
             { path: 'group/:groupId', component: GroupViewComponent, canActivate: [AuthGuard] },
-            { path: 'meets/:meetId', component: MeetNewComponent, canActivate: [AuthGuard] },
+            { path: 'meets/:meetId', component: MeetEditComponent, canActivate: [AuthGuard] },
         ],
     },
     {
