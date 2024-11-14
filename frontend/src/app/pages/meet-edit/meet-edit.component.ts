@@ -9,18 +9,29 @@ import { DataService } from '../../core/services/data.service'
 @Component({
     standalone: true,
     imports: [CardAccountComponent, CommonModule, CardGameComponent],
-    templateUrl: 'meet-new.component.html',
+    templateUrl: 'meet-edit.component.html',
 })
-export class MeetNewComponent {
+export class MeetEditComponent {
     // DataService data
     public userData: ReturnType<typeof this.dataService.currentUser> = null
     private userGroups: ReturnType<typeof this.dataService.userGroups> = []
     public groupData: null | (typeof this.userGroups)[number] = null
+    private userMeets: ReturnType<typeof this.dataService.userMeets> = []
+
 
     // Component state
     public selectedUserIds: number[] = []
     public gameReviews: Record<GameType['id'], Record<UserType['id'], number>> = {}
     public avgReviewsIndex: Record<GameType['id'], number> = {}
+
+    // Component props
+    public allGroupGames: Record<
+        GameType['id'],
+        {
+            data: GameType
+            owners: Array<UserType['id']>
+        }
+    > = {}
 
     constructor(
         private readonly router: Router,
@@ -30,16 +41,36 @@ export class MeetNewComponent {
         effect(() => {
             this.userData = this.dataService.currentUser()
             this.userGroups = this.dataService.userGroups()
+            this.userMeets = this.dataService.userMeets()
 
-            const groupId = Number.parseInt(this.route.snapshot.paramMap.get('groupId') || '')
-            const groupData = this.userGroups.find((group) => group.id === groupId)
 
-            if (Number.isNaN(groupId) || !this.userData || !groupData) {
-                return
-            }
+            const meet = this.userMeets[0]
+            if(!meet) return
+            const groupData = this.userGroups.find((group) => group.id === meet.groupId)
+
+            if (!this.userData || !groupData) return
 
             this.groupData = groupData
+
+            const userGroups = this.userGroups
             
+            for (const group of userGroups) {
+                for (const member of group.members) {
+                    for (const game of member.games) {
+                        if (!this.allGroupGames[game.id]) {
+                            this.allGroupGames[game.id] = {
+                                data: game,
+                                owners: [member.id],
+                            }
+                        } else {
+                            if (!this.allGroupGames[game.id].owners.includes(member.id)) {
+                                this.allGroupGames[game.id].owners.push(member.id)
+                            }
+                        }
+                    }
+                }
+            }
+
             // After getting group data, index all reviews by gameId
             this._indexReviews(groupData)
         })
@@ -97,15 +128,28 @@ export class MeetNewComponent {
         }
     }
 
-    onCreateDraft() {
-        const accountId = this.userData?.id
-        const groupId = this.groupData?.id
-        if (accountId && groupId) {
-            this.dataService.createMeeting(accountId, groupId)
+    public onSaveDraft() {
+        const accountId = this.userMeets[0].id
+        const groupId = this.userMeets[0].groupId
+        const selectedUsers = this.groupData?.members.filter((member) => this.selectedUserIds.includes(member.id))
+        if (selectedUsers) {
+            for (const user of selectedUsers) {
+                for (const game of user.games) {
+                    game.title
+                }
+            }
+            if (accountId && groupId) {
+                this.dataService.createMeeting(accountId, groupId)
+            }
+
+            console.log(selectedUsers)
         }
     }
 
     onGoBack() {
-        this.router.navigate(['/dashboard'])
+        const groupId = this.userMeets[0].groupId
+        
+        this.router.navigate([`/group/${groupId}/meet/new`])
     }
 }
+
