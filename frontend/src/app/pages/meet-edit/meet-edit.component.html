@@ -38,11 +38,11 @@
                     <span class="font-semibold">Total games:</span> {{ totalGames.length }}
                 </p>
             </div>
-            <!-- <div>
-                <button (click)="onCreateDraft()" class="app-btn-primary" title="Create draft meeting button">
+            <div>
+                <button (click)="onSaveDraft()" class="app-btn-primary" title="Create draft meeting button">
                     Draft
                 </button>
-            </div> -->
+            </div>
         </div>
     </div>
 </div>
@@ -51,16 +51,35 @@
     <h2 class="text-xl font-semibold mb-4">Available Games</h2>
     <div class="flex gap-2 flex-wrap">
         @for (game of totalGames ; track $index) {
-        <div>
-            <app-card-game
-                [title]="game.title"
-                [imageUrl]="game.imageUrl"
-                [gameAvgDuration]="game.gameAvgDuration"
-                [minPlayers]="game.minPlayers"
-                [maxPlayers]="game.maxPlayers"
-            />
-            <div class="px-4 flex items-center justify-between">
-                <div class="flex items-center justify-start">
+            <div class="relative">
+                <app-card-game
+                    [title]="game.title"
+                    [imageUrl]="game.imageUrl"
+                    [gameAvgDuration]="game.gameAvgDuration"
+                    [minPlayers]="game.minPlayers"
+                    [maxPlayers]="game.maxPlayers"
+                ></app-card-game>
+            
+                @if (!selectedGameIds.includes(game.id)) {
+                    <!-- Overlay to deselect -->
+                    <button
+                        (click)="onClickGame(game.id)"
+                        class="absolute top-0 right-0 left-0 bottom-0 bg-red-800/70 rounded-lg p-2 border-2 border-red-600 opacity-25"
+                    >
+                        <span class="font-bold text-xl tracking-wider"></span>
+                    </button>
+                } @else {
+                    <!-- Overlay to select -->
+                    <button
+                        (click)="onClickGame(game.id)"
+                        class="absolute top-0 right-0 left-0 bottom-0 bg-green-800/70 rounded-lg p-2 border-2 border-green-600"
+                    >
+                        <span class="font-bold text-xl tracking-wider">Added</span>
+                    </button>
+                }
+                
+                <div class="px-4 flex items-center justify-between">
+                    <div class="flex items-center justify-start">
                     @if (avgReviewsIndex[game.id] >= 1 && avgReviewsIndex[game.id] < 2) {
                         <i class="bi bi-star-half text-yellow-400"></i>
                     }
@@ -91,12 +110,12 @@
                     @if (avgReviewsIndex[game.id] >= 10) {
                         <i class="bi bi-star-fill text-yellow-400"></i>
                     }
+                    </div>
                 </div>
                 <div>
                     {{ avgReviewsIndex[game.id] }}
                 </div>
             </div>
-        </div>
         }
-    </div>
+</div>
 </div>
