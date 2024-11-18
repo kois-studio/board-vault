@@ -18,11 +18,11 @@ export class MeetEditComponent {
     public groupData: null | (typeof this.userGroups)[number] = null
     private userMeets: ReturnType<typeof this.dataService.userMeets> = []
 
-
     // Component state
     public selectedUserIds: number[] = []
     public gameReviews: Record<GameType['id'], Record<UserType['id'], number>> = {}
     public avgReviewsIndex: Record<GameType['id'], number> = {}
+    public selectedGameIds: Array<number> = []
 
     // Component props
     public allGroupGames: Record<
@@ -42,7 +42,6 @@ export class MeetEditComponent {
             this.userData = this.dataService.currentUser()
             this.userGroups = this.dataService.userGroups()
             this.userMeets = this.dataService.userMeets()
-
 
             const meet = this.userMeets[0]
             if(!meet) return
@@ -128,21 +127,35 @@ export class MeetEditComponent {
         }
     }
 
+    public onClickGame(gameId: number) {
+        if (this.selectedGameIds.includes(gameId)) {
+            this.selectedGameIds = this.selectedGameIds.filter((id) => id !== gameId)
+        } else {
+            this.selectedGameIds.push(gameId)
+        }
+    }
+
     public onSaveDraft() {
         const accountId = this.userMeets[0].id
         const groupId = this.userMeets[0].groupId
-        const selectedUsers = this.groupData?.members.filter((member) => this.selectedUserIds.includes(member.id))
-        if (selectedUsers) {
-            for (const user of selectedUsers) {
-                for (const game of user.games) {
-                    game.title
-                }
+    
+        if (accountId && groupId) {
+            const selectedUsers = this.groupData?.members.filter((member) =>
+                this.selectedUserIds.includes(member.id)
+        )
+        console.log(selectedUsers)
+    
+            const selectedGames = this.totalGames.filter((game) =>
+                this.selectedGameIds.includes(game.id)
+            )
+        console.log(selectedGames)
+    
+            if (selectedGames.length > 0) {
+                console.log('Selected Games:', selectedGames)
+                // this.dataService.createMeeting(accountId, groupId)
+            } else {
+                console.error('No games selected')
             }
-            if (accountId && groupId) {
-                this.dataService.createMeeting(accountId, groupId)
-            }
-
-            console.log(selectedUsers)
         }
     }
 
