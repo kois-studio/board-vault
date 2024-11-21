@@ -174,16 +174,28 @@ export class UsersService {
 
     async getUserMeets(userId: number): Promise<Array<MeetDto>> {
         this.LOGGER.log(`Getting all meets for user ${userId}`)
-        const resultSet = await this.databaseService.getUserMeets(userId)
+        // Step 1: Get all groups for user
+        const getUserGroups = await this.databaseService.getUserGroups(userId)
+        const groupIds = getUserGroups.rows.map(row => Number(row[0]))
 
-        return resultSet.rows.map(row => ({
-            id: Number(row[0]),
-            groupId: Number(row[1]),
-            createdBy: Number(row[2]),
-            createdAt: String(row[3]),
-            isConfirmed: Boolean(row[4]),
-            confirmedAt: String(row[5]),
-        }))
+        // Step 2: Get meets for each group
+        const resultMeets: Array<MeetDto> = []
+
+        for (const groupId of groupIds) {
+            const resultSet = await this.databaseService.getGroupMeets(groupId)
+
+            const meets = resultSet.rows.map(row => ({
+                id: Number(row[0]),
+                groupId: Number(row[1]),
+                createdBy: Number(row[2]),
+                createdAt: String(row[3]),
+                isConfirmed: Boolean(row[4]),
+                confirmedAt: String(row[5]),
+            }))
+
+            resultMeets.push(...meets)
+        }
+        return resultMeets
     }
 
     async getUserInvitationsReceived(userId: number): Promise<Array<InvitationWithExtraData>> {

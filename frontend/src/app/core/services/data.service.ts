@@ -587,7 +587,7 @@ export class DataService {
             next: (res) => {
                 // 2.
                 this.userMeets.set([])
-                this._getUserMeets(accountId)
+                this._getUserMeets(groupId)
 
                 // 3.
                 this.toastService.success('You have created the meet')
