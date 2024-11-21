@@ -217,14 +217,14 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
-    getUserMeets(userId: number) {
+    getGroupMeets(groupId: number) {
         return this._tursoExecute({
             sql: `
                 SELECT m.id, m.groupId, m.createdBy, m.createdAt, m.isConfirmed, m.confirmedAt
                 FROM Meet m
-                WHERE m.id = ?
+                WHERE m.groupId = ?
             `,
-            args: [userId],
+            args: [groupId],
         })
     }
 
