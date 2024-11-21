@@ -43,7 +43,9 @@ export class MeetEditComponent {
             this.userGroups = this.dataService.userGroups()
             this.userMeets = this.dataService.userMeets()
 
-            const meet = this.userMeets[0]
+            const meetId = Number.parseInt(this.route.snapshot.paramMap.get('meetId') || '')
+
+            const meet = this.userMeets.find(meet => meet.id === meetId)
             if(!meet) return
             const groupData = this.userGroups.find((group) => group.id === meet.groupId)
 
