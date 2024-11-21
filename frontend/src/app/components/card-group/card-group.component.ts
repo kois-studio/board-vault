@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { Component, Input, effect } from '@angular/core'
 import { Router } from '@angular/router'
-import type { GroupWithMembersAndGames } from '../../api/api.types'
+import type { GroupWithMembersAndGames, MeetType } from '../../api/api.types'
 import type { GameType, InvitationWithAccountsData } from '../../api/api.types'
 import { DataService } from '../../core/services/data.service'
 import { CardAccountComponent } from '../card-account/card-account.component'
@@ -14,6 +14,9 @@ import { CardAccountComponent } from '../card-account/card-account.component'
 })
 export class CardGroupComponent {
     public userData: ReturnType<typeof this.dataService.currentUser> = null
+    public userMeets: ReturnType<typeof this.dataService.userMeets> = []
+    public lastMeeting: MeetType | null = null
+
     @Input({ required: true }) group!: GroupWithMembersAndGames
     @Input({ required: true }) invitations: undefined | Array<InvitationWithAccountsData> = []
 
@@ -23,7 +26,33 @@ export class CardGroupComponent {
     ) {
         effect(() => {
             this.userData = this.dataService.currentUser()
+            this.userMeets = this.dataService.userMeets()
+            this.updateLastMeeting()
         })
+    }
+
+    private updateLastMeeting() {
+        const sortedMeets = this.userMeets
+            .filter(meet => meet.groupId === this.group.id)
+            .sort((a, b) => (new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
+        
+        this.lastMeeting = sortedMeets.length >= 1 ? sortedMeets[0] : null
+    }
+    get meetAlreadyExist(): null | MeetType['id']{
+
+        
+        if(!this.lastMeeting) {
+            return null
+        }
+        const today = new Date()
+        const lastMeetingDate = new Date(this.lastMeeting.createdAt)
+
+        const isSameDay =
+        lastMeetingDate.getFullYear() === today.getFullYear() &&
+        lastMeetingDate.getMonth() === today.getMonth() &&
+        lastMeetingDate.getDate() === today.getDate()
+
+     return isSameDay ? this.lastMeeting.id : null
     }
 
     get totalGames(): Array<GameType> {
@@ -53,5 +82,13 @@ export class CardGroupComponent {
 
     onNewMeet() {
         this.router.navigate(['/group', this.group.id, 'meet', 'new'])
+    }
+
+    onEditMeet() {
+        if(this.lastMeeting){
+            this.router.navigate(['/meets', this.lastMeeting.id])
+        } else {
+            console.error('No meeting to edit')
+        }
     }
 }
