@@ -11,6 +11,7 @@ import { GameOwnedDto } from '../../common/types/game-owned.type'
 import { CreateNotificationBody, UpdateNotificationBody } from '../../common/types/notification.type'
 import { CreateGameReviewBody } from '../../common/types/game-review.type'
 import { CreateGamePlaySessionBody } from '../../common/types/game-play-session.type'
+import { UpdateMeetAttendeeBody } from '../../common/types/meet-attendee.type'
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
@@ -754,6 +755,20 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    getMeetAttendeeByMeetId(meetId: number) {
+        return this._tursoExecute({
+            sql: 'SELECT * FROM MeetAttendee WHERE meetId = ?',
+            args: [meetId],
+        })
+    }
+
+    async createMeetAttendee(meetId: number, accountId: number) {
+        return this._tursoExecute({
+            sql: 'INSERT INTO MeetAttendee (meetId, accountId) VALUES (?, ?)',
+            args: [meetId, accountId],
+        })
+    }
+
     async createMeeting(groupId: number, createdBy: number) {
         return this._tursoExecute({
             sql: 'INSERT INTO Meet (groupId, createdBy) VALUES (?, ?)',
@@ -784,5 +799,28 @@ export class DatabaseService implements OnModuleInit {
             `,
             args: [meetId, groupId],
         })
+    }
+
+    async updateMeetAttendee(accountId: number, meetId: number, partialMeetAttendees: UpdateMeetAttendeeBody) {
+        const fields = []
+        const args = []
+
+        if (partialMeetAttendees.isAttending != undefined) {
+            fields.push('isAttending = ?')
+            args.push(partialMeetAttendees.isAttending)
+        }
+
+        if (fields.length === 0) {
+            throw new BadRequestException('No fields to update')
+        }
+
+        args.push(accountId, meetId)
+
+        await this._tursoExecute({
+            sql: `UPDATE MeetAttendee SET ${fields.join(', ')} WHERE accountId = ? AND meetId = ?`,
+            args,
+        })
+
+        return this.getMeetAttendeeByMeetId(meetId)
     }
 }

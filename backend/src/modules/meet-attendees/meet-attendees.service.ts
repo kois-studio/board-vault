@@ -1,7 +1,7 @@
 import { ResultSet } from '@libsql/client/.'
-import { Injectable, Logger } from '@nestjs/common'
+import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { DatabaseService } from '../database/database.service'
-import { MeetAttendeeDto } from '../../common/types/meet-attendee.type'
+import { MeetAttendeeDto, UpdateMeetAttendeeBody } from '../../common/types/meet-attendee.type'
 import { meetAttendeesSchema } from '../../common/schemas/db-meet-attendee.schema'
 
 @Injectable()
@@ -33,5 +33,32 @@ export class MeetAttendeesService {
         const resultSet = await this.databaseService.getMeetAttendees()
 
         return this._parseResultSet(resultSet)
+    }
+
+    async getMeetAttendeeByMeetId(meetId: number): Promise<Array<MeetAttendeeDto>> {
+        this.LOGGER.log(`Getting meetAttendee with meetId ${meetId}`)
+        const resultSet = await this.databaseService.getMeetAttendeeByMeetId(meetId)
+        const meetAttendees = this._parseResultSet(resultSet)
+
+        if (meetAttendees.length === 0) {
+            throw new NotFoundException(`MeetAttendee with meetId ${meetId} not found`)
+        }
+
+        return meetAttendees
+    }
+
+    async updateMeetAttendee(
+        meetId: number,
+        accountId: number,
+        partialMeetAttendee: UpdateMeetAttendeeBody,
+    ): Promise<{ success: boolean }> {
+        this.LOGGER.log(`Updating meetAttendee with accountId ${accountId} and meetId ${meetId} to ${partialMeetAttendee}`)
+        const resultSet = await this.databaseService.updateMeetAttendee(meetId, accountId, partialMeetAttendee)
+
+        if (resultSet.rows.length === 0) {
+            throw new NotFoundException(`Meet with meetId ${meetId} not found`)
+        }
+
+        return { success: true }
     }
 }
