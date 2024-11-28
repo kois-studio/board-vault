@@ -598,4 +598,19 @@ export class DataService {
             },
         })
     }
+    public updateMeetAttendee(meetId: number, accountId: number, isAttending: boolean) {
+        this.api.updateMeetAttendee(meetId, accountId, isAttending ).subscribe({
+            next: (res) => {
+                // TODO: Only one toast for all
+                // this.toastService.success(`Meet attendee ${accountId} updated to ${isAttending} in meet ${meetId}`)
+            },
+            error: (error) => {
+                if (error.status === 404) {
+                    return this.toastService.error('MeetAttendee not found')
+                }
+                this.toastService.error('Error updating meetAttendees')
+            },
+            
+        })
+    }
 }
