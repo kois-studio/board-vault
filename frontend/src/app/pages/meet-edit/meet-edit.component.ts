@@ -1,10 +1,12 @@
 import { CommonModule } from '@angular/common'
 import { Component, effect } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
-import { GameType, GroupWithMembersAndGames, UserType } from '../../api/api.types'
+import { GameType, GroupWithMembersAndGames, MeetType, UserType } from '../../api/api.types'
 import { CardAccountComponent } from '../../components/card-account/card-account.component'
 import { CardGameComponent } from '../../components/card-game/card-game.component'
 import { DataService } from '../../core/services/data.service'
+import { Api } from '../../api/api'
+import { firstValueFrom } from 'rxjs'
 
 @Component({
     standalone: true,
@@ -23,6 +25,7 @@ export class MeetEditComponent {
     public gameReviews: Record<GameType['id'], Record<UserType['id'], number>> = {}
     public avgReviewsIndex: Record<GameType['id'], number> = {}
     public selectedGameIds: Array<number> = []
+    public lastMeeting: MeetType | null = null
 
     // Component props
     public allGroupGames: Record<
@@ -34,14 +37,16 @@ export class MeetEditComponent {
     > = {}
 
     constructor(
+        private readonly api: Api,
         private readonly router: Router,
         private readonly route: ActivatedRoute,
         private readonly dataService: DataService,
     ) {
-        effect(() => {
+        effect(async () => {
             this.userData = this.dataService.currentUser()
             this.userGroups = this.dataService.userGroups()
             this.userMeets = this.dataService.userMeets()
+            this._updateLastMeeting()
 
             const meetId = Number.parseInt(this.route.snapshot.paramMap.get('meetId') || '')
 
@@ -74,7 +79,39 @@ export class MeetEditComponent {
 
             // After getting group data, index all reviews by gameId
             this._indexReviews(groupData)
+
+            // Get MeetAttendees data
+            const meetAttendees = await firstValueFrom(this.api.getMeetAttendees(meetId))
+
+            const selectedIds = meetAttendees
+                .filter(meetAttendee => meetAttendee.isAttending)
+                .map(meetAttendee => meetAttendee.accountId)
+            this.selectedUserIds = selectedIds
         })
+    }
+
+    private _updateLastMeeting() {
+        const sortedMeets = this.userMeets
+            .filter(meet => meet.groupId === this.groupData?.id)
+            .sort((a, b) => (new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
+        
+        this.lastMeeting = sortedMeets.length >= 1 ? sortedMeets[0] : null
+    }
+    get meetAlreadyExist(): null | MeetType['id']{
+
+        
+        if(!this.lastMeeting) {
+            return null
+        }
+        const today = new Date()
+        const lastMeetingDate = new Date(this.lastMeeting.createdAt)
+
+        const isSameDay =
+        lastMeetingDate.getFullYear() === today.getFullYear() &&
+        lastMeetingDate.getMonth() === today.getMonth() &&
+        lastMeetingDate.getDate() === today.getDate()
+
+     return isSameDay ? this.lastMeeting.id : null
     }
 
     private _indexReviews(groupData: GroupWithMembersAndGames) {
@@ -137,16 +174,22 @@ export class MeetEditComponent {
         }
     }
 
-    public onSaveDraft() {
+    public onSaveMeet() {
+        if(!this.groupData || !this.lastMeeting){ return }
+
         const accountId = this.userMeets[0].id
         const groupId = this.userMeets[0].groupId
-    
+        const lastMeetId = this.lastMeeting.id
+        
         if (accountId && groupId) {
             const selectedUsers = this.groupData?.members.filter((member) =>
                 this.selectedUserIds.includes(member.id)
         )
-        console.log(selectedUsers)
-    
+    for (const member of this.groupData.members) {
+        const isAttending = this.selectedUserIds.includes(member.id)
+
+        this.dataService.updateMeetAttendee(lastMeetId, member.id, isAttending)
+    }
             const selectedGames = this.totalGames.filter((game) =>
                 this.selectedGameIds.includes(game.id)
             )
