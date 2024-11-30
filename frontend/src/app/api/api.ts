@@ -160,7 +160,7 @@ export class Api {
         return this.http.get<Array<MeetAttendeeType>>(`${this.url}/meetAttendees/${meetId}`)
     }
 
-    updateMeetAttendee(meetId: number, accountId: number, isAttending:boolean ) {
+    updateMeetAttendee(meetId: number, accountId: number, isAttending: boolean) {
         return this.http.put<{ success: true }>(`${this.url}/meetAttendees/${meetId}/${accountId}`, { isAttending })
     }
 
@@ -168,7 +168,7 @@ export class Api {
         return this.http.get<Array<MeetGameType>>(`${this.url}/meetGames/${meetId}`)
     }
 
-    updateMeetGame(meetId: number, gameId: number, isPlayed:boolean ) {
+    updateMeetGame(meetId: number, gameId: number, isPlayed: boolean) {
         return this.http.put<{ success: true }>(`${this.url}/meetGames/${meetId}/${gameId}`, { isPlayed })
     }
 }

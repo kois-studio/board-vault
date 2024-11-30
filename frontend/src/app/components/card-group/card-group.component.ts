@@ -33,26 +33,24 @@ export class CardGroupComponent {
 
     private updateLastMeeting() {
         const sortedMeets = this.userMeets
-            .filter(meet => meet.groupId === this.group.id)
-            .sort((a, b) => (new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
-        
+            .filter((meet) => meet.groupId === this.group.id)
+            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+
         this.lastMeeting = sortedMeets.length >= 1 ? sortedMeets[0] : null
     }
-    get meetAlreadyExist(): null | MeetType['id']{
-
-        
-        if(!this.lastMeeting) {
+    get meetAlreadyExist(): null | MeetType['id'] {
+        if (!this.lastMeeting) {
             return null
         }
         const today = new Date()
         const lastMeetingDate = new Date(this.lastMeeting.createdAt)
 
         const isSameDay =
-        lastMeetingDate.getFullYear() === today.getFullYear() &&
-        lastMeetingDate.getMonth() === today.getMonth() &&
-        lastMeetingDate.getDate() === today.getDate()
+            lastMeetingDate.getFullYear() === today.getFullYear() &&
+            lastMeetingDate.getMonth() === today.getMonth() &&
+            lastMeetingDate.getDate() === today.getDate()
 
-     return isSameDay ? this.lastMeeting.id : null
+        return isSameDay ? this.lastMeeting.id : null
     }
 
     get totalGames(): Array<GameType> {
@@ -85,7 +83,7 @@ export class CardGroupComponent {
     }
 
     onEditMeet() {
-        if(this.lastMeeting){
+        if (this.lastMeeting) {
             this.router.navigate(['/meets', this.lastMeeting.id])
         } else {
             console.error('No meeting to edit')
