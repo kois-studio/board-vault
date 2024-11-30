@@ -8,6 +8,7 @@ import type {
     InvitationWithAccountsData,
     InvitationWithExtraData,
     MeetAttendeeType,
+    MeetGameType,
     MeetType,
     NotificationType,
     UserType,
@@ -161,5 +162,13 @@ export class Api {
 
     updateMeetAttendee(meetId: number, accountId: number, isAttending:boolean ) {
         return this.http.put<{ success: true }>(`${this.url}/meetAttendees/${meetId}/${accountId}`, { isAttending })
+    }
+
+    getMeetGames(meetId: number) {
+        return this.http.get<Array<MeetGameType>>(`${this.url}/meetGames/${meetId}`)
+    }
+
+    updateMeetGame(meetId: number, gameId: number, isPlayed:boolean ) {
+        return this.http.put<{ success: true }>(`${this.url}/meetGames/${meetId}/${gameId}`, { isPlayed })
     }
 }
