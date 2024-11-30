@@ -39,7 +39,7 @@ export class MeetNewComponent {
             }
 
             this.groupData = groupData
-            
+
             // After getting group data, index all reviews by gameId
             this._indexReviews(groupData)
         })
