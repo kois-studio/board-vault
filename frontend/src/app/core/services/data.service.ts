@@ -600,7 +600,7 @@ export class DataService {
     }
 
     public updateMeetAttendee(meetId: number, accountId: number, isAttending: boolean) {
-        this.api.updateMeetAttendee(meetId, accountId, isAttending ).subscribe({
+        this.api.updateMeetAttendee(meetId, accountId, isAttending).subscribe({
             next: (res) => {
                 // TODO: Only one toast for all
                 // this.toastService.success(`Meet attendee ${accountId} updated to ${isAttending} in meet ${meetId}`)
@@ -616,7 +616,7 @@ export class DataService {
     }
 
     public updateMeetGame(meetId: number, gameId: number, isPlayed: boolean) {
-        this.api.updateMeetGame(meetId, gameId, isPlayed ).subscribe({
+        this.api.updateMeetGame(meetId, gameId, isPlayed).subscribe({
             next: (res) => {
                 // TODO: Only one toast for all
                 // this.toastService.success(`Meet game ${gameId} updated to ${isPlayed} in meet ${meetId}`)

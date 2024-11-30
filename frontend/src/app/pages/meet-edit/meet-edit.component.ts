@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common'
 import { Component, effect } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
+import { firstValueFrom } from 'rxjs'
+import { Api } from '../../api/api'
 import { GameType, GroupWithMembersAndGames, MeetType, UserType } from '../../api/api.types'
 import { CardAccountComponent } from '../../components/card-account/card-account.component'
 import { CardGameComponent } from '../../components/card-game/card-game.component'
 import { DataService } from '../../core/services/data.service'
-import { Api } from '../../api/api'
-import { firstValueFrom } from 'rxjs'
 
 @Component({
     standalone: true,
@@ -50,8 +50,8 @@ export class MeetEditComponent {
 
             const meetId = Number.parseInt(this.route.snapshot.paramMap.get('meetId') || '')
 
-            const meet = this.userMeets.find(meet => meet.id === meetId)
-            if(!meet) return
+            const meet = this.userMeets.find((meet) => meet.id === meetId)
+            if (!meet) return
             const groupData = this.userGroups.find((group) => group.id === meet.groupId)
 
             if (!this.userData || !groupData) return
@@ -59,7 +59,7 @@ export class MeetEditComponent {
             this.groupData = groupData
 
             const userGroups = this.userGroups
-            
+
             for (const group of userGroups) {
                 for (const member of group.members) {
                     for (const game of member.games) {
@@ -82,44 +82,38 @@ export class MeetEditComponent {
 
             // Get MeetAttendees data
             const meetAttendees = await firstValueFrom(this.api.getMeetAttendees(meetId))
+            const selectedUserIds = meetAttendees
+                .filter((meetAttendee) => meetAttendee.isAttending)
+                .map((meetAttendee) => meetAttendee.accountId)
+            this.selectedUserIds = selectedUserIds
 
             // Get MeetGames data
             const meetGames = await firstValueFrom(this.api.getMeetGames(meetId))
-
-            const selectedIds = meetAttendees
-                .filter(meetAttendee => meetAttendee.isAttending)
-                .map(meetAttendee => meetAttendee.accountId)
-            this.selectedUserIds = selectedIds
-
-            const selectedGameIds = meetGames
-                .filter(meetAttendee => meetAttendee.isPlayed)
-                .map(meetAttendee => meetAttendee.gameId)
-            this.selectedUserIds = selectedGameIds
+            const selectedGameIds = meetGames.filter((meetAttendee) => meetAttendee.isPlayed).map((meetAttendee) => meetAttendee.gameId)
+            this.selectedGameIds = selectedGameIds
         })
     }
 
     private _updateLastMeeting() {
         const sortedMeets = this.userMeets
-            .filter(meet => meet.groupId === this.groupData?.id)
-            .sort((a, b) => (new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
-        
+            .filter((meet) => meet.groupId === this.groupData?.id)
+            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+
         this.lastMeeting = sortedMeets.length >= 1 ? sortedMeets[0] : null
     }
-    get meetAlreadyExist(): null | MeetType['id']{
-
-        
-        if(!this.lastMeeting) {
+    get meetAlreadyExist(): null | MeetType['id'] {
+        if (!this.lastMeeting) {
             return null
         }
         const today = new Date()
         const lastMeetingDate = new Date(this.lastMeeting.createdAt)
 
         const isSameDay =
-        lastMeetingDate.getFullYear() === today.getFullYear() &&
-        lastMeetingDate.getMonth() === today.getMonth() &&
-        lastMeetingDate.getDate() === today.getDate()
+            lastMeetingDate.getFullYear() === today.getFullYear() &&
+            lastMeetingDate.getMonth() === today.getMonth() &&
+            lastMeetingDate.getDate() === today.getDate()
 
-     return isSameDay ? this.lastMeeting.id : null
+        return isSameDay ? this.lastMeeting.id : null
     }
 
     private _indexReviews(groupData: GroupWithMembersAndGames) {
@@ -183,47 +177,30 @@ export class MeetEditComponent {
     }
 
     public onSaveMeet() {
-        if(!this.groupData || !this.lastMeeting){ return }
+        if (!this.groupData || !this.lastMeeting) {
+            return
+        }
 
-        const accountId = this.userMeets[0].id
-        const groupId = this.userMeets[0].groupId
         const lastMeetId = this.lastMeeting.id
-        
-        if (accountId && groupId) {
-            const selectedUsers = this.groupData?.members.filter((member) =>
-                this.selectedUserIds.includes(member.id)
-        )
-    for (const member of this.groupData.members) {
-        const isAttending = this.selectedUserIds.includes(member.id)
 
-        this.dataService.updateMeetAttendee(lastMeetId, member.id, isAttending)
-    }
-            const selectedGames = this.totalGames.filter((game) =>
-                this.selectedGameIds.includes(game.id)
-            )
-        console.log(selectedGames)
-    
         for (const member of this.groupData.members) {
-            for (const games of member.games) {
-                const isPlaying = this.selectedGameIds.includes(games.id)
-                
-                this.dataService.updateMeetGame(lastMeetId, games.id, isPlaying)
-            }
+            const isAttending = this.selectedUserIds.includes(member.id)
+
+            this.dataService.updateMeetAttendee(lastMeetId, member.id, isAttending)
         }
-        
-            // if (selectedGames.length > 0) {
-            //     console.log('Selected Games:', selectedGames)
-            //     // this.dataService.createMeeting(accountId, groupId)
-            // } else {
-            //     console.error('No games selected')
-            // }
+
+        for (const games of this.totalGames) {
+            const isPlaying = this.selectedGameIds.includes(games.id)
+
+            this.dataService.updateMeetGame(lastMeetId, games.id, isPlaying)
         }
+
+        // TODO: cada vez que se quite un usuario recalcular todos los selectedGames
     }
 
     onGoBack() {
         const groupId = this.userMeets[0].groupId
-        
+
         this.router.navigate([`/group/${groupId}/meet/new`])
     }
 }
-
