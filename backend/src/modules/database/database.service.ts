@@ -12,6 +12,7 @@ import { CreateNotificationBody, UpdateNotificationBody } from '../../common/typ
 import { CreateGameReviewBody } from '../../common/types/game-review.type'
 import { CreateGamePlaySessionBody } from '../../common/types/game-play-session.type'
 import { UpdateMeetAttendeeBody } from '../../common/types/meet-attendee.type'
+import { UpdateMeetGameBody } from '../../common/types/meet-game.type'
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
@@ -769,6 +770,20 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    getMeetGameByMeetId(meetId: number) {
+        return this._tursoExecute({
+            sql: 'SELECT * FROM MeetGame WHERE meetId = ?',
+            args: [meetId],
+        })
+    }
+
+    async createMeetGame(meetId: number, gameId: number) {
+        return this._tursoExecute({
+            sql: 'INSERT INTO MeetGame (meetId, gameId) VALUES (?, ?)',
+            args: [meetId, gameId],
+        })
+    }
+
     async createMeeting(groupId: number, createdBy: number) {
         return this._tursoExecute({
             sql: 'INSERT INTO Meet (groupId, createdBy) VALUES (?, ?)',
@@ -822,5 +837,28 @@ export class DatabaseService implements OnModuleInit {
         })
 
         return this.getMeetAttendeeByMeetId(meetId)
+    }
+
+    async updateMeetGame(gameId: number, meetId: number, partialMeetGames: UpdateMeetGameBody) {
+        const fields = []
+        const args = []
+
+        if (partialMeetGames.isPlayed != undefined) {
+            fields.push('isPlayed = ?')
+            args.push(partialMeetGames.isPlayed)
+        }
+
+        if (fields.length === 0) {
+            throw new BadRequestException('No fields to update')
+        }
+
+        args.push(gameId, meetId)
+
+        await this._tursoExecute({
+            sql: `UPDATE MeetGame SET ${fields.join(', ')} WHERE gameId = ? AND meetId = ?`,
+            args,
+        })
+
+        return this.getMeetGameByMeetId(meetId)
     }
 }
