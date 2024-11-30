@@ -1,8 +1,8 @@
 import { ResultSet } from '@libsql/client/.'
-import { Injectable, Logger } from '@nestjs/common'
+import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { DatabaseService } from '../database/database.service'
 import { meetGamesSchema } from '../../common/schemas/db-meet-game.schema'
-import { MeetGameDto } from '../../common/types/meet-game.type'
+import { MeetGameDto, UpdateMeetGameBody } from '../../common/types/meet-game.type'
 
 @Injectable()
 export class MeetGamesService {
@@ -33,5 +33,28 @@ export class MeetGamesService {
         const resultSet = await this.databaseService.getMeetGames()
 
         return this._parseResultSet(resultSet)
+    }
+
+    async getMeetGameByMeetId(meetId: number): Promise<Array<MeetGameDto>> {
+        this.LOGGER.log(`Getting meetGame with meetId ${meetId}`)
+        const resultSet = await this.databaseService.getMeetGameByMeetId(meetId)
+        const meetGames = this._parseResultSet(resultSet)
+
+        if (meetGames.length === 0) {
+            throw new NotFoundException(`MeetGame with meetId ${meetId} not found`)
+        }
+
+        return meetGames
+    }
+
+    async updateMeetGame(meetId: number, gameId: number, partialMeetGame: UpdateMeetGameBody): Promise<{ success: boolean }> {
+        this.LOGGER.log(`Updating meetGame with gameId ${gameId} and meetId ${meetId} to ${partialMeetGame}`)
+        const resultSet = await this.databaseService.updateMeetGame(meetId, gameId, partialMeetGame)
+
+        if (resultSet.rows.length === 0) {
+            throw new NotFoundException(`Meet with meetId ${meetId} not found`)
+        }
+
+        return { success: true }
     }
 }
