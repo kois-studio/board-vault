@@ -598,11 +598,13 @@ export class DataService {
             },
         })
     }
+
     public updateMeetAttendee(meetId: number, accountId: number, isAttending: boolean) {
         this.api.updateMeetAttendee(meetId, accountId, isAttending ).subscribe({
             next: (res) => {
                 // TODO: Only one toast for all
                 // this.toastService.success(`Meet attendee ${accountId} updated to ${isAttending} in meet ${meetId}`)
+                // this.toastService.success(`AccountId ${accountId}  ${isAttending}`)
             },
             error: (error) => {
                 if (error.status === 404) {
@@ -610,7 +612,22 @@ export class DataService {
                 }
                 this.toastService.error('Error updating meetAttendees')
             },
-            
+        })
+    }
+
+    public updateMeetGame(meetId: number, gameId: number, isPlayed: boolean) {
+        this.api.updateMeetGame(meetId, gameId, isPlayed ).subscribe({
+            next: (res) => {
+                // TODO: Only one toast for all
+                // this.toastService.success(`Meet game ${gameId} updated to ${isPlayed} in meet ${meetId}`)
+                // this.toastService.success(`GameId ${gameId}  ${isPlayed}`)
+            },
+            error: (error) => {
+                if (error.status === 404) {
+                    return this.toastService.error('MeetGame not found')
+                }
+                this.toastService.error('Error updating meetGames')
+            },
         })
     }
 }
