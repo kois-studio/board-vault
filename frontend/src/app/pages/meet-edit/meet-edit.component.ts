@@ -83,10 +83,18 @@ export class MeetEditComponent {
             // Get MeetAttendees data
             const meetAttendees = await firstValueFrom(this.api.getMeetAttendees(meetId))
 
+            // Get MeetGames data
+            const meetGames = await firstValueFrom(this.api.getMeetGames(meetId))
+
             const selectedIds = meetAttendees
                 .filter(meetAttendee => meetAttendee.isAttending)
                 .map(meetAttendee => meetAttendee.accountId)
             this.selectedUserIds = selectedIds
+
+            const selectedGameIds = meetGames
+                .filter(meetAttendee => meetAttendee.isPlayed)
+                .map(meetAttendee => meetAttendee.gameId)
+            this.selectedUserIds = selectedGameIds
         })
     }
 
@@ -195,12 +203,20 @@ export class MeetEditComponent {
             )
         console.log(selectedGames)
     
-            if (selectedGames.length > 0) {
-                console.log('Selected Games:', selectedGames)
-                // this.dataService.createMeeting(accountId, groupId)
-            } else {
-                console.error('No games selected')
+        for (const member of this.groupData.members) {
+            for (const games of member.games) {
+                const isPlaying = this.selectedGameIds.includes(games.id)
+                
+                this.dataService.updateMeetGame(lastMeetId, games.id, isPlaying)
             }
+        }
+        
+            // if (selectedGames.length > 0) {
+            //     console.log('Selected Games:', selectedGames)
+            //     // this.dataService.createMeeting(accountId, groupId)
+            // } else {
+            //     console.error('No games selected')
+            // }
         }
     }
 
