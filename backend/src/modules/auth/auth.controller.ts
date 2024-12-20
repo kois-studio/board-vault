@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common'
+import { BadRequestException, Body, Controller, Get, Post, Query } from '@nestjs/common'
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { AuthService } from './auth.service'
 import { LoginUserDto, RegisterUserDto } from '../../common/types/user.type'
@@ -22,5 +22,31 @@ export class AuthController {
     @ApiResponse({ status: 401, description: 'Invalid credentials' })
     async loginUser(@Body() loginDto: LoginUserDto) {
         return this.authService.login(loginDto.email, loginDto.password)
+    }
+
+    @Get('/check-email')
+    @ApiOperation({ summary: 'Check if an email exists' })
+    @ApiResponse({ status: 200, description: 'Email availability status' })
+    @ApiResponse({ status: 400, description: 'Email is required' })
+    async checkEmail(@Query('email') email: string) {
+        if (!email) {
+            throw new BadRequestException('Email is required')
+        }
+        const isAvailable = await this.authService.checkEmail(email)
+
+        return { isAvailable }
+    }
+
+    @Get('/check-username')
+    @ApiOperation({ summary: 'Check if a username exists' })
+    @ApiResponse({ status: 200, description: 'Username availability status' })
+    @ApiResponse({ status: 400, description: 'Username is required' })
+    async checkUsername(@Query('username') username: string) {
+        if (!username) {
+            throw new BadRequestException('Username is required')
+        }
+        const isAvailable = await this.authService.checkUsername(username)
+
+        return { isAvailable }
     }
 }

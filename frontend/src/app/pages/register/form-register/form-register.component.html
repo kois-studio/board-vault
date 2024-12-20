@@ -13,6 +13,14 @@
             [class]="emailClass"
             required
         />
+        <div *ngIf="!email?.invalid && (email?.dirty || email?.touched) && !isCheckingEmail">
+            <div *ngIf="isEmailAvailable" class="text-sm text-green-500 py-1">
+                <i class="bi bi-check-lg"></i> Email is available.
+            </div>
+            <div *ngIf="!isEmailAvailable" class="text-sm text-red-500 py-1">
+                <i class="bi bi-x-lg"></i> Email is not available.
+            </div>
+        </div>
         <div *ngIf="email?.invalid && (email?.dirty || email?.touched)">
             <div *ngIf="email?.hasError('required')" class="text-sm text-red-500 py-1">
                 <i class="bi bi-exclamation-circle-fill"></i> Email is required.
@@ -36,6 +44,14 @@
             [class]="usernameClass"
             required
         />
+        <div *ngIf="!username?.invalid && (username?.dirty || username?.touched) && !isCheckingUsername">
+            <div *ngIf="isUsernameAvailable" class="text-sm text-green-500 py-1">
+                <i class="bi bi-check-lg"></i> Username is available.
+            </div>
+            <div *ngIf="!isUsernameAvailable" class="text-sm text-red-500 py-1">
+                <i class="bi bi-x-lg"></i> Username is not available.
+            </div>
+        </div>
         <div *ngIf="username?.invalid && (username?.dirty || username?.touched)">
             <div *ngIf="username?.hasError('required')" class="text-sm text-red-500 py-1">
                 <i class="bi bi-exclamation-circle-fill"></i> Username is required.

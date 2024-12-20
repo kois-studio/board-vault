@@ -63,6 +63,22 @@ export class DatabaseService implements OnModuleInit {
         return this.tursoClient.execute(stmt)
     }
 
+    // #region Auth
+
+    checkEmail(email: string) {
+        return this._tursoExecute({
+            sql: 'SELECT * FROM Account WHERE email = ?',
+            args: [email],
+        })
+    }
+
+    checkUsername(username: string) {
+        return this._tursoExecute({
+            sql: 'SELECT * FROM Account WHERE username = ?',
+            args: [username],
+        })
+    }
+
     // #region User
 
     getUsers() {
