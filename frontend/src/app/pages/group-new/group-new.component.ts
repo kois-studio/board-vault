@@ -2,12 +2,11 @@ import { CommonModule } from '@angular/common'
 import { Component } from '@angular/core'
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router } from '@angular/router'
-import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
 import { DataService } from '../../core/services/data.service'
 
 @Component({
     standalone: true,
-    imports: [CommonModule, ImageProfileComponent, ReactiveFormsModule],
+    imports: [CommonModule, ReactiveFormsModule],
     templateUrl: 'group-new.component.html',
 })
 export class GroupNewComponent {
