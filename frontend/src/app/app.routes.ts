@@ -21,20 +21,6 @@ import { ReviewComponent } from './pages/reviews/reviews.component'
 export const routes: Routes = [
     {
         path: '',
-        component: LayoutCompleteComponent,
-        children: [
-            // accessible to everyone
-            { path: '', component: LandingComponent },
-            // accessible to authenticated users
-            { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
-            { path: 'games', component: GamesComponent, canActivate: [AuthGuard] },
-            { path: 'reviews', component: ReviewComponent, canActivate: [AuthGuard] },
-            { path: 'group/:groupId', component: GroupViewComponent, canActivate: [AuthGuard] },
-            { path: 'meets/:meetId', component: MeetEditComponent, canActivate: [AuthGuard] },
-        ],
-    },
-    {
-        path: '',
         component: LayoutBasicComponent,
         children: [
             // accessible to unauthenticated users
@@ -46,6 +32,20 @@ export const routes: Routes = [
             { path: 'group/:groupId/leave', component: GroupLeaveComponent, canActivate: [AuthGuard] },
             { path: 'group/:groupId/delete', component: GroupDeleteComponent, canActivate: [AuthGuard] },
             { path: 'group/:groupId/meet/new', component: MeetNewComponent, canActivate: [AuthGuard] },
+        ],
+    },
+    {
+        path: '',
+        component: LayoutCompleteComponent,
+        children: [
+            // accessible to everyone
+            { path: '', component: LandingComponent },
+            // accessible to authenticated users
+            { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
+            { path: 'games', component: GamesComponent, canActivate: [AuthGuard] },
+            { path: 'reviews', component: ReviewComponent, canActivate: [AuthGuard] },
+            { path: 'group/:groupId', component: GroupViewComponent, canActivate: [AuthGuard] },
+            { path: 'meets/:meetId', component: MeetEditComponent, canActivate: [AuthGuard] },
         ],
     },
     { path: '**', component: PageNotFoundComponent }, // Wildcard route for a 404 page
