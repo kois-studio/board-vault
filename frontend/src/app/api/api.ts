@@ -30,6 +30,14 @@ export class Api {
         return this.http.post<{ success: true }>(`${this.url}/auth/register`, { email, username, password })
     }
 
+    checkEmail(email: string) {
+        return this.http.get<{ isAvailable: boolean }>(`${this.url}/auth/check-email?email=${email}`)
+    }
+
+    checkUsername(username: string) {
+        return this.http.get<{ isAvailable: boolean }>(`${this.url}/auth/check-username?username=${username}`)
+    }
+
     // #region users
 
     updateUser(

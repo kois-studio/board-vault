@@ -2,14 +2,16 @@ import { Injectable, Logger, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import * as bcrypt from 'bcrypt'
 import { UsersService } from '../users/users.service'
+import { DatabaseService } from '../database/database.service'
 
 @Injectable()
 export class AuthService {
     private readonly LOGGER: Logger = new Logger(this.constructor.name)
 
     constructor(
-        private readonly usersService: UsersService,
         private readonly jwtService: JwtService,
+        private readonly databaseService: DatabaseService,
+        private readonly usersService: UsersService,
     ) {}
 
     async validateUser(email: string, password: string) {
@@ -45,5 +47,17 @@ export class AuthService {
             display_name: username,
             imageUrl: 'https://pbs.twimg.com/profile_images/1833050358479826944/A2qj0e6Z_400x400.jpg',
         })
+    }
+
+    async checkEmail(email: string): Promise<boolean> {
+        const result = await this.databaseService.checkEmail(email)
+
+        return !result.rows.length
+    }
+
+    async checkUsername(username: string): Promise<boolean> {
+        const result = await this.databaseService.checkUsername(username)
+
+        return !result.rows.length
     }
 }
