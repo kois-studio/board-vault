@@ -2,7 +2,7 @@
 @if (isVisible) {
 <div class="fixed inset-0 bg-zinc-900 bg-opacity-50 flex justify-center items-center" (click)="hideDialog()">
     <!-- Dialog box -->
-    <div class="bg-zinc-900 rounded-2xl border border-zinc-700 w-3/4 max-w-xl max-h-[90vh] overflow-hidden relative" (click)="$event.stopPropagation()">
+    <div class="bg-zinc-900 rounded border border-zinc-700 w-3/4 max-w-xl max-h-[90vh] overflow-hidden relative" (click)="$event.stopPropagation()">
         <!-- Close button -->
         <button (click)="hideDialog()" class="py-2 px-4 rounded-lg hover:bg-zinc-800 absolute top-2 right-2">
             <i class="bi bi-x-lg"></i>
