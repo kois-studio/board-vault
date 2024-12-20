@@ -146,6 +146,7 @@ export class FormRegisterComponent implements OnInit {
         this.api.register(this.email?.value, this.username?.value, this.password?.value).subscribe({
             next: (data) => {
                 this.toastService.success('User registered successfully!')
+                // TODO: instead of redirect to login, access directly to the dashboard
                 this.router.navigate(['/login'])
             },
             error: (error) => {
