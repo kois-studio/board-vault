@@ -46,7 +46,7 @@ export class FormRegisterComponent implements OnInit {
                 switchMap((email) => {
                     if (!email || this.email?.invalid) return []
                     return this.api.checkEmail(email)
-                })
+                }),
             )
             .subscribe({
                 next: (response) => {
@@ -74,7 +74,7 @@ export class FormRegisterComponent implements OnInit {
                     this.isCheckingUsername = true
                     this.isUsernameAvailable = null
                     return this.api.checkUsername(username)
-                })
+                }),
             )
             .subscribe({
                 next: (response) => {
@@ -85,7 +85,7 @@ export class FormRegisterComponent implements OnInit {
                     this.isCheckingUsername = false
                     this.isUsernameAvailable = null
                     this.toastService.error('Error checking username availability')
-                }
+                },
             })
     }
 

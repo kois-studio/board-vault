@@ -13,8 +13,8 @@ export class GroupViewComponent {
     // --------------------------------------------------------------------------
     //        DATA from services
     // --------------------------------------------------------------------------
-    public userData: ReturnType<typeof this.dataService.currentUser> = null
-    public userGroups: ReturnType<typeof this.dataService.userGroups> = []
+    private userData: ReturnType<typeof this.dataService.currentUser> = null
+    private userGroups: ReturnType<typeof this.dataService.userGroups> = []
     public invitationsGroupIndex: ReturnType<typeof this.dataService.invitationsGroupIndex> = {}
 
     // --------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core'
-import { ReviewDisplayComponent } from "../ui/review-display/review-display.component";
+import { ReviewDisplayComponent } from '../ui/review-display/review-display.component'
 
 @Component({
     standalone: true,
