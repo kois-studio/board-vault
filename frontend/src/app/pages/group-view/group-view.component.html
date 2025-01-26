@@ -1,11 +1,58 @@
 <container-wrapper>
-    <title-subtitle title="Group Details">
+    <title-subtitle [title]="groupData?.name ?? ''">
         See who's in the group, the games you share, and all your meetings together
     </title-subtitle>
 
-    
+    <!-- 2 columns - left: members list; right: games sorted -->
+    <div class="grid xl:grid-cols-3 gap-y-12">
+        <!-- left col -->
+        <section class="p-4">
+            <h2 class="text-xl font-semibold mb-4">Group members</h2>
+            <hr />
+
+            <ul class="grid gap-y-4 mt-4">
+                @for (member of groupData?.members; track $index) {
+                <li class="bg-zinc-800 rounded-lg flex items-center justify-start">
+                    <app-card-account [member]="member" [isOwner]="groupData?.createdBy === member.id" />
+                </li>
+                }
+            </ul>
+
+            <!-- INVITED MEMBERS -->
+            @if (groupData && invitationsGroupIndex[groupData.id] && invitationsGroupIndex[groupData.id].length > 0) {
+            <ul class="grid gap-y-4 mt-4">
+                @for (invitation of invitationsGroupIndex[groupData.id]; track $index) {
+                <!-- <li class="bg-zinc-800 rounded-lg flex items-center justify-start">
+                    <app-card-account [member]="invitation" [isOwner]="groupData?.createdBy === member.id" />
+                </li> -->
+                }
+            </ul>
+            }
+        </section>
+
+        <!-- right col -->
+        <section class="p-4 col-span-2">
+            <h2 class="text-xl font-semibold mb-4">Most loved games:</h2>
+            <hr />
+            <div class="flex gap-2 flex-wrap pt-4">
+                @for (game of totalGames.slice(0, 8); track $index) {
+                <div>
+                    <app-card-game
+                        [title]="game.title"
+                        [imageUrl]="game.imageUrl"
+                        [gameAvgDuration]="game.gameAvgDuration"
+                        [minPlayers]="game.minPlayers"
+                        [maxPlayers]="game.maxPlayers"
+                        [review]="avgReviewsIndex[game.id]"
+                    />
+                </div>
+                }
+            </div>
+        </section>
+    </div>
 </container-wrapper>
 
+<hr class="pt-48" />
 <div class="mb-96 mx-2 max-w-5xl md:mx-auto p-6">
     <!-- GROUP CARD -->
     <div class="shadow-md rounded-lg p-6 bg-zinc-800 relative">
