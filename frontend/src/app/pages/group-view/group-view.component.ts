@@ -2,11 +2,13 @@ import { Component, effect } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { GameType } from '../../api/api.types'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
+import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
+import { TitleSubtitleComponent } from '../../components/ui/title-subtitle/title-subtitle.component'
 import { DataService } from '../../core/services/data.service'
 
 @Component({
     standalone: true,
-    imports: [ImageProfileComponent],
+    imports: [ImageProfileComponent, TitleSubtitleComponent, ContainerWrapperComponent],
     templateUrl: 'group-view.component.html',
 })
 export class GroupViewComponent {
