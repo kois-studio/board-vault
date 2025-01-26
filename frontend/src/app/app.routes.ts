@@ -21,15 +21,15 @@ import { ReviewComponent } from './pages/reviews/reviews.component'
 /**
  * Which route uses LayoutBasicComponent and which uses LayoutCompleteComponent?
  * The idea is to differentiate between when the user is making an *action* or only visualizing information.
- * 
+ *
  * `LayoutBasicComponent`: you are executing an action that will change the state of the application.
  *    - auth actions (login, register, recover password, etc)
  *    - CRUD actions (create a new group or edit its data)
- * 
+ *
  * `LayoutCompleteComponent`: you are only visualizing information.
  *   - dashboard
  *   - group details
- * 
+ *
  * The reason is that by doing this, the user gets a "focused" experience on the action they are doing. 0 distractions.
  */
 export const routes: Routes = [

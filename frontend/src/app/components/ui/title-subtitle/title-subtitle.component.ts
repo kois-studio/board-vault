@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input } from '@angular/core'
 
 @Component({
     standalone: true,
@@ -7,5 +7,5 @@ import { Component, Input } from '@angular/core';
     templateUrl: 'title-subtitle.component.html',
 })
 export class TitleSubtitleComponent {
-    @Input({ required: true }) title: string = '';
+    @Input({ required: true }) title = ''
 }
