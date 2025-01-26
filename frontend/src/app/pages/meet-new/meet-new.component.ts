@@ -4,9 +4,9 @@ import { ActivatedRoute, Router } from '@angular/router'
 import { GameType, GroupWithMembersAndGames, UserType } from '../../api/api.types'
 import { CardAccountComponent } from '../../components/card-account/card-account.component'
 import { CardGameComponent } from '../../components/card-game/card-game.component'
+import { ReviewDisplayComponent } from '../../components/ui/review-display/review-display.component'
+import { TitleSubtitleComponent } from '../../components/ui/title-subtitle/title-subtitle.component'
 import { DataService } from '../../core/services/data.service'
-import { TitleSubtitleComponent } from "../../components/ui/title-subtitle/title-subtitle.component";
-import { ReviewDisplayComponent } from "../../components/ui/review-display/review-display.component";
 
 @Component({
     standalone: true,
