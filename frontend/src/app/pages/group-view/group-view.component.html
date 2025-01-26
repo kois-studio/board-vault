@@ -1,3 +1,11 @@
+<container-wrapper>
+    <title-subtitle title="Group Details">
+        See who's in the group, the games you share, and all your meetings together
+    </title-subtitle>
+
+    
+</container-wrapper>
+
 <div class="mb-96 mx-2 max-w-5xl md:mx-auto p-6">
     <!-- GROUP CARD -->
     <div class="shadow-md rounded-lg p-6 bg-zinc-800 relative">
@@ -7,43 +15,41 @@
         <!-- MEMBERS DATA -->
         <h3 class="pt-8 font-bold tracking-wider">Members</h3>
         <ul class="pb-8 grid lg:grid-cols-2 gap-4">
-            @if (groupData && groupData.members) {
-                @for (member of groupData.members; track $index) {
-                    <li class="flex justify-between items-center relative">
-                        <div class="flex items-center p-4">
-                            <app-image-profile [imageUrl]="member.imageUrl" />
-                            <div class="ml-3">
-                                <p class="font-semibold text-white">{{ member.display_name }}</p>
-                                <p class="text-gray-400 text-sm">
-                                    <span>{{ member.username }}</span>
-                                    @if (groupData.createdBy === member.id) {
-                                        <span class="text-blue-500 pl-2">owner</span>
-                                    }
-                                </p>
-                            </div>
-                        </div>
-                    </li>
-                }
-            }
+            @if (groupData && groupData.members) { @for (member of groupData.members; track $index) {
+            <li class="flex justify-between items-center relative">
+                <div class="flex items-center p-4">
+                    <app-image-profile [imageUrl]="member.imageUrl" />
+                    <div class="ml-3">
+                        <p class="font-semibold text-white">{{ member.display_name }}</p>
+                        <p class="text-gray-400 text-sm">
+                            <span>{{ member.username }}</span>
+                            @if (groupData.createdBy === member.id) {
+                            <span class="text-blue-500 pl-2">owner</span>
+                            }
+                        </p>
+                    </div>
+                </div>
+            </li>
+            } }
         </ul>
 
         <!-- INVITED MEMBERS -->
         @if (groupData && invitationsGroupIndex[groupData.id] && invitationsGroupIndex[groupData.id].length > 0) {
-            <hr />
-            <h3 class="pt-8 font-bold tracking-wider">Invitations pending</h3>
-            <ul class="pb-8 grid lg:grid-cols-2 gap-4">
+        <hr />
+        <h3 class="pt-8 font-bold tracking-wider">Invitations pending</h3>
+        <ul class="pb-8 grid lg:grid-cols-2 gap-4">
             @for (invitation of invitationsGroupIndex[groupData.id]; track $index) {
-                <li class="flex justify-between items-center relative">
-                    <div class="flex items-center p-4 opacity-40">
-                        <app-image-profile [imageUrl]="invitation.toAccount.imageUrl" />
-                        <div class="ml-3">
-                            <p class="font-semibold text-white">{{ invitation.toAccount.display_name }}</p>
-                            <p class="text-gray-400 text-sm">{{ invitation.toAccount.username }}</p>
-                        </div>
+            <li class="flex justify-between items-center relative">
+                <div class="flex items-center p-4 opacity-40">
+                    <app-image-profile [imageUrl]="invitation.toAccount.imageUrl" />
+                    <div class="ml-3">
+                        <p class="font-semibold text-white">{{ invitation.toAccount.display_name }}</p>
+                        <p class="text-gray-400 text-sm">{{ invitation.toAccount.username }}</p>
                     </div>
-                </li>
+                </div>
+            </li>
             }
-            </ul>
+        </ul>
         }
 
         <hr />
@@ -64,6 +70,6 @@
             meets/:meetId/full o meets/:meetId/complete or somethingg like that,
             to differ from basic meets/:meetId structure (which would returns only the Meet table's data)
         -->
-        meetings history 
+        meetings history
     </div>
 </div>
