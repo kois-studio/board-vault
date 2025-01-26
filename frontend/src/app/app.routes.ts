@@ -23,6 +23,8 @@ export const routes: Routes = [
         path: '',
         component: LayoutBasicComponent,
         children: [
+            // accessible to everyone
+            { path: '', component: LandingComponent }, // cannot move it to routes[n>0] unless routes[0].path !== ''
             // accessible to unauthenticated users
             { path: 'login', component: LoginComponent, canActivate: [AuthRedirectGuard] },
             { path: 'register', component: RegisterComponent, canActivate: [AuthRedirectGuard] },
@@ -38,8 +40,6 @@ export const routes: Routes = [
         path: '',
         component: LayoutCompleteComponent,
         children: [
-            // accessible to everyone
-            { path: '', component: LandingComponent },
             // accessible to authenticated users
             { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
             { path: 'games', component: GamesComponent, canActivate: [AuthGuard] },
