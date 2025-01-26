@@ -1,0 +1,16 @@
+<div class="flex items-center gap-2">
+    <!-- Number -->
+    <span class="font-medium">{{ review / 2 }}</span>
+    <!-- Stars -->
+    <div class="flex items-center">
+        <ng-container *ngFor="let star of fullStars">
+            <i class="bi bi-star-fill text-yellow-400"></i>
+        </ng-container>
+        <ng-container *ngFor="let star of halfStars">
+            <i class="bi bi-star-half text-yellow-400"></i>
+        </ng-container>
+        <ng-container *ngFor="let star of emptyStars">
+            <i class="bi bi-star text-yellow-400"></i>
+        </ng-container>
+    </div>
+</div>
