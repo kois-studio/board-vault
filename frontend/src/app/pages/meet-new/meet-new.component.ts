@@ -5,15 +5,17 @@ import { GameType, GroupWithMembersAndGames, UserType } from '../../api/api.type
 import { CardAccountComponent } from '../../components/card-account/card-account.component'
 import { CardGameComponent } from '../../components/card-game/card-game.component'
 import { DataService } from '../../core/services/data.service'
+import { TitleSubtitleComponent } from "../../components/ui/title-subtitle/title-subtitle.component";
+import { ReviewDisplayComponent } from "../../components/ui/review-display/review-display.component";
 
 @Component({
     standalone: true,
-    imports: [CardAccountComponent, CommonModule, CardGameComponent],
+    imports: [CardAccountComponent, CommonModule, CardGameComponent, TitleSubtitleComponent, ReviewDisplayComponent],
     templateUrl: 'meet-new.component.html',
 })
 export class MeetNewComponent {
     // DataService data
-    public userData: ReturnType<typeof this.dataService.currentUser> = null
+    private userData: ReturnType<typeof this.dataService.currentUser> = null
     private userGroups: ReturnType<typeof this.dataService.userGroups> = []
     public groupData: null | (typeof this.userGroups)[number] = null
 
@@ -42,6 +44,9 @@ export class MeetNewComponent {
 
             // After getting group data, index all reviews by gameId
             this._indexReviews(groupData)
+
+            // Pre-select current user
+            this.selectedUserIds.push(this.userData.id)
         })
     }
 
