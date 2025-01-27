@@ -5,6 +5,8 @@ import { DatabaseService } from '../database/database.service'
 import { groupsSchema } from '../../common/schemas'
 import { InvitationWithAccountsData } from '../../common/types/invitation.type'
 import { UserGetDto } from '../../common/types/user.type'
+import { MeetWithAttendeesAndGames } from 'src/common/types/meet.type'
+import type { GameDto } from '../../common/types/game.type'
 
 @Injectable()
 export class GroupsService {
@@ -125,6 +127,22 @@ export class GroupsService {
             sentAt: String(row[4]),
             fromAccount: JSON.parse(String(row[5])) as UserGetDto,
             toAccount: JSON.parse(String(row[6])) as UserGetDto,
+        }))
+    }
+
+    async getGroupMeetings(groupId: number): Promise<Array<MeetWithAttendeesAndGames>> {
+        this.LOGGER.log(`Getting all meetings for group ${groupId}`)
+        const resultSet = await this.databaseService.getGroupMeetings(groupId)
+
+        return resultSet.rows.map(row => ({
+            id: Number(row[0]),
+            groupId: Number(row[1]),
+            createdBy: Number(row[2]),
+            createdAt: String(row[3]),
+            isConfirmed: Boolean(row[4]),
+            confirmedAt: row[5] ? String(row[5]) : null,
+            attendees: JSON.parse(String(row[6])) as Array<UserGetDto['id']>,
+            playedGames: JSON.parse(String(row[7])) as Array<GameDto['id']>,
         }))
     }
 }
