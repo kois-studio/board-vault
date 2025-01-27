@@ -10,6 +10,7 @@ import type {
     MeetAttendeeType,
     MeetGameType,
     MeetType,
+    MeetWithAttendeesAndGamesType,
     NotificationType,
     UserType,
 } from './api.types'
@@ -109,6 +110,10 @@ export class Api {
 
     removeMember(groupId: number, memberId: number) {
         return this.http.delete<{ success: true }>(`${this.url}/memberships/${memberId}/${groupId}`, {})
+    }
+
+    getGroupMeetings(groupId: number) {
+        return this.http.get<Array<MeetWithAttendeesAndGamesType>>(`${this.url}/groups/${groupId}/meetings`)
     }
 
     // #region games
