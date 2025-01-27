@@ -78,29 +78,13 @@
         </div>
 
         <!-- games played -->
-        <div class="flex">
+        <div class="flex gap-2 items-center">
             @for (game of parseGameIds(meet.playedGames); track $index) {
-                <img
-                  [src]="game?.imageUrl"
-                  class="h-24"
-                />
+                <div class="h-20 w-20 rounded-lg">
+                    <image-background [src]="game?.imageUrl!" class="h-24" />
+                </div>
             }
         </div>
     </div>
     }
 </container-wrapper>
-
-<!-- TODO: show the list of meetings of this group -->
-<!-- if a meeting is pending confirmation, highlight it on top in blue color
-    the rest of confirmed meetings, show them below with gray bg
--->
-<!-- it should be a @for that passes the data to a <card-meeting /> new component
-    that coomponent will show:
-    - the meeting's data (when it was, who created it, etc)
-    - the meeting's attendees (with all its data)
-    - the meeting's games (with all its data)
-
-    to show all this stuff you should create a new endpoint
-    meets/:meetId/full o meets/:meetId/complete or somethingg like that,
-    to differ from basic meets/:meetId structure (which would returns only the Meet table's data)
--->
