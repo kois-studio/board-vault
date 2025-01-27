@@ -4,6 +4,7 @@ import { CreateGroupBody, GroupDto, GroupWithMembersAndGames, UpdateGroupBody } 
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
 import { GroupsService } from './groups.service'
 import { InvitationWithAccountsData } from '../../common/types/invitation.type'
+import { MeetWithAttendeesAndGames } from 'src/common/types/meet.type'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('groups')
@@ -61,5 +62,12 @@ export class GroupsController {
     @ApiResponse({ status: 200, type: [InvitationWithAccountsData] })
     getGroupInvitations(@Param('groupId', ParseIntPipe) groupId: number) {
         return this.groupsService.getGroupInvitations(groupId)
+    }
+
+    @Get('/:groupId/meetings')
+    @ApiOperation({ summary: 'Get all group meetings' })
+    @ApiResponse({ status: 200, type: [MeetWithAttendeesAndGames] })
+    getGroupMeetings(@Param('groupId', ParseIntPipe) groupId: number) {
+        return this.groupsService.getGroupMeetings(groupId)
     }
 }
