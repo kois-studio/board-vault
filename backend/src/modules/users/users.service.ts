@@ -10,7 +10,7 @@ import { NotificationDto } from '../../common/types/notification.type'
 import { GroupMembershipsService } from '../group-memberships/group-memberships.service'
 import { GameReviewAndGameData } from '../../common/types/game-review.type'
 import { MeetsService } from '../meets/meets.service'
-import { MeetDto } from 'src/common/types/meet.type'
+import { MeetDto } from '../../common/types/meet.type'
 
 @Injectable()
 export class UsersService {

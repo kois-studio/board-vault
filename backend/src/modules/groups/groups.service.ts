@@ -5,7 +5,7 @@ import { DatabaseService } from '../database/database.service'
 import { groupsSchema } from '../../common/schemas'
 import { InvitationWithAccountsData } from '../../common/types/invitation.type'
 import { UserGetDto } from '../../common/types/user.type'
-import { MeetWithAttendeesAndGames } from 'src/common/types/meet.type'
+import { MeetWithAttendeesAndGames } from '../../common/types/meet.type'
 import type { GameDto } from '../../common/types/game.type'
 
 @Injectable()
