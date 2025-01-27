@@ -1,24 +1,36 @@
+import { CommonModule } from '@angular/common'
 import { Component, effect } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
-import { GameType, GroupWithMembersAndGames, UserType } from '../../api/api.types'
+import { Api } from '../../api/api'
+import type { GameType, GroupWithMembersAndGames, MeetWithAttendeesAndGamesType, UserType } from '../../api/api.types'
 import { CardAccountComponent } from '../../components/card-account/card-account.component'
 import { CardGameComponent } from '../../components/card-game/card-game.component'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { TitleSubtitleComponent } from '../../components/ui/title-subtitle/title-subtitle.component'
+import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { DataService } from '../../core/services/data.service'
 
 @Component({
     standalone: true,
-    imports: [ImageProfileComponent, TitleSubtitleComponent, ContainerWrapperComponent, CardAccountComponent, CardGameComponent],
+    imports: [
+        TitleSubtitleComponent,
+        ContainerWrapperComponent,
+        CardAccountComponent,
+        CardGameComponent,
+        CommonModule,
+        CustomDatePipe,
+        ImageProfileComponent,
+    ],
     templateUrl: 'group-view.component.html',
 })
 export class GroupViewComponent {
     // --------------------------------------------------------------------------
     //        DATA from services
     // --------------------------------------------------------------------------
-    private userData: ReturnType<typeof this.dataService.currentUser> = null
+    public userData: ReturnType<typeof this.dataService.currentUser> = null
     private userGroups: ReturnType<typeof this.dataService.userGroups> = []
+    userMeets: ReturnType<typeof this.dataService.userMeets> = []
     public invitationsGroupIndex: ReturnType<typeof this.dataService.invitationsGroupIndex> = {}
 
     // --------------------------------------------------------------------------
@@ -27,17 +39,19 @@ export class GroupViewComponent {
     public groupData: null | (typeof this.userGroups)[number] = null
     public gameReviews: Record<GameType['id'], Record<UserType['id'], number>> = {}
     public avgReviewsIndex: Record<GameType['id'], number> = {}
-
+    public groupMeetings: Array<MeetWithAttendeesAndGamesType> = []
     public isLoading = false
 
     constructor(
         private readonly router: Router,
         private readonly route: ActivatedRoute,
         private readonly dataService: DataService,
+        private readonly api: Api,
     ) {
         effect(() => {
             this.userData = this.dataService.currentUser()
             this.userGroups = this.dataService.userGroups()
+            this.userMeets = this.dataService.userMeets()
             this.invitationsGroupIndex = this.dataService.invitationsGroupIndex()
 
             const groupId = Number.parseInt(this.route.snapshot.paramMap.get('groupId') || '')
@@ -51,6 +65,16 @@ export class GroupViewComponent {
 
             // After getting group data, index all reviews by gameId
             this._indexReviews(groupData)
+
+            // Get the group meetings data (with its members and games)
+            this.api.getGroupMeetings(groupId).subscribe({
+                next: (groupMeetings) => {
+                    this.groupMeetings = groupMeetings
+                },
+                error: (error) => {
+                    console.error(error)
+                },
+            })
         })
     }
 
@@ -89,6 +113,16 @@ export class GroupViewComponent {
         }
 
         return Object.values(games)
+    }
+
+    parseAttendeeIds(memberIds: Array<UserType['id']>): Array<UserType> {
+        return memberIds
+            .map((memberId) => this.groupData?.members.find((member) => member.id === memberId) || null)
+            .filter((member) => member !== null)
+    }
+
+    parseGameIds(gameIds: Array<GameType['id']>): Array<GameType> {
+        return gameIds.map((gameId) => this.totalGames.find((game) => game.id === gameId)).filter((game) => game !== undefined)
     }
 
     onGoBack() {

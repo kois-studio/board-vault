@@ -120,3 +120,8 @@ export type MeetGameType = {
     gameId: number
     isPlayed: boolean
 }
+
+export type MeetWithAttendeesAndGamesType = MeetType & {
+    attendees: Array<UserType['id']>
+    playedGames: Array<GameType['id']>
+}
