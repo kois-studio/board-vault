@@ -4,7 +4,7 @@ import { CreateGroupBody, GroupDto, GroupWithMembersAndGames, UpdateGroupBody } 
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
 import { GroupsService } from './groups.service'
 import { InvitationWithAccountsData } from '../../common/types/invitation.type'
-import { MeetWithAttendeesAndGames } from 'src/common/types/meet.type'
+import { MeetWithAttendeesAndGames } from '../../common/types/meet.type'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('groups')

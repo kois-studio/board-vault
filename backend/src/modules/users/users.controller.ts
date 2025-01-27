@@ -9,7 +9,7 @@ import { SuccessDto } from '../../common/types/auth.type'
 import { NotificationDto } from '../../common/types/notification.type'
 import { UserOwnershipGuard } from '../../common/guards/ownership.guard'
 import { GameReviewAndGameData } from '../../common/types/game-review.type'
-import { MeetDto } from 'src/common/types/meet.type'
+import { MeetDto } from '../../common/types/meet.type'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('users')
