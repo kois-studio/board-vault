@@ -1,4 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
+import { GameDto } from './game.type'
+import { UserGetDto } from './user.type'
 
 export class MeetDto {
     @ApiProperty({ example: 12345 })
@@ -18,4 +20,12 @@ export class MeetDto {
 
     @ApiProperty({ example: '2024-09-28 10:02:39' })
     confirmedAt: string | null
+}
+
+export class MeetWithAttendeesAndGames extends MeetDto {
+    @ApiProperty({ type: [UserGetDto], description: 'The attendees of the meet.' })
+    attendees: Array<UserGetDto['id']>
+
+    @ApiProperty({ type: [GameDto], description: 'The games played at the meet.' })
+    playedGames: Array<GameDto['id']>
 }
