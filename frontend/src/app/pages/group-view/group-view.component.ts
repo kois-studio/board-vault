@@ -7,6 +7,7 @@ import { CardAccountComponent } from '../../components/card-account/card-account
 import { CardGameComponent } from '../../components/card-game/card-game.component'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
+import { ImageBackgroundComponent } from '../../components/ui/image-background/image-background.component'
 import { TitleSubtitleComponent } from '../../components/ui/title-subtitle/title-subtitle.component'
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { DataService } from '../../core/services/data.service'
@@ -21,6 +22,7 @@ import { DataService } from '../../core/services/data.service'
         CommonModule,
         CustomDatePipe,
         ImageProfileComponent,
+        ImageBackgroundComponent,
     ],
     templateUrl: 'group-view.component.html',
 })
