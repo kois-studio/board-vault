@@ -72,7 +72,9 @@ export class GroupViewComponent {
             // Get the group meetings data (with its members and games)
             this.api.getGroupMeetings(groupId).subscribe({
                 next: (groupMeetings) => {
-                    this.groupMeetings = groupMeetings
+                    this.groupMeetings = groupMeetings.sort((a, b) => {
+                        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+                    })
                 },
                 error: (error) => {
                     console.error(error)
