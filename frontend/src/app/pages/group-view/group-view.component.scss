@@ -1,0 +1,3 @@
+.bv-stacked-image:not(:first-of-type) {
+    mask: radial-gradient(circle 1.25rem at -9px 50%, transparent 99%, #fff 100%);
+}

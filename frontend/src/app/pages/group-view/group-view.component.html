@@ -68,21 +68,27 @@
                 @for (member of parseAttendeeIds(meet.attendees); track $index) {
                 <div
                     title="{{ member?.username }} - {{ member?.display_name }}"
-                    class="relative -ml-2 first:ml-0 border-2 border-white rounded-full"
-                    [style.zIndex]="3 - $index"
+                    class="relative -ml-2 first:ml-0 rounded-full bv-stacked-image"
+                    [style.zIndex]="3 + $index"
                 >
                     <app-image-profile [imageUrl]="member?.imageUrl" />
                 </div>
                 }
+                <div
+                    class="relative -ml-2 first:ml-0 rounded-full bv-stacked-image"
+                    [style.zIndex]="3 + meet.attendees.length"
+                >
+                    <div class="rounded-full bg-zinc-900 flex items-center justify-center w-10 h-10">+2</div>
+                </div>
             </div>
         </div>
 
         <!-- games played -->
         <div class="flex gap-2 items-center">
             @for (game of parseGameIds(meet.playedGames); track $index) {
-                <div class="h-20 w-20 rounded-lg">
-                    <image-background [src]="game?.imageUrl!" class="h-24" />
-                </div>
+            <div class="h-20 w-20 rounded-lg">
+                <image-background [src]="game?.imageUrl!" class="h-24" />
+            </div>
             }
         </div>
     </div>
