@@ -25,6 +25,7 @@ import { DataService } from '../../core/services/data.service'
         ImageBackgroundComponent,
     ],
     templateUrl: 'group-view.component.html',
+    styleUrls: ['group-view.component.scss'],
 })
 export class GroupViewComponent {
     // --------------------------------------------------------------------------
@@ -114,7 +115,11 @@ export class GroupViewComponent {
             }
         }
 
-        return Object.values(games)
+        return Object.values(games).sort((a, b) => {
+            const a_review = this.avgReviewsIndex[a.id] ?? -1
+            const b_review = this.avgReviewsIndex[b.id] ?? -1
+            return b_review - a_review
+        })
     }
 
     parseAttendeeIds(memberIds: Array<UserType['id']>): Array<UserType> {
