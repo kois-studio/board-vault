@@ -8,6 +8,9 @@ import { CardAccountComponent } from '../../components/card-account/card-account
 import { CardGameComponent } from '../../components/card-game/card-game.component'
 import { DataService } from '../../core/services/data.service'
 
+/**
+ * The idea with this is that it will become the "confirmation" to explain which games have been played and who finally attended the meeting.
+ */
 @Component({
     standalone: true,
     imports: [CardAccountComponent, CommonModule, CardGameComponent],
