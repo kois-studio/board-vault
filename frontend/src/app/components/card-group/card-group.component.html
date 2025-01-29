@@ -48,16 +48,15 @@
     <!-- GROUP DATA -->
     <div class="flex justify-between pt-6">
         <div>
-            @if(meetAlreadyExist){
-                <button (click)="onNewMeet()" class="app-btn-secondary m-1">New meet</button>
-                <button (click)="onEditMeet()" class="app-btn-primary m-1">Edit</button>
+            @if(meetingTodayAlreadyCreated){
+            <button (click)="onEditMeet()" class="app-btn-success m-1">Go to Today's Meet</button>
             } @else {
-                <button (click)="onNewMeet()" class="app-btn-primary m-1">New meet</button>
+            <button (click)="onNewMeet()" class="app-btn-primary m-1">New meet</button>
             }
         </div>
         <div>
             <p class="text-gray-400 text-sm">
-                <span class="font-semibold">Created:</span> {{ group.createdAt | date : "dd/MM/yyyy" }}
+                <span class="font-semibold">Created:</span> {{ group.createdAt | date : 'dd/MM/yyyy' }}
             </p>
             <p class="text-gray-400"><span class="font-semibold">Total games:</span> {{ totalGames.length }}</p>
         </div>

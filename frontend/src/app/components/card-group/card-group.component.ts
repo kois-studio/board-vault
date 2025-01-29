@@ -38,7 +38,8 @@ export class CardGroupComponent {
 
         this.lastMeeting = sortedMeets.length >= 1 ? sortedMeets[0] : null
     }
-    get meetAlreadyExist(): null | MeetType['id'] {
+
+    get meetingTodayAlreadyCreated(): null | MeetType['id'] {
         if (!this.lastMeeting) {
             return null
         }
