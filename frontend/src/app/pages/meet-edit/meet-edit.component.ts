@@ -24,9 +24,9 @@ export class MeetEditComponent {
     private userGroups: ReturnType<typeof this.dataService.userGroups> = []
     public groupData: Nullable<(typeof this.userGroups)[number]> = null
     public meetData: Nullable<MeetWithAttendeesAndGamesType> = null
+    public meetDataCopyOriginal: Nullable<MeetWithAttendeesAndGamesType> = null // to compare changes
 
     // Component state
-    public selectedUserIds: number[] = []
     public gameReviews: Record<GameType['id'], Record<UserType['id'], number>> = {}
     public avgReviewsIndex: Record<GameType['id'], number> = {}
     public selectedGameIds: Array<number> = []
@@ -55,6 +55,7 @@ export class MeetEditComponent {
             const meetId = Number.parseInt(this.route.snapshot.paramMap.get('meetId') || '')
 
             this.meetData = await firstValueFrom(this.api.getMeetDetailsById(meetId))
+            this.meetDataCopyOriginal = JSON.parse(JSON.stringify(this.meetData))
 
             if (!this.meetData) return
 
@@ -85,18 +86,6 @@ export class MeetEditComponent {
 
             // After getting group data, index all reviews by gameId
             this._indexReviews(groupData)
-
-            // Get MeetAttendees data
-            const meetAttendees = await firstValueFrom(this.api.getMeetAttendees(meetId))
-            const selectedUserIds = meetAttendees
-                .filter((meetAttendee) => meetAttendee.isAttending)
-                .map((meetAttendee) => meetAttendee.accountId)
-            this.selectedUserIds = selectedUserIds
-
-            // Get MeetGames data
-            const meetGames = await firstValueFrom(this.api.getMeetGames(meetId))
-            const selectedGameIds = meetGames.filter((meetAttendee) => meetAttendee.isPlayed).map((meetAttendee) => meetAttendee.gameId)
-            this.selectedGameIds = selectedGameIds
         })
     }
 
@@ -120,18 +109,31 @@ export class MeetEditComponent {
         }
     }
 
-    get totalGames(): Array<GameType> {
-        const games: Array<GameType> = []
+    get totalGames(): Array<GameType & { active: boolean }> {
+        const games: Array<GameType & { active: boolean }> = []
 
         if (!this.groupData) {
             return []
         }
 
         for (const member of this.groupData.members) {
-            if (this.selectedUserIds.includes(member.id)) {
+            // add the games of the non-selected members as inactive
+            if (!this.meetData?.attendees.includes(member.id)) {
                 for (const game of member.games) {
                     if (!games.find((g) => g.id === game.id)) {
-                        games.push(game)
+                        games.push({ ...game, active: false })
+                    }
+                }
+            }
+            // add the games of the selected members as active
+            else {
+                for (const game of member.games) {
+                    if (!games.find((g) => g.id === game.id)) {
+                        games.push({ ...game, active: true })
+                    } else {
+                        // if was already added, simply update the active flag
+                        const index = games.findIndex((g) => g.id === game.id)
+                        games[index].active = true
                     }
                 }
             }
@@ -145,45 +147,38 @@ export class MeetEditComponent {
     }
 
     public onClickMember(memberId: number) {
-        if (this.selectedUserIds.includes(memberId)) {
-            this.selectedUserIds = this.selectedUserIds.filter((id) => id !== memberId)
-        } else {
-            this.selectedUserIds.push(memberId)
-        }
-    }
-
-    public onClickGame(gameId: number) {
-        if (this.selectedGameIds.includes(gameId)) {
-            this.selectedGameIds = this.selectedGameIds.filter((id) => id !== gameId)
-        } else {
-            this.selectedGameIds.push(gameId)
-        }
-    }
-
-    public onSaveMeet() {
-        if (!this.groupData || !this.lastMeeting) {
+        if (!this.meetData) {
             return
         }
 
-        const lastMeetId = this.lastMeeting.id
-
-        for (const member of this.groupData.members) {
-            const isAttending = this.selectedUserIds.includes(member.id)
-
-            this.dataService.updateMeetAttendee(lastMeetId, member.id, isAttending)
+        if (this.meetData.attendees.includes(memberId)) {
+            this.meetData.attendees = this.meetData.attendees.filter((id) => id !== memberId)
+        } else {
+            this.meetData.attendees.push(memberId)
         }
-
-        for (const games of this.totalGames) {
-            const isPlaying = this.selectedGameIds.includes(games.id)
-
-            this.dataService.updateMeetGame(lastMeetId, games.id, isPlaying)
-        }
-
-        // TODO: cada vez que se quite un usuario recalcular todos los selectedGames
     }
 
-    onGoBack() {
-        this.router.navigate(['/dashboard'])
-        // this.router.navigate([`/group/${groupId}/meet/new`])
+    public onSaveAttendeesSelection() {
+        if (!this.groupData || !this.meetData) {
+            return
+        }
+
+        for (const member of this.groupData.members) {
+            const isAttending = this.meetData.attendees.includes(member.id)
+            const isAttendingOriginal = this.meetDataCopyOriginal?.attendees.includes(member.id)
+
+            if (isAttending !== isAttendingOriginal) {
+                this.dataService.updateMeetAttendee(this.meetData.id, member.id, isAttending)
+            }
+        }
+
+        this.router.navigate([`/group/${this.groupData.id}`])
+
+        // TODO: this will be done in a future `meet-confirmation` component
+        // for (const games of this.totalGames) {
+        //     const isPlaying = this.selectedGameIds.includes(games.id)
+
+        //     this.dataService.updateMeetGame(this.meetData.id, games.id, isPlaying)
+        // }
     }
 }
