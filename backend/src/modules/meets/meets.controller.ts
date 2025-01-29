@@ -2,7 +2,7 @@ import { Controller, Get, Param, ParseIntPipe, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
 import { MeetsService } from './meets.service'
-import { MeetDto } from '../../common/types/meet.type'
+import { MeetDto, MeetWithAttendeesAndGames } from '../../common/types/meet.type'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('meets')
@@ -24,5 +24,13 @@ export class MeetsController {
     @ApiResponse({ status: 404, description: 'Meet not found' })
     getMeetById(@Param('meetId', ParseIntPipe) meetId: number) {
         return this.meetsService.getMeetById(meetId)
+    }
+
+    @Get('/:meetId/details')
+    @ApiOperation({ summary: 'Get meet details by id', deprecated: true })
+    @ApiResponse({ status: 200, type: MeetWithAttendeesAndGames, description: 'Meet details found' })
+    @ApiResponse({ status: 404, description: 'Meet details not found' })
+    getMeetDetailsById(@Param('meetId', ParseIntPipe) meetId: number) {
+        return this.meetsService.getMeetDetailsById(meetId)
     }
 }

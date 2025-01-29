@@ -799,6 +799,33 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    getMeetDetailsById(meetId: number) {
+        return this._tursoExecute({
+            sql: `
+            SELECT 
+                m.id,
+                m.groupId,
+                m.createdBy,
+                m.createdAt,
+                m.isConfirmed,
+                m.confirmedAt,
+                (
+                    SELECT json_group_array(ma.accountId)
+                    FROM MeetAttendee ma
+                    WHERE ma.meetId = m.id
+                ) AS attendees,
+                (
+                    SELECT json_group_array(mg.gameId)
+                    FROM MeetGame mg
+                    WHERE mg.meetId = m.id AND mg.isPlayed = 1
+                ) AS playedGames
+            FROM Meet m
+            WHERE m.id = ?
+            `,
+            args: [meetId],
+        })
+    }
+
     getMeetAttendeeByMeetId(meetId: number) {
         return this._tursoExecute({
             sql: 'SELECT * FROM MeetAttendee WHERE meetId = ?',
@@ -806,7 +833,7 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
-    async createMeetAttendee(meetId: number, accountId: number) {
+    createMeetAttendee(meetId: number, accountId: number) {
         return this._tursoExecute({
             sql: 'INSERT INTO MeetAttendee (meetId, accountId) VALUES (?, ?)',
             args: [meetId, accountId],
@@ -820,21 +847,21 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
-    async createMeetGame(meetId: number, gameId: number) {
+    createMeetGame(meetId: number, gameId: number) {
         return this._tursoExecute({
             sql: 'INSERT INTO MeetGame (meetId, gameId) VALUES (?, ?)',
             args: [meetId, gameId],
         })
     }
 
-    async createMeeting(groupId: number, createdBy: number) {
+    createMeeting(groupId: number, createdBy: number) {
         return this._tursoExecute({
             sql: 'INSERT INTO Meet (groupId, createdBy) VALUES (?, ?)',
             args: [groupId, createdBy],
         })
     }
 
-    async addGroupMembersToMeeting(meetId: number, groupId: number) {
+    addGroupMembersToMeeting(meetId: number, groupId: number) {
         return this._tursoExecute({
             sql: `
             INSERT INTO MeetAttendee (meetId, accountId)
@@ -846,7 +873,7 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
-    async addGroupGamesToMeeting(meetId: number, groupId: number) {
+    addGroupGamesToMeeting(meetId: number, groupId: number) {
         return this._tursoExecute({
             sql: `
             INSERT OR IGNORE INTO MeetGame (meetId, gameId, isPlayed)
