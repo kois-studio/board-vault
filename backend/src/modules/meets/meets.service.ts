@@ -1,8 +1,10 @@
 import { ResultSet } from '@libsql/client/.'
 import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { DatabaseService } from '../database/database.service'
-import { MeetDto } from '../../common/types/meet.type'
+import { MeetDto, MeetWithAttendeesAndGames } from '../../common/types/meet.type'
 import { meetsSchema } from '../../common/schemas/db-meet.schema'
+import { UserGetDto } from 'src/common/types/user.type'
+import { GameDto } from 'src/common/types/game.type'
 
 @Injectable()
 export class MeetsService {
@@ -49,5 +51,21 @@ export class MeetsService {
         }
 
         return meets[0]
+    }
+
+    async getMeetDetailsById(id: number): Promise<MeetWithAttendeesAndGames> {
+        this.LOGGER.log(`Getting meet details with id ${id}`)
+        const resultSet = await this.databaseService.getMeetDetailsById(id)
+
+        return resultSet.rows.map(row => ({
+            id: Number(row[0]),
+            groupId: Number(row[1]),
+            createdBy: Number(row[2]),
+            createdAt: String(row[3]),
+            isConfirmed: Boolean(row[4]),
+            confirmedAt: row[5] ? String(row[5]) : null,
+            attendees: JSON.parse(String(row[6])) as Array<UserGetDto['id']>,
+            playedGames: JSON.parse(String(row[7])) as Array<GameDto['id']>,
+        }))[0]
     }
 }
