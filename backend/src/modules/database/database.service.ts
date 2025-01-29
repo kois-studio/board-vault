@@ -444,7 +444,7 @@ export class DatabaseService implements OnModuleInit {
                 (
                     SELECT json_group_array(ma.accountId)
                     FROM MeetAttendee ma
-                    WHERE ma.meetId = m.id
+                    WHERE ma.meetId = m.id AND ma.isAttending = 1
                 ) AS attendees,
                 (
                     SELECT json_group_array(mg.gameId)
@@ -812,7 +812,7 @@ export class DatabaseService implements OnModuleInit {
                 (
                     SELECT json_group_array(ma.accountId)
                     FROM MeetAttendee ma
-                    WHERE ma.meetId = m.id
+                    WHERE ma.meetId = m.id AND ma.isAttending = 1
                 ) AS attendees,
                 (
                     SELECT json_group_array(mg.gameId)
