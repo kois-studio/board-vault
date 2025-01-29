@@ -4,6 +4,9 @@
         Games are sorted based on everyone’s preferences and the last time you played them together.
     </title-subtitle>
 
+    original <br/>
+    {{meetDataCopyOriginal | json}}<br/><br/>
+    modified <br/>
     {{meetData | json}}
 
     <!-- 2 columns - left: selectable list; right: games sorted -->
@@ -19,28 +22,28 @@
                     (click)="onClickMember(member.id)"
                     class="bg-zinc-800 rounded-lg cursor-pointer flex items-center justify-start border"
                     [ngClass]="{
-                        'border-zinc-800': !selectedUserIds.includes(member.id),
-                        'border-green-400': selectedUserIds.includes(member.id),
+                        'border-zinc-800': !meetData?.attendees?.includes(member.id),
+                        'border-green-400': meetData?.attendees?.includes(member.id),
                     }"
                 >
                     <!-- indicator -->
                     <div
                         class="h-4 w-4 rounded-full mx-4"
                         [ngClass]="{
-                            'bg-gray-400': !selectedUserIds.includes(member.id),
-                            'bg-green-400': selectedUserIds.includes(member.id),
+                            'bg-gray-400': !meetData?.attendees?.includes(member.id),
+                            'bg-green-400': meetData?.attendees?.includes(member.id),
                         }"
                     ></div>
                     <app-card-account
                         [member]="member"
                         [ngClass]="{
-                            'opacity-30': !selectedUserIds.includes(member.id),
+                            'opacity-30': !meetData?.attendees?.includes(member.id),
                         }"
                     />
                 </button>
                 }
             </ul>
-            <button (click)="onSaveMeet()" class="app-btn-primary mt-4" title="Create draft meeting button">
+            <button (click)="onSaveAttendeesSelection()" class="app-btn-primary mt-4" title="Create draft meeting button">
                 Save selection
             </button>
         </section>
@@ -51,7 +54,9 @@
             <hr />
             <div class="flex gap-2 flex-wrap pt-4">
                 @for (game of totalGames ; track $index) {
-                <div>
+                <div [ngClass]="{
+                    'opacity-30': !game.active,
+                }">
                     <app-card-game
                         [title]="game.title"
                         [imageUrl]="game.imageUrl"
