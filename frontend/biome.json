@@ -14,7 +14,7 @@
         "enabled": true,
         "indentStyle": "space",
         "indentWidth": 4,
-        "lineWidth": 120
+        "lineWidth": 140
     },
     "organizeImports": {
         "enabled": true
@@ -34,7 +34,7 @@
     "javascript": {
         "formatter": {
             "quoteStyle": "single",
-            "lineWidth": 120,
+            "lineWidth": 140,
             "semicolons": "asNeeded"
         }
     }
