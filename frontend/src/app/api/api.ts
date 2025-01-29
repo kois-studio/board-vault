@@ -143,7 +143,9 @@ export class Api {
     }
 
     updateNotification(notificationId: number, partialNotification: Partial<NotificationType>) {
-        return this.http.put<{ success: true }>(`${this.url}/notifications/${notificationId}`, { isRead: partialNotification.isRead })
+        return this.http.put<{ success: true }>(`${this.url}/notifications/${notificationId}`, {
+            isRead: partialNotification.isRead,
+        })
     }
 
     // #region Game Reviews
@@ -167,6 +169,10 @@ export class Api {
 
     getMeetById(meetId: number) {
         return this.http.get<MeetType>(`${this.url}/meets/${meetId}`)
+    }
+
+    getMeetDetailsById(meetId: number) {
+        return this.http.get<MeetWithAttendeesAndGamesType>(`${this.url}/meets/${meetId}/details`)
     }
 
     getMeetAttendees(meetId: number) {
