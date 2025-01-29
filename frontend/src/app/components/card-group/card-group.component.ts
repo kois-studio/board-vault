@@ -80,7 +80,13 @@ export class CardGroupComponent {
     }
 
     onNewMeet() {
-        this.router.navigate(['/group', this.group.id, 'meet', 'new'])
+        const accountId = this.userData?.id
+        const groupId = this.group.id
+
+        if (accountId && groupId) {
+            this.dataService.createMeeting(accountId, groupId)
+        }
+        // DO NOTHING more, the dataService will redirect to the correct /meet/:id
     }
 
     onEditMeet() {

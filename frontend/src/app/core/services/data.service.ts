@@ -590,7 +590,7 @@ export class DataService {
                 this._getUserMeets(groupId)
 
                 // 3.
-                this.toastService.success('You have created the meet')
+                this.toastService.success('New meeting created for today!')
                 this.router.navigate([`/meets/${res.meetId}`])
             },
             error: () => {
