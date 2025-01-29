@@ -195,7 +195,9 @@ export class UsersService {
 
             resultMeets.push(...meets)
         }
-        return resultMeets
+        return resultMeets.sort((a, b) => {
+            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        })
     }
 
     async getUserInvitationsReceived(userId: number): Promise<Array<InvitationWithExtraData>> {
