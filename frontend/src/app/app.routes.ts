@@ -13,7 +13,6 @@ import { GroupViewComponent } from './pages/group-view/group-view.component'
 import { LandingComponent } from './pages/landing/landing.component'
 import { LoginComponent } from './pages/login/login.component'
 import { MeetEditComponent } from './pages/meet-edit/meet-edit.component'
-import { MeetNewComponent } from './pages/meet-new/meet-new.component'
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component'
 import { RegisterComponent } from './pages/register/register.component'
 import { ReviewComponent } from './pages/reviews/reviews.component'
@@ -47,7 +46,6 @@ export const routes: Routes = [
             { path: 'group/:groupId/edit', component: GroupEditComponent, canActivate: [AuthGuard] },
             { path: 'group/:groupId/leave', component: GroupLeaveComponent, canActivate: [AuthGuard] },
             { path: 'group/:groupId/delete', component: GroupDeleteComponent, canActivate: [AuthGuard] },
-            { path: 'group/:groupId/meet/new', component: MeetNewComponent, canActivate: [AuthGuard] },
         ],
     },
     {
