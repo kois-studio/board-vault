@@ -5,7 +5,8 @@ import { firstValueFrom } from 'rxjs'
 import { Api } from '../../api/api'
 import type { GameType, GroupWithMembersAndGames, MeetType, MeetWithAttendeesAndGamesType, UserType } from '../../api/api.types'
 import { CardAccountComponent } from '../../components/card-account/card-account.component'
-import { CardGameComponent } from '../../components/card-game/card-game.component'
+import { ImageBackgroundComponent } from '../../components/ui/image-background/image-background.component'
+import { ReviewDisplayComponent } from '../../components/ui/review-display/review-display.component'
 import { TitleSubtitleComponent } from '../../components/ui/title-subtitle/title-subtitle.component'
 import { DataService } from '../../core/services/data.service'
 import type { Nullable } from '../../core/types/commons.type'
@@ -15,7 +16,7 @@ import type { Nullable } from '../../core/types/commons.type'
  */
 @Component({
     standalone: true,
-    imports: [CardAccountComponent, CommonModule, CardGameComponent, TitleSubtitleComponent],
+    imports: [CardAccountComponent, CommonModule, TitleSubtitleComponent, ReviewDisplayComponent, ImageBackgroundComponent],
     templateUrl: 'meet-edit.component.html',
 })
 export class MeetEditComponent {
