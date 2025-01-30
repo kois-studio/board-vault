@@ -4,10 +4,10 @@ import { ActivatedRoute, Router } from '@angular/router'
 import { Api } from '../../api/api'
 import type { GameType, GroupWithMembersAndGames, MeetWithAttendeesAndGamesType, UserType } from '../../api/api.types'
 import { CardAccountComponent } from '../../components/card-account/card-account.component'
-import { CardGameComponent } from '../../components/card-game/card-game.component'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { ImageBackgroundComponent } from '../../components/ui/image-background/image-background.component'
+import { ReviewDisplayComponent } from '../../components/ui/review-display/review-display.component'
 import { TitleSubtitleComponent } from '../../components/ui/title-subtitle/title-subtitle.component'
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { DataService } from '../../core/services/data.service'
@@ -18,11 +18,11 @@ import { DataService } from '../../core/services/data.service'
         TitleSubtitleComponent,
         ContainerWrapperComponent,
         CardAccountComponent,
-        CardGameComponent,
         CommonModule,
         CustomDatePipe,
         ImageProfileComponent,
         ImageBackgroundComponent,
+        ReviewDisplayComponent,
     ],
     templateUrl: 'group-view.component.html',
     styleUrls: ['group-view.component.scss'],
@@ -39,6 +39,7 @@ export class GroupViewComponent {
     // --------------------------------------------------------------------------
     //        DATA for this component
     // --------------------------------------------------------------------------
+    public selectedUserIds: number[] = []
     public groupData: null | (typeof this.userGroups)[number] = null
     public gameReviews: Record<GameType['id'], Record<UserType['id'], number>> = {}
     public avgReviewsIndex: Record<GameType['id'], number> = {}
@@ -103,30 +104,46 @@ export class GroupViewComponent {
         }
     }
 
-    get totalGames(): Array<GameType> {
+    // #region Getters
+
+    get totalGames(): Array<GameType & { active: boolean }> {
+        const games: Array<GameType & { active: boolean }> = []
+
         if (!this.groupData) {
             return []
         }
 
-        // index all games by gameId so we don't duplicate games
-        const games: Record<GameType['id'], GameType> = {}
-
         for (const member of this.groupData.members) {
-            for (const game of member.games) {
-                games[game.id] = game
+            // add the games of the non-selected members as inactive
+            if (!this.selectedUserIds.includes(member.id)) {
+                for (const game of member.games) {
+                    if (!games.find((g) => g.id === game.id)) {
+                        games.push({ ...game, active: false })
+                    }
+                }
+            }
+            // add the games of the selected members as active
+            else {
+                for (const game of member.games) {
+                    if (!games.find((g) => g.id === game.id)) {
+                        games.push({ ...game, active: true })
+                    } else {
+                        // if was already added, simply update the active flag
+                        const index = games.findIndex((g) => g.id === game.id)
+                        games[index].active = true
+                    }
+                }
             }
         }
 
-        return Object.values(games).sort((a, b) => {
+        return games.sort((a, b) => {
             const a_review = this.avgReviewsIndex[a.id] ?? -1
             const b_review = this.avgReviewsIndex[b.id] ?? -1
             return b_review - a_review
         })
     }
 
-    onClickMeeting(meetId: number): void {
-        this.router.navigate(['/meets', meetId])
-    }
+    // #region Parse Data
 
     parseAttendeeIds(memberIds: Array<UserType['id']>): Array<UserType> {
         return memberIds
@@ -136,6 +153,20 @@ export class GroupViewComponent {
 
     parseGameIds(gameIds: Array<GameType['id']>): Array<GameType> {
         return gameIds.map((gameId) => this.totalGames.find((game) => game.id === gameId)).filter((game) => game !== undefined)
+    }
+
+    // #region Button Clicks
+
+    onClickMeeting(meetId: number): void {
+        this.router.navigate(['/meets', meetId])
+    }
+
+    onClickMember(memberId: number) {
+        if (this.selectedUserIds.includes(memberId)) {
+            this.selectedUserIds = this.selectedUserIds.filter((id) => id !== memberId)
+        } else {
+            this.selectedUserIds.push(memberId)
+        }
     }
 
     onGoBack() {
