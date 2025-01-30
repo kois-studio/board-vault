@@ -4,10 +4,10 @@
         Games are sorted based on everyone’s preferences and the last time you played them together.
     </title-subtitle>
 
-    original <br/>
-    {{meetDataCopyOriginal | json}}<br/><br/>
-    modified <br/>
-    {{meetData | json}}
+    original <br />
+    {{ meetDataCopyOriginal | json }}<br /><br />
+    modified <br />
+    {{ meetData | json }}
 
     <!-- 2 columns - left: selectable list; right: games sorted -->
     <div class="grid xl:grid-cols-3 gap-y-12">
@@ -52,19 +52,31 @@
         <section class="p-4 col-span-2">
             <h2 class="text-xl font-semibold mb-4">Recommended Games:</h2>
             <hr />
-            <div class="flex gap-2 flex-wrap pt-4">
+            <div class="grid grid-cols-2 gap-2 pt-4">
                 @for (game of totalGames ; track $index) {
-                <div [ngClass]="{
-                    'opacity-30': !game.active,
-                }">
-                    <app-card-game
-                        [title]="game.title"
-                        [imageUrl]="game.imageUrl"
-                        [gameAvgDuration]="game.gameAvgDuration"
-                        [minPlayers]="game.minPlayers"
-                        [maxPlayers]="game.maxPlayers"
-                        [review]="avgReviewsIndex[game.id]"
-                    />
+                <div
+                    class="rounded bg-zinc-800 p-2 flex justify-between items-center"
+                    [ngClass]="{
+                        'opacity-30': !game.active,
+                    }"
+                >
+                    <div class="flex items-center gap-2">
+                        <div class="h-20 w-20 roundd-lg">
+                            <image-background [src]="game.imageUrl" class="h-24" />
+                        </div>
+                        <div class="ml-3 text-nowrap overflow-hidden text-ellipsis whitespace-nowrap">
+                            <p class="font-semibold text-white">{{ game.title }}</p>
+                            <p class="text-gray-400 text-sm text-start w-full">
+                                <i class="bi bi-clock-fill"></i> {{ game.gameAvgDuration }} mins
+                            </p>
+                            <p class="text-gray-400 text-sm text-start">
+                                <i class="bi bi-people-fill"></i> {{ game.minPlayers }} - {{ game.maxPlayers }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="px-3">
+                        <review-display [review]="avgReviewsIndex[game.id]" [flexCol]="true" />
+                    </div>
                 </div>
                 }
             </div>
