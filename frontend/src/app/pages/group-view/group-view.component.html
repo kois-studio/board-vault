@@ -12,9 +12,29 @@
 
             <ul class="grid gap-y-4 mt-4">
                 @for (member of groupData?.members; track $index) {
-                <li class="bg-zinc-800 rounded-lg flex items-center justify-start">
-                    <app-card-account [member]="member" [isOwner]="groupData?.createdBy === member.id" />
-                </li>
+                <button
+                    (click)="onClickMember(member.id)"
+                    class="bg-zinc-800 rounded-lg cursor-pointer flex items-center justify-start border"
+                    [ngClass]="{
+                            'border-zinc-800': !selectedUserIds.includes(member.id),
+                            'border-green-400': selectedUserIds.includes(member.id),
+                        }"
+                >
+                    <!-- indicator -->
+                    <div
+                        class="h-4 w-4 rounded-full mx-4"
+                        [ngClass]="{
+                                'bg-gray-400': !selectedUserIds.includes(member.id),
+                                'bg-green-400': selectedUserIds.includes(member.id),
+                            }"
+                    ></div>
+                    <app-card-account
+                        [member]="member"
+                        [ngClass]="{
+                                'opacity-30': !selectedUserIds.includes(member.id),
+                            }"
+                    />
+                </button>
                 }
             </ul>
 
@@ -37,17 +57,32 @@
         <section class="p-4 col-span-2">
             <h2 class="text-xl font-semibold mb-4">Group games:</h2>
             <hr />
-            <div class="flex gap-2 flex-wrap pt-4">
-                @for (game of totalGames.slice(0, 12); track $index) {
-                <div>
-                    <app-card-game
-                        [title]="game.title"
-                        [imageUrl]="game.imageUrl"
-                        [gameAvgDuration]="game.gameAvgDuration"
-                        [minPlayers]="game.minPlayers"
-                        [maxPlayers]="game.maxPlayers"
-                        [review]="avgReviewsIndex[game.id]"
-                    />
+
+            <div class="grid grid-cols-2 gap-2 pt-4">
+                @for (game of totalGames ; track $index) {
+                <div
+                    class="rounded bg-zinc-800 p-2 flex justify-between items-center"
+                    [ngClass]="{
+                        'opacity-30': !game.active,
+                    }"
+                >
+                    <div class="flex items-center gap-2">
+                        <div class="h-20 w-20 roundd-lg">
+                            <image-background [src]="game.imageUrl" class="h-24" />
+                        </div>
+                        <div class="ml-3 text-nowrap overflow-hidden text-ellipsis whitespace-nowrap">
+                            <p class="font-semibold text-white">{{ game.title }}</p>
+                            <p class="text-gray-400 text-sm text-start w-full">
+                                <i class="bi bi-clock-fill"></i> {{ game.gameAvgDuration }} mins
+                            </p>
+                            <p class="text-gray-400 text-sm text-start">
+                                <i class="bi bi-people-fill"></i> {{ game.minPlayers }} - {{ game.maxPlayers }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="px-3">
+                        <review-display [review]="avgReviewsIndex[game.id]" [flexCol]="true" />
+                    </div>
                 </div>
                 }
             </div>
@@ -58,45 +93,41 @@
     <h2 class="text-xl font-semibold mb-4 mt-12">Meetings history</h2>
     <hr />
 
-    @for (meet of groupMeetings; track $index) {
-    <button
-        (click)="onClickMeeting(meet.id)"
-        class="bg-zinc-800 rounded-lg p-4 flex flex-row mt-4 justify-between w-full"
-    >
-        <!-- Date and attendees -->
-        <div class="flex flex-col gap-4">
-            <h3 class="text-lg font-semibold">{{ meet.createdAt | customDate }}</h3>
+    <div class="grid grid-cols-2 gap-4 mt-4">
+        @for (meet of groupMeetings; track $index) {
+        <button (click)="onClickMeeting(meet.id)" class="bg-zinc-800 rounded-lg p-4 flex flex-row justify-between w-full">
+            <!-- Date and attendees -->
+            <div class="flex flex-col gap-4">
+                <h3 class="text-lg font-semibold">{{ meet.createdAt | customDate }}</h3>
 
-            <div class="flex">
-                @for (member of parseAttendeeIds(meet.attendees); track $index) {
-                <div
-                    title="{{ member?.username }} - {{ member?.display_name }}"
-                    class="relative -ml-2 first:ml-0 rounded-full bv-stacked-image"
-                    [style.zIndex]="3 + $index"
-                >
-                    <app-image-profile [imageUrl]="member?.imageUrl" />
+                <div class="flex">
+                    @for (member of parseAttendeeIds(meet.attendees); track $index) {
+                    <div
+                        title="{{ member?.username }} - {{ member?.display_name }}"
+                        class="relative -ml-2 first:ml-0 rounded-full bv-stacked-image"
+                        [style.zIndex]="3 + $index"
+                    >
+                        <app-image-profile [imageUrl]="member?.imageUrl" />
+                    </div>
+                    }
+                    <div class="relative -ml-2 first:ml-0 rounded-full bv-stacked-image" [style.zIndex]="3 + meet.attendees.length">
+                        <div class="rounded-full bg-zinc-900 flex items-center justify-center w-10 h-10">+2</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- games played -->
+            <div class="flex gap-2 items-center">
+                @for (game of parseGameIds(meet.playedGames); track $index) {
+                <div class="h-20 w-20 rounded-lg">
+                    <image-background [src]="game?.imageUrl!" class="h-24" />
                 </div>
                 }
-                <div
-                    class="relative -ml-2 first:ml-0 rounded-full bv-stacked-image"
-                    [style.zIndex]="3 + meet.attendees.length"
-                >
-                    <div class="rounded-full bg-zinc-900 flex items-center justify-center w-10 h-10">+2</div>
-                </div>
             </div>
-        </div>
 
-        <!-- games played -->
-        <div class="flex gap-2 items-center">
-            @for (game of parseGameIds(meet.playedGames); track $index) {
-            <div class="h-20 w-20 rounded-lg">
-                <image-background [src]="game?.imageUrl!" class="h-24" />
-            </div>
-            }
-        </div>
-        
-        id: {{ meet.id }}<br/>
-        is confirmed? {{ meet.isConfirmed}}
-    </button>
-    }
+            id: {{ meet.id }}<br />
+            is confirmed? {{ meet.isConfirmed }}
+        </button>
+        }
+    </div>
 </container-wrapper>
