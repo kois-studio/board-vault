@@ -12,7 +12,7 @@ import { GroupNewComponent } from './pages/group-new/group-new.component'
 import { GroupViewComponent } from './pages/group-view/group-view.component'
 import { LandingComponent } from './pages/landing/landing.component'
 import { LoginComponent } from './pages/login/login.component'
-import { MeetEditComponent } from './pages/meet-edit/meet-edit.component'
+import { MeetViewComponent } from './pages/meet-view/meet-view.component'
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component'
 import { RegisterComponent } from './pages/register/register.component'
 import { ReviewComponent } from './pages/reviews/reviews.component'
@@ -57,7 +57,7 @@ export const routes: Routes = [
             { path: 'games', component: GamesComponent, canActivate: [AuthGuard] },
             { path: 'reviews', component: ReviewComponent, canActivate: [AuthGuard] },
             { path: 'group/:groupId', component: GroupViewComponent, canActivate: [AuthGuard] },
-            { path: 'meets/:meetId', component: MeetEditComponent, canActivate: [AuthGuard] },
+            { path: 'meets/:meetId', component: MeetViewComponent, canActivate: [AuthGuard] },
         ],
     },
     { path: '**', component: PageNotFoundComponent }, // Wildcard route for a 404 page
