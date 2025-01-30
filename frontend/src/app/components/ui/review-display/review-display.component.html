@@ -1,4 +1,6 @@
-<div class="flex items-center gap-2">
+<div class="flex items-center gap-x-2" [ngClass]="{
+    'flex-col': flexCol,
+}">
     <!-- Number -->
     <span class="font-medium">{{ review / 2 }}</span>
     <!-- Stars -->
