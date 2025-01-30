@@ -59,7 +59,10 @@
     <hr />
 
     @for (meet of groupMeetings; track $index) {
-    <div class="bg-zinc-800 rounded-lg p-4 flex flex-row mt-4 justify-between">
+    <button
+        (click)="onClickMeeting(meet.id)"
+        class="bg-zinc-800 rounded-lg p-4 flex flex-row mt-4 justify-between w-full"
+    >
         <!-- Date and attendees -->
         <div class="flex flex-col gap-4">
             <h3 class="text-lg font-semibold">{{ meet.createdAt | customDate }}</h3>
@@ -94,6 +97,6 @@
         
         id: {{ meet.id }}<br/>
         is confirmed? {{ meet.isConfirmed}}
-    </div>
+    </button>
     }
 </container-wrapper>
