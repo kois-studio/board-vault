@@ -124,6 +124,10 @@ export class GroupViewComponent {
         })
     }
 
+    onClickMeeting(meetId: number): void {
+        this.router.navigate(['/meets', meetId])
+    }
+
     parseAttendeeIds(memberIds: Array<UserType['id']>): Array<UserType> {
         return memberIds
             .map((memberId) => this.groupData?.members.find((member) => member.id === memberId) || null)
