@@ -17,9 +17,9 @@ import type { Nullable } from '../../core/types/commons.type'
 @Component({
     standalone: true,
     imports: [CardAccountComponent, CommonModule, TitleSubtitleComponent, ReviewDisplayComponent, ImageBackgroundComponent],
-    templateUrl: 'meet-edit.component.html',
+    templateUrl: 'meet-view.component.html',
 })
-export class MeetEditComponent {
+export class MeetViewComponent {
     // DataService data (filled on init -> effect)
     public userData: ReturnType<typeof this.dataService.currentUser> = null
     private userGroups: ReturnType<typeof this.dataService.userGroups> = []
