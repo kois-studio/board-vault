@@ -10,6 +10,9 @@ import { Component, Input } from '@angular/core'
 export class ReviewDisplayComponent {
     @Input({ required: true }) review = 0
 
+    // Optional props
+    @Input() flexCol = false
+
     get fullStars(): number[] {
         return Array(Math.floor(this.review / 2)).fill(0)
     }
