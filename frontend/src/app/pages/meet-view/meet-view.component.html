@@ -1,20 +1,20 @@
 <div class="container mx-auto max-w-6xl justify-center items-center mb-40">
     <title-subtitle title="{{ groupData?.name }}"> Select who assisted and which games have been played </title-subtitle>
 
-    original <br />
+    <!-- original <br />
     {{ meetDataCopyOriginal | json }}<br /><br />
     modified <br />
-    {{ meetData | json }}
+    {{ meetData | json }} -->
 
     <!-- Attendees -->
     <section class="p-4">
         <div class="relative">
             <h2 class="text-xl font-semibold mb-4">Select the attendees</h2>
             <button
-                title="Create draft meeting button"
+                [title]="disableSaveAttendees ? 'No changes to save' : 'Save selection'"
                 (click)="onSaveAttendeesSelection()"
                 class="app-btn-primary absolute -top-2 right-0"
-                [disabled]="true"
+                [disabled]="disableSaveAttendees"
             >
                 Save selection
             </button>
@@ -55,10 +55,10 @@
         <div class="relative">
             <h2 class="text-xl font-semibold mb-4">Select the games played</h2>
             <button
-                title="Create draft meeting button"
-                (click)="onSaveAttendeesSelection()"
+                [title]="disableSaveGamesPlayed ? 'No changes to save' : 'Save selection'"
+                (click)="onSaveGamesPlayedSelection()"
                 class="app-btn-primary absolute -top-2 right-0"
-                [disabled]="true"
+                [disabled]="disableSaveGamesPlayed"
             >
                 Save selection
             </button>
@@ -87,7 +87,7 @@
                 <div
                     class="h-20 w-20 roundd-lg"
                     [ngClass]="{
-                        'opacity-30': !meetData?.playedGames?.includes(game.id),
+                        'opacity-30': !game.active
                     }"
                 >
                     <image-background [src]="game.imageUrl" class="h-24" />
@@ -97,7 +97,7 @@
                 <div
                     class="ml-3 text-nowrap overflow-hidden text-ellipsis whitespace-nowrap"
                     [ngClass]="{
-                        'opacity-30': !meetData?.playedGames?.includes(game.id),
+                        'opacity-30': !game.active
                     }"
                 >
                     <p class="font-semibold text-white">{{ game.title }}</p>

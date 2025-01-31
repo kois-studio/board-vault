@@ -16,7 +16,7 @@ import type { Nullable } from '../../core/types/commons.type'
  */
 @Component({
     standalone: true,
-    imports: [CardAccountComponent, CommonModule, TitleSubtitleComponent, ReviewDisplayComponent, ImageBackgroundComponent],
+    imports: [CardAccountComponent, CommonModule, TitleSubtitleComponent, ImageBackgroundComponent],
     templateUrl: 'meet-view.component.html',
 })
 export class MeetViewComponent {
@@ -31,15 +31,6 @@ export class MeetViewComponent {
     public gameReviews: Record<GameType['id'], Record<UserType['id'], number>> = {}
     public avgReviewsIndex: Record<GameType['id'], number> = {}
     public lastMeeting: Nullable<MeetType> = null
-
-    // Component props
-    public allGroupGames: Record<
-        GameType['id'],
-        {
-            data: GameType
-            owners: Array<UserType['id']>
-        }
-    > = {}
 
     constructor(
         private readonly api: Api,
@@ -66,30 +57,12 @@ export class MeetViewComponent {
 
             this.groupData = groupData
 
-            // After getting group data, index all games by gameId
-            for (const group of this.userGroups) {
-                for (const member of group.members) {
-                    for (const game of member.games) {
-                        if (!this.allGroupGames[game.id]) {
-                            this.allGroupGames[game.id] = {
-                                data: game,
-                                owners: [member.id],
-                            }
-                        } else {
-                            if (!this.allGroupGames[game.id].owners.includes(member.id)) {
-                                this.allGroupGames[game.id].owners.push(member.id)
-                            }
-                        }
-                    }
-                }
-            }
-
             // After getting group data, index all reviews by gameId
-            this._indexReviews(groupData)
+            this.#indexReviews(groupData)
         })
     }
 
-    private _indexReviews(groupData: GroupWithMembersAndGames) {
+    #indexReviews(groupData: GroupWithMembersAndGames): void {
         // Step 1: Index all reviews by gameId and userId
         for (const member of groupData.members) {
             for (const review of member.reviews) {
@@ -110,6 +83,22 @@ export class MeetViewComponent {
     }
 
     // #region Getters
+
+    get disableSaveAttendees(): boolean {
+        if (!this.meetData || !this.meetDataCopyOriginal) {
+            return true
+        }
+
+        return JSON.stringify(this.meetData.attendees) === JSON.stringify(this.meetDataCopyOriginal.attendees)
+    }
+
+    get disableSaveGamesPlayed(): boolean {
+        if (!this.meetData || !this.meetDataCopyOriginal) {
+            return true
+        }
+
+        return JSON.stringify(this.meetData.playedGames) === JSON.stringify(this.meetDataCopyOriginal.playedGames)
+    }
 
     get totalGames(): Array<GameType & { active: boolean }> {
         const games: Array<GameType & { active: boolean }> = []
@@ -174,8 +163,8 @@ export class MeetViewComponent {
         }
     }
 
-    public onSaveAttendeesSelection() {
-        if (!this.groupData || !this.meetData) {
+    onSaveAttendeesSelection(): void {
+        if (!this.groupData || !this.meetData || !this.meetDataCopyOriginal) {
             return
         }
 
@@ -188,7 +177,10 @@ export class MeetViewComponent {
             }
         }
 
-        this.router.navigate([`/group/${this.groupData.id}`])
+        // update the original copy for future comparisons
+        this.meetDataCopyOriginal.attendees = [...this.meetData.attendees]
+
+        // this.router.navigate([`/group/${this.groupData.id}`])
 
         // TODO: this will be done in a future `meet-confirmation` component
         // for (const games of this.totalGames) {
@@ -196,5 +188,25 @@ export class MeetViewComponent {
 
         //     this.dataService.updateMeetGame(this.meetData.id, games.id, isPlaying)
         // }
+    }
+
+    onSaveGamesPlayedSelection(): void {
+        if (!this.groupData || !this.meetData || !this.meetDataCopyOriginal) {
+            return
+        }
+
+        for (const game of this.totalGames) {
+            const isPlaying = this.meetData.playedGames.includes(game.id)
+            const isPlayingOriginal = this.meetDataCopyOriginal?.playedGames.includes(game.id)
+
+            if (isPlaying !== isPlayingOriginal) {
+                this.dataService.updateMeetGame(this.meetData.id, game.id, isPlaying)
+            }
+        }
+
+        // update the original copy for future comparisons
+        this.meetDataCopyOriginal.playedGames = [...this.meetData.playedGames]
+
+        // this.router.navigate([`/group/${this.groupData.id}`])
     }
 }
