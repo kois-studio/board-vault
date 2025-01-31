@@ -30,7 +30,6 @@ export class MeetViewComponent {
     // Component state
     public gameReviews: Record<GameType['id'], Record<UserType['id'], number>> = {}
     public avgReviewsIndex: Record<GameType['id'], number> = {}
-    public selectedGameIds: Array<number> = []
     public lastMeeting: Nullable<MeetType> = null
 
     // Component props
@@ -110,6 +109,8 @@ export class MeetViewComponent {
         }
     }
 
+    // #region Getters
+
     get totalGames(): Array<GameType & { active: boolean }> {
         const games: Array<GameType & { active: boolean }> = []
 
@@ -147,7 +148,9 @@ export class MeetViewComponent {
         })
     }
 
-    public onClickMember(memberId: number) {
+    // #region Button Clicks
+
+    onClickMember(memberId: number): void {
         if (!this.meetData) {
             return
         }
@@ -156,6 +159,18 @@ export class MeetViewComponent {
             this.meetData.attendees = this.meetData.attendees.filter((id) => id !== memberId)
         } else {
             this.meetData.attendees.push(memberId)
+        }
+    }
+
+    onClickGame(gameId: number): void {
+        if (!this.meetData) {
+            return
+        }
+
+        if (this.meetData.playedGames.includes(gameId)) {
+            this.meetData.playedGames = this.meetData.playedGames.filter((id) => id !== gameId)
+        } else {
+            this.meetData.playedGames.push(gameId)
         }
     }
 
