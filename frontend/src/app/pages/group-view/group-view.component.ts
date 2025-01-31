@@ -66,7 +66,7 @@ export class GroupViewComponent {
             }
 
             this.groupData = groupData
-            this.selectedUserIds = groupData.members.map(member => member.id)
+            this.selectedUserIds = groupData.members.map((member) => member.id)
 
             // After getting group data, index all reviews by gameId
             this._indexReviews(groupData)
