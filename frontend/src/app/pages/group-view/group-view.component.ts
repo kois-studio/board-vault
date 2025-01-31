@@ -147,9 +147,18 @@ export class GroupViewComponent {
     // #region Parse Data
 
     parseAttendeeIds(memberIds: Array<UserType['id']>): Array<UserType> {
-        return memberIds
+        const result = memberIds
             .map((memberId) => this.groupData?.members.find((member) => member.id === memberId) || null)
             .filter((member) => member !== null)
+
+        // If > 5 members, we will show [1,2,3,4, +n] in the HTML, so we only return the first 4
+        //      if 6 -> [1,2,3,4, +2]
+        //      if 7 -> [1,2,3,4, +3]
+        if (memberIds.length > 5) {
+            return result.slice(0, 4)
+        }
+
+        return result
     }
 
     parseGameIds(gameIds: Array<GameType['id']>): Array<GameType> {

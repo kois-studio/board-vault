@@ -96,9 +96,9 @@
 
     <div class="grid grid-cols-2 gap-4 mt-4">
         @for (meet of groupMeetings; track $index) {
-        <button (click)="onClickMeeting(meet.id)" class="bg-zinc-800 rounded-lg p-4 flex flex-row justify-between w-full">
+        <button (click)="onClickMeeting(meet.id)" class="bg-zinc-800 rounded-lg p-4 grid lg:grid-cols-2 w-full">
             <!-- Date and attendees -->
-            <div class="flex flex-col gap-4">
+            <div class="flex flex-col gap-4 text-left">
                 <h3 class="text-lg font-semibold">{{ meet.createdAt | customDate }}</h3>
 
                 <div class="flex">
@@ -111,23 +111,26 @@
                         <app-image-profile [imageUrl]="member?.imageUrl" />
                     </div>
                     }
+
+                    <!-- If there are more than 5 attendees, show a +X at the end -->
+                    @if (meet.attendees.length > 5) {
                     <div class="relative -ml-2 first:ml-0 rounded-full bv-stacked-image" [style.zIndex]="3 + meet.attendees.length">
-                        <div class="rounded-full bg-zinc-900 flex items-center justify-center w-10 h-10">+2</div>
+                        <div class="rounded-full bg-zinc-900 flex items-center justify-center w-10 h-10">
+                            +{{ meet.attendees.length - 4 }}
+                        </div>
                     </div>
+                    }
                 </div>
             </div>
 
             <!-- games played -->
-            <div class="flex gap-2 items-center">
+            <div class="flex gap-2 items-center flex-wrap border">
                 @for (game of parseGameIds(meet.playedGames); track $index) {
-                <div class="h-20 w-20 rounded-lg">
+                <div class="h-20 w-20 rounded-lg" [title]="game.title">
                     <image-background [src]="game?.imageUrl!" class="h-24" />
                 </div>
                 }
             </div>
-
-            id: {{ meet.id }}<br />
-            is confirmed? {{ meet.isConfirmed }}
         </button>
         }
     </div>
