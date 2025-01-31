@@ -1,85 +1,113 @@
 <div class="container mx-auto max-w-6xl justify-center items-center mb-40">
-    <title-subtitle title="Plan Today’s Meet">
-        Select who’s coming today and discover the best games for your group. <br />
-        Games are sorted based on everyone’s preferences and the last time you played them together.
-    </title-subtitle>
+    <title-subtitle title="{{ groupData?.name }}"> Select who assisted and which games have been played </title-subtitle>
 
     original <br />
     {{ meetDataCopyOriginal | json }}<br /><br />
     modified <br />
     {{ meetData | json }}
 
-    <!-- 2 columns - left: selectable list; right: games sorted -->
-    <div class="grid xl:grid-cols-3 gap-y-12">
-        <!-- left col -->
-        <section class="p-4">
-            <h2 class="text-xl font-semibold mb-4">{{ groupData?.name }}</h2>
-            <hr />
-
-            <ul class="grid gap-y-4 mt-4">
-                @for (member of groupData?.members; track $index) {
-                <button
-                    (click)="onClickMember(member.id)"
-                    class="bg-zinc-800 rounded-lg cursor-pointer flex items-center justify-start border"
-                    [ngClass]="{
-                        'border-zinc-800': !meetData?.attendees?.includes(member.id),
-                        'border-green-400': meetData?.attendees?.includes(member.id),
-                    }"
-                >
-                    <!-- indicator -->
-                    <div
-                        class="h-4 w-4 rounded-full mx-4"
-                        [ngClass]="{
-                            'bg-gray-400': !meetData?.attendees?.includes(member.id),
-                            'bg-green-400': meetData?.attendees?.includes(member.id),
-                        }"
-                    ></div>
-                    <app-card-account
-                        [member]="member"
-                        [ngClass]="{
-                            'opacity-30': !meetData?.attendees?.includes(member.id),
-                        }"
-                    />
-                </button>
-                }
-            </ul>
-            <button (click)="onSaveAttendeesSelection()" class="app-btn-primary mt-4" title="Create draft meeting button">
+    <!-- Attendees -->
+    <section class="p-4">
+        <div class="relative">
+            <h2 class="text-xl font-semibold mb-4">Select the attendees</h2>
+            <button
+                title="Create draft meeting button"
+                (click)="onSaveAttendeesSelection()"
+                class="app-btn-primary absolute -top-2 right-0"
+                [disabled]="true"
+            >
                 Save selection
             </button>
-        </section>
+        </div>
+        <hr />
 
-        <!-- right col -->
-        <section class="p-4 col-span-2">
-            <h2 class="text-xl font-semibold mb-4">Recommended Games:</h2>
-            <hr />
-            <div class="grid grid-cols-2 gap-2 pt-4">
-                @for (game of totalGames ; track $index) {
+        <ul class="grid grid-cols-3 gap-4 mt-4">
+            @for (member of groupData?.members; track $index) {
+            <button
+                (click)="onClickMember(member.id)"
+                class="bg-zinc-800 rounded-lg cursor-pointer flex items-center justify-start border"
+                [ngClass]="{
+                    'border-zinc-800': !meetData?.attendees?.includes(member.id),
+                    'border-green-400': meetData?.attendees?.includes(member.id),
+                }"
+            >
+                <!-- indicator -->
                 <div
-                    class="rounded bg-zinc-800 p-2 flex justify-between items-center"
+                    class="h-4 w-4 rounded-full mx-4"
                     [ngClass]="{
-                        'opacity-30': !game.active,
+                        'bg-gray-400': !meetData?.attendees?.includes(member.id),
+                        'bg-green-400': meetData?.attendees?.includes(member.id),
+                    }"
+                ></div>
+                <app-card-account
+                    [member]="member"
+                    [ngClass]="{
+                        'opacity-30': !meetData?.attendees?.includes(member.id),
+                    }"
+                />
+            </button>
+            }
+        </ul>
+    </section>
+
+    <!-- Games played -->
+    <section class="p-4 col-span-2">
+        <div class="relative">
+            <h2 class="text-xl font-semibold mb-4">Select the games played</h2>
+            <button
+                title="Create draft meeting button"
+                (click)="onSaveAttendeesSelection()"
+                class="app-btn-primary absolute -top-2 right-0"
+                [disabled]="true"
+            >
+                Save selection
+            </button>
+        </div>
+        <hr />
+        <div class="grid grid-cols-4 gap-4 pt-4">
+            @for (game of totalGames ; track $index) {
+            <button
+                (click)="onClickGame(game.id)"
+                class="bg-zinc-800 rounded-lg cursor-pointer flex items-center justify-start border p-2"
+                [ngClass]="{
+                        'border-zinc-800': !meetData?.playedGames?.includes(game.id),
+                        'border-green-400': meetData?.playedGames?.includes(game.id),
+                    }"
+            >
+                <!-- indicator -->
+                <div
+                    class="h-4 w-4 rounded-full ml-2 mr-4"
+                    [ngClass]="{
+                        'bg-gray-400': !meetData?.playedGames?.includes(game.id),
+                        'bg-green-400': meetData?.playedGames?.includes(game.id),
+                    }"
+                ></div>
+
+                <!-- card / image -->
+                <div
+                    class="h-20 w-20 roundd-lg"
+                    [ngClass]="{
+                        'opacity-30': !meetData?.playedGames?.includes(game.id),
                     }"
                 >
-                    <div class="flex items-center gap-2">
-                        <div class="h-20 w-20 roundd-lg">
-                            <image-background [src]="game.imageUrl" class="h-24" />
-                        </div>
-                        <div class="ml-3 text-nowrap overflow-hidden text-ellipsis whitespace-nowrap">
-                            <p class="font-semibold text-white">{{ game.title }}</p>
-                            <p class="text-gray-400 text-sm text-start w-full">
-                                <i class="bi bi-clock-fill"></i> {{ game.gameAvgDuration }} mins
-                            </p>
-                            <p class="text-gray-400 text-sm text-start">
-                                <i class="bi bi-people-fill"></i> {{ game.minPlayers }} - {{ game.maxPlayers }}
-                            </p>
-                        </div>
-                    </div>
-                    <div class="px-3">
-                        <review-display [review]="avgReviewsIndex[game.id]" [flexCol]="true" />
-                    </div>
+                    <image-background [src]="game.imageUrl" class="h-24" />
                 </div>
-                }
-            </div>
-        </section>
-    </div>
+
+                <!-- card / data -->
+                <div
+                    class="ml-3 text-nowrap overflow-hidden text-ellipsis whitespace-nowrap"
+                    [ngClass]="{
+                        'opacity-30': !meetData?.playedGames?.includes(game.id),
+                    }"
+                >
+                    <p class="font-semibold text-white">{{ game.title }}</p>
+                    <p class="text-gray-400 text-sm text-start w-full"><i class="bi bi-clock-fill"></i> {{ game.gameAvgDuration }} mins</p>
+                    <p class="text-gray-400 text-sm text-start">
+                        <i class="bi bi-people-fill"></i> {{ game.minPlayers }} - {{ game.maxPlayers }}
+                    </p>
+                </div>
+            </button>
+            }
+        </div>
+    </section>
 </div>
