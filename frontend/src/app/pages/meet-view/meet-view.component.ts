@@ -173,21 +173,16 @@ export class MeetViewComponent {
             const isAttendingOriginal = this.meetDataCopyOriginal?.attendees.includes(member.id)
 
             if (isAttending !== isAttendingOriginal) {
-                this.dataService.updateMeetAttendee(this.meetData.id, member.id, isAttending)
+                if (isAttending) {
+                    this.dataService.createMeetAttendee(this.meetData.id, member.id)
+                } else {
+                    this.dataService.deleteMeetAttendee(this.meetData.id, member.id)
+                }
             }
         }
 
         // update the original copy for future comparisons
         this.meetDataCopyOriginal.attendees = [...this.meetData.attendees]
-
-        // this.router.navigate([`/group/${this.groupData.id}`])
-
-        // TODO: this will be done in a future `meet-confirmation` component
-        // for (const games of this.totalGames) {
-        //     const isPlaying = this.selectedGameIds.includes(games.id)
-
-        //     this.dataService.updateMeetGame(this.meetData.id, games.id, isPlaying)
-        // }
     }
 
     onSaveGamesPlayedSelection(): void {
@@ -200,13 +195,15 @@ export class MeetViewComponent {
             const isPlayingOriginal = this.meetDataCopyOriginal?.playedGames.includes(game.id)
 
             if (isPlaying !== isPlayingOriginal) {
-                this.dataService.updateMeetGame(this.meetData.id, game.id, isPlaying)
+                if (isPlaying) {
+                    this.dataService.createMeetGame(this.meetData.id, game.id)
+                } else {
+                    this.dataService.deleteMeetGame(this.meetData.id, game.id)
+                }
             }
         }
 
         // update the original copy for future comparisons
         this.meetDataCopyOriginal.playedGames = [...this.meetData.playedGames]
-
-        // this.router.navigate([`/group/${this.groupData.id}`])
     }
 }

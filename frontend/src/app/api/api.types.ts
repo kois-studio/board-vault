@@ -112,13 +112,11 @@ export type MeetType = {
 export type MeetAttendeeType = {
     meetId: number
     accountId: number
-    isAttending: boolean
 }
 
 export type MeetGameType = {
     meetId: number
     gameId: number
-    isPlayed: boolean
 }
 
 export type MeetWithAttendeesAndGamesType = MeetType & {
