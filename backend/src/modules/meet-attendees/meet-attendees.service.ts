@@ -38,7 +38,7 @@ export class MeetAttendeesService {
         this.LOGGER.log(`Creating meetAttendee with accountId ${accountId} and meetId ${meetId}`)
         const resultSet = await this.databaseService.createMeetAttendee(meetId, accountId)
 
-        if (resultSet.rows.length === 0) {
+        if (resultSet.rowsAffected === 0) {
             throw new NotFoundException(`Meet with meetId ${meetId} not found`)
         }
 
@@ -49,7 +49,7 @@ export class MeetAttendeesService {
         this.LOGGER.log(`Deleting meetAttendee with accountId ${accountId} and meetId ${meetId}`)
         const resultSet = await this.databaseService.deleteMeetAttendee(meetId, accountId)
 
-        if (resultSet.rows.length === 0) {
+        if (resultSet.rowsAffected === 0) {
             throw new NotFoundException(`Meet with meetId ${meetId} not found`)
         }
 
