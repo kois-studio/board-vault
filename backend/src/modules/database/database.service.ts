@@ -847,7 +847,7 @@ export class DatabaseService implements OnModuleInit {
         return this._tursoExecute({
             sql: `
             INSERT OR IGNORE INTO MeetGame (meetId, gameId)
-            SELECT ?, og.gameId, FALSE
+            SELECT ?, og.gameId
             FROM OwnedGame og
             INNER JOIN GroupMembership gm ON og.accountId = gm.accountId
             WHERE gm.groupId = ?
