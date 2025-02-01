@@ -71,14 +71,6 @@ export class CardGroupComponent {
         this.router.navigate(['/group', this.group.id])
     }
 
-    onEditGroup() {
-        this.router.navigate(['/group', this.group.id, 'edit'])
-    }
-
-    onLeaveGroup() {
-        this.router.navigate(['/group', this.group.id, 'leave'])
-    }
-
     onNewMeet() {
         const accountId = this.userData?.id
         const groupId = this.group.id

@@ -8,7 +8,18 @@
     <div class="grid xl:grid-cols-3 gap-y-12">
         <!-- left col -->
         <section class="p-4">
-            <h2 class="text-xl font-semibold mb-4">Group members</h2>
+            <div class="relative">
+                <h2 class="text-xl font-semibold mb-4">Group members</h2>
+                @if (groupData?.createdBy === userData?.id) {
+                <button (click)="onClickEditGroup()" class="app-btn-primary py-1 px-2 absolute top-0 right-0" title="Edit members">
+                    <i class="bi bi-pencil"></i>
+                </button>
+                } @else {
+                <button (click)="onClickLeaveGroup()" class="app-btn-error py-1 px-2 absolute top-0 right-0" title="Leave group">
+                    <i class="bi bi-box-arrow-right"></i>
+                </button>
+                }
+            </div>
             <hr />
 
             <ul class="grid gap-y-4 mt-4">
