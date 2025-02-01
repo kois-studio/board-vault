@@ -38,7 +38,7 @@ export class MeetGamesService {
         this.LOGGER.log(`Creating meetGame with gameId ${gameId} and meetId ${meetId}`)
         const resultSet = await this.databaseService.createMeetGame(meetId, gameId)
 
-        if (resultSet.rows.length === 0) {
+        if (resultSet.rowsAffected === 0) {
             throw new NotFoundException(`Meet with meetId ${meetId} not found`)
         }
 
@@ -49,7 +49,7 @@ export class MeetGamesService {
         this.LOGGER.log(`Deleting meetGame with gameId ${gameId} and meetId ${meetId}`)
         const resultSet = await this.databaseService.deleteMeetGame(meetId, gameId)
 
-        if (resultSet.rows.length === 0) {
+        if (resultSet.rowsAffected === 0) {
             throw new NotFoundException(`Meet with meetId ${meetId} not found`)
         }
 
