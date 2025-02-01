@@ -272,7 +272,7 @@ export class UsersService {
         await this.databaseService.addGroupMembersToMeeting(meetingData.id, groupId)
 
         // Step 5: Add all games from the group to MeetGame table
-        await this.databaseService.addGroupGamesToMeeting(meetingData.id, groupId)
+        // await this.databaseService.addGroupGamesToMeeting(meetingData.id, groupId)
 
         // Step 6: Notify all members of the group
         // TODO:
