@@ -3,8 +3,8 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { DatabaseService } from '../database/database.service'
 import { MeetDto, MeetWithAttendeesAndGames } from '../../common/types/meet.type'
 import { meetsSchema } from '../../common/schemas/db-meet.schema'
-import { UserGetDto } from 'src/common/types/user.type'
-import { GameDto } from 'src/common/types/game.type'
+import { UserGetDto } from '../../common/types/user.type'
+import { GameDto } from '../../common/types/game.type'
 
 @Injectable()
 export class MeetsService {

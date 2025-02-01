@@ -2,7 +2,7 @@ import { ResultSet } from '@libsql/client/.'
 import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { DatabaseService } from '../database/database.service'
 import { meetGamesSchema } from '../../common/schemas/db-meet-game.schema'
-import { MeetGameDto, UpdateMeetGameBody } from '../../common/types/meet-game.type'
+import { MeetGameDto } from '../../common/types/meet-game.type'
 
 @Injectable()
 export class MeetGamesService {
@@ -14,7 +14,6 @@ export class MeetGamesService {
         const meetGames = resultSet.rows.map(row => ({
             meetId: Number(row[0]),
             gameId: Number(row[1]),
-            isPlayed: Boolean(row[2]),
         }))
 
         const result = meetGamesSchema.safeParse(meetGames)
@@ -35,21 +34,20 @@ export class MeetGamesService {
         return this._parseResultSet(resultSet)
     }
 
-    async getMeetGameByMeetId(meetId: number): Promise<Array<MeetGameDto>> {
-        this.LOGGER.log(`Getting meetGame with meetId ${meetId}`)
-        const resultSet = await this.databaseService.getMeetGameByMeetId(meetId)
-        const meetGames = this._parseResultSet(resultSet)
+    async createMeetGame(meetId: number, gameId: number): Promise<MeetGameDto> {
+        this.LOGGER.log(`Creating meetGame with gameId ${gameId} and meetId ${meetId}`)
+        const resultSet = await this.databaseService.createMeetGame(meetId, gameId)
 
-        if (meetGames.length === 0) {
-            throw new NotFoundException(`MeetGame with meetId ${meetId} not found`)
+        if (resultSet.rows.length === 0) {
+            throw new NotFoundException(`Meet with meetId ${meetId} not found`)
         }
 
-        return meetGames
+        return this._parseResultSet(resultSet)[0]
     }
 
-    async updateMeetGame(meetId: number, gameId: number, partialMeetGame: UpdateMeetGameBody): Promise<{ success: boolean }> {
-        this.LOGGER.log(`Updating meetGame with gameId ${gameId} and meetId ${meetId} to ${partialMeetGame}`)
-        const resultSet = await this.databaseService.updateMeetGame(meetId, gameId, partialMeetGame)
+    async deleteMeetGame(meetId: number, gameId: number): Promise<{ success: boolean }> {
+        this.LOGGER.log(`Deleting meetGame with gameId ${gameId} and meetId ${meetId}`)
+        const resultSet = await this.databaseService.deleteMeetGame(meetId, gameId)
 
         if (resultSet.rows.length === 0) {
             throw new NotFoundException(`Meet with meetId ${meetId} not found`)

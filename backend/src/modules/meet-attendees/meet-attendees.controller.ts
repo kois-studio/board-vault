@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Put, UseGuards } from '@nestjs/common'
+import { Controller, Delete, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
 import { MeetAttendeesService } from './meet-attendees.service'
-import { MeetAttendeeDto, UpdateMeetAttendeeBody } from '../../common/types/meet-attendee.type'
+import { MeetAttendeeDto } from '../../common/types/meet-attendee.type'
+import { SuccessDto } from '../../common/types/auth.type'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('meetAttendees')
@@ -18,22 +19,19 @@ export class MeetAttendeesController {
         return this.meetAttendeesService.getMeetAttendees()
     }
 
-    @Get('/:meetId')
-    @ApiOperation({ summary: 'Get meet attendees by MeetId', deprecated: false })
-    @ApiResponse({ status: 200, type: [MeetAttendeeDto], description: 'List of meet attendees by meetId' })
-    async getMeetAttendeeByMeetId(@Param('meetId', ParseIntPipe) meetId: number) {
-        return this.meetAttendeesService.getMeetAttendeeByMeetId(meetId)
+    @Post(':meetId/:accountId')
+    @ApiOperation({ summary: 'Create meetAttendees ', deprecated: false })
+    @ApiResponse({ status: 200, type: MeetAttendeeDto, description: 'The meetAttendees has been successfully created.' })
+    @ApiResponse({ status: 404, description: 'MeetId not found.' })
+    async createMeetAttendee(@Param('meetId', ParseIntPipe) meetId: number, @Param('accountId', ParseIntPipe) accountId: number) {
+        return this.meetAttendeesService.createMeetAttendee(meetId, accountId)
     }
 
-    @Put(':meetId/:accountId')
+    @Delete(':meetId/:accountId')
     @ApiOperation({ summary: 'Update meetAttendees ', deprecated: false })
-    @ApiResponse({ status: 200, description: 'The meetAttendees has been successfully updated.' })
+    @ApiResponse({ status: 200, type: SuccessDto, description: 'The meetAttendees has been successfully updated.' })
     @ApiResponse({ status: 404, description: 'MeetId not found.' })
-    updateMeetAttendee(
-        @Param('meetId', ParseIntPipe) meetId: number,
-        @Param('accountId', ParseIntPipe) accountId: number,
-        @Body() partialMeetAttendee: UpdateMeetAttendeeBody,
-    ) {
-        return this.meetAttendeesService.updateMeetAttendee(accountId, meetId, partialMeetAttendee)
+    updateMeetAttendee(@Param('meetId', ParseIntPipe) meetId: number, @Param('accountId', ParseIntPipe) accountId: number) {
+        return this.meetAttendeesService.deleteMeetAttendee(meetId, accountId)
     }
 }

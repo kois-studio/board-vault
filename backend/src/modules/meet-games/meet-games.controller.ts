@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Put, UseGuards } from '@nestjs/common'
+import { Controller, Delete, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
 import { MeetGamesService } from './meet-games.service'
-import { MeetGameDto, UpdateMeetGameBody } from '../../common/types/meet-game.type'
+import { MeetGameDto } from '../../common/types/meet-game.type'
+import { SuccessDto } from '../../common/types/auth.type'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('meetGames')
@@ -18,22 +19,19 @@ export class MeetGamesController {
         return this.meetGamesService.getMeetGames()
     }
 
-    @Get('/:meetId')
-    @ApiOperation({ summary: 'Get meet games by MeetId', deprecated: false })
-    @ApiResponse({ status: 200, type: [MeetGameDto], description: 'List of meet games by meetId' })
-    async getMeetGameByMeetId(@Param('meetId', ParseIntPipe) meetId: number) {
-        return this.meetGamesService.getMeetGameByMeetId(meetId)
+    @Post(':meetId/:gameId')
+    @ApiOperation({ summary: 'Create meetGames ', deprecated: false })
+    @ApiResponse({ status: 200, type: MeetGameDto, description: 'The meetGames has been successfully created.' })
+    @ApiResponse({ status: 404, description: 'MeetId not found.' })
+    createMeetGame(@Param('meetId', ParseIntPipe) meetId: number, @Param('gameId', ParseIntPipe) gameId: number) {
+        return this.meetGamesService.createMeetGame(meetId, gameId)
     }
 
-    @Put(':meetId/:gameId')
+    @Delete(':meetId/:gameId')
     @ApiOperation({ summary: 'Update meetGames ', deprecated: false })
-    @ApiResponse({ status: 200, description: 'The meetGames has been successfully updated.' })
+    @ApiResponse({ status: 200, type: SuccessDto, description: 'The meetGames has been successfully updated.' })
     @ApiResponse({ status: 404, description: 'MeetId not found.' })
-    updateMeetGame(
-        @Param('meetId', ParseIntPipe) meetId: number,
-        @Param('gameId', ParseIntPipe) gameId: number,
-        @Body() partialMeetGame: UpdateMeetGameBody,
-    ) {
-        return this.meetGamesService.updateMeetGame(gameId, meetId, partialMeetGame)
+    updateMeetGame(@Param('meetId', ParseIntPipe) meetId: number, @Param('gameId', ParseIntPipe) gameId: number) {
+        return this.meetGamesService.deleteMeetGame(meetId, gameId)
     }
 }

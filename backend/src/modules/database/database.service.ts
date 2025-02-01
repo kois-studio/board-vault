@@ -1,18 +1,16 @@
 import { BadRequestException, Injectable, Logger, NotFoundException, OnModuleInit } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { Client, createClient, type InStatement } from '@libsql/client'
-import { CreateUserBody, UpdateUserBody } from '../../common/types/user.type'
 import * as bcrypt from 'bcrypt'
-import { CreateGroupBody, UpdateGroupBody } from '../../common/types/group.type'
-import { CreateGroupMembershipBody } from '../../common/types/group-membership.type'
-import { CreateGameBody, UpdateGameBody } from '../../common/types/game.type'
-import { CreateInvitationBody, CreateInvitationByUsernameBody } from '../../common/types/invitation.type'
-import { GameOwnedDto } from '../../common/types/game-owned.type'
-import { CreateNotificationBody, UpdateNotificationBody } from '../../common/types/notification.type'
-import { CreateGameReviewBody } from '../../common/types/game-review.type'
-import { CreateGamePlaySessionBody } from '../../common/types/game-play-session.type'
-import { UpdateMeetAttendeeBody } from '../../common/types/meet-attendee.type'
-import { UpdateMeetGameBody } from '../../common/types/meet-game.type'
+import type { CreateUserBody, UpdateUserBody } from '../../common/types/user.type'
+import type { CreateGroupBody, UpdateGroupBody } from '../../common/types/group.type'
+import type { CreateGroupMembershipBody } from '../../common/types/group-membership.type'
+import type { CreateGameBody, UpdateGameBody } from '../../common/types/game.type'
+import type { CreateInvitationBody, CreateInvitationByUsernameBody } from '../../common/types/invitation.type'
+import type { GameOwnedDto } from '../../common/types/game-owned.type'
+import type { CreateNotificationBody, UpdateNotificationBody } from '../../common/types/notification.type'
+import type { CreateGameReviewBody } from '../../common/types/game-review.type'
+import type { CreateGamePlaySessionBody } from '../../common/types/game-play-session.type'
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
@@ -444,12 +442,12 @@ export class DatabaseService implements OnModuleInit {
                 (
                     SELECT json_group_array(ma.accountId)
                     FROM MeetAttendee ma
-                    WHERE ma.meetId = m.id AND ma.isAttending = 1
+                    WHERE ma.meetId = m.id
                 ) AS attendees,
                 (
                     SELECT json_group_array(mg.gameId)
                     FROM MeetGame mg
-                    WHERE mg.meetId = m.id AND mg.isPlayed = 1
+                    WHERE mg.meetId = m.id
                 ) AS playedGames
             FROM Meet m
             WHERE m.groupId = ?
@@ -812,45 +810,17 @@ export class DatabaseService implements OnModuleInit {
                 (
                     SELECT json_group_array(ma.accountId)
                     FROM MeetAttendee ma
-                    WHERE ma.meetId = m.id AND ma.isAttending = 1
+                    WHERE ma.meetId = m.id
                 ) AS attendees,
                 (
                     SELECT json_group_array(mg.gameId)
                     FROM MeetGame mg
-                    WHERE mg.meetId = m.id AND mg.isPlayed = 1
+                    WHERE mg.meetId = m.id
                 ) AS playedGames
             FROM Meet m
             WHERE m.id = ?
             `,
             args: [meetId],
-        })
-    }
-
-    getMeetAttendeeByMeetId(meetId: number) {
-        return this._tursoExecute({
-            sql: 'SELECT * FROM MeetAttendee WHERE meetId = ?',
-            args: [meetId],
-        })
-    }
-
-    createMeetAttendee(meetId: number, accountId: number) {
-        return this._tursoExecute({
-            sql: 'INSERT INTO MeetAttendee (meetId, accountId) VALUES (?, ?)',
-            args: [meetId, accountId],
-        })
-    }
-
-    getMeetGameByMeetId(meetId: number) {
-        return this._tursoExecute({
-            sql: 'SELECT * FROM MeetGame WHERE meetId = ?',
-            args: [meetId],
-        })
-    }
-
-    createMeetGame(meetId: number, gameId: number) {
-        return this._tursoExecute({
-            sql: 'INSERT INTO MeetGame (meetId, gameId) VALUES (?, ?)',
-            args: [meetId, gameId],
         })
     }
 
@@ -876,7 +846,7 @@ export class DatabaseService implements OnModuleInit {
     addGroupGamesToMeeting(meetId: number, groupId: number) {
         return this._tursoExecute({
             sql: `
-            INSERT OR IGNORE INTO MeetGame (meetId, gameId, isPlayed)
+            INSERT OR IGNORE INTO MeetGame (meetId, gameId)
             SELECT ?, og.gameId, FALSE
             FROM OwnedGame og
             INNER JOIN GroupMembership gm ON og.accountId = gm.accountId
@@ -886,49 +856,35 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
-    async updateMeetAttendee(accountId: number, meetId: number, partialMeetAttendees: UpdateMeetAttendeeBody) {
-        const fields = []
-        const args = []
+    // #region MeetAttendee
 
-        if (partialMeetAttendees.isAttending != undefined) {
-            fields.push('isAttending = ?')
-            args.push(partialMeetAttendees.isAttending)
-        }
-
-        if (fields.length === 0) {
-            throw new BadRequestException('No fields to update')
-        }
-
-        args.push(accountId, meetId)
-
-        await this._tursoExecute({
-            sql: `UPDATE MeetAttendee SET ${fields.join(', ')} WHERE accountId = ? AND meetId = ?`,
-            args,
+    createMeetAttendee(meetId: number, accountId: number) {
+        return this._tursoExecute({
+            sql: 'INSERT INTO MeetAttendee (meetId, accountId) VALUES (?, ?)',
+            args: [meetId, accountId],
         })
-
-        return this.getMeetAttendeeByMeetId(meetId)
     }
 
-    async updateMeetGame(gameId: number, meetId: number, partialMeetGames: UpdateMeetGameBody) {
-        const fields = []
-        const args = []
-
-        if (partialMeetGames.isPlayed != undefined) {
-            fields.push('isPlayed = ?')
-            args.push(partialMeetGames.isPlayed)
-        }
-
-        if (fields.length === 0) {
-            throw new BadRequestException('No fields to update')
-        }
-
-        args.push(gameId, meetId)
-
-        await this._tursoExecute({
-            sql: `UPDATE MeetGame SET ${fields.join(', ')} WHERE gameId = ? AND meetId = ?`,
-            args,
+    deleteMeetAttendee(meetId: number, accountId: number) {
+        return this._tursoExecute({
+            sql: 'DELETE FROM MeetAttendee WHERE meetId = ? AND accountId = ?',
+            args: [meetId, accountId],
         })
+    }
 
-        return this.getMeetGameByMeetId(meetId)
+    // #region MeetGame
+
+    createMeetGame(meetId: number, gameId: number) {
+        return this._tursoExecute({
+            sql: 'INSERT INTO MeetGame (meetId, gameId) VALUES (?, ?)',
+            args: [meetId, gameId],
+        })
+    }
+
+    deleteMeetGame(meetId: number, gameId: number) {
+        return this._tursoExecute({
+            sql: 'DELETE FROM MeetGame WHERE meetId = ? AND gameId = ?',
+            args: [meetId, gameId],
+        })
     }
 }
