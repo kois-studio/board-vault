@@ -37,7 +37,7 @@ export class GroupLeaveComponent {
         })
     }
     onGoBack() {
-        this.router.navigate(['/dashboard'])
+        this.router.navigate(['/group', this.groupData?.id])
     }
 
     onConfirmLeaveGroup() {
