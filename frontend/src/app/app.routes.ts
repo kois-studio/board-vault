@@ -54,7 +54,7 @@ export const routes: Routes = [
             { path: 'login', component: LoginComponent, canActivate: [AuthRedirectGuard] },
             { path: 'register', component: RegisterComponent, canActivate: [AuthRedirectGuard] },
             // accessible to authenticated users
-            { path: 'group/new', component: GroupNewComponent, canActivate: [AuthGuard] },
+            { path: 'create-group', component: GroupNewComponent, canActivate: [AuthGuard] }, // 'group/new' would break in 'group/:groupId'
             { path: 'group/:groupId/edit', component: GroupEditComponent, canActivate: [AuthGuard] },
             { path: 'group/:groupId/leave', component: GroupLeaveComponent, canActivate: [AuthGuard] },
             { path: 'group/:groupId/delete', component: GroupDeleteComponent, canActivate: [AuthGuard] },
