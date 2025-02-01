@@ -152,4 +152,15 @@ CREATE TABLE IF NOT EXISTS MeetGame (
     FOREIGN KEY (gameId) REFERENCES Game(id) ON DELETE CASCADE,
     PRIMARY KEY (meetId, gameId)
 );
+
+-- -----------------------------------------------------
+-- Table 'FeatureFlags' (Feature flags for the app)
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS FeatureFlags (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT UNIQUE NOT NULL,
+    isEnabled BOOLEAN DEFAULT FALSE,
+    description TEXT, -- Optional, for documentation purposes
+    lastUpdated DATETIME DEFAULT CURRENT_TIMESTAMP
+);
 ```

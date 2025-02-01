@@ -30,6 +30,8 @@ BEGIN TRANSACTION;
 -- -----------------------------------------------------
 -- Table 'Account'
 -- -----------------------------------------------------
+DELETE FROM sqlite_sequence;
+
 CREATE TABLE IF NOT EXISTS Account (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     email TEXT NOT NULL UNIQUE, 
@@ -258,17 +260,23 @@ CREATE TABLE IF NOT EXISTS MeetGame (
 );
 
 -- -----------------------------------------------------
+-- Table 'FeatureFlags' (Feature flags for the app)
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS FeatureFlags (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT UNIQUE NOT NULL,
+    isEnabled BOOLEAN DEFAULT FALSE,
+    description TEXT, -- Optional, for documentation purposes
+    lastUpdated DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+INSERT INTO FeatureFlags (name, isEnabled, description) VALUES ('admin_debugging', 1, 'Enable debugging features for admins');
+
+-- -----------------------------------------------------
 -- Indexes for faster access to the data
 -- -----------------------------------------------------
 CREATE INDEX idx_notification_accountId ON Notification(accountId);
 CREATE INDEX idx_groupmembership_accountId ON GroupMembership(accountId);
 CREATE INDEX idx_ownedgame_gameId ON OwnedGame(gameId);
 
-DELETE FROM sqlite_sequence;
-INSERT INTO sqlite_sequence VALUES('Account',3);
-INSERT INTO sqlite_sequence VALUES('UserGroup',6);
-INSERT INTO sqlite_sequence VALUES('Game',34);
-INSERT INTO sqlite_sequence VALUES('Invitation',1);
-INSERT INTO sqlite_sequence VALUES('Notification',10);
 COMMIT;
 ```
