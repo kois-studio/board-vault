@@ -41,10 +41,11 @@ CREATE TABLE IF NOT EXISTS Account (
     display_name VARCHAR(255), -- Custom name, can be NULL initially
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP, -- auto set to current time
     is_deleted BOOLEAN DEFAULT FALSE -- soft delete
+    isAdmin BOOLEAN DEFAULT FALSE -- indicates if the account is an admin
 );
-INSERT INTO Account VALUES(1,'david@test.com','dawichi','$2b$10$CpIDmTErYFytqH2DWripr.xN60wARDTHwkvpPUmQUJxe1iHIvEYeu','https://pbs.twimg.com/profile_images/1332020756033712130/ZXD9wpQR_400x400.jpg','David M. Fajardo','2024-10-04 13:08:19',0);
-INSERT INTO Account VALUES(2,'alex@test.com','alexwwe','$2b$10$It2eJ2E6deeU7UBbti9tUOpZGq0J9HnmtS1qquUcEDcxKNHruz2ca','https://pbs.twimg.com/profile_images/991696745418711040/17X66VeI_400x400.jpg','alexwwe','2024-10-03 10:32:18',0);
-INSERT INTO Account VALUES(3,'test@test.com','test','$2b$10$aO6PuKn0.VDQ.PkAXpw9Sen1DH7T/wtmkeAhv7iy/NGA.JsmC7bT.','https://pbs.twimg.com/profile_images/1833050358479826944/A2qj0e6Z_400x400.jpg','test 1','2024-10-03 09:57:58',0);
+INSERT INTO Account VALUES(1,'david@test.com','dawichi','$2b$10$CpIDmTErYFytqH2DWripr.xN60wARDTHwkvpPUmQUJxe1iHIvEYeu','https://pbs.twimg.com/profile_images/1332020756033712130/ZXD9wpQR_400x400.jpg','David M. Fajardo','2024-10-04 13:08:19',0,1);
+INSERT INTO Account VALUES(2,'alex@test.com','alexwwe','$2b$10$It2eJ2E6deeU7UBbti9tUOpZGq0J9HnmtS1qquUcEDcxKNHruz2ca','https://pbs.twimg.com/profile_images/991696745418711040/17X66VeI_400x400.jpg','alexwwe','2024-10-03 10:32:18',0,1);
+INSERT INTO Account VALUES(3,'test@test.com','test','$2b$10$aO6PuKn0.VDQ.PkAXpw9Sen1DH7T/wtmkeAhv7iy/NGA.JsmC7bT.','https://pbs.twimg.com/profile_images/1833050358479826944/A2qj0e6Z_400x400.jpg','test 1','2024-10-03 09:57:58',0,1);
 
 -- -----------------------------------------------------
 -- Table 'Game'

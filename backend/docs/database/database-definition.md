@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS Account (
     display_name VARCHAR(255), -- Custom name, can be NULL initially
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP, -- auto set to current time
     is_deleted BOOLEAN DEFAULT FALSE -- soft delete
+    isAdmin BOOLEAN DEFAULT FALSE -- indicates if the account is an admin
 );
 
 -- -----------------------------------------------------
