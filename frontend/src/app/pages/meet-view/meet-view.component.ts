@@ -6,14 +6,10 @@ import { Api } from '../../api/api'
 import type { GameType, GroupWithMembersAndGames, MeetType, MeetWithAttendeesAndGamesType, UserType } from '../../api/api.types'
 import { CardAccountComponent } from '../../components/card-account/card-account.component'
 import { ImageBackgroundComponent } from '../../components/ui/image-background/image-background.component'
-import { ReviewDisplayComponent } from '../../components/ui/review-display/review-display.component'
 import { TitleSubtitleComponent } from '../../components/ui/title-subtitle/title-subtitle.component'
 import { DataService } from '../../core/services/data.service'
 import type { Nullable } from '../../core/types/commons.type'
 
-/**
- * The idea with this is that it will become the "confirmation" to explain which games have been played and who finally attended the meeting.
- */
 @Component({
     standalone: true,
     imports: [CardAccountComponent, CommonModule, TitleSubtitleComponent, ImageBackgroundComponent],
