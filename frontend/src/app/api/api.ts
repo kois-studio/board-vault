@@ -148,7 +148,7 @@ export class Api {
         })
     }
 
-    // #region Game Reviews
+    // #region game reviews
 
     createGameReview(accountId: number, gameId: number, review: number) {
         return this.http.post<{ success: true }>(`${this.url}/reviews/`, { accountId, gameId, review })
@@ -158,7 +158,7 @@ export class Api {
         return this.http.delete<{ success: true }>(`${this.url}/reviews/${accountId}/${gameId}`)
     }
 
-    // #region Meetings
+    // #region meetings
 
     createMeeting(accountId: number, groupId: number) {
         return this.http.post<{ success: true; meetId: number }>(`${this.url}/users/${accountId}/group/${groupId}/newMeeting`, {
@@ -175,19 +175,23 @@ export class Api {
         return this.http.get<MeetWithAttendeesAndGamesType>(`${this.url}/meets/${meetId}/details`)
     }
 
-    getMeetAttendees(meetId: number) {
-        return this.http.get<Array<MeetAttendeeType>>(`${this.url}/meetAttendees/${meetId}`)
+    // #region meet attendees
+
+    createMeetAttendee(meetId: number, accountId: number) {
+        return this.http.post<MeetAttendeeType>(`${this.url}/meetAttendees/${meetId}/${accountId}`, {})
     }
 
-    updateMeetAttendee(meetId: number, accountId: number, isAttending: boolean) {
-        return this.http.put<{ success: true }>(`${this.url}/meetAttendees/${meetId}/${accountId}`, { isAttending })
+    deleteMeetAttendee(meetId: number, accountId: number) {
+        return this.http.delete<{ success: true }>(`${this.url}/meetAttendees/${meetId}/${accountId}`)
     }
 
-    getMeetGames(meetId: number) {
-        return this.http.get<Array<MeetGameType>>(`${this.url}/meetGames/${meetId}`)
+    // #region meet games
+
+    createMeetGame(meetId: number, gameId: number) {
+        return this.http.post<MeetGameType>(`${this.url}/meetGames/${meetId}/${gameId}`, {})
     }
 
-    updateMeetGame(meetId: number, gameId: number, isPlayed: boolean) {
-        return this.http.put<{ success: true }>(`${this.url}/meetGames/${meetId}/${gameId}`, { isPlayed })
+    deleteMeetGame(meetId: number, gameId: number) {
+        return this.http.delete<{ success: true }>(`${this.url}/meetGames/${meetId}/${gameId}`)
     }
 }

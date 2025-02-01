@@ -199,12 +199,7 @@ export class DataService {
 
     // #region form-update-profile
 
-    public updateCurrentUserData(requestBody: {
-        email?: string
-        username?: string
-        display_name?: string
-        imageUrl?: string
-    }) {
+    public updateCurrentUserData(requestBody: { email?: string; username?: string; display_name?: string; imageUrl?: string }) {
         const currentUser = this.currentUser()
         if (!currentUser) {
             return
@@ -599,13 +594,9 @@ export class DataService {
         })
     }
 
-    public updateMeetAttendee(meetId: number, accountId: number, isAttending: boolean) {
-        this.api.updateMeetAttendee(meetId, accountId, isAttending).subscribe({
-            next: (res) => {
-                // TODO: Only one toast for all
-                // this.toastService.success(`Meet attendee ${accountId} updated to ${isAttending} in meet ${meetId}`)
-                // this.toastService.success(`AccountId ${accountId}  ${isAttending}`)
-            },
+    public createMeetAttendee(meetId: number, accountId: number) {
+        this.api.createMeetAttendee(meetId, accountId).subscribe({
+            next: (res) => {},
             error: (error) => {
                 if (error.status === 404) {
                     return this.toastService.error('MeetAttendee not found')
@@ -615,13 +606,33 @@ export class DataService {
         })
     }
 
-    public updateMeetGame(meetId: number, gameId: number, isPlayed: boolean) {
-        this.api.updateMeetGame(meetId, gameId, isPlayed).subscribe({
-            next: (res) => {
-                // TODO: Only one toast for all
-                // this.toastService.success(`Meet game ${gameId} updated to ${isPlayed} in meet ${meetId}`)
-                // this.toastService.success(`GameId ${gameId}  ${isPlayed}`)
+    public deleteMeetAttendee(meetId: number, accountId: number) {
+        this.api.deleteMeetAttendee(meetId, accountId).subscribe({
+            next: (res) => {},
+            error: (error) => {
+                if (error.status === 404) {
+                    return this.toastService.error('MeetAttendee not found')
+                }
+                this.toastService.error('Error updating meetAttendees')
             },
+        })
+    }
+
+    public createMeetGame(meetId: number, gameId: number) {
+        this.api.createMeetGame(meetId, gameId).subscribe({
+            next: (res) => {},
+            error: (error) => {
+                if (error.status === 404) {
+                    return this.toastService.error('MeetGame not found')
+                }
+                this.toastService.error('Error updating meetGames')
+            },
+        })
+    }
+
+    public deleteMeetGame(meetId: number, gameId: number) {
+        this.api.deleteMeetGame(meetId, gameId).subscribe({
+            next: (res) => {},
             error: (error) => {
                 if (error.status === 404) {
                     return this.toastService.error('MeetGame not found')
