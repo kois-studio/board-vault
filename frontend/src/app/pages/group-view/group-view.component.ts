@@ -179,6 +179,14 @@ export class GroupViewComponent {
         }
     }
 
+    onClickEditGroup() {
+        this.router.navigate(['/group', this.groupData?.id, 'edit'])
+    }
+
+    onClickLeaveGroup() {
+        this.router.navigate(['/group', this.groupData?.id, 'leave'])
+    }
+
     onGoBack() {
         this.router.navigate(['/dashboard'])
     }

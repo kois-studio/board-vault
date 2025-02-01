@@ -1,15 +1,6 @@
 <div class="shadow-md rounded-lg p-6 bg-zinc-800 relative">
     <!-- TOP RIGHT BUTTONS -->
     <div class="absolute top-3 right-3">
-        @if (group.createdBy === userData?.id) {
-        <button (click)="onEditGroup()" class="app-btn-primary py-1 px-2" title="Edit group">
-            <i class="bi bi-pencil"></i>
-        </button>
-        } @else {
-        <button (click)="onLeaveGroup()" class="app-btn-error py-1 px-2" title="Leave group">
-            <i class="bi bi-box-arrow-right"></i>
-        </button>
-        }
         <button (click)="onOpenGroup()" class="app-btn-primary py-1 px-2 ml-2" title="View details">
             <i class="bi bi-plus-lg"></i>
         </button>
