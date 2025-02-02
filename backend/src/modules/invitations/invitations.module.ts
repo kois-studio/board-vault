@@ -1,23 +1,17 @@
 import { Module } from '@nestjs/common'
 import { InvitationsService } from './invitations.service'
 import { InvitationsController } from './invitations.controller'
-import { DatabaseService } from '../database/database.service'
-import { GroupsService } from '../groups/groups.service'
-import { GroupMembershipsService } from '../group-memberships/group-memberships.service'
-import { UsersService } from '../users/users.service'
-import { NotificationsService } from '../notifications/notifications.service'
-import { MeetsService } from '../meets/meets.service'
+// module dependencies
+import { DatabaseModule } from '../database/database.module'
+import { GroupsModule } from '../groups/groups.module'
+import { GroupMembershipsModule } from '../group-memberships/group-memberships.module'
+import { UsersModule } from '../users/users.module'
+import { NotificationsModule } from '../notifications/notifications.module'
+import { MeetsModule } from '../meets/meets.module'
 
 @Module({
-    providers: [
-        InvitationsService,
-        DatabaseService,
-        GroupsService,
-        GroupMembershipsService,
-        UsersService,
-        NotificationsService,
-        MeetsService,
-    ],
+    imports: [DatabaseModule, GroupsModule, GroupMembershipsModule, UsersModule, NotificationsModule, MeetsModule],
+    providers: [InvitationsService],
     exports: [InvitationsService],
     controllers: [InvitationsController],
 })
