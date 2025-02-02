@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common'
 import { GamesOwnedService } from './games-owned.service'
 import { GamesOwnedController } from './games-owned.controller'
-import { DatabaseService } from '../database/database.service'
+// module dependencies
+import { DatabaseModule } from '../database/database.module'
 
 @Module({
-    providers: [GamesOwnedService, DatabaseService],
+    imports: [DatabaseModule],
+    providers: [GamesOwnedService],
     exports: [GamesOwnedService],
     controllers: [GamesOwnedController],
 })

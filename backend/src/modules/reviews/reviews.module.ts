@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common'
 import { ReviewsService } from './reviews.service'
 import { ReviewsController } from './reviews.controller'
-import { DatabaseService } from '../database/database.service'
+// module dependencies
+import { DatabaseModule } from '../database/database.module'
 
 @Module({
-    providers: [ReviewsService, DatabaseService],
+    imports: [DatabaseModule],
+    providers: [ReviewsService],
     exports: [ReviewsService],
     controllers: [ReviewsController],
 })
