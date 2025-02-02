@@ -5,14 +5,23 @@ import { firstValueFrom } from 'rxjs'
 import { Api } from '../../api/api'
 import type { GameType, GroupWithMembersAndGames, MeetType, MeetWithAttendeesAndGamesType, UserType } from '../../api/api.types'
 import { CardAccountComponent } from '../../components/card-account/card-account.component'
+import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { ImageBackgroundComponent } from '../../components/ui/image-background/image-background.component'
 import { TitleSubtitleComponent } from '../../components/ui/title-subtitle/title-subtitle.component'
+import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { DataService } from '../../core/services/data.service'
 import type { Nullable } from '../../core/types/commons.type'
 
 @Component({
     standalone: true,
-    imports: [CardAccountComponent, CommonModule, TitleSubtitleComponent, ImageBackgroundComponent],
+    imports: [
+        CardAccountComponent,
+        CommonModule,
+        TitleSubtitleComponent,
+        ImageBackgroundComponent,
+        CustomDatePipe,
+        ContainerWrapperComponent,
+    ],
     templateUrl: 'meet-view.component.html',
 })
 export class MeetViewComponent {
@@ -134,6 +143,7 @@ export class MeetViewComponent {
     }
 
     // #region Button Clicks
+    // TODO: rethink the click system, it should be done with a straightforward click(id) instead of so much logic
 
     onClickMember(memberId: number): void {
         if (!this.meetData) {
@@ -145,6 +155,8 @@ export class MeetViewComponent {
         } else {
             this.meetData.attendees.push(memberId)
         }
+
+        this.#saveAttendeesSelection()
     }
 
     onClickGame(gameId: number): void {
@@ -157,9 +169,17 @@ export class MeetViewComponent {
         } else {
             this.meetData.playedGames.push(gameId)
         }
+
+        this.#saveGamesPlayedSelection()
     }
 
-    onSaveAttendeesSelection(): void {
+    onClickMeetConfirm(): void {
+        this.router.navigate(['/meets', this.meetData?.id, 'confirm'])
+    }
+
+    // #region private methods
+
+    #saveAttendeesSelection(): void {
         if (!this.groupData || !this.meetData || !this.meetDataCopyOriginal) {
             return
         }
@@ -181,7 +201,7 @@ export class MeetViewComponent {
         this.meetDataCopyOriginal.attendees = [...this.meetData.attendees]
     }
 
-    onSaveGamesPlayedSelection(): void {
+    #saveGamesPlayedSelection(): void {
         if (!this.groupData || !this.meetData || !this.meetDataCopyOriginal) {
             return
         }

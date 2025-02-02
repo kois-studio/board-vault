@@ -1,5 +1,7 @@
-<div class="container mx-auto max-w-6xl justify-center items-center mb-40">
-    <title-subtitle title="{{ groupData?.name }}"> Select who assisted and which games have been played </title-subtitle>
+<container-wrapper>
+    <title-subtitle title="{{ groupData?.name }} - {{ meetData?.createdAt ?? '' | customDate }}">
+        Select who assisted and which games have been played
+    </title-subtitle>
 
     <!-- original <br />
     {{ meetDataCopyOriginal | json }}<br /><br />
@@ -8,20 +10,10 @@
 
     <!-- Attendees -->
     <section class="p-4">
-        <div class="relative">
-            <h2 class="text-xl font-semibold mb-4">Select the attendees</h2>
-            <button
-                [title]="disableSaveAttendees ? 'No changes to save' : 'Save selection'"
-                (click)="onSaveAttendeesSelection()"
-                class="app-btn-primary absolute -top-2 right-0"
-                [disabled]="disableSaveAttendees"
-            >
-                Save selection
-            </button>
-        </div>
+        <h2 class="text-xl font-semibold mb-4">Select the attendees</h2>
         <hr />
 
-        <ul class="grid grid-cols-3 gap-4 mt-4">
+        <ul class="grid grid-cols-4 gap-4 mt-4">
             @for (member of groupData?.members; track $index) {
             <button
                 (click)="onClickMember(member.id)"
@@ -33,7 +25,7 @@
             >
                 <!-- indicator -->
                 <div
-                    class="h-4 w-4 rounded-full mx-4"
+                    class="h-4 w-4 rounded-full ml-4"
                     [ngClass]="{
                         'bg-gray-400': !meetData?.attendees?.includes(member.id),
                         'bg-green-400': meetData?.attendees?.includes(member.id),
@@ -56,11 +48,10 @@
             <h2 class="text-xl font-semibold mb-4">Select the games played</h2>
             <button
                 [title]="disableSaveGamesPlayed ? 'No changes to save' : 'Save selection'"
-                (click)="onSaveGamesPlayedSelection()"
+                (click)="onClickMeetConfirm()"
                 class="app-btn-primary absolute -top-2 right-0"
-                [disabled]="disableSaveGamesPlayed"
             >
-                Save selection
+                Confirm
             </button>
         </div>
         <hr />
@@ -110,4 +101,4 @@
             }
         </div>
     </section>
-</div>
+</container-wrapper>
