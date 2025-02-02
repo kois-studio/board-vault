@@ -1,8 +1,9 @@
-import { Controller, Get, Param, ParseIntPipe, UseGuards } from '@nestjs/common'
+import { Controller, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
 import { MeetsService } from './meets.service'
 import { MeetDto, MeetWithAttendeesAndGames } from '../../common/types/meet.type'
+import { SuccessDto } from '../../common/types/auth.type'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('meets')
@@ -31,6 +32,14 @@ export class MeetsController {
     @ApiResponse({ status: 200, type: MeetWithAttendeesAndGames, description: 'Meet details found' })
     @ApiResponse({ status: 404, description: 'Meet details not found' })
     getMeetDetailsById(@Param('meetId', ParseIntPipe) meetId: number) {
+        return this.meetsService.getMeetDetailsById(meetId)
+    }
+
+    @Post('/:meetId/confirm')
+    @ApiOperation({ summary: 'Confirm a meet and create gameplay sessions' })
+    @ApiResponse({ status: 200, type: SuccessDto, description: 'Meet confirmed successfully' })
+    @ApiResponse({ status: 404, description: 'Meet not found' })
+    async confirmMeet(@Param('meetId', ParseIntPipe) meetId: number) {
         return this.meetsService.getMeetDetailsById(meetId)
     }
 }
