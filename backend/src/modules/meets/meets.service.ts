@@ -65,11 +65,10 @@ export class MeetsService {
             id: Number(row[0]),
             groupId: Number(row[1]),
             createdBy: Number(row[2]),
-            createdAt: String(row[3]),
+            meetDate: String(row[3]),
             isConfirmed: Boolean(row[4]),
-            confirmedAt: row[5] ? String(row[5]) : null,
-            attendees: JSON.parse(String(row[6])) as Array<UserGetDto['id']>,
-            playedGames: JSON.parse(String(row[7])) as Array<GameDto['id']>,
+            attendees: JSON.parse(String(row[5])) as Array<UserGetDto['id']>,
+            playedGames: JSON.parse(String(row[6])) as Array<GameDto['id']>,
         }))[0]
     }
 
@@ -105,7 +104,7 @@ export class MeetsService {
         for (const accountId of meetDetails.attendees) {
             for (const gameId of meetDetails.playedGames) {
                 this.LOGGER.log(`Creating gameplay session for accountId ${accountId} and gameId ${gameId}`)
-                await this.gamePlaySessionService.createGamePlaySession({ accountId, gameId })
+                await this.gamePlaySessionService.createGamePlaySession({ accountId, gameId, meetId })
             }
         }
 
