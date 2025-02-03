@@ -13,13 +13,10 @@ export class MeetDto {
     createdBy: number
 
     @ApiProperty({ example: '2024-09-28 10:02:39' })
-    createdAt: string
+    meetDate: string
 
     @ApiProperty({ example: true })
     isConfirmed: boolean
-
-    @ApiProperty({ example: '2024-09-28 10:02:39' })
-    confirmedAt: string | null
 }
 
 export class MeetWithAttendeesAndGames extends MeetDto {
