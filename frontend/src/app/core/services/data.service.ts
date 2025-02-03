@@ -66,6 +66,7 @@ export class DataService {
                 this._getUserNotifications(userType.id)
                 this._getUserReviews(userType.id)
                 this._getUserMeets(userType.id)
+                this._getGamesList()
             },
             error: (error) => {
                 if (error.status === 401) {
@@ -77,6 +78,17 @@ export class DataService {
                 }
 
                 this.toastService.error("Error retrieving user's data, login again")
+            },
+        })
+    }
+
+    private _getGamesList() {
+        this.api.getGames().subscribe({
+            next: (games) => {
+                this.gamesList.set(games)
+            },
+            error: () => {
+                this.toastService.error('Error retrieving games list')
             },
         })
     }
