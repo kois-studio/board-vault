@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common'
 import { DatabaseService } from '../database/database.service'
 import { ResultSet } from '@libsql/client/.'
-import { CreateGamePlaySessionBody, GamePlaySessionDto } from '../../common/types/game-play-session.type'
+import { GamePlaySessionDto } from '../../common/types/game-play-session.type'
 import { gamePlaySessionsSchema } from '../../common/schemas/db-game-play-session.schema'
 
 @Injectable()
@@ -49,7 +49,7 @@ export class GamePlaySessionService {
         return gamePlaySession
     }
 
-    async createGamePlaySession(gamePlaySessionBody: CreateGamePlaySessionBody) {
+    async createGamePlaySession(gamePlaySessionBody: GamePlaySessionDto) {
         this.LOGGER.log(`Creating gamePlaySesion ${gamePlaySessionBody.accountId} - ${gamePlaySessionBody.gameId}`)
         try {
             await this.databaseService.createGamePlaySession(gamePlaySessionBody)

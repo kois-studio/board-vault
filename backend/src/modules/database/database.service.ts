@@ -436,9 +436,8 @@ export class DatabaseService implements OnModuleInit {
                 m.id,
                 m.groupId,
                 m.createdBy,
-                m.createdAt,
+                m.meetDate,
                 m.isConfirmed,
-                m.confirmedAt,
                 (
                     SELECT json_group_array(ma.accountId)
                     FROM MeetAttendee ma
@@ -804,9 +803,8 @@ export class DatabaseService implements OnModuleInit {
                 m.id,
                 m.groupId,
                 m.createdBy,
-                m.createdAt,
+                m.meetDate,
                 m.isConfirmed,
-                m.confirmedAt,
                 (
                     SELECT json_group_array(ma.accountId)
                     FROM MeetAttendee ma

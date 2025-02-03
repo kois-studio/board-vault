@@ -138,11 +138,10 @@ export class GroupsService {
             id: Number(row[0]),
             groupId: Number(row[1]),
             createdBy: Number(row[2]),
-            createdAt: String(row[3]),
+            meetDate: String(row[3]),
             isConfirmed: Boolean(row[4]),
-            confirmedAt: row[5] ? String(row[5]) : null,
-            attendees: JSON.parse(String(row[6])) as Array<UserGetDto['id']>,
-            playedGames: JSON.parse(String(row[7])) as Array<GameDto['id']>,
+            attendees: JSON.parse(String(row[5])) as Array<UserGetDto['id']>,
+            playedGames: JSON.parse(String(row[6])) as Array<GameDto['id']>,
         }))
     }
 }
