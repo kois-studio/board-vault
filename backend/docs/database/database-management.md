@@ -216,12 +216,14 @@ CREATE TABLE IF NOT EXISTS GameReview (
 -- Table 'GamePlaySession' (Tracks each play session)
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS GamePlaySession (
-    id INTEGER PRIMARY KEY AUTOINCREMENT, -- Unique identifier for each session
     accountId INTEGER NOT NULL,
     gameId INTEGER NOT NULL,
-    playedAt DATETIME DEFAULT CURRENT_TIMESTAMP, -- Timestamp when the user played the game
+    meetId INTEGER NOT NULL,
+    playedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (accountId, gameId, meetId), -- Composite primary key
     FOREIGN KEY (accountId) REFERENCES Account(id) ON DELETE CASCADE,
-    FOREIGN KEY (gameId) REFERENCES Game(id) ON DELETE CASCADE
+    FOREIGN KEY (gameId) REFERENCES Game(id) ON DELETE CASCADE,
+    FOREIGN KEY (meetId) REFERENCES Meet(id) ON DELETE CASCADE
 );
 
 -- -----------------------------------------------------
@@ -231,9 +233,8 @@ CREATE TABLE IF NOT EXISTS Meet (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     groupId INTEGER NOT NULL,
     createdBy INTEGER NOT NULL,
-    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-    isConfirmed BOOLEAN DEFAULT FALSE, -- Pre-meeting if FALSE, post-meeting if TRUE
-    confirmedAt DATETIME, -- Only set when isConfirmed is TRUE
+    meetDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    isConfirmed BOOLEAN DEFAULT FALSE, -- If confirmed, cannot be edited
     FOREIGN KEY (groupId) REFERENCES UserGroup(id) ON DELETE CASCADE,
     FOREIGN KEY (createdBy) REFERENCES Account(id) ON DELETE CASCADE
 );
