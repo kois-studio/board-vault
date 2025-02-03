@@ -21,13 +21,13 @@ export class UserCompleteDto {
     username: string
 
     @ApiProperty({ example: 'Jose Antonio' })
-    display_name: string
+    displayName: string
 
     @ApiProperty({ example: 'https://example.com/profile.jpg' })
     imageUrl: string
 
     @ApiProperty({ example: false })
-    is_deleted: boolean
+    isDeleted: boolean
 }
 
 /**
@@ -38,12 +38,12 @@ export class UserGetDto extends OmitType(UserCompleteDto, ['password']) {}
 /**
  * POST requests --> no db generated props
  */
-export class CreateUserBody extends OmitType(UserCompleteDto, ['id', 'createdAt', 'is_deleted']) {}
+export class CreateUserBody extends OmitType(UserCompleteDto, ['id', 'createdAt', 'isDeleted']) {}
 
 /**
  * PUT requests --> editable fields
  */
-export class UpdateUserBody extends PartialType(PickType(UserCompleteDto, ['email', 'username', 'password', 'display_name', 'imageUrl'])) {}
+export class UpdateUserBody extends PartialType(PickType(UserCompleteDto, ['email', 'username', 'password', 'displayName', 'imageUrl'])) {}
 
 /**
  * POST /auth/register
