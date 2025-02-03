@@ -40,6 +40,6 @@ export class MeetsController {
     @ApiResponse({ status: 200, type: SuccessDto, description: 'Meet confirmed successfully' })
     @ApiResponse({ status: 404, description: 'Meet not found' })
     async confirmMeet(@Param('meetId', ParseIntPipe) meetId: number) {
-        return this.meetsService.getMeetDetailsById(meetId)
+        return this.meetsService.confirmMeet(meetId)
     }
 }
