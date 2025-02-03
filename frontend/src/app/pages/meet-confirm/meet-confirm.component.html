@@ -1,0 +1,35 @@
+<div class="mt-24 lg:mt-48 mb-96 mx-2 max-w-xl md:mx-auto p-2 lg:p-6">
+    <div class="shadow-md rounded-lg p-6 bg-zinc-800 relative">
+        <!-- TOP LEFT BUTTONS -->
+        <div class="flex gap-4 absolute -top-16 left-0">    
+            <button (click)="onGoBack()" class="app-btn-error" title="Cancel editing">
+                <i class="bi bi-arrow-left"></i> Back
+            </button>
+        </div>
+
+        <h2 class="text-xl font-semibold mb-4">Confirm attendees and games played</h2>
+        <hr />
+
+        <div class="pt-8 pb-2">
+            <div class="grid gap-4">
+                <div class="grid grid-cols-3">
+                    <!-- attendees -->
+                    <ul>
+                        @for (member of filteredMembers; track $index) {
+                            <app-card-account [member]="member"></app-card-account>
+                        }
+                    </ul>
+                    <!-- playedGames -->
+                    <ul class="col-span-2 flex flex-wrap gap-2 justify-start items-start content-start">
+                        @for (game of filteredGames; track $index) {
+                            <img [src]="game?.imageUrl ?? ''" style="width: 60px; height: 60px;" />
+                        }
+                    </ul>
+                </div>
+                <button class="app-btn-primary" title="Invite user" (click)="onClickMeetConfirm()">
+                    Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
