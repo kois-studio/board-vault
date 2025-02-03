@@ -188,15 +188,14 @@ export class UsersService {
                 id: Number(row[0]),
                 groupId: Number(row[1]),
                 createdBy: Number(row[2]),
-                createdAt: String(row[3]),
+                meetDate: String(row[3]),
                 isConfirmed: Boolean(row[4]),
-                confirmedAt: String(row[5]),
             }))
 
             resultMeets.push(...meets)
         }
         return resultMeets.sort((a, b) => {
-            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            return new Date(b.meetDate).getTime() - new Date(a.meetDate).getTime()
         })
     }
 

@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, UseGuards } f
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
 import { GamePlaySessionService } from './game-play-session.service'
-import { CreateGamePlaySessionBody, GamePlaySessionDto } from '../../common/types/game-play-session.type'
+import { GamePlaySessionDto } from '../../common/types/game-play-session.type'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('gamePlaySession')
@@ -21,7 +21,7 @@ export class GamePlaySessionController {
     @Post('/')
     @ApiOperation({ summary: 'Create a new GamePlaySession', deprecated: true })
     @ApiResponse({ status: 201, description: 'The GamePlaySession has been succesfully created' })
-    async createGamePlaySession(@Body() gamePlaySessionBody: CreateGamePlaySessionBody) {
+    async createGamePlaySession(@Body() gamePlaySessionBody: GamePlaySessionDto) {
         return this.gamePlaySessionService.createGamePlaySession(gamePlaySessionBody)
     }
 
