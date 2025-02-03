@@ -15,11 +15,11 @@ import type { Nullable } from '../../core/types/commons.type'
 @Component({
     standalone: true,
     imports: [
-        CardAccountComponent,
         CommonModule,
+        CustomDatePipe,
+        CardAccountComponent,
         TitleSubtitleComponent,
         ImageBackgroundComponent,
-        CustomDatePipe,
         ContainerWrapperComponent,
     ],
     templateUrl: 'meet-view.component.html',
