@@ -85,9 +85,9 @@ export class InvitationsService {
             username: String(userRow[2]),
             // password: String(userRow[3]), // Do not return password
             imageUrl: String(userRow[4]),
-            display_name: String(userRow[5]),
+            displayName: String(userRow[5]),
             createdAt: String(userRow[6]),
-            is_deleted: Boolean(userRow[7]),
+            isDeleted: Boolean(userRow[7]),
         }
     }
 
@@ -125,7 +125,7 @@ export class InvitationsService {
         await this.notificationsService.createNotification({
             accountId: owner.id,
             type: NotificationTypeEnum.InvitationAccepted,
-            message: `${invited.display_name} joined your group ${groupData.name}`,
+            message: `${invited.displayName} joined your group ${groupData.name}`,
         })
 
         return { success: true }

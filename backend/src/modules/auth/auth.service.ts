@@ -44,7 +44,7 @@ export class AuthService {
             email,
             password,
             username,
-            display_name: username,
+            displayName: username,
             imageUrl: 'https://pbs.twimg.com/profile_images/1833050358479826944/A2qj0e6Z_400x400.jpg',
         })
     }
