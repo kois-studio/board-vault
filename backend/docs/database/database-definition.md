@@ -14,9 +14,9 @@ CREATE TABLE IF NOT EXISTS Account (
     username TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL,
     imageUrl TEXT, -- Profile picture, can be NULL initially
-    display_name VARCHAR(255), -- Custom name, can be NULL initially
+    displayName VARCHAR(255), -- Custom name, can be NULL initially
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP, -- auto set to current time
-    is_deleted BOOLEAN DEFAULT FALSE -- soft delete
+    isDeleted BOOLEAN DEFAULT FALSE -- soft delete
     isAdmin BOOLEAN DEFAULT FALSE -- indicates if the account is an admin
 );
 
@@ -113,7 +113,6 @@ CREATE TABLE IF NOT EXISTS GamePlaySession (
     accountId INTEGER NOT NULL,
     gameId INTEGER NOT NULL,
     meetId INTEGER NOT NULL,
-    playedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (accountId, gameId, meetId), -- Composite primary key
     FOREIGN KEY (accountId) REFERENCES Account(id) ON DELETE CASCADE,
     FOREIGN KEY (gameId) REFERENCES Game(id) ON DELETE CASCADE,

@@ -38,9 +38,9 @@ CREATE TABLE IF NOT EXISTS Account (
     username TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL,
     imageUrl TEXT, -- Profile picture, can be NULL initially
-    display_name VARCHAR(255), -- Custom name, can be NULL initially
+    displayName VARCHAR(255), -- Custom name, can be NULL initially
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP, -- auto set to current time
-    is_deleted BOOLEAN DEFAULT FALSE -- soft delete
+    isDeleted BOOLEAN DEFAULT FALSE -- soft delete
     isAdmin BOOLEAN DEFAULT FALSE -- indicates if the account is an admin
 );
 INSERT INTO Account VALUES(1,'david@test.com','dawichi','$2b$10$CpIDmTErYFytqH2DWripr.xN60wARDTHwkvpPUmQUJxe1iHIvEYeu','https://pbs.twimg.com/profile_images/1332020756033712130/ZXD9wpQR_400x400.jpg','David M. Fajardo','2024-10-04 13:08:19',0,1);
@@ -219,7 +219,6 @@ CREATE TABLE IF NOT EXISTS GamePlaySession (
     accountId INTEGER NOT NULL,
     gameId INTEGER NOT NULL,
     meetId INTEGER NOT NULL,
-    playedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (accountId, gameId, meetId), -- Composite primary key
     FOREIGN KEY (accountId) REFERENCES Account(id) ON DELETE CASCADE,
     FOREIGN KEY (gameId) REFERENCES Game(id) ON DELETE CASCADE,
