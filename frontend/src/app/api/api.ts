@@ -175,6 +175,10 @@ export class Api {
         return this.http.get<MeetWithAttendeesAndGamesType>(`${this.url}/meets/${meetId}/details`)
     }
 
+    confimMeeting(meetId: number) {
+        return this.http.post<{ success: true }>(`${this.url}/meets/${meetId}/confirm`, {})
+    }
+
     // #region meet attendees
 
     createMeetAttendee(meetId: number, accountId: number) {
