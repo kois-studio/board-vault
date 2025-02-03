@@ -30,9 +30,9 @@ export class UsersService {
             username: String(row[2]),
             password: String(row[3]),
             imageUrl: String(row[4]),
-            display_name: String(row[5]),
+            displayName: String(row[5]),
             createdAt: String(row[6]),
-            is_deleted: Boolean(row[7]),
+            isDeleted: Boolean(row[7]),
         }))
 
         const result = usersSchema.safeParse(users)

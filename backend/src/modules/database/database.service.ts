@@ -10,7 +10,7 @@ import type { CreateInvitationBody, CreateInvitationByUsernameBody } from '../..
 import type { GameOwnedDto } from '../../common/types/game-owned.type'
 import type { CreateNotificationBody, UpdateNotificationBody } from '../../common/types/notification.type'
 import type { CreateGameReviewBody } from '../../common/types/game-review.type'
-import type { CreateGamePlaySessionBody } from '../../common/types/game-play-session.type'
+import type { GamePlaySessionDto } from '../../common/types/game-play-session.type'
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
@@ -98,12 +98,12 @@ export class DatabaseService implements OnModuleInit {
     }
 
     async createUser(userDto: CreateUserBody) {
-        const { email, password, username, display_name, imageUrl } = userDto
+        const { email, password, username, displayName, imageUrl } = userDto
         const hashedPassword = await bcrypt.hash(password, 10)
 
         await this._tursoExecute({
-            sql: 'INSERT INTO Account (email, password, username, display_name, imageUrl) VALUES (?, ?, ?, ?, ?)',
-            args: [email, hashedPassword, username, display_name, imageUrl],
+            sql: 'INSERT INTO Account (email, password, username, displayName, imageUrl) VALUES (?, ?, ?, ?, ?)',
+            args: [email, hashedPassword, username, displayName, imageUrl],
         })
     }
 
@@ -127,9 +127,9 @@ export class DatabaseService implements OnModuleInit {
             fields.push('username = ?')
             args.push(partialUserDto.username)
         }
-        if (partialUserDto.display_name) {
-            fields.push('display_name = ?')
-            args.push(partialUserDto.display_name)
+        if (partialUserDto.displayName) {
+            fields.push('displayName = ?')
+            args.push(partialUserDto.displayName)
         }
         if (partialUserDto.imageUrl) {
             fields.push('imageUrl = ?')
@@ -160,7 +160,7 @@ export class DatabaseService implements OnModuleInit {
 
     softDeleteUserById(id: number) {
         return this._tursoExecute({
-            sql: 'UPDATE Account SET is_deleted = true WHERE id = ?',
+            sql: 'UPDATE Account SET isDeleted = true WHERE id = ?',
             args: [id],
         })
     }
@@ -351,7 +351,7 @@ export class DatabaseService implements OnModuleInit {
                     json_object(
                         'id', a.id,
                         'username', a.username,
-                        'display_name', a.display_name,
+                        'displayName', a.displayName,
                         'email', a.email,
                         'imageUrl', a.imageUrl,
                         'joinedAt', gm.joinedAt,
@@ -405,24 +405,24 @@ export class DatabaseService implements OnModuleInit {
                     'id', fa.id,
                     'email', fa.email,
                     'username', fa.username,
-                    'display_name', fa.display_name,
+                    'displayName', fa.displayName,
                     'imageUrl', fa.imageUrl,
                     'createdAt', fa.created_at,
-                    'is_deleted', fa.is_deleted
+                    'isDeleted', fa.isDeleted
                 ) as fromAccount,
                 -- Selecting all properties for the toAccount
                 json_object(
                     'id', ta.id,
                     'email', ta.email,
                     'username', ta.username,
-                    'display_name', ta.display_name,
+                    'displayName', ta.displayName,
                     'imageUrl', ta.imageUrl,
                     'createdAt', ta.created_at,
-                    'is_deleted', ta.is_deleted
+                    'isDeleted', ta.isDeleted
                 ) as toAccount
             FROM Invitation i
-            JOIN Account fa ON i.fromAccountId = fa.id AND fa.is_deleted = 0
-            JOIN Account ta ON i.toAccountId = ta.id AND ta.is_deleted = 0
+            JOIN Account fa ON i.fromAccountId = fa.id AND fa.isDeleted = 0
+            JOIN Account ta ON i.toAccountId = ta.id AND ta.isDeleted = 0
             WHERE i.groupId = ?
             `,
             args: [groupId],
@@ -762,7 +762,7 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
-    async createGamePlaySession(gamePlaySessionDto: CreateGamePlaySessionBody) {
+    async createGamePlaySession(gamePlaySessionDto: GamePlaySessionDto) {
         await this._tursoExecute({
             sql: 'INSERT INTO GamePlaySession (accountId, gameId) VALUES (?, ?)',
             args: [gamePlaySessionDto.accountId, gamePlaySessionDto.gameId],
