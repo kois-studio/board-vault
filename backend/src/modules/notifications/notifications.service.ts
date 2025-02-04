@@ -11,7 +11,6 @@ export class NotificationsService {
     constructor(private readonly databaseService: DatabaseService) {}
 
     private _parseResultSet(resultSet: ResultSet): Array<NotificationDto> {
-        console.log(resultSet)
         const notifications = resultSet.rows.map(row => ({
             id: Number(row[0]),
             accountId: Number(row[1]),
