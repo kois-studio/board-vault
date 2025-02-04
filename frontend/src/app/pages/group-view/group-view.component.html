@@ -92,9 +92,11 @@
                             </p>
                         </div>
                     </div>
+                    @if (avgReviewsIndex[game.id]) {
                     <div class="px-3">
                         <review-display [review]="avgReviewsIndex[game.id]" [flexCol]="true" />
                     </div>
+                    }
                 </div>
                 }
             </div>
