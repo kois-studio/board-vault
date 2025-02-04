@@ -11,7 +11,6 @@ export class GamePlaySessionService {
     constructor(private readonly databaseService: DatabaseService) {}
 
     private _parseResultSet(resultSet: ResultSet): Array<GamePlaySessionDto> {
-        console.log(resultSet)
         const gamePlaySessions = resultSet.rows.map(row => ({
             id: Number(row[0]),
             accountId: Number(row[1]),
@@ -50,7 +49,7 @@ export class GamePlaySessionService {
     }
 
     async createGamePlaySession(gamePlaySessionBody: GamePlaySessionDto) {
-        this.LOGGER.log(`Creating gamePlaySesion ${gamePlaySessionBody.accountId} - ${gamePlaySessionBody.gameId}`)
+        this.LOGGER.log('Creating gamePlaySesion')
         try {
             await this.databaseService.createGamePlaySession(gamePlaySessionBody)
 
@@ -59,16 +58,5 @@ export class GamePlaySessionService {
             this.LOGGER.error('Failed to create gamePlay Session', error)
             throw new InternalServerErrorException('Failed to create gamePlay Session')
         }
-    }
-
-    async deleteGamePlaySessionById(id: number): Promise<{ success: boolean }> {
-        this.LOGGER.log(`Deleting gamePlay Session with id ${id}`)
-        const resultSet = await this.databaseService.deleteGamePlaySessionById(id)
-
-        if (resultSet.rowsAffected === 0) {
-            throw new NotFoundException(`GamePlay Session with id ${id} not found`)
-        }
-
-        return { success: true }
     }
 }
