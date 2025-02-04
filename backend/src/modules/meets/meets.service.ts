@@ -21,9 +21,8 @@ export class MeetsService {
             id: Number(row[0]),
             groupId: Number(row[1]),
             createdBy: Number(row[2]),
-            createdAt: String(row[3]),
+            meetDate: String(row[3]),
             isConfirmed: Boolean(row[4]),
-            confirmedAt: row[5],
         }))
 
         console.log(meets, resultSet)
