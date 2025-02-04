@@ -211,7 +211,7 @@ export class DataService {
 
     // #region form-update-profile
 
-    public updateCurrentUserData(requestBody: { email?: string; username?: string; display_name?: string; imageUrl?: string }) {
+    public updateCurrentUserData(requestBody: { email?: string; username?: string; displayName?: string; imageUrl?: string }) {
         const currentUser = this.currentUser()
         if (!currentUser) {
             return

@@ -47,7 +47,7 @@ export class Api {
             email?: string
             password?: string
             username?: string
-            display_name?: string
+            displayName?: string
             imageUrl?: string
         },
     ) {

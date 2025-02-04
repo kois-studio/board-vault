@@ -12,10 +12,10 @@ export type UserType = {
     id: number
     email: string
     username: string
-    display_name: string
+    displayName: string
     imageUrl: string
     createdAt: string
-    is_deleted: boolean
+    isDeleted: boolean
 }
 
 // #region Game
@@ -104,9 +104,8 @@ export type MeetType = {
     id: number
     groupId: number
     createdBy: number
-    createdAt: string
+    meetDate: string
     isConfirmed: boolean
-    confirmedAt: string | null
 }
 
 export type MeetAttendeeType = {

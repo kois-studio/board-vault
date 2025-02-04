@@ -37,7 +37,7 @@
                         <div class="flex items-center p-4">
                             <app-image-profile [imageUrl]="member.imageUrl" />
                             <div class="ml-3">
-                                <p class="font-semibold text-white">{{ member.display_name }}</p>
+                                <p class="font-semibold text-white">{{ member.displayName }}</p>
                                 <p class="text-gray-400 text-sm">
                                     <span>{{ member.username }}</span>
                                     @if (groupData.createdBy === member.id) {
@@ -72,7 +72,7 @@
                     <div class="flex items-center p-4 opacity-40">
                         <app-image-profile [imageUrl]="invitation.toAccount.imageUrl" />
                         <div class="ml-3">
-                            <p class="font-semibold text-white">{{ invitation.toAccount.display_name }}</p>
+                            <p class="font-semibold text-white">{{ invitation.toAccount.displayName }}</p>
                             <p class="text-gray-400 text-sm">{{ invitation.toAccount.username }}</p>
                         </div>
                     </div>

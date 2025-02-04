@@ -75,7 +75,7 @@ export class GroupViewComponent {
             this.api.getGroupMeetings(groupId).subscribe({
                 next: (groupMeetings) => {
                     this.groupMeetings = groupMeetings.sort((a, b) => {
-                        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+                        return new Date(b.meetDate).getTime() - new Date(a.meetDate).getTime()
                     })
                 },
                 error: (error) => {
