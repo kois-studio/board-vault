@@ -21,6 +21,7 @@ export class DataService {
     // --------------------------------------------------------------------------
     //         ARRAYS OF DATA
     // --------------------------------------------------------------------------
+    // `userXYZ` to store the data of the current user
     public userGames: WritableSignal<Array<GameType>> = signal([])
     public userGroups: WritableSignal<Array<GroupWithMembersAndGames>> = signal([])
     public userNotifications: WritableSignal<Array<NotificationType>> = signal([])
@@ -51,6 +52,8 @@ export class DataService {
             if (token && email) {
                 // 1. Get the user data
                 this._getUserData(email)
+                // 2. Get the games list (commmon for all users)
+                this._getGamesList()
             }
         })
     }
@@ -62,11 +65,10 @@ export class DataService {
 
                 // 2. Get the user's groups and invitations
                 this._getUserGroups(userType.id)
-                this._getUserInvitations(userType.id)
                 this._getUserNotifications(userType.id)
+                this._getUserInvitations(userType.id)
                 this._getUserReviews(userType.id)
                 this._getUserMeets(userType.id)
-                this._getGamesList()
             },
             error: (error) => {
                 if (error.status === 401) {
