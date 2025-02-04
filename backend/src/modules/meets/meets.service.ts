@@ -25,7 +25,6 @@ export class MeetsService {
             isConfirmed: Boolean(row[4]),
         }))
 
-        console.log(meets, resultSet)
         const result = meetsSchema.safeParse(meets)
 
         if (!result.success) {
@@ -102,7 +101,6 @@ export class MeetsService {
         // Create gameplay sessions for each game and attendee
         for (const accountId of meetDetails.attendees) {
             for (const gameId of meetDetails.playedGames) {
-                this.LOGGER.log(`Creating gameplay session for accountId ${accountId} and gameId ${gameId}`)
                 await this.gamePlaySessionService.createGamePlaySession({ accountId, gameId, meetId })
             }
         }
