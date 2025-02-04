@@ -16,7 +16,7 @@ export class FormUpdateProfileComponent {
     public userData: UserType | null = null
 
     public updateProfileFormGroup = new FormGroup({
-        display_name: new FormControl(this.userData?.display_name, [
+        displayName: new FormControl(this.userData?.displayName, [
             Validators.required,
             Validators.minLength(4),
             Validators.maxLength(20),
@@ -28,7 +28,7 @@ export class FormUpdateProfileComponent {
         effect(() => {
             this.userData = this.dataService.currentUser()
             this.updateProfileFormGroup.setValue({
-                display_name: this.userData?.display_name,
+                displayName: this.userData?.displayName,
                 imageUrl: this.userData?.imageUrl,
             })
         })
@@ -37,14 +37,14 @@ export class FormUpdateProfileComponent {
     // Form controls
     get disableSubmit() {
         const valuesAreUnchanged =
-            this.updateProfileFormGroup.value.display_name === this.userData?.display_name &&
+            this.updateProfileFormGroup.value.displayName === this.userData?.displayName &&
             this.updateProfileFormGroup.value.imageUrl === this.userData?.imageUrl
         return this.updateProfileFormGroup.invalid || valuesAreUnchanged
     }
 
     // Getters for form controls (shorthands)
-    get display_name() {
-        return this.updateProfileFormGroup.get('display_name')
+    get displayName() {
+        return this.updateProfileFormGroup.get('displayName')
     }
     get imageUrl() {
         return this.updateProfileFormGroup.get('imageUrl')
@@ -52,8 +52,8 @@ export class FormUpdateProfileComponent {
 
     // Input classes
     get displayNameClass() {
-        if (!this.display_name?.dirty && !this.display_name?.touched) return ''
-        return this.display_name?.valid ? 'border-green-500' : 'border-red-500'
+        if (!this.displayName?.dirty && !this.displayName?.touched) return ''
+        return this.displayName?.valid ? 'border-green-500' : 'border-red-500'
     }
     get imageUrlClass() {
         if (!this.imageUrl?.dirty && !this.imageUrl?.touched) return ''
@@ -63,19 +63,19 @@ export class FormUpdateProfileComponent {
     public onCancel() {
         this.isEditingProfileData = false
         this.updateProfileFormGroup.setValue({
-            display_name: this.userData?.display_name,
+            displayName: this.userData?.displayName,
             imageUrl: this.userData?.imageUrl,
         })
     }
 
     public onSave() {
         const userData = this.userData
-        const display_name = this.updateProfileFormGroup.value.display_name
+        const displayName = this.updateProfileFormGroup.value.displayName
         const imageUrl = this.updateProfileFormGroup.value.imageUrl
 
-        if (!userData || !display_name || !imageUrl) return
+        if (!userData || !displayName || !imageUrl) return
 
-        this.dataService.updateCurrentUserData({ display_name, imageUrl })
+        this.dataService.updateCurrentUserData({ displayName, imageUrl })
 
         this.isEditingProfileData = false
     }
