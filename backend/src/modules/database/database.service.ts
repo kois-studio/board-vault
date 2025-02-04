@@ -763,15 +763,8 @@ export class DatabaseService implements OnModuleInit {
 
     async createGamePlaySession(gamePlaySessionDto: GamePlaySessionDto) {
         await this._tursoExecute({
-            sql: 'INSERT INTO GamePlaySession (accountId, gameId) VALUES (?, ?)',
-            args: [gamePlaySessionDto.accountId, gamePlaySessionDto.gameId],
-        })
-    }
-
-    deleteGamePlaySessionById(id: number) {
-        return this._tursoExecute({
-            sql: 'DELETE FROM GamePlaySession WHERE id = ?',
-            args: [id],
+            sql: 'INSERT INTO GamePlaySession (accountId, gameId, meetId) VALUES (?, ?, ?)',
+            args: [gamePlaySessionDto.accountId, gamePlaySessionDto.gameId, gamePlaySessionDto.meetId],
         })
     }
 
