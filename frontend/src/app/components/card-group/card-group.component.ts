@@ -34,7 +34,7 @@ export class CardGroupComponent {
     private updateLastMeeting() {
         const sortedMeets = this.userMeets
             .filter((meet) => meet.groupId === this.group.id)
-            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+            .sort((a, b) => new Date(b.meetDate).getTime() - new Date(a.meetDate).getTime())
 
         this.lastMeeting = sortedMeets.length >= 1 ? sortedMeets[0] : null
     }
@@ -44,7 +44,7 @@ export class CardGroupComponent {
             return null
         }
         const today = new Date()
-        const lastMeetingDate = new Date(this.lastMeeting.createdAt)
+        const lastMeetingDate = new Date(this.lastMeeting.meetDate)
 
         const isSameDay =
             lastMeetingDate.getFullYear() === today.getFullYear() &&
