@@ -13,15 +13,27 @@ turso db list # to see the <database-name>
 turso db shell <database-name> .dump > dump.sql
 ```
 
+## EMPTY DB
+
+To delete all tables in the DB (in case of a Table change for example) run:
+
+```shell
+turso db shell <database-name> "SELECT 'DROP TABLE ' || name || ';' FROM sqlite_master WHERE type = 'table';" > drop_tables.sql
+turso db shell <database-name> < drop_tables.sql
+```
+
 ## RESTORE DUMP
 
-Create a brand new DB in Turso. Then create a `dump.sql` file with the content below and run:
+Create a brand new DB in Turso or delete the tables from a existing one.
+Then import the `dump.sql` file:
 
 ```shell
 turso db shell <database-name> < dump.sql
 ```    
 
-Copy this inside the `dump.sql` file before.
+## DUMP EXAMPLE (for development)
+
+Copy this inside the `dump.sql` file and import it.
 
 ```sql
 PRAGMA foreign_keys=OFF;
