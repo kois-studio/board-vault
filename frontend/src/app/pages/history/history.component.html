@@ -9,6 +9,11 @@
         <hr />
 
         <ul class="grid grid-cols-4 gap-4 mt-4">
+            @for (item of gamesHistory; track $index) {
+                <div>
+                    {{item.gameData.title}}
+                </div>
+            }
         </ul>
     </section>
 </container-wrapper>

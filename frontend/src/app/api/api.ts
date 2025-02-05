@@ -86,6 +86,10 @@ export class Api {
         return this.http.get<Array<NotificationType>>(`${this.url}/users/${accountId}/notifications`)
     }
 
+    getUserGamesHistory(accountId: number) {
+        return this.http.get<Array<GameReviewType>>(`${this.url}/users/${accountId}/history/games`)
+    }
+
     // #region groups
 
     getGroupInvitations(groupId: number) {
