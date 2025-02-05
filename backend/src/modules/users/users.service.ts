@@ -11,6 +11,7 @@ import { GroupMembershipsService } from '../group-memberships/group-memberships.
 import { GameReviewAndGameData } from '../../common/types/game-review.type'
 import { MeetsService } from '../meets/meets.service'
 import { MeetDto } from '../../common/types/meet.type'
+import { GamePlayHistoryDto } from 'src/common/types/game-play-session.type'
 
 @Injectable()
 export class UsersService {
@@ -231,6 +232,17 @@ export class UsersService {
             this.LOGGER.error('Failed to update games for user', error)
             throw new NotFoundException('Failed to update games for user')
         }
+    }
+
+    async getUserGamesHistory(userId: number): Promise<Array<GamePlayHistoryDto>> {
+        this.LOGGER.log(`Getting games history for user ${userId}`)
+        const resultSet = await this.databaseService.getUserGamesHistory(userId)
+
+        return resultSet.rows.map(row => ({
+            accountId: Number(row[0]),
+            gameData: JSON.parse(String(row[1])) as GameDto,
+            meetData: JSON.parse(String(row[2])) as MeetDto,
+        }))
     }
 
     async leaveGroup(userId: number, groupId: number): Promise<{ success: boolean }> {
