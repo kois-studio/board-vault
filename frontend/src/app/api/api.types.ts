@@ -98,6 +98,14 @@ export type GameReviewType = {
     gameData: GameType
 }
 
+// #region GamePlaySession
+
+export type GamePlayHistoryType = {
+    accountId: number
+    gameData: GameType
+    meetData: MeetType
+}
+
 // #region Meeting
 
 export type MeetType = {
