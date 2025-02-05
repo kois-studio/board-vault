@@ -70,32 +70,32 @@ CREATE TABLE IF NOT EXISTS Game (
     minPlayers INTEGER,
     maxPlayers INTEGER
 );
-INSERT INTO Game VALUES(1,'4 en raya','https://th.bing.com/th/id/OIP.NBji9WnY4r87KmccdUEmlwHaHa?w=192&h=192&c=7&r=0&o=5&pid=1.7',5,2,2);
+INSERT INTO Game VALUES(1,'4 en raya','https://th.bing.com/th/id/OIP.iFUaSb7A9zbN8FDMS7iFoAHaFj?rs=1&pid=ImgDetMain',5,2,2);
 INSERT INTO Game VALUES(2,'Arre Unicornio','https://media.zacatrus.com/catalog/product/cache/f22f70ef8ee260256901b557cf6bf49a/h/u/huelicorne_1_.jpg',30,2,8);
 INSERT INTO Game VALUES(3,'Backgammon','https://th.bing.com/th/id/R.90c3fd5a43919242e8cd008613530dbe?rik=VxmqiRuHOBrt%2bw&riu=http%3a%2f%2ftechdoorblog.weebly.com%2fuploads%2f1%2f3%2f0%2f1%2f130136186%2f610bozupxml-sl1024-ccccccc_orig.jpg&ehk=oxswxAfqc3XydB9ZAH%2bF%2fdEqP%2fHRJoqNIz934RxPueM%3d&risl=&pid=ImgRaw&r=0',60,2,2);
 INSERT INTO Game VALUES(4,'Baraja Española','https://www.asesmus.com/wp-content/uploads/2022/08/71Y5q39MbfL._AC_SL1309_.jpg',20,2,8);
 INSERT INTO Game VALUES(5,'Bote salvavidas','https://th.bing.com/th/id/OIP.m6LRhkBEYBImep08G2JaDAHaFj?pid=ImgDet&rs=1',60,4,8);
 INSERT INTO Game VALUES(6,'Carcassonne','https://th.bing.com/th/id/OIP.Nov0duOiE7Mh5CjeKhbGBgHaE8?w=244&h=180&c=7&r=0&o=5&pid=1.7',120,2,8);
-INSERT INTO Game VALUES(7,'Ciudadelas','https://th.bing.com/th/id/R.2a22f47ceab0f39bd123afb59eae194b?rik=OR5wboES7cP97A&pid=ImgRaw&r=0',30,2,8);
+INSERT INTO Game VALUES(7,'Ciudadelas','https://ecsmedia.pl/c/asmodee-classic-ciudadelas-board-game-spanish-version-edge-entertainment-edgctd01-assorted-colour-model-b-iext139251342.jpg',30,2,8);
 INSERT INTO Game VALUES(8,'Cortex','https://multimedia.dideco.es/img/juego/EAN_3770004936052-5.jpg',15,2,6);
 INSERT INTO Game VALUES(9,'DOS','https://th.bing.com/th/id/OIP.fTvlrZclGbcjKy8d7nhHZAHaD4?w=311&h=180&c=7&r=0&o=5&pid=1.7',20,2,12);
 INSERT INTO Game VALUES(10,'Dixit','https://m.media-amazon.com/images/I/71FMZqq4ZtL.jpg',30,3,8);
 INSERT INTO Game VALUES(11,'Dobble','https://www.jeuxdenim.be/images/jeux/Dobble_large01.jpg',15,2,8);
-INSERT INTO Game VALUES(12,'Five Alive','https://shop.hasbro.com/_next/image?url=https%3A%2F%2Fwww.hasbro.com%2Fcommon%2Fproductimages%2Fes_ES%2FE88849455863402891467E2D8B61DE43%2F65fb64a2039648648ec1d6829b16ddcd30074b38.jpg&w=640&q=75',10,2,6);
+INSERT INTO Game VALUES(12,'Five Alive','https://www.toys-shop.gr/190649-large_default/five-alive-card-game.jpg',10,2,6);
 INSERT INTO Game VALUES(13,'Happy Little Dinosaurs','https://teeturtle-s3-web.s3.amazonaws.com/accounts/2/uploads/HLD-Purchase-Game-1_Boxes_1000x1000-DD.png',30,2,4);
 INSERT INTO Game VALUES(14,'Here to Slay','https://th.bing.com/th/id/OIP.X5UdB-lMh_4wBZ2Ng4dBfAHaCm?w=315&h=122&c=7&r=0&o=5&pid=1.7',40,2,10);
 INSERT INTO Game VALUES(15,'Hundir la flota','https://th.bing.com/th/id/R.8b249f3feedccc098af96e1b2c8efbbf?rik=r32aZMn8GJIcvQ&pid=ImgRaw&r=0',20,2,2);
-INSERT INTO Game VALUES(16,'Joking Hazard','https://th.bing.com/th/id/OIP.oNOfxhiKuQ3tE3qn7kK_2QHaEJ?pid=ImgDet&rs=1',40,3,10);
+INSERT INTO Game VALUES(16,'Joking Hazard','https://muggles.cards/wp-content/uploads/2021/11/Joking-Hazard-Card-Combination-4.jpg',40,3,10);
 INSERT INTO Game VALUES(17,'Jungle Speed','https://media.zacatrus.com/catalog/product/cache/f22f70ef8ee260256901b557cf6bf49a/j/u/jungle_speed.jpg',15,3,8);
 INSERT INTO Game VALUES(18,'Love Letter','https://whatsericplaying.files.wordpress.com/2021/01/cards-2-3.jpg?w=1024',15,2,6);
 INSERT INTO Game VALUES(19,'Monopoly','https://m.media-amazon.com/images/I/81qy+MXuxDL._AC_UF894,1000_QL80_.jpg',120,2,6);
-INSERT INTO Game VALUES(20,'Pocket Madness','https://th.bing.com/th/id/OIP.y92E0oJAnKHqqgC-cXAGmgHaEg?pid=ImgDet&rs=1',40,2,4);
+INSERT INTO Game VALUES(20,'Pocket Madness','https://ludessimo.fr/wp-content/uploads/2023/03/a_01_7621-pocket-madness-fun-forge.jpg',40,2,4);
 INSERT INTO Game VALUES(21,'Portal de Molthar','https://th.bing.com/th/id/OIP.KzmCcD-E_Dnn5URDw_FpZgHaD4?pid=ImgDet&rs=1',30,2,8);
 INSERT INTO Game VALUES(22,'Rummikub','https://th.bing.com/th/id/OIP.33TNzpA-_YQtjBLgJALtRAHaFH?w=250&h=180&c=7&r=0&o=5&pid=1.7',60,2,8);
 INSERT INTO Game VALUES(23,'Samurai Sword','https://m.media-amazon.com/images/I/61vNcwnTvLL._AC_UF894,1000_QL80_.jpg',15,3,7);
 INSERT INTO Game VALUES(24,'Sushi Go!','https://th.bing.com/th/id/R.5943d256d777f0d9ac7be793db79b642?rik=dSfVsxSjJI0MIg&pid=ImgRaw&r=0',30,2,5);
 INSERT INTO Game VALUES(25,'The Grimwood','https://img.fruugo.com/product/1/84/849256841_max.jpg',45,2,6);
-INSERT INTO Game VALUES(26,'Tic Tac K.O.','https://12ax7web.s3.amazonaws.com/accounts/1/uploads/TTKO-Landing-Page-01-PurchaseGame_V2.png',30,2,4);
+INSERT INTO Game VALUES(26,'Tic Tac K.O.','https://th.bing.com/th/id/OIP.s1Hc0oIgRo_7N2JH23HfVgHaKa?rs=1&pid=ImgDetMain',30,2,4);
 INSERT INTO Game VALUES(27,'Time Bomb','https://edicionesprimigenio.com/wp-content/uploads/2017/05/pic3554020.jpg',20,4,8);
 INSERT INTO Game VALUES(28,'Tiro al pato','https://th.bing.com/th/id/OIP.5OlGiMwBO-_2K6QefJFeegHaHa?pid=ImgDet&rs=1',30,2,8);
 INSERT INTO Game VALUES(29,'Tripulación','https://www.theboardgamefamily.com/wp-content/uploads/2020/03/Crew_Choices.jpg',7,2,5);
