@@ -16,11 +16,7 @@ export class FormUpdateProfileComponent {
     public userData: UserType | null = null
 
     public updateProfileFormGroup = new FormGroup({
-        displayName: new FormControl(this.userData?.displayName, [
-            Validators.required,
-            Validators.minLength(4),
-            Validators.maxLength(20),
-        ]),
+        displayName: new FormControl(this.userData?.displayName, [Validators.required, Validators.minLength(4), Validators.maxLength(20)]),
         imageUrl: new FormControl(this.userData?.imageUrl, [Validators.required, urlValidator()]),
     })
 
