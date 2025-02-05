@@ -9,6 +9,7 @@ export const userSchema = z.object({
     imageUrl: z.string().url(),
     createdAt: z.string().refine(date => !isNaN(Date.parse(date)), { message: 'Invalid date format' }),
     isDeleted: z.boolean(),
+    isAdmin: z.boolean(),
 })
 
 export const usersSchema = z.array(userSchema)

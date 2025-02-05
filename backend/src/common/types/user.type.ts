@@ -28,6 +28,9 @@ export class UserCompleteDto {
 
     @ApiProperty({ example: false })
     isDeleted: boolean
+
+    @ApiProperty({ example: false })
+    isAdmin: boolean
 }
 
 /**
@@ -38,7 +41,7 @@ export class UserGetDto extends OmitType(UserCompleteDto, ['password']) {}
 /**
  * POST requests --> no db generated props
  */
-export class CreateUserBody extends OmitType(UserCompleteDto, ['id', 'createdAt', 'isDeleted']) {}
+export class CreateUserBody extends OmitType(UserCompleteDto, ['id', 'createdAt', 'isDeleted', 'isAdmin']) {}
 
 /**
  * PUT requests --> editable fields
