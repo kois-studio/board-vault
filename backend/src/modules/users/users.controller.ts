@@ -10,6 +10,7 @@ import { NotificationDto } from '../../common/types/notification.type'
 import { UserOwnershipGuard } from '../../common/guards/ownership.guard'
 import { GameReviewAndGameData } from '../../common/types/game-review.type'
 import { MeetDto } from '../../common/types/meet.type'
+import { GamePlayHistoryDto } from 'src/common/types/game-play-session.type'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('users')
@@ -116,6 +117,13 @@ export class UsersController {
     getUserInvitationsReceived(@Param('userId', ParseIntPipe) userId: number) {
         // TODO: in a future, trim unnecessary data from the response
         return this.usersService.getUserInvitationsReceived(userId)
+    }
+
+    @Get('/:userId/history/games')
+    @ApiOperation({ summary: 'Get games history for user' })
+    @ApiResponse({ status: 200, type: [GamePlayHistoryDto] })
+    getUserGamesHistory(@Param('userId', ParseIntPipe) userId: number) {
+        return this.usersService.getUserGamesHistory(userId)
     }
 
     @UseGuards(UserOwnershipGuard)

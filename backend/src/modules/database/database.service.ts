@@ -273,6 +273,35 @@ export class DatabaseService implements OnModuleInit {
         }
     }
 
+    getUserGamesHistory(userId: number) {
+        return this._tursoExecute({
+            sql: `SELECT 
+            gps.accountId,
+            json_object(
+                'id', g.id,
+                'title', g.title,
+                'imageUrl', g.imageUrl,
+                'gameAvgDuration', g.gameAvgDuration,
+                'minPlayers', g.minPlayers,
+                'maxPlayers', g.maxPlayers
+            ) AS gameData,
+            json_object(
+                'id', m.id,
+                'groupId', m.groupId,
+                'createdBy', m.createdBy,
+                'meetDate', m.meetDate,
+                'isConfirmed', m.isConfirmed
+            ) AS meetData
+            FROM GamePlaySession gps
+            JOIN Game g ON gps.gameId = g.id
+            JOIN Meet m ON gps.meetId = m.id
+            WHERE gps.accountId = ?
+            ORDER BY m.meetDate DESC;
+            `,
+            args: [userId],
+        })
+    }
+
     // #region Group
 
     getGroups() {
