@@ -10,6 +10,7 @@ import { GroupEditComponent } from './pages/group-edit/group-edit.component'
 import { GroupLeaveComponent } from './pages/group-leave/group-leave.component'
 import { GroupNewComponent } from './pages/group-new/group-new.component'
 import { GroupViewComponent } from './pages/group-view/group-view.component'
+import { HistoryComponent } from './pages/history/history.component'
 import { LandingComponent } from './pages/landing/landing.component'
 import { LoginComponent } from './pages/login/login.component'
 import { MeetConfirmComponent } from './pages/meet-confirm/meet-confirm.component'
@@ -43,6 +44,7 @@ export const routes: Routes = [
             { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
             { path: 'games', component: GamesComponent, canActivate: [AuthGuard] },
             { path: 'reviews', component: ReviewComponent, canActivate: [AuthGuard] },
+            { path: 'history', component: HistoryComponent, canActivate: [AuthGuard] },
             { path: 'group/:groupId', component: GroupViewComponent, canActivate: [AuthGuard] },
             { path: 'meets/:meetId', component: MeetViewComponent, canActivate: [AuthGuard] },
         ],
