@@ -9,13 +9,13 @@ import { DataService } from '../../core/services/data.service'
     imports: [CardGroupComponent, RouterLink],
 })
 export class DashboardComponent {
-    public userData: ReturnType<typeof this.dataService.currentUser> = null
+    private _userData: ReturnType<typeof this.dataService.currentUser> = null
     public userGroups: ReturnType<typeof this.dataService.userGroups> = []
     public invitationsGroupIndex: ReturnType<typeof this.dataService.invitationsGroupIndex> = {}
 
     constructor(private readonly dataService: DataService) {
         effect(() => {
-            this.userData = this.dataService.currentUser()
+            this._userData = this.dataService.currentUser()
             this.userGroups = this.dataService.userGroups()
             this.invitationsGroupIndex = this.dataService.invitationsGroupIndex()
         })

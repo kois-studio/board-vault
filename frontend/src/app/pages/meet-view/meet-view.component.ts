@@ -25,6 +25,8 @@ import type { Nullable } from '../../core/types/commons.type'
     templateUrl: 'meet-view.component.html',
 })
 export class MeetViewComponent {
+    public loaded = false
+
     // DataService data (filled on init -> effect)
     public userData: ReturnType<typeof this.dataService.currentUser> = null
     private userGroups: ReturnType<typeof this.dataService.userGroups> = []
@@ -64,6 +66,8 @@ export class MeetViewComponent {
 
             // After getting group data, index all reviews by gameId
             this.#indexReviews(groupData)
+
+            this.loaded = true
         })
     }
 
