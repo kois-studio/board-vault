@@ -33,6 +33,7 @@ export class UsersService {
             displayName: String(row[5]),
             createdAt: String(row[6]),
             isDeleted: Boolean(row[7]),
+            isAdmin: Number(row[8]) === 1 ? true : false,
         }))
 
         const result = usersSchema.safeParse(users)
