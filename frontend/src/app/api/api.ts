@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { environment } from '../../environments/environment'
 import type {
+    GamePlayHistoryType,
     GameReviewType,
     GameType,
     GroupWithMembersAndGames,
@@ -87,7 +88,7 @@ export class Api {
     }
 
     getUserGamesHistory(accountId: number) {
-        return this.http.get<Array<GameReviewType>>(`${this.url}/users/${accountId}/history/games`)
+        return this.http.get<Array<GamePlayHistoryType>>(`${this.url}/users/${accountId}/history/games`)
     }
 
     // #region groups
