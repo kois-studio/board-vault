@@ -8,10 +8,13 @@
         <h2 class="text-xl font-semibold mb-4">Select the attendees</h2>
         <hr />
 
-        <ul class="grid grid-cols-4 gap-4 mt-4">
+        <ul class="grid gap-4 mt-4">
             @for (item of gamesHistory; track $index) {
-                <div>
-                    {{item.gameData.title}}
+                <div class="bg-zinc-800">
+                    <p>{{ item.gameData.title }}</p>
+                    <img [src]="item.gameData.imageUrl" class="w-16 h-16" />
+                    <p>{{ item.meetData.meetDate | customDate }}</p>
+                    <p>{{ item.meetData.groupId }} group id</p>
                 </div>
             }
         </ul>
