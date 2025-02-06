@@ -2,15 +2,16 @@ import { CommonModule } from '@angular/common'
 import { Component, effect } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { Api } from '../../api/api'
-import { GameReviewType } from '../../api/api.types'
+import { GamePlayHistoryType, GameReviewType } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { TitleSubtitleComponent } from '../../components/ui/title-subtitle/title-subtitle.component'
+import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { DataService } from '../../core/services/data.service'
 
 @Component({
     standalone: true,
-    imports: [CommonModule, TitleSubtitleComponent, ContainerWrapperComponent],
+    imports: [CommonModule, TitleSubtitleComponent, ContainerWrapperComponent, CustomDatePipe],
     templateUrl: 'history.component.html',
 })
 export class HistoryComponent {
@@ -20,7 +21,7 @@ export class HistoryComponent {
     public userData: ReturnType<typeof this.dataService.currentUser> = null
 
     // Component state
-    public gamesHistory: Array<GameReviewType> = []
+    public gamesHistory: Array<GamePlayHistoryType> = []
 
     constructor(
         private readonly api: Api,
