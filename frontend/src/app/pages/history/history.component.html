@@ -5,32 +5,38 @@
 
     <!-- Attendees -->
     <section class="p-4">
-        <h2 class="text-xl font-semibold mb-4">Select the attendees</h2>
+        <h2 class="text-xl font-semibold mb-4">Game History</h2>
         <hr />
 
-        <ul class="grid grid-cols-2 gap-4 mt-4">
-            @for (item of gamesHistory; track $index) {
-                <div class="bg-zinc-800 rounded-lg p-4 flex gap-4 hover:bg-zinc-700 transition-colors cursor-pointer">
-                    <!-- Game image -->
-                    <img [src]="item.gameData.imageUrl" 
-                         [alt]="item.gameData.title"
-                         class="w-24 h-24 object-cover rounded-lg" />
+        @if (gamesHistory.length === 0) {
+            <div class="text-center py-8 text-zinc-400">
+                <p>No games played yet</p>
+            </div>
+        } @else {
+            <ul class="grid grid-cols-2 gap-4 mt-4">
+                @for (item of gamesHistory; track $index) {
+                    <div class="bg-zinc-800 rounded-lg p-4 flex gap-4 hover:bg-zinc-700 transition-colors cursor-pointer">
+                        <!-- Game image -->
+                        <img [src]="item.gameData.imageUrl" 
+                             [alt]="item.gameData.title"
+                             loading="lazy"
+                             class="w-24 h-24 object-cover rounded-lg" />
 
-                    <!-- Game info -->
-                    <div class="flex flex-col justify-between flex-1">
-                        <div>
-                            <h3 class="text-xl font-semibold mb-1">{{ item.gameData.title }}</h3>
-                            <p class="text-zinc-400 text-sm">
-                                Played {{ item.meetData.meetDate | customDate }}
-                            </p>
-                        </div>
-
-                        <div class="flex justify-between items-end">
-                            <!-- Meet info -->
-                            <div class="text-sm text-zinc-400">
-                                <p>Group #{{ item.meetData.groupId }}</p>
-                                <p>Meet #{{ item.meetData.id }}</p>
+                        <!-- Game info -->
+                        <div class="flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="text-xl font-semibold mb-1">{{ item.gameData.title }}</h3>
+                                <p class="text-zinc-400 text-sm">
+                                    Played {{ item.meetData.meetDate | customDate }}
+                                </p>
                             </div>
+
+                            <div class="flex justify-between items-end">
+                                <!-- Meet info -->
+                                <div class="text-sm text-zinc-400">
+                                    <p>Group #{{ item.meetData.groupId }}</p>
+                                    <p>Meet #{{ item.meetData.id }}</p>
+                                </div>
 
                             <!-- Game stats -->
                             <div class="text-right text-sm">
@@ -46,5 +52,6 @@
                 </div>
             }
         </ul>
+    }
     </section>
 </container-wrapper>
