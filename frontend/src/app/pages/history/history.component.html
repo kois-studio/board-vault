@@ -8,13 +8,41 @@
         <h2 class="text-xl font-semibold mb-4">Select the attendees</h2>
         <hr />
 
-        <ul class="grid gap-4 mt-4">
+        <ul class="grid grid-cols-2 gap-4 mt-4">
             @for (item of gamesHistory; track $index) {
-                <div class="bg-zinc-800">
-                    <p>{{ item.gameData.title }}</p>
-                    <img [src]="item.gameData.imageUrl" class="w-16 h-16" />
-                    <p>{{ item.meetData.meetDate | customDate }}</p>
-                    <p>{{ item.meetData.groupId }} group id</p>
+                <div class="bg-zinc-800 rounded-lg p-4 flex gap-4 hover:bg-zinc-700 transition-colors cursor-pointer">
+                    <!-- Game image -->
+                    <img [src]="item.gameData.imageUrl" 
+                         [alt]="item.gameData.title"
+                         class="w-24 h-24 object-cover rounded-lg" />
+
+                    <!-- Game info -->
+                    <div class="flex flex-col justify-between flex-1">
+                        <div>
+                            <h3 class="text-xl font-semibold mb-1">{{ item.gameData.title }}</h3>
+                            <p class="text-zinc-400 text-sm">
+                                Played {{ item.meetData.meetDate | customDate }}
+                            </p>
+                        </div>
+
+                        <div class="flex justify-between items-end">
+                            <!-- Meet info -->
+                            <div class="text-sm text-zinc-400">
+                                <p>Group #{{ item.meetData.groupId }}</p>
+                                <p>Meet #{{ item.meetData.id }}</p>
+                            </div>
+
+                            <!-- Game stats -->
+                            <div class="text-right text-sm">
+                                <p class="text-green-400">
+                                    <span class="font-semibold">4.5</span>/5 rating
+                                </p>
+                                <p class="text-zinc-400">
+                                    Played with 5 players
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             }
         </ul>
