@@ -15,8 +15,19 @@ import type {
 import { ToastService } from '../../components/toast/toast.service'
 import { LocalStorageService } from './local-storage.service'
 
+enum LOADING_KEYS {
+    USER_DATA = 'userData',
+    GAMES_LIST = 'gamesList',
+    USER_INVITATIONS = 'userInvitations',
+    USER_NOTIFICATIONS = 'userNotifications',
+    USER_REVIEWS = 'userReviews',
+    USER_GROUPS = 'userGroups',
+    USER_MEETS = 'userMeets',
+}
+
 @Injectable({ providedIn: 'root' })
 export class DataService {
+    public isLoading: WritableSignal<Record<string, boolean>> = signal({})
     public currentUser: WritableSignal<null | UserType> = signal(null)
     // --------------------------------------------------------------------------
     //         ARRAYS OF DATA
@@ -58,17 +69,22 @@ export class DataService {
         })
     }
 
+    private _setLoading(key: LOADING_KEYS, loading: boolean) {
+        this.isLoading.update(state => ({ ...state, [key]: loading }))
+    }
+
     private _getUserData(email: string) {
+        this._setLoading(LOADING_KEYS.USER_DATA, true)
         this.api.getUserByEmail(email).subscribe({
             next: (userType) => {
                 this.currentUser.set(userType)
 
-                // 2. Get the user's groups and invitations
                 this._getUserGroups(userType.id)
                 this._getUserNotifications(userType.id)
                 this._getUserInvitations(userType.id)
                 this._getUserReviews(userType.id)
                 this._getUserMeets(userType.id)
+                this._setLoading(LOADING_KEYS.USER_DATA, false)
             },
             error: (error) => {
                 if (error.status === 401) {
@@ -76,10 +92,12 @@ export class DataService {
                     this.localStorageService.clear()
                     this.currentUser.set(null)
                     this.router.navigate(['/login'])
+                    this._setLoading(LOADING_KEYS.USER_DATA, false)
                     return
                 }
 
                 this.toastService.error("Error retrieving user's data, login again")
+                this._setLoading(LOADING_KEYS.USER_DATA, false)
             },
         })
     }
