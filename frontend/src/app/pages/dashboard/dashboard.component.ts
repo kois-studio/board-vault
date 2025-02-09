@@ -1,12 +1,12 @@
-import { CommonModule } from '@angular/common'
 import { Component, effect } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { CardGroupComponent } from '../../components/card-group/card-group.component'
+import { SkeletonCardGroupComponent } from '../../components/skeletons/skeleton-card-group/skeleton-card-group.component'
 import { DataService } from '../../core/services/data.service'
 
 @Component({
     standalone: true,
-    imports: [CardGroupComponent, RouterLink, CommonModule],
+    imports: [CardGroupComponent, RouterLink, SkeletonCardGroupComponent],
     templateUrl: 'dashboard.component.html',
 })
 export class DashboardComponent {
