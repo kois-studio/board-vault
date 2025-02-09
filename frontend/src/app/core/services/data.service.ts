@@ -159,9 +159,16 @@ export class DataService {
         this.api
             .getUserGroups(userId)
             .pipe(
+                // If no groupIds, loading=false because there is nothing to fetch
+                tap(groupIds => {
+                    if (groupIds.length === 0) {
+                        this._setLoading(LOADING_KEYS.USER_GROUPS, false)
+                    }
+                }),
                 catchError((err) => {
                     this.toastService.error("Error retrieving user's groups")
-                    return of([]) // Return an empty array to allow the process to continue
+                    this._setLoading(LOADING_KEYS.USER_GROUPS, false)
+                    return of([])
                 }),
                 concatMap((groupIds) =>
                     from(groupIds).pipe(
