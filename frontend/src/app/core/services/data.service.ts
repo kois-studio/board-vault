@@ -27,8 +27,20 @@ export enum LOADING_KEYS {
 
 @Injectable({ providedIn: 'root' })
 export class DataService {
-    public isLoading: WritableSignal<Record<string, boolean>> = signal({})
+    // current user data, null if not logged in
     public currentUser: WritableSignal<null | UserType> = signal(null)
+
+    // loading index of operations
+    public loadingStatesIndex: WritableSignal<Record<string, boolean>> = signal({
+        [LOADING_KEYS.USER_DATA]: true,
+        [LOADING_KEYS.GAMES_LIST]: true,
+        [LOADING_KEYS.USER_INVITATIONS]: true,
+        [LOADING_KEYS.USER_NOTIFICATIONS]: true,
+        [LOADING_KEYS.USER_REVIEWS]: true,
+        [LOADING_KEYS.USER_GROUPS]: true,
+        [LOADING_KEYS.USER_MEETS]: true,
+    })
+
     // --------------------------------------------------------------------------
     //         ARRAYS OF DATA
     // --------------------------------------------------------------------------
@@ -57,20 +69,23 @@ export class DataService {
         private readonly toastService: ToastService,
         private readonly localStorageService: LocalStorageService,
     ) {
-        effect(() => {
-            const token = this.localStorageService.getToken()
-            const email = this.localStorageService.getItem('email')
-            if (token && email) {
-                // 1. Get the user data
-                this._getUserData(email)
-                // 2. Get the games list (commmon for all users)
-                this._getGamesList()
-            }
-        })
+        effect(
+            () => {
+                const token = this.localStorageService.getToken()
+                const email = this.localStorageService.getItem('email')
+                if (token && email) {
+                    // 1. Get the user data
+                    this._getUserData(email)
+                    // 2. Get the games list (commmon for all users)
+                    this._getGamesList()
+                }
+            },
+            { allowSignalWrites: true },
+        )
     }
 
     private _setLoading(key: LOADING_KEYS, loading: boolean) {
-        this.isLoading.update(state => ({ ...state, [key]: loading }))
+        this.loadingStatesIndex.update((state) => ({ ...state, [key]: loading }))
     }
 
     private _getUserData(email: string) {
@@ -79,11 +94,13 @@ export class DataService {
             next: (userType) => {
                 this.currentUser.set(userType)
 
+                // GET derived data
                 this._getUserGroups(userType.id)
                 this._getUserNotifications(userType.id)
                 this._getUserInvitations(userType.id)
                 this._getUserReviews(userType.id)
                 this._getUserMeets(userType.id)
+
                 this._setLoading(LOADING_KEYS.USER_DATA, false)
             },
             error: (error) => {
@@ -147,6 +164,7 @@ export class DataService {
     }
 
     private _getUserGroups(userId: number) {
+        this._setLoading(LOADING_KEYS.USER_GROUPS, true)
         this.api
             .getUserGroups(userId)
             .pipe(
@@ -194,7 +212,14 @@ export class DataService {
                     ),
                 ),
             )
-            .subscribe()
+            .subscribe({
+                next: () => {
+                    this._setLoading(LOADING_KEYS.USER_GROUPS, false)
+                },
+                error: () => {
+                    this._setLoading(LOADING_KEYS.USER_GROUPS, false)
+                },
+            })
     }
 
     private _getUserMeets(userId: number) {
