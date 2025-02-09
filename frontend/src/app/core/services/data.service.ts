@@ -13,17 +13,8 @@ import type {
     UserType,
 } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
+import { LOADING_KEYS } from '../enums/loading-keys-enum'
 import { LocalStorageService } from './local-storage.service'
-
-export enum LOADING_KEYS {
-    USER_DATA = 'userData',
-    GAMES_LIST = 'gamesList',
-    USER_INVITATIONS = 'userInvitations',
-    USER_NOTIFICATIONS = 'userNotifications',
-    USER_REVIEWS = 'userReviews',
-    USER_GROUPS = 'userGroups',
-    USER_MEETS = 'userMeets',
-}
 
 @Injectable({ providedIn: 'root' })
 export class DataService {
