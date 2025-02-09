@@ -15,7 +15,7 @@ import type {
 import { ToastService } from '../../components/toast/toast.service'
 import { LocalStorageService } from './local-storage.service'
 
-enum LOADING_KEYS {
+export enum LOADING_KEYS {
     USER_DATA = 'userData',
     GAMES_LIST = 'gamesList',
     USER_INVITATIONS = 'userInvitations',
