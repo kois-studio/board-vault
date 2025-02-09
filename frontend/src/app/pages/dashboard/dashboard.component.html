@@ -7,7 +7,9 @@
     </div>
 
     <section class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-40">
-        @if (userGroups.length === 0) {
+        @if (loadingStatesIndex['userGroups'] === true) {
+            <p class="text-gray-400 text-center col-span-2">Loading groups...</p>
+        } @else if (userGroups.length === 0) {
             <p class="text-gray-400 text-center col-span-2">You don't have any groups yet.</p>
         } @else {
             @for (group of userGroups; track $index) {
