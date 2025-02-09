@@ -8,12 +8,14 @@
 
     <section class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-40">
         @if (loadingStatesIndex['userGroups'] === true) {
-            <p class="text-gray-400 text-center col-span-2">Loading groups...</p>
+            @for (item of [1,2]; track $index) {
+                <app-skeleton-card-group />
+            }
         } @else if (userGroups.length === 0) {
             <p class="text-gray-400 text-center col-span-2">You don't have any groups yet.</p>
         } @else {
             @for (group of userGroups; track $index) {
-            <app-card-group [group]="group" [invitations]="invitationsGroupIndex[group.id]" />
+                <app-card-group [group]="group" [invitations]="invitationsGroupIndex[group.id]" />
             }
         }
     </section>
