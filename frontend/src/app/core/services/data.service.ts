@@ -160,7 +160,7 @@ export class DataService {
             .getUserGroups(userId)
             .pipe(
                 // If no groupIds, loading=false because there is nothing to fetch
-                tap(groupIds => {
+                tap((groupIds) => {
                     if (groupIds.length === 0) {
                         this._setLoading(LOADING_KEYS.USER_GROUPS, false)
                     }

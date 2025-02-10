@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { Component, effect } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { Api } from '../../api/api'
-import { GamePlayHistoryType, GameReviewType } from '../../api/api.types'
+import { GamePlayHistoryType } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { TitleSubtitleComponent } from '../../components/ui/title-subtitle/title-subtitle.component'
@@ -22,6 +22,7 @@ export class HistoryComponent {
 
     // Component state
     public gamesHistory: Array<GamePlayHistoryType> = []
+    public groupedGames: Record<string, Array<GamePlayHistoryType>> = {}
 
     constructor(
         private readonly api: Api,
@@ -42,6 +43,7 @@ export class HistoryComponent {
             this.api.getUserGamesHistory(this.userData.id).subscribe({
                 next: (res) => {
                     this.gamesHistory = res
+                    this.groupedGames = this._groupGamesByDate(res)
                 },
                 error: () => {
                     this.toastService.error('Error fetching user history')
@@ -50,5 +52,19 @@ export class HistoryComponent {
 
             this.loaded = true
         })
+    }
+
+    private _groupGamesByDate(games: Array<GamePlayHistoryType>): Record<string, Array<GamePlayHistoryType>> {
+        return games.reduce(
+            (groups, game) => {
+                const date = new Date(game.meetData.meetDate).toLocaleDateString()
+                if (!groups[date]) {
+                    groups[date] = []
+                }
+                groups[date].push(game)
+                return groups
+            },
+            {} as Record<string, Array<GamePlayHistoryType>>,
+        )
     }
 }
