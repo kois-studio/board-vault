@@ -641,7 +641,7 @@ export class DataService {
 
                 // 3.
                 this.toastService.success('New meeting created for today!')
-                this.router.navigate([`/meets/${res.meetId}`])
+                this.router.navigate([`/group/${groupId}`])
             },
             error: () => {
                 this.toastService.error('Error creating meeting')
