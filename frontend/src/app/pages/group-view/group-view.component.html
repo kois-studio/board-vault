@@ -116,19 +116,19 @@
             <div class="bg-zinc-800 rounded-lg p-4">
                 <!-- Header: Date and details button -->
                 <div class="flex justify-between items-center">
-                    <h3 class="text-lg font-semibold flex items-center gap-2 mb-4">
+                    <h3 class="text-lg font-semibold flex items-center mb-4">
                         {{ meet.meetDate | customDate }}
                     </h3>
 
                     <button (click)="onClickMeeting(meet.id)" class="font-bold text-blue-400 hover:text-blue-300">
-                        View details <i class="bi bi-arrow-right ml-1"></i>
+                        Edit <i class="bi bi-arrow-right ml-1"></i>
                     </button>
                 </div>
 
                 <!-- Content grid -->
                 <div class="grid md:grid-cols-3 gap-4">
                     <!-- Attendees -->
-                    <div class="bg-zinc-900 rounded-lg p-3">
+                    <div class="bg-zinc-900 rounded-lg p-4">
                         <h4 class="text-gray-400 mb-2"><i class="bi bi-people-fill mr-1"></i> Attendees</h4>
                         <div class="flex">
                             @for (member of parseAttendeeIds(meet.attendees); track $index) {
@@ -153,16 +153,16 @@
                     </div>
 
                     <!-- Games played -->
-                    <div class="bg-zinc-900 rounded-lg p-3 md:col-span-2">
+                    <div class="bg-zinc-900 rounded-lg p-4 md:col-span-2">
                         <h4 class="text-gray-400 mb-2"><i class="bi bi-controller mr-1"></i> Games played</h4>
-                        <div class="grid md:grid-cols-2 gap-2">
+                        <div class="grid md:grid-cols-2 gap-4">
                             @for (game of parseGameIds(meet.playedGames); track $index) {
                             <div class="bg-zinc-800 rounded-lg p-2">
                                 <div class="flex items-center gap-2">
                                     <image-background [src]="game?.imageUrl!" class="h-12 w-12 rounded" />
                                     <div class="overflow-hidden">
-                                        <p class="font-medium text-sm truncate">{{ game.title }}</p>
-                                        <p class="text-xs text-gray-400">
+                                        <p class="font-medium truncate">{{ game.title }}</p>
+                                        <p class="text-sm text-gray-400">
                                             {{ '45 mins' }}
                                             <span class="mx-1">•</span>
                                             {{ '4 players' }}
