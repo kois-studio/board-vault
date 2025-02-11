@@ -1,15 +1,14 @@
-import { CommonModule } from '@angular/common';
-import { Component, effect } from '@angular/core';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { DataService } from '../../core/services/data.service';
+import { CommonModule } from '@angular/common'
+import { Component, effect } from '@angular/core'
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
+import { ActivatedRoute, Router } from '@angular/router'
+import { DataService } from '../../core/services/data.service'
 
 @Component({
     standalone: true,
     imports: [CommonModule, ReactiveFormsModule],
-    templateUrl: 'meet-new.component.html'
+    templateUrl: 'meet-new.component.html',
 })
-
 export class MeetNewComponent {
     // --------------------------------------------------------------------------
     //        DATA from services
