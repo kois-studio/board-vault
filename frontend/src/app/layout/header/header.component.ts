@@ -1,6 +1,5 @@
 import { Component } from '@angular/core'
-import { RouterLink, RouterLinkActive } from '@angular/router'
-import { LanguageSelectorComponent } from '../../components/language-selector/language-selector.component'
+import { RouterLink } from '@angular/router'
 import { LocalStorageService } from '../../core/services/local-storage.service'
 import { ProfileMenuComponent } from '../profile-menu/profile-menu.component'
 
@@ -8,7 +7,7 @@ import { ProfileMenuComponent } from '../profile-menu/profile-menu.component'
     selector: 'app-layout-header',
     templateUrl: './header.component.html',
     standalone: true,
-    imports: [RouterLink, RouterLinkActive, LanguageSelectorComponent, ProfileMenuComponent],
+    imports: [RouterLink, ProfileMenuComponent],
 })
 export class LayoutHeaderComponent {
     public currentLocale = 'en'
