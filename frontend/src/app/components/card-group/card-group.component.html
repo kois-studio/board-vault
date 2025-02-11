@@ -12,7 +12,7 @@
 
     <!-- MEMBERS DATA -->
     <h3 class="pt-8 font-bold tracking-wider">Members</h3>
-    <ul class="pb-8">
+    <ul>
         @for (member of group.members; track $index) {
         <li class="flex justify-between">
             <app-card-account [member]="member" [isOwner]="group.createdBy === member.id" />
@@ -33,23 +33,4 @@
         }
     </ul>
     }
-
-    <hr />
-
-    <!-- GROUP DATA -->
-    <div class="flex justify-between pt-6">
-        <div>
-            @if(meetingTodayAlreadyCreated){
-            <button (click)="onEditMeet()" class="app-btn-success m-1">Go to Today's Meet</button>
-            } @else {
-            <button (click)="onNewMeet()" class="app-btn-primary m-1">New meet</button>
-            }
-        </div>
-        <div>
-            <p class="text-gray-400 text-sm">
-                <span class="font-semibold">Created:</span> {{ group.createdAt | date : 'dd/MM/yyyy' }}
-            </p>
-            <p class="text-gray-400"><span class="font-semibold">Total games:</span> {{ totalGames.length }}</p>
-        </div>
-    </div>
 </div>
