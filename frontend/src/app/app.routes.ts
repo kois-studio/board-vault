@@ -18,6 +18,7 @@ import { MeetViewComponent } from './pages/meet-view/meet-view.component'
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component'
 import { RegisterComponent } from './pages/register/register.component'
 import { ReviewComponent } from './pages/reviews/reviews.component'
+import { MeetNewComponent } from './pages/meet-new/meet-new.component'
 
 /**
  * Which route uses LayoutBasicComponent and which uses LayoutCompleteComponent?
@@ -58,6 +59,7 @@ export const routes: Routes = [
             { path: 'register', component: RegisterComponent, canActivate: [AuthRedirectGuard] },
             // accessible to authenticated users
             { path: 'create-group', component: GroupNewComponent, canActivate: [AuthGuard] }, // 'group/new' would break in 'group/:groupId'
+            { path: 'group/:groupId/meets/new', component: MeetNewComponent, canActivate: [AuthGuard] }, // 'meets/new' would break in 'meets/:meetId'
             { path: 'group/:groupId/edit', component: GroupEditComponent, canActivate: [AuthGuard] },
             { path: 'group/:groupId/leave', component: GroupLeaveComponent, canActivate: [AuthGuard] },
             { path: 'group/:groupId/delete', component: GroupDeleteComponent, canActivate: [AuthGuard] },
