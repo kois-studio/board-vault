@@ -14,11 +14,11 @@ import { HistoryComponent } from './pages/history/history.component'
 import { LandingComponent } from './pages/landing/landing.component'
 import { LoginComponent } from './pages/login/login.component'
 import { MeetConfirmComponent } from './pages/meet-confirm/meet-confirm.component'
+import { MeetNewComponent } from './pages/meet-new/meet-new.component'
 import { MeetViewComponent } from './pages/meet-view/meet-view.component'
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component'
 import { RegisterComponent } from './pages/register/register.component'
 import { ReviewComponent } from './pages/reviews/reviews.component'
-import { MeetNewComponent } from './pages/meet-new/meet-new.component'
 
 /**
  * Which route uses LayoutBasicComponent and which uses LayoutCompleteComponent?

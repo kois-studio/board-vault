@@ -12,15 +12,15 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
         @for (gameData of gamesList; track $index) {
         <div class="bg-zinc-800/50 rounded-lg p-3 hover:bg-zinc-800/70 transition-all">
-            <div class="flex items-center gap-3">
+            <div class="flex justify-between items-center gap-3">
                 <!-- Reduced image size -->
                 <div
-                    class="h-16 w-16 rounded-lg border border-zinc-700 overflow-hidden bg-cover bg-no-repeat bg-center flex-shrink-0"
+                    class="h-16 w-16 rounded-lg border border-zinc-700 overflow-hidden bg-cover bg-no-repeat bg-center shrink-0"
                     [style]="{ 'background-image': 'url(' + gameData.data.imageUrl + ')' }"
                 ></div>
 
                 <!-- Game Info -->
-                <div class="flex-grow min-w-0">
+                <div class="grow min-w-0">
                     <h3 class="text-lg font-semibold text-white mb-1 truncate">{{ gameData.data.title }}</h3>
                     <div class="flex items-center gap-3 text-zinc-400 text-xs">
                         <span class="flex items-center gap-1">
