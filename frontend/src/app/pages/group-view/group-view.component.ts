@@ -187,6 +187,17 @@ export class GroupViewComponent {
         this.router.navigate(['/group', this.groupData?.id, 'leave'])
     }
 
+    onClickNewMeet(): void {
+        const accountId = this.userData?.id
+        const groupId = this.groupData?.id
+
+        if (accountId && groupId) {
+            // TODO: add a previous step page to confirm the meet date
+            this.dataService.createMeeting(accountId, groupId)
+        }
+        // DO NOTHING more, the dataService will redirect to the correct /meet/:id
+    }
+
     onGoBack() {
         this.router.navigate(['/dashboard'])
     }
