@@ -1,50 +1,71 @@
-<div class="container mx-auto px-2 pt-8 lg:pt-16">
-    <h1 class="text-4xl text-center">Reviews</h1>
-    <p class="text-gray-400 text-center">Reviews... <br /></p>
-</div>
+<container-wrapper>
+    <title-subtitle title="Game Reviews"> Rate your favorite board games </title-subtitle>
 
-@if(userReviews.length === 0) {
-<div class="text-gray-500 text-center">No reviews available</div>
-}
+    @if(userReviews.length === 0) {
+    <div class="text-zinc-500 text-center p-8 bg-zinc-800/50 rounded-lg">
+        <i class="bi bi-stars text-4xl mb-2"></i>
+        <p>No reviews available yet. Start rating your games!</p>
+    </div>
+    }
 
-<div class="container mx-auto grid grid-cols-2 gap-x-16">
-    <section class="grid grid-cols-4">
+    <div class="space-y-4">
         @for (gameData of gamesList; track $index) {
-        <div class="flex justify-start items-center p-2 col-span-3 relative">
-            <div class="absolute top-3 -left-5 flex flex-col items-center justify-center gap-y-1">
-                @for (ownerId of gameData.owners; track $index) {
-                    <app-image-profile [imageUrl]="getOwnerData(ownerId)?.imageUrl" size="small" title="{{getOwnerData(ownerId)?.username}}" />
-                }
-            </div>
-            <div
-                class="h-16 w-16 border overflow-hidden bg-cover bg-no-repeat bg-center aspect-square"
-                [style]="{ 'background-image': 'url(' + gameData.data.imageUrl + ')' }"
-            ></div>
-            <div class="ml-3">
-                <p class="font-semibold text-white">{{ gameData.data.title }}</p>
-                <div class="text-gray-400 text-sm">
-                    <p><i class="bi bi-clock-fill"></i> {{ gameData.data.gameAvgDuration }} mins</p>
-                    <p><i class="bi bi-people-fill"></i> {{ gameData.data.minPlayers }} - {{ gameData.data.maxPlayers }}</p>
+        <div class="bg-zinc-800/50 rounded-lg p-4 hover:bg-zinc-800/70 transition-all">
+            <div class="flex items-center gap-4">
+                <!-- Game Image -->
+                <div
+                    class="h-24 w-24 rounded-lg border border-zinc-700 overflow-hidden bg-cover bg-no-repeat bg-center flex-shrink-0"
+                    [style]="{ 'background-image': 'url(' + gameData.data.imageUrl + ')' }"
+                ></div>
+
+                <!-- Game Info -->
+                <div class="flex-grow">
+                    <h3 class="text-xl font-semibold text-white mb-2">{{ gameData.data.title }}</h3>
+                    <div class="flex items-center gap-4 text-zinc-400 text-sm">
+                        <span class="flex items-center gap-1">
+                            <i class="bi bi-clock-fill"></i>
+                            {{ gameData.data.gameAvgDuration }} mins
+                        </span>
+                        <span class="flex items-center gap-1">
+                            <i class="bi bi-people-fill"></i>
+                            {{ gameData.data.minPlayers }} - {{ gameData.data.maxPlayers }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Owners -->
+                <div class="flex -space-x-2">
+                    @for (ownerId of gameData.owners; track $index) {
+                    <app-image-profile
+                        [imageUrl]="getOwnerData(ownerId)?.imageUrl"
+                        size="small"
+                        title="{{ getOwnerData(ownerId)?.username }}"
+                        class="border-2 border-zinc-800 rounded-full"
+                    />
+                    }
+                </div>
+
+                <!-- Rating Stars -->
+                <div class="flex items-center gap-1">
+                    @for (star of [2, 4, 6, 8, 10]; track $index) {
+                    <button
+                        (click)="setReview(gameData.data.id, star)"
+                        (mouseover)="hoverRating[gameData.data.id] = star"
+                        (mouseleave)="hoverRating[gameData.data.id] = 0"
+                        class="p-1 hover:scale-110 transition-transform"
+                    >
+                        <i
+                            class="text-xl {{
+                                star <= (hoverRating[gameData.data.id] || getReview(gameData.data.id))
+                                    ? 'bi bi-star-fill text-yellow-400'
+                                    : 'bi bi-star text-zinc-500'
+                            }}"
+                        ></i>
+                    </button>
+                    }
                 </div>
             </div>
         </div>
-        <div class="flex items-center justify-center">
-            @for (star of [2, 4, 6, 8, 10]; track $index) {
-            <button
-                (click)="setReview(gameData.data.id, star)"
-                (mouseover)="hoverRating[gameData.data.id] = star"
-                (mouseleave)="hoverRating[gameData.data.id] = 0"
-            >
-                <i
-                    class="{{
-                        star <= (hoverRating[gameData.data.id] || getReview(gameData.data.id))
-                            ? 'bi bi-star-fill text-yellow-400'
-                            : 'bi bi-star'
-                    }}"
-                ></i>
-            </button>
-            }
-        </div>
         }
-    </section>
-</div>
+    </div>
+</container-wrapper>
