@@ -104,8 +104,8 @@
                     </div>
                     @if (avgReviewsIndex[game.id]) {
                     <div class="px-3 flex flex-col items-center">
-                        <review-display [review]="avgReviewsIndex[game.id]" [flexCol]="true" />
-                        <span class="text-xs text-gray-400 mt-1">4 voters</span>
+                        <review-display [review]="avgReviewsIndex[game.id].average" [flexCol]="true" />
+                        <span class="text-xs text-gray-400 mt-1">{{ avgReviewsIndex[game.id].voters }} voters</span>
                     </div>
                     }
                 </div>

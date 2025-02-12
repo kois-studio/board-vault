@@ -42,7 +42,7 @@ export class GroupViewComponent {
     public selectedUserIds: number[] = []
     public groupData: null | (typeof this.userGroups)[number] = null
     public gameReviews: Record<GameType['id'], Record<UserType['id'], number>> = {}
-    public avgReviewsIndex: Record<GameType['id'], number> = {}
+    public avgReviewsIndex: Record<GameType['id'], { average: number; voters: number }> = {}
     public groupMeetings: Array<MeetWithAttendeesAndGamesType> = []
     public isLoading = false
 
@@ -101,16 +101,21 @@ export class GroupViewComponent {
         for (const [gameId, value] of Object.entries(this.gameReviews)) {
             const reviews = Object.values(value)
             const sum = reviews.reduce((acc, review) => acc + review, 0)
-            this.avgReviewsIndex[Number(gameId)] = Number((sum / reviews.length).toFixed(2))
+            this.avgReviewsIndex[Number(gameId)] = {
+                average: Number((sum / reviews.length).toFixed(2)),
+                voters: reviews.length,
+            }
         }
     }
 
     // #region Getters
 
-    get totalUniqueGames(): Array<GameType & {
-        quantity: number, // number of copies of the game in the group
-        active: boolean, // to highlight or not in the UI
-    }> {
+    get totalUniqueGames(): Array<
+        GameType & {
+            quantity: number // number of copies of the game in the group
+            active: boolean // to highlight or not in the UI
+        }
+    > {
         const games: Array<GameType & { quantity: number; active: boolean }> = []
 
         if (!this.groupData) {
@@ -146,8 +151,8 @@ export class GroupViewComponent {
         }
 
         return games.sort((a, b) => {
-            const a_review = this.avgReviewsIndex[a.id] ?? -1
-            const b_review = this.avgReviewsIndex[b.id] ?? -1
+            const a_review = this.avgReviewsIndex[a.id]?.average ?? -1
+            const b_review = this.avgReviewsIndex[b.id]?.average ?? -1
             return b_review - a_review
         })
     }
