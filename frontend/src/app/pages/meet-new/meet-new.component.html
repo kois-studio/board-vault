@@ -7,11 +7,11 @@
             </button>
         </div>
 
-        <!-- GROUP CARD -->
+        <!-- TITLE -->
         <h2 class="text-xl font-semibold mb-4">Create a new meet</h2>
         <hr />
 
-        <!-- DATA -->
+        <!-- FORM -->
         <div class="pt-8 pb-2">
             <div class="grid gap-4">
                 <div>
@@ -27,9 +27,12 @@
                         <div *ngIf="dateForm.hasError('required')" class="text-sm text-red-500 py-1">
                             <i class="bi bi-exclamation-circle-fill"></i> Date is required.
                         </div>
+                        <div *ngIf="dateForm.hasError('futureDate')" class="text-sm text-red-500 py-1">
+                            <i class="bi bi-exclamation-circle-fill"></i> Date cannot be in the past.
+                        </div>
                     </div>
                 </div>
-                <button class="app-btn-primary" title="Invite user" (click)="onClickCreateMeeting()" [disabled]="disableCreateButton">
+                <button class="app-btn-primary" title="Create meet" (click)="onClickCreateMeeting()" [disabled]="disableCreateButton">
                     Create
                 </button>
             </div>

@@ -10,6 +10,7 @@ import { DataService } from '../../core/services/data.service'
     templateUrl: 'meet-new.component.html',
 })
 export class MeetNewComponent {
+    public isCreatingLoading = false
     // --------------------------------------------------------------------------
     //        DATA from services
     // --------------------------------------------------------------------------
@@ -21,9 +22,19 @@ export class MeetNewComponent {
     //        DATA for this component
     // --------------------------------------------------------------------------
     public groupData: null | (typeof this.userGroups)[number] = null
-    public dateForm = new FormControl('', [Validators.required])
-    public isLoading = false
     public today = new Date().toISOString().split('T')[0] // Format: YYYY-MM-DD
+    public dateForm = new FormControl(
+        new Date().toISOString().split('T')[0], 
+        [
+            Validators.required,
+            (control) => {
+                if (!control.value) return null;
+                const selectedDate = new Date(control.value);
+                const today = new Date(new Date().toISOString().split('T')[0]);
+                return selectedDate >= today ? null : { futureDate: true };
+            }
+        ]
+    )
 
     constructor(
         private readonly router: Router,
@@ -56,7 +67,7 @@ export class MeetNewComponent {
             return true
         }
 
-        return this.isLoading || this.dateForm.invalid
+        return this.isCreatingLoading || this.dateForm.invalid
     }
 
     onGoBack() {
