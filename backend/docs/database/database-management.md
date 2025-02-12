@@ -62,6 +62,7 @@ INSERT INTO Account VALUES(4,'carmenduranveloso@gmail.com','carmen','$2b$10$kjqv
 INSERT INTO Account VALUES(5,'bruno@gmail.com','bruno','$2b$10$YSrq1xxXlaCyco0H4FUK.uh/OQj0/FlClCcNzloqBXnNhVjrnmIpO','https://cdn.discordapp.com/avatars/316950810951024641/cfe69a5de3bff79279862839a2e2c036.webp','bruno','2025-02-06 19:15:54',0,0);
 INSERT INTO Account VALUES(6,'cristian@gmail.com','bloddsword','$2b$10$YSrq1xxXlaCyco0H4FUK.uh/OQj0/FlClCcNzloqBXnNhVjrnmIpO','https://pbs.twimg.com/profile_images/1833050358479826944/A2qj0e6Z_400x400.jpg','bloddsword','2025-02-06 19:16:41',0,0);
 INSERT INTO Account VALUES(7,'mirian@gmail.com','mirianbeta','$2b$10$pWLbhMYpv2W5zz6HF2vRquatoxpTKaNbBvm1ttTAcISCCl91/AirW','https://comunidad.retorn.com/wp-content/uploads/2018/09/gatitos.jpg','mirianbeta','2025-02-07 12:55:08',0,0);
+INSERT INTO Account VALUES(8,'marcos@gmail.com','marcosporto','$2b$10$pWLbhMYpv2W5zz6HF2vRquatoxpTKaNbBvm1ttTAcISCCl91/AirW','https://i.pinimg.com/originals/82/d6/76/82d676ef7f4d8c9c62c94d65373e7399.jpg','marcosporto','2025-02-12 18:01:29',0,0);
 
 -- -----------------------------------------------------
 -- Table 'Game'
@@ -179,14 +180,13 @@ CREATE TABLE IF NOT EXISTS GroupMembership (
     FOREIGN KEY (groupId) REFERENCES UserGroup(id) ON DELETE CASCADE,
     PRIMARY KEY (accountId, groupId)
 );
-INSERT INTO GroupMembership VALUES(1,2,'2024-10-03 20:16:12');
-INSERT INTO GroupMembership VALUES(2,4,'2024-10-03 21:52:58');
-INSERT INTO GroupMembership VALUES(2,2,'2024-10-11 15:46:32');
-INSERT INTO GroupMembership VALUES(2,6,'2024-10-14 12:21:03');
-INSERT INTO GroupMembership VALUES(4,2,'2025-02-06 19:13:18');
-INSERT INTO GroupMembership VALUES(5,2,'2025-02-06 19:18:14');
-INSERT INTO GroupMembership VALUES(6,2,'2025-02-06 19:18:58');
-INSERT INTO GroupMembership VALUES(7,2,'2025-02-07 12:58:07');
+INSERT INTO GroupMembership VALUES(1,1,'2024-10-03 20:16:12');
+INSERT INTO GroupMembership VALUES(2,1,'2024-10-11 15:46:32');
+INSERT INTO GroupMembership VALUES(4,1,'2025-02-06 19:13:18');
+INSERT INTO GroupMembership VALUES(5,1,'2025-02-06 19:18:14');
+INSERT INTO GroupMembership VALUES(6,1,'2025-02-06 19:18:58');
+INSERT INTO GroupMembership VALUES(7,1,'2025-02-07 12:58:07');
+INSERT INTO GroupMembership VALUES(8,1,'2025-02-12 18:08:52');
 
 -- -----------------------------------------------------
 -- Table 'Invitation'
