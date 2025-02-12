@@ -614,6 +614,7 @@ export class DataService {
         // 1.
         this.api.createGameReview(accountId, gameId, review).subscribe({
             next: (res) => {
+                // TODO: res should return GameReviewType so we just append it to the array later
                 // 2.
                 this.userReviews.set([])
                 this._getUserReviews(accountId)
