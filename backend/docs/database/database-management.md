@@ -52,12 +52,16 @@ CREATE TABLE IF NOT EXISTS Account (
     imageUrl TEXT, -- Profile picture, can be NULL initially
     displayName VARCHAR(255), -- Custom name, can be NULL initially
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP, -- auto set to current time
-    isDeleted BOOLEAN DEFAULT FALSE -- soft delete
+    isDeleted BOOLEAN DEFAULT FALSE, -- soft delete
     isAdmin BOOLEAN DEFAULT FALSE -- indicates if the account is an admin
 );
-INSERT INTO Account VALUES(1,'david@test.com','dawichi','$2b$10$CpIDmTErYFytqH2DWripr.xN60wARDTHwkvpPUmQUJxe1iHIvEYeu','https://pbs.twimg.com/profile_images/1332020756033712130/ZXD9wpQR_400x400.jpg','David M. Fajardo','2024-10-04 13:08:19',0,1);
-INSERT INTO Account VALUES(2,'alex@test.com','alexwwe','$2b$10$It2eJ2E6deeU7UBbti9tUOpZGq0J9HnmtS1qquUcEDcxKNHruz2ca','https://pbs.twimg.com/profile_images/991696745418711040/17X66VeI_400x400.jpg','alexwwe','2024-10-03 10:32:18',0,1);
+INSERT INTO Account VALUES(1,'david@gmail.com','dawichi','$2b$10$CpIDmTErYFytqH2DWripr.xN60wARDTHwkvpPUmQUJxe1iHIvEYeu','https://pbs.twimg.com/profile_images/1332020756033712130/ZXD9wpQR_400x400.jpg','David M. Fajardo','2024-10-04 13:08:19',0,1);
+INSERT INTO Account VALUES(2,'alex@gmail.com','alexwwe','$2b$10$CpIDmTErYFytqH2DWripr.xN60wARDTHwkvpPUmQUJxe1iHIvEYeu','https://pbs.twimg.com/profile_images/991696745418711040/17X66VeI_400x400.jpg','alexwwe','2024-10-03 10:32:18',0,1);
 INSERT INTO Account VALUES(3,'test@test.com','test','$2b$10$aO6PuKn0.VDQ.PkAXpw9Sen1DH7T/wtmkeAhv7iy/NGA.JsmC7bT.','https://pbs.twimg.com/profile_images/1833050358479826944/A2qj0e6Z_400x400.jpg','test 1','2024-10-03 09:57:58',0,1);
+INSERT INTO Account VALUES(4,'carmenduranveloso@gmail.com','carmen','$2b$10$kjqvaykdY64N2hWyaJOT9.JhVhm696sLeh10Du5Y3culrO09S.IlC','https://th.bing.com/th?id=OIP.Iv1IH-nIdyY3-144t-LxrgHaE7&w=200&h=132&rs=1&qlt=80&o=6&pid=3.1','carmen','2025-02-06 19:09:13',0,0);
+INSERT INTO Account VALUES(5,'bruno@gmail.com','bruno','$2b$10$YSrq1xxXlaCyco0H4FUK.uh/OQj0/FlClCcNzloqBXnNhVjrnmIpO','https://cdn.discordapp.com/avatars/316950810951024641/cfe69a5de3bff79279862839a2e2c036.webp','bruno','2025-02-06 19:15:54',0,0);
+INSERT INTO Account VALUES(6,'cristian@gmail.com','bloddsword','$2b$10$YSrq1xxXlaCyco0H4FUK.uh/OQj0/FlClCcNzloqBXnNhVjrnmIpO','https://pbs.twimg.com/profile_images/1833050358479826944/A2qj0e6Z_400x400.jpg','bloddsword','2025-02-06 19:16:41',0,0);
+INSERT INTO Account VALUES(7,'mirian@gmail.com','mirianbeta','$2b$10$pWLbhMYpv2W5zz6HF2vRquatoxpTKaNbBvm1ttTAcISCCl91/AirW','https://comunidad.retorn.com/wp-content/uploads/2018/09/gatitos.jpg','mirianbeta','2025-02-07 12:55:08',0,0);
 
 -- -----------------------------------------------------
 -- Table 'Game'
@@ -104,6 +108,10 @@ INSERT INTO Game VALUES(31,'Unstable Unicorns','https://teeturtle-s3-web.s3.amaz
 INSERT INTO Game VALUES(32,'Unstable Unicorns Travel Edition','https://teeturtle-s3-web.s3.amazonaws.com/accounts/2/products/1986199882677/Front-82-Card-1-1000x1000.jpg',30,2,4);
 INSERT INTO Game VALUES(33,'Virus','https://tranjisgames.com/wp-content/uploads/2019/11/virus1_new-1.png',20,2,6);
 INSERT INTO Game VALUES(34,'What do you meme','https://th.bing.com/th/id/R.74ecd7d85d70a101455790856e58a8a0?rik=%2bPadzQ8bCNvI6g&pid=ImgRaw&r=0',40,3,20);
+INSERT INTO Game VALUES(35,'Deep Sea Adventure','https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRKpuWQrR58af8uRsFxENqtPTS9wrxoHII2EQ&s',20,2,6);
+INSERT INTO Game VALUES(36,'Cluedo','https://cdn.ecommercedns.uk/files/8/248218/0/17691480/c001.jpg',90,2,6);
+INSERT INTO Game VALUES(37,'Chess','https://images.chesscomfiles.com/uploads/v1/images_users/tiny_mce/NiiLoC/phpIvIkul.jpeg',60,2,2);
+INSERT INTO Game VALUES(38,'Trash Pandas','https://img.kwcdn.com/product/1e13cb94884/8fa37cfe-1313-41ee-8fae-c13df0638f47_1000x1000.jpeg',30,2,4);
 
 -- -----------------------------------------------------
 -- Table 'OwnedGame'
@@ -134,6 +142,19 @@ INSERT INTO OwnedGame VALUES(1,31);
 INSERT INTO OwnedGame VALUES(2,10);
 INSERT INTO OwnedGame VALUES(2,11);
 INSERT INTO OwnedGame VALUES(2,14);
+INSERT INTO OwnedGame VALUES(4,18);
+INSERT INTO OwnedGame VALUES(6,28);
+INSERT INTO OwnedGame VALUES(6,18);
+INSERT INTO OwnedGame VALUES(2,22);
+INSERT INTO OwnedGame VALUES(7,19);
+INSERT INTO OwnedGame VALUES(7,17);
+INSERT INTO OwnedGame VALUES(7,27);
+INSERT INTO OwnedGame VALUES(7,12);
+INSERT INTO OwnedGame VALUES(7,29);
+INSERT INTO OwnedGame VALUES(7,30);
+INSERT INTO OwnedGame VALUES(7,9);
+INSERT INTO OwnedGame VALUES(7,4);
+
 
 -- -----------------------------------------------------
 -- Table 'UserGroup'
@@ -145,12 +166,7 @@ CREATE TABLE IF NOT EXISTS UserGroup (
     createdAt DATETIME DEFAULT CURRENT_TIMESTAMP, -- auto set to current time
     FOREIGN KEY (createdBy) REFERENCES Account(id) ON DELETE CASCADE
 );
-INSERT INTO UserGroup VALUES(1,'Davids Group',1,'2024-10-03 14:07:51');
-INSERT INTO UserGroup VALUES(2,'UBER',1,'2024-10-03 14:11:14');
-INSERT INTO UserGroup VALUES(3,'Family',1,'2024-10-03 14:11:19');
-INSERT INTO UserGroup VALUES(4,'Alexs Group',2,'2024-10-03 21:52:24');
-INSERT INTO UserGroup VALUES(5,'alexGrupo1',2,'2024-10-14 12:21:03');
-INSERT INTO UserGroup VALUES(6,'prueba2',2,'2024-10-14 12:51:23');
+INSERT INTO UserGroup VALUES(1,'UBER',1,'2024-10-03 14:11:14');
 
 -- -----------------------------------------------------
 -- Table 'GroupMembership'
@@ -163,16 +179,14 @@ CREATE TABLE IF NOT EXISTS GroupMembership (
     FOREIGN KEY (groupId) REFERENCES UserGroup(id) ON DELETE CASCADE,
     PRIMARY KEY (accountId, groupId)
 );
-INSERT INTO GroupMembership VALUES(1,1,'2024-10-03 14:21:24');
-INSERT INTO GroupMembership VALUES(1,3,'2024-10-03 20:16:12');
 INSERT INTO GroupMembership VALUES(1,2,'2024-10-03 20:16:12');
-INSERT INTO GroupMembership VALUES(2,1,'2024-10-03 21:52:02');
 INSERT INTO GroupMembership VALUES(2,4,'2024-10-03 21:52:58');
-INSERT INTO GroupMembership VALUES(1,4,'2024-10-11 15:44:29');
 INSERT INTO GroupMembership VALUES(2,2,'2024-10-11 15:46:32');
-INSERT INTO GroupMembership VALUES(2,3,'2024-10-11 15:55:53');
 INSERT INTO GroupMembership VALUES(2,6,'2024-10-14 12:21:03');
-INSERT INTO GroupMembership VALUES(1,6,'2024-10-15 12:02:59');
+INSERT INTO GroupMembership VALUES(4,2,'2025-02-06 19:13:18');
+INSERT INTO GroupMembership VALUES(5,2,'2025-02-06 19:18:14');
+INSERT INTO GroupMembership VALUES(6,2,'2025-02-06 19:18:58');
+INSERT INTO GroupMembership VALUES(7,2,'2025-02-07 12:58:07');
 
 -- -----------------------------------------------------
 -- Table 'Invitation'
@@ -200,16 +214,6 @@ CREATE TABLE IF NOT EXISTS Notification (
     isRead BOOLEAN DEFAULT 0, -- 0 = Unread, 1 = Read
     FOREIGN KEY (accountId) REFERENCES Account(id) ON DELETE CASCADE
 );
-INSERT INTO Notification VALUES(1,2,'invitation_accepted','David M. Fajardo joined your group Alex''s Group','2024-10-11 11:28:44',0);
-INSERT INTO Notification VALUES(2,2,'invitation_accepted','David M. Fajardo joined your group Alex''s Group','2024-10-11 11:31:02',0);
-INSERT INTO Notification VALUES(3,2,'invitation_accepted','David M. Fajardo joined your group Alex''s Group','2024-10-11 11:33:12',0);
-INSERT INTO Notification VALUES(4,2,'invitation_accepted','alexwwe joined your group Family','2024-10-11 11:55:31',0);
-INSERT INTO Notification VALUES(5,2,'invitation_accepted','David M. Fajardo joined your group Alex''s Group','2024-10-11 15:44:30',0);
-INSERT INTO Notification VALUES(6,2,'invitation_accepted','alexwwe joined your group UBER','2024-10-11 15:46:32',0);
-INSERT INTO Notification VALUES(7,2,'invitation_accepted','alexwwe joined your group Family','2024-10-11 15:55:53',0);
-INSERT INTO Notification VALUES(8,2,'invitation_accepted','David M. Fajardo joined your group alexGrupo1','2024-10-15 12:03:00',0);
-INSERT INTO Notification VALUES(9,2,'invitation_accepted','David M. Fajardo joined your group undefined','2024-10-15 12:03:01',0);
-INSERT INTO Notification VALUES(10,2,'invitation_accepted','David M. Fajardo joined your group prueba2','2024-10-15 12:25:58',0);
 
 -- -----------------------------------------------------
 -- Table 'GameReview' (Account-Game n:m)
@@ -223,10 +227,103 @@ CREATE TABLE IF NOT EXISTS GameReview (
     FOREIGN KEY (gameId) REFERENCES Game(id) ON DELETE CASCADE,
     PRIMARY KEY (accountId, gameId) -- Ensures one review per account per game
 );
+INSERT INTO GameReview VALUES(1,6,10,'2025-02-06 19:19:17');
+INSERT INTO GameReview VALUES(1,5,10,'2025-02-06 19:19:19');
+INSERT INTO GameReview VALUES(1,7,10,'2025-02-06 19:19:20');
+INSERT INTO GameReview VALUES(2,1,10,'2025-02-06 19:19:21');
+INSERT INTO GameReview VALUES(1,9,8,'2025-02-06 19:19:22');
+INSERT INTO GameReview VALUES(1,10,8,'2025-02-06 19:19:23');
+INSERT INTO GameReview VALUES(1,11,8,'2025-02-06 19:19:25');
+INSERT INTO GameReview VALUES(1,13,10,'2025-02-06 19:19:27');
+INSERT INTO GameReview VALUES(2,5,2,'2025-02-06 19:19:30');
+INSERT INTO GameReview VALUES(1,1,10,'2025-02-06 19:19:30');
+INSERT INTO GameReview VALUES(2,6,10,'2025-02-06 19:19:32');
+INSERT INTO GameReview VALUES(1,14,10,'2025-02-06 19:19:33');
+INSERT INTO GameReview VALUES(1,16,8,'2025-02-06 19:19:42');
+INSERT INTO GameReview VALUES(1,15,10,'2025-02-06 19:19:43');
+INSERT INTO GameReview VALUES(1,18,8,'2025-02-06 19:19:49');
+INSERT INTO GameReview VALUES(2,7,4,'2025-02-06 19:19:50');
+INSERT INTO GameReview VALUES(1,20,6,'2025-02-06 19:19:50');
+INSERT INTO GameReview VALUES(2,9,4,'2025-02-06 19:19:51');
+INSERT INTO GameReview VALUES(1,22,8,'2025-02-06 19:19:54');
+INSERT INTO GameReview VALUES(1,24,8,'2025-02-06 19:19:56');
+INSERT INTO GameReview VALUES(2,11,6,'2025-02-06 19:19:59');
+INSERT INTO GameReview VALUES(2,10,4,'2025-02-06 19:20:00');
+INSERT INTO GameReview VALUES(2,14,10,'2025-02-06 19:20:10');
+INSERT INTO GameReview VALUES(1,34,6,'2025-02-06 19:20:12');
+INSERT INTO GameReview VALUES(1,30,4,'2025-02-06 19:20:15');
+INSERT INTO GameReview VALUES(1,26,10,'2025-02-06 19:20:18');
+INSERT INTO GameReview VALUES(2,15,10,'2025-02-06 19:20:21');
+INSERT INTO GameReview VALUES(2,16,8,'2025-02-06 19:20:23');
+INSERT INTO GameReview VALUES(1,31,10,'2025-02-06 19:20:23');
+INSERT INTO GameReview VALUES(2,22,10,'2025-02-06 19:20:28');
+INSERT INTO GameReview VALUES(2,24,8,'2025-02-06 19:21:20');
+INSERT INTO GameReview VALUES(2,26,4,'2025-02-06 19:21:22');
+INSERT INTO GameReview VALUES(2,30,8,'2025-02-06 19:21:23');
+INSERT INTO GameReview VALUES(2,31,2,'2025-02-06 19:21:25');
+INSERT INTO GameReview VALUES(2,34,8,'2025-02-06 19:21:27');
+INSERT INTO GameReview VALUES(2,28,6,'2025-02-06 19:25:10');
+INSERT INTO GameReview VALUES(2,18,10,'2025-02-06 19:25:13');
+INSERT INTO GameReview VALUES(1,12,6,'2025-02-11 19:45:14');
+INSERT INTO GameReview VALUES(1,28,10,'2025-02-11 19:59:24');
+INSERT INTO GameReview VALUES(1,17,2,'2025-02-11 19:59:30');
+INSERT INTO GameReview VALUES(1,19,10,'2025-02-11 19:59:34');
+INSERT INTO GameReview VALUES(1,29,4,'2025-02-11 19:59:40');
+INSERT INTO GameReview VALUES(1,27,6,'2025-02-11 19:59:42');
+INSERT INTO GameReview VALUES(1,4,2,'2025-02-11 19:59:50');
+INSERT INTO GameReview VALUES(5,1,8,'2025-02-12 11:03:11');
+INSERT INTO GameReview VALUES(4,1,4,'2025-02-12 11:03:16');
+INSERT INTO GameReview VALUES(4,4,6,'2025-02-12 11:03:18');
+INSERT INTO GameReview VALUES(4,6,10,'2025-02-12 11:03:22');
+INSERT INTO GameReview VALUES(4,9,4,'2025-02-12 11:03:28');
+INSERT INTO GameReview VALUES(5,5,8,'2025-02-12 11:03:30');
+INSERT INTO GameReview VALUES(4,11,4,'2025-02-12 11:03:31');
+INSERT INTO GameReview VALUES(5,6,10,'2025-02-12 11:03:34');
+INSERT INTO GameReview VALUES(4,13,4,'2025-02-12 11:03:36');
+INSERT INTO GameReview VALUES(5,4,8,'2025-02-12 11:03:37');
+INSERT INTO GameReview VALUES(4,15,6,'2025-02-12 11:03:40');
+INSERT INTO GameReview VALUES(5,7,8,'2025-02-12 11:03:43');
+INSERT INTO GameReview VALUES(5,10,10,'2025-02-12 11:03:45');
+INSERT INTO GameReview VALUES(5,12,6,'2025-02-12 11:03:46');
+INSERT INTO GameReview VALUES(4,19,6,'2025-02-12 11:03:48');
+INSERT INTO GameReview VALUES(4,22,8,'2025-02-12 11:03:50');
+INSERT INTO GameReview VALUES(4,26,4,'2025-02-12 11:03:54');
+INSERT INTO GameReview VALUES(5,9,6,'2025-02-12 11:03:54');
+INSERT INTO GameReview VALUES(5,11,8,'2025-02-12 11:03:56');
+INSERT INTO GameReview VALUES(4,28,6,'2025-02-12 11:03:59');
+INSERT INTO GameReview VALUES(5,13,6,'2025-02-12 11:04:00');
+INSERT INTO GameReview VALUES(4,30,6,'2025-02-12 11:04:01');
+INSERT INTO GameReview VALUES(5,14,10,'2025-02-12 11:04:01');
+INSERT INTO GameReview VALUES(5,16,10,'2025-02-12 11:04:03');
+INSERT INTO GameReview VALUES(5,18,8,'2025-02-12 11:04:06');
+INSERT INTO GameReview VALUES(4,34,4,'2025-02-12 11:04:07');
+INSERT INTO GameReview VALUES(5,17,2,'2025-02-12 11:04:14');
+INSERT INTO GameReview VALUES(4,5,2,'2025-02-12 11:04:14');
+INSERT INTO GameReview VALUES(5,19,2,'2025-02-12 11:04:17');
+INSERT INTO GameReview VALUES(4,7,4,'2025-02-12 11:04:20');
+INSERT INTO GameReview VALUES(5,24,6,'2025-02-12 11:04:22');
+INSERT INTO GameReview VALUES(4,10,4,'2025-02-12 11:04:22');
+INSERT INTO GameReview VALUES(5,22,10,'2025-02-12 11:04:24');
+INSERT INTO GameReview VALUES(5,26,10,'2025-02-12 11:04:25');
+INSERT INTO GameReview VALUES(4,12,4,'2025-02-12 11:04:25');
+INSERT INTO GameReview VALUES(5,28,8,'2025-02-12 11:04:27');
+INSERT INTO GameReview VALUES(5,29,6,'2025-02-12 11:04:29');
+INSERT INTO GameReview VALUES(4,14,8,'2025-02-12 11:04:30');
+INSERT INTO GameReview VALUES(5,30,8,'2025-02-12 11:04:30');
+INSERT INTO GameReview VALUES(5,34,10,'2025-02-12 11:04:31');
+INSERT INTO GameReview VALUES(5,31,10,'2025-02-12 11:04:33');
+INSERT INTO GameReview VALUES(4,16,4,'2025-02-12 11:04:33');
+INSERT INTO GameReview VALUES(4,18,6,'2025-02-12 11:04:40');
+INSERT INTO GameReview VALUES(4,20,6,'2025-02-12 11:04:43');
+INSERT INTO GameReview VALUES(4,24,6,'2025-02-12 11:04:45');
+INSERT INTO GameReview VALUES(4,29,6,'2025-02-12 11:04:54');
+INSERT INTO GameReview VALUES(4,31,8,'2025-02-12 11:05:10');
+INSERT INTO GameReview VALUES(1,3,8,'2025-02-12 11:05:59');
 
 -- -----------------------------------------------------
 -- Table 'GamePlaySession' (Tracks each play session)
 -- -----------------------------------------------------
+-- this should be generated based on Meet + MeetAttendee + MeetGame
 CREATE TABLE IF NOT EXISTS GamePlaySession (
     accountId INTEGER NOT NULL,
     gameId INTEGER NOT NULL,
