@@ -107,8 +107,11 @@ export class GroupViewComponent {
 
     // #region Getters
 
-    get totalGames(): Array<GameType & { active: boolean }> {
-        const games: Array<GameType & { active: boolean }> = []
+    get totalUniqueGames(): Array<GameType & {
+        quantity: number, // number of copies of the game in the group
+        active: boolean, // to highlight or not in the UI
+    }> {
+        const games: Array<GameType & { quantity: number; active: boolean }> = []
 
         if (!this.groupData) {
             return []
@@ -118,20 +121,25 @@ export class GroupViewComponent {
             // add the games of the non-selected members as inactive
             if (!this.selectedUserIds.includes(member.id)) {
                 for (const game of member.games) {
-                    if (!games.find((g) => g.id === game.id)) {
-                        games.push({ ...game, active: false })
+                    const gameObject = games.find((g) => g.id === game.id)
+                    if (!gameObject) {
+                        games.push({ ...game, active: false, quantity: 1 })
+                    } else {
+                        gameObject.quantity++
                     }
                 }
             }
             // add the games of the selected members as active
             else {
                 for (const game of member.games) {
-                    if (!games.find((g) => g.id === game.id)) {
-                        games.push({ ...game, active: true })
+                    const gameObject = games.find((g) => g.id === game.id)
+                    if (!gameObject) {
+                        games.push({ ...game, active: true, quantity: 1 })
                     } else {
                         // if was already added, simply update the active flag
                         const index = games.findIndex((g) => g.id === game.id)
                         games[index].active = true
+                        games[index].quantity++
                     }
                 }
             }
@@ -162,7 +170,7 @@ export class GroupViewComponent {
     }
 
     parseGameIds(gameIds: Array<GameType['id']>): Array<GameType> {
-        return gameIds.map((gameId) => this.totalGames.find((game) => game.id === gameId)).filter((game) => game !== undefined)
+        return gameIds.map((gameId) => this.totalUniqueGames.find((game) => game.id === gameId)).filter((game) => game !== undefined)
     }
 
     // #region Button Clicks
