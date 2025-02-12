@@ -21,8 +21,9 @@ export class MeetNewComponent {
     //        DATA for this component
     // --------------------------------------------------------------------------
     public groupData: null | (typeof this.userGroups)[number] = null
-    public groupNameForm = new FormControl('', [Validators.required, Validators.minLength(4), Validators.maxLength(20)])
+    public dateForm = new FormControl('', [Validators.required])
     public isLoading = false
+    public today = new Date().toISOString().split('T')[0] // Format: YYYY-MM-DD
 
     constructor(
         private readonly router: Router,
@@ -45,20 +46,17 @@ export class MeetNewComponent {
         })
     }
 
-    get groupName() {
-        return this.groupNameForm.get('groupName')
-    }
-
-    get groupNameClass() {
-        if (!this.groupNameForm.dirty && !this.groupNameForm.touched) return ''
-        return this.groupNameForm.valid ? 'border-green-500' : 'border-red-500'
+    get dateClass() {
+        if (!this.dateForm.dirty && !this.dateForm.touched) return ''
+        return this.dateForm.valid ? 'border-green-500' : 'border-red-500'
     }
 
     get disableCreateButton() {
-        if (!this.groupNameForm.value) {
+        if (!this.dateForm.value) {
             return true
         }
-        return this.isLoading || this.groupNameForm.invalid
+
+        return this.isLoading || this.dateForm.invalid
     }
 
     onGoBack() {
