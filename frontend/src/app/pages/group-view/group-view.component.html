@@ -76,7 +76,7 @@
             <hr />
 
             <div class="grid lg:grid-cols-2 gap-4 pt-4">
-                @for (game of totalGames ; track $index) {
+                @for (game of totalUniqueGames ; track $index) {
                 <div
                     class="rounded bg-zinc-800 p-2 flex justify-between items-center"
                     [ngClass]="{
@@ -84,8 +84,13 @@
                     }"
                 >
                     <div class="flex items-center gap-2">
-                        <div class="h-20 w-20 roundd-lg">
+                        <div class="h-20 w-20 roundd-lg relative">
                             <image-background [src]="game.imageUrl" class="h-24" />
+                            @if (game.quantity > 1) {
+                            <div class="absolute -top-2 -left-2 bg-blue-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
+                                x{{game.quantity}}
+                            </div>
+                            }
                         </div>
                         <div class="ml-3 text-nowrap overflow-hidden text-ellipsis whitespace-nowrap">
                             <p class="font-semibold text-white">{{ game.title }}</p>
