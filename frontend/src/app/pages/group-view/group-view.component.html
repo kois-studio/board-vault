@@ -40,12 +40,17 @@
                                 'bg-green-400': selectedUserIds.includes(member.id),
                             }"
                     ></div>
-                    <app-card-account
-                        [member]="member"
-                        [ngClass]="{
-                                'opacity-30': !selectedUserIds.includes(member.id),
-                            }"
-                    />
+                    <div class="flex items-center justify-between w-full">
+                        <app-card-account
+                            [member]="member"
+                            [ngClass]="{
+                                    'opacity-30': !selectedUserIds.includes(member.id),
+                                }"
+                        />
+                        <div class="text-gray-400 text-sm mr-4">
+                            {{ member.games.length }} {{ member.games.length === 1 ? 'game' : 'games' }}
+                        </div>
+                    </div>
                 </button>
                 }
             </ul>
