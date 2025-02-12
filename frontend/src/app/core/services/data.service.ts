@@ -567,8 +567,9 @@ export class DataService {
                 this.api.createGameReview(accountId, gameId, newReview).subscribe({
                     next: (res) => {
                         // 2.
-                        this.userReviews.set([])
-                        this._getUserReviews(accountId)
+                        this.userReviews.update((reviews) =>
+                            reviews.map((review) => (review.gameId === gameId ? { ...review, review: newReview } : review)),
+                        )
 
                         // 3.
                         this.toastService.success('You have created the review')
