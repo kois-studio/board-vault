@@ -180,6 +180,13 @@ export class GroupViewComponent {
 
     // #region Button Clicks
 
+    onClickSelectAll(): void {
+        if (!this.groupData) return;
+        
+        const allMembersSelected = this.selectedUserIds.length === this.groupData.members.length
+        this.selectedUserIds = allMembersSelected ? [] : this.groupData.members.map(member => member.id);
+    }
+
     onClickMeeting(meetId: number): void {
         this.router.navigate(['/meets', meetId])
     }
