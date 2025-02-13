@@ -24,7 +24,7 @@ $color-primary-hover: #0078d4;
         @apply shadow-zinc-500 bg-zinc-700 hover:bg-zinc-800;
     }
 
-    .app-btn-error {
+    .app-btn-danger {
         @extend .app-btn;
         @apply shadow-red-500 bg-red-600 hover:bg-red-800;
     }
