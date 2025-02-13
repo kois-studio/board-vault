@@ -9,7 +9,7 @@
         <!-- left col -->
         <section class="p-4">
             <div class="relative">
-                <h2 class="text-xl font-semibold mb-4">Group members</h2>
+                <h2 class="text-xl font-semibold mb-4">Members ({{groupData?.members?.length}})</h2>
                 @if (groupData?.createdBy === userData?.id) {
                 <button (click)="onClickEditGroup()" class="app-btn-primary py-1 px-2 absolute top-0 right-0" title="Edit members">
                     <i class="bi bi-pencil"></i>
@@ -43,6 +43,7 @@
                     <div class="flex items-center justify-between w-full">
                         <app-card-account
                             [member]="member"
+                            [isOwner]="groupData?.createdBy === member.id"
                             [ngClass]="{
                                     'opacity-30': !selectedUserIds.includes(member.id),
                                 }"
@@ -72,7 +73,7 @@
 
         <!-- right col -->
         <section class="p-4 col-span-2">
-            <h2 class="text-xl font-semibold mb-4">Group games:</h2>
+            <h2 class="text-xl font-semibold mb-4">Group games ({{totalUniqueGames.length}})</h2>
             <hr />
 
             <div class="grid lg:grid-cols-2 gap-4 pt-4">
