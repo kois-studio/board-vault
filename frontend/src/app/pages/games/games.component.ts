@@ -12,7 +12,10 @@ import { DataService } from '../../core/services/data.service'
     templateUrl: 'games.component.html',
 })
 export class GamesComponent {
+    public loaded = false
+    public activeTab: 'collection' | 'browse' = 'collection'
     public allGames: ReturnType<typeof this.dataService.gamesList> = []
+    //TODO: esto no se usa
     public allGamesIds: Array<number> = []
 
     public userGames: ReturnType<typeof this.dataService.userGames> = []
@@ -45,6 +48,10 @@ export class GamesComponent {
 
     get gameTitle() {
         return this.gameTitleForm.get('title')
+    }
+
+    get gamesNotOwnedByUser() {
+        return this.allGames.filter((game) => !this.userGamesIds.includes(game.id))
     }
 
     public onClickGame(gameId: number) {

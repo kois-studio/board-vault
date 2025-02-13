@@ -1,20 +1,42 @@
 <container-wrapper>
-    <title-subtitle title="Games list">
-        These are all the games registered so far <br />
-        You may add to request new ones here
-    </title-subtitle>
+    <title-subtitle title="My Game Collection"> Manage your board game collection and discover new games to add </title-subtitle>
 
+    <!-- Collection Management Bar -->
     @if (gameIdsToToggle.length > 0) {
-        <button class="app-btn-primary block" title="Invite user" (click)="saveSelection()">
-            Save changes
-        </button>
+    <div class="sticky top-0 z-10 bg-zinc-800/90 backdrop-blur-sm py-4 -mx-4 px-4 shadow-lg mb-8">
+        <div class="flex items-center justify-between">
+            <span class="font-semibold">
+                {{ gameIdsToToggle.length }} changes pending
+            </span>
+            <button class="app-btn-primary" (click)="saveSelection()">Save Changes</button>
+        </div>
+    </div>
     }
 
-    <!-- MY GAMES -->
-    <h2 class="text-2xl font-bold py-8">My Games</h2>
-    <div class="flex gap-2 flex-wrap">
-        @for (game of userGames; track $index) {
-            <div class="relative">
+    <!-- Tab selector -->
+    <div class="flex gap-4 border-b border-gray-700">
+        <button
+            [class]="activeTab === 'collection' ? 'border-b-2 border-primary text-primary' : 'text-gray-400'"
+            class="pb-4 px-2 font-medium"
+            (click)="activeTab = 'collection'"
+        >
+            My Collection ({{ userGames.length }})
+        </button>
+        <button
+            [class]="activeTab === 'browse' ? 'border-b-2 border-primary text-primary' : 'text-gray-400'"
+            class="pb-4 px-2 font-medium"
+            (click)="activeTab = 'browse'"
+        >
+            Browse Games
+        </button>
+    </div>
+
+    <!-- Tab 1: collection -->
+    @if (activeTab === 'collection') {
+    <section class="py-8">
+        <div class="flex flex-wrap gap-4">
+            @for (game of userGames; track $index) {
+            <div class="group relative transition-all">
                 <app-card-game
                     [title]="game.title"
                     [imageUrl]="game.imageUrl"
@@ -22,76 +44,62 @@
                     [minPlayers]="game.minPlayers"
                     [maxPlayers]="game.maxPlayers"
                 />
-
-                @if (gameIdsToToggle.includes(game.id)) {
-                    <!-- overlay on hover to delete -->
+                <div
+                    class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
+                >
                     <button
                         (click)="onClickGame(game.id)"
-                        class="absolute top-0 right-0 left-0 bottom-0 bg-red-800/70 rounded-lg p-2 border-2 border-red-600"
+                        class="absolute bottom-4 left-4 right-4"
+                        [class.app-btn-danger]="!gameIdsToToggle.includes(game.id)"
+                        [class.app-btn-secondary]="gameIdsToToggle.includes(game.id)"
                     >
-                        <span class="font-bold text-xl tracking-wider">Remove</span>
+                        {{ gameIdsToToggle.includes(game.id) ? 'Cancel' : 'Remove' }}
                     </button>
-                } @else {
+                </div>
+            </div>
+            }
+        </div>
+    </section>
+    }
+
+    <!-- Tab 2: browse -->
+    @if (activeTab === 'browse') {
+    <section class="py-8">
+        <!-- Search and Add New -->
+        <div class="flex flex-col md:flex-row gap-4 mb-8">
+            <div class="flex-1 relative">
+                <input type="text" [formControl]="gameTitleForm" placeholder="Search games..." class="app-input w-full pl-10" />
+                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            </div>
+            <button class="app-btn-secondary whitespace-nowrap" (click)="onRequestNewGame()">Request New Game</button>
+        </div>
+
+        <!-- Games Grid -->
+        <div class="flex flex-wrap gap-4">
+            @for (game of gamesNotOwnedByUser; track $index) {
+            <div class="group relative transition-all">
+                <app-card-game
+                    [title]="game.title"
+                    [imageUrl]="game.imageUrl"
+                    [gameAvgDuration]="game.gameAvgDuration"
+                    [minPlayers]="game.minPlayers"
+                    [maxPlayers]="game.maxPlayers"
+                />
+                <div
+                    class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
+                >
                     <button
                         (click)="onClickGame(game.id)"
-                        class="absolute top-0 right-0 left-0 bottom-0"
-                        title="Remove game from my list"
-                    ></button>
-                }
-            </div>
-        }
-    </div>
-
-    <!-- ALL GAMES -->
-    <h2 class="text-2xl font-bold pb-2 pt-24">Games available</h2>
-    <p class="text-gray-400 pb-8">Select from here all the games that you own</p>
-
-    <!-- SEARCH BAR -->
-    <div class="py-4 md:flex items-start justify-start gap-4">
-        <input
-            type="text"
-            [formControl]="gameTitleForm"
-            placeholder="Search by username"
-            class="app-input max-w-96 mb-2"
-            required
-        />
-        <button class="app-btn-primary block" title="Invite user" (click)="onRequestNewGame()">
-            I don't find my game
-        </button>
-    </div>
-
-    <div class="flex gap-2 flex-wrap">
-        @for (game of allGames; track $index) {
-            @if (!userGamesIds.includes(game.id)) {
-                <div class="relative">
-                    <app-card-game
-                        [title]="game.title"
-                        [imageUrl]="game.imageUrl"
-                        [gameAvgDuration]="game.gameAvgDuration"
-                        [minPlayers]="game.minPlayers"
-                        [maxPlayers]="game.maxPlayers"
-                    />
-    
-                    @if (gameIdsToToggle.includes(game.id)) {
-                        <!-- overlay on hover to add -->
-                        <button
-                            (click)="onClickGame(game.id)"
-                            class="absolute top-0 right-0 left-0 bottom-0 bg-green-800/70 rounded-lg p-2 border-2 border-green-600"
-                        >
-                            <span class="font-bold text-xl tracking-wider"
-                                >Add to <br />
-                                my list</span
-                            >
-                        </button>
-                    } @else {
-                        <button
-                            (click)="onClickGame(game.id)"
-                            class="absolute top-0 right-0 left-0 bottom-0"
-                            title="Add game to my list"
-                        ></button>
-                    }
+                        class="absolute bottom-4 left-4 right-4"
+                        [class.app-btn-primary]="!gameIdsToToggle.includes(game.id)"
+                        [class.app-btn-secondary]="gameIdsToToggle.includes(game.id)"
+                    >
+                        {{ gameIdsToToggle.includes(game.id) ? 'Cancel' : 'I own it' }}
+                    </button>
                 </div>
+            </div>
             }
-        }
-    </div>
+        </div>
+    </section>
+    }
 </container-wrapper>
