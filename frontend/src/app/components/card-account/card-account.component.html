@@ -1,9 +1,9 @@
 @if (member) {
 <div class="flex justify-start items-center p-4">
     <app-image-profile [imageUrl]="member.imageUrl" />
-    <div class="ml-3 text-nowrap">
+    <div class="ml-3 text-nowrap text-start">
         <p class="font-semibold text-white">{{ member.displayName }}</p>
-        <p class="text-gray-400 text-sm text-start">
+        <p class="text-gray-400 text-sm">
             <span>{{ member.username }}</span>
             @if (isOwner) {
             <span class="text-blue-500 pl-2">owner</span>

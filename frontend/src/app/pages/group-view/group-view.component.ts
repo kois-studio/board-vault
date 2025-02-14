@@ -109,6 +109,13 @@ export class GroupViewComponent {
 
     // #region Getters
 
+    get invitationsList(): typeof this.invitationsGroupIndex[number] {
+        if (!this.groupData) {
+            return []
+        }
+        return this.invitationsGroupIndex[this.groupData.id]
+    }
+
     get totalUniqueGames(): Array<
         GameType & {
             quantity: number // number of copies of the game in the group
