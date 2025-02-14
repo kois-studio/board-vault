@@ -6,7 +6,6 @@ import { FormUpdateProfileComponent } from './forms/form-update-profile/form-upd
 import { FormUpdateUsernameComponent } from './forms/form-update-username/form-update-username.component'
 
 @Component({
-    standalone: true,
     imports: [FormUpdateProfileComponent, FormUpdateUsernameComponent, FormUpdateEmailComponent],
     selector: 'app-modal-profile-settings',
     templateUrl: 'modal-profile-settings.component.html',

@@ -3,7 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router'
 import { DataService } from '../../core/services/data.service'
 
 @Component({
-    standalone: true,
     imports: [],
     templateUrl: 'group-delete.component.html',
 })

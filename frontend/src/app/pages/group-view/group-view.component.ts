@@ -13,7 +13,6 @@ import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { DataService } from '../../core/services/data.service'
 
 @Component({
-    standalone: true,
     imports: [
         TitleSubtitleComponent,
         ContainerWrapperComponent,
@@ -181,10 +180,10 @@ export class GroupViewComponent {
     // #region Button Clicks
 
     onClickSelectAll(): void {
-        if (!this.groupData) return;
-        
+        if (!this.groupData) return
+
         const allMembersSelected = this.selectedUserIds.length === this.groupData.members.length
-        this.selectedUserIds = allMembersSelected ? [] : this.groupData.members.map(member => member.id);
+        this.selectedUserIds = allMembersSelected ? [] : this.groupData.members.map((member) => member.id)
     }
 
     onClickMeeting(meetId: number): void {

@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common'
 import { Component, Input } from '@angular/core'
 
 @Component({
-    standalone: true,
     imports: [CommonModule],
     selector: 'review-display',
     templateUrl: 'review-display.component.html',

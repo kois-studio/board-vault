@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common'
 import { Component, Input } from '@angular/core'
 
 @Component({
-    standalone: true,
     imports: [CommonModule],
     selector: 'app-image-profile',
     templateUrl: 'image-profile.component.html',

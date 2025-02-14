@@ -5,7 +5,6 @@ import type { UserType } from '../../../../../../api/api.types'
 import { DataService } from '../../../../../../core/services/data.service'
 
 @Component({
-    standalone: true,
     imports: [ReactiveFormsModule, CommonModule, FormUpdateUsernameComponent],
     selector: 'form-update-username',
     templateUrl: 'form-update-username.component.html',

@@ -7,7 +7,6 @@ import { Api } from '../../../api/api'
 import { ToastService } from '../../../components/toast/toast.service'
 
 @Component({
-    standalone: true,
     imports: [ReactiveFormsModule, CommonModule],
     selector: 'app-form-register',
     templateUrl: 'form-register.component.html',

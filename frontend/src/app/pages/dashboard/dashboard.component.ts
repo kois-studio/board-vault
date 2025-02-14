@@ -5,7 +5,6 @@ import { SkeletonCardGroupComponent } from '../../components/skeletons/skeleton-
 import { DataService } from '../../core/services/data.service'
 
 @Component({
-    standalone: true,
     imports: [CardGroupComponent, RouterLink, SkeletonCardGroupComponent],
     templateUrl: 'dashboard.component.html',
 })
