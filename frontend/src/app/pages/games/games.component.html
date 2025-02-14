@@ -35,7 +35,7 @@
     @if (activeTab === 'collection') {
     <section class="py-8">
         <div class="flex flex-wrap gap-4">
-            @for (game of userGames; track $index) {
+            @for (game of gamesOwnedByUser; track $index) {
             <div class="group relative transition-all" [class.ring-2]="gameIdsToToggle.includes(game.id)" [class.ring-red-500]="gameIdsToToggle.includes(game.id)">
                 <app-card-game
                     [title]="game.title"

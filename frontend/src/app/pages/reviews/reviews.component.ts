@@ -60,7 +60,7 @@ export class ReviewComponent {
     }
 
     get gamesList() {
-        return Object.values(this.allGroupGames)
+        return Object.values(this.allGroupGames).sort((a, b) => a.data.title.localeCompare(b.data.title))
     }
 
     public getReview(gameId: number): number {
