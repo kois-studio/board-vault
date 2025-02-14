@@ -79,7 +79,16 @@
 
         <!-- right col -->
         <section class="p-4 col-span-2">
-            <h2 class="text-xl font-semibold mb-4">Group games ({{totalUniqueGames.length}})</h2>
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold">Group games ({{totalUniqueGames.length}})</h2>
+                <button 
+                    class="text-gray-400 hover:text-white px-2 py-1 rounded-lg" 
+                    [ngClass]="{'text-white bg-zinc-700': isFilteringGames}"
+                    (click)="onClickFilterGames()"
+                >
+                    <i class="bi bi-filter text-xl"></i>
+                </button>
+            </div>
             <hr />
 
             <div class="grid lg:grid-cols-2 gap-4 pt-4">

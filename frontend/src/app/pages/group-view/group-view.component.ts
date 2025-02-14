@@ -44,6 +44,7 @@ export class GroupViewComponent {
     public avgReviewsIndex: Record<GameType['id'], { average: number; voters: number }> = {}
     public groupMeetings: Array<MeetWithAttendeesAndGamesType> = []
     public isLoading = false
+    public isFilteringGames = false
 
     constructor(
         private readonly router: Router,
@@ -108,7 +109,7 @@ export class GroupViewComponent {
 
     // #region Getters
 
-    get invitationsList(): typeof this.invitationsGroupIndex[number] {
+    get invitationsList(): (typeof this.invitationsGroupIndex)[number] {
         if (!this.groupData) {
             return []
         }
@@ -166,11 +167,17 @@ export class GroupViewComponent {
             }
         }
 
-        return games.sort((a, b) => {
+        games.sort((a, b) => {
             const a_review = this.avgReviewsIndex[a.id]?.average ?? -1
             const b_review = this.avgReviewsIndex[b.id]?.average ?? -1
             return b_review - a_review
         })
+
+        if (this.isFilteringGames) {
+            return games.filter((game) => game.active)
+        }
+
+        return games
     }
 
     // #region Parse Data
@@ -229,5 +236,9 @@ export class GroupViewComponent {
 
     onGoBack() {
         this.router.navigate(['/dashboard'])
+    }
+
+    onClickFilterGames(): void {
+        this.isFilteringGames = !this.isFilteringGames
     }
 }
