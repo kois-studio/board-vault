@@ -5,6 +5,7 @@ import { Api } from '../../api/api'
 import type { GameType, GroupWithMembersAndGames, MeetWithAttendeesAndGamesType, UserType } from '../../api/api.types'
 import { CardAccountComponent } from '../../components/card-account/card-account.component'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
+import { ButtonComponent } from '../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { ImageBackgroundComponent } from '../../components/ui/image-background/image-background.component'
 import { ReviewDisplayComponent } from '../../components/ui/review-display/review-display.component'
@@ -23,6 +24,7 @@ import { LocalStorageService } from '../../core/services/local-storage.service'
         ImageProfileComponent,
         ImageBackgroundComponent,
         ReviewDisplayComponent,
+        ButtonComponent,
     ],
     templateUrl: 'group-view.component.html',
     styleUrls: ['group-view.component.scss'],
