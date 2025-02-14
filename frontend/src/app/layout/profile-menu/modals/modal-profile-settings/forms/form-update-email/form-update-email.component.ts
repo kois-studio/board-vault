@@ -7,7 +7,7 @@ import { DataService } from '../../../../../../core/services/data.service'
 import { LocalStorageService } from '../../../../../../core/services/local-storage.service'
 
 @Component({
-    imports: [ReactiveFormsModule, CommonModule, FormUpdateEmailComponent],
+    imports: [ReactiveFormsModule, CommonModule],
     selector: 'form-update-email',
     templateUrl: 'form-update-email.component.html',
 })
