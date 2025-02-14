@@ -65,7 +65,6 @@ export class GroupViewComponent {
             }
 
             this.groupData = groupData
-            this.selectedUserIds = groupData.members.map((member) => member.id)
 
             // After getting group data, index all reviews by gameId
             this._indexReviews(groupData)
@@ -128,6 +127,7 @@ export class GroupViewComponent {
             return []
         }
 
+        // STEP 1: active/inactive games based on selected members (ownership)
         for (const member of this.groupData.members) {
             // add the games of the non-selected members as inactive
             if (!this.selectedUserIds.includes(member.id)) {
@@ -153,6 +153,16 @@ export class GroupViewComponent {
                         games[index].quantity++
                     }
                 }
+            }
+        }
+
+        // STEP 2: disable the games which min/max players are not suitable for the selected members
+        for (const game of games) {
+            const tooManyPlayers = this.selectedUserIds.length > game.maxPlayers
+            const tooFewPlayers = this.selectedUserIds.length < game.minPlayers
+
+            if (tooManyPlayers || tooFewPlayers) {
+                game.active = false
             }
         }
 
