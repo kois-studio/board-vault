@@ -1,10 +1,10 @@
-import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { CommonModule } from '@angular/common'
+import { Component, Input } from '@angular/core'
 
 /**
  * @description
  * A button component that can be used to create a button with a variety of variants and types.
- * 
+ *
  * @example
  * ```html
  * <app-button>Click me</app-button>
@@ -22,8 +22,9 @@ import { Component, Input } from '@angular/core';
     imports: [CommonModule],
 })
 export class ButtonComponent {
-    @Input() variant: 'primary' | 'secondary' | 'danger' | 'success' = 'primary';
-    @Input() type: 'button' | 'submit' | 'reset' = 'button';
-    @Input() disabled: boolean = false;
-    @Input() loading: boolean = false;
+    @Input() variant: 'primary' | 'secondary' | 'danger' | 'success' = 'primary'
+    @Input() size: 'small' | 'medium' | 'large' = 'medium'
+    @Input() type: 'button' | 'submit' | 'reset' = 'button'
+    @Input() disabled = false
+    @Input() loading = false
 }
