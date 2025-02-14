@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, effect } from '@angular/core'
+import { Component, effect, signal } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { Api } from '../../api/api'
 import type { GameType, GroupWithMembersAndGames, MeetWithAttendeesAndGamesType, UserType } from '../../api/api.types'
@@ -11,6 +11,7 @@ import { ReviewDisplayComponent } from '../../components/ui/review-display/revie
 import { TitleSubtitleComponent } from '../../components/ui/title-subtitle/title-subtitle.component'
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { DataService } from '../../core/services/data.service'
+import { LocalStorageService } from '../../core/services/local-storage.service'
 
 @Component({
     imports: [
@@ -43,15 +44,22 @@ export class GroupViewComponent {
     public gameReviews: Record<GameType['id'], Record<UserType['id'], number>> = {}
     public avgReviewsIndex: Record<GameType['id'], { average: number; voters: number }> = {}
     public groupMeetings: Array<MeetWithAttendeesAndGamesType> = []
+    
+    // --------------------------------------------------------------------------
+    //        flags
+    // --------------------------------------------------------------------------
     public isLoading = false
-    public isFilteringGames = false
+    public isFilteringGames = signal(false)
 
     constructor(
         private readonly router: Router,
         private readonly route: ActivatedRoute,
         private readonly dataService: DataService,
         private readonly api: Api,
+        private readonly localStorageService: LocalStorageService,
     ) {
+        this.isFilteringGames.set(this.localStorageService.getItem('isFilteringGames') === 'true')
+
         effect(() => {
             this.userData = this.dataService.currentUser()
             this.userGroups = this.dataService.userGroups()
@@ -173,7 +181,7 @@ export class GroupViewComponent {
             return b_review - a_review
         })
 
-        if (this.isFilteringGames) {
+        if (this.isFilteringGames()) {
             return games.filter((game) => game.active)
         }
 
@@ -238,7 +246,9 @@ export class GroupViewComponent {
         this.router.navigate(['/dashboard'])
     }
 
-    onClickFilterGames(): void {
-        this.isFilteringGames = !this.isFilteringGames
+    public toggleGamesFilter(): void {
+        const newValue = !this.isFilteringGames()
+        this.isFilteringGames.set(newValue)
+        this.localStorageService.setItem('isFilteringGames', newValue.toString())
     }
 }

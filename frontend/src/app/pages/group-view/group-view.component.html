@@ -83,8 +83,8 @@
                 <h2 class="text-xl font-semibold">Group games ({{totalUniqueGames.length}})</h2>
                 <button 
                     class="text-gray-400 hover:text-white px-2 py-1 rounded-lg" 
-                    [ngClass]="{'text-white bg-zinc-700': isFilteringGames}"
-                    (click)="onClickFilterGames()"
+                    [ngClass]="{'text-white bg-zinc-700': isFilteringGames()}"
+                    (click)="toggleGamesFilter()"
                 >
                     <i class="bi bi-filter text-xl"></i>
                 </button>
