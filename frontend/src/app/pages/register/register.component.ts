@@ -4,7 +4,6 @@ import { FormRegisterComponent } from './form-register/form-register.component'
 
 @Component({
     templateUrl: 'register.component.html',
-    standalone: true,
     imports: [RouterLink, FormRegisterComponent],
 })
 export class RegisterComponent implements OnInit {

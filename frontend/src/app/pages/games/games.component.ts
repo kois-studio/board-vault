@@ -7,7 +7,6 @@ import { TitleSubtitleComponent } from '../../components/ui/title-subtitle/title
 import { DataService } from '../../core/services/data.service'
 
 @Component({
-    standalone: true,
     imports: [CardGameComponent, ReactiveFormsModule, ContainerWrapperComponent, TitleSubtitleComponent],
     templateUrl: 'games.component.html',
 })

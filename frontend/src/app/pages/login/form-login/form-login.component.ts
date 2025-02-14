@@ -8,7 +8,6 @@ import { DataService } from '../../../core/services/data.service'
 import { LocalStorageService } from '../../../core/services/local-storage.service'
 
 @Component({
-    standalone: true,
     imports: [ReactiveFormsModule, CommonModule],
     selector: 'app-form-login',
     templateUrl: 'form-login.component.html',

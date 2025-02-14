@@ -8,7 +8,6 @@ import { ModalProfileNotificationsComponent } from './modals/modal-profile-notif
 import { ModalProfileSettingsComponent } from './modals/modal-profile-settings/modal-profile-settings.component'
 
 @Component({
-    standalone: true,
     imports: [ImageProfileComponent, ModalProfileSettingsComponent, ModalProfileInvitationsComponent, ModalProfileNotificationsComponent],
     selector: 'app-profile-menu',
     templateUrl: 'profile-menu.component.html',

@@ -6,7 +6,6 @@ import { ProfileMenuComponent } from '../profile-menu/profile-menu.component'
 @Component({
     selector: 'app-layout-header',
     templateUrl: './header.component.html',
-    standalone: true,
     imports: [RouterLink, ProfileMenuComponent],
 })
 export class LayoutHeaderComponent {

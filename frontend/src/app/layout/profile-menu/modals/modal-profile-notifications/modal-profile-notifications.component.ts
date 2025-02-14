@@ -4,7 +4,6 @@ import { SortByDatePipe } from '../../../../core/pipes/sortByDate.pipe'
 import { DataService } from '../../../../core/services/data.service'
 
 @Component({
-    standalone: true,
     imports: [CardNotificationComponent, SortByDatePipe],
     selector: 'app-modal-profile-notifications',
     templateUrl: 'modal-profile-notifications.component.html',

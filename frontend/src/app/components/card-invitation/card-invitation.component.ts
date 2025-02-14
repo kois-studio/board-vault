@@ -4,7 +4,6 @@ import { DataService } from '../../core/services/data.service'
 import { CardAccountComponent } from '../card-account/card-account.component'
 
 @Component({
-    standalone: true,
     imports: [CardAccountComponent],
     selector: 'app-card-invitation',
     templateUrl: 'card-invitation.component.html',

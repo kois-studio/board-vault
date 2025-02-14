@@ -3,7 +3,6 @@ import { CardInvitationComponent } from '../../../../components/card-invitation/
 import { DataService } from '../../../../core/services/data.service'
 
 @Component({
-    standalone: true,
     imports: [CardInvitationComponent],
     selector: 'app-modal-profile-invitations',
     templateUrl: 'modal-profile-invitations.component.html',

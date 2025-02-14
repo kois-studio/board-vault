@@ -13,7 +13,6 @@ import { DataService } from '../../core/services/data.service'
 import type { Nullable } from '../../core/types/commons.type'
 
 @Component({
-    standalone: true,
     imports: [
         CommonModule,
         CustomDatePipe,

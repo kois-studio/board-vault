@@ -6,7 +6,6 @@ import { DataService } from '../../../../../../core/services/data.service'
 import { urlValidator } from '../../../../../../core/validators/url.validator'
 
 @Component({
-    standalone: true,
     imports: [ReactiveFormsModule, CommonModule, FormUpdateProfileComponent],
     selector: 'form-update-profile',
     templateUrl: 'form-update-profile.component.html',

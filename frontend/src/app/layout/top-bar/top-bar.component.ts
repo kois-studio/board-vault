@@ -6,7 +6,6 @@ import { RouterLink, RouterLinkActive } from '@angular/router'
  * used to display user profile and other options
  */
 @Component({
-    standalone: true,
     imports: [RouterLink, RouterLinkActive],
     selector: 'app-layout-top-bar',
     templateUrl: 'top-bar.component.html',
