@@ -27,10 +27,10 @@
                 @for (member of groupData?.members; track $index) {
                 <button
                     (click)="onClickMember(member.id)"
-                    class="bg-zinc-800 rounded-lg cursor-pointer flex items-center justify-start border"
+                    class="rounded-lg cursor-pointer flex items-center justify-start border border-zinc-800"
                     [ngClass]="{
-                            'border-zinc-800': !selectedUserIds.includes(member.id),
-                            'border-green-400': selectedUserIds.includes(member.id),
+                            'bg-zinc-800/30 border-zinc-800': !selectedUserIds.includes(member.id),
+                            'bg-zinc-800 border-green-400': selectedUserIds.includes(member.id),
                         }"
                 >
                     <!-- indicator -->
