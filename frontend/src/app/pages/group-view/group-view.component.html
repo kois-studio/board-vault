@@ -12,14 +12,13 @@
                 <h2 class="text-xl font-semibold mb-4">Members ({{ groupData?.members?.length }})</h2>
                 
                 <!-- select / deselect all -->
-                <button 
-                    (click)="onClickSelectAll()" 
-                    class="app-btn-primary py-1! px-2! absolute top-0 right-0" 
+                <app-button
+                    size="small"
+                    class="absolute top-0 right-0 font-normal"
+                    (click)="onClickSelectAll()"
                 >
-                    <span class="font-normal">
-                        {{ selectedUserIds.length === groupData?.members?.length ? 'Unselect all' : 'Select all' }}
-                    </span>
-                </button>
+                    {{ selectedUserIds.length === groupData?.members?.length ? 'Unselect all' : 'Select all' }}
+                </app-button>
             </div>
             <hr />
 
@@ -73,7 +72,7 @@
 
             <!-- edit group button -->
             <div class="flex justify-end">
-                <button (click)="onClickEditGroup()" class="app-btn-primary mt-8">Manage members</button>
+                <app-button class="mt-8" (click)="onClickEditGroup()">Manage members</app-button>
             </div>
         </section>
 
