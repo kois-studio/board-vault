@@ -10,7 +10,6 @@ import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { DataService } from '../../core/services/data.service'
 
 @Component({
-    standalone: true,
     imports: [CommonModule, TitleSubtitleComponent, ContainerWrapperComponent, CustomDatePipe],
     templateUrl: 'history.component.html',
 })

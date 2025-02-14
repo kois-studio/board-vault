@@ -3,7 +3,6 @@ import { ImageBackgroundComponent } from '../ui/image-background/image-backgroun
 import { ReviewDisplayComponent } from '../ui/review-display/review-display.component'
 
 @Component({
-    standalone: true,
     imports: [ReviewDisplayComponent, ImageBackgroundComponent],
     selector: 'app-card-game',
     templateUrl: 'card-game.component.html',

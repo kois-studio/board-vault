@@ -7,7 +7,6 @@ import { RouterOutlet } from '@angular/router'
  * to display the forms alone
  */
 @Component({
-    standalone: true,
     imports: [RouterOutlet],
     selector: 'app-layout-basic',
     templateUrl: 'layout-basic.component.html',

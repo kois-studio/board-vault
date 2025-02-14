@@ -5,7 +5,6 @@ import { DataService } from '../../core/services/data.service'
 import { formatDate } from '../../core/utils/formatDate'
 
 @Component({
-    standalone: true,
     imports: [CommonModule],
     selector: 'app-card-notification',
     templateUrl: 'card-notification.component.html',

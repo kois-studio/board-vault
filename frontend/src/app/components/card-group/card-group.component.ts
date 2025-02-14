@@ -7,7 +7,6 @@ import { DataService } from '../../core/services/data.service'
 import { CardAccountComponent } from '../card-account/card-account.component'
 
 @Component({
-    standalone: true,
     imports: [CommonModule, CardAccountComponent],
     selector: 'app-card-group',
     templateUrl: 'card-group.component.html',

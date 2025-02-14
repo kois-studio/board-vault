@@ -5,7 +5,6 @@ import { ActivatedRoute, Router } from '@angular/router'
 import { DataService } from '../../core/services/data.service'
 
 @Component({
-    standalone: true,
     imports: [CommonModule, ReactiveFormsModule],
     templateUrl: 'meet-new.component.html',
 })

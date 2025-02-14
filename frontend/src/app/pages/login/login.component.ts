@@ -4,7 +4,6 @@ import { FormLoginComponent } from './form-login/form-login.component'
 
 @Component({
     templateUrl: 'login.component.html',
-    standalone: true,
     imports: [RouterLink, FormLoginComponent],
 })
 export class LoginComponent implements OnInit {

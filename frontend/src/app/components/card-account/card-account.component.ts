@@ -3,7 +3,6 @@ import { UserType } from '../../api/api.types'
 import { ImageProfileComponent } from '../image-profile/image-profile.component'
 
 @Component({
-    standalone: true,
     imports: [ImageProfileComponent],
     selector: 'app-card-account',
     templateUrl: 'card-account.component.html',

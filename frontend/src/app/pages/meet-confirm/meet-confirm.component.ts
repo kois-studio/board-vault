@@ -10,7 +10,6 @@ import { DataService } from '../../core/services/data.service'
 import { Nullable } from '../../core/types/commons.type'
 
 @Component({
-    standalone: true,
     imports: [CommonModule, CardAccountComponent],
     templateUrl: 'meet-confirm.component.html',
 })

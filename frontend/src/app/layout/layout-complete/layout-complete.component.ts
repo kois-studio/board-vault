@@ -9,7 +9,6 @@ import { LayoutTopBarComponent } from '../top-bar/top-bar.component'
  * General layout with header and footer
  */
 @Component({
-    standalone: true,
     imports: [RouterOutlet, LayoutHeaderComponent, LayoutFooterComponent, LayoutTopBarComponent],
     selector: 'app-layout-complete',
     templateUrl: 'layout-complete.component.html',

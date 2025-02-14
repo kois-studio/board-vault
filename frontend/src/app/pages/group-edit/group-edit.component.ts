@@ -7,7 +7,6 @@ import { ImageProfileComponent } from '../../components/image-profile/image-prof
 import { DataService } from '../../core/services/data.service'
 
 @Component({
-    standalone: true,
     imports: [CommonModule, ImageProfileComponent, ReactiveFormsModule],
     templateUrl: 'group-edit.component.html',
 })
