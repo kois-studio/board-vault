@@ -19,7 +19,7 @@
         </div>
 
         <div class="absolute top-3 right-3">
-            <button (click)="onDeleteGroup()" class="app-btn-danger py-1 px-2" title="Delete group">
+            <button (click)="onDeleteGroup()" class="app-btn-danger py-1! px-2!" title="Delete group">
                 <i class="bi bi-trash"></i>
             </button>
         </div>
@@ -52,7 +52,7 @@
                                     <span class="font-bold text-xl tracking-wider text-red-500">Cancel</span>
                                 </button>
                             } @else {
-                                <button (click)="markAsToRemove(member.id)" class="app-btn-danger py-1 px-2 mr-2" title="Remove member">
+                                <button (click)="markAsToRemove(member.id)" class="app-btn-danger py-1! px-2! mr-2" title="Remove member">
                                     <i class="bi bi-x"></i>
                                 </button>
                             }
@@ -81,7 +81,7 @@
                             <span class="font-bold text-xl tracking-wider text-red-500">Cancel</span>
                         </button>
                     } @else {
-                        <button (click)="markAsToRemove(invitation.toAccountId)" class="app-btn-danger py-1 px-2 mr-2" title="Remove member">
+                        <button (click)="markAsToRemove(invitation.toAccountId)" class="app-btn-danger py-1! px-2! mr-2" title="Remove member">
                             <i class="bi bi-x"></i>
                         </button>
                     }
