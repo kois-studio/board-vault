@@ -49,8 +49,12 @@ export class GamesComponent {
         return this.gameTitleForm.get('title')
     }
 
+    get gamesOwnedByUser() {
+        return this.userGames.sort((a, b) => a.title.localeCompare(b.title))
+    }
+
     get gamesNotOwnedByUser() {
-        return this.allGames.filter((game) => !this.userGamesIds.includes(game.id))
+        return this.allGames.filter((game) => !this.userGamesIds.includes(game.id)).sort((a, b) => a.title.localeCompare(b.title))
     }
 
     public onClickGame(gameId: number) {
