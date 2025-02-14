@@ -11,14 +11,13 @@
             <div class="relative">
                 <h2 class="text-xl font-semibold mb-4">Members ({{ groupData?.members?.length }})</h2>
                 
-                <!-- members action buttons -->
+                <!-- select / deselect all -->
                 <button 
                     (click)="onClickSelectAll()" 
                     class="app-btn-primary py-1 px-2 absolute top-0 right-0" 
-                    [title]="selectedUserIds.length === groupData?.members?.length ? 'Deselect all' : 'Select all'"
                 >
                     <span class="font-normal">
-                        {{ selectedUserIds.length === groupData?.members?.length ? 'Deselect all' : 'Select all' }}
+                        {{ selectedUserIds.length === groupData?.members?.length ? 'Unselect all' : 'Select all' }}
                     </span>
                 </button>
             </div>
@@ -59,18 +58,23 @@
             </ul>
 
             <!-- INVITED MEMBERS -->
-            @if (groupData && invitationsGroupIndex[groupData.id] && invitationsGroupIndex[groupData.id].length > 0) {
+            @if (invitationsList.length > 0) {
             <h2 class="text-xl font-semibold mb-4 mt-12">Invitations pending</h2>
             <hr />
 
             <ul class="grid gap-y-4 mt-4">
-                @for (invitation of invitationsGroupIndex[groupData.id]; track $index) {
+                @for (invitation of invitationsList; track $index) {
                 <li class="bg-zinc-800 rounded-lg flex items-center justify-start opacity-40">
                     <app-card-account [member]="invitation.toAccount" />
                 </li>
                 }
             </ul>
             }
+
+            <!-- edit group button -->
+            <div class="flex justify-end">
+                <button (click)="onClickEditGroup()" class="app-btn-primary mt-8">Manage members</button>
+            </div>
         </section>
 
         <!-- right col -->
