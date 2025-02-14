@@ -121,7 +121,7 @@ export class GroupViewComponent {
         if (!this.groupData) {
             return []
         }
-        return this.invitationsGroupIndex[this.groupData.id]
+        return this.invitationsGroupIndex[this.groupData.id] || []
     }
 
     get totalUniqueGames(): Array<
