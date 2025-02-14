@@ -44,7 +44,7 @@ export class GroupViewComponent {
     public gameReviews: Record<GameType['id'], Record<UserType['id'], number>> = {}
     public avgReviewsIndex: Record<GameType['id'], { average: number; voters: number }> = {}
     public groupMeetings: Array<MeetWithAttendeesAndGamesType> = []
-    
+
     // --------------------------------------------------------------------------
     //        flags
     // --------------------------------------------------------------------------
