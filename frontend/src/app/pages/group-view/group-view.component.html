@@ -159,9 +159,11 @@
                         {{ meet.meetDate | customDate }}
                     </h3>
 
+                    @if (!meet.isConfirmed) {
                     <button (click)="onClickMeeting(meet.id)" class="font-bold text-blue-400 hover:text-blue-300">
                         Edit <i class="bi bi-arrow-right ml-1"></i>
                     </button>
+                    }
                 </div>
 
                 <!-- Content grid -->
