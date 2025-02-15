@@ -13,7 +13,7 @@
         <h2 class="text-xl font-semibold mb-4">Select the attendees</h2>
         <hr />
 
-        <ul class="grid grid-cols-4 gap-4 mt-4">
+        <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4">
             @for (member of groupData?.members; track $index) {
             <button
                 (click)="onClickMember(member.id)"
@@ -54,13 +54,13 @@
             <button
                 [title]="disableSaveGamesPlayed ? 'No changes to save' : 'Save selection'"
                 (click)="onClickMeetConfirm()"
-                class="app-btn-primary absolute -top-2 right-0"
+                class="app-btn-primary absolute top-0 right-0"
             >
                 Confirm
             </button>
         </div>
         <hr />
-        <div class="grid grid-cols-4 gap-4 pt-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pt-4">
             @for (game of totalGames ; track $index) {
             <button
                 (click)="onClickGame(game.id)"
