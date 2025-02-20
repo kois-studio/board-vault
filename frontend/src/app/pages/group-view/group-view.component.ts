@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, effect, signal } from '@angular/core'
+import { Component, effect } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { Api } from '../../api/api'
 import type { GameType, GroupWithMembersAndGames, MeetWithAttendeesAndGamesType, UserType } from '../../api/api.types'
@@ -51,8 +51,8 @@ export class GroupViewComponent {
     //        flags
     // --------------------------------------------------------------------------
     public isLoading = false
-    public isHidingMaxPlayers = signal(false)
-    public isFilteringGames = signal(false)
+    public isHidingMaxPlayers = false
+    public isFilteringGames = false
 
     constructor(
         private readonly router: Router,
@@ -61,8 +61,8 @@ export class GroupViewComponent {
         private readonly api: Api,
         private readonly localStorageService: LocalStorageService,
     ) {
-        this.isFilteringGames.set(this.localStorageService.getItem('isFilteringGames') === 'true')
-        this.isHidingMaxPlayers.set(this.localStorageService.getItem('isHidingMaxPlayers') === 'true')
+        this.isFilteringGames = this.localStorageService.getItem('isFilteringGames') === 'true'
+        this.isHidingMaxPlayers = this.localStorageService.getItem('isHidingMaxPlayers') === 'true'
 
         effect(() => {
             this.userData = this.dataService.currentUser()
@@ -170,7 +170,7 @@ export class GroupViewComponent {
         }
 
         // STEP 2: disable the games which min/max players are not suitable for the selected members
-        if (this.isHidingMaxPlayers()) {
+        if (this.isHidingMaxPlayers) {
             for (const game of games) {
                 const tooManyPlayers = this.selectedUserIds.length > game.maxPlayers
                 const tooFewPlayers = this.selectedUserIds.length < game.minPlayers
@@ -188,7 +188,7 @@ export class GroupViewComponent {
         })
 
         // STEP 3: hide the games which are not active
-        if (this.isFilteringGames()) {
+        if (this.isFilteringGames) {
             return games.filter((game) => game.active)
         }
 
@@ -256,14 +256,14 @@ export class GroupViewComponent {
     // #region Filters
 
     public toggleGamesFilter(): void {
-        const newValue = !this.isFilteringGames()
-        this.isFilteringGames.set(newValue)
+        const newValue = !this.isFilteringGames
+        this.isFilteringGames = newValue
         this.localStorageService.setItem('isFilteringGames', newValue.toString())
     }
 
     public toggleMaxPlayersFilter(): void {
-        const newValue = !this.isHidingMaxPlayers()
-        this.isHidingMaxPlayers.set(newValue)
+        const newValue = !this.isHidingMaxPlayers
+        this.isHidingMaxPlayers = newValue
         this.localStorageService.setItem('isHidingMaxPlayers', newValue.toString())
     }
 }
