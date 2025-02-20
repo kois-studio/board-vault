@@ -51,8 +51,9 @@ export class GroupViewComponent {
     //        flags
     // --------------------------------------------------------------------------
     public isLoading = false
-    public isHidingMaxPlayers = false
-    public isFilteringGames = false
+    public isFilteringGames = false // to filter out 'disabled' games
+    public isHidingMaxPlayers = false // to disable games based on min/max players
+    public isRecalculatingReviews = false // to recalculate the reviews for the selected members
 
     constructor(
         private readonly router: Router,
@@ -63,6 +64,7 @@ export class GroupViewComponent {
     ) {
         this.isFilteringGames = this.localStorageService.getItem('isFilteringGames') === 'true'
         this.isHidingMaxPlayers = this.localStorageService.getItem('isHidingMaxPlayers') === 'true'
+        this.isRecalculatingReviews = this.localStorageService.getItem('isRecalculatingReviews') === 'true'
 
         effect(() => {
             this.userData = this.dataService.currentUser()
@@ -265,5 +267,11 @@ export class GroupViewComponent {
         const newValue = !this.isHidingMaxPlayers
         this.isHidingMaxPlayers = newValue
         this.localStorageService.setItem('isHidingMaxPlayers', newValue.toString())
+    }
+
+    public toggleRecalculateReviews(): void {
+        const newValue = !this.isRecalculatingReviews
+        this.isRecalculatingReviews = newValue
+        this.localStorageService.setItem('isRecalculatingReviews', newValue.toString())
     }
 }
