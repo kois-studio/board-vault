@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, effect } from '@angular/core'
+import { Component, effect, inject } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { Api } from '../../api/api'
 import type { GameType, GroupWithMembersAndGames, MeetWithAttendeesAndGamesType, UserType } from '../../api/api.types'
@@ -13,6 +13,7 @@ import { TitleSubtitleComponent } from '../../components/ui/title-subtitle/title
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { DataService } from '../../core/services/data.service'
 import { LocalStorageService } from '../../core/services/local-storage.service'
+import { GroupViewService } from './group-view.service'
 
 @Component({
     imports: [
@@ -30,42 +31,44 @@ import { LocalStorageService } from '../../core/services/local-storage.service'
     styleUrls: ['group-view.component.scss'],
 })
 export class GroupViewComponent {
+    private readonly dataService = inject(DataService)
+    private readonly groupViewService = inject(GroupViewService)
+
     // --------------------------------------------------------------------------
-    //        DATA from services
+    //        Services signals
     // --------------------------------------------------------------------------
     public userData: ReturnType<typeof this.dataService.currentUser> = null
     private userGroups: ReturnType<typeof this.dataService.userGroups> = []
     userMeets: ReturnType<typeof this.dataService.userMeets> = []
     public invitationsGroupIndex: ReturnType<typeof this.dataService.invitationsGroupIndex> = {}
 
+    // groupViewService
+    public readonly groupMembers$ = this.groupViewService.groupMembers
+    public readonly selectedMembers$ = this.groupViewService.selectedMembers
+    public readonly isFilteringGames$ = this.groupViewService.isFilteringGames
+    public readonly isHidingMaxPlayers$ = this.groupViewService.isHidingMaxPlayers
+    public readonly isRecalculatingReviews$ = this.groupViewService.isRecalculatingReviews
+    public readonly gameReviews$ = this.groupViewService.gameReviews
+    public readonly avgReviewsIndex$ = this.groupViewService.avgReviewsIndex
+    public readonly totalUniqueGames$ = this.groupViewService.totalUniqueGames
+
     // --------------------------------------------------------------------------
     //        DATA for this component
     // --------------------------------------------------------------------------
-    public selectedUserIds: number[] = []
     public groupData: null | (typeof this.userGroups)[number] = null
-    public gameReviews: Record<GameType['id'], Record<UserType['id'], number>> = {}
-    public avgReviewsIndex: Record<GameType['id'], { average: number; voters: number }> = {}
     public groupMeetings: Array<MeetWithAttendeesAndGamesType> = []
 
     // --------------------------------------------------------------------------
     //        flags
     // --------------------------------------------------------------------------
     public isLoading = false
-    public isFilteringGames = false // to filter out 'disabled' games
-    public isHidingMaxPlayers = false // to disable games based on min/max players
-    public isRecalculatingReviews = false // to recalculate the reviews for the selected members
 
     constructor(
+        private readonly api: Api,
         private readonly router: Router,
         private readonly route: ActivatedRoute,
-        private readonly dataService: DataService,
-        private readonly api: Api,
         private readonly localStorageService: LocalStorageService,
     ) {
-        this.isFilteringGames = this.localStorageService.getItem('isFilteringGames') === 'true'
-        this.isHidingMaxPlayers = this.localStorageService.getItem('isHidingMaxPlayers') === 'true'
-        this.isRecalculatingReviews = this.localStorageService.getItem('isRecalculatingReviews') === 'true'
-
         effect(() => {
             this.userData = this.dataService.currentUser()
             this.userGroups = this.dataService.userGroups()
@@ -82,7 +85,8 @@ export class GroupViewComponent {
             this.groupData = groupData
 
             // After getting group data, index all reviews by gameId
-            this._indexReviews(groupData)
+            this._indexReviews(groupData.members)
+            this.groupMembers$.set(groupData.members)
 
             // Get the group meetings data (with its members and games)
             this.api.getGroupMeetings(groupId).subscribe({
@@ -98,27 +102,19 @@ export class GroupViewComponent {
         })
     }
 
-    private _indexReviews(groupData: GroupWithMembersAndGames) {
-        // Step 1: Index all reviews by gameId and userId
-        for (const member of groupData.members) {
+    private _indexReviews(members: GroupWithMembersAndGames['members']) {
+        const reviews: Record<GameType['id'], Record<UserType['id'], number>> = {}
+
+        for (const member of members) {
             for (const review of member.reviews) {
-                if (this.gameReviews[review.gameId] === undefined) {
-                    this.gameReviews[review.gameId] = {}
+                if (reviews[review.gameId] === undefined) {
+                    reviews[review.gameId] = {}
                 }
-
-                this.gameReviews[review.gameId][member.id] = review.review
+                reviews[review.gameId][member.id] = review.review
             }
         }
 
-        // Step 2: Calculate average review for each game
-        for (const [gameId, value] of Object.entries(this.gameReviews)) {
-            const reviews = Object.values(value)
-            const sum = reviews.reduce((acc, review) => acc + review, 0)
-            this.avgReviewsIndex[Number(gameId)] = {
-                average: Number((sum / reviews.length).toFixed(2)),
-                voters: reviews.length,
-            }
-        }
+        this.gameReviews$.set(reviews)
     }
 
     // #region Getters
@@ -128,73 +124,6 @@ export class GroupViewComponent {
             return []
         }
         return this.invitationsGroupIndex[this.groupData.id] || []
-    }
-
-    get totalUniqueGames(): Array<
-        GameType & {
-            quantity: number // number of copies of the game in the group
-            active: boolean // to highlight or not in the UI
-        }
-    > {
-        const games: Array<GameType & { quantity: number; active: boolean }> = []
-
-        if (!this.groupData) {
-            return []
-        }
-
-        // STEP 1: active/inactive games based on selected members (ownership)
-        for (const member of this.groupData.members) {
-            // add the games of the non-selected members as inactive
-            if (!this.selectedUserIds.includes(member.id)) {
-                for (const game of member.games) {
-                    const gameObject = games.find((g) => g.id === game.id)
-                    if (!gameObject) {
-                        games.push({ ...game, active: false, quantity: 1 })
-                    } else {
-                        gameObject.quantity++
-                    }
-                }
-            }
-            // add the games of the selected members as active
-            else {
-                for (const game of member.games) {
-                    const gameObject = games.find((g) => g.id === game.id)
-                    if (!gameObject) {
-                        games.push({ ...game, active: true, quantity: 1 })
-                    } else {
-                        // if was already added, simply update the active flag
-                        const index = games.findIndex((g) => g.id === game.id)
-                        games[index].active = true
-                        games[index].quantity++
-                    }
-                }
-            }
-        }
-
-        // STEP 2: disable the games which min/max players are not suitable for the selected members
-        if (this.isHidingMaxPlayers) {
-            for (const game of games) {
-                const tooManyPlayers = this.selectedUserIds.length > game.maxPlayers
-                const tooFewPlayers = this.selectedUserIds.length < game.minPlayers
-
-                if (tooManyPlayers || tooFewPlayers) {
-                    game.active = false
-                }
-            }
-        }
-
-        games.sort((a, b) => {
-            const a_review = this.avgReviewsIndex[a.id]?.average ?? -1
-            const b_review = this.avgReviewsIndex[b.id]?.average ?? -1
-            return b_review - a_review
-        })
-
-        // STEP 3: hide the games which are not active
-        if (this.isFilteringGames) {
-            return games.filter((game) => game.active)
-        }
-
-        return games
     }
 
     // #region Parse Data
@@ -215,7 +144,7 @@ export class GroupViewComponent {
     }
 
     parseGameIds(gameIds: Array<GameType['id']>): Array<GameType> {
-        return gameIds.map((gameId) => this.totalUniqueGames.find((game) => game.id === gameId)).filter((game) => game !== undefined)
+        return gameIds.map((gameId) => this.totalUniqueGames$().find((game) => game.id === gameId)).filter((game) => game !== undefined)
     }
 
     // #region Button Clicks
@@ -223,8 +152,8 @@ export class GroupViewComponent {
     onClickSelectAll(): void {
         if (!this.groupData) return
 
-        const allMembersSelected = this.selectedUserIds.length === this.groupData.members.length
-        this.selectedUserIds = allMembersSelected ? [] : this.groupData.members.map((member) => member.id)
+        const allMembersSelected = this.selectedMembers$().length === this.groupData.members.length
+        this.selectedMembers$.set(allMembersSelected ? [] : this.groupData.members.map((member) => member.id))
     }
 
     onClickMeeting(meetId: number): void {
@@ -232,10 +161,11 @@ export class GroupViewComponent {
     }
 
     onClickMember(memberId: number) {
-        if (this.selectedUserIds.includes(memberId)) {
-            this.selectedUserIds = this.selectedUserIds.filter((id) => id !== memberId)
+        const currentSelected = this.selectedMembers$()
+        if (currentSelected.includes(memberId)) {
+            this.selectedMembers$.set(currentSelected.filter((id) => id !== memberId))
         } else {
-            this.selectedUserIds.push(memberId)
+            this.selectedMembers$.set([...currentSelected, memberId])
         }
     }
 
@@ -258,20 +188,20 @@ export class GroupViewComponent {
     // #region Filters
 
     public toggleGamesFilter(): void {
-        const newValue = !this.isFilteringGames
-        this.isFilteringGames = newValue
+        const newValue = !this.isFilteringGames$()
+        this.isFilteringGames$.set(newValue)
         this.localStorageService.setItem('isFilteringGames', newValue.toString())
     }
 
     public toggleMaxPlayersFilter(): void {
-        const newValue = !this.isHidingMaxPlayers
-        this.isHidingMaxPlayers = newValue
+        const newValue = !this.isHidingMaxPlayers$()
+        this.isHidingMaxPlayers$.set(newValue)
         this.localStorageService.setItem('isHidingMaxPlayers', newValue.toString())
     }
 
     public toggleRecalculateReviews(): void {
-        const newValue = !this.isRecalculatingReviews
-        this.isRecalculatingReviews = newValue
+        const newValue = !this.isRecalculatingReviews$()
+        this.isRecalculatingReviews$.set(newValue)
         this.localStorageService.setItem('isRecalculatingReviews', newValue.toString())
     }
 }
