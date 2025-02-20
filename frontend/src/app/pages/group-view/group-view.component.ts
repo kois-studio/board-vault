@@ -2,7 +2,13 @@ import { CommonModule } from '@angular/common'
 import { Component, effect, inject } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { Api } from '../../api/api'
-import type { GameType, GroupWithMembersAndGames, MeetWithAttendeesAndGamesType, UserType } from '../../api/api.types'
+import type {
+    GameType,
+    GroupWithMembersAndGames,
+    InvitationWithAccountsData,
+    MeetWithAttendeesAndGamesType,
+    UserType,
+} from '../../api/api.types'
 import { CardAccountComponent } from '../../components/card-account/card-account.component'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
 import { ButtonComponent } from '../../components/ui/button/button.component'
@@ -37,10 +43,11 @@ export class GroupViewComponent {
     // --------------------------------------------------------------------------
     //        Services signals
     // --------------------------------------------------------------------------
-    public userData: ReturnType<typeof this.dataService.currentUser> = null
-    private userGroups: ReturnType<typeof this.dataService.userGroups> = []
-    userMeets: ReturnType<typeof this.dataService.userMeets> = []
-    public invitationsGroupIndex: ReturnType<typeof this.dataService.invitationsGroupIndex> = {}
+    // dataService
+    public readonly currentUser$ = this.dataService.currentUser
+    public readonly userGroups$ = this.dataService.userGroups
+    public readonly userMeets$ = this.dataService.userMeets
+    public readonly invitationsGroupIndex$ = this.dataService.invitationsGroupIndex
 
     // groupViewService
     public readonly groupMembers$ = this.groupViewService.groupMembers
@@ -49,13 +56,13 @@ export class GroupViewComponent {
     public readonly isHidingMaxPlayers$ = this.groupViewService.isHidingMaxPlayers
     public readonly isRecalculatingReviews$ = this.groupViewService.isRecalculatingReviews
     public readonly gameReviews$ = this.groupViewService.gameReviews
-    public readonly avgReviewsIndex$ = this.groupViewService.avgReviewsIndex
-    public readonly totalUniqueGames$ = this.groupViewService.totalUniqueGames
+    public readonly avgReviewsIndexComputed = this.groupViewService.avgReviewsIndexComputed
+    public readonly totalUniqueGamesComputed = this.groupViewService.totalUniqueGamesComputed
 
     // --------------------------------------------------------------------------
     //        DATA for this component
     // --------------------------------------------------------------------------
-    public groupData: null | (typeof this.userGroups)[number] = null
+    public groupData: null | GroupWithMembersAndGames = null
     public groupMeetings: Array<MeetWithAttendeesAndGamesType> = []
 
     // --------------------------------------------------------------------------
@@ -70,15 +77,10 @@ export class GroupViewComponent {
         private readonly localStorageService: LocalStorageService,
     ) {
         effect(() => {
-            this.userData = this.dataService.currentUser()
-            this.userGroups = this.dataService.userGroups()
-            this.userMeets = this.dataService.userMeets()
-            this.invitationsGroupIndex = this.dataService.invitationsGroupIndex()
-
             const groupId = Number.parseInt(this.route.snapshot.paramMap.get('groupId') || '')
-            const groupData = this.userGroups.find((group) => group.id === groupId)
+            const groupData = this.userGroups$().find((group) => group.id === groupId)
 
-            if (Number.isNaN(groupId) || !this.userData || !groupData) {
+            if (Number.isNaN(groupId) || !this.currentUser$() || !groupData) {
                 return
             }
 
@@ -119,11 +121,11 @@ export class GroupViewComponent {
 
     // #region Getters
 
-    get invitationsList(): (typeof this.invitationsGroupIndex)[number] {
+    get invitationsList(): InvitationWithAccountsData[] {
         if (!this.groupData) {
             return []
         }
-        return this.invitationsGroupIndex[this.groupData.id] || []
+        return this.invitationsGroupIndex$()[this.groupData.id] || []
     }
 
     // #region Parse Data
@@ -144,7 +146,9 @@ export class GroupViewComponent {
     }
 
     parseGameIds(gameIds: Array<GameType['id']>): Array<GameType> {
-        return gameIds.map((gameId) => this.totalUniqueGames$().find((game) => game.id === gameId)).filter((game) => game !== undefined)
+        return gameIds
+            .map((gameId) => this.totalUniqueGamesComputed().find((game) => game.id === gameId))
+            .filter((game) => game !== undefined)
     }
 
     // #region Button Clicks
