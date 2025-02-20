@@ -19,10 +19,10 @@ import { LocalStorageService } from './local-storage.service'
 @Injectable({ providedIn: 'root' })
 export class DataService {
     // current user data, null if not logged in
-    public currentUser: WritableSignal<null | UserType> = signal(null)
+    public readonly currentUser: WritableSignal<null | UserType> = signal(null)
 
     // loading index of operations
-    public loadingStatesIndex: WritableSignal<Record<string, boolean>> = signal({
+    public readonly loadingStatesIndex: WritableSignal<Record<string, boolean>> = signal({
         [LOADING_KEYS.USER_DATA]: true,
         [LOADING_KEYS.GAMES_LIST]: true,
         [LOADING_KEYS.USER_INVITATIONS]: true,
@@ -36,21 +36,21 @@ export class DataService {
     //         ARRAYS OF DATA
     // --------------------------------------------------------------------------
     // `userXYZ` to store the data of the current user
-    public userGames: WritableSignal<Array<GameType>> = signal([])
-    public userGroups: WritableSignal<Array<GroupWithMembersAndGames>> = signal([])
-    public userNotifications: WritableSignal<Array<NotificationType>> = signal([])
-    public userInvitations: WritableSignal<Array<InvitationWithExtraData>> = signal([])
-    public userReviews: WritableSignal<Array<GameReviewType>> = signal([])
-    public userMeets: WritableSignal<Array<MeetType>> = signal([])
+    public readonly userGames: WritableSignal<Array<GameType>> = signal([])
+    public readonly userGroups: WritableSignal<Array<GroupWithMembersAndGames>> = signal([])
+    public readonly userNotifications: WritableSignal<Array<NotificationType>> = signal([])
+    public readonly userInvitations: WritableSignal<Array<InvitationWithExtraData>> = signal([])
+    public readonly userReviews: WritableSignal<Array<GameReviewType>> = signal([])
+    public readonly userMeets: WritableSignal<Array<MeetType>> = signal([])
 
     // list of all games available to select
-    public gamesList: WritableSignal<Array<GameType>> = signal([])
+    public readonly gamesList: WritableSignal<Array<GameType>> = signal([])
 
     // --------------------------------------------------------------------------
     //         INDEXES (for fast access to data)
     // --------------------------------------------------------------------------
     // (this {groupId} which {Invitation[]} has pending)
-    public invitationsGroupIndex: WritableSignal<Record<number, Array<InvitationWithAccountsData>>> = signal({})
+    public readonly invitationsGroupIndex: WritableSignal<Record<number, Array<InvitationWithAccountsData>>> = signal({})
 
     // --------------------------------------------------------------------------
     // --------------------------------------------------------------------------

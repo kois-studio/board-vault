@@ -79,7 +79,7 @@
         <!-- right col -->
         <section class="p-4 col-span-2">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-semibold">Group games ({{totalUniqueGames$().length}})</h2>
+                <h2 class="text-xl font-semibold">Group games ({{totalUniqueGamesComputed().length}})</h2>
                 <ul class="flex gap-2">
                     <button
                         title="Recalculate reviews for the selected members"
@@ -110,7 +110,7 @@
             <hr />
 
             <div class="grid lg:grid-cols-2 gap-4 pt-4">
-                @if (totalUniqueGames$().length === 0) {
+                @if (totalUniqueGamesComputed().length === 0) {
                 <div class="lg:col-span-2 text-center py-8 text-gray-400">
                     <p class="pb-2">
                         <i class="bi bi-dice-3 text-4xl"></i>
@@ -124,7 +124,7 @@
                 </div>
                 }
 
-                @for (game of totalUniqueGames$(); track $index) {
+                @for (game of totalUniqueGamesComputed(); track $index) {
                 <div
                     class="rounded bg-zinc-800 p-2 flex justify-between items-center"
                     [ngClass]="{
@@ -150,10 +150,10 @@
                             </p>
                         </div>
                     </div>
-                    @if (avgReviewsIndex$()[game.id]) {
+                    @if (avgReviewsIndexComputed()[game.id]) {
                     <div class="px-3 flex flex-col items-center">
-                        <review-display [review]="avgReviewsIndex$()[game.id].average" [flexCol]="true" />
-                        <span class="text-xs text-gray-400 mt-1">{{ avgReviewsIndex$()[game.id].voters }} voters</span>
+                        <review-display [review]="avgReviewsIndexComputed()[game.id].average" [flexCol]="true" />
+                        <span class="text-xs text-gray-400 mt-1">{{ avgReviewsIndexComputed()[game.id].voters }} voters</span>
                     </div>
                     }
                 </div>
