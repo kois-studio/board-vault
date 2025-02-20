@@ -82,6 +82,14 @@
                 <h2 class="text-xl font-semibold">Group games ({{totalUniqueGames.length}})</h2>
                 <ul class="flex gap-2">
                     <button
+                        title="Recalculate reviews for the selected members"
+                        class="text-gray-400 hover:text-white px-2 py-1 rounded-lg" 
+                        [ngClass]="{'text-white bg-zinc-700': isRecalculatingReviews}"
+                        (click)="toggleRecalculateReviews()"
+                        >
+                            <i class="bi bi-star text-xl"></i>
+                    </button>
+                    <button
                         title="Disable games whose min/max players don't match the selected members"
                         class="text-gray-400 hover:text-white px-2 py-1 rounded-lg" 
                         [ngClass]="{'text-white bg-zinc-700': isHidingMaxPlayers}"
