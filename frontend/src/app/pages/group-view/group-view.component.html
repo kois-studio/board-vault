@@ -80,13 +80,24 @@
         <section class="p-4 col-span-2">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-semibold">Group games ({{totalUniqueGames.length}})</h2>
-                <button 
-                    class="text-gray-400 hover:text-white px-2 py-1 rounded-lg" 
-                    [ngClass]="{'text-white bg-zinc-700': isFilteringGames()}"
-                    (click)="toggleGamesFilter()"
-                >
-                    <i class="bi bi-filter text-xl"></i>
-                </button>
+                <ul class="flex gap-2">
+                    <button
+                        title="Disable games whose min/max players don't match the selected members"
+                        class="text-gray-400 hover:text-white px-2 py-1 rounded-lg" 
+                        [ngClass]="{'text-white bg-zinc-700': isHidingMaxPlayers()}"
+                        (click)="toggleMaxPlayersFilter()"
+                        >
+                            <i class="bi bi-people text-xl"></i>
+                    </button>
+                    <button
+                        title="Hide disabled games"
+                        class="text-gray-400 hover:text-white px-2 py-1 rounded-lg" 
+                        [ngClass]="{'text-white bg-zinc-700': isFilteringGames()}"
+                        (click)="toggleGamesFilter()"
+                    >
+                        <i class="bi bi-filter text-xl"></i>
+                    </button>
+                </ul>
             </div>
             <hr />
 
