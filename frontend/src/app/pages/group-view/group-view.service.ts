@@ -27,7 +27,7 @@ export class GroupViewService {
     //
     // is regenerated based on the changes of the list (members selected, filters, etc)
     // --------------------------------------------------------------------------
-    public readonly avgReviewsIndex = computed(() => {
+    public readonly avgReviewsIndexComputed = computed(() => {
         const result: Record<GameType['id'], { average: number; voters: number }> = {}
 
         for (const [gameId, value] of Object.entries(this.gameReviews())) {
@@ -61,7 +61,7 @@ export class GroupViewService {
     //
     // is computed based on the group members and the selected members
     // --------------------------------------------------------------------------
-    public readonly totalUniqueGames = computed(
+    public readonly totalUniqueGamesComputed = computed(
         (): Array<
             GameType & {
                 quantity: number // number of copies of the game in the group
@@ -112,8 +112,8 @@ export class GroupViewService {
             }
 
             games.sort((a, b) => {
-                const a_review = this.avgReviewsIndex()[a.id]?.average ?? -1
-                const b_review = this.avgReviewsIndex()[b.id]?.average ?? -1
+                const a_review = this.avgReviewsIndexComputed()[a.id]?.average ?? -1
+                const b_review = this.avgReviewsIndexComputed()[b.id]?.average ?? -1
                 return b_review - a_review
             })
 
