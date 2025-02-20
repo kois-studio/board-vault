@@ -51,6 +51,7 @@ export class GroupViewComponent {
     //        flags
     // --------------------------------------------------------------------------
     public isLoading = false
+    public isHidingMaxPlayers = signal(false)
     public isFilteringGames = signal(false)
 
     constructor(
@@ -61,6 +62,7 @@ export class GroupViewComponent {
         private readonly localStorageService: LocalStorageService,
     ) {
         this.isFilteringGames.set(this.localStorageService.getItem('isFilteringGames') === 'true')
+        this.isHidingMaxPlayers.set(this.localStorageService.getItem('isHidingMaxPlayers') === 'true')
 
         effect(() => {
             this.userData = this.dataService.currentUser()
@@ -168,12 +170,14 @@ export class GroupViewComponent {
         }
 
         // STEP 2: disable the games which min/max players are not suitable for the selected members
-        for (const game of games) {
-            const tooManyPlayers = this.selectedUserIds.length > game.maxPlayers
-            const tooFewPlayers = this.selectedUserIds.length < game.minPlayers
+        if (this.isHidingMaxPlayers()) {
+            for (const game of games) {
+                const tooManyPlayers = this.selectedUserIds.length > game.maxPlayers
+                const tooFewPlayers = this.selectedUserIds.length < game.minPlayers
 
-            if (tooManyPlayers || tooFewPlayers) {
-                game.active = false
+                if (tooManyPlayers || tooFewPlayers) {
+                    game.active = false
+                }
             }
         }
 
@@ -183,6 +187,7 @@ export class GroupViewComponent {
             return b_review - a_review
         })
 
+        // STEP 3: hide the games which are not active
         if (this.isFilteringGames()) {
             return games.filter((game) => game.active)
         }
@@ -248,9 +253,17 @@ export class GroupViewComponent {
         this.router.navigate(['/dashboard'])
     }
 
+    // #region Filters
+
     public toggleGamesFilter(): void {
         const newValue = !this.isFilteringGames()
         this.isFilteringGames.set(newValue)
         this.localStorageService.setItem('isFilteringGames', newValue.toString())
+    }
+
+    public toggleMaxPlayersFilter(): void {
+        const newValue = !this.isHidingMaxPlayers()
+        this.isHidingMaxPlayers.set(newValue)
+        this.localStorageService.setItem('isHidingMaxPlayers', newValue.toString())
     }
 }
