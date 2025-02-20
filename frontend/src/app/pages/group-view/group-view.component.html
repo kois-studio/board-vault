@@ -17,7 +17,7 @@
                     class="absolute top-0 right-0 font-normal"
                     (click)="onClickSelectAll()"
                 >
-                    {{ selectedUserIds.length === groupData?.members?.length ? 'Unselect all' : 'Select all' }}
+                    {{ selectedMembers$().length === groupData?.members?.length ? 'Unselect all' : 'Select all' }}
                 </app-button>
             </div>
             <hr />
@@ -28,16 +28,16 @@
                     (click)="onClickMember(member.id)"
                     class="rounded-lg cursor-pointer flex items-center justify-start border border-zinc-800"
                     [ngClass]="{
-                            'bg-zinc-800/30 border-zinc-800': !selectedUserIds.includes(member.id),
-                            'bg-zinc-800 border-green-400': selectedUserIds.includes(member.id),
+                            'bg-zinc-800/30 border-zinc-800': !selectedMembers$().includes(member.id),
+                            'bg-zinc-800 border-green-400': selectedMembers$().includes(member.id),
                         }"
                 >
                     <!-- indicator -->
                     <div
                         class="h-4 w-4 rounded-full mx-4"
                         [ngClass]="{
-                                'bg-gray-400': !selectedUserIds.includes(member.id),
-                                'bg-green-400': selectedUserIds.includes(member.id),
+                                'bg-gray-400': !selectedMembers$().includes(member.id),
+                                'bg-green-400': selectedMembers$().includes(member.id),
                             }"
                     ></div>
                     <div class="flex items-center justify-between w-full">
@@ -45,7 +45,7 @@
                             [member]="member"
                             [isOwner]="groupData?.createdBy === member.id"
                             [ngClass]="{
-                                    'opacity-30': !selectedUserIds.includes(member.id),
+                                    'opacity-30': !selectedMembers$().includes(member.id),
                                 }"
                         />
                         <div class="text-gray-400 text-sm mr-4">
@@ -79,12 +79,12 @@
         <!-- right col -->
         <section class="p-4 col-span-2">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-semibold">Group games ({{totalUniqueGames.length}})</h2>
+                <h2 class="text-xl font-semibold">Group games ({{totalUniqueGames$().length}})</h2>
                 <ul class="flex gap-2">
                     <button
                         title="Recalculate reviews for the selected members"
                         class="text-gray-400 hover:text-white px-2 py-1 rounded-lg" 
-                        [ngClass]="{'text-white bg-zinc-700': isRecalculatingReviews}"
+                        [ngClass]="{'text-white bg-zinc-700': isRecalculatingReviews$()}"
                         (click)="toggleRecalculateReviews()"
                         >
                             <i class="bi bi-star text-xl"></i>
@@ -92,7 +92,7 @@
                     <button
                         title="Disable games whose min/max players don't match the selected members"
                         class="text-gray-400 hover:text-white px-2 py-1 rounded-lg" 
-                        [ngClass]="{'text-white bg-zinc-700': isHidingMaxPlayers}"
+                        [ngClass]="{'text-white bg-zinc-700': isHidingMaxPlayers$()}"
                         (click)="toggleMaxPlayersFilter()"
                         >
                             <i class="bi bi-people text-xl"></i>
@@ -100,7 +100,7 @@
                     <button
                         title="Hide disabled games"
                         class="text-gray-400 hover:text-white px-2 py-1 rounded-lg" 
-                        [ngClass]="{'text-white bg-zinc-700': isFilteringGames}"
+                        [ngClass]="{'text-white bg-zinc-700': isFilteringGames$()}"
                         (click)="toggleGamesFilter()"
                     >
                         <i class="bi bi-filter text-xl"></i>
@@ -110,7 +110,7 @@
             <hr />
 
             <div class="grid lg:grid-cols-2 gap-4 pt-4">
-                @if (totalUniqueGames.length === 0) {
+                @if (totalUniqueGames$().length === 0) {
                 <div class="lg:col-span-2 text-center py-8 text-gray-400">
                     <p class="pb-2">
                         <i class="bi bi-dice-3 text-4xl"></i>
@@ -123,7 +123,8 @@
                     </ul>
                 </div>
                 }
-                @for (game of totalUniqueGames ; track $index) {
+
+                @for (game of totalUniqueGames$(); track $index) {
                 <div
                     class="rounded bg-zinc-800 p-2 flex justify-between items-center"
                     [ngClass]="{
@@ -149,10 +150,10 @@
                             </p>
                         </div>
                     </div>
-                    @if (avgReviewsIndex[game.id]) {
+                    @if (avgReviewsIndex$()[game.id]) {
                     <div class="px-3 flex flex-col items-center">
-                        <review-display [review]="avgReviewsIndex[game.id].average" [flexCol]="true" />
-                        <span class="text-xs text-gray-400 mt-1">{{ avgReviewsIndex[game.id].voters }} voters</span>
+                        <review-display [review]="avgReviewsIndex$()[game.id].average" [flexCol]="true" />
+                        <span class="text-xs text-gray-400 mt-1">{{ avgReviewsIndex$()[game.id].voters }} voters</span>
                     </div>
                     }
                 </div>
