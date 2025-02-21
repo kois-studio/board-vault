@@ -3,6 +3,8 @@ import { JwtService } from '@nestjs/jwt'
 import * as bcrypt from 'bcrypt'
 import { UsersService } from '../users/users.service'
 import { DatabaseService } from '../database/database.service'
+import { randomUUID } from 'node:crypto'
+import { EmailService } from '../email/email.service'
 
 @Injectable()
 export class AuthService {
@@ -12,6 +14,7 @@ export class AuthService {
         private readonly jwtService: JwtService,
         private readonly databaseService: DatabaseService,
         private readonly usersService: UsersService,
+        private readonly emailService: EmailService,
     ) {}
 
     async validateUser(email: string, password: string) {
@@ -40,13 +43,29 @@ export class AuthService {
 
     async register(email: string, username: string, password: string) {
         this.LOGGER.log(`Creating user ${username} - ${email}`)
-        return this.usersService.createUser({
-            email,
-            password,
-            username,
-            displayName: username,
-            imageUrl: 'https://pbs.twimg.com/profile_images/1833050358479826944/A2qj0e6Z_400x400.jpg',
-        })
+
+        // Generate a unique verification token
+        const verificationToken = randomUUID()
+
+        // Create the user with the verification token
+        const user = await this.usersService.createUser(
+            {
+                email,
+                password,
+                username,
+                displayName: username,
+                imageUrl: 'https://pbs.twimg.com/profile_images/1833050358479826944/A2qj0e6Z_400x400.jpg',
+            },
+            verificationToken,
+        )
+
+        if (user.success) {
+            // Send verification email
+            await this.emailService.sendVerificationEmail(email, verificationToken)
+    
+            return user
+        }
+
     }
 
     async checkEmail(email: string): Promise<boolean> {
