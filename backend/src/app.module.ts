@@ -15,6 +15,7 @@ import { GamePlaySessionModule } from './modules/game-play-session/game-play-ses
 import { MeetsModule } from './modules/meets/meets.module'
 import { MeetAttendeesModule } from './modules/meet-attendees/meet-attendees.module'
 import { MeetGamesModule } from './modules/meet-games/meet-games.module'
+import { EmailModule } from './modules/email/email.module'
 
 @Module({
     imports: [
@@ -33,6 +34,7 @@ import { MeetGamesModule } from './modules/meet-games/meet-games.module'
         MeetsModule,
         MeetAttendeesModule,
         MeetGamesModule,
+        EmailModule,
     ],
     controllers: [],
     providers: [],
