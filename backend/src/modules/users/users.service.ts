@@ -35,6 +35,9 @@ export class UsersService {
             createdAt: String(row[6]),
             isDeleted: Boolean(row[7]),
             isAdmin: Number(row[8]) === 1 ? true : false,
+            email_verified: Boolean(row[9]),
+            verification_token: String(row[10]),
+            password_reset_token: String(row[11]),
         }))
 
         const result = usersSchema.safeParse(users)
