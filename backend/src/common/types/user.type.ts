@@ -31,17 +31,26 @@ export class UserCompleteDto {
 
     @ApiProperty({ example: false })
     isAdmin: boolean
+
+    @ApiProperty({ example: false })
+    email_verified: boolean
+
+    @ApiProperty({ example: null })
+    verification_token: string | null
+
+    @ApiProperty({ example: null })
+    password_reset_token: string | null
 }
 
 /**
  * GET requests --> no password hash included
  */
-export class UserGetDto extends OmitType(UserCompleteDto, ['password']) {}
+export class UserGetDto extends OmitType(UserCompleteDto, ['password', 'verification_token', 'password_reset_token']) {}
 
 /**
  * POST requests --> no db generated props
  */
-export class CreateUserBody extends OmitType(UserCompleteDto, ['id', 'createdAt', 'isDeleted', 'isAdmin']) {}
+export class CreateUserBody extends OmitType(UserCompleteDto, ['id', 'createdAt', 'isDeleted', 'isAdmin', 'email_verified', 'verification_token', 'password_reset_token']) {}
 
 /**
  * PUT requests --> editable fields
