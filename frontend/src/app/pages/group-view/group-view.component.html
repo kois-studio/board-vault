@@ -1,5 +1,5 @@
 <container-wrapper>
-    <title-subtitle [title]="groupData?.name ?? 'Group details'">
+    <title-subtitle [title]="groupData$()?.name ?? 'Group details'">
         See who's in the group, the games you share, and all your meetings together. <br />
         Games are sorted based on everyone's preferences and the last time you played them together.
     </title-subtitle>
@@ -9,7 +9,7 @@
         <!-- left col -->
         <section class="p-4">
             <div class="relative">
-                <h2 class="text-xl font-semibold mb-4">Members ({{ groupData?.members?.length }})</h2>
+                <h2 class="text-xl font-semibold mb-4">Members ({{ groupData$()?.members?.length }})</h2>
                 
                 <!-- select / deselect all -->
                 <app-button
@@ -17,13 +17,13 @@
                     class="absolute top-0 right-0 font-normal"
                     (click)="onClickSelectAll()"
                 >
-                    {{ selectedMembers$().length === groupData?.members?.length ? 'Unselect all' : 'Select all' }}
+                    {{ selectedMembers$().length === groupData$()?.members?.length ? 'Unselect all' : 'Select all' }}
                 </app-button>
             </div>
             <hr />
 
             <ul class="grid gap-y-4 mt-4">
-                @for (member of groupData?.members; track $index) {
+                @for (member of groupData$()?.members ?? []; track $index) {
                 <button
                     (click)="onClickMember(member.id)"
                     class="rounded-lg cursor-pointer flex items-center justify-start border border-zinc-800"
@@ -43,7 +43,7 @@
                     <div class="flex items-center justify-between w-full">
                         <app-card-account
                             [member]="member"
-                            [isOwner]="groupData?.createdBy === member.id"
+                            [isOwner]="groupData$()?.createdBy === member.id"
                             [ngClass]="{
                                     'opacity-30': !selectedMembers$().includes(member.id),
                                 }"
