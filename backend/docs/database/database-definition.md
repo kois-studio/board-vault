@@ -16,8 +16,11 @@ CREATE TABLE IF NOT EXISTS Account (
     imageUrl TEXT, -- Profile picture, can be NULL initially
     displayName VARCHAR(255), -- Custom name, can be NULL initially
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP, -- auto set to current time
-    isDeleted BOOLEAN DEFAULT FALSE -- soft delete
-    isAdmin BOOLEAN DEFAULT FALSE -- indicates if the account is an admin
+    isDeleted BOOLEAN DEFAULT FALSE, -- soft delete
+    isAdmin BOOLEAN DEFAULT FALSE, -- indicates if the account is an admin
+    email_verified BOOLEAN DEFAULT FALSE,
+    verification_token TEXT,
+    password_reset_token TEXT
 );
 
 -- -----------------------------------------------------
