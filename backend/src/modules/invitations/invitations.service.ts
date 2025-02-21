@@ -89,6 +89,7 @@ export class InvitationsService {
             createdAt: String(userRow[6]),
             isDeleted: Boolean(userRow[7]),
             isAdmin: Number(userRow[8]) === 1 ? true : false, // TODO: review if this is working
+            email_verified: Boolean(userRow[9]),
         }
     }
 

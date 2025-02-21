@@ -10,6 +10,9 @@ export const userSchema = z.object({
     createdAt: z.string().refine(date => !isNaN(Date.parse(date)), { message: 'Invalid date format' }),
     isDeleted: z.boolean(),
     isAdmin: z.boolean(),
+    email_verified: z.boolean(),
+    verification_token: z.string().nullable(),
+    password_reset_token: z.string().nullable(),
 })
 
 export const usersSchema = z.array(userSchema)
