@@ -30,7 +30,7 @@ export class UsersController {
     @ApiOperation({ summary: 'Create a new user', deprecated: true })
     @ApiResponse({ status: 201, description: 'The user has been succesfully created' })
     async createUser(@Body() userDto: CreateUserBody) {
-        return this.usersService.createUser(userDto)
+        return this.usersService.createUser(userDto, 'do-not-use-this-token')
     }
 
     @Get('/:userId')
