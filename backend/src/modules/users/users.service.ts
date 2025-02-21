@@ -91,10 +91,10 @@ export class UsersService {
         }
     }
 
-    async createUser(userDto: CreateUserBody) {
+    async createUser(userDto: CreateUserBody, verificationToken: string) {
         this.LOGGER.log(`Creating user ${userDto.username} - ${userDto.email}`)
         try {
-            await this.databaseService.createUser(userDto)
+            await this.databaseService.createUser(userDto, verificationToken)
 
             return { success: true }
         } catch (error) {
