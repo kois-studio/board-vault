@@ -135,6 +135,22 @@ export class DatabaseService implements OnModuleInit {
             fields.push('imageUrl = ?')
             args.push(partialUserDto.imageUrl)
         }
+        if (partialUserDto.isAdmin) {
+            fields.push('isAdmin = ?')
+            args.push(partialUserDto.isAdmin)
+        }
+        if (partialUserDto.email_verified) {
+            fields.push('email_verified = ?')
+            args.push(partialUserDto.email_verified)
+        }
+        if (partialUserDto.verification_token !== undefined) {
+            fields.push('verification_token = ?')
+            args.push(partialUserDto.verification_token)
+        }
+        if (partialUserDto.password_reset_token !== undefined) {
+            fields.push('password_reset_token = ?')
+            args.push(partialUserDto.password_reset_token)
+        }
 
         // Error if no fields are provided
         if (fields.length === 0) {
@@ -299,6 +315,13 @@ export class DatabaseService implements OnModuleInit {
             ORDER BY m.meetDate DESC;
             `,
             args: [userId],
+        })
+    }
+
+    async findUserByVerificationToken(token: string) {
+        return this._tursoExecute({
+            sql: 'SELECT * FROM Account WHERE verification_token = ?',
+            args: [token],
         })
     }
 
