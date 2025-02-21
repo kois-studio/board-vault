@@ -55,7 +55,7 @@ export class CreateUserBody extends OmitType(UserCompleteDto, ['id', 'createdAt'
 /**
  * PUT requests --> editable fields
  */
-export class UpdateUserBody extends PartialType(PickType(UserCompleteDto, ['email', 'username', 'password', 'displayName', 'imageUrl'])) {}
+export class UpdateUserBody extends PartialType(PickType(UserCompleteDto, ['email', 'username', 'password', 'displayName', 'imageUrl', 'isAdmin', 'email_verified', 'verification_token', 'password_reset_token'])) {}
 
 /**
  * POST /auth/register
