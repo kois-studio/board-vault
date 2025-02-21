@@ -2,13 +2,7 @@ import { CommonModule } from '@angular/common'
 import { Component, effect, inject } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { Api } from '../../api/api'
-import type {
-    GameType,
-    GroupWithMembersAndGames,
-    InvitationWithAccountsData,
-    MeetWithAttendeesAndGamesType,
-    UserType,
-} from '../../api/api.types'
+import type { GameType, InvitationWithAccountsData, MeetWithAttendeesAndGamesType, UserType } from '../../api/api.types'
 import { CardAccountComponent } from '../../components/card-account/card-account.component'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
 import { ButtonComponent } from '../../components/ui/button/button.component'
@@ -37,8 +31,12 @@ import { GroupViewService } from './group-view.service'
     styleUrls: ['group-view.component.scss'],
 })
 export class GroupViewComponent {
+    private readonly api = inject(Api)
+    private readonly router = inject(Router)
+    private readonly route = inject(ActivatedRoute)
     private readonly dataService = inject(DataService)
     private readonly groupViewService = inject(GroupViewService)
+    private readonly localStorageService = inject(LocalStorageService)
 
     // --------------------------------------------------------------------------
     //        Services signals
@@ -50,47 +48,33 @@ export class GroupViewComponent {
     public readonly invitationsGroupIndex$ = this.dataService.invitationsGroupIndex
 
     // groupViewService
-    public readonly groupMembers$ = this.groupViewService.groupMembers
+    public readonly groupData$ = this.groupViewService.groupData
     public readonly selectedMembers$ = this.groupViewService.selectedMembers
     public readonly isFilteringGames$ = this.groupViewService.isFilteringGames
     public readonly isHidingMaxPlayers$ = this.groupViewService.isHidingMaxPlayers
     public readonly isRecalculatingReviews$ = this.groupViewService.isRecalculatingReviews
-    public readonly gameReviews$ = this.groupViewService.gameReviews
     public readonly avgReviewsIndexComputed = this.groupViewService.avgReviewsIndexComputed
     public readonly totalUniqueGamesComputed = this.groupViewService.totalUniqueGamesComputed
 
     // --------------------------------------------------------------------------
-    //        DATA for this component
-    // --------------------------------------------------------------------------
-    public groupData: null | GroupWithMembersAndGames = null
-    public groupMeetings: Array<MeetWithAttendeesAndGamesType> = []
-
-    // --------------------------------------------------------------------------
-    //        flags
+    //        Component props
     // --------------------------------------------------------------------------
     public isLoading = false
+    public groupMeetings: Array<MeetWithAttendeesAndGamesType> = []
 
-    constructor(
-        private readonly api: Api,
-        private readonly router: Router,
-        private readonly route: ActivatedRoute,
-        private readonly localStorageService: LocalStorageService,
-    ) {
+    constructor() {
         effect(() => {
             const groupId = Number.parseInt(this.route.snapshot.paramMap.get('groupId') || '')
-            const groupData = this.userGroups$().find((group) => group.id === groupId)
+            const group = this.userGroups$().find((group) => group.id === groupId)
 
-            if (Number.isNaN(groupId) || !this.currentUser$() || !groupData) {
+            if (Number.isNaN(groupId) || !this.currentUser$() || !group) {
                 return
             }
 
-            this.groupData = groupData
+            // set the group data
+            this.groupData$.set(group)
 
-            // After getting group data, index all reviews by gameId
-            this._indexReviews(groupData.members)
-            this.groupMembers$.set(groupData.members)
-
-            // Get the group meetings data (with its members and games)
+            // get the group meetings
             this.api.getGroupMeetings(groupId).subscribe({
                 next: (groupMeetings) => {
                     this.groupMeetings = groupMeetings.sort((a, b) => {
@@ -99,40 +83,27 @@ export class GroupViewComponent {
                 },
                 error: (error) => {
                     console.error(error)
+                    this.groupMeetings = [] // Clear previous data on error
                 },
             })
         })
     }
 
-    private _indexReviews(members: GroupWithMembersAndGames['members']) {
-        const reviews: Record<GameType['id'], Record<UserType['id'], number>> = {}
-
-        for (const member of members) {
-            for (const review of member.reviews) {
-                if (reviews[review.gameId] === undefined) {
-                    reviews[review.gameId] = {}
-                }
-                reviews[review.gameId][member.id] = review.review
-            }
-        }
-
-        this.gameReviews$.set(reviews)
-    }
-
     // #region Getters
 
     get invitationsList(): InvitationWithAccountsData[] {
-        if (!this.groupData) {
+        const groupData = this.groupData$()
+        if (!groupData) {
             return []
         }
-        return this.invitationsGroupIndex$()[this.groupData.id] || []
+        return this.invitationsGroupIndex$()[groupData.id] || []
     }
 
     // #region Parse Data
 
     parseAttendeeIds(memberIds: Array<UserType['id']>): Array<UserType> {
         const result = memberIds
-            .map((memberId) => this.groupData?.members.find((member) => member.id === memberId) || null)
+            .map((memberId) => this.groupData$()?.members.find((member) => member.id === memberId) || null)
             .filter((member) => member !== null)
 
         // If > 5 members, we will show [1,2,3,4, +n] in the HTML, so we only return the first 4
@@ -154,10 +125,11 @@ export class GroupViewComponent {
     // #region Button Clicks
 
     onClickSelectAll(): void {
-        if (!this.groupData) return
+        const groupData = this.groupData$()
+        if (!groupData) return
 
-        const allMembersSelected = this.selectedMembers$().length === this.groupData.members.length
-        this.selectedMembers$.set(allMembersSelected ? [] : this.groupData.members.map((member) => member.id))
+        const allMembersSelected = this.selectedMembers$().length === groupData.members.length
+        this.selectedMembers$.set(allMembersSelected ? [] : groupData.members.map((member) => member.id))
     }
 
     onClickMeeting(meetId: number): void {
@@ -174,15 +146,15 @@ export class GroupViewComponent {
     }
 
     onClickEditGroup() {
-        this.router.navigate(['/group', this.groupData?.id, 'edit'])
+        this.router.navigate(['/group', this.groupData$()?.id, 'edit'])
     }
 
     onClickLeaveGroup() {
-        this.router.navigate(['/group', this.groupData?.id, 'leave'])
+        this.router.navigate(['/group', this.groupData$()?.id, 'leave'])
     }
 
     onClickNewMeet(): void {
-        this.router.navigate(['/group', this.groupData?.id, 'meets', 'new'])
+        this.router.navigate(['/group', this.groupData$()?.id, 'meets', 'new'])
     }
 
     onGoBack() {

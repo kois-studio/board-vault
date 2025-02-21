@@ -11,16 +11,43 @@ export class GroupViewService {
     // #region           signals
     // --------------------------------------------------------------------------
     // members
-    public readonly groupMembers = signal<GroupWithMembersAndGames['members']>([])
+    public readonly groupData = signal<GroupWithMembersAndGames | null>(null)
     public readonly selectedMembers = signal<number[]>([])
 
     // filters
     public readonly isFilteringGames = signal(false) // to filter out 'disabled' games
     public readonly isHidingMaxPlayers = signal(false) // to disable games based on min/max players
+    public readonly isRecalculatingReviews = signal<boolean>(false) // to recalculate the reviews based on the selected members
 
-    // reviews
-    public readonly isRecalculatingReviews = signal<boolean>(false)
-    public readonly gameReviews = signal<Record<GameType['id'], Record<UserType['id'], number>>>({})
+    // --------------------------------------------------------------------------
+    // #region           game reviews
+    // --------------------------------------------------------------------------
+    /**
+     * Indexes all group members reviews by gameId and userId
+     *
+     * ```json
+     * {
+     *    "18": { // gameId
+     *        "1": 5, // user 1 -> 5 stars
+     *        "2": 4, // user 2 -> 4 stars
+     *    },
+     * }
+     * ```
+     */
+    private readonly _gameReviewsComputed = computed<Record<GameType['id'], Record<UserType['id'], number>>>(() => {
+        const reviews: Record<GameType['id'], Record<UserType['id'], number>> = {}
+
+        // index all reviews by gameId and userId
+        for (const member of this.groupData()?.members ?? []) {
+            for (const review of member.reviews) {
+                if (reviews[review.gameId] === undefined) {
+                    reviews[review.gameId] = {}
+                }
+                reviews[review.gameId][member.id] = review.review
+            }
+        }
+        return reviews
+    })
 
     // --------------------------------------------------------------------------
     // #region           avg reviews index
@@ -30,7 +57,7 @@ export class GroupViewService {
     public readonly avgReviewsIndexComputed = computed(() => {
         const result: Record<GameType['id'], { average: number; voters: number }> = {}
 
-        for (const [gameId, value] of Object.entries(this.gameReviews())) {
+        for (const [gameId, value] of Object.entries(this._gameReviewsComputed())) {
             let reviews: number[] = []
 
             if (this.isRecalculatingReviews() && this.selectedMembers().length > 0) {
@@ -71,7 +98,7 @@ export class GroupViewService {
             const games: Array<GameType & { quantity: number; active: boolean }> = []
 
             // STEP 1: active/inactive games based on selected members (ownership)
-            for (const member of this.groupMembers()) {
+            for (const member of this.groupData()?.members ?? []) {
                 // add the games of the non-selected members as inactive
                 if (!this.selectedMembers().includes(member.id)) {
                     for (const game of member.games) {
