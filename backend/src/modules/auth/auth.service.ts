@@ -79,4 +79,27 @@ export class AuthService {
 
         return !result.rows.length
     }
+
+    async verifyEmail(token: string): Promise<boolean> {
+        // Find the user associated with the verification token
+        const user = await this.databaseService.findUserByVerificationToken(token)
+
+        if (user.rows.length === 0) {
+            return false // Invalid or expired token
+        }
+
+        const userId = user.rows[0]['id']
+
+        if (Number.isNaN(userId)) {
+            return false // Invalid or expired token
+        }
+
+        // Update the user's status to verified
+        await this.databaseService.updateUser(Number(userId), {
+            email_verified: true,
+            verification_token: null,
+        })
+
+        return true // Email successfully verified
+    }
 }

@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, Post, Query } from '@nestjs/common'
+import { BadRequestException, Body, Controller, Get, Post, Query, Param } from '@nestjs/common'
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { AuthService } from './auth.service'
 import { LoginUserDto, RegisterUserDto } from '../../common/types/user.type'
@@ -48,5 +48,17 @@ export class AuthController {
         const isAvailable = await this.authService.checkUsername(username)
 
         return { isAvailable }
+    }
+
+    @Get('/verify-email/:token')
+    @ApiOperation({ summary: 'Verify user email' })
+    @ApiResponse({ status: 200, description: 'Email successfully verified' })
+    @ApiResponse({ status: 400, description: 'Invalid or expired token' })
+    async verifyEmail(@Param('token') token: string) {
+        const result = await this.authService.verifyEmail(token)
+        if (!result) {
+            throw new BadRequestException('Invalid or expired token')
+        }
+        return { message: 'Email successfully verified' }
     }
 }
