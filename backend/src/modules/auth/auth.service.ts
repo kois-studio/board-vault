@@ -1,4 +1,4 @@
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common'
+import { BadRequestException, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import * as bcrypt from 'bcrypt'
 import { UsersService } from '../users/users.service'
@@ -101,5 +101,23 @@ export class AuthService {
         })
 
         return true // Email successfully verified
+    }
+
+    async forgotPassword(email: string): Promise<void> {
+        // Check if the email exists in the database
+        const user = await this.usersService.getUserByEmail(email, true)
+        if (user instanceof Error || !user) {
+            throw new NotFoundException('Email not found')
+        }
+
+        // Generate a unique password reset token
+        const resetToken = randomUUID()
+
+        // Store the reset token in the database with an expiration time
+        await this.databaseService.updateUser(user.id, { password_reset_token: resetToken })
+
+        // Send password reset email
+        const resetLink = `https://yourapp.com/reset-password?token=${resetToken}`
+        await this.emailService.sendPasswordResetEmail(email, resetLink)
     }
 }
