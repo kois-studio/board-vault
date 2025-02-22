@@ -26,6 +26,8 @@ export class VerifyEmailComponent implements OnInit {
             return
         }
 
+        // set timeout to 2 seconds to show loading state
+        // this gives the user time to read the messages without taking too long
         setTimeout(() => {
             this.api.verifyEmail(token).subscribe({
                 next: (response) => {
@@ -38,6 +40,6 @@ export class VerifyEmailComponent implements OnInit {
                     this.state = 'error'
                 },
             })
-        }, 5000)
+        }, 2000)
     }
 }
