@@ -1,0 +1,10 @@
+<div>
+    <h1>Email Verification</h1>
+    @if (state === 'loading') {
+        <p>Please wait while we verify your email...</p>
+    } @else if (state === 'success') {
+        <p>Your email has been verified successfully!</p>
+    } @else if (state === 'error') {
+        <p>There was an error verifying your email. Please try again.</p>
+    }
+</div>

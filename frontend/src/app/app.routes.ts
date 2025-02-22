@@ -3,6 +3,9 @@ import { AuthRedirectGuard } from './core/guards/auth-redirect.guard'
 import { AuthGuard } from './core/guards/auth.guard'
 import { LayoutBasicComponent } from './layout/layout-basic/layout-basic.component'
 import { LayoutCompleteComponent } from './layout/layout-complete/layout-complete.component'
+import { LoginComponent } from './pages/auth/login/login.component'
+import { RegisterComponent } from './pages/auth/register/register.component'
+import { VerifyEmailComponent } from './pages/auth/verify-email/verify-email.component'
 import { DashboardComponent } from './pages/dashboard/dashboard.component'
 import { GamesComponent } from './pages/games/games.component'
 import { GroupDeleteComponent } from './pages/group-delete/group-delete.component'
@@ -12,12 +15,10 @@ import { GroupNewComponent } from './pages/group-new/group-new.component'
 import { GroupViewComponent } from './pages/group-view/group-view.component'
 import { HistoryComponent } from './pages/history/history.component'
 import { LandingComponent } from './pages/landing/landing.component'
-import { LoginComponent } from './pages/auth/login/login.component'
 import { MeetConfirmComponent } from './pages/meet-confirm/meet-confirm.component'
 import { MeetNewComponent } from './pages/meet-new/meet-new.component'
 import { MeetViewComponent } from './pages/meet-view/meet-view.component'
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component'
-import { RegisterComponent } from './pages/auth/register/register.component'
 import { ReviewComponent } from './pages/reviews/reviews.component'
 
 /**
@@ -57,6 +58,7 @@ export const routes: Routes = [
             // accessible to unauthenticated users
             { path: 'login', component: LoginComponent, canActivate: [AuthRedirectGuard] },
             { path: 'register', component: RegisterComponent, canActivate: [AuthRedirectGuard] },
+            { path: 'verify-email/:token', component: VerifyEmailComponent, canActivate: [AuthRedirectGuard] },
             // accessible to authenticated users
             { path: 'create-group', component: GroupNewComponent, canActivate: [AuthGuard] }, // 'group/new' would break in 'group/:groupId'
             { path: 'group/:groupId/meets/new', component: MeetNewComponent, canActivate: [AuthGuard] }, // 'meets/new' would break in 'meets/:meetId'
