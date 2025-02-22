@@ -1,4 +1,4 @@
 export const environment = {
     production: true,
-    apiUrl: 'https://board-vault.com',
+    apiUrl: 'https://backend.board-vault.com',
 }
