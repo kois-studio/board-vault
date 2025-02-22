@@ -3,8 +3,8 @@ import { Component, OnInit } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router } from '@angular/router'
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs'
-import { Api } from '../../../api/api'
-import { ToastService } from '../../../components/toast/toast.service'
+import { Api } from '../../../../api/api'
+import { ToastService } from '../../../../components/toast/toast.service'
 
 @Component({
     imports: [ReactiveFormsModule, CommonModule],
