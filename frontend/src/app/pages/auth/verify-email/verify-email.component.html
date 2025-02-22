@@ -2,18 +2,23 @@
     <h1 class="text-2xl font-bold mb-4">Email Verification</h1>
     @if (state === 'loading') {
         <p class="flex items-center justify-center text-gray-500">
-            <i class="bi bi-hourglass-split mr-2"></i>
+            <app-spinner />
             Please wait while we verify your email...
-        </p>
-    } @else if (state === 'success') {
-        <p class="flex items-center justify-center text-green-500">
-            <i class="bi bi-check-circle mr-2"></i>
-            Your email has been verified successfully!
         </p>
     } @else if (state === 'error') {
         <p class="flex items-center justify-center text-red-500">
             <i class="bi bi-x-circle mr-2"></i>
             There was an error verifying your email. The token is invalid or expired.
         </p>
+    } @else if (state === 'success') {
+        <div class="text-center">
+            <p class="text-green-500 mb-4">
+                <i class="bi bi-check-circle mr-2"></i> Your email has been verified successfully!
+            </p>
+            <p class="flex items-center justify-center text-gray-500 text-sm">
+                <app-spinner />
+                Redirecting to login page...
+            </p>
+        </div>
     }
 </div>
