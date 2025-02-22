@@ -17,7 +17,6 @@ export class VerifyEmailComponent implements OnInit {
     ngOnInit() {
         this._verifyEmail()
     }
-
     private _verifyEmail() {
         const token = this.route.snapshot.paramMap.get('token')
         if (!token) {
@@ -25,13 +24,15 @@ export class VerifyEmailComponent implements OnInit {
             return
         }
 
-        this.api.verifyEmail(token).subscribe({
-            next: (response) => {
-                this.state = 'success'
-            },
-            error: (error) => {
-                this.state = 'error'
-            },
-        })
+        setTimeout(() => {
+            this.api.verifyEmail(token).subscribe({
+                next: (response) => {
+                    this.state = 'success'
+                },
+                error: (error) => {
+                    this.state = 'error'
+                },
+            })
+        }, 2000);
     }
 }
