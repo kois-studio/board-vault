@@ -40,6 +40,14 @@ export class Api {
         return this.http.get<{ isAvailable: boolean }>(`${this.url}/auth/check-username?username=${username}`)
     }
 
+    verifyEmail(token: string) {
+        return this.http.get<{ success: true }>(`${this.url}/auth/verify-email/${token}`)
+    }
+
+    forgotPassword(email: string) {
+        return this.http.post<{ success: true }>(`${this.url}/auth/forgot-password`, { email })
+    }
+
     // #region users
 
     updateUser(
