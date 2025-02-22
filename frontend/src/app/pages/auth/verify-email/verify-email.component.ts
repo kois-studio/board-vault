@@ -1,16 +1,18 @@
 import { Component, OnInit } from '@angular/core'
-import { ActivatedRoute } from '@angular/router'
+import { ActivatedRoute, Router } from '@angular/router'
 import { Api } from '../../../api/api'
+import { SpinnerComponent } from '../../../components/ui/spinner/spinner.component'
 
 @Component({
     templateUrl: 'verify-email.component.html',
-    imports: [],
+    imports: [SpinnerComponent],
 })
 export class VerifyEmailComponent implements OnInit {
     public state: 'loading' | 'success' | 'error' = 'loading'
 
     constructor(
         private readonly api: Api,
+        private readonly router: Router,
         private readonly route: ActivatedRoute,
     ) {}
 
@@ -28,11 +30,14 @@ export class VerifyEmailComponent implements OnInit {
             this.api.verifyEmail(token).subscribe({
                 next: (response) => {
                     this.state = 'success'
+                    setTimeout(() => {
+                        this.router.navigate(['/login'])
+                    }, 2000)
                 },
                 error: (error) => {
                     this.state = 'error'
                 },
             })
-        }, 2000);
+        }, 5000)
     }
 }
