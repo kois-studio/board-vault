@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { Component, effect, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { DataService } from '../../../core/services/data.service'
-import { ButtonComponent } from "../../ui/button/button.component";
+import { ButtonComponent } from '../../ui/button/button.component'
 
 @Component({
     imports: [ReactiveFormsModule, CommonModule, ButtonComponent],
@@ -17,14 +17,18 @@ export class FormUpdateDisplayNameComponent {
     // --------------------------------------------------------------------------
     // dataService
     public readonly currentUser$ = this.dataService.currentUser
-    
+
     // --------------------------------------------------------------------------
     //        Component props
     // --------------------------------------------------------------------------
     public isEditing = false
 
     public updateProfileFormGroup = new FormGroup({
-        displayName: new FormControl(this.currentUser$()?.displayName ?? '', [Validators.required, Validators.minLength(4), Validators.maxLength(20)]),
+        displayName: new FormControl(this.currentUser$()?.displayName ?? '', [
+            Validators.required,
+            Validators.minLength(4),
+            Validators.maxLength(20),
+        ]),
     })
 
     constructor() {
@@ -33,7 +37,7 @@ export class FormUpdateDisplayNameComponent {
                 displayName: this.currentUser$()?.displayName ?? '',
             })
         })
-        
+
         // Set the form to disabled initially
         this.updateProfileFormGroup.disable()
     }
@@ -60,7 +64,7 @@ export class FormUpdateDisplayNameComponent {
         this.updateProfileFormGroup.setValue({
             displayName: this.currentUser$()?.displayName ?? '',
         })
-        
+
         // Disable the form when canceling
         this.updateProfileFormGroup.disable()
         this._clearForm()
