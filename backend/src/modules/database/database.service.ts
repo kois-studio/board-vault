@@ -97,6 +97,13 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    getUserByPasswordResetToken(token: string) {
+        return this._tursoExecute({
+            sql: 'SELECT * FROM Account WHERE password_reset_token = ?',
+            args: [token],
+        })
+    }
+
     async createUser(userDto: CreateUserBody, verificationToken: string) {
         const { email, password, username, displayName, imageUrl } = userDto
         const hashedPassword = await bcrypt.hash(password, 10)
