@@ -89,7 +89,7 @@ export class FormRegisterComponent implements OnInit {
 
     // Form controls
     get disableSubmit() {
-        return this.isLoading || this.registerFormGroup.invalid
+        return this.isLoading || this.registerFormGroup.invalid || this.passwordsDoNotMatch
     }
 
     // Getters for form controls (shorthands)
