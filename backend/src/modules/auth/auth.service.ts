@@ -119,4 +119,20 @@ export class AuthService {
         // Send password reset email
         await this.emailService.sendPasswordResetEmail(email, resetToken)
     }
+
+    async resetPassword(token: string, password: string): Promise<boolean> {
+        const user = await this.databaseService.getUserByPasswordResetToken(token)
+        if (user.rows.length === 0) {
+            return false // Invalid or expired token
+        }
+
+        const userId = user.rows[0]['id']
+
+        if (Number.isNaN(userId)) {
+            return false // Invalid or expired token
+        }
+
+        await this.databaseService.updateUser(Number(userId), { password })
+        return true
+    }
 }
