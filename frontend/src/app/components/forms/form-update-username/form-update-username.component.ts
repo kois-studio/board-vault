@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { Component, effect, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { DataService } from '../../../core/services/data.service'
-import { ButtonComponent } from "../../ui/button/button.component";
+import { ButtonComponent } from '../../ui/button/button.component'
 
 @Component({
     imports: [ReactiveFormsModule, CommonModule, ButtonComponent],
@@ -17,7 +17,7 @@ export class FormUpdateUsernameComponent {
     // --------------------------------------------------------------------------
     // dataService
     public readonly currentUser$ = this.dataService.currentUser
-    
+
     // --------------------------------------------------------------------------
     //        Component props
     // --------------------------------------------------------------------------
@@ -33,7 +33,7 @@ export class FormUpdateUsernameComponent {
                 username: this.currentUser$()?.username ?? '',
             })
         })
-        
+
         // Set the form to disabled initially
         this.updateUsernameFormGroup.disable()
     }
@@ -60,7 +60,7 @@ export class FormUpdateUsernameComponent {
         this.updateUsernameFormGroup.setValue({
             username: this.currentUser$()?.username ?? '',
         })
-        
+
         // Disable the form when canceling
         this.updateUsernameFormGroup.disable()
         this._clearForm()
