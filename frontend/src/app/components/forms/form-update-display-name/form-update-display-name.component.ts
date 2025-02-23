@@ -33,6 +33,9 @@ export class FormUpdateDisplayNameComponent {
                 displayName: this.currentUser$()?.displayName ?? '',
             })
         })
+        
+        // Set the form to disabled initially
+        this.updateProfileFormGroup.disable()
     }
 
     // Form controls
@@ -57,8 +60,10 @@ export class FormUpdateDisplayNameComponent {
         this.updateProfileFormGroup.setValue({
             displayName: this.currentUser$()?.displayName ?? '',
         })
-        this.updateProfileFormGroup.markAsUntouched()
-        this.updateProfileFormGroup.markAsPristine()
+        
+        // Disable the form when canceling
+        this.updateProfileFormGroup.disable()
+        this._clearForm()
     }
 
     public onSave() {
@@ -69,5 +74,29 @@ export class FormUpdateDisplayNameComponent {
         this.dataService.updateCurrentUserData({ displayName })
 
         this.isEditing = false
+
+        // Disable the form after saving
+        this.updateProfileFormGroup.disable()
+        this._clearForm()
+    }
+
+    private _clearForm() {
+        this.updateProfileFormGroup.markAsUntouched()
+        this.updateProfileFormGroup.markAsPristine()
+    }
+
+    // Watch for changes in isEditing to enable/disable the form
+    public toggleEditing() {
+        this.isEditing = !this.isEditing
+        if (this.isEditing) {
+            this.updateProfileFormGroup.enable() // Enable the form when editing
+            // Focus the input element directly
+            const inputElement = document.querySelector('input[formControlName="displayName"]') as HTMLInputElement
+            if (inputElement) {
+                inputElement.focus()
+            }
+        } else {
+            this.updateProfileFormGroup.disable() // Disable the form when not editing
+        }
     }
 }
