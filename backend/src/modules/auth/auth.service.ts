@@ -117,7 +117,6 @@ export class AuthService {
         await this.databaseService.updateUser(user.id, { password_reset_token: resetToken })
 
         // Send password reset email
-        const resetLink = `https://yourapp.com/reset-password?token=${resetToken}`
-        await this.emailService.sendPasswordResetEmail(email, resetLink)
+        await this.emailService.sendPasswordResetEmail(email, resetToken)
     }
 }
