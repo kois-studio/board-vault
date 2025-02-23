@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core'
+import { Component } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { FormRegisterComponent } from './form-register/form-register.component'
 
@@ -6,6 +6,4 @@ import { FormRegisterComponent } from './form-register/form-register.component'
     templateUrl: 'register.component.html',
     imports: [RouterLink, FormRegisterComponent],
 })
-export class RegisterComponent implements OnInit {
-    ngOnInit() {}
-}
+export class RegisterComponent {}
