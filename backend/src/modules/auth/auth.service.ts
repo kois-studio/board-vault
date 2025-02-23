@@ -62,10 +62,9 @@ export class AuthService {
         if (user.success) {
             // Send verification email
             await this.emailService.sendVerificationEmail(email, verificationToken)
-    
+
             return user
         }
-
     }
 
     async checkEmail(email: string): Promise<boolean> {
@@ -132,7 +131,11 @@ export class AuthService {
             return false // Invalid or expired token
         }
 
-        await this.databaseService.updateUser(Number(userId), { password })
+        await this.databaseService.updateUser(Number(userId), {
+            password,
+            password_reset_token: null,
+        })
+
         return true
     }
 }
