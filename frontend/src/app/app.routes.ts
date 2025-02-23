@@ -22,6 +22,10 @@ import { MeetNewComponent } from './pages/meet-new/meet-new.component'
 import { MeetViewComponent } from './pages/meet-view/meet-view.component'
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component'
 import { ReviewComponent } from './pages/reviews/reviews.component'
+import { SettingsAccountComponent } from './pages/settings/account/settings-account.component'
+import { SettingsContactComponent } from './pages/settings/contact/settings-contact.component'
+import { SettingsSecurityComponent } from './pages/settings/security/settings-security.component'
+import { SettingsPageComponent } from './pages/settings/settings.component'
 
 /**
  * Which route uses LayoutBasicComponent and which uses LayoutCompleteComponent?
@@ -51,6 +55,17 @@ export const routes: Routes = [
             { path: 'history', component: HistoryComponent, canActivate: [AuthGuard] },
             { path: 'group/:groupId', component: GroupViewComponent, canActivate: [AuthGuard] },
             { path: 'meets/:meetId', component: MeetViewComponent, canActivate: [AuthGuard] },
+            {
+                path: 'settings',
+                component: SettingsPageComponent,
+                canActivate: [AuthGuard],
+                children: [
+                    { path: '', redirectTo: 'account', pathMatch: 'full' },
+                    { path: 'account', component: SettingsAccountComponent, canActivate: [AuthGuard] },
+                    { path: 'security', component: SettingsSecurityComponent, canActivate: [AuthGuard] },
+                    { path: 'contact', component: SettingsContactComponent, canActivate: [AuthGuard] },
+                ],
+            },
         ],
     },
     {
