@@ -24,7 +24,7 @@
         </form>
     </div>
     @if (!isEditing){
-        <app-button variant="secondary" (click)="isEditing = true">Update profile</app-button>
+        <app-button variant="secondary" (click)="toggleEditing()">Change display name</app-button>
     }@else {
     <div class="flex gap-4">
         <app-button variant="secondary" (click)="onCancel()">Cancel</app-button>
