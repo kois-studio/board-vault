@@ -48,6 +48,10 @@ export class Api {
         return this.http.post<{ success: true }>(`${this.url}/auth/forgot-password`, { email })
     }
 
+    resetPassword(token: string, password: string) {
+        return this.http.post<{ success: true }>(`${this.url}/auth/reset-password/${token}`, { password })
+    }
+
     // #region users
 
     updateUser(
