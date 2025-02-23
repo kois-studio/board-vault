@@ -141,6 +141,13 @@ export class GroupViewService {
             games.sort((a, b) => {
                 const a_review = this.avgReviewsIndexComputed()[a.id]?.average ?? -1
                 const b_review = this.avgReviewsIndexComputed()[b.id]?.average ?? -1
+
+                if (a_review === b_review) {
+                    // Sort by number of voters if average reviews are the same
+                    const a_voters = this.avgReviewsIndexComputed()[a.id]?.voters ?? 0
+                    const b_voters = this.avgReviewsIndexComputed()[b.id]?.voters ?? 0
+                    return b_voters - a_voters
+                }
                 return b_review - a_review
             })
 
