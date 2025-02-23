@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsEmail } from 'class-validator'
+import { IsEmail, IsString } from 'class-validator'
 
 export class SuccessDto {
     @ApiProperty({ example: true, description: 'The success status of the operation.' })
@@ -15,4 +15,10 @@ export class ForgotPasswordDto {
     @ApiProperty({ description: 'The email address of the user' })
     @IsEmail()
     email: string
+}
+
+export class ResetPasswordDto {
+    @ApiProperty({ description: 'The new password for the user' })
+    @IsString()
+    password: string
 }
