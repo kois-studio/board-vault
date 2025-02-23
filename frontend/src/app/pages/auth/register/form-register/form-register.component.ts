@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { Component, OnInit } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
-import { Router } from '@angular/router'
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs'
 import { Api } from '../../../../api/api'
 import { ToastService } from '../../../../components/toast/toast.service'
@@ -12,7 +11,8 @@ import { ToastService } from '../../../../components/toast/toast.service'
     templateUrl: 'form-register.component.html',
 })
 export class FormRegisterComponent implements OnInit {
-    public isLoading = false
+    public isLoading = false // loading state
+    public isFinished = false // the user has been created, show a "check your email" message
 
     // email availability check
     public isCheckingEmail = false
@@ -31,7 +31,6 @@ export class FormRegisterComponent implements OnInit {
     })
 
     constructor(
-        private readonly router: Router,
         private readonly api: Api,
         private readonly toastService: ToastService,
     ) {}
@@ -145,8 +144,7 @@ export class FormRegisterComponent implements OnInit {
         this.api.register(this.email?.value, this.username?.value, this.password?.value).subscribe({
             next: (data) => {
                 this.toastService.success('User registered successfully!')
-                // TODO: instead of redirect to login, access directly to the dashboard
-                this.router.navigate(['/login'])
+                this.isFinished = true
             },
             error: (error) => {
                 this.toastService.error('Error registering user')

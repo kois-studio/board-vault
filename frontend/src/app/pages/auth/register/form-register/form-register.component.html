@@ -1,3 +1,13 @@
+@if (isFinished) {
+    <div class="text-center py-4">
+        <p class="text-green-400">
+            <i class="bi bi-check-circle mr-2"></i> We have sent you an email.
+        </p>
+        <p class="text-gray-400">
+            Please check <span class="text-white font-bold">{{ email?.value || 'your email' }}</span> for a verification link.
+        </p>
+    </div>
+} @else {
 <form
     [formGroup]="registerFormGroup"
     (ngSubmit)="handleRegister()"
@@ -115,3 +125,4 @@
         Register
     </button>
 </form>
+}
