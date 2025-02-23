@@ -1,0 +1,35 @@
+<div class="w-full flex justify-between items-center gap-4">
+    <div class="flex items-center">
+        <form [formGroup]="updateUsernameFormGroup">
+            <div>
+                <input
+                    type="text"
+                    formControlName="username"
+                    class="app-input"
+                    [class]="usernameClass"
+                    required
+                />
+                <div *ngIf="username?.invalid && (username?.dirty || username?.touched)">
+                    <div *ngIf="username?.hasError('required')" class="text-sm text-red-500 py-1">
+                        <i class="bi bi-exclamation-circle-fill"></i> username is required.
+                    </div>
+                    <div *ngIf="username?.hasError('minlength')" class="text-sm text-red-500 py-1">
+                        <i class="bi bi-exclamation-circle-fill"></i> username is too short.
+                    </div>
+                    <div *ngIf="username?.hasError('maxlength')" class="text-sm text-red-500 py-1">
+                        <i class="bi bi-exclamation-circle-fill"></i> username is too long.
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    @if (!isEditing){
+        <app-button variant="secondary" (click)="toggleEditing()">Change username</app-button>
+    }@else {
+        <div class="flex gap-4">
+            <app-button variant="secondary" (click)="onCancel()">Cancel</app-button>
+            <app-button variant="primary" [disabled]="disableSubmit" (click)="onSave()">Save</app-button>
+        </div>
+    }
+</div>

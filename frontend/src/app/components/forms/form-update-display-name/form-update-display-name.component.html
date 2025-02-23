@@ -11,24 +11,25 @@
                 />
                 <div *ngIf="displayName?.invalid && (displayName?.dirty || displayName?.touched)">
                     <div *ngIf="displayName?.hasError('required')" class="text-sm text-red-500 py-1">
-                        <i class="bi bi-exclamation-circle-fill"></i> displayName is required.
+                        <i class="bi bi-exclamation-circle-fill"></i> display name is required.
                     </div>
                     <div *ngIf="displayName?.hasError('minlength')" class="text-sm text-red-500 py-1">
-                        <i class="bi bi-exclamation-circle-fill"></i> displayName is too short.
+                        <i class="bi bi-exclamation-circle-fill"></i> display name is too short.
                     </div>
                     <div *ngIf="displayName?.hasError('maxlength')" class="text-sm text-red-500 py-1">
-                        <i class="bi bi-exclamation-circle-fill"></i> displayName is too long.
+                        <i class="bi bi-exclamation-circle-fill"></i> display name is too long.
                     </div>
                 </div>
             </div>
         </form>
     </div>
+
     @if (!isEditing){
         <app-button variant="secondary" (click)="toggleEditing()">Change display name</app-button>
     }@else {
-    <div class="flex gap-4">
-        <app-button variant="secondary" (click)="onCancel()">Cancel</app-button>
-        <app-button variant="primary" [disabled]="disableSubmit" (click)="onSave()">Save</app-button>
-    </div>
+        <div class="flex gap-4">
+            <app-button variant="secondary" (click)="onCancel()">Cancel</app-button>
+            <app-button variant="primary" [disabled]="disableSubmit" (click)="onSave()">Save</app-button>
+        </div>
     }
 </div>
