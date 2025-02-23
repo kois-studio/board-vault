@@ -26,6 +26,8 @@ export class VerifyEmailComponent implements OnInit {
             return
         }
 
+        this.state = 'loading'
+
         // set timeout to 2 seconds to show loading state
         // this gives the user time to read the messages without taking too long
         setTimeout(() => {
