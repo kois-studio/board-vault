@@ -5,6 +5,7 @@ import { LayoutBasicComponent } from './layout/layout-basic/layout-basic.compone
 import { LayoutCompleteComponent } from './layout/layout-complete/layout-complete.component'
 import { LoginComponent } from './pages/auth/login/login.component'
 import { RegisterComponent } from './pages/auth/register/register.component'
+import { ResetPasswordRequestComponent } from './pages/auth/reset-password-request/reset-password-request.component'
 import { VerifyEmailComponent } from './pages/auth/verify-email/verify-email.component'
 import { DashboardComponent } from './pages/dashboard/dashboard.component'
 import { GamesComponent } from './pages/games/games.component'
@@ -59,6 +60,7 @@ export const routes: Routes = [
             { path: 'login', component: LoginComponent, canActivate: [AuthRedirectGuard] },
             { path: 'register', component: RegisterComponent, canActivate: [AuthRedirectGuard] },
             { path: 'verify-email/:token', component: VerifyEmailComponent, canActivate: [AuthRedirectGuard] },
+            { path: 'reset-password/request', component: ResetPasswordRequestComponent, canActivate: [AuthRedirectGuard] },
             // accessible to authenticated users
             { path: 'create-group', component: GroupNewComponent, canActivate: [AuthGuard] }, // 'group/new' would break in 'group/:groupId'
             { path: 'group/:groupId/meets/new', component: MeetNewComponent, canActivate: [AuthGuard] }, // 'meets/new' would break in 'meets/:meetId'
