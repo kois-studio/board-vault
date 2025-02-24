@@ -1,24 +1,18 @@
 <h2 class="text-2xl font-bold tracking-wide pb-2">Security</h2>
-<p class="text-gray-400 pb-8">Manage your account security settings.</p>
+<p class="text-gray-400 pb-8">Manage your private information.</p>
 
-<!-- Email addresses -->
-<div class="flex flex-col lg:flex-row gap-2 lg:items-center items-start border-b border-zinc-500 py-4">
-    <h3 class="w-48">Email address</h3>
-    <!-- <form-update-email class="w-full" /> -->
+<div class="lg:items-center items-start py-4">
+    <h3 class="text-gray-400 pb-1">Email</h3>
+    Coming soon...
+    <!-- <app-button routerLink="/settings/security/email" variant="secondary">Change email</app-button> -->
 </div>
 
-<!-- Password -->
-<div class="flex flex-col lg:flex-row gap-2 lg:justify-items-center justify-items-end border-b border-zinc-500 py-4">
-    <h3 class="w-48">Password</h3>
-    <button class="app-btn-secondary">Change password</button>
+<div class="lg:items-center items-start py-4">
+    <h3 class="text-gray-400 pb-1">Password</h3>
+    <app-button routerLink="/settings/security/password" variant="secondary">Change password</app-button>
 </div>
 
-<!-- Delete account -->
-<div class="flex flex-col lg:flex-row gap-2 lg:items-center items-start border-b border-zinc-500 py-4">
-    <h3 class="w-48">Delete account</h3>
-    <div>
-        <button class="flex gap-2 py-2 px-4 rounded-lg hover:bg-red-400/20 w-full text-red-400 font-bold tracking-wide">
-            Delete account
-        </button>
-    </div>
+<div class="lg:items-center items-start py-4">
+    <h3 class="text-gray-400 pb-1">Danger zone</h3>
+    <app-button routerLink="/settings/security/delete" variant="danger">Delete account</app-button>
 </div>
