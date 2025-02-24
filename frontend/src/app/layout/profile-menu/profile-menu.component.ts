@@ -1,14 +1,13 @@
 import { Component, ElementRef, Renderer2, ViewChild, effect } from '@angular/core'
-import { Router } from '@angular/router'
+import { Router, RouterLink } from '@angular/router'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
 import { DataService } from '../../core/services/data.service'
 import { LocalStorageService } from '../../core/services/local-storage.service'
 import { ModalProfileInvitationsComponent } from './modals/modal-profile-invitations/modal-profile-invitations.component'
 import { ModalProfileNotificationsComponent } from './modals/modal-profile-notifications/modal-profile-notifications.component'
-import { ModalProfileSettingsComponent } from './modals/modal-profile-settings/modal-profile-settings.component'
 
 @Component({
-    imports: [ImageProfileComponent, ModalProfileSettingsComponent, ModalProfileInvitationsComponent, ModalProfileNotificationsComponent],
+    imports: [ImageProfileComponent, ModalProfileInvitationsComponent, ModalProfileNotificationsComponent, RouterLink],
     selector: 'app-profile-menu',
     templateUrl: 'profile-menu.component.html',
 })
@@ -19,7 +18,6 @@ export class ProfileMenuComponent {
     public userUnreadNotifications: ReturnType<typeof this.dataService.userNotifications> = []
 
     // Get the child component to be able to call its methods
-    @ViewChild(ModalProfileSettingsComponent) modalProfileSettingsComponent!: ModalProfileSettingsComponent
     @ViewChild(ModalProfileInvitationsComponent) modalProfileInvitationsComponent!: ModalProfileInvitationsComponent
     @ViewChild(ModalProfileNotificationsComponent) modalProfileNotificationsComponent!: ModalProfileNotificationsComponent
 
@@ -73,7 +71,6 @@ export class ProfileMenuComponent {
 
     // #region Methods
     public onClickProfileSettings() {
-        this.modalProfileSettingsComponent.showDialog()
         this.isDropdownVisible = false
     }
 
