@@ -20,7 +20,7 @@
             </div>
         </div>
         <div class="border-t border-zinc-700">
-            <button (click)="onClickProfileSettings()" class="flex items-center gap-2 w-full px-4 py-2 text-left text-white hover:bg-zinc-800 border-b border-zinc-700">
+            <button routerLink="/settings" (click)="onClickProfileSettings()" class="flex items-center gap-2 w-full px-4 py-2 text-left text-white hover:bg-zinc-800 border-b border-zinc-700">
                 <i class="bi bi-gear"></i> Manage account
             </button>
             <button (click)="onClickInvitations()" class="flex items-center gap-2 w-full px-4 py-2 text-left text-white hover:bg-zinc-800 border-b border-zinc-700">
@@ -46,9 +46,6 @@
     </div>
     }
 </div>
-
-<!-- Modal: Profile Settings -->
-<app-modal-profile-settings />
 
 <!-- Modal: Invitations -->
 <app-modal-profile-invitations />
