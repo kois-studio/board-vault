@@ -9,8 +9,10 @@
         <div>
             <div class="flex items-center justify-between gap-6">
                 @if (!getIsLogged) {
-                <a routerLink="/login" class="app-btn-secondary mr-4">Log In</a>
-                <a routerLink="/register" class="app-btn-primary mr-4">Get it free</a>
+                <a href="#features">Features</a>
+                <a href="#how-it-works">How it works</a>
+                <a routerLink="/login">Log In</a>
+                <a routerLink="/register" class="app-btn-primary">Sign Up</a>
                 } @if (getIsLogged) {
                 <app-profile-menu />
                 }
