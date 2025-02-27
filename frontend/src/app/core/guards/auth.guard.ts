@@ -1,5 +1,5 @@
 // auth.guard.ts
-import { inject, Injectable } from '@angular/core'
+import { Injectable, inject } from '@angular/core'
 import { CanActivate, Router } from '@angular/router'
 import { LoginService } from '../services/login.service'
 

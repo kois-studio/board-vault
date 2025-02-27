@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
-import { ProfileMenuComponent } from '../profile-menu/profile-menu.component'
 import { LoginService } from '../../core/services/login.service'
+import { ProfileMenuComponent } from '../profile-menu/profile-menu.component'
 
 @Component({
     selector: 'app-layout-header',
