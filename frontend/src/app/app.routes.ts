@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router'
-import { AuthRedirectGuard } from './core/guards/auth-redirect.guard'
-import { AuthGuard } from './core/guards/auth.guard'
+import { GuestOnlyGuard } from './core/guards/auth-redirect.guard'
+import { AuthOnlyGuard } from './core/guards/auth.guard'
 import { LayoutBasicComponent } from './layout/layout-basic/layout-basic.component'
 import { LayoutCompleteComponent } from './layout/layout-complete/layout-complete.component'
 import { LoginComponent } from './pages/auth/login/login.component'
@@ -49,21 +49,21 @@ export const routes: Routes = [
             // accessible to everyone
             { path: '', component: LandingComponent }, // cannot move it to routes[n>0] unless routes[0].path !== ''
             // accessible to authenticated users
-            { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
-            { path: 'games', component: GamesComponent, canActivate: [AuthGuard] },
-            { path: 'reviews', component: ReviewComponent, canActivate: [AuthGuard] },
-            { path: 'history', component: HistoryComponent, canActivate: [AuthGuard] },
-            { path: 'group/:groupId', component: GroupViewComponent, canActivate: [AuthGuard] },
-            { path: 'meets/:meetId', component: MeetViewComponent, canActivate: [AuthGuard] },
+            { path: 'dashboard', component: DashboardComponent, canActivate: [AuthOnlyGuard] },
+            { path: 'games', component: GamesComponent, canActivate: [AuthOnlyGuard] },
+            { path: 'reviews', component: ReviewComponent, canActivate: [AuthOnlyGuard] },
+            { path: 'history', component: HistoryComponent, canActivate: [AuthOnlyGuard] },
+            { path: 'group/:groupId', component: GroupViewComponent, canActivate: [AuthOnlyGuard] },
+            { path: 'meets/:meetId', component: MeetViewComponent, canActivate: [AuthOnlyGuard] },
             {
                 path: 'settings',
                 component: SettingsPageComponent,
-                canActivate: [AuthGuard],
+                canActivate: [AuthOnlyGuard],
                 children: [
                     { path: '', redirectTo: 'account', pathMatch: 'full' },
-                    { path: 'account', component: SettingsAccountComponent, canActivate: [AuthGuard] },
-                    { path: 'security', component: SettingsSecurityComponent, canActivate: [AuthGuard] },
-                    { path: 'contact', component: SettingsContactComponent, canActivate: [AuthGuard] },
+                    { path: 'account', component: SettingsAccountComponent, canActivate: [AuthOnlyGuard] },
+                    { path: 'security', component: SettingsSecurityComponent, canActivate: [AuthOnlyGuard] },
+                    { path: 'contact', component: SettingsContactComponent, canActivate: [AuthOnlyGuard] },
                 ],
             },
         ],
@@ -73,18 +73,18 @@ export const routes: Routes = [
         component: LayoutBasicComponent,
         children: [
             // accessible to unauthenticated users
-            { path: 'login', component: LoginComponent, canActivate: [AuthRedirectGuard] },
-            { path: 'register', component: RegisterComponent, canActivate: [AuthRedirectGuard] },
-            { path: 'verify-email/:token', component: VerifyEmailComponent, canActivate: [AuthRedirectGuard] },
-            { path: 'reset-password/request', component: ResetPasswordRequestComponent, canActivate: [AuthRedirectGuard] },
-            { path: 'reset-password/:token', component: ResetPasswordTokenComponent, canActivate: [AuthRedirectGuard] },
+            { path: 'login', component: LoginComponent, canActivate: [GuestOnlyGuard] },
+            { path: 'register', component: RegisterComponent, canActivate: [GuestOnlyGuard] },
+            { path: 'verify-email/:token', component: VerifyEmailComponent, canActivate: [GuestOnlyGuard] },
+            { path: 'reset-password/request', component: ResetPasswordRequestComponent, canActivate: [GuestOnlyGuard] },
+            { path: 'reset-password/:token', component: ResetPasswordTokenComponent, canActivate: [GuestOnlyGuard] },
             // accessible to authenticated users
-            { path: 'create-group', component: GroupNewComponent, canActivate: [AuthGuard] }, // 'group/new' would break in 'group/:groupId'
-            { path: 'group/:groupId/meets/new', component: MeetNewComponent, canActivate: [AuthGuard] }, // 'meets/new' would break in 'meets/:meetId'
-            { path: 'group/:groupId/edit', component: GroupEditComponent, canActivate: [AuthGuard] },
-            { path: 'group/:groupId/leave', component: GroupLeaveComponent, canActivate: [AuthGuard] },
-            { path: 'group/:groupId/delete', component: GroupDeleteComponent, canActivate: [AuthGuard] },
-            { path: 'meets/:meetId/confirm', component: MeetConfirmComponent, canActivate: [AuthGuard] },
+            { path: 'create-group', component: GroupNewComponent, canActivate: [AuthOnlyGuard] }, // 'group/new' would break in 'group/:groupId'
+            { path: 'group/:groupId/meets/new', component: MeetNewComponent, canActivate: [AuthOnlyGuard] }, // 'meets/new' would break in 'meets/:meetId'
+            { path: 'group/:groupId/edit', component: GroupEditComponent, canActivate: [AuthOnlyGuard] },
+            { path: 'group/:groupId/leave', component: GroupLeaveComponent, canActivate: [AuthOnlyGuard] },
+            { path: 'group/:groupId/delete', component: GroupDeleteComponent, canActivate: [AuthOnlyGuard] },
+            { path: 'meets/:meetId/confirm', component: MeetConfirmComponent, canActivate: [AuthOnlyGuard] },
         ],
     },
     { path: '**', component: PageNotFoundComponent }, // Wildcard route for a 404 page
