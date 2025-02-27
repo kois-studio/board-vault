@@ -71,8 +71,8 @@ export class FormLoginComponent {
         this.api.login(email, password).subscribe({
             next: (res) => {
                 // Store the token in localStorage
-                this.loginService.logIn(res.access_token)
-                this.localStorageService.setItem('email', email)
+                this.loginService.token = res.access_token
+                this.loginService.email = email
 
                 // Load the app's data
                 this.dataService.init(email)
