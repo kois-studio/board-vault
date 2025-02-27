@@ -7,7 +7,7 @@
     </div>
 
     <section class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-40">
-        @if (loadingStatesIndex$()['userGroups'] === true) {
+        @if (isLoadingGroups()) {
             @for (item of [1,2]; track $index) {
                 <app-skeleton-card-group />
             }

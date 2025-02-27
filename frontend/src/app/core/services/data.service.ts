@@ -1,8 +1,9 @@
-import { Injectable, type WritableSignal, effect, signal } from '@angular/core'
+import { Injectable, type WritableSignal, effect, inject, signal } from '@angular/core'
 import { Router } from '@angular/router'
 import { catchError, concatMap, from, of, tap } from 'rxjs'
 import { Api } from '../../api/api'
 import type {
+    GamePlayHistoryType,
     GameReviewType,
     GameType,
     GroupWithMembersAndGames,
@@ -14,27 +15,24 @@ import type {
 } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
 import { LOADING_KEYS } from '../enums/loading-keys-enum'
+import { LoadingService } from './loading.service'
 import { LocalStorageService } from './local-storage.service'
 import { LoginService } from './login.service'
 
 @Injectable({ providedIn: 'root' })
 export class DataService {
+    private readonly api = inject(Api)
+    private readonly router = inject(Router)
+    private readonly toastService = inject(ToastService)
+    private readonly loginService = inject(LoginService)
+    private readonly loadingService = inject(LoadingService)
+    private readonly localStorageService = inject(LocalStorageService)
+
     // --------------------------------------------------------------------------
     //        signals definition
     // --------------------------------------------------------------------------
     // current user data, null if not logged in
     public readonly currentUser: WritableSignal<null | UserType> = signal(null)
-
-    // loading index of operations
-    public readonly loadingStatesIndex: WritableSignal<Record<string, boolean>> = signal({
-        [LOADING_KEYS.USER_DATA]: true,
-        [LOADING_KEYS.GAMES_LIST]: true,
-        [LOADING_KEYS.USER_INVITATIONS]: true,
-        [LOADING_KEYS.USER_NOTIFICATIONS]: true,
-        [LOADING_KEYS.USER_REVIEWS]: true,
-        [LOADING_KEYS.USER_GROUPS]: true,
-        [LOADING_KEYS.USER_MEETS]: true,
-    })
 
     // --------------------------------------------------------------------------
     //         ARRAYS OF DATA
@@ -46,6 +44,7 @@ export class DataService {
     public readonly userInvitations: WritableSignal<Array<InvitationWithExtraData>> = signal([])
     public readonly userReviews: WritableSignal<Array<GameReviewType>> = signal([])
     public readonly userMeets: WritableSignal<Array<MeetType>> = signal([])
+    public readonly userHistory: WritableSignal<Array<GamePlayHistoryType>> = signal([])
 
     // list of all games available to select
     public readonly gamesList: WritableSignal<Array<GameType>> = signal([])
@@ -58,34 +57,20 @@ export class DataService {
 
     // --------------------------------------------------------------------------
     // --------------------------------------------------------------------------
-    constructor(
-        private readonly api: Api,
-        private readonly router: Router,
-        private readonly toastService: ToastService,
-        private readonly localStorageService: LocalStorageService,
-        private readonly loginService: LoginService,
-    ) {
-        effect(
-            () => {
-                const token = this.loginService.token
-                const email = this.loginService.email
-                if (token && email) {
-                    // 1. Get the user data
-                    this._getUserData(email)
-                    // 2. Get the games list (commmon for all users)
-                    this._getGamesList()
-                }
-            },
-            { allowSignalWrites: true },
-        )
-    }
-
-    private _setLoading(key: LOADING_KEYS, loading: boolean) {
-        this.loadingStatesIndex.update((state) => ({ ...state, [key]: loading }))
+    constructor() {
+        effect(() => {
+            const token = this.loginService.token
+            const email = this.loginService.email
+            if (token && email) {
+                // 1. Get the user data
+                this._getUserData(email)
+                // 2. Get the games list (commmon for all users)
+                this._getGamesList()
+            }
+        })
     }
 
     private _getUserData(email: string) {
-        this._setLoading(LOADING_KEYS.USER_DATA, true)
         this.api.getUserByEmail(email).subscribe({
             next: (userType) => {
                 this.currentUser.set(userType)
@@ -96,8 +81,7 @@ export class DataService {
                 this._getUserInvitations(userType.id)
                 this._getUserReviews(userType.id)
                 this._getUserMeets(userType.id)
-
-                this._setLoading(LOADING_KEYS.USER_DATA, false)
+                this._getUserHistory(userType.id)
             },
             error: (error) => {
                 if (error.status === 401) {
@@ -105,12 +89,13 @@ export class DataService {
                     this.localStorageService.clear()
                     this.currentUser.set(null)
                     this.router.navigate(['/login'])
-                    this._setLoading(LOADING_KEYS.USER_DATA, false)
                     return
                 }
 
                 this.toastService.error("Error retrieving user's data, login again")
-                this._setLoading(LOADING_KEYS.USER_DATA, false)
+            },
+            complete: () => {
+                this.loadingService.finish(LOADING_KEYS.USER_DATA)
             },
         })
     }
@@ -160,19 +145,20 @@ export class DataService {
     }
 
     private _getUserGroups(userId: number) {
-        this._setLoading(LOADING_KEYS.USER_GROUPS, true)
         this.api
             .getUserGroups(userId)
             .pipe(
                 // If no groupIds, loading=false because there is nothing to fetch
                 tap((groupIds) => {
                     if (groupIds.length === 0) {
-                        this._setLoading(LOADING_KEYS.USER_GROUPS, false)
+                        // early finish because no groupIds to fetch
+                        this.loadingService.finish(LOADING_KEYS.USER_GROUPS)
                     }
                 }),
                 catchError((err) => {
+                    // early finish because no groupIds to fetch
                     this.toastService.error("Error retrieving user's groups")
-                    this._setLoading(LOADING_KEYS.USER_GROUPS, false)
+                    this.loadingService.finish(LOADING_KEYS.USER_GROUPS)
                     return of([])
                 }),
                 concatMap((groupIds) =>
@@ -216,11 +202,8 @@ export class DataService {
                 ),
             )
             .subscribe({
-                next: () => {
-                    this._setLoading(LOADING_KEYS.USER_GROUPS, false)
-                },
-                error: () => {
-                    this._setLoading(LOADING_KEYS.USER_GROUPS, false)
+                complete: () => {
+                    this.loadingService.finish(LOADING_KEYS.USER_GROUPS)
                 },
             })
     }
@@ -232,6 +215,20 @@ export class DataService {
             },
             error: () => {
                 this.toastService.error("Error retrieving user's meets")
+            },
+        })
+    }
+
+    private _getUserHistory(userId: number) {
+        this.api.getUserGamesHistory(userId).subscribe({
+            next: (history) => {
+                this.userHistory.set(history)
+            },
+            error: () => {
+                this.toastService.error("Error retrieving user's history")
+            },
+            complete: () => {
+                this.loadingService.finish(LOADING_KEYS.USER_GAMES_HISTORY)
             },
         })
     }
