@@ -1,21 +1,23 @@
-import { Injectable } from '@angular/core'
+import { inject, Injectable } from '@angular/core'
 import { CanActivate, Router } from '@angular/router'
-import { LocalStorageService } from '../services/local-storage.service'
+import { LoginService } from '../services/login.service'
 
 /**
  * Prevents access a route and redirects to the dashboard if the user is already authenticated.
  */
-@Injectable({
-    providedIn: 'root',
-})
-export class AuthRedirectGuard implements CanActivate {
-    constructor(
-        private localStorageService: LocalStorageService,
-        private router: Router,
-    ) {}
+@Injectable({ providedIn: 'root' })
+export class GuestOnlyGuard implements CanActivate {
+    private readonly router = inject(Router)
+    private readonly loginService = inject(LoginService)
+
+    // --------------------------------------------------------------------------
+    //        signals
+    // --------------------------------------------------------------------------
+    // loginService
+    public readonly loginState$ = this.loginService.loginState
 
     public canActivate(): boolean {
-        const token = this.localStorageService.getToken()
+        const token = this.loginState$().token
 
         if (token) {
             // If token exists, redirect to dashboard
