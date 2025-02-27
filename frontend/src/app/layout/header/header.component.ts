@@ -1,7 +1,7 @@
-import { Component } from '@angular/core'
+import { Component, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
-import { LocalStorageService } from '../../core/services/local-storage.service'
 import { ProfileMenuComponent } from '../profile-menu/profile-menu.component'
+import { LoginService } from '../../core/services/login.service'
 
 @Component({
     selector: 'app-layout-header',
@@ -9,11 +9,15 @@ import { ProfileMenuComponent } from '../profile-menu/profile-menu.component'
     imports: [RouterLink, ProfileMenuComponent],
 })
 export class LayoutHeaderComponent {
-    public currentLocale = 'en'
+    private readonly loginService = inject(LoginService)
 
-    constructor(private readonly localStorageService: LocalStorageService) {}
+    // --------------------------------------------------------------------------
+    //        Services signals
+    // --------------------------------------------------------------------------
+    // loginService
+    public readonly loginState$ = this.loginService.loginState
 
-    get getIsLogged(): boolean {
-        return !!this.localStorageService.token
+    get isLogged(): boolean {
+        return !!this.loginState$().token
     }
 }

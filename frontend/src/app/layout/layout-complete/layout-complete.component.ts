@@ -1,6 +1,6 @@
-import { Component } from '@angular/core'
+import { Component, inject } from '@angular/core'
 import { RouterOutlet } from '@angular/router'
-import { LocalStorageService } from '../../core/services/local-storage.service'
+import { LoginService } from '../../core/services/login.service'
 import { LayoutFooterComponent } from '../footer/footer.component'
 import { LayoutHeaderComponent } from '../header/header.component'
 import { LayoutTopBarComponent } from '../top-bar/top-bar.component'
@@ -14,9 +14,15 @@ import { LayoutTopBarComponent } from '../top-bar/top-bar.component'
     templateUrl: 'layout-complete.component.html',
 })
 export class LayoutCompleteComponent {
-    constructor(private readonly localStorageService: LocalStorageService) {}
+    private readonly loginService = inject(LoginService)
 
-    get getIsLogged(): boolean {
-        return !!this.localStorageService.token
+    // --------------------------------------------------------------------------
+    //        Services signals
+    // --------------------------------------------------------------------------
+    // loginService
+    public readonly loginState$ = this.loginService.loginState
+
+    get isLogged(): boolean {
+        return !!this.loginState$().token
     }
 }
