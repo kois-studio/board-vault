@@ -64,7 +64,7 @@ export class FormUpdateEmailComponent {
 
         this.dataService.updateCurrentUserData({ email })
 
-        this.localStorageService.deleteToken()
+        // this.localStorageService.deleteToken()
         this.dataService.clearState()
         this.router.navigate(['/login'])
 

@@ -15,9 +15,15 @@ import type {
 import { ToastService } from '../../components/toast/toast.service'
 import { LOADING_KEYS } from '../enums/loading-keys-enum'
 import { LocalStorageService } from './local-storage.service'
+import { LoginService } from './login.service'
 
 @Injectable({ providedIn: 'root' })
 export class DataService {
+
+    
+    // --------------------------------------------------------------------------
+    //        signals definition
+    // --------------------------------------------------------------------------
     // current user data, null if not logged in
     public readonly currentUser: WritableSignal<null | UserType> = signal(null)
 
@@ -59,10 +65,11 @@ export class DataService {
         private readonly router: Router,
         private readonly toastService: ToastService,
         private readonly localStorageService: LocalStorageService,
+        private readonly loginService: LoginService,
     ) {
         effect(
             () => {
-                const token = this.localStorageService.getToken()
+                const token = this.loginService.loginState().token
                 const email = this.localStorageService.getItem('email')
                 if (token && email) {
                     // 1. Get the user data
