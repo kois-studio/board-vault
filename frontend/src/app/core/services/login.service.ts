@@ -1,6 +1,6 @@
-import { inject, Injectable, signal, WritableSignal } from '@angular/core'
-import { LocalStorageService } from './local-storage.service'
+import { Injectable, WritableSignal, inject, signal } from '@angular/core'
 import { Api } from '../../api/api'
+import { LocalStorageService } from './local-storage.service'
 import { LogService } from './log.service'
 
 type LoginStateType = {
