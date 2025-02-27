@@ -1,11 +1,11 @@
 // auth-interceptor.ts
 import { HttpInterceptorFn } from '@angular/common/http'
+import { LocalStorageService } from '../services/local-storage.service'
 import { inject } from '@angular/core'
-import { LoginService } from '../services/login.service'
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-    const loginService = inject(LoginService)
-    const token = loginService.loginState().token
+    const localStorageService = inject(LocalStorageService)
+    const token = localStorageService.getItem('token')
 
     if (token) {
         // Clone the request and add the Authorization header

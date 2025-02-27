@@ -16,13 +16,7 @@ import { LayoutTopBarComponent } from '../top-bar/top-bar.component'
 export class LayoutCompleteComponent {
     private readonly loginService = inject(LoginService)
 
-    // --------------------------------------------------------------------------
-    //        Services signals
-    // --------------------------------------------------------------------------
-    // loginService
-    public readonly loginState$ = this.loginService.loginState
-
     get isLogged(): boolean {
-        return !!this.loginState$().token
+        return !!this.loginService.token
     }
 }
