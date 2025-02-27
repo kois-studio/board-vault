@@ -66,7 +66,7 @@ export class LoginService {
         this.loginState.set({
             token: null,
             valid: false,
-            timestamp: 0,
+            timestamp: null,
         })
     }
 
@@ -80,9 +80,11 @@ export class LoginService {
      */
     private _loadToken(): void {
         const rawLoginState = this.localStorageService.getItem(this.localstorage_key)
+        this.logService.log('Loading token', rawLoginState)
 
         // case 1: the user is not authenticated
         if (!rawLoginState) {
+            this.logService.log('No token found')
             this.loginState.set({
                 token: null,
                 valid: false,
@@ -92,8 +94,9 @@ export class LoginService {
         }
 
         const { token, timestamp } = JSON.parse(rawLoginState) as LocalStorageLoginStateType
-
         const isRecent = timestamp && timestamp > Date.now() - 10 // 30min
+
+        this.logService.log('isRecent', isRecent)
 
         // case 2: authenticated AND recent
         if (isRecent) {
@@ -111,6 +114,7 @@ export class LoginService {
         this.api.getUserByEmail(token).subscribe({
             next: (user) => {
                 if (user) {
+                    this.logService.log('User found', user)
                     this.loginState.set({
                         token,
                         valid: true,
@@ -119,11 +123,8 @@ export class LoginService {
                 }
             },
             error: () => {
-                this.loginState.set({
-                    token: null,
-                    valid: false,
-                    timestamp: null,
-                })
+                this.logService.log('User not found')
+                this.logOut()
             },
         })
     }
