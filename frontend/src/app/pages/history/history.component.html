@@ -1,16 +1,16 @@
-<container-wrapper *ngIf="loaded">
+<container-wrapper>
     <title-subtitle titleText="History">
         Your history of games played in the past meetings
     </title-subtitle>
 
     <!-- Attendees -->
-    <section class="p-4">
-        @if (gamesHistory.length === 0) {
+    <section class="p-4" *ngIf="!isLoadingHistory()">
+        @if (userHistory$().length === 0) {
             <div class="text-center py-8 text-zinc-400">
                 <p>No games played yet</p>
             </div>
         } @else {
-            @for (dateGroup of groupedGames | keyvalue; track dateGroup.key) {
+            @for (dateGroup of groupedGamesByDateComputed() | keyvalue; track dateGroup.key) {
                 <div class="mb-8">
                     <h2 class="text-2xl font-semibold mb-4 text-zinc-300">
                         {{ dateGroup.key | customDate }}

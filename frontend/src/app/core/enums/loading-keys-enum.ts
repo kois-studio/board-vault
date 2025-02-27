@@ -6,4 +6,5 @@ export enum LOADING_KEYS {
     USER_REVIEWS = 'userReviews',
     USER_GROUPS = 'userGroups',
     USER_MEETS = 'userMeets',
+    USER_GAMES_HISTORY = 'userGamesHistory',
 }

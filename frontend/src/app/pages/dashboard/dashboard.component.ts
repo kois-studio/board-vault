@@ -1,8 +1,10 @@
-import { Component, inject } from '@angular/core'
+import { Component, computed, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { CardGroupComponent } from '../../components/card-group/card-group.component'
 import { SkeletonCardGroupComponent } from '../../components/skeletons/skeleton-card-group/skeleton-card-group.component'
+import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
 import { DataService } from '../../core/services/data.service'
+import { LoadingService } from '../../core/services/loading.service'
 
 @Component({
     imports: [CardGroupComponent, RouterLink, SkeletonCardGroupComponent],
@@ -10,12 +12,14 @@ import { DataService } from '../../core/services/data.service'
 })
 export class DashboardComponent {
     private readonly dataService = inject(DataService)
+    private readonly loadingService = inject(LoadingService)
 
     // --------------------------------------------------------------------------
     //        signals
     // --------------------------------------------------------------------------
     // dataService
-    public readonly loadingStatesIndex$ = this.dataService.loadingStatesIndex
     public readonly userGroups$ = this.dataService.userGroups
     public readonly invitationsGroupIndex$ = this.dataService.invitationsGroupIndex
+    // loadingService
+    public readonly isLoadingGroups = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_GROUPS])
 }
