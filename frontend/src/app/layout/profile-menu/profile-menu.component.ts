@@ -1,10 +1,10 @@
-import { Component, ElementRef, Renderer2, ViewChild, effect } from '@angular/core'
+import { Component, ElementRef, Renderer2, ViewChild, effect, inject } from '@angular/core'
 import { Router, RouterLink } from '@angular/router'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
 import { DataService } from '../../core/services/data.service'
-import { LocalStorageService } from '../../core/services/local-storage.service'
 import { ModalProfileInvitationsComponent } from './modals/modal-profile-invitations/modal-profile-invitations.component'
 import { ModalProfileNotificationsComponent } from './modals/modal-profile-notifications/modal-profile-notifications.component'
+import { LoginService } from '../../core/services/login.service'
 
 @Component({
     imports: [ImageProfileComponent, ModalProfileInvitationsComponent, ModalProfileNotificationsComponent, RouterLink],
@@ -12,6 +12,8 @@ import { ModalProfileNotificationsComponent } from './modals/modal-profile-notif
     templateUrl: 'profile-menu.component.html',
 })
 export class ProfileMenuComponent {
+    private readonly loginService = inject(LoginService)
+
     public isDropdownVisible = false
     public userData: ReturnType<typeof this.dataService.currentUser> = null
     public userInvitations: ReturnType<typeof this.dataService.userInvitations> = []
@@ -26,7 +28,6 @@ export class ProfileMenuComponent {
     constructor(
         private readonly router: Router,
         private readonly dataService: DataService,
-        private readonly localStorageService: LocalStorageService,
         // these 2 are used to being able to close the dropdown when clicking outside of it
         private readonly renderer: Renderer2,
         private readonly elementRef: ElementRef,
@@ -85,7 +86,7 @@ export class ProfileMenuComponent {
     }
 
     public onClickSignOut() {
-        this.localStorageService.deleteToken()
+        this.loginService.logOut()
         this.dataService.clearState()
         this.router.navigate(['/'])
     }
