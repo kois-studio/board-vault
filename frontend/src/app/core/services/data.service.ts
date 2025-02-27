@@ -67,8 +67,8 @@ export class DataService {
     ) {
         effect(
             () => {
-                const token = this.loginService.loginState().token
-                const email = this.localStorageService.getItem('email')
+                const token = this.loginService.token
+                const email = this.loginService.email
                 if (token && email) {
                     // 1. Get the user data
                     this._getUserData(email)
