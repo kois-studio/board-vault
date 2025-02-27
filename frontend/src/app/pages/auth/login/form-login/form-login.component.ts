@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common'
-import { Component } from '@angular/core'
+import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router, RouterLink } from '@angular/router'
 import { Api } from '../../../../api/api'
 import { ToastService } from '../../../../components/toast/toast.service'
 import { DataService } from '../../../../core/services/data.service'
 import { LocalStorageService } from '../../../../core/services/local-storage.service'
+import { LoginService } from '../../../../core/services/login.service'
 
 @Component({
     imports: [ReactiveFormsModule, CommonModule, RouterLink],
@@ -13,6 +14,8 @@ import { LocalStorageService } from '../../../../core/services/local-storage.ser
     templateUrl: 'form-login.component.html',
 })
 export class FormLoginComponent {
+    private readonly loginService = inject(LoginService)
+
     public isLoading = false
 
     // Form inputs
@@ -68,7 +71,7 @@ export class FormLoginComponent {
         this.api.login(email, password).subscribe({
             next: (res) => {
                 // Store the token in localStorage
-                this.localStorageService.setToken(res.access_token)
+                this.loginService.logIn(res.access_token)
                 this.localStorageService.setItem('email', email)
 
                 // Load the app's data
