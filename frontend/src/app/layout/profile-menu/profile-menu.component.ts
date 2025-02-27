@@ -2,9 +2,9 @@ import { Component, ElementRef, Renderer2, ViewChild, effect, inject } from '@an
 import { Router, RouterLink } from '@angular/router'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
 import { DataService } from '../../core/services/data.service'
+import { LoginService } from '../../core/services/login.service'
 import { ModalProfileInvitationsComponent } from './modals/modal-profile-invitations/modal-profile-invitations.component'
 import { ModalProfileNotificationsComponent } from './modals/modal-profile-notifications/modal-profile-notifications.component'
-import { LoginService } from '../../core/services/login.service'
 
 @Component({
     imports: [ImageProfileComponent, ModalProfileInvitationsComponent, ModalProfileNotificationsComponent, RouterLink],
