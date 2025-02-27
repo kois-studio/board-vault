@@ -1,22 +1,24 @@
 // auth.guard.ts
-import { Injectable } from '@angular/core'
+import { inject, Injectable } from '@angular/core'
 import { CanActivate, Router } from '@angular/router'
-import { LocalStorageService } from '../services/local-storage.service'
+import { LoginService } from '../services/login.service'
 
 /**
  * Prevents access to a route if the user is not authenticated.
  */
-@Injectable({
-    providedIn: 'root',
-})
-export class AuthGuard implements CanActivate {
-    constructor(
-        private localStorageService: LocalStorageService,
-        private router: Router,
-    ) {}
+@Injectable({ providedIn: 'root' })
+export class AuthOnlyGuard implements CanActivate {
+    private readonly router = inject(Router)
+    private readonly loginService = inject(LoginService)
+
+    // --------------------------------------------------------------------------
+    //        signals
+    // --------------------------------------------------------------------------
+    // loginService
+    public readonly loginState$ = this.loginService.loginState
 
     canActivate(): boolean {
-        const token = this.localStorageService.getToken()
+        const token = this.loginState$().token
 
         if (token) {
             // If token exists, allow access to the route
