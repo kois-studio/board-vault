@@ -1,10 +1,18 @@
 import { inject, Injectable, signal, WritableSignal } from '@angular/core'
 import { LocalStorageService } from './local-storage.service'
+import { Api } from '../../api/api'
+import { LogService } from './log.service'
 
 type LoginStateType = {
     token: null | string
     valid: boolean
     timestamp: null | number
+}
+
+type LocalStorageLoginStateType = {
+    token: string
+    valid: boolean
+    timestamp: number
 }
 
 /**
@@ -14,6 +22,8 @@ type LoginStateType = {
  */
 @Injectable({ providedIn: 'root' })
 export class LoginService {
+    private readonly api = inject(Api)
+    private readonly logService = inject(LogService)
     private readonly localStorageService = inject(LocalStorageService)
 
     // --------------------------------------------------------------------------
@@ -38,7 +48,7 @@ export class LoginService {
      * Sets the token (on login) generating the timestamp
      */
     logIn(token: string): void {
-        const loginState = {
+        const loginState: LocalStorageLoginStateType = {
             token,
             valid: true,
             timestamp: Date.now(),
@@ -81,9 +91,9 @@ export class LoginService {
             return
         }
 
-        const { token, timestamp } = JSON.parse(rawLoginState) as LoginStateType
+        const { token, timestamp } = JSON.parse(rawLoginState) as LocalStorageLoginStateType
 
-        const isRecent = timestamp && timestamp > Date.now() - 1000 * 60 * 30 // 30min
+        const isRecent = timestamp && timestamp > Date.now() - 10 // 30min
 
         // case 2: authenticated AND recent
         if (isRecent) {
@@ -96,10 +106,25 @@ export class LoginService {
         }
 
         // case 3: authenticated and NOT recent
-        this.loginState.set({
-            token,
-            valid: false, // it will require a server-check before showing the UI
-            timestamp,
+        // it will require a server-check before showing the UI
+        // so we make a server-check with a getUserByEmail request
+        this.api.getUserByEmail(token).subscribe({
+            next: (user) => {
+                if (user) {
+                    this.loginState.set({
+                        token,
+                        valid: true,
+                        timestamp,
+                    })
+                }
+            },
+            error: () => {
+                this.loginState.set({
+                    token: null,
+                    valid: false,
+                    timestamp: null,
+                })
+            },
         })
     }
 }
