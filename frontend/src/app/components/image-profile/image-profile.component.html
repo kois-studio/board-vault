@@ -10,12 +10,12 @@
     </div>
 } @else {
     <div
-        class="rounded-full flex items-center justify-center text-white text-3xl overflow-hidden border-4 border-white shadow-lg mx-auto"
+        class="rounded-full flex items-center justify-center text-white"
         [style.background-color]="avatar.backgroundColor"
         [ngClass]="{
-            'w-6 h-6': size === 'small',
-            'w-10 h-10': size === 'medium',
-            'w-20 h-20': size === 'large'
+            'w-6 h-6 text-2xl': size === 'small',
+            'w-10 h-10 text-2xl': size === 'medium',
+            'w-20 h-20 text-5xl': size === 'large'
         }"
     >
         @if (avatar.type === 'icon' && avatar.iconName) {
