@@ -9,7 +9,13 @@
         </button>
         <!-- Dialog content -->
         <app-avatar-editor
-            [avatar]="userAvatar"
+            [avatar]="currentUser$()?.avatar ?? {
+                backgroundColor: '#3B82F6',
+                iconName: 'person-fill',
+                emoji: null,
+                type: 'icon',
+                initials: '',
+            }"
             (configChange)="updateAvatar($event)">
         </app-avatar-editor>
     </div>
