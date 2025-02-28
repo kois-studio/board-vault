@@ -5,7 +5,7 @@ import { LocalStorageService } from '../services/local-storage.service'
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
     const localStorageService = inject(LocalStorageService)
-    const token = localStorageService.getItem('token')
+    const token = localStorageService.getItem('access_token')
 
     if (token) {
         // Clone the request and add the Authorization header
