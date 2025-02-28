@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core'
+import { Component, effect, inject, OnInit } from '@angular/core'
 import { Api } from '../../api/api'
 import type { UserType } from '../../api/api.types'
 import { DataService } from '../../core/services/data.service'
@@ -23,13 +23,6 @@ export class ModalAvatarEditorComponent {
     //        Component props
     // --------------------------------------------------------------------------
     public isVisible = false
-    public userAvatar: UserType['avatar'] = {
-        backgroundColor: '#3B82F6',
-        iconName: 'person-fill',
-        emoji: null,
-        type: 'icon',
-        initials: '',
-    }
 
     // --------------------------------------------------------------------------
     //        Methods
