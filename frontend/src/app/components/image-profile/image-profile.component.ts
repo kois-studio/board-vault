@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { Component, Input } from '@angular/core'
+import { UserType } from '../../api/api.types'
 
 @Component({
     imports: [CommonModule],
@@ -7,6 +8,6 @@ import { Component, Input } from '@angular/core'
     templateUrl: 'image-profile.component.html',
 })
 export class ImageProfileComponent {
-    @Input() imageUrl: null | undefined | string = null
+    @Input({ required: true }) avatar: null | undefined | UserType['imageUrl'] = null
     @Input() size: 'small' | 'medium' | 'large' = 'medium'
 }

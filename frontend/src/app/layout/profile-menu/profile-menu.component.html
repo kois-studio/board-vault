@@ -1,7 +1,7 @@
 <!-- Profile Picture and Dropdown Trigger -->
 <div class="relative">
     <button (click)="toggleDropdown()" class="relative">
-        <app-image-profile [imageUrl]="userData?.imageUrl" />
+        <app-image-profile [avatar]="userData?.imageUrl" />
         @if (userInvitations.length + userUnreadNotifications.length) {
             <div class="absolute -bottom-1 -right-1 bg-blue-600 rounded-full h-5 w-5 flex items-center justify-center">
                 <span class="text-sm">{{ userInvitations.length + userUnreadNotifications.length }}</span>
@@ -13,7 +13,7 @@
     @if (isDropdownVisible) {
     <div class="absolute right-0 mt-2 w-56 bg-zinc-900 border border-zinc-700 rounded-lg shadow-xl">
         <div class="flex items-center p-4">
-            <app-image-profile [imageUrl]="userData?.imageUrl" />
+            <app-image-profile [avatar]="userData?.imageUrl" />
             <div class="ml-3">
                 <p class="font-semibold text-white">{{ userData?.displayName }}</p>
                 <p class="text-gray-400 text-sm">{{ userData?.username }}</p>
