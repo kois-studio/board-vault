@@ -4,7 +4,7 @@
 <div class="lg:items-center flex justify-start items-center py-4">
     <div class="relative border-4 border-white rounded-full">
         <!-- Original Image Profile Component -->
-        <app-image-profile [imageUrl]="currentUser$()?.imageUrl" size="large" />
+        <app-image-profile [avatar]="currentUser$()?.imageUrl" size="large" />
 
         <!-- Edit button overlay -->
         <button

@@ -256,7 +256,12 @@ export class DataService {
 
     // #region form-update-profile
 
-    public updateCurrentUserData(requestBody: { email?: string; username?: string; displayName?: string; imageUrl?: string }) {
+    public updateCurrentUserData(requestBody: {
+        email?: string
+        username?: string
+        displayName?: string
+        imageUrl?: UserType['imageUrl']
+    }) {
         const currentUser = this.currentUser()
         if (!currentUser) {
             return
@@ -275,10 +280,12 @@ export class DataService {
                             const userIndex = group.members.findIndex((member) => member.id === currentUser.id)
                             if (userIndex === -1) return group
 
-                            for (const [key, value] of Object.entries(requestBody) as Array<[keyof typeof requestBody, string]>) {
+                            for (const [key, value] of Object.entries(requestBody) as Array<
+                                [keyof typeof requestBody, UserType['imageUrl']]
+                            >) {
                                 if (requestBody[key] === updatedUser[key]) {
                                     // extra check
-                                    group.members[userIndex][key] = value
+                                    // group.members[userIndex][key] = value
                                 }
                             }
                             return group
