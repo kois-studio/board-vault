@@ -1,4 +1,4 @@
-import { Injectable, type WritableSignal, effect, inject, signal } from '@angular/core'
+import { Injectable, effect, inject, signal } from '@angular/core'
 import { Router } from '@angular/router'
 import { catchError, concatMap, from, of, tap } from 'rxjs'
 import { Api } from '../../api/api'
@@ -32,28 +32,28 @@ export class DataService {
     //        signals definition
     // --------------------------------------------------------------------------
     // current user data, null if not logged in
-    public readonly currentUser: WritableSignal<null | UserType> = signal(null)
+    public readonly currentUser = signal<null | UserType>(null)
 
     // --------------------------------------------------------------------------
     //         ARRAYS OF DATA
     // --------------------------------------------------------------------------
     // `userXYZ` to store the data of the current user
-    public readonly userGames: WritableSignal<Array<GameType>> = signal([])
-    public readonly userGroups: WritableSignal<Array<GroupWithMembersAndGames>> = signal([])
-    public readonly userNotifications: WritableSignal<Array<NotificationType>> = signal([])
-    public readonly userInvitations: WritableSignal<Array<InvitationWithExtraData>> = signal([])
-    public readonly userReviews: WritableSignal<Array<GameReviewType>> = signal([])
-    public readonly userMeets: WritableSignal<Array<MeetType>> = signal([])
-    public readonly userHistory: WritableSignal<Array<GamePlayHistoryType>> = signal([])
+    public readonly userGames = signal<Array<GameType>>([])
+    public readonly userGroups = signal<Array<GroupWithMembersAndGames>>([])
+    public readonly userNotifications = signal<Array<NotificationType>>([])
+    public readonly userInvitations = signal<Array<InvitationWithExtraData>>([])
+    public readonly userReviews = signal<Array<GameReviewType>>([])
+    public readonly userMeets = signal<Array<MeetType>>([])
+    public readonly userHistory = signal<Array<GamePlayHistoryType>>([])
 
     // list of all games available to select
-    public readonly gamesList: WritableSignal<Array<GameType>> = signal([])
+    public readonly gamesList = signal<Array<GameType>>([])
 
     // --------------------------------------------------------------------------
     //         INDEXES (for fast access to data)
     // --------------------------------------------------------------------------
     // (this {groupId} which {Invitation[]} has pending)
-    public readonly invitationsGroupIndex: WritableSignal<Record<number, Array<InvitationWithAccountsData>>> = signal({})
+    public readonly invitationsGroupIndex = signal<Record<number, Array<InvitationWithAccountsData>>>({})
 
     // --------------------------------------------------------------------------
     // --------------------------------------------------------------------------
