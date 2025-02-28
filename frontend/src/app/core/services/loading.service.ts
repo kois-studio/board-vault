@@ -1,4 +1,4 @@
-import { Injectable, WritableSignal, signal } from '@angular/core'
+import { Injectable, signal } from '@angular/core'
 import { LOADING_KEYS } from '../enums/loading-keys-enum'
 
 @Injectable({ providedIn: 'root' })
@@ -11,7 +11,7 @@ export class LoadingService {
      * data.length == 0 -> error (depending on the component, show a message, an error, whatever)
      * data.length > 0 -> success (show the data)
      */
-    public readonly loadingStatesIndex: WritableSignal<Record<string, boolean>> = signal({
+    public readonly loadingStatesIndex = signal<Record<string, boolean>>({
         [LOADING_KEYS.USER_DATA]: true,
         [LOADING_KEYS.GAMES_LIST]: true,
         [LOADING_KEYS.USER_INVITATIONS]: true,
