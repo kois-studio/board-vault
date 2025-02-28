@@ -105,12 +105,12 @@ export class DatabaseService implements OnModuleInit {
     }
 
     async createUser(userDto: CreateUserBody, verificationToken: string) {
-        const { email, password, username, displayName, imageUrl } = userDto
+        const { email, password, username, displayName, avatar } = userDto
         const hashedPassword = await bcrypt.hash(password, 10)
 
         await this._tursoExecute({
-            sql: 'INSERT INTO Account (email, password, username, displayName, imageUrl, verification_token) VALUES (?, ?, ?, ?, ?, ?)',
-            args: [email, hashedPassword, username, displayName, JSON.stringify(imageUrl), verificationToken],
+            sql: 'INSERT INTO Account (email, password, username, displayName, avatar, verification_token) VALUES (?, ?, ?, ?, ?, ?)',
+            args: [email, hashedPassword, username, displayName, JSON.stringify(avatar), verificationToken],
         })
     }
 
@@ -138,9 +138,9 @@ export class DatabaseService implements OnModuleInit {
             fields.push('displayName = ?')
             args.push(partialUserDto.displayName)
         }
-        if (partialUserDto.imageUrl) {
-            fields.push('imageUrl = ?')
-            args.push(JSON.stringify(partialUserDto.imageUrl))
+        if (partialUserDto.avatar) {
+            fields.push('avatar = ?')
+            args.push(JSON.stringify(partialUserDto.avatar))
         }
         if (partialUserDto.isAdmin) {
             fields.push('isAdmin = ?')
@@ -412,7 +412,7 @@ export class DatabaseService implements OnModuleInit {
                         'username', a.username,
                         'displayName', a.displayName,
                         'email', a.email,
-                        'imageUrl', a.imageUrl,
+                        'avatar', a.avatar,
                         'joinedAt', gm.joinedAt,
                         'games', (
                             SELECT json_group_array(
@@ -465,7 +465,7 @@ export class DatabaseService implements OnModuleInit {
                     'email', fa.email,
                     'username', fa.username,
                     'displayName', fa.displayName,
-                    'imageUrl', fa.imageUrl,
+                    'avatar', fa.avatar,
                     'createdAt', fa.created_at,
                     'isDeleted', fa.isDeleted
                 ) as fromAccount,
@@ -475,7 +475,7 @@ export class DatabaseService implements OnModuleInit {
                     'email', ta.email,
                     'username', ta.username,
                     'displayName', ta.displayName,
-                    'imageUrl', ta.imageUrl,
+                    'avatar', ta.avatar,
                     'createdAt', ta.created_at,
                     'isDeleted', ta.isDeleted
                 ) as toAccount

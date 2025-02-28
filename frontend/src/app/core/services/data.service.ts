@@ -260,7 +260,7 @@ export class DataService {
         email?: string
         username?: string
         displayName?: string
-        imageUrl?: UserType['imageUrl']
+        avatar?: UserType['avatar']
     }) {
         const currentUser = this.currentUser()
         if (!currentUser) {
@@ -281,7 +281,7 @@ export class DataService {
                             if (userIndex === -1) return group
 
                             for (const [key, value] of Object.entries(requestBody) as Array<
-                                [keyof typeof requestBody, UserType['imageUrl']]
+                                [keyof typeof requestBody, UserType['avatar']]
                             >) {
                                 if (requestBody[key] === updatedUser[key]) {
                                     // extra check

@@ -8,6 +8,6 @@ import { UserType } from '../../api/api.types'
     templateUrl: 'image-profile.component.html',
 })
 export class ImageProfileComponent {
-    @Input({ required: true }) avatar: null | undefined | UserType['imageUrl'] = null
+    @Input({ required: true }) avatar: null | undefined | UserType['avatar'] = null
     @Input() size: 'small' | 'medium' | 'large' = 'medium'
 }

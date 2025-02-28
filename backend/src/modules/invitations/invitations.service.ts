@@ -84,7 +84,7 @@ export class InvitationsService {
             email: String(userRow[1]),
             username: String(userRow[2]),
             // password: String(userRow[3]), // Do not return password
-            imageUrl: JSON.parse(String(userRow[4])) as AvatarDto,
+            avatar: JSON.parse(String(userRow[4])) as AvatarDto,
             displayName: String(userRow[5]),
             createdAt: String(userRow[6]),
             isDeleted: Boolean(userRow[7]),

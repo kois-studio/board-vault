@@ -10,17 +10,10 @@ import type { UserType } from '../../api/api.types'
     styleUrls: ['./avatar-editor.component.scss'],
 })
 export class AvatarEditorComponent implements OnInit {
-    @Input() initialConfig: UserType['imageUrl'] = {
-        backgroundColor: '#6366F1', // Indigo-500
-        iconName: 'person-fill',
-        emoji: null,
-        type: 'icon',
-        initials: '',
-    }
+    @Input({ required: true }) avatar!: UserType['avatar']
 
-    @Output() configChange = new EventEmitter<UserType['imageUrl']>()
+    @Output() configChange = new EventEmitter<UserType['avatar']>()
 
-    avatarConfig!: UserType['imageUrl']
     activeTab: 'icon' | 'emoji' | 'initials' = 'icon'
     searchTerm = ''
 
@@ -68,8 +61,7 @@ export class AvatarEditorComponent implements OnInit {
     emojis = ['😀', '😎', '🚀', '💼', '💻', '📱', '🎮', '🎨', '📚', '🎵', '🏆', '💡', '🔍', '⚙️', '🛠️', '📊', '📈', '🌟', '🔥', '✨']
 
     ngOnInit(): void {
-        this.avatarConfig = { ...this.initialConfig }
-        this.activeTab = this.avatarConfig.type
+        this.activeTab = this.avatar.type
     }
 
     get filteredIcons(): string[] {
@@ -77,29 +69,29 @@ export class AvatarEditorComponent implements OnInit {
     }
 
     selectColor(color: string): void {
-        this.avatarConfig.backgroundColor = color
+        this.avatar.backgroundColor = color
         this.emitChange()
     }
 
     selectIcon(iconName: string): void {
-        this.avatarConfig.iconName = iconName
-        this.avatarConfig.emoji = null
-        this.avatarConfig.type = 'icon'
+        this.avatar.iconName = iconName
+        this.avatar.emoji = null
+        this.avatar.type = 'icon'
         this.emitChange()
     }
 
     selectEmoji(emoji: string): void {
-        this.avatarConfig.emoji = emoji
-        this.avatarConfig.iconName = null
-        this.avatarConfig.type = 'emoji'
+        this.avatar.emoji = emoji
+        this.avatar.iconName = null
+        this.avatar.type = 'emoji'
         this.emitChange()
     }
 
     setInitials(initials: string): void {
-        this.avatarConfig.initials = initials.substring(0, 2).toUpperCase()
-        this.avatarConfig.iconName = null
-        this.avatarConfig.emoji = null
-        this.avatarConfig.type = 'initials'
+        this.avatar.initials = initials.substring(0, 2).toUpperCase()
+        this.avatar.iconName = null
+        this.avatar.emoji = null
+        this.avatar.type = 'initials'
         this.emitChange()
     }
 
@@ -108,6 +100,6 @@ export class AvatarEditorComponent implements OnInit {
     }
 
     emitChange(): void {
-        this.configChange.emit({ ...this.avatarConfig })
+        this.configChange.emit({ ...this.avatar })
     }
 }
