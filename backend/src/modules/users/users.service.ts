@@ -30,7 +30,7 @@ export class UsersService {
             email: String(row[1]),
             username: String(row[2]),
             password: String(row[3]),
-            imageUrl: JSON.parse(String(row[4])) as AvatarDto,
+            avatar: JSON.parse(String(row[4])) as AvatarDto,
             displayName: String(row[5]),
             createdAt: String(row[6]),
             isDeleted: Boolean(row[7]),

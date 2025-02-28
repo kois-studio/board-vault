@@ -43,7 +43,7 @@
                     <div class="flex -space-x-1">
                         @for (ownerId of gameData.owners; track $index) {
                         <app-image-profile
-                            [avatar]="getOwnerData(ownerId)?.imageUrl"
+                            [avatar]="getOwnerData(ownerId)?.avatar"
                             size="small"
                             title="{{ getOwnerData(ownerId)?.username }}"
                             class="border-2 border-zinc-800 rounded-full"

@@ -56,7 +56,7 @@ export class AuthService {
                 password,
                 username,
                 displayName: username,
-                imageUrl: {
+                avatar: {
                     backgroundColor,
                     iconName: 'person-fill',
                     emoji: null,

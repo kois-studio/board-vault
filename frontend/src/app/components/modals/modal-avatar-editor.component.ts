@@ -23,7 +23,7 @@ export class ModalAvatarEditorComponent {
     //        Component props
     // --------------------------------------------------------------------------
     public isVisible = false
-    public userAvatar: UserType['imageUrl'] = {
+    public userAvatar: UserType['avatar'] = {
         backgroundColor: '#3B82F6',
         iconName: 'person-fill',
         emoji: null,
@@ -42,19 +42,15 @@ export class ModalAvatarEditorComponent {
         this.isVisible = false
     }
 
-    public updateAvatar(newAvatar: UserType['imageUrl']) {
+    public updateAvatar(newAvatar: UserType['avatar']) {
         if (!this.currentUser$()) {
             return
         }
 
-        this.api
-            .updateUser(Number(this.currentUser$()?.id), {
-                imageUrl: newAvatar,
-            })
-            .subscribe({
-                next: () => {
-                    this.dataService.updateCurrentUserData({ imageUrl: newAvatar })
-                },
-            })
+        this.api.updateUser(Number(this.currentUser$()?.id), { avatar: newAvatar }).subscribe({
+            next: () => {
+                this.dataService.updateCurrentUserData({ avatar: newAvatar })
+            },
+        })
     }
 }

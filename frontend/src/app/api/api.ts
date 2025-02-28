@@ -61,7 +61,7 @@ export class Api {
             password?: string
             username?: string
             displayName?: string
-            imageUrl?: UserType['imageUrl']
+            avatar?: UserType['avatar']
         },
     ) {
         return this.http.put<{ success: true }>(`${this.url}/users/${userId}`, requesBody)
