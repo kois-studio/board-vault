@@ -1,0 +1,17 @@
+<!-- Dialog overlay -->
+@if (isVisible) {
+<div class="fixed inset-0 bg-zinc-900/60 flex justify-center items-center z-50" (click)="hideDialog()">
+    <!-- Dialog box -->
+    <div class="bg-zinc-800 rounded border border-zinc-700 w-full h-full sm:h-auto sm:w-3/4 max-w-xl relative" (click)="$event.stopPropagation()">
+        <!-- Close button -->
+        <button (click)="hideDialog()" class="py-2 px-4 rounded-lg hover:bg-zinc-800 absolute top-2 right-2">
+            <i class="bi bi-x-lg"></i>
+        </button>
+        <!-- Dialog content -->
+        <app-avatar-editor
+            [initialConfig]="userAvatar"
+            (configChange)="updateAvatar($event)">
+        </app-avatar-editor>
+    </div>
+</div>
+}
