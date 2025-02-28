@@ -1,7 +1,6 @@
 @if (!avatar) {
     <div class="rounded-full bg-zinc-900 flex items-center justify-center" [ngClass]="{
-        'w-6 h-6': size === 'small',
-        'w-10 h-10': size === 'medium',
+        'w-10 h-10': size === 'base',
         'w-20 h-20': size === 'large'
     }">
         <svg class="w-5 h-5 text-zinc-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
@@ -13,17 +12,18 @@
         class="rounded-full flex items-center justify-center text-white"
         [style.background-color]="avatar.backgroundColor"
         [ngClass]="{
-            'w-6 h-6 text-2xl': size === 'small',
-            'w-10 h-10 text-2xl': size === 'medium',
-            'w-20 h-20 text-5xl': size === 'large'
+            'w-10 h-10 text-2xl': size === 'base',
+            'w-20 h-20 text-5xl': size === 'large',
         }"
     >
         @if (avatar.type === 'icon' && avatar.iconName) {
-        <i class="bi bi-{{ avatar.iconName }}"></i>
-        } @if (avatar.type === 'emoji' && avatar.emoji) {
-        <span class="text-3xl">{{ avatar.emoji }}</span>
-        } @if (avatar.type === 'initials') {
-        <span class="text-xl font-bold">{{ avatar.initials || 'AB' }}</span>
+            <i class="bi bi-{{ avatar.iconName }}"></i>
+        }
+        @if (avatar.type === 'emoji' && avatar.emoji) {
+            <span class="">{{ avatar.emoji }}</span>
+        }
+        @if (avatar.type === 'initials' && avatar.initials) {
+            <span class="font-bold -translate-y-[1px] ">{{ avatar.initials }}</span>
         }
     </div>
 }

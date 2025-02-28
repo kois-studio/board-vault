@@ -4,7 +4,7 @@ import { CreateGroupBody, GroupDto, GroupMemberWithGames, GroupWithMembersAndGam
 import { DatabaseService } from '../database/database.service'
 import { groupsSchema } from '../../common/schemas'
 import { InvitationWithAccountsData } from '../../common/types/invitation.type'
-import { UserGetDto } from '../../common/types/user.type'
+import { AvatarDto, UserGetDto } from '../../common/types/user.type'
 import { MeetWithAttendeesAndGames } from '../../common/types/meet.type'
 import type { GameDto } from '../../common/types/game.type'
 
@@ -111,7 +111,10 @@ export class GroupsService {
             name: String(row[1]),
             createdBy: Number(row[2]),
             createdAt: String(row[3]),
-            members: JSON.parse(String(row[4])) as Array<GroupMemberWithGames>,
+            members: (JSON.parse(String(row[4])) as Array<GroupMemberWithGames>).map(member => ({
+                ...member,
+                avatar: JSON.parse(String(member.avatar)) as AvatarDto,
+            })),
         }))[0]
     }
 
@@ -127,6 +130,16 @@ export class GroupsService {
             sentAt: String(row[4]),
             fromAccount: JSON.parse(String(row[5])) as UserGetDto,
             toAccount: JSON.parse(String(row[6])) as UserGetDto,
+        })).map(invitation => ({
+            ...invitation,
+            fromAccount: {
+                ...invitation.fromAccount,
+                avatar: JSON.parse(String(invitation.fromAccount.avatar)) as AvatarDto,
+            },
+            toAccount: {
+                ...invitation.toAccount,
+                avatar: JSON.parse(String(invitation.toAccount.avatar)) as AvatarDto,
+            },
         }))
     }
 
