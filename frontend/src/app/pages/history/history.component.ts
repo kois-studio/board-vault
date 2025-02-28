@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { Component, computed, inject } from '@angular/core'
 import { GamePlayHistoryType } from '../../api/api.types'
+import { SkeletonCardGroupComponent } from '../../components/skeletons/skeleton-card-group/skeleton-card-group.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { TitleSubtitleComponent } from '../../components/ui/title-subtitle/title-subtitle.component'
 import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
@@ -9,7 +10,7 @@ import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
 
 @Component({
-    imports: [CommonModule, TitleSubtitleComponent, ContainerWrapperComponent, CustomDatePipe],
+    imports: [CommonModule, TitleSubtitleComponent, ContainerWrapperComponent, CustomDatePipe, SkeletonCardGroupComponent],
     templateUrl: 'history.component.html',
 })
 export class HistoryComponent {
