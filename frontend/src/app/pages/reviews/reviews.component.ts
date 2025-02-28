@@ -1,13 +1,12 @@
 import { CommonModule } from '@angular/common'
 import { Component, effect } from '@angular/core'
 import { GameType, UserType } from '../../api/api.types'
-import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { TitleSubtitleComponent } from '../../components/ui/title-subtitle/title-subtitle.component'
 import { DataService } from '../../core/services/data.service'
 
 @Component({
-    imports: [CommonModule, ImageProfileComponent, ContainerWrapperComponent, TitleSubtitleComponent],
+    imports: [CommonModule, ContainerWrapperComponent, TitleSubtitleComponent],
     templateUrl: 'reviews.component.html',
 })
 export class ReviewComponent {
