@@ -20,11 +20,11 @@ export class LoginService {
 
     // #region ACCESS_TOKEN
 
-    getToken(): string | null {
+    get token(): string | null {
         return this.localStorageService.getItem(this.KEYS.ACCESS_TOKEN)
     }
 
-    setToken(token: string | null) {
+    set token(token: string | null) {
         if (token) {
             this.localStorageService.setItem(this.KEYS.ACCESS_TOKEN, token)
         } else {
