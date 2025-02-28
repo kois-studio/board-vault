@@ -1,22 +1,18 @@
-<div class="flex flex-col items-center p-6 max-w-md mx-auto bg-zinc-800 rounded-lg shadow-md">
+<div class="flex flex-col items-center p-2 max-w-md mx-auto bg-zinc-800">
     <!-- Avatar Preview -->
     <div class="mb-6 text-center">
         <h2 class="text-xl font-semibold mb-3">Avatar Preview</h2>
         <div
-            class="w-24 h-24 rounded-full flex items-center justify-center text-white text-3xl overflow-hidden border-4 border-white shadow-lg"
+            class="w-24 h-24 rounded-full flex items-center justify-center text-white text-3xl overflow-hidden border-4 border-white shadow-lg mx-auto"
             [style.background-color]="avatarConfig.backgroundColor"
         >
-            <ng-container *ngIf="avatarConfig.type === 'icon' && avatarConfig.iconName">
-                <i class="bi bi-{{ avatarConfig.iconName }}"></i>
-            </ng-container>
-
-            <ng-container *ngIf="avatarConfig.type === 'emoji' && avatarConfig.emoji">
-                <span class="text-3xl">{{ avatarConfig.emoji }}</span>
-            </ng-container>
-
-            <ng-container *ngIf="avatarConfig.type === 'initials'">
-                <span class="text-xl font-bold">{{ avatarConfig.initials || 'AB' }}</span>
-            </ng-container>
+            @if (avatarConfig.type === 'icon' && avatarConfig.iconName) {
+            <i class="bi bi-{{ avatarConfig.iconName }}"></i>
+            } @if (avatarConfig.type === 'emoji' && avatarConfig.emoji) {
+            <span class="text-3xl">{{ avatarConfig.emoji }}</span>
+            } @if (avatarConfig.type === 'initials') {
+            <span class="text-xl font-bold">{{ avatarConfig.initials || 'AB' }}</span>
+            }
         </div>
     </div>
 
@@ -24,8 +20,8 @@
     <div class="w-full mb-6">
         <h3 class="text-lg font-medium mb-2">Background Color</h3>
         <div class="grid grid-cols-6 gap-2">
+            @for (color of colorPalette; track color) {
             <button
-                *ngFor="let color of colorPalette"
                 [style.background-color]="color"
                 class="w-10 h-10 rounded-full hover:scale-110 transition-transform duration-200 shadow-sm"
                 [class.ring-2]="color === avatarConfig.backgroundColor"
@@ -33,6 +29,7 @@
                 [class.ring-blue-500]="color === avatarConfig.backgroundColor"
                 (click)="selectColor(color)"
             ></button>
+            }
         </div>
     </div>
 
@@ -42,9 +39,9 @@
             <button
                 (click)="switchTab('icon')"
                 class="py-2 px-4 font-medium transition-colors duration-200"
-                [class.text-blue-600]="activeTab === 'icon'"
+                [class.text-white]="activeTab === 'icon'"
                 [class.border-b-2]="activeTab === 'icon'"
-                [class.border-blue-600]="activeTab === 'icon'"
+                [class.border-white]="activeTab === 'icon'"
                 [class.text-gray-500]="activeTab !== 'icon'"
             >
                 Icon
@@ -52,9 +49,9 @@
             <button
                 (click)="switchTab('emoji')"
                 class="py-2 px-4 font-medium transition-colors duration-200"
-                [class.text-blue-600]="activeTab === 'emoji'"
+                [class.text-white]="activeTab === 'emoji'"
                 [class.border-b-2]="activeTab === 'emoji'"
-                [class.border-blue-600]="activeTab === 'emoji'"
+                [class.border-white]="activeTab === 'emoji'"
                 [class.text-gray-500]="activeTab !== 'emoji'"
             >
                 Emoji
@@ -62,9 +59,9 @@
             <button
                 (click)="switchTab('initials')"
                 class="py-2 px-4 font-medium transition-colors duration-200"
-                [class.text-blue-600]="activeTab === 'initials'"
+                [class.text-white]="activeTab === 'initials'"
                 [class.border-b-2]="activeTab === 'initials'"
-                [class.border-blue-600]="activeTab === 'initials'"
+                [class.border-white]="activeTab === 'initials'"
                 [class.text-gray-500]="activeTab !== 'initials'"
             >
                 Initials
@@ -73,48 +70,55 @@
     </div>
 
     <!-- Icon Selection -->
-    <div *ngIf="activeTab === 'icon'" class="w-full">
+    @if (activeTab === 'icon') {
+    <div class="w-full">
         <!-- Search box -->
-        <div class="mb-3">
+        <!-- <div class="mb-3">
             <input
                 type="text"
                 [(ngModel)]="searchTerm"
                 placeholder="Search icons..."
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
-        </div>
+        </div> -->
 
         <!-- Icons grid -->
         <div class="grid grid-cols-5 gap-3 max-h-64 overflow-y-auto p-2">
+            @for (icon of filteredIcons; track icon) {
             <button
-                *ngFor="let icon of filteredIcons"
                 (click)="selectIcon(icon)"
                 class="h-12 w-12 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors duration-200"
                 [class.bg-blue-100]="avatarConfig.iconName === icon"
             >
                 <i class="bi bi-{{ icon }} text-2xl"></i>
             </button>
+            }
         </div>
     </div>
+    }
 
     <!-- Emoji Selection -->
-    <div *ngIf="activeTab === 'emoji'" class="w-full">
+    @if (activeTab === 'emoji') {
+    <div class="w-full">
         <div class="grid grid-cols-5 gap-3 max-h-64 overflow-y-auto p-2">
+            @for (emoji of emojis; track emoji) {
             <button
-                *ngFor="let emoji of emojis"
                 (click)="selectEmoji(emoji)"
                 class="h-12 w-12 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors duration-200 text-2xl"
                 [class.bg-blue-100]="avatarConfig.emoji === emoji"
             >
                 {{ emoji }}
             </button>
+            }
         </div>
     </div>
+    }
 
     <!-- Initials Input -->
-    <div *ngIf="activeTab === 'initials'" class="w-full">
+    @if (activeTab === 'initials') {
+    <div class="w-full">
         <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-1">Your Initials</label>
+            <label class="block mb-1">Your Initials</label>
             <input
                 type="text"
                 [(ngModel)]="avatarConfig.initials"
@@ -123,7 +127,8 @@
                 placeholder="AB"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
-            <p class="mt-1 text-sm text-gray-500">Maximum 2 characters</p>
+            <p class="mt-1 text-sm text-gray-400">Maximum 2 characters</p>
         </div>
     </div>
+    }
 </div>
