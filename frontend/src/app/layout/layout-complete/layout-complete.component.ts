@@ -17,6 +17,6 @@ export class LayoutCompleteComponent {
     private readonly loginService = inject(LoginService)
 
     get isLogged(): boolean {
-        return !!this.loginService.token
+        return !!this.loginService.getToken()
     }
 }
