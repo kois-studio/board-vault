@@ -3,51 +3,54 @@
         Your history of games played in the past meetings
     </title-subtitle>
 
-    <!-- Attendees -->
-    <section class="p-4" *ngIf="!isLoadingHistory()">
-        @if (userHistory$().length === 0) {
-            <div class="text-center py-8 text-zinc-400">
-                <p>No games played yet</p>
-            </div>
-        } @else {
-            @for (dateGroup of groupedGamesByDateComputed() | keyvalue; track dateGroup.key) {
-                <div class="mb-8">
-                    <h2 class="text-2xl font-semibold mb-4 text-zinc-300">
-                        {{ dateGroup.key | customDate }}
-                    </h2>
-                    <ul class="grid lg:grid-cols-2 xl:grid-cols-3 gap-4">
-                        @for (item of dateGroup.value; track $index) {
-                            <div class="bg-zinc-800 rounded-lg p-4 flex gap-4 hover:bg-zinc-700 transition-colors cursor-pointer">
-                                <!-- Game image -->
-                                <img
-                                    [src]="item.gameData.imageUrl"
-                                    [alt]="item.gameData.title"
-                                    loading="lazy"
-                                    class="w-24 h-24 object-cover rounded-lg"
-                                />
+    <!-- Loading state -->
+    @if (isLoadingHistory()) {
+        <!-- TODO: custom skeleton matching actual history structure -->
+        <app-skeleton-card-group />
+    } @else if (userHistory$().length === 0) {
+        <!-- no data -->
+        <div class="text-center py-8 text-zinc-400">
+            <p>No games played yet</p>
+        </div>
+    } @else {
+        @for (dateGroup of groupedGamesByDateComputed() | keyvalue; track dateGroup.key) {
+            <div class="mb-8">
+                <h2 class="text-2xl font-semibold mb-4 text-zinc-300">
+                    {{ dateGroup.key | customDate }}
+                </h2>
+                <ul class="grid lg:grid-cols-2 xl:grid-cols-3 gap-4">
+                    @for (item of dateGroup.value; track $index) {
+                        <div class="bg-zinc-800 rounded-lg p-4 flex gap-4 hover:bg-zinc-700 transition-colors cursor-pointer">
+                            <!-- Game image -->
+                            <img
+                                [src]="item.gameData.imageUrl"
+                                [alt]="item.gameData.title"
+                                loading="lazy"
+                                class="w-24 h-24 object-cover rounded-lg"
+                            />
 
-                                <!-- Game info -->
-                                <div class="flex flex-col justify-between flex-1">
-                                    <div>
-                                        <h3 class="text-xl font-semibold mb-1">{{ item.gameData.title }}</h3>
-                                        <p class="text-zinc-400 text-sm">
-                                            Played {{ item.meetData.meetDate | customDate }}
-                                        </p>
-                                    </div>
+                            <!-- Game info -->
+                            <div class="flex flex-col justify-between flex-1">
+                                <div>
+                                    <h3 class="text-xl font-semibold mb-1">{{ item.gameData.title }}</h3>
+                                    <p class="text-zinc-400 text-sm">
+                                        Played {{ item.meetData.meetDate | customDate }}
+                                    </p>
+                                </div>
 
-                                    <div class="flex justify-between items-end">
-                                        <!-- Meet info -->
-                                        <div class="text-sm text-zinc-400">
-                                            <p>Group #{{ item.meetData.groupId }}</p>
-                                            <p>Meet #{{ item.meetData.id }}</p>
-                                        </div>
+                                <div class="flex justify-between items-end">
+                                    <!-- Meet info -->
+                                    <div class="text-sm text-zinc-400">
+                                        <p>Group #{{ item.meetData.groupId }}</p>
+                                        <p>Meet #{{ item.meetData.id }}</p>
                                     </div>
                                 </div>
                             </div>
-                        }
-                    </ul>
-                </div>
-            }
+                        </div>
+                    }
+                </ul>
+            </div>
         }
-    </section>
+        
+    }
 </container-wrapper>
