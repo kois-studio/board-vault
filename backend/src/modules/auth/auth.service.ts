@@ -46,6 +46,8 @@ export class AuthService {
 
         // Generate a unique verification token
         const verificationToken = randomUUID()
+        const backgroundsPool = ['#3B82F6', '#F97316', '#F59E0B', '#10B981', '#06B6D4', '#8B5CF6', '#EC4899']
+        const backgroundColor = backgroundsPool[Math.floor(Math.random() * backgroundsPool.length)]
 
         // Create the user with the verification token
         const user = await this.usersService.createUser(
@@ -54,7 +56,13 @@ export class AuthService {
                 password,
                 username,
                 displayName: username,
-                imageUrl: 'https://pbs.twimg.com/profile_images/1833050358479826944/A2qj0e6Z_400x400.jpg',
+                imageUrl: {
+                    backgroundColor,
+                    iconName: 'person-fill',
+                    emoji: null,
+                    type: 'initials',
+                    initials: username.slice(0, 2),
+                },
             },
             verificationToken,
         )

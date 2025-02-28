@@ -3,7 +3,7 @@ import { DatabaseService } from '../database/database.service'
 import { ResultSet } from '@libsql/client/.'
 import { invitationsSchema } from '../../common/schemas'
 import { CreateInvitationBody, CreateInvitationByUsernameBody, InvitationDto } from '../../common/types/invitation.type'
-import { UserGetDto } from '../../common/types/user.type'
+import { AvatarDto, UserGetDto } from '../../common/types/user.type'
 import { GroupsService } from '../groups/groups.service'
 import { GroupMembershipsService } from '../group-memberships/group-memberships.service'
 import { UsersService } from '../users/users.service'
@@ -84,7 +84,7 @@ export class InvitationsService {
             email: String(userRow[1]),
             username: String(userRow[2]),
             // password: String(userRow[3]), // Do not return password
-            imageUrl: String(userRow[4]),
+            imageUrl: JSON.parse(String(userRow[4])) as AvatarDto,
             displayName: String(userRow[5]),
             createdAt: String(userRow[6]),
             isDeleted: Boolean(userRow[7]),

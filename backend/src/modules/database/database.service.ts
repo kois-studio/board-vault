@@ -110,7 +110,7 @@ export class DatabaseService implements OnModuleInit {
 
         await this._tursoExecute({
             sql: 'INSERT INTO Account (email, password, username, displayName, imageUrl, verification_token) VALUES (?, ?, ?, ?, ?, ?)',
-            args: [email, hashedPassword, username, displayName, imageUrl, verificationToken],
+            args: [email, hashedPassword, username, displayName, JSON.stringify(imageUrl), verificationToken],
         })
     }
 
@@ -140,7 +140,7 @@ export class DatabaseService implements OnModuleInit {
         }
         if (partialUserDto.imageUrl) {
             fields.push('imageUrl = ?')
-            args.push(partialUserDto.imageUrl)
+            args.push(JSON.stringify(partialUserDto.imageUrl))
         }
         if (partialUserDto.isAdmin) {
             fields.push('isAdmin = ?')
