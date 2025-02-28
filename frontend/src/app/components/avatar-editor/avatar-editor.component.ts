@@ -2,10 +2,11 @@ import { CommonModule } from '@angular/common'
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import type { UserType } from '../../api/api.types'
+import { ImageProfileComponent } from '../image-profile/image-profile.component'
 @Component({
     selector: 'app-avatar-editor',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, ImageProfileComponent],
     templateUrl: './avatar-editor.component.html',
     styleUrls: ['./avatar-editor.component.scss'],
 })

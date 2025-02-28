@@ -9,5 +9,5 @@ import { UserType } from '../../api/api.types'
 })
 export class ImageProfileComponent {
     @Input({ required: true }) avatar: null | undefined | UserType['avatar'] = null
-    @Input() size: 'small' | 'medium' | 'large' = 'medium'
+    @Input() size: 'base' | 'large' = 'base'
 }
