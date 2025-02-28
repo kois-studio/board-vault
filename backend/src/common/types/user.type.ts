@@ -1,6 +1,23 @@
 import { ApiProperty, OmitType, PartialType, PickType } from '@nestjs/swagger'
 import { GameDto } from './game.type'
 
+export class AvatarDto {
+    @ApiProperty({ example: '#3B82F6' })
+    backgroundColor: string
+
+    @ApiProperty({ example: 'person-fill' })
+    iconName: string | null
+
+    @ApiProperty({ example: null })
+    emoji: string | null
+
+    @ApiProperty({ example: 'icon' })
+    type: 'icon' | 'emoji' | 'initials'
+
+    @ApiProperty({ example: 'AB' })
+    initials: string
+}
+
 /**
  * base User as it comes from db
  */
@@ -23,8 +40,8 @@ export class UserCompleteDto {
     @ApiProperty({ example: 'Jose Antonio' })
     displayName: string
 
-    @ApiProperty({ example: 'https://example.com/profile.jpg' })
-    imageUrl: string
+    @ApiProperty({ type: AvatarDto, description: 'The avatar of the user.' })
+    imageUrl: AvatarDto
 
     @ApiProperty({ example: false })
     isDeleted: boolean

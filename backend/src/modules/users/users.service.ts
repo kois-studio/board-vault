@@ -1,6 +1,6 @@
 import { BadRequestException, ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { DatabaseService } from '../database/database.service'
-import { CreateUserBody, UpdateUserBody, UserCompleteDto, UserGetDto } from '../../common/types/user.type'
+import { AvatarDto, CreateUserBody, UpdateUserBody, UserCompleteDto, UserGetDto } from '../../common/types/user.type'
 import { ResultSet } from '@libsql/client/.'
 import { usersSchema } from '../../common/schemas'
 import { GameDto } from '../../common/types/game.type'
@@ -30,7 +30,7 @@ export class UsersService {
             email: String(row[1]),
             username: String(row[2]),
             password: String(row[3]),
-            imageUrl: String(row[4]),
+            imageUrl: JSON.parse(String(row[4])) as AvatarDto,
             displayName: String(row[5]),
             createdAt: String(row[6]),
             isDeleted: Boolean(row[7]),
