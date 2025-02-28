@@ -59,7 +59,7 @@ export class DataService {
     // --------------------------------------------------------------------------
     constructor() {
         effect(() => {
-            const token = this.loginService.getToken()
+            const token = this.loginService.token
             const email = this.loginService.email
             if (token && email) {
                 // 1. Get the user data
