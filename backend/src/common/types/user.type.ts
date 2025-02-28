@@ -41,7 +41,7 @@ export class UserCompleteDto {
     displayName: string
 
     @ApiProperty({ type: AvatarDto, description: 'The avatar of the user.' })
-    imageUrl: AvatarDto
+    avatar: AvatarDto
 
     @ApiProperty({ example: false })
     isDeleted: boolean
@@ -72,7 +72,7 @@ export class CreateUserBody extends OmitType(UserCompleteDto, ['id', 'createdAt'
 /**
  * PUT requests --> editable fields
  */
-export class UpdateUserBody extends PartialType(PickType(UserCompleteDto, ['email', 'username', 'password', 'displayName', 'imageUrl', 'isAdmin', 'email_verified', 'verification_token', 'password_reset_token'])) {}
+export class UpdateUserBody extends PartialType(PickType(UserCompleteDto, ['email', 'username', 'password', 'displayName', 'avatar', 'isAdmin', 'email_verified', 'verification_token', 'password_reset_token'])) {}
 
 /**
  * POST /auth/register

@@ -6,7 +6,7 @@ export const userSchema = z.object({
     password: z.string().min(8),
     username: z.string().min(4),
     displayName: z.string().min(4),
-    imageUrl: z.object({
+    avatar: z.object({
         backgroundColor: z.string(),
         iconName: z.string().nullable(),
         emoji: z.string().nullable(),

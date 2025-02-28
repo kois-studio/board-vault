@@ -35,7 +35,7 @@
                 @for (member of groupData.members; track $index) {
                     <li class="flex justify-between items-center relative">
                         <div class="flex items-center p-4">
-                            <app-image-profile [avatar]="member.imageUrl" />
+                            <app-image-profile [avatar]="member.avatar" />
                             <div class="ml-3">
                                 <p class="font-semibold text-white">{{ member.displayName }}</p>
                                 <p class="text-gray-400 text-sm">
@@ -70,7 +70,7 @@
             @for (invitation of invitationsGroupIndex[groupData.id]; track $index) {
                 <li class="flex justify-between items-center relative">
                     <div class="flex items-center p-4 opacity-40">
-                        <app-image-profile [avatar]="invitation.toAccount.imageUrl" />
+                        <app-image-profile [avatar]="invitation.toAccount.avatar" />
                         <div class="ml-3">
                             <p class="font-semibold text-white">{{ invitation.toAccount.displayName }}</p>
                             <p class="text-gray-400 text-sm">{{ invitation.toAccount.username }}</p>

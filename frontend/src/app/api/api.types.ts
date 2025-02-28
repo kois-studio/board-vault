@@ -13,7 +13,7 @@ export type UserType = {
     email: string
     username: string
     displayName: string
-    imageUrl: {
+    avatar: {
         backgroundColor: string
         iconName: string | null
         emoji: string | null
