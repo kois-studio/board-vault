@@ -11,7 +11,7 @@ export class GuestOnlyGuard implements CanActivate {
     private readonly loginService = inject(LoginService)
 
     public canActivate(): boolean {
-        const token = this.loginService.token
+        const token = this.loginService.getToken()
 
         if (token) {
             // If token exists, redirect to dashboard
