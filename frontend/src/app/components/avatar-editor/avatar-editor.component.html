@@ -2,17 +2,8 @@
     <!-- Avatar Preview -->
     <div class="mb-6 text-center">
         <h2 class="text-xl font-semibold mb-3">Avatar Preview</h2>
-        <div
-            class="w-24 h-24 rounded-full flex items-center justify-center text-white text-3xl overflow-hidden border-4 border-white shadow-lg mx-auto"
-            [style.background-color]="avatar.backgroundColor"
-        >
-            @if (avatar.type === 'icon' && avatar.iconName) {
-            <i class="bi bi-{{ avatar.iconName }}"></i>
-            } @if (avatar.type === 'emoji' && avatar.emoji) {
-            <span class="text-3xl">{{ avatar.emoji }}</span>
-            } @if (avatar.type === 'initials') {
-            <span class="text-xl font-bold">{{ avatar.initials || 'AB' }}</span>
-            }
+        <div class="flex items-center justify-center">
+            <app-image-profile [avatar]="avatar" size="large" />
         </div>
     </div>
 

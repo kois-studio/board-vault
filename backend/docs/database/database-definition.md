@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS Account (
     email TEXT NOT NULL UNIQUE,
     username TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL,
-    imageUrl TEXT, -- Profile picture, can be NULL initially
+    avatar TEXT, -- JSON structure to store avatar configuration
     displayName VARCHAR(255), -- Custom name, can be NULL initially
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP, -- auto set to current time
     isDeleted BOOLEAN DEFAULT FALSE, -- soft delete
