@@ -25,11 +25,7 @@ export class LoginService {
     }
 
     set token(token: string | null) {
-        if (token) {
-            this.localStorageService.setItem(this.KEYS.ACCESS_TOKEN, token)
-        } else {
-            this.localStorageService.removeItem(this.KEYS.ACCESS_TOKEN)
-        }
+        this.localStorageService.setItem(this.KEYS.ACCESS_TOKEN, String(token))
     }
 
     // #region EMAIL

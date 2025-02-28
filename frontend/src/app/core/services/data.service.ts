@@ -88,7 +88,7 @@ export class DataService {
                     this.toastService.error('Your session has expired, please log in again')
                     this.localStorageService.clear()
                     this.currentUser.set(null)
-                    this.router.navigate(['/login'])
+                    this.router.navigate(['/'])
                     return
                 }
 
