@@ -1,15 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-
-export interface AvatarConfig {
-    backgroundColor: string
-    iconName: string | null
-    emoji: string | null
-    type: 'icon' | 'emoji' | 'initials'
-    initials?: string
-}
-
+import type { UserType } from '../../api/api.types'
 @Component({
     selector: 'app-avatar-editor',
     standalone: true,
@@ -18,16 +10,17 @@ export interface AvatarConfig {
     styleUrls: ['./avatar-editor.component.scss'],
 })
 export class AvatarEditorComponent implements OnInit {
-    @Input() initialConfig: AvatarConfig = {
+    @Input() initialConfig: UserType['imageUrl'] = {
         backgroundColor: '#6366F1', // Indigo-500
         iconName: 'person-fill',
         emoji: null,
         type: 'icon',
+        initials: '',
     }
 
-    @Output() configChange = new EventEmitter<AvatarConfig>()
+    @Output() configChange = new EventEmitter<UserType['imageUrl']>()
 
-    avatarConfig!: AvatarConfig
+    avatarConfig!: UserType['imageUrl']
     activeTab: 'icon' | 'emoji' | 'initials' = 'icon'
     searchTerm = ''
 

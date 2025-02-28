@@ -1,5 +1,8 @@
-import { Component } from '@angular/core'
-import { AvatarConfig, AvatarEditorComponent } from '../avatar-editor/avatar-editor.component'
+import { Component, inject } from '@angular/core'
+import { Api } from '../../api/api'
+import type { UserType } from '../../api/api.types'
+import { DataService } from '../../core/services/data.service'
+import { AvatarEditorComponent } from '../avatar-editor/avatar-editor.component'
 
 @Component({
     imports: [AvatarEditorComponent],
@@ -7,8 +10,30 @@ import { AvatarConfig, AvatarEditorComponent } from '../avatar-editor/avatar-edi
     templateUrl: 'modal-avatar-editor.component.html',
 })
 export class ModalAvatarEditorComponent {
-    public isVisible = false
+    private readonly api = inject(Api)
+    private readonly dataService = inject(DataService)
 
+    // --------------------------------------------------------------------------
+    //        Services signals
+    // --------------------------------------------------------------------------
+    // dataService
+    public readonly currentUser$ = this.dataService.currentUser
+
+    // --------------------------------------------------------------------------
+    //        Component props
+    // --------------------------------------------------------------------------
+    public isVisible = false
+    public userAvatar: UserType['imageUrl'] = {
+        backgroundColor: '#3B82F6',
+        iconName: 'person-fill',
+        emoji: null,
+        type: 'icon',
+        initials: '',
+    }
+
+    // --------------------------------------------------------------------------
+    //        Methods
+    // --------------------------------------------------------------------------
     public showDialog() {
         this.isVisible = true
     }
@@ -17,17 +42,19 @@ export class ModalAvatarEditorComponent {
         this.isVisible = false
     }
 
-    // TODO: review
-    userAvatar: AvatarConfig = {
-        backgroundColor: '#3B82F6',
-        iconName: 'person-fill',
-        emoji: null,
-        type: 'icon'
-    };
-    
-    updateAvatar(newConfig: AvatarConfig) {
-        this.userAvatar = newConfig
-        console.log('newConfig', newConfig)
-        // Save to your service/API as needed
+    public updateAvatar(newAvatar: UserType['imageUrl']) {
+        if (!this.currentUser$()) {
+            return
+        }
+
+        this.api
+            .updateUser(Number(this.currentUser$()?.id), {
+                imageUrl: newAvatar,
+            })
+            .subscribe({
+                next: () => {
+                    this.dataService.updateCurrentUserData({ imageUrl: newAvatar })
+                },
+            })
     }
 }
