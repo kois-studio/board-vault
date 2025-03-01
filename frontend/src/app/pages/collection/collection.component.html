@@ -1,0 +1,369 @@
+<div class="bg-white dark:bg-zinc-900 min-h-screen">
+    <app-page-header titleText="Collection" [showActionButton]="true">
+        Manage your board games, wishlist and reviews
+        <app-button class="action-button" icon="plus-lg">Add New Game</app-button>
+    </app-page-header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- My Games Card -->
+            <div
+                class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-800 transition overflow-hidden group"
+            >
+                <a href="/collection/games" class="block p-6">
+                    <div class="flex items-start">
+                        <div
+                            class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center mr-4 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-900/50 transition"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-6 w-6 text-indigo-600 dark:text-indigo-400"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+                                />
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-center mb-2">
+                                <h2 class="text-xl font-bold text-zinc-900 dark:text-white">My Games</h2>
+                                <span
+                                    class="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-300 text-sm font-medium px-2.5 py-0.5 rounded-full"
+                                    >42</span
+                                >
+                            </div>
+                            <p class="text-zinc-600 dark:text-zinc-300">Browse, filter and manage your board game collection</p>
+                            <div class="mt-6 flex justify-between items-center">
+                                <div class="flex -space-x-2">
+                                    <img
+                                        class="w-8 h-8 rounded-lg border-2 border-white dark:border-zinc-800"
+                                        src="/images/game-1.jpg"
+                                        alt=""
+                                    />
+                                    <img
+                                        class="w-8 h-8 rounded-lg border-2 border-white dark:border-zinc-800"
+                                        src="/images/game-2.jpg"
+                                        alt=""
+                                    />
+                                    <img
+                                        class="w-8 h-8 rounded-lg border-2 border-white dark:border-zinc-800"
+                                        src="/images/game-3.jpg"
+                                        alt=""
+                                    />
+                                    <div
+                                        class="w-8 h-8 rounded-lg border-2 border-white dark:border-zinc-800 bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-xs font-medium text-indigo-800 dark:text-indigo-300"
+                                    >
+                                        +39
+                                    </div>
+                                </div>
+                                <span
+                                    class="text-indigo-600 dark:text-indigo-400 group-hover:underline flex items-center text-sm font-medium"
+                                >
+                                    View all
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                        <path
+                                            fill-rule="evenodd"
+                                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                            clip-rule="evenodd"
+                                        />
+                                    </svg>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Wishlist Card -->
+            <div
+                class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-800 transition overflow-hidden group"
+            >
+                <a href="/collection/wishlist" class="block p-6">
+                    <div class="flex items-start">
+                        <div
+                            class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center mr-4 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-900/50 transition"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-6 w-6 text-indigo-600 dark:text-indigo-400"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                                />
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-center mb-2">
+                                <h2 class="text-xl font-bold text-zinc-900 dark:text-white">Wishlist</h2>
+                                <span
+                                    class="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-300 text-sm font-medium px-2.5 py-0.5 rounded-full"
+                                    >12</span
+                                >
+                            </div>
+                            <p class="text-zinc-600 dark:text-zinc-300">Keep track of games you want to add to your collection</p>
+                            <div class="mt-6 flex justify-between items-center">
+                                <div class="flex -space-x-2">
+                                    <img
+                                        class="w-8 h-8 rounded-lg border-2 border-white dark:border-zinc-800"
+                                        src="/images/wishlist-1.jpg"
+                                        alt=""
+                                    />
+                                    <img
+                                        class="w-8 h-8 rounded-lg border-2 border-white dark:border-zinc-800"
+                                        src="/images/wishlist-2.jpg"
+                                        alt=""
+                                    />
+                                    <img
+                                        class="w-8 h-8 rounded-lg border-2 border-white dark:border-zinc-800"
+                                        src="/images/wishlist-3.jpg"
+                                        alt=""
+                                    />
+                                    <div
+                                        class="w-8 h-8 rounded-lg border-2 border-white dark:border-zinc-800 bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-xs font-medium text-indigo-800 dark:text-indigo-300"
+                                    >
+                                        +9
+                                    </div>
+                                </div>
+                                <span
+                                    class="text-indigo-600 dark:text-indigo-400 group-hover:underline flex items-center text-sm font-medium"
+                                >
+                                    View all
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                        <path
+                                            fill-rule="evenodd"
+                                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                            clip-rule="evenodd"
+                                        />
+                                    </svg>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Reviews Card -->
+            <div
+                class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-800 transition overflow-hidden group"
+            >
+                <a href="/collection/reviews" class="block p-6">
+                    <div class="flex items-start">
+                        <div
+                            class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center mr-4 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-900/50 transition"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-6 w-6 text-indigo-600 dark:text-indigo-400"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+                                />
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-center mb-2">
+                                <h2 class="text-xl font-bold text-zinc-900 dark:text-white">Reviews & Ratings</h2>
+                                <span
+                                    class="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-300 text-sm font-medium px-2.5 py-0.5 rounded-full"
+                                    >28</span
+                                >
+                            </div>
+                            <p class="text-zinc-600 dark:text-zinc-300">Manage your game reviews and see your rating history</p>
+                            <div class="mt-6 flex justify-between items-center">
+                                <div class="flex text-amber-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path
+                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                                        />
+                                    </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path
+                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                                        />
+                                    </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path
+                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                                        />
+                                    </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path
+                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                                        />
+                                    </svg>
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        class="h-5 w-5 text-zinc-300 dark:text-zinc-600"
+                                        viewBox="0 0 20 20"
+                                        fill="currentColor"
+                                    >
+                                        <path
+                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                                        />
+                                    </svg>
+                                </div>
+                                <span
+                                    class="text-indigo-600 dark:text-indigo-400 group-hover:underline flex items-center text-sm font-medium"
+                                >
+                                    View all
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                        <path
+                                            fill-rule="evenodd"
+                                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                            clip-rule="evenodd"
+                                        />
+                                    </svg>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Stats Card -->
+            <div
+                class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-800 transition overflow-hidden group"
+            >
+                <a href="/collection/stats" class="block p-6">
+                    <div class="flex items-start">
+                        <div
+                            class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center mr-4 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-900/50 transition"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-6 w-6 text-indigo-600 dark:text-indigo-400"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                                />
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-center mb-2">
+                                <h2 class="text-xl font-bold text-zinc-900 dark:text-white">Collection Stats</h2>
+                            </div>
+                            <p class="text-zinc-600 dark:text-zinc-300">Insights, analytics and details about your board game collection</p>
+                            <div class="mt-6 grid grid-cols-3 gap-2">
+                                <div class="bg-indigo-50 dark:bg-indigo-900/20 rounded-lg p-2 text-center">
+                                    <span class="block text-xl font-bold text-indigo-600 dark:text-indigo-400">42</span>
+                                    <span class="text-xs text-zinc-500 dark:text-zinc-400">Games</span>
+                                </div>
+                                <div class="bg-indigo-50 dark:bg-indigo-900/20 rounded-lg p-2 text-center">
+                                    <span class="block text-xl font-bold text-indigo-600 dark:text-indigo-400">$2,340</span>
+                                    <span class="text-xs text-zinc-500 dark:text-zinc-400">Value</span>
+                                </div>
+                                <div class="bg-indigo-50 dark:bg-indigo-900/20 rounded-lg p-2 text-center">
+                                    <span class="block text-xl font-bold text-indigo-600 dark:text-indigo-400">86%</span>
+                                    <span class="text-xs text-zinc-500 dark:text-zinc-400">Played</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Recent Activities -->
+        <div class="mt-8">
+            <h2 class="text-lg font-medium text-zinc-900 dark:text-white mb-4">Recent Activity</h2>
+            <div class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 overflow-hidden">
+                <ul class="divide-y divide-zinc-200 dark:divide-zinc-700">
+                    <li class="p-4 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/30 rounded-full flex items-center justify-center mr-4">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    class="h-5 w-5 text-indigo-600 dark:text-indigo-400"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                >
+                                    <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm text-zinc-900 dark:text-white">
+                                    You added <span class="font-medium">Wingspan</span> to your collection
+                                </p>
+                                <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">2 hours ago</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="p-4 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-amber-100 dark:bg-amber-900/30 rounded-full flex items-center justify-center mr-4">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    class="h-5 w-5 text-amber-600 dark:text-amber-400"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                >
+                                    <path
+                                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                                    />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm text-zinc-900 dark:text-white">
+                                    You rated <span class="font-medium">Gloomhaven</span> with 4.5 stars
+                                </p>
+                                <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Yesterday</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="p-4 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mr-4">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    class="h-5 w-5 text-red-600 dark:text-red-400"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                >
+                                    <path
+                                        fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"
+                                    />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm text-zinc-900 dark:text-white">
+                                    You removed <span class="font-medium">Catan</span> from your collection
+                                </p>
+                                <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">3 days ago</p>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <div class="bg-zinc-50 dark:bg-zinc-900/50 p-4 text-center">
+                    <a href="#" class="text-sm text-indigo-600 dark:text-indigo-400 font-medium hover:underline">View all activity</a>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
