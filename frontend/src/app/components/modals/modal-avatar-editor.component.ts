@@ -1,4 +1,4 @@
-import { Component, effect, inject, OnInit } from '@angular/core'
+import { Component, OnInit, effect, inject } from '@angular/core'
 import { Api } from '../../api/api'
 import type { UserType } from '../../api/api.types'
 import { DataService } from '../../core/services/data.service'
