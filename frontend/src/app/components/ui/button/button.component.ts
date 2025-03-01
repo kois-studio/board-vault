@@ -25,6 +25,7 @@ export class ButtonComponent {
     @Input() variant: 'primary' | 'secondary' | 'danger' | 'success' = 'primary'
     @Input() size: 'small' | 'medium' | 'large' = 'medium'
     @Input() type: 'button' | 'submit' | 'reset' = 'button'
+    @Input() icon?: string // The icon to display in the button
     @Input() disabled = false
     @Input() loading = false
 }
