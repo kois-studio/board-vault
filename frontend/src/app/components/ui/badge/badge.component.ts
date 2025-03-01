@@ -8,6 +8,6 @@ import { Component, Input } from '@angular/core'
 })
 export class BadgeComponent {
     @Input() showIndicator = false
-    @Input() color: 'indigo' | 'red' | 'green' | 'blue' | 'gray' = 'indigo'
+    @Input() color: 'indigo' | 'red' | 'green' | 'blue' | 'gray' | 'yellow' = 'indigo'
     @Input({ required: true }) text!: string | number
 }
