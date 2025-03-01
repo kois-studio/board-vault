@@ -280,14 +280,21 @@ export class DataService {
                             const userIndex = group.members.findIndex((member) => member.id === currentUser.id)
                             if (userIndex === -1) return group
 
-                            for (const [key, value] of Object.entries(requestBody) as Array<
-                                [keyof typeof requestBody, UserType['avatar']]
-                            >) {
-                                if (requestBody[key] === updatedUser[key]) {
-                                    // extra check
-                                    // group.members[userIndex][key] = value
-                                }
+                            // update the user data inside that group
+                            if (requestBody.username) {
+                                group.members[userIndex].username = requestBody.username
                             }
+                            if (requestBody.displayName) {
+                                group.members[userIndex].displayName = requestBody.displayName
+                            }
+                            if (requestBody.email) {
+                                group.members[userIndex].email = requestBody.email
+                            }
+
+                            if (requestBody.avatar) {
+                                group.members[userIndex].avatar = requestBody.avatar
+                            }
+
                             return group
                         }),
                     )
