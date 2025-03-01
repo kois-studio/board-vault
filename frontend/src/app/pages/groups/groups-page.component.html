@@ -1,0 +1,417 @@
+<div class="bg-white dark:bg-zinc-900 min-h-screen">
+    <app-page-header titleText="Groups" [showActionButton]="true">
+        Manage your groups, friends and social gaming connections
+        <app-button class="action-button" icon="plus-lg">Create New Group</app-button>
+    </app-page-header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- My Groups Card -->
+            <div
+                class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-800 transition overflow-hidden group"
+            >
+                <a href="/connect/groups" class="block p-6">
+                    <div class="flex items-start">
+                        <div
+                            class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center mr-4 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-900/50 transition"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-6 w-6 text-indigo-600 dark:text-indigo-400"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                                />
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-center mb-2">
+                                <h2 class="text-xl font-bold text-zinc-900 dark:text-white">My Groups</h2>
+                                <span
+                                    class="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-300 text-sm font-medium px-2.5 py-0.5 rounded-full"
+                                    >3</span
+                                >
+                            </div>
+                            <p class="text-zinc-600 dark:text-zinc-300">Manage your gaming groups and create new ones</p>
+                            <div class="mt-6 flex justify-between items-center">
+                                <div class="flex -space-x-2">
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center border-2 border-white dark:border-zinc-800"
+                                    >
+                                        <span class="text-xs font-medium text-green-800 dark:text-green-300">WG</span>
+                                    </div>
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center border-2 border-white dark:border-zinc-800"
+                                    >
+                                        <span class="text-xs font-medium text-purple-800 dark:text-purple-300">FC</span>
+                                    </div>
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center border-2 border-white dark:border-zinc-800"
+                                    >
+                                        <span class="text-xs font-medium text-blue-800 dark:text-blue-300">CC</span>
+                                    </div>
+                                </div>
+                                <span
+                                    class="text-indigo-600 dark:text-indigo-400 group-hover:underline flex items-center text-sm font-medium"
+                                >
+                                    View all
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                        <path
+                                            fill-rule="evenodd"
+                                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                            clip-rule="evenodd"
+                                        />
+                                    </svg>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Group Invites & Discover Card -->
+            <div
+                class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-800 transition overflow-hidden group"
+            >
+                <a href="/connect/invites" class="block p-6">
+                    <div class="flex items-start">
+                        <div
+                            class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center mr-4 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-900/50 transition"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-6 w-6 text-indigo-600 dark:text-indigo-400"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                                />
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-center mb-2">
+                                <h2 class="text-xl font-bold text-zinc-900 dark:text-white">Invites & Discovery</h2>
+                                <span
+                                    class="bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 text-sm font-medium px-2.5 py-0.5 rounded-full flex items-center"
+                                >
+                                    <span class="w-2 h-2 bg-red-500 rounded-full mr-1"></span>
+                                    2 New
+                                </span>
+                            </div>
+                            <p class="text-zinc-600 dark:text-zinc-300">Manage group invitations and discover new groups to join</p>
+                            <div class="mt-6 grid grid-cols-2 gap-4">
+                                <div
+                                    class="bg-indigo-50 dark:bg-indigo-900/20 rounded-lg p-3 text-center hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition"
+                                >
+                                    <span class="text-sm font-medium text-indigo-700 dark:text-indigo-300">Group Invites</span>
+                                    <span
+                                        class="bg-red-500 text-white text-xs font-medium rounded-full h-5 w-5 inline-flex items-center justify-center ml-1"
+                                        >2</span
+                                    >
+                                </div>
+                                <div
+                                    class="bg-indigo-50 dark:bg-indigo-900/20 rounded-lg p-3 text-center hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition"
+                                >
+                                    <span class="text-sm font-medium text-indigo-700 dark:text-indigo-300">Find Groups</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Friends & Activity Card -->
+            <div
+                class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-800 transition overflow-hidden group"
+            >
+                <a href="/connect/friends" class="block p-6">
+                    <div class="flex items-start">
+                        <div
+                            class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center mr-4 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-900/50 transition"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-6 w-6 text-indigo-600 dark:text-indigo-400"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                                />
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-center mb-2">
+                                <h2 class="text-xl font-bold text-zinc-900 dark:text-white">Friends & Activity</h2>
+                                <span
+                                    class="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-300 text-sm font-medium px-2.5 py-0.5 rounded-full"
+                                    >16</span
+                                >
+                            </div>
+                            <p class="text-zinc-600 dark:text-zinc-300">Manage your gaming friends and see their recent activity</p>
+                            <div class="mt-6 flex justify-between items-center">
+                                <div class="flex -space-x-2">
+                                    <img
+                                        class="w-8 h-8 rounded-full border-2 border-white dark:border-zinc-800"
+                                        src="/images/avatar-1.jpg"
+                                        alt=""
+                                    />
+                                    <img
+                                        class="w-8 h-8 rounded-full border-2 border-white dark:border-zinc-800"
+                                        src="/images/avatar-2.jpg"
+                                        alt=""
+                                    />
+                                    <img
+                                        class="w-8 h-8 rounded-full border-2 border-white dark:border-zinc-800"
+                                        src="/images/avatar-3.jpg"
+                                        alt=""
+                                    />
+                                    <div
+                                        class="w-8 h-8 rounded-full border-2 border-white dark:border-zinc-800 bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-xs font-medium text-indigo-800 dark:text-indigo-300"
+                                    >
+                                        +13
+                                    </div>
+                                </div>
+                                <span
+                                    class="text-indigo-600 dark:text-indigo-400 group-hover:underline flex items-center text-sm font-medium"
+                                >
+                                    View all
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                        <path
+                                            fill-rule="evenodd"
+                                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                            clip-rule="evenodd"
+                                        />
+                                    </svg>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Group Collections & Analytics Card -->
+            <div
+                class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-800 transition overflow-hidden group"
+            >
+                <a href="/connect/group-data" class="block p-6">
+                    <div class="flex items-start">
+                        <div
+                            class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center mr-4 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-900/50 transition"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-6 w-6 text-indigo-600 dark:text-indigo-400"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                                />
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-center mb-2">
+                                <h2 class="text-xl font-bold text-zinc-900 dark:text-white">Group Data</h2>
+                            </div>
+                            <p class="text-zinc-600 dark:text-zinc-300">View shared game collections and group play statistics</p>
+                            <div class="mt-6 grid grid-cols-2 gap-4">
+                                <div
+                                    class="bg-indigo-50 dark:bg-indigo-900/20 rounded-lg p-3 text-center hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        class="h-5 w-5 mx-auto mb-1 text-indigo-600 dark:text-indigo-400"
+                                        viewBox="0 0 20 20"
+                                        fill="currentColor"
+                                    >
+                                        <path
+                                            d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"
+                                        />
+                                    </svg>
+                                    <span class="text-sm font-medium text-indigo-700 dark:text-indigo-300">Group Collections</span>
+                                </div>
+                                <div
+                                    class="bg-indigo-50 dark:bg-indigo-900/20 rounded-lg p-3 text-center hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        class="h-5 w-5 mx-auto mb-1 text-indigo-600 dark:text-indigo-400"
+                                        viewBox="0 0 20 20"
+                                        fill="currentColor"
+                                    >
+                                        <path
+                                            fill-rule="evenodd"
+                                            d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 0l-2 2a1 1 0 101.414 1.414L8 10.414l1.293 1.293a1 1 0 001.414 0l4-4z"
+                                            clip-rule="evenodd"
+                                        />
+                                    </svg>
+                                    <span class="text-sm font-medium text-indigo-700 dark:text-indigo-300">Group Analytics</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Recent Social Activity -->
+        <div class="mt-8">
+            <h2 class="text-lg font-medium text-zinc-900 dark:text-white mb-4">Recent Social Activity</h2>
+            <div class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 overflow-hidden">
+                <ul class="divide-y divide-zinc-200 dark:divide-zinc-700">
+                    <li class="p-4 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition">
+                        <div class="flex items-center">
+                            <img class="w-10 h-10 rounded-full mr-4" src="/images/avatar-2.jpg" alt="" />
+                            <div>
+                                <p class="text-sm text-zinc-900 dark:text-white">
+                                    <span class="font-medium">Sarah Miller</span> invited you to join the group
+                                    <span class="font-medium">Weekend Strategists</span>
+                                </p>
+                                <div class="flex mt-2">
+                                    <button
+                                        class="mr-2 px-3 py-1 text-xs font-medium rounded bg-indigo-600 text-white hover:bg-indigo-700 transition"
+                                    >
+                                        Accept
+                                    </button>
+                                    <button
+                                        class="px-3 py-1 text-xs font-medium rounded bg-zinc-200 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-300 dark:hover:bg-zinc-600 transition"
+                                    >
+                                        Decline
+                                    </button>
+                                </div>
+                                <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">1 hour ago</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="p-4 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition">
+                        <div class="flex items-center">
+                            <img class="w-10 h-10 rounded-full mr-4" src="/images/avatar-1.jpg" alt="" />
+                            <div>
+                                <p class="text-sm text-zinc-900 dark:text-white">
+                                    <span class="font-medium">Michael Chen</span> scheduled a game night with
+                                    <span class="font-medium">Tabletop Club</span>
+                                </p>
+                                <div class="flex items-center mt-1">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        class="h-4 w-4 text-zinc-400 dark:text-zinc-500 mr-1"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                        />
+                                    </svg>
+                                    <span class="text-xs text-zinc-600 dark:text-zinc-400">Saturday, 7:00 PM</span>
+                                </div>
+                                <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Yesterday</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="p-4 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition">
+                        <div class="flex items-center">
+                            <img class="w-10 h-10 rounded-full mr-4" src="/images/avatar-3.jpg" alt="" />
+                            <div>
+                                <p class="text-sm text-zinc-900 dark:text-white">
+                                    <span class="font-medium">Alex Johnson</span> added 3 new games to
+                                    <span class="font-medium">Friday Night Gamers</span> collection
+                                </p>
+                                <div class="flex -space-x-1 mt-2">
+                                    <img class="w-6 h-6 rounded border border-white dark:border-zinc-800" src="/images/game-1.jpg" alt="" />
+                                    <img class="w-6 h-6 rounded border border-white dark:border-zinc-800" src="/images/game-2.jpg" alt="" />
+                                    <img class="w-6 h-6 rounded border border-white dark:border-zinc-800" src="/images/game-3.jpg" alt="" />
+                                </div>
+                                <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">2 days ago</p>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <div class="bg-zinc-50 dark:bg-zinc-900/50 p-4 text-center">
+                    <a href="#" class="text-sm text-indigo-600 dark:text-indigo-400 font-medium hover:underline">View all activity</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Friend Suggestions -->
+        <div class="mt-8">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-medium text-zinc-900 dark:text-white">People You May Know</h2>
+                <a href="#" class="text-sm text-indigo-600 dark:text-indigo-400 font-medium hover:underline">View All</a>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Friend Suggestion 1 -->
+                <div
+                    class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 p-4 flex flex-col items-center"
+                >
+                    <img class="w-16 h-16 rounded-full mb-3" src="/images/avatar-4.jpg" alt="" />
+                    <h3 class="font-medium text-zinc-900 dark:text-white">Jessica Williams</h3>
+                    <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-3">4 mutual friends</p>
+                    <button class="w-full px-3 py-1.5 text-sm font-medium rounded bg-indigo-600 text-white hover:bg-indigo-700 transition">
+                        Add Friend
+                    </button>
+                </div>
+
+                <!-- Friend Suggestion 2 -->
+                <div
+                    class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 p-4 flex flex-col items-center"
+                >
+                    <img class="w-16 h-16 rounded-full mb-3" src="/images/avatar-5.jpg" alt="" />
+                    <h3 class="font-medium text-zinc-900 dark:text-white">David Roberts</h3>
+                    <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-3">2 mutual friends</p>
+                    <button class="w-full px-3 py-1.5 text-sm font-medium rounded bg-indigo-600 text-white hover:bg-indigo-700 transition">
+                        Add Friend
+                    </button>
+                </div>
+
+                <!-- Friend Suggestion 3 -->
+                <div
+                    class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 p-4 flex flex-col items-center"
+                >
+                    <img class="w-16 h-16 rounded-full mb-3" src="/images/avatar-6.jpg" alt="" />
+                    <h3 class="font-medium text-zinc-900 dark:text-white">Emma Thompson</h3>
+                    <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-3">5 mutual friends</p>
+                    <button class="w-full px-3 py-1.5 text-sm font-medium rounded bg-indigo-600 text-white hover:bg-indigo-700 transition">
+                        Add Friend
+                    </button>
+                </div>
+
+                <!-- Friend Suggestion 4 -->
+                <div
+                    class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 p-4 flex flex-col items-center"
+                >
+                    <img class="w-16 h-16 rounded-full mb-3" src="/images/avatar-7.jpg" alt="" />
+                    <h3 class="font-medium text-zinc-900 dark:text-white">James Wilson</h3>
+                    <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-3">1 mutual friend</p>
+                    <button class="w-full px-3 py-1.5 text-sm font-medium rounded bg-indigo-600 text-white hover:bg-indigo-700 transition">
+                        Add Friend
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
