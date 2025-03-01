@@ -4,6 +4,6 @@ import { PageHeaderComponent } from '../../components/ui/page-header/page-header
 
 @Component({
     imports: [PageHeaderComponent, ButtonComponent],
-    templateUrl: 'collection.component.html',
+    templateUrl: 'collection-page.component.html',
 })
 export class CollectionPageComponent {}
