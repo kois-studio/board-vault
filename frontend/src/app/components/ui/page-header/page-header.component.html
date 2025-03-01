@@ -1,0 +1,20 @@
+<header class="py-6 px-4 sm:px-6 lg:px-8 border-b border-zinc-200 dark:border-zinc-800">
+    <div class="max-w-7xl mx-auto">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+            <div>
+                <h1 class="text-2xl font-bold text-zinc-900 dark:text-white">
+                    {{ titleText }}
+                </h1>
+                <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                    <ng-content />
+                </p>
+            </div>
+
+            @if (showActionButton) {
+            <div class="mt-4 md:mt-0">
+                <ng-content select=".action-button" />
+            </div>
+            }
+        </div>
+    </div>
+</header>
