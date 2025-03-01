@@ -1,8 +1,8 @@
 import { Component, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
+import { DarkModeToggleComponent } from '../../components/ui/dark-mode-toggle/dark-mode-toggle.component'
 import { LoginService } from '../../core/services/login.service'
 import { ProfileMenuComponent } from '../profile-menu/profile-menu.component'
-import { DarkModeToggleComponent } from "../../components/ui/dark-mode-toggle/dark-mode-toggle.component";
 
 @Component({
     selector: 'app-layout-header',
