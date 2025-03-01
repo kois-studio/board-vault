@@ -8,6 +8,7 @@ import { RegisterComponent } from './pages/auth/register/register.component'
 import { ResetPasswordRequestComponent } from './pages/auth/reset-password-request/reset-password-request.component'
 import { ResetPasswordTokenComponent } from './pages/auth/reset-password-token/reset-password-token.component'
 import { VerifyEmailComponent } from './pages/auth/verify-email/verify-email.component'
+import { CollectionPageComponent } from './pages/collection/collection.component'
 import { DashboardComponent } from './pages/dashboard/dashboard.component'
 import { GamesComponent } from './pages/games/games.component'
 import { GroupDeleteComponent } from './pages/group-delete/group-delete.component'
@@ -51,6 +52,7 @@ export const routes: Routes = [
             // accessible to authenticated users
             { path: 'dashboard', component: DashboardComponent, canActivate: [AuthOnlyGuard] },
             { path: 'games', component: GamesComponent, canActivate: [AuthOnlyGuard] },
+            { path: 'collection', component: CollectionPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'reviews', component: ReviewComponent, canActivate: [AuthOnlyGuard] },
             { path: 'history', component: HistoryComponent, canActivate: [AuthOnlyGuard] },
             { path: 'group/:groupId', component: GroupViewComponent, canActivate: [AuthOnlyGuard] },
