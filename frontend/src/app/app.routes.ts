@@ -23,6 +23,7 @@ import { MeetConfirmComponent } from './pages/meet-confirm/meet-confirm.componen
 import { MeetNewComponent } from './pages/meet-new/meet-new.component'
 import { MeetViewComponent } from './pages/meet-view/meet-view.component'
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component'
+import { PlayPageComponent } from './pages/play-page/play-page.component'
 import { ReviewComponent } from './pages/reviews/reviews.component'
 import { SettingsAccountComponent } from './pages/settings/account/settings-account.component'
 import { SettingsContactComponent } from './pages/settings/contact/settings-contact.component'
@@ -55,6 +56,7 @@ export const routes: Routes = [
             { path: 'games', component: GamesComponent, canActivate: [AuthOnlyGuard] },
             { path: 'collection', component: CollectionPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'groups', component: GroupsPageComponent, canActivate: [AuthOnlyGuard] },
+            { path: 'play', component: PlayPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'reviews', component: ReviewComponent, canActivate: [AuthOnlyGuard] },
             { path: 'history', component: HistoryComponent, canActivate: [AuthOnlyGuard] },
             { path: 'group/:groupId', component: GroupViewComponent, canActivate: [AuthOnlyGuard] },
