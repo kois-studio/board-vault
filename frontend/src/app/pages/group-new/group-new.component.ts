@@ -49,7 +49,6 @@ export class GroupNewComponent {
         this.groupNameForm.reset()
         this.isLoading = false
 
-        // TODO: redirect to /group/:groupId with the new group id
-        this.router.navigate(['/dashboard'])
+        this.router.navigate(['/groups/my-groups'])
     }
 }
