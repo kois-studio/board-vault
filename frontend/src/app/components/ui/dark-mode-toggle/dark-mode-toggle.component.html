@@ -1,0 +1,20 @@
+<button
+    (click)="toggleDarkMode()"
+    class="h-[34px] w-[58px] cursor-pointer rounded-full border-2 border-orange-100 bg-orange-50 focus:outline-none dark:border-transparent dark:bg-zinc-900"
+>
+    <span
+        id="darkmode-switch"
+        class="pointer-events-none flex h-[30px] w-[30px] translate-x-[0px] transform items-center justify-center rounded-full bg-orange-200 ring-0 transition duration-700 ease-in-out"
+        [ngClass]="{
+            'translate-x-[0px] bg-orange-200': !isDarkMode,
+            'translate-x-[24px] bg-zinc-700': isDarkMode
+        }"
+    >
+        <i
+            [ngClass]="{
+                'bi bi-moon-fill animate__animated animate__rotateIn text-white': isDarkMode,
+                'bi bi-sun-fill animate__animated animate__rotateInUpRight text-black': !isDarkMode
+            }"
+        ></i>
+    </span>
+</button>

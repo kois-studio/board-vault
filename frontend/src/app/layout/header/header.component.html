@@ -1,10 +1,11 @@
-<header class="p-2 border-b border-zinc-500">
+<header class="p-2 border-b border-zinc-500 bg-white dark:bg-zinc-800">
     <nav class="animate__animated animate__fadeIn relative flex items-center justify-between px-4 z-40">
         <a routerLink="/" aria-label="Home">
             <span class="hidden">Home</span>
             <img src="/images/logo.webp" alt="logo" class="w-16" />
         </a>
 
+        <app-dark-mode-toggle />
         <!-- DESKTOP MENU -->
         <div>
             <div class="flex items-center justify-between gap-6">
