@@ -22,7 +22,7 @@ $color-primary-hover: #0078d4;
 
     .app-btn-secondary {
         @extend .app-btn;
-        @apply shadow-zinc-500 bg-zinc-700 hover:bg-zinc-800;
+        @apply shadow-zinc-500 hover:bg-zinc-200 dark:bg-zinc-700 dark:hover:bg-zinc-800;
     }
 
     .app-btn-danger {
