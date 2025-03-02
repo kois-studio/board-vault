@@ -1,571 +1,156 @@
-<div class="bg-white dark:bg-zinc-900 min-h-screen">
-    <app-page-header titleText="Play Sessions" [showActionButton]="true">
-        Schedule game sessions, track plays, and get recommendations
-        <app-button class="action-button" icon="plus-lg">Schedule Game Session</app-button>
-    </app-page-header>
+<app-page-header titleText="Play Sessions" [showActionButton]="true">
+    Schedule game sessions, track plays, and get recommendations
+    <app-button class="action-button" icon="plus-lg">Schedule Game Session</app-button>
+</app-page-header>
 
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Upcoming & Schedule Card -->
-            <div
-                class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-800 transition overflow-hidden group"
-            >
-                <a href="/play/sessions" class="block p-6">
-                    <div class="flex items-start">
-                        <div
-                            class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center mr-4 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-900/50 transition"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-6 w-6 text-indigo-600 dark:text-indigo-400"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                                />
-                            </svg>
+<container-wrapper>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- --------------------------
+            1 - Upcoming Sessions Card
+        ---------------------------- -->
+        <app-card-section
+            icon="calendar3"
+            titleText="Upcoming Sessions"
+            description="View and manage your scheduled game nights"
+            cardLink="/play/sessions"
+        >
+            <!-- TODO: show the actual count -->
+            <!-- Badge -->
+            <app-badge class="app-card-section-badge" color="indigo" [text]="userGroups$().length + ' sessions'" />
+
+            <!-- Content-->
+            <div class="w-full">
+                <div class="bg-indigo-50 dark:bg-indigo-900/20 rounded-lg p-3 w-full">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                            <span class="font-medium text-zinc-900 dark:text-white">Weekend Warriors</span>
                         </div>
-                        <div class="flex-1">
-                            <div class="flex justify-between items-center mb-2">
-                                <h2 class="text-xl font-bold text-zinc-900 dark:text-white">Upcoming Sessions</h2>
-                                <span
-                                    class="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-300 text-sm font-medium px-2.5 py-0.5 rounded-full"
-                                    >2</span
-                                >
-                            </div>
-                            <p class="text-zinc-600 dark:text-zinc-300">View and manage your scheduled game nights</p>
-
-                            <div class="mt-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg p-3">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center">
-                                        <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                                        <span class="font-medium text-zinc-900 dark:text-white">Weekend Warriors</span>
-                                    </div>
-                                    <span class="text-sm text-zinc-500 dark:text-zinc-400">Tomorrow, 7 PM</span>
-                                </div>
-                                <div class="mt-2 flex items-center">
-                                    <div class="flex -space-x-1 mr-2">
-                                        <img
-                                            class="w-5 h-5 rounded-full border border-white dark:border-zinc-800"
-                                            src="/images/avatar-1.jpg"
-                                            alt=""
-                                        />
-                                        <img
-                                            class="w-5 h-5 rounded-full border border-white dark:border-zinc-800"
-                                            src="/images/avatar-2.jpg"
-                                            alt=""
-                                        />
-                                        <img
-                                            class="w-5 h-5 rounded-full border border-white dark:border-zinc-800"
-                                            src="/images/avatar-3.jpg"
-                                            alt=""
-                                        />
-                                        <span
-                                            class="w-5 h-5 rounded-full border border-white dark:border-zinc-800 bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-xs font-medium text-indigo-800 dark:text-indigo-300"
-                                            >+2</span
-                                        >
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="mt-4 flex justify-between items-center">
-                                <button class="text-sm text-indigo-600 dark:text-indigo-400 font-medium flex items-center hover:underline">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                                        <path
-                                            fill-rule="evenodd"
-                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
-                                            clip-rule="evenodd"
-                                        />
-                                    </svg>
-                                    Schedule New
-                                </button>
-                                <span
-                                    class="text-indigo-600 dark:text-indigo-400 group-hover:underline flex items-center text-sm font-medium"
-                                >
-                                    View all
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                        <path
-                                            fill-rule="evenodd"
-                                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                                            clip-rule="evenodd"
-                                        />
-                                    </svg>
-                                </span>
-                            </div>
-                        </div>
+                        <span class="text-sm text-zinc-500 dark:text-zinc-400">Tomorrow, 7 PM</span>
                     </div>
-                </a>
-            </div>
-
-            <!-- Session History Card -->
-            <div
-                class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-800 transition overflow-hidden group"
-            >
-                <a href="/play/history" class="block p-6">
-                    <div class="flex items-start">
-                        <div
-                            class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center mr-4 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-900/50 transition"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-6 w-6 text-indigo-600 dark:text-indigo-400"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                                />
-                            </svg>
-                        </div>
-                        <div class="flex-1">
-                            <div class="flex justify-between items-center mb-2">
-                                <h2 class="text-xl font-bold text-zinc-900 dark:text-white">Session History</h2>
-                                <span
-                                    class="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-300 text-sm font-medium px-2.5 py-0.5 rounded-full"
-                                    >36</span
-                                >
-                            </div>
-                            <p class="text-zinc-600 dark:text-zinc-300">Browse your past game sessions and performance</p>
-
-                            <div class="mt-4 grid grid-cols-4 gap-2">
-                                <div class="text-center">
-                                    <div class="text-xl font-bold text-indigo-600 dark:text-indigo-400">36</div>
-                                    <div class="text-xs text-zinc-500 dark:text-zinc-400">Sessions</div>
-                                </div>
-                                <div class="text-center">
-                                    <div class="text-xl font-bold text-indigo-600 dark:text-indigo-400">18</div>
-                                    <div class="text-xs text-zinc-500 dark:text-zinc-400">Games</div>
-                                </div>
-                                <div class="text-center">
-                                    <div class="text-xl font-bold text-indigo-600 dark:text-indigo-400">72</div>
-                                    <div class="text-xs text-zinc-500 dark:text-zinc-400">Hours</div>
-                                </div>
-                                <div class="text-center">
-                                    <div class="text-xl font-bold text-indigo-600 dark:text-indigo-400">9</div>
-                                    <div class="text-xs text-zinc-500 dark:text-zinc-400">Groups</div>
-                                </div>
-                            </div>
-
-                            <div class="mt-4 flex justify-end items-center">
-                                <span
-                                    class="text-indigo-600 dark:text-indigo-400 group-hover:underline flex items-center text-sm font-medium"
-                                >
-                                    View history
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                        <path
-                                            fill-rule="evenodd"
-                                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                                            clip-rule="evenodd"
-                                        />
-                                    </svg>
-                                </span>
-                            </div>
-                        </div>
+                    <div class="flex -space-x-2">
+                        <!-- TODO: show some game images-->
+                        <app-image-profile
+                            class="border-2 rounded-full border-red-100 dark:border-zinc-800"
+                            [avatar]="currentUser$()?.avatar"
+                        />
+                        <app-image-profile
+                            class="border-2 rounded-full border-red-100 dark:border-zinc-800"
+                            [avatar]="currentUser$()?.avatar"
+                        />
+                        <app-image-profile
+                            class="border-2 rounded-full border-red-100 dark:border-zinc-800"
+                            [avatar]="currentUser$()?.avatar"
+                        />
                     </div>
-                </a>
-            </div>
+                </div>
 
-            <!-- Game Recommendations Card -->
-            <div
-                class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-800 transition overflow-hidden group"
-            >
-                <a href="/play/recommendations" class="block p-6">
-                    <div class="flex items-start">
-                        <div
-                            class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center mr-4 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-900/50 transition"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-6 w-6 text-indigo-600 dark:text-indigo-400"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
-                                />
-                            </svg>
-                        </div>
-                        <div class="flex-1">
-                            <div class="flex justify-between items-center mb-2">
-                                <h2 class="text-xl font-bold text-zinc-900 dark:text-white">Recommendations</h2>
-                            </div>
-                            <p class="text-zinc-600 dark:text-zinc-300">Find the perfect games to play next based on your preferences</p>
-
-                            <div class="mt-4 space-y-3">
-                                <div class="flex items-center">
-                                    <img class="w-10 h-10 rounded object-cover mr-3" src="/images/game-1.jpg" alt="" />
-                                    <div>
-                                        <h3 class="font-medium text-zinc-900 dark:text-white">Wingspan</h3>
-                                        <div class="flex text-amber-400 text-xs">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                                                <path
-                                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                                />
-                                            </svg>
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                                                <path
-                                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                                />
-                                            </svg>
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                                                <path
-                                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                                />
-                                            </svg>
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                                                <path
-                                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                                />
-                                            </svg>
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                                                <path
-                                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                                />
-                                            </svg>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="flex items-center">
-                                    <img class="w-10 h-10 rounded object-cover mr-3" src="/images/game-2.jpg" alt="" />
-                                    <div>
-                                        <h3 class="font-medium text-zinc-900 dark:text-white">Pandemic Legacy</h3>
-                                        <div class="flex text-amber-400 text-xs">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                                                <path
-                                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                                />
-                                            </svg>
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                                                <path
-                                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                                />
-                                            </svg>
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                                                <path
-                                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                                />
-                                            </svg>
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                                                <path
-                                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                                />
-                                            </svg>
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                class="h-3 w-3 text-zinc-300 dark:text-zinc-600"
-                                                viewBox="0 0 20 20"
-                                                fill="currentColor"
-                                            >
-                                                <path
-                                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                                />
-                                            </svg>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="mt-4 flex justify-between items-center">
-                                <button class="text-sm text-indigo-600 dark:text-indigo-400 font-medium flex items-center hover:underline">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                                        <path
-                                            fill-rule="evenodd"
-                                            d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
-                                            clip-rule="evenodd"
-                                        />
-                                    </svg>
-                                    Adjust Preferences
-                                </button>
-                                <span
-                                    class="text-indigo-600 dark:text-indigo-400 group-hover:underline flex items-center text-sm font-medium"
-                                >
-                                    See more
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                        <path
-                                            fill-rule="evenodd"
-                                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                                            clip-rule="evenodd"
-                                        />
-                                    </svg>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-
-            <!-- Quick Play & Analytics Card -->
-            <div
-                class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-800 transition overflow-hidden group"
-            >
-                <a href="/play/quick" class="block p-6">
-                    <div class="flex items-start">
-                        <div
-                            class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center mr-4 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-900/50 transition"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-6 w-6 text-indigo-600 dark:text-indigo-400"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                            </svg>
-                        </div>
-                        <div class="flex-1">
-                            <div class="flex justify-between items-center mb-2">
-                                <h2 class="text-xl font-bold text-zinc-900 dark:text-white">Quick Play & Stats</h2>
-                            </div>
-                            <p class="text-zinc-600 dark:text-zinc-300">Quickly log games and view your play statistics</p>
-
-                            <div class="mt-4 grid grid-cols-2 gap-3">
-                                <div class="bg-indigo-600 text-white rounded-lg p-3 text-center hover:bg-indigo-700 transition shadow-sm">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        class="h-5 w-5 mx-auto mb-1"
-                                        viewBox="0 0 20 20"
-                                        fill="currentColor"
-                                    >
-                                        <path
-                                            fill-rule="evenodd"
-                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z"
-                                            clip-rule="evenodd"
-                                        />
-                                    </svg>
-                                    <span class="text-sm font-medium">Log a Play</span>
-                                </div>
-                                <div
-                                    class="bg-indigo-50 dark:bg-indigo-900/20 rounded-lg p-3 text-center hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition"
-                                >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        class="h-5 w-5 mx-auto mb-1 text-indigo-600 dark:text-indigo-400"
-                                        viewBox="0 0 20 20"
-                                        fill="currentColor"
-                                    >
-                                        <path
-                                            fill-rule="evenodd"
-                                            d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 0l-2 2a1 1 0 101.414 1.414L8 10.414l1.293 1.293a1 1 0 001.414 0l4-4z"
-                                            clip-rule="evenodd"
-                                        />
-                                    </svg>
-                                    <span class="text-sm font-medium text-indigo-700 dark:text-indigo-300">Play Stats</span>
-                                </div>
-                            </div>
-
-                            <div class="mt-4">
-                                <h3 class="text-sm font-medium text-zinc-900 dark:text-white mb-2">Recent Plays</h3>
-                                <div class="space-y-2">
-                                    <div class="flex items-center justify-between text-sm">
-                                        <span class="text-zinc-600 dark:text-zinc-300">Gloomhaven</span>
-                                        <span class="text-zinc-500 dark:text-zinc-400">3 days ago</span>
-                                    </div>
-                                    <div class="flex items-center justify-between text-sm">
-                                        <span class="text-zinc-600 dark:text-zinc-300">Spirit Island</span>
-                                        <span class="text-zinc-500 dark:text-zinc-400">Last week</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-        </div>
-
-        <!-- Quick Game Selector -->
-        <div class="mt-8">
-            <h2 class="text-lg font-medium text-zinc-900 dark:text-white mb-4">Quick Game Selector</h2>
-            <div class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 p-6">
-                <div class="max-w-3xl mx-auto">
-                    <form>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Number of Players</label>
-                                <select
-                                    class="w-full rounded-lg border-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                >
-                                    <option>Any</option>
-                                    <option>1 player</option>
-                                    <option>2 players</option>
-                                    <option>3 players</option>
-                                    <option>4 players</option>
-                                    <option>5+ players</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Play Time</label>
-                                <select
-                                    class="w-full rounded-lg border-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                >
-                                    <option>Any</option>
-                                    <option>< 30 min</option>
-                                    <option>30-60 min</option>
-                                    <option>1-2 hours</option>
-                                    <option>2+ hours</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Complexity</label>
-                                <select
-                                    class="w-full rounded-lg border-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                >
-                                    <option>Any</option>
-                                    <option>Light</option>
-                                    <option>Medium</option>
-                                    <option>Heavy</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="mt-4 text-center">
-                            <button
-                                type="submit"
-                                class="px-6 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition shadow-sm inline-flex items-center"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                                    <path
-                                        fill-rule="evenodd"
-                                        d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                                        clip-rule="evenodd"
-                                    />
-                                </svg>
-                                Find Games
-                            </button>
-                        </div>
-                    </form>
+                <div class="mt-4 flex justify-between items-center">
+                    <button class="text-sm text-indigo-600 dark:text-indigo-400 font-medium flex items-center hover:underline">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                            <path
+                                fill-rule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
+                                clip-rule="evenodd"
+                            />
+                        </svg>
+                        Schedule New
+                    </button>
                 </div>
             </div>
-        </div>
 
-        <!-- Analytics Overview -->
-        <div class="mt-8">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-lg font-medium text-zinc-900 dark:text-white">Play Analytics</h2>
-                <a href="/play/analytics" class="text-sm text-indigo-600 dark:text-indigo-400 font-medium hover:underline"
-                    >View Full Report</a
+            <!-- View all highlight -->
+            <span class="text-indigo-600 dark:text-indigo-400 group-hover:underline flex items-center text-sm font-medium">
+                View all >
+            </span>
+        </app-card-section>
+
+        <!-- --------------------------
+            2 - Session History Card
+        ---------------------------- -->
+        <app-card-section
+            icon="clock"
+            color="green"
+            titleText="Session History"
+            description="Browse your past game sessions and performance"
+            cardLink="/play/history"
+        >
+            <!-- Badge -->
+            <!-- TODO: show actual count -->
+            <app-badge class="app-card-section-badge" color="green" [text]="userGroups$().length + ' sessions'" />
+
+            <!-- Content-->
+            <div></div>
+
+            <!-- View all highlight -->
+            <span class="text-green-600 dark:text-green-400 group-hover:underline flex items-center text-sm font-medium">
+                View history >
+            </span>
+        </app-card-section>
+
+        <!-- --------------------------
+            3 - Game Recommendations Card
+        ---------------------------- -->
+        <app-card-section
+            icon="lightbulb"
+            color="fuchsia"
+            titleText="Game Recommendations"
+            description="Find the perfect games to play next based on your preferences"
+            cardLink="/play/recommendations"
+        >
+            <!-- Content-->
+            <div></div>
+
+            <!-- View all highlight -->
+            <span class="text-fuchsia-600 dark:text-fuchsia-400 group-hover:underline flex items-center text-sm font-medium">
+                View all >
+            </span>
+        </app-card-section>
+
+        <!-- --------------------------
+            4 - Quick Stats Card
+        ---------------------------- -->
+        <app-card-section
+            icon="lightning-charge-fill"
+            color="cyan"
+            titleText="Quick Play & Stats"
+            description="Quickly log a game session or view your play statistics"
+            cardLink="/play/recommendations"
+        >
+            <!-- Badge -->
+            <!-- TODO: show actual count -->
+            <app-badge class="app-card-section-badge" color="cyan" [text]="userGroups$().length + ' sessions'" />
+
+            <!-- Content-->
+            <div class="mt-4 grid grid-cols-2 gap-3 w-full">
+                <div class="bg-indigo-600 text-white rounded-lg p-3 text-center hover:bg-indigo-700 transition shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mx-auto mb-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path
+                            fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z"
+                            clip-rule="evenodd"
+                        />
+                    </svg>
+                    <span class="text-sm font-medium">Log a Play</span>
+                </div>
+                <div
+                    class="bg-indigo-50 dark:bg-indigo-900/20 rounded-lg p-3 text-center hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition"
                 >
-            </div>
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                <div class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 p-4">
-                    <h3 class="text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-1">Most Played Categories</h3>
-                    <div class="h-40 flex items-center justify-center">
-                        <div class="text-center text-zinc-400 dark:text-zinc-500">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-10 w-10 mx-auto mb-2"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                                />
-                            </svg>
-                            <p class="text-sm">Chart visualization</p>
-                        </div>
-                    </div>
-                    <div class="mt-2">
-                        <div class="flex justify-between items-center text-sm">
-                            <span class="text-zinc-700 dark:text-zinc-300">Strategy</span>
-                            <span class="text-zinc-900 dark:text-white font-medium">42%</span>
-                        </div>
-                        <div class="flex justify-between items-center text-sm mt-1">
-                            <span class="text-zinc-700 dark:text-zinc-300">Cooperative</span>
-                            <span class="text-zinc-900 dark:text-white font-medium">28%</span>
-                        </div>
-                        <div class="flex justify-between items-center text-sm mt-1">
-                            <span class="text-zinc-700 dark:text-zinc-300">Card Games</span>
-                            <span class="text-zinc-900 dark:text-white font-medium">18%</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 p-4">
-                    <h3 class="text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-1">Play Time Distribution</h3>
-                    <div class="h-40 flex items-center justify-center">
-                        <div class="text-center text-zinc-400 dark:text-zinc-500">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-10 w-10 mx-auto mb-2"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                                />
-                            </svg>
-                            <p class="text-sm">Chart visualization</p>
-                        </div>
-                    </div>
-                    <div class="mt-2">
-                        <div class="flex justify-between items-center text-sm">
-                            <span class="text-zinc-700 dark:text-zinc-300">Weekend</span>
-                            <span class="text-zinc-900 dark:text-white font-medium">68%</span>
-                        </div>
-                        <div class="flex justify-between items-center text-sm mt-1">
-                            <span class="text-zinc-700 dark:text-zinc-300">Weeknight</span>
-                            <span class="text-zinc-900 dark:text-white font-medium">32%</span>
-                        </div>
-                        <div class="flex justify-between items-center text-sm mt-1">
-                            <span class="text-zinc-700 dark:text-zinc-300">Avg. Session</span>
-                            <span class="text-zinc-900 dark:text-white font-medium">2.5 hours</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 p-4">
-                    <h3 class="text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-1">Win Rate by Game</h3>
-                    <div class="h-40 flex items-center justify-center">
-                        <div class="text-center text-zinc-400 dark:text-zinc-500">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-10 w-10 mx-auto mb-2"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                            </svg>
-                            <p class="text-sm">Chart visualization</p>
-                        </div>
-                    </div>
-                    <div class="mt-2">
-                        <div class="flex justify-between items-center text-sm">
-                            <span class="text-zinc-700 dark:text-zinc-300">Catan</span>
-                            <span class="text-zinc-900 dark:text-white font-medium">62%</span>
-                        </div>
-                        <div class="flex justify-between items-center text-sm mt-1">
-                            <span class="text-zinc-700 dark:text-zinc-300">Ticket to Ride</span>
-                            <span class="text-zinc-900 dark:text-white font-medium">45%</span>
-                        </div>
-                        <div class="flex justify-between items-center text-sm mt-1">
-                            <span class="text-zinc-700 dark:text-zinc-300">Dominion</span>
-                            <span class="text-zinc-900 dark:text-white font-medium">38%</span>
-                        </div>
-                    </div>
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-5 w-5 mx-auto mb-1 text-indigo-600 dark:text-indigo-400"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                    >
+                        <path
+                            fill-rule="evenodd"
+                            d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 0l-2 2a1 1 0 101.414 1.414L8 10.414l1.293 1.293a1 1 0 001.414 0l4-4z"
+                            clip-rule="evenodd"
+                        />
+                    </svg>
+                    <span class="text-sm font-medium text-indigo-700 dark:text-indigo-300">Play Stats</span>
                 </div>
             </div>
-        </div>
-    </main>
-</div>
+        </app-card-section>
+    </div>
+</container-wrapper>

@@ -113,4 +113,183 @@
             </div>
         </div>
     </div>
+
+    <!-- Quick Game Selector -->
+    <div class="mt-8">
+        <h2 class="text-lg font-medium text-zinc-900 dark:text-white mb-4">Quick Game Selector</h2>
+        <div class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 p-6">
+            <div class="max-w-3xl mx-auto">
+                <form>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Number of Players</label>
+                            <select
+                                class="w-full rounded-lg border-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                            >
+                                <option>Any</option>
+                                <option>1 player</option>
+                                <option>2 players</option>
+                                <option>3 players</option>
+                                <option>4 players</option>
+                                <option>5+ players</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Play Time</label>
+                            <select
+                                class="w-full rounded-lg border-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                            >
+                                <option>Any</option>
+                                <option>< 30 min</option>
+                                <option>30-60 min</option>
+                                <option>1-2 hours</option>
+                                <option>2+ hours</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Complexity</label>
+                            <select
+                                class="w-full rounded-lg border-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                            >
+                                <option>Any</option>
+                                <option>Light</option>
+                                <option>Medium</option>
+                                <option>Heavy</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mt-4 text-center">
+                        <button
+                            type="submit"
+                            class="px-6 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition shadow-sm inline-flex items-center"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                                    clip-rule="evenodd"
+                                />
+                            </svg>
+                            Find Games
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Overview -->
+    <div class="mt-8">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-medium text-zinc-900 dark:text-white">Play Analytics</h2>
+            <a href="/play/analytics" class="text-sm text-indigo-600 dark:text-indigo-400 font-medium hover:underline">View Full Report</a>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 p-4">
+                <h3 class="text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-1">Most Played Categories</h3>
+                <div class="h-40 flex items-center justify-center">
+                    <div class="text-center text-zinc-400 dark:text-zinc-500">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-10 w-10 mx-auto mb-2"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                            />
+                        </svg>
+                        <p class="text-sm">Chart visualization</p>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-zinc-700 dark:text-zinc-300">Strategy</span>
+                        <span class="text-zinc-900 dark:text-white font-medium">42%</span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm mt-1">
+                        <span class="text-zinc-700 dark:text-zinc-300">Cooperative</span>
+                        <span class="text-zinc-900 dark:text-white font-medium">28%</span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm mt-1">
+                        <span class="text-zinc-700 dark:text-zinc-300">Card Games</span>
+                        <span class="text-zinc-900 dark:text-white font-medium">18%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 p-4">
+                <h3 class="text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-1">Play Time Distribution</h3>
+                <div class="h-40 flex items-center justify-center">
+                    <div class="text-center text-zinc-400 dark:text-zinc-500">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-10 w-10 mx-auto mb-2"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                            />
+                        </svg>
+                        <p class="text-sm">Chart visualization</p>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-zinc-700 dark:text-zinc-300">Weekend</span>
+                        <span class="text-zinc-900 dark:text-white font-medium">68%</span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm mt-1">
+                        <span class="text-zinc-700 dark:text-zinc-300">Weeknight</span>
+                        <span class="text-zinc-900 dark:text-white font-medium">32%</span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm mt-1">
+                        <span class="text-zinc-700 dark:text-zinc-300">Avg. Session</span>
+                        <span class="text-zinc-900 dark:text-white font-medium">2.5 hours</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 p-4">
+                <h3 class="text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-1">Win Rate by Game</h3>
+                <div class="h-40 flex items-center justify-center">
+                    <div class="text-center text-zinc-400 dark:text-zinc-500">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-10 w-10 mx-auto mb-2"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                        </svg>
+                        <p class="text-sm">Chart visualization</p>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-zinc-700 dark:text-zinc-300">Catan</span>
+                        <span class="text-zinc-900 dark:text-white font-medium">62%</span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm mt-1">
+                        <span class="text-zinc-700 dark:text-zinc-300">Ticket to Ride</span>
+                        <span class="text-zinc-900 dark:text-white font-medium">45%</span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm mt-1">
+                        <span class="text-zinc-700 dark:text-zinc-300">Dominion</span>
+                        <span class="text-zinc-900 dark:text-white font-medium">38%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </container-wrapper>
