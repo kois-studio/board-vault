@@ -3,7 +3,7 @@
     <button (click)="toggleDropdown()" class="relative">
         <app-image-profile [avatar]="userData?.avatar" />
         @if (userInvitations.length + userUnreadNotifications.length) {
-            <div class="absolute -bottom-1 -right-1 bg-blue-600 rounded-full h-5 w-5 flex items-center justify-center">
+            <div class="absolute -bottom-1 -right-1 bg-blue-600 rounded-full h-5 w-5 flex items-center justify-center text-white">
                 <span class="text-sm">{{ userInvitations.length + userUnreadNotifications.length }}</span>
             </div>
         }
