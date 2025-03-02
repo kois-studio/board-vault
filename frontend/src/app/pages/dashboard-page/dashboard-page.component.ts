@@ -1,5 +1,4 @@
 import { Component, inject } from '@angular/core'
-import { RouterLink } from '@angular/router'
 import { CardSectionComponent } from '../../components/cards/card-section/card-section.component'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
 import { BadgeComponent } from '../../components/ui/badge/badge.component'
@@ -9,24 +8,16 @@ import { PageHeaderComponent } from '../../components/ui/page-header/page-header
 import { DataService } from '../../core/services/data.service'
 
 @Component({
-    imports: [
-        PageHeaderComponent,
-        ButtonComponent,
-        RouterLink,
-        ContainerWrapperComponent,
-        CardSectionComponent,
-        BadgeComponent,
-        ImageProfileComponent,
-    ],
-    templateUrl: 'groups-page.component.html',
+    imports: [ContainerWrapperComponent, PageHeaderComponent, ButtonComponent, CardSectionComponent, BadgeComponent, ImageProfileComponent],
+    templateUrl: 'dashboard-page.component.html',
 })
-export class GroupsPageComponent {
+export class DashboardPageComponent {
     private readonly dataService = inject(DataService)
 
     // --------------------------------------------------------------------------
     //        signals
     // --------------------------------------------------------------------------
+    // dataService
     public readonly currentUser$ = this.dataService.currentUser
     public readonly userGroups$ = this.dataService.userGroups
-    public readonly invitationsGroupIndex$ = this.dataService.invitationsGroupIndex
 }

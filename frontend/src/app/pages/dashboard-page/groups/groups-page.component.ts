@@ -8,9 +8,9 @@ import { LoadingService } from '../../../core/services/loading.service'
 
 @Component({
     imports: [SkeletonCardGroupComponent, CardGroupComponent, RouterLink],
-    templateUrl: 'my-groups.component.html',
+    templateUrl: 'groups-page.component.html',
 })
-export class MyGroupsComponent {
+export class GroupsPageComponent {
     private readonly dataService = inject(DataService)
     private readonly loadingService = inject(LoadingService)
 
