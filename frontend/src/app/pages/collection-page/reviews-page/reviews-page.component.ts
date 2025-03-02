@@ -1,15 +1,15 @@
 import { CommonModule } from '@angular/common'
 import { Component, effect } from '@angular/core'
-import { GameType, UserType } from '../../api/api.types'
-import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
-import { TitleSubtitleComponent } from '../../components/ui/title-subtitle/title-subtitle.component'
-import { DataService } from '../../core/services/data.service'
+import type { GameType, UserType } from '../../../api/api.types'
+import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
+import { TitleSubtitleComponent } from '../../../components/ui/title-subtitle/title-subtitle.component'
+import { DataService } from '../../../core/services/data.service'
 
 @Component({
     imports: [CommonModule, ContainerWrapperComponent, TitleSubtitleComponent],
-    templateUrl: 'reviews.component.html',
+    templateUrl: 'reviews-page.component.html',
 })
-export class ReviewComponent {
+export class ReviewsPageComponent {
     // From dataService
     public userReviews: ReturnType<typeof this.dataService.userReviews> = []
     public userGroups: ReturnType<typeof this.dataService.userGroups> = []
