@@ -1,4 +1,4 @@
-<div class="flex flex-col items-center p-2 max-w-md mx-auto bg-zinc-800">
+<div class="flex flex-col items-center p-2 max-w-md mx-auto">
     <!-- Avatar Preview -->
     <div class="mb-6 text-center">
         <h2 class="text-xl font-semibold mb-3">Avatar Preview</h2>
@@ -30,30 +30,30 @@
             <button
                 (click)="switchTab('icon')"
                 class="py-2 px-4 font-medium transition-colors duration-200"
-                [class.text-white]="activeTab === 'icon'"
-                [class.border-b-2]="activeTab === 'icon'"
-                [class.border-white]="activeTab === 'icon'"
-                [class.text-gray-500]="activeTab !== 'icon'"
+                [ngClass]="{
+                    'text-black dark:text-white border-b-2 border-black dark:border-white': activeTab === 'icon',
+                    'text-gray-700 dark:text-gray-500': activeTab !== 'icon',
+                }"
             >
                 Icon
             </button>
             <button
                 (click)="switchTab('emoji')"
                 class="py-2 px-4 font-medium transition-colors duration-200"
-                [class.text-white]="activeTab === 'emoji'"
-                [class.border-b-2]="activeTab === 'emoji'"
-                [class.border-white]="activeTab === 'emoji'"
-                [class.text-gray-500]="activeTab !== 'emoji'"
+                [ngClass]="{
+                    'text-black dark:text-white border-b-2 border-black dark:border-white': activeTab === 'emoji',
+                    'text-gray-700 dark:text-gray-500': activeTab !== 'emoji',
+                }"
             >
                 Emoji
             </button>
             <button
                 (click)="switchTab('initials')"
                 class="py-2 px-4 font-medium transition-colors duration-200"
-                [class.text-white]="activeTab === 'initials'"
-                [class.border-b-2]="activeTab === 'initials'"
-                [class.border-white]="activeTab === 'initials'"
-                [class.text-gray-500]="activeTab !== 'initials'"
+                [ngClass]="{
+                    'text-black dark:text-white border-b-2 border-black dark:border-white': activeTab === 'initials',
+                    'text-gray-700 dark:text-gray-500': activeTab !== 'initials',
+                }"
             >
                 Initials
             </button>
@@ -118,7 +118,7 @@
                 placeholder="AB"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
-            <p class="mt-1 text-sm text-gray-400">Maximum 2 characters</p>
+            <p class="mt-1 text-sm text-gray-700 dark:text-gray-400">Maximum 2 characters</p>
         </div>
     </div>
     }
