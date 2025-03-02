@@ -7,7 +7,7 @@ $color-primary-hover: #0078d4;
 
 @layer components {
     .app-input {
-        @apply rounded border border-zinc-700 bg-zinc-900 disabled:bg-zinc-800 px-4 py-2 w-full;
+        @apply rounded border border-zinc-400 dark:border-zinc-700 dark:bg-zinc-900 disabled:bg-zinc-200 dark:disabled:bg-zinc-800 px-4 py-2 w-full;
     }
 
     // Base button styles (common styles for all buttons)
