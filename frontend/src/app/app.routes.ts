@@ -9,6 +9,7 @@ import { ResetPasswordRequestComponent } from './pages/auth/reset-password-reque
 import { ResetPasswordTokenComponent } from './pages/auth/reset-password-token/reset-password-token.component'
 import { VerifyEmailComponent } from './pages/auth/verify-email/verify-email.component'
 import { CollectionPageComponent } from './pages/collection-page/collection-page.component'
+import { ReviewsPageComponent } from './pages/collection-page/reviews-page/reviews-page.component'
 import { DashboardComponent } from './pages/dashboard/dashboard.component'
 import { GamesComponent } from './pages/games/games.component'
 import { GroupDeleteComponent } from './pages/group-delete/group-delete.component'
@@ -25,7 +26,6 @@ import { MeetNewComponent } from './pages/meet-new/meet-new.component'
 import { MeetViewComponent } from './pages/meet-view/meet-view.component'
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component'
 import { PlayPageComponent } from './pages/play-page/play-page.component'
-import { ReviewComponent } from './pages/reviews/reviews.component'
 import { SettingsAccountComponent } from './pages/settings/account/settings-account.component'
 import { SettingsContactComponent } from './pages/settings/contact/settings-contact.component'
 import { SettingsSecurityComponent } from './pages/settings/security/settings-security.component'
@@ -56,10 +56,10 @@ export const routes: Routes = [
             { path: 'dashboard', component: DashboardComponent, canActivate: [AuthOnlyGuard] },
             { path: 'games', component: GamesComponent, canActivate: [AuthOnlyGuard] },
             { path: 'collection', component: CollectionPageComponent, canActivate: [AuthOnlyGuard] },
+            { path: 'collection/reviews', component: ReviewsPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'groups', component: GroupsPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'groups/my-groups', component: MyGroupsComponent, canActivate: [AuthOnlyGuard] },
             { path: 'play', component: PlayPageComponent, canActivate: [AuthOnlyGuard] },
-            { path: 'reviews', component: ReviewComponent, canActivate: [AuthOnlyGuard] },
             { path: 'history', component: HistoryComponent, canActivate: [AuthOnlyGuard] },
             { path: 'group/:groupId', component: GroupViewComponent, canActivate: [AuthOnlyGuard] },
             { path: 'meets/:meetId', component: MeetViewComponent, canActivate: [AuthOnlyGuard] },
