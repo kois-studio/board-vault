@@ -18,12 +18,12 @@ import { GroupEditComponent } from './pages/group-edit/group-edit.component'
 import { GroupLeaveComponent } from './pages/group-leave/group-leave.component'
 import { GroupNewComponent } from './pages/group-new/group-new.component'
 import { GroupViewComponent } from './pages/group-view/group-view.component'
-import { HistoryComponent } from './pages/history/history.component'
 import { LandingComponent } from './pages/landing/landing.component'
 import { MeetConfirmComponent } from './pages/meet-confirm/meet-confirm.component'
 import { MeetNewComponent } from './pages/meet-new/meet-new.component'
 import { MeetViewComponent } from './pages/meet-view/meet-view.component'
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component'
+import { HistoryPageComponent } from './pages/play-page/history-page/history-page.component'
 import { PlayPageComponent } from './pages/play-page/play-page.component'
 import { SettingsAccountComponent } from './pages/settings/account/settings-account.component'
 import { SettingsContactComponent } from './pages/settings/contact/settings-contact.component'
@@ -58,7 +58,7 @@ export const routes: Routes = [
             { path: 'collection/games', component: MyGamesPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'collection/reviews', component: ReviewsPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'play', component: PlayPageComponent, canActivate: [AuthOnlyGuard] },
-            { path: 'history', component: HistoryComponent, canActivate: [AuthOnlyGuard] },
+            { path: 'play/history', component: HistoryPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'group/:groupId', component: GroupViewComponent, canActivate: [AuthOnlyGuard] },
             { path: 'meets/:meetId', component: MeetViewComponent, canActivate: [AuthOnlyGuard] },
             {
