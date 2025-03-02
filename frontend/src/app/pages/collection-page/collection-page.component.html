@@ -20,9 +20,9 @@
                 <!-- Content-->
                 <div class="flex -space-x-2">
                     <!-- TODO: show some game images-->
-                    <app-image-profile class="border-2 rounded-full border-white dark:border-zinc-800" [avatar]="currentUser$()?.avatar" />
-                    <app-image-profile class="border-2 rounded-full border-white dark:border-zinc-800" [avatar]="currentUser$()?.avatar" />
-                    <app-image-profile class="border-2 rounded-full border-white dark:border-zinc-800" [avatar]="currentUser$()?.avatar" />
+                    <app-image-profile class="border-2 rounded-full border-blue-100 dark:border-zinc-800" [avatar]="currentUser$()?.avatar" />
+                    <app-image-profile class="border-2 rounded-full border-blue-100 dark:border-zinc-800" [avatar]="currentUser$()?.avatar" />
+                    <app-image-profile class="border-2 rounded-full border-blue-100 dark:border-zinc-800" [avatar]="currentUser$()?.avatar" />
                 </div>
 
                 <!-- View all highlight -->
@@ -46,9 +46,9 @@
                 <!-- Content-->
                 <div class="flex -space-x-2">
                     <!-- TODO: show some game images-->
-                    <app-image-profile class="border-2 rounded-full border-white dark:border-zinc-800" [avatar]="currentUser$()?.avatar" />
-                    <app-image-profile class="border-2 rounded-full border-white dark:border-zinc-800" [avatar]="currentUser$()?.avatar" />
-                    <app-image-profile class="border-2 rounded-full border-white dark:border-zinc-800" [avatar]="currentUser$()?.avatar" />
+                    <app-image-profile class="border-2 rounded-full border-red-100 dark:border-zinc-800" [avatar]="currentUser$()?.avatar" />
+                    <app-image-profile class="border-2 rounded-full border-red-100 dark:border-zinc-800" [avatar]="currentUser$()?.avatar" />
+                    <app-image-profile class="border-2 rounded-full border-red-100 dark:border-zinc-800" [avatar]="currentUser$()?.avatar" />
                 </div>
 
                 <!-- View all highlight -->
@@ -66,19 +66,19 @@
                 cardLink="/collection/reviews"
             >
                 <!-- Badge -->
-                <app-badge class="app-card-section-badge" color="yellow" [text]="userReviews$().length + ' reviews'" />
+                <app-badge class="app-card-section-badge" color="orange" [text]="userReviews$().length + ' reviews'" />
 
                 <!-- Content-->
                 <div class="grid grid-cols-3 gap-2 w-full">
-                    <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-2 text-center">
-                        <span class="block text-xl font-bold text-yellow-600 dark:text-yellow-400">3</span>
+                    <div class="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-2 text-center">
+                        <span class="block text-xl font-bold text-orange-600 dark:text-orange-400">3</span>
                         <span class="text-xs text-zinc-500 dark:text-zinc-400">Pending reviews</span>
                     </div>
                     <div></div>
                 </div>
 
                 <!-- View all highlight -->
-                <span class="text-yellow-600 dark:text-yellow-400 group-hover:underline flex items-center text-sm font-medium text-nowrap">
+                <span class="text-orange-600 dark:text-orange-400 group-hover:underline flex items-center text-sm font-medium text-nowrap">
                     View all >
                 </span>
             </app-card-section>
