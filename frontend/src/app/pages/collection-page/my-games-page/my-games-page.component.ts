@@ -1,16 +1,16 @@
 import { Component, effect } from '@angular/core'
 import { FormControl, ReactiveFormsModule } from '@angular/forms'
-import { Api } from '../../api/api'
-import { CardGameComponent } from '../../components/card-game/card-game.component'
-import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
-import { TitleSubtitleComponent } from '../../components/ui/title-subtitle/title-subtitle.component'
-import { DataService } from '../../core/services/data.service'
+import { Api } from '../../../api/api'
+import { CardGameComponent } from '../../../components/card-game/card-game.component'
+import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
+import { TitleSubtitleComponent } from '../../../components/ui/title-subtitle/title-subtitle.component'
+import { DataService } from '../../../core/services/data.service'
 
 @Component({
     imports: [CardGameComponent, ReactiveFormsModule, ContainerWrapperComponent, TitleSubtitleComponent],
-    templateUrl: 'games.component.html',
+    templateUrl: 'my-games-page.component.html',
 })
-export class GamesComponent {
+export class MyGamesPageComponent {
     public loaded = false
     public activeTab: 'collection' | 'browse' = 'collection'
     public allGames: ReturnType<typeof this.dataService.gamesList> = []

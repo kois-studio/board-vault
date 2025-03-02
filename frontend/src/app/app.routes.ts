@@ -9,9 +9,9 @@ import { ResetPasswordRequestComponent } from './pages/auth/reset-password-reque
 import { ResetPasswordTokenComponent } from './pages/auth/reset-password-token/reset-password-token.component'
 import { VerifyEmailComponent } from './pages/auth/verify-email/verify-email.component'
 import { CollectionPageComponent } from './pages/collection-page/collection-page.component'
+import { MyGamesPageComponent } from './pages/collection-page/my-games-page/my-games-page.component'
 import { ReviewsPageComponent } from './pages/collection-page/reviews-page/reviews-page.component'
 import { DashboardComponent } from './pages/dashboard/dashboard.component'
-import { GamesComponent } from './pages/games/games.component'
 import { GroupDeleteComponent } from './pages/group-delete/group-delete.component'
 import { GroupEditComponent } from './pages/group-edit/group-edit.component'
 import { GroupLeaveComponent } from './pages/group-leave/group-leave.component'
@@ -54,8 +54,8 @@ export const routes: Routes = [
             { path: '', component: LandingComponent }, // cannot move it to routes[n>0] unless routes[0].path !== ''
             // accessible to authenticated users
             { path: 'dashboard', component: DashboardComponent, canActivate: [AuthOnlyGuard] },
-            { path: 'games', component: GamesComponent, canActivate: [AuthOnlyGuard] },
             { path: 'collection', component: CollectionPageComponent, canActivate: [AuthOnlyGuard] },
+            { path: 'collection/games', component: MyGamesPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'collection/reviews', component: ReviewsPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'groups', component: GroupsPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'groups/my-groups', component: MyGroupsComponent, canActivate: [AuthOnlyGuard] },
