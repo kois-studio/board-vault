@@ -5,7 +5,9 @@
 
 <container-wrapper>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- 1 - My Groups Card -->
+        <!-- --------------------------
+            1 - My Groups Card
+        ---------------------------- -->
         <app-card-section
             icon="people-fill"
             titleText="My Groups"
@@ -29,7 +31,32 @@
             </span>
         </app-card-section>
 
-        <!-- 2 - Group Invites -->
+        <!-- --------------------------
+            2 - Quick Stats
+        ---------------------------- -->
+        <app-card-section
+            icon="list-nested"
+            color="green"
+            titleText="Quick stats"
+            description="General stats about your account"
+            cardLink="/stats"
+        >
+            <!-- Content-->
+            <div class="grid grid-cols-3 gap-2 w-full">
+                <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-2 text-center">
+                    <span class="block text-xl font-bold text-green-600 dark:text-green-400">42</span>
+                    <span class="text-xs text-zinc-500 dark:text-zinc-400">Games</span>
+                </div>
+                <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-2 text-center">
+                    <span class="block text-xl font-bold text-green-600 dark:text-green-400">$2,340</span>
+                    <span class="text-xs text-zinc-500 dark:text-zinc-400">Value</span>
+                </div>
+                <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-2 text-center">
+                    <span class="block text-xl font-bold text-green-600 dark:text-green-400">86</span>
+                    <span class="text-xs text-zinc-500 dark:text-zinc-400">Sessions</span>
+                </div>
+            </div>
+        </app-card-section>
     </div>
 
     <!-- Recent Social Activity -->
