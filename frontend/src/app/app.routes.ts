@@ -11,14 +11,13 @@ import { VerifyEmailComponent } from './pages/auth/verify-email/verify-email.com
 import { CollectionPageComponent } from './pages/collection-page/collection-page.component'
 import { MyGamesPageComponent } from './pages/collection-page/my-games-page/my-games-page.component'
 import { ReviewsPageComponent } from './pages/collection-page/reviews-page/reviews-page.component'
-import { DashboardComponent } from './pages/dashboard/dashboard.component'
+import { DashboardPageComponent } from './pages/dashboard-page/dashboard-page.component'
+import { GroupsPageComponent } from './pages/dashboard-page/groups/groups-page.component'
 import { GroupDeleteComponent } from './pages/group-delete/group-delete.component'
 import { GroupEditComponent } from './pages/group-edit/group-edit.component'
 import { GroupLeaveComponent } from './pages/group-leave/group-leave.component'
 import { GroupNewComponent } from './pages/group-new/group-new.component'
 import { GroupViewComponent } from './pages/group-view/group-view.component'
-import { GroupsPageComponent } from './pages/groups/groups-page.component'
-import { MyGroupsComponent } from './pages/groups/my-groups/my-groups.component'
 import { HistoryComponent } from './pages/history/history.component'
 import { LandingComponent } from './pages/landing/landing.component'
 import { MeetConfirmComponent } from './pages/meet-confirm/meet-confirm.component'
@@ -53,12 +52,11 @@ export const routes: Routes = [
             // accessible to everyone
             { path: '', component: LandingComponent }, // cannot move it to routes[n>0] unless routes[0].path !== ''
             // accessible to authenticated users
-            { path: 'dashboard', component: DashboardComponent, canActivate: [AuthOnlyGuard] },
+            { path: 'dashboard', component: DashboardPageComponent, canActivate: [AuthOnlyGuard] },
+            { path: 'groups', component: GroupsPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'collection', component: CollectionPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'collection/games', component: MyGamesPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'collection/reviews', component: ReviewsPageComponent, canActivate: [AuthOnlyGuard] },
-            { path: 'groups', component: GroupsPageComponent, canActivate: [AuthOnlyGuard] },
-            { path: 'groups/my-groups', component: MyGroupsComponent, canActivate: [AuthOnlyGuard] },
             { path: 'play', component: PlayPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'history', component: HistoryComponent, canActivate: [AuthOnlyGuard] },
             { path: 'group/:groupId', component: GroupViewComponent, canActivate: [AuthOnlyGuard] },
