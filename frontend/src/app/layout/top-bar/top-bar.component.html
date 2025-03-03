@@ -2,10 +2,28 @@
     <div class="border-b border-zinc-200 dark:border-zinc-700 flex items-center justify-center gap-4">
         @for (section of sections; track $index) {
             <a
-                [routerLink]="section.id"
+                [routerLink]="section.path"
                 routerLinkActive="border-b-2 border-black dark:border-white"
                 class="block px-5 py-3 text-sm font-medium whitespace-nowrap"
             >{{ section.name }}</a>
         }
     </div>
 </container-wrapper>
+
+<!-- 0 is "no subsections" mode -->
+@if (topBarModeComputed() > 0) {
+    <div class="container mx-auto max-w-6xl px-4">
+        <div class="flex items-center justify-center gap-4 animate__animated animate__fadeInDown">
+            @for (subsection of sections[topBarModeComputed() - 1].subsections; track $index) {
+                <a
+                    [routerLink]="subsection.path"
+                    routerLinkActive="border-b-2 border-black dark:border-white"
+                    class="block px-5 py-3 text-sm font-medium whitespace-nowrap"
+                >
+                    <i class="bi bi-{{ subsection.icon }}"></i>
+                    {{ subsection.name }}
+                </a>
+            }
+        </div>
+    </div>
+}
