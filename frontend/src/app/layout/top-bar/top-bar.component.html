@@ -3,8 +3,8 @@
         @for (section of sections; track $index) {
             <a
                 [routerLink]="section.id"
-                routerLinkActive="border-black dark:border-white"
-                class="block px-5 py-3 text-sm font-medium border-b-2 whitespace-nowrap border-transparent"
+                routerLinkActive="border-b-2 border-black dark:border-white"
+                class="block px-5 py-3 text-sm font-medium whitespace-nowrap"
             >{{ section.name }}</a>
         }
     </div>
