@@ -1,7 +1,8 @@
 import { Component, Input } from '@angular/core'
+import { ContainerWrapperComponent } from '../container-wrapper/container-wrapper.component'
 
 @Component({
-    imports: [],
+    imports: [ContainerWrapperComponent],
     selector: 'app-page-header',
     templateUrl: 'page-header.component.html',
 })
