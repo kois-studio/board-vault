@@ -30,11 +30,6 @@ $color-primary-hover: #0078d4;
         @apply shadow-red-500 bg-red-600 hover:bg-red-800;
     }
 
-    .app-btn-success {
-        @extend .app-btn;
-        @apply shadow-green-500 bg-green-600 hover:bg-green-800;
-    }
-
     .text-secondary {
         @apply text-zinc-700 dark:text-zinc-400;
     }
@@ -55,24 +50,3 @@ button {
     cursor: pointer;
 }
 
-/* width */
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-
-/* Track */
-::-webkit-scrollbar-track {
-    background: #ccc;
-    border-radius: 5px;
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 5px;
-
-    &:hover {
-        background: $color-primary;
-    }
-}

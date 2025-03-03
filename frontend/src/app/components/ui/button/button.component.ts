@@ -28,4 +28,5 @@ export class ButtonComponent {
     @Input() icon?: string // The icon to display in the button
     @Input() disabled = false
     @Input() loading = false
+    @Input() wide = false
 }
