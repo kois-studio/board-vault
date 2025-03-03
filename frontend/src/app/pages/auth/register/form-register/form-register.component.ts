@@ -4,9 +4,10 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs'
 import { Api } from '../../../../api/api'
 import { ToastService } from '../../../../components/toast/toast.service'
+import { ButtonComponent } from '../../../../components/ui/button/button.component'
 
 @Component({
-    imports: [ReactiveFormsModule, CommonModule],
+    imports: [ReactiveFormsModule, CommonModule, ButtonComponent],
     selector: 'app-form-register',
     templateUrl: 'form-register.component.html',
 })
