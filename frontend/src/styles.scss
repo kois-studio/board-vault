@@ -34,6 +34,10 @@ $color-primary-hover: #0078d4;
         @extend .app-btn;
         @apply shadow-green-500 bg-green-600 hover:bg-green-800;
     }
+
+    .text-secondary {
+        @apply text-zinc-700 dark:text-zinc-400;
+    }
 }
 
 html,
