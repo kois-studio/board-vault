@@ -1,5 +1,11 @@
-<div class="dark:bg-zinc-800 flex items-center justify-start gap-4 p-2 flex-wrap text-nowrap border-b border-zinc-200 dark:border-zinc-700">
-    <a routerLink="/dashboard" routerLinkActive="bg-zinc-300 dark:bg-zinc-800" class="app-btn-secondary">Dashboard</a>
-    <a routerLink="/collection" routerLinkActive="bg-zinc-300 dark:bg-zinc-800" class="app-btn-secondary">Collection</a>
-    <a routerLink="/play" routerLinkActive="bg-zinc-300 dark:bg-zinc-800" class="app-btn-secondary">Play</a>
-</div>
+<container-wrapper>
+    <div class="border-b border-zinc-200 dark:border-zinc-700 flex items-center justify-center gap-4">
+        @for (section of sections; track $index) {
+            <a
+                [routerLink]="section.id"
+                routerLinkActive="border-black dark:border-white"
+                class="block px-5 py-3 text-sm font-medium border-b-2 whitespace-nowrap border-transparent"
+            >{{ section.name }}</a>
+        }
+    </div>
+</container-wrapper>
