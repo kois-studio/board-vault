@@ -1,7 +1,7 @@
 <button
     [type]="type"
     [disabled]="disabled || loading"
-    class="rounded shadow tracking-wide transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-bold text-white flex items-center justify-center"
+    class="rounded shadow tracking-wide transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-bold text-white block w-full mx-auto"
     [ngClass]="{
         'px-2 py-1 font-normal text-sm': size === 'small',
         'px-4 py-2 font-normal text-base': size === 'medium',
@@ -12,31 +12,34 @@
         'bg-green-600 hover:bg-green-800 shadow-green-500/50': variant === 'success'
     }"
 >
-    @if (!loading) {
-        <ng-container>
-            @if (icon) {
-                <i
-                    class="bi bi-{{ icon }} mr-2"
-                    [ngClass]="{
-                        'text-sm': size === 'small',
-                        'text-base': size === 'medium',
-                        'text-lg': size === 'large'
-                    }"
-                ></i>
-            }
-            <ng-content></ng-content>
-        </ng-container>
-    } @else {
-        <span class="inline-flex items-center">
-            <svg class="animate-spin -ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path
-                    class="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-            </svg>
-            Loading...
-        </span>
-    }
+    <div class="flex items-center justify-center">
+        @if (!loading) {
+            <ng-container>
+                @if (icon) {
+                    <i
+                        class="bi bi-{{ icon }} mr-2"
+                        [ngClass]="{
+                            'text-sm': size === 'small',
+                            'text-base': size === 'medium',
+                            'text-lg': size === 'large'
+                        }"
+                    ></i>
+                }
+                <ng-content></ng-content>
+            </ng-container>
+        } @else {
+            <span class="inline-flex items-center">
+                <svg class="animate-spin -ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path
+                        class="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                </svg>
+                Loading...
+            </span>
+        }
+        
+    </div>
 </button>

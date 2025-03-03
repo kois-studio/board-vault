@@ -1,7 +1,7 @@
 <form
     [formGroup]="loginFormGroup"
     (ngSubmit)="handleLogin()"
-    class="flex flex-col gap-4 rounded bg-zinc-800 p-8 w-96 mx-auto"
+    class="flex flex-col gap-4 rounded bg-purple-100 dark:bg-zinc-800 p-8 w-96 mx-auto"
 >
     <!-- 1. EMAIL -->
     <div>
@@ -52,14 +52,15 @@
     </div>
 
     <!-- 3. SUBMIT -->
-    <button
+    <app-button
         type="submit"
         [disabled]="disableSubmit"
-        class="app-btn-primary px-6! py-4! text-xl"
+        [loading]="isLoading"
+        size="large"
         required
     >
         Access
-    </button>
+    </app-button>
 </form>
 
 <!-- 4. RESET PASSWORD LINK -->

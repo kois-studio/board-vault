@@ -3,15 +3,15 @@
         <p class="text-green-400">
             <i class="bi bi-check-circle mr-2"></i> We have sent you an email.
         </p>
-        <p class="text-gray-400">
-            Please check <span class="text-white font-bold">{{ email?.value || 'your email' }}</span> for a verification link.
+        <p class="text-secondary">
+            Please check <span class="font-bold">{{ email?.value || 'your email' }}</span> for a verification link.
         </p>
     </div>
 } @else {
 <form
     [formGroup]="registerFormGroup"
     (ngSubmit)="handleRegister()"
-    class="flex flex-col gap-4 rounded bg-zinc-800 p-8 w-96 mx-auto"
+    class="flex flex-col gap-4 rounded bg-purple-100 dark:bg-zinc-800 p-8 w-96 mx-auto"
 >
     <!-- 1. EMAIL -->
     <div>
@@ -116,13 +116,14 @@
     </div>
 
     <!-- 5. SUBMIT -->
-    <button
+    <app-button
         type="submit"
         [disabled]="disableSubmit"
-        class="app-btn-primary px-6! py-4! text-xl"
+        [loading]="isLoading"
+        size="large"
         required
     >
         Register
-    </button>
+    </app-button>
 </form>
 }
