@@ -21,7 +21,7 @@ export class LayoutTopBarComponent implements OnInit {
     public readonly currentUrl$ = signal<string | null>(null)
     public readonly topBarModeComputed = computed(() => {
         // 0 -> shows sections, but no subsections
-        // 1 -> shows sections[0] and its subsections
+        // 1 -> shows sections[0] and its subsections (dashboard doesn't have any)
         // 2 -> shows sections[1] and its subsections
         // 3-> shows sections[2] and its subsections
         const currentUrl = this.currentUrl$()
@@ -32,10 +32,6 @@ export class LayoutTopBarComponent implements OnInit {
         return (
             {
                 '/dashboard': 0,
-                '/dashboard/my-groups': 1,
-                '/dashboard/my-stats': 1,
-                '/dashboard/activity': 1,
-                '/dashboard/analytics': 1,
                 '/collection': 0,
                 '/collection/games': 2,
                 '/collection/wishlist': 2,
@@ -54,12 +50,6 @@ export class LayoutTopBarComponent implements OnInit {
         {
             path: 'dashboard',
             name: 'Dashboard',
-            subsections: [
-                { path: 'my-groups', icon: 'people-fill', name: 'My Groups' },
-                { path: 'my-stats', icon: 'bar-chart-fill', name: 'My Stats' },
-                { path: 'activity', icon: 'clock-history', name: 'Activity' },
-                { path: 'analytics', icon: 'graph-up-arrow', name: 'Analytics' },
-            ],
         },
         {
             path: 'collection',
@@ -75,10 +65,10 @@ export class LayoutTopBarComponent implements OnInit {
             path: 'play',
             name: 'Play',
             subsections: [
-                { path: 'upcoming-sessions', icon: 'calendar-check-fill', name: 'Upcoming Sessions' },
-                { path: 'session-history', icon: 'clock-history', name: 'Session History' },
-                { path: 'recommendations', icon: 'hand-thumbs-up', name: 'Game Recommendations' },
-                { path: 'quick-play', icon: 'play-fill', name: 'Quick Play & Stats' },
+                { path: 'play/upcoming-sessions', icon: 'calendar-check-fill', name: 'Upcoming' },
+                { path: 'play/history', icon: 'clock-history', name: 'History' },
+                { path: 'play/recommendations', icon: 'hand-thumbs-up', name: 'Discover' },
+                { path: 'play/quick-play', icon: 'play-fill', name: 'Stats' },
             ],
         },
     ]
