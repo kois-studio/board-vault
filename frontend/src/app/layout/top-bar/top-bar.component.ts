@@ -1,5 +1,6 @@
-import { Component } from '@angular/core'
-import { RouterLink, RouterLinkActive } from '@angular/router'
+import { Component, OnInit, WritableSignal, computed, inject, signal } from '@angular/core'
+import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router'
+import { filter } from 'rxjs/operators'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 
 /**
@@ -11,37 +12,84 @@ import { ContainerWrapperComponent } from '../../components/ui/container-wrapper
     selector: 'app-layout-top-bar',
     templateUrl: 'top-bar.component.html',
 })
-export class LayoutTopBarComponent {
+export class LayoutTopBarComponent implements OnInit {
+    private readonly router = inject(Router)
+
+    // --------------------------------------------------------------------------
+    //        Signals
+    // --------------------------------------------------------------------------
+    public readonly currentUrl$ = signal<string | null>(null)
+    public readonly topBarModeComputed = computed(() => {
+        // 0 -> shows sections, but no subsections
+        // 1 -> shows sections[0] and its subsections
+        // 2 -> shows sections[1] and its subsections
+        // 3-> shows sections[2] and its subsections
+        const currentUrl = this.currentUrl$()
+        if (!currentUrl) {
+            return 0
+        }
+
+        return (
+            {
+                '/dashboard': 0,
+                '/dashboard/my-groups': 1,
+                '/dashboard/my-stats': 1,
+                '/dashboard/activity': 1,
+                '/dashboard/analytics': 1,
+                '/collection': 0,
+                '/collection/games': 2,
+                '/collection/wishlist': 2,
+                '/collection/reviews': 2,
+                '/collection/stats': 2,
+                '/play': 0,
+                '/play/upcoming-sessions': 3,
+                '/play/history': 3,
+                '/play/recommendations': 3,
+                '/play/quick-play': 3,
+            }[currentUrl] ?? 0
+        )
+    })
+
     public readonly sections = [
         {
-            id: 'dashboard',
+            path: 'dashboard',
             name: 'Dashboard',
             subsections: [
-                { id: 'my-groups', name: 'My Groups' },
-                { id: 'my-stats', name: 'My Stats' },
-                { id: 'activity', name: 'Activity' },
-                { id: 'analytics', name: 'Analytics' },
+                { path: 'my-groups', icon: 'people-fill', name: 'My Groups' },
+                { path: 'my-stats', icon: 'bar-chart-fill', name: 'My Stats' },
+                { path: 'activity', icon: 'clock-history', name: 'Activity' },
+                { path: 'analytics', icon: 'graph-up-arrow', name: 'Analytics' },
             ],
         },
         {
-            id: 'collection',
+            path: 'collection',
             name: 'Collection',
             subsections: [
-                { id: 'my-games', name: 'My Games' },
-                { id: 'wishlist', name: 'Wishlist' },
-                { id: 'reviews', name: 'Reviews' },
-                { id: 'stats', name: 'Stats' },
+                { path: 'collection/games', icon: 'grid-fill', name: 'My Games' },
+                { path: 'collection/wishlist', icon: 'suit-heart-fill', name: 'Wishlist' },
+                { path: 'collection/reviews', icon: 'star-fill', name: 'Reviews' },
+                { path: 'collection/stats', icon: 'bar-chart-fill', name: 'Stats' },
             ],
         },
         {
-            id: 'play',
+            path: 'play',
             name: 'Play',
             subsections: [
-                { id: 'upcoming-sessions', name: 'Upcoming Sessions' },
-                { id: 'session-history', name: 'Session History' },
-                { id: 'recommendations', name: 'Game Recommendations' },
-                { id: 'quick-play', name: 'Quick Play & Stats' },
+                { path: 'upcoming-sessions', icon: 'calendar-check-fill', name: 'Upcoming Sessions' },
+                { path: 'session-history', icon: 'clock-history', name: 'Session History' },
+                { path: 'recommendations', icon: 'hand-thumbs-up', name: 'Game Recommendations' },
+                { path: 'quick-play', icon: 'play-fill', name: 'Quick Play & Stats' },
             ],
         },
     ]
+
+    ngOnInit() {
+        // Initialize based on current route
+        this.currentUrl$.set(this.router.url)
+
+        // Update whenever navigation completes
+        this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((event: NavigationEnd) => {
+            this.currentUrl$.set(event.url)
+        })
+    }
 }
