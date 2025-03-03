@@ -4,12 +4,13 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router, RouterLink } from '@angular/router'
 import { Api } from '../../../../api/api'
 import { ToastService } from '../../../../components/toast/toast.service'
+import { ButtonComponent } from '../../../../components/ui/button/button.component'
 import { DataService } from '../../../../core/services/data.service'
 import { LocalStorageService } from '../../../../core/services/local-storage.service'
 import { LoginService } from '../../../../core/services/login.service'
 
 @Component({
-    imports: [ReactiveFormsModule, CommonModule, RouterLink],
+    imports: [ReactiveFormsModule, CommonModule, RouterLink, ButtonComponent],
     selector: 'app-form-login',
     templateUrl: 'form-login.component.html',
 })

@@ -51,6 +51,9 @@ export const routes: Routes = [
         children: [
             // accessible to everyone
             { path: '', component: LandingComponent }, // cannot move it to routes[n>0] unless routes[0].path !== ''
+            // accessible to unauthenticated users
+            { path: 'login', component: LoginComponent, canActivate: [GuestOnlyGuard] },
+            { path: 'register', component: RegisterComponent, canActivate: [GuestOnlyGuard] },
             // accessible to authenticated users
             { path: 'dashboard', component: DashboardPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'groups', component: GroupsPageComponent, canActivate: [AuthOnlyGuard] },
@@ -79,8 +82,6 @@ export const routes: Routes = [
         component: LayoutBasicComponent,
         children: [
             // accessible to unauthenticated users
-            { path: 'login', component: LoginComponent, canActivate: [GuestOnlyGuard] },
-            { path: 'register', component: RegisterComponent, canActivate: [GuestOnlyGuard] },
             { path: 'verify-email/:token', component: VerifyEmailComponent, canActivate: [GuestOnlyGuard] },
             { path: 'reset-password/request', component: ResetPasswordRequestComponent, canActivate: [GuestOnlyGuard] },
             { path: 'reset-password/:token', component: ResetPasswordTokenComponent, canActivate: [GuestOnlyGuard] },
