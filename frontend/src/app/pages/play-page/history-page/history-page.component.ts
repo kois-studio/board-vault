@@ -42,4 +42,13 @@ export class HistoryPageComponent {
             {} as Record<string, Array<GamePlayHistoryType>>,
         )
     })
+
+    /**
+     * This is to avoid a certain error with the date
+     */
+    public isValidDate(date: any): boolean {
+        if (!date) return false;
+        const d = new Date(date);
+        return !isNaN(d.getTime());
+    }
 }
