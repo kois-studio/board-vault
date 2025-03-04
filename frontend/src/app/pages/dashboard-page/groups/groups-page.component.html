@@ -1,11 +1,13 @@
-<div class="container mx-auto pt-8 lg:pt-16 px-4">
-    <!-- GROUPS -->
-    <h1 class="text-2xl font-bold text-center pb-8">My Groups</h1>
+<app-page-header titleText="My Groups" [showActionButton]="true">
+    Organize your gaming groups
+    <app-button
+        class="action-button"
+        icon="plus-lg"
+        routerLink="/create-group"
+    >Create Group</app-button>
+</app-page-header>
 
-    <div class="flex justify-end pb-8">
-        <a routerLink="/create-group" class="app-btn-primary">Create Group</a>
-    </div>
-
+<container-wrapper>
     <section class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-40">
         @if (isLoadingGroups()) {
             @for (item of [1,2]; track $index) {
@@ -19,4 +21,4 @@
             }
         }
     </section>
-</div>
+</container-wrapper>
