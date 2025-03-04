@@ -1,6 +1,6 @@
 <!-- Profile Picture and Dropdown Trigger -->
 <div class="relative">
-    <button (click)="toggleDropdown()" class="relative">
+    <button (click)="toggleDropdown()" class="relative cursor-pointer">
         <app-image-profile [avatar]="userData?.avatar" />
         @if (userInvitations.length + userUnreadNotifications.length) {
             <div class="absolute -bottom-1 -right-1 bg-blue-600 rounded-full h-5 w-5 flex items-center justify-center text-white">
@@ -20,10 +20,10 @@
             </div>
         </div>
         <div class="border-t border-zinc-700">
-            <button routerLink="/settings" (click)="onClickProfileSettings()" class="flex items-center gap-2 w-full px-4 py-2 text-left text-white hover:bg-zinc-800 border-b border-zinc-700">
+            <button routerLink="/settings" (click)="onClickProfileSettings()" class="flex items-center gap-2 w-full px-4 py-2 text-left text-white hover:bg-zinc-800 border-b border-zinc-700 cursor-pointer">
                 <i class="bi bi-gear"></i> Manage account
             </button>
-            <button (click)="onClickInvitations()" class="flex items-center gap-2 w-full px-4 py-2 text-left text-white hover:bg-zinc-800 border-b border-zinc-700">
+            <button (click)="onClickInvitations()" class="flex items-center gap-2 w-full px-4 py-2 text-left text-white hover:bg-zinc-800 border-b border-zinc-700 cursor-pointer">
                 <i class="bi bi-envelope"></i> Group Invitations
                 @if (userInvitations.length) {
                     <div class="bg-blue-600 rounded-full h-5 w-5 flex items-center justify-center">
@@ -31,7 +31,7 @@
                     </div>
                 }
             </button>
-            <button (click)="onClickNotifications()" class="flex items-center gap-2 w-full px-4 py-2 text-left text-white hover:bg-zinc-800 border-b border-zinc-700">
+            <button (click)="onClickNotifications()" class="flex items-center gap-2 w-full px-4 py-2 text-left text-white hover:bg-zinc-800 border-b border-zinc-700 cursor-pointer">
                 <i class="bi bi-bell"></i> Notifications
                 @if (userUnreadNotifications.length > 0) {
                     <div class="bg-blue-600 rounded-full h-5 w-5 flex items-center justify-center">
@@ -39,7 +39,7 @@
                     </div>
                 }
             </button>
-            <button (click)="onClickSignOut()" class="flex items-center gap-2 w-full px-4 py-2 text-left text-white hover:bg-zinc-800">
+            <button (click)="onClickSignOut()" class="flex items-center gap-2 w-full px-4 py-2 text-left text-white hover:bg-zinc-800 cursor-pointer">
                 <i class="bi bi-box-arrow-right"></i> Sign out
             </button>
         </div>
