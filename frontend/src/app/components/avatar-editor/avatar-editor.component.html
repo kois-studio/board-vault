@@ -29,7 +29,7 @@
         <div class="flex border-b border-gray-200">
             <button
                 (click)="switchTab('icon')"
-                class="py-2 px-4 font-medium transition-colors duration-200"
+                class="py-2 px-4 font-medium transition-colors duration-200 cursor-pointer"
                 [ngClass]="{
                     'text-black dark:text-white border-b-2 border-black dark:border-white': activeTab === 'icon',
                     'text-gray-700 dark:text-gray-500': activeTab !== 'icon',
@@ -39,7 +39,7 @@
             </button>
             <button
                 (click)="switchTab('emoji')"
-                class="py-2 px-4 font-medium transition-colors duration-200"
+                class="py-2 px-4 font-medium transition-colors duration-200 cursor-pointer"
                 [ngClass]="{
                     'text-black dark:text-white border-b-2 border-black dark:border-white': activeTab === 'emoji',
                     'text-gray-700 dark:text-gray-500': activeTab !== 'emoji',
@@ -49,7 +49,7 @@
             </button>
             <button
                 (click)="switchTab('initials')"
-                class="py-2 px-4 font-medium transition-colors duration-200"
+                class="py-2 px-4 font-medium transition-colors duration-200 cursor-pointer"
                 [ngClass]="{
                     'text-black dark:text-white border-b-2 border-black dark:border-white': activeTab === 'initials',
                     'text-gray-700 dark:text-gray-500': activeTab !== 'initials',
@@ -78,7 +78,7 @@
             @for (icon of filteredIcons; track icon) {
             <button
                 (click)="selectIcon(icon)"
-                class="h-12 w-12 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors duration-200"
+                class="h-12 w-12 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors duration-200 cursor-pointer"
                 [class.bg-blue-100]="avatar.iconName === icon"
             >
                 <i class="bi bi-{{ icon }} text-2xl"></i>
@@ -95,7 +95,7 @@
             @for (emoji of emojis; track emoji) {
             <button
                 (click)="selectEmoji(emoji)"
-                class="h-12 w-12 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors duration-200 text-2xl"
+                class="h-12 w-12 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors duration-200 text-2xl cursor-pointer"
                 [class.bg-blue-100]="avatar.emoji === emoji"
             >
                 {{ emoji }}
