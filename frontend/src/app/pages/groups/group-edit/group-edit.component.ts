@@ -133,6 +133,6 @@ export class GroupEditComponent {
 
     onDeleteGroup() {
         if (!this.groupData) return
-        this.router.navigate(['/group', this.groupData.id, 'delete'])
+        this.router.navigate(['/groups', this.groupData.id, 'delete'])
     }
 }
