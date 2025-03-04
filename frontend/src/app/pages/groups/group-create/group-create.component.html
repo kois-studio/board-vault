@@ -1,10 +1,8 @@
 <div class="mt-24 lg:mt-48 mb-96 mx-2 max-w-xl md:mx-auto p-2 lg:p-6">
-    <div class="shadow-md rounded-lg p-6 bg-zinc-800 relative">
+    <div class="shadow-md rounded-lg p-6 bg-zinc-200 dark:bg-zinc-800 relative">
         <!-- TOP RIGHT BUTTONS -->
-        <div class="flex gap-4 absolute -top-16 left-0">    
-            <button (click)="onGoBack()" class="app-btn-danger" title="Cancel editing">
-                <i class="bi bi-arrow-left"></i> Back
-            </button>
+        <div class="flex gap-4 absolute -top-16 left-0">
+            <app-button routerLink="/groups" icon="arrow-left" variant="danger">Back</app-button>
         </div>
 
         <!-- GROUP CARD -->
@@ -37,9 +35,7 @@
                         </div>
                     </div>
                 </div>
-                <button class="app-btn-primary" title="Create group" (click)="onCreateGroup()" [disabled]="disableCreateButton">
-                    Create
-                </button>
+                <app-button [disabled]="disableCreateButton" (click)="onCreateGroup()" variant="primary" [wide]="true">Create</app-button>
             </div>
         </div>
     </div>
