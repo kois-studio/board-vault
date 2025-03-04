@@ -2,13 +2,13 @@ import { CommonModule } from '@angular/common'
 import { Component } from '@angular/core'
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router } from '@angular/router'
-import { DataService } from '../../core/services/data.service'
+import { DataService } from '../../../core/services/data.service'
 
 @Component({
     imports: [CommonModule, ReactiveFormsModule],
-    templateUrl: 'group-new.component.html',
+    templateUrl: 'group-create.component.html',
 })
-export class GroupNewComponent {
+export class GroupCreateComponent {
     // --------------------------------------------------------------------------
     //        DATA for this component
     // --------------------------------------------------------------------------
