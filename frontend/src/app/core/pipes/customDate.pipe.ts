@@ -4,7 +4,11 @@ import { Pipe, PipeTransform } from '@angular/core'
     name: 'customDate',
 })
 export class CustomDatePipe implements PipeTransform {
-    transform(value: string | Date): string {
+    transform(value: null | string | Date): string {
+        if (!value) {
+            return ''
+        }
+
         // If the value is a string, parse it into a Date object
         const date = typeof value === 'string' ? new Date(value.replace(' ', 'T')) : value
 
