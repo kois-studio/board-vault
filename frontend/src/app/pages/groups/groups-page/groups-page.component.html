@@ -8,13 +8,13 @@
 </app-page-header>
 
 <container-wrapper>
-    <section class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-40">
+    <section class="grid grid-cols-1 gap-8 mb-40">
         @if (isLoadingGroups()) {
             @for (item of [1,2]; track $index) {
                 <app-skeleton-card-group />
             }
         } @else if (userGroups$().length === 0) {
-            <p class="text-gray-400 text-center col-span-2">You don't have any groups yet.</p>
+            <p class="text-secondary text-center col-span-2">You don't have any groups yet.</p>
         } @else {
             @for (group of userGroups$(); track $index) {
                 <app-card-group [group]="group" [invitations]="invitationsGroupIndex$()[group.id]" />
