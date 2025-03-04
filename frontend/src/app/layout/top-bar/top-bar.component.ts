@@ -56,9 +56,9 @@ export class LayoutTopBarComponent implements OnInit {
             name: 'Collection',
             subsections: [
                 { path: 'collection/games', icon: 'grid-fill', name: 'My Games' },
-                { path: 'collection/wishlist', icon: 'suit-heart-fill', name: 'Wishlist' },
                 { path: 'collection/reviews', icon: 'star-fill', name: 'Reviews' },
-                { path: 'collection/stats', icon: 'bar-chart-fill', name: 'Stats' },
+                // { path: 'collection/wishlist', icon: 'suit-heart-fill', name: 'Wishlist' },
+                // { path: 'collection/stats', icon: 'bar-chart-fill', name: 'Stats' },
             ],
         },
         {

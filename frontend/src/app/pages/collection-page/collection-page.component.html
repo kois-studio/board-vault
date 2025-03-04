@@ -12,7 +12,7 @@
             icon="grid-fill"
             color="blue"
             titleText="My Games"
-            description="Browse, filter and manage your board game collection"
+            description="Browse and manage your board game collection"
             cardLink="/collection/games"
         >
             <!-- Badge -->
@@ -27,47 +27,17 @@
             </div>
 
             <!-- View all highlight -->
-            <span class="text-blue-600 dark:text-blue-400 group-hover:underline flex items-center text-sm font-medium">
-                View all >
-            </span>
-        </app-card-section>
-        
-        <!-- --------------------------
-            2 - Wishlist Card
-        ---------------------------- -->
-        <app-card-section
-            icon="suit-heart-fill"
-            color="red"
-            titleText="Wishlist"
-            description="Keep track of games you want to add to your collection"
-            cardLink="/collection/wishlist"
-        >
-            <!-- Badge -->
-            <!-- TODO: show the number of games in the wishlist -->
-            <app-badge class="app-card-section-badge" color="red" [text]="userGames$().length + ' games'" />
-
-            <!-- Content-->
-            <div class="flex -space-x-2">
-                <!-- TODO: show some game images-->
-                <app-image-profile class="border-2 rounded-full border-red-100 dark:border-zinc-800" [avatar]="currentUser$()?.avatar" />
-                <app-image-profile class="border-2 rounded-full border-red-100 dark:border-zinc-800" [avatar]="currentUser$()?.avatar" />
-                <app-image-profile class="border-2 rounded-full border-red-100 dark:border-zinc-800" [avatar]="currentUser$()?.avatar" />
-            </div>
-
-            <!-- View all highlight -->
-            <span class="text-red-600 dark:text-red-400 group-hover:underline flex items-center text-sm font-medium">
-                View all >
-            </span>
+            <span class="text-blue-600 dark:text-blue-400 group-hover:underline flex items-center text-sm font-medium"> View all > </span>
         </app-card-section>
 
         <!-- --------------------------
-            3 - Reviews Card
+            2 - Reviews Card
         ---------------------------- -->
         <app-card-section
             icon="star-fill"
             color="orange"
             titleText="Reviews"
-            description="Share your thoughts and ratings on the games you've played"
+            description="Rate and review the games you've played"
             cardLink="/collection/reviews"
         >
             <!-- Badge -->
@@ -89,6 +59,33 @@
         </app-card-section>
 
         <!-- --------------------------
+            3 - Wishlist Card
+        ---------------------------- -->
+        <app-card-section
+            icon="suit-heart-fill"
+            color="red"
+            titleText="Wishlist"
+            description="Keep track of games you want to add to your collection"
+            cardLink="/collection/wishlist"
+            [comingSoon]="true"
+        >
+            <!-- Badge -->
+            <!-- TODO: show the number of games in the wishlist -->
+            <!-- <app-badge class="app-card-section-badge" color="red" [text]="userGames$().length + ' games'" /> -->
+
+            <!-- Content-->
+            <div class="flex -space-x-2">
+                <!-- TODO: show some game images-->
+                <!-- <app-image-profile class="border-2 rounded-full border-red-100 dark:border-zinc-800" [avatar]="currentUser$()?.avatar" />
+                <app-image-profile class="border-2 rounded-full border-red-100 dark:border-zinc-800" [avatar]="currentUser$()?.avatar" />
+                <app-image-profile class="border-2 rounded-full border-red-100 dark:border-zinc-800" [avatar]="currentUser$()?.avatar" /> -->
+            </div>
+
+            <!-- View all highlight -->
+            <span class="text-red-600 dark:text-red-400 group-hover:underline flex items-center text-sm font-medium"> View all > </span>
+        </app-card-section>
+
+        <!-- --------------------------
             4 - Stats Card
         ---------------------------- -->
         <app-card-section
@@ -97,29 +94,19 @@
             titleText="Collection Stats"
             description="Insights and analytics about your collection"
             cardLink="/collection/stats"
+            [comingSoon]="true"
         >
             <!-- Content-->
-            <div class="grid grid-cols-3 gap-2 w-full">
-                <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-2 text-center">
-                    <span class="block text-xl font-bold text-green-600 dark:text-green-400">42</span>
-                    <span class="text-xs text-zinc-500 dark:text-zinc-400">Games</span>
-                </div>
-                <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-2 text-center">
-                    <span class="block text-xl font-bold text-green-600 dark:text-green-400">$2,340</span>
-                    <span class="text-xs text-zinc-500 dark:text-zinc-400">Value</span>
-                </div>
-                <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-2 text-center">
-                    <span class="block text-xl font-bold text-green-600 dark:text-green-400">86%</span>
-                    <span class="text-xs text-zinc-500 dark:text-zinc-400">Played</span>
-                </div>
-            </div>
+            <div></div>
+
+            <!-- View all highlight -->
+            <span class="text-green-600 dark:text-green-400 group-hover:underline flex items-center text-sm font-medium"> View all > </span>
         </app-card-section>
     </div>
 </container-wrapper>
 
 <!-- Main Content -->
 <main class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-
     <!-- Recent Activities -->
     <div class="mt-8">
         <h2 class="text-lg font-medium text-zinc-900 dark:text-white mb-4">Recent Activity</h2>
