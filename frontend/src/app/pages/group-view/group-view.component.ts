@@ -146,15 +146,15 @@ export class GroupViewComponent {
     }
 
     onClickEditGroup() {
-        this.router.navigate(['/group', this.groupData$()?.id, 'edit'])
+        this.router.navigate(['/groups', this.groupData$()?.id, 'edit'])
     }
 
     onClickLeaveGroup() {
-        this.router.navigate(['/group', this.groupData$()?.id, 'leave'])
+        this.router.navigate(['/groups', this.groupData$()?.id, 'leave'])
     }
 
     onClickNewMeet(): void {
-        this.router.navigate(['/group', this.groupData$()?.id, 'meets', 'new'])
+        this.router.navigate(['/groups', this.groupData$()?.id, 'meets', 'new'])
     }
 
     onGoBack() {
