@@ -14,10 +14,10 @@ import { ReviewsPageComponent } from './pages/collection-page/reviews-page/revie
 import { DashboardPageComponent } from './pages/dashboard-page/dashboard-page.component'
 import { PageNotFoundComponent } from './pages/errors/page-not-found/page-not-found.component'
 import { GroupDeleteComponent } from './pages/group-delete/group-delete.component'
-import { GroupEditComponent } from './pages/group-edit/group-edit.component'
 import { GroupLeaveComponent } from './pages/group-leave/group-leave.component'
 import { GroupViewComponent } from './pages/group-view/group-view.component'
 import { GroupCreateComponent } from './pages/groups/group-create/group-create.component'
+import { GroupEditComponent } from './pages/groups/group-edit/group-edit.component'
 import { GroupsPageComponent } from './pages/groups/groups-page/groups-page.component'
 import { LandingComponent } from './pages/landing/landing.component'
 import { MeetConfirmComponent } from './pages/meet-confirm/meet-confirm.component'
@@ -62,7 +62,7 @@ export const routes: Routes = [
             { path: 'collection/reviews', component: ReviewsPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'play', component: PlayPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'play/history', component: HistoryPageComponent, canActivate: [AuthOnlyGuard] },
-            { path: 'group/:groupId', component: GroupViewComponent, canActivate: [AuthOnlyGuard] },
+            { path: 'groups/:groupId', component: GroupViewComponent, canActivate: [AuthOnlyGuard] },
             { path: 'meets/:meetId', component: MeetViewComponent, canActivate: [AuthOnlyGuard] },
             {
                 path: 'settings',
@@ -87,10 +87,10 @@ export const routes: Routes = [
             { path: 'reset-password/:token', component: ResetPasswordTokenComponent, canActivate: [GuestOnlyGuard] },
             // accessible to authenticated users
             { path: 'create-group', component: GroupCreateComponent, canActivate: [AuthOnlyGuard] }, // 'group/new' would break in 'group/:groupId'
-            { path: 'group/:groupId/meets/new', component: MeetNewComponent, canActivate: [AuthOnlyGuard] }, // 'meets/new' would break in 'meets/:meetId'
-            { path: 'group/:groupId/edit', component: GroupEditComponent, canActivate: [AuthOnlyGuard] },
-            { path: 'group/:groupId/leave', component: GroupLeaveComponent, canActivate: [AuthOnlyGuard] },
-            { path: 'group/:groupId/delete', component: GroupDeleteComponent, canActivate: [AuthOnlyGuard] },
+            { path: 'groups/:groupId/meets/new', component: MeetNewComponent, canActivate: [AuthOnlyGuard] }, // 'meets/new' would break in 'meets/:meetId'
+            { path: 'groups/:groupId/edit', component: GroupEditComponent, canActivate: [AuthOnlyGuard] },
+            { path: 'groups/:groupId/leave', component: GroupLeaveComponent, canActivate: [AuthOnlyGuard] },
+            { path: 'groups/:groupId/delete', component: GroupDeleteComponent, canActivate: [AuthOnlyGuard] },
             { path: 'meets/:meetId/confirm', component: MeetConfirmComponent, canActivate: [AuthOnlyGuard] },
         ],
     },
