@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
-import { Component, Input, effect } from '@angular/core'
-import { Router } from '@angular/router'
+import { Component, Input, computed, effect, inject } from '@angular/core'
+import { Router, RouterLink } from '@angular/router'
 import type { GroupWithMembersAndGames, MeetType } from '../../api/api.types'
 import type { GameType, InvitationWithAccountsData } from '../../api/api.types'
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
@@ -8,50 +8,48 @@ import { DataService } from '../../core/services/data.service'
 import { CardAccountComponent } from '../card-account/card-account.component'
 
 @Component({
-    imports: [CommonModule, CardAccountComponent, CustomDatePipe],
+    imports: [CommonModule, CardAccountComponent, RouterLink, CustomDatePipe],
     selector: 'app-card-group',
     templateUrl: 'card-group.component.html',
 })
 export class CardGroupComponent {
-    public userData: ReturnType<typeof this.dataService.currentUser> = null
-    public userMeets: ReturnType<typeof this.dataService.userMeets> = []
-    public lastMeeting: MeetType | null = null
+    private readonly dataService = inject(DataService)
+
+    // --------------------------------------------------------------------------
+    //        Services signals
+    // --------------------------------------------------------------------------
+    // dataService
+    public readonly currentUser$ = this.dataService.currentUser
+    public readonly userMeets$ = this.dataService.userMeets
+
+    // --------------------------------------------------------------------------
+    //        Component props
+    // --------------------------------------------------------------------------
+    public readonly lastMeetingComputed = computed(() => {
+        const sortedMeets = this.userMeets$()
+            .filter((meet) => meet.groupId === this.group.id)
+            .sort((a, b) => new Date(b.meetDate).getTime() - new Date(a.meetDate).getTime())
+
+        return sortedMeets.length >= 1 ? sortedMeets[0] : null
+    })
 
     @Input({ required: true }) group!: GroupWithMembersAndGames
     @Input({ required: true }) invitations: undefined | Array<InvitationWithAccountsData> = []
 
-    constructor(
-        private readonly router: Router,
-        private readonly dataService: DataService,
-    ) {
-        effect(() => {
-            this.userData = this.dataService.currentUser()
-            this.userMeets = this.dataService.userMeets()
-            this.updateLastMeeting()
-        })
-    }
-
-    private updateLastMeeting() {
-        const sortedMeets = this.userMeets
-            .filter((meet) => meet.groupId === this.group.id)
-            .sort((a, b) => new Date(b.meetDate).getTime() - new Date(a.meetDate).getTime())
-
-        this.lastMeeting = sortedMeets.length >= 1 ? sortedMeets[0] : null
-    }
-
     get meetingTodayAlreadyCreated(): null | MeetType['id'] {
-        if (!this.lastMeeting) {
+        const lastMeeting = this.lastMeetingComputed()
+        if (!lastMeeting) {
             return null
         }
         const today = new Date()
-        const lastMeetingDate = new Date(this.lastMeeting.meetDate)
+        const lastMeetingDate = new Date(lastMeeting.meetDate)
 
         const isSameDay =
             lastMeetingDate.getFullYear() === today.getFullYear() &&
             lastMeetingDate.getMonth() === today.getMonth() &&
             lastMeetingDate.getDate() === today.getDate()
 
-        return isSameDay ? this.lastMeeting.id : null
+        return isSameDay ? lastMeeting.id : null
     }
 
     get totalGames(): Array<GameType> {
@@ -65,9 +63,5 @@ export class CardGroupComponent {
         }
 
         return Object.values(games)
-    }
-
-    onOpenGroup() {
-        this.router.navigate(['/group', this.group.id])
     }
 }
