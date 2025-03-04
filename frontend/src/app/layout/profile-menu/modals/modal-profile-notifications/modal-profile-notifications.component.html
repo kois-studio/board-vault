@@ -1,8 +1,8 @@
 <!-- Dialog overlay -->
 @if (isVisible) {
-<div class="fixed inset-0 bg-zinc-900/60 flex justify-center items-center" (click)="hideDialog()">
+<div class="fixed inset-0 bg-zinc-900/80 dark:bg-zinc-900/60 flex justify-center items-center" (click)="hideDialog()">
     <!-- Dialog box -->
-    <div class="bg-zinc-900 rounded border border-zinc-700 w-3/4 max-w-xl max-h-[90vh] overflow-hidden relative" (click)="$event.stopPropagation()">
+    <div class="bg-white dark:bg-zinc-900 rounded border border-zinc-700 w-3/4 max-w-xl max-h-[90vh] overflow-hidden relative" (click)="$event.stopPropagation()">
         <!-- Close button -->
         <button (click)="hideDialog()" class="py-2 px-4 rounded-lg hover:bg-zinc-800 absolute top-2 right-2">
             <i class="bi bi-x-lg"></i>
@@ -10,7 +10,7 @@
         <!-- Dialog content -->
         <div class="p-8">
             <h2 class="text-2xl font-bold tracking-wider"><i class="bi bi-bell"></i> Notifications</h2>
-            <h3 class="text-gray-400 text-sm border-b border-zinc-500 py-4">
+            <h3 class="text-secondary text-sm border-b border-zinc-500 py-4">
                 Important updates and changes in your groups.
             </h3>
 
