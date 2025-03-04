@@ -16,7 +16,7 @@ import { PageNotFoundComponent } from './pages/errors/page-not-found/page-not-fo
 import { GroupDeleteComponent } from './pages/group-delete/group-delete.component'
 import { GroupEditComponent } from './pages/group-edit/group-edit.component'
 import { GroupLeaveComponent } from './pages/group-leave/group-leave.component'
-import { GroupNewComponent } from './pages/group-new/group-new.component'
+import { GroupCreateComponent } from './pages/groups/group-create/group-create.component'
 import { GroupViewComponent } from './pages/group-view/group-view.component'
 import { GroupsPageComponent } from './pages/groups/groups-page/groups-page.component'
 import { LandingComponent } from './pages/landing/landing.component'
@@ -86,7 +86,7 @@ export const routes: Routes = [
             { path: 'reset-password/request', component: ResetPasswordRequestComponent, canActivate: [GuestOnlyGuard] },
             { path: 'reset-password/:token', component: ResetPasswordTokenComponent, canActivate: [GuestOnlyGuard] },
             // accessible to authenticated users
-            { path: 'create-group', component: GroupNewComponent, canActivate: [AuthOnlyGuard] }, // 'group/new' would break in 'group/:groupId'
+            { path: 'create-group', component: GroupCreateComponent, canActivate: [AuthOnlyGuard] }, // 'group/new' would break in 'group/:groupId'
             { path: 'group/:groupId/meets/new', component: MeetNewComponent, canActivate: [AuthOnlyGuard] }, // 'meets/new' would break in 'meets/:meetId'
             { path: 'group/:groupId/edit', component: GroupEditComponent, canActivate: [AuthOnlyGuard] },
             { path: 'group/:groupId/leave', component: GroupLeaveComponent, canActivate: [AuthOnlyGuard] },
