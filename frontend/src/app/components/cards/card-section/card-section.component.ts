@@ -12,7 +12,7 @@ export class CardSectionComponent {
     @Input({ required: true }) icon!: string
     @Input({ required: true }) titleText!: string
     @Input({ required: true }) description!: string
-    @Input({ required: true }) cardLink!: string
+    @Input() cardLink: string | null = null
     @Input() color: TailwindColor = 'indigo'
     @Input() comingSoon = false
 }
