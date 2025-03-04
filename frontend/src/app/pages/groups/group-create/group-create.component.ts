@@ -1,24 +1,23 @@
 import { CommonModule } from '@angular/common'
-import { Component } from '@angular/core'
+import { Component, inject } from '@angular/core'
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
-import { Router } from '@angular/router'
+import { Router, RouterLink } from '@angular/router'
+import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { DataService } from '../../../core/services/data.service'
 
 @Component({
-    imports: [CommonModule, ReactiveFormsModule],
+    imports: [CommonModule, ReactiveFormsModule, ButtonComponent, RouterLink],
     templateUrl: 'group-create.component.html',
 })
 export class GroupCreateComponent {
+    private readonly router = inject(Router)
+    private readonly dataService = inject(DataService)
+
     // --------------------------------------------------------------------------
     //        DATA for this component
     // --------------------------------------------------------------------------
     public groupNameForm = new FormControl('', [Validators.required, Validators.minLength(4), Validators.maxLength(20)])
     public isLoading = false
-
-    constructor(
-        private readonly router: Router,
-        private readonly dataService: DataService,
-    ) {}
 
     get groupName() {
         return this.groupNameForm.get('groupName')
@@ -36,10 +35,6 @@ export class GroupCreateComponent {
         return this.isLoading || this.groupNameForm.invalid
     }
 
-    onGoBack() {
-        this.router.navigate(['/dashboard'])
-    }
-
     onCreateGroup() {
         if (!this.groupNameForm.value) return
         this.isLoading = true
@@ -49,6 +44,6 @@ export class GroupCreateComponent {
         this.groupNameForm.reset()
         this.isLoading = false
 
-        this.router.navigate(['/groups/my-groups'])
+        this.router.navigate(['/groups'])
     }
 }
