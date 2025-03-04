@@ -10,6 +10,11 @@ export class DarkModeToggleComponent implements OnInit {
     public isDarkMode = false
 
     ngOnInit(): void {
+        if (document.documentElement.classList.contains('dark')) {
+            this.isDarkMode = true
+            return
+        }
+
         // Load preferred color scheme
         if (localStorage.getItem('theme')) {
             console.log(`${localStorage.getItem('theme')} mode selected on localStorage`)
