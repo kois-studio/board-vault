@@ -3,11 +3,12 @@ import { Component, Input, effect } from '@angular/core'
 import { Router } from '@angular/router'
 import type { GroupWithMembersAndGames, MeetType } from '../../api/api.types'
 import type { GameType, InvitationWithAccountsData } from '../../api/api.types'
+import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { DataService } from '../../core/services/data.service'
 import { CardAccountComponent } from '../card-account/card-account.component'
 
 @Component({
-    imports: [CommonModule, CardAccountComponent],
+    imports: [CommonModule, CardAccountComponent, CustomDatePipe],
     selector: 'app-card-group',
     templateUrl: 'card-group.component.html',
 })

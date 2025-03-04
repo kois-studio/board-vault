@@ -1,36 +1,60 @@
-<div class="shadow-md rounded-lg p-6 bg-zinc-200 dark:bg-zinc-800 relative">
-    <!-- TOP RIGHT BUTTONS -->
-    <div class="absolute top-3 right-3">
-        <button (click)="onOpenGroup()" class="app-btn-primary py-1! px-2! ml-2" title="View details">
-            <i class="bi bi-plus-lg"></i>
-        </button>
+<button
+    (click)="onOpenGroup()"
+    class="group transition-all duration-300 hover:scale-[1.01] shadow-md hover:shadow-lg rounded-lg overflow-hidden bg-white dark:bg-zinc-800 border border-transparent hover:border-indigo-300 dark:hover:border-indigo-600 block w-full"
+>
+    <!-- HEADER -->
+    <div class="bg-indigo-600 p-5 text-white flex justify-between items-center">
+        <h2 class="text-xl font-bold tracking-wide truncate">{{ group.name }}</h2>
+        <div class="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1 text-xs">{{ totalGames.length }} Games</div>
     </div>
 
-    <!-- GROUP CARD -->
-    <h2 class="text-xl font-semibold mb-4">{{ group.name }}</h2>
-    <hr />
+    <!-- CONTENT -->
+    <div class="p-5">
+        <!-- MEMBERS -->
+        <div class="mb-4">
+            <h3 class="text-sm uppercase font-semibold text-zinc-500 dark:text-zinc-400 mb-3 flex items-center">
+                <i class="bi bi-people-fill mr-2"></i> Members ({{ group.members.length }})
+            </h3>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-2">
+                @for (member of group.members; track member.id) {
+                <div class="bg-zinc-50 dark:bg-zinc-700 rounded-md p-2 flex justify-between items-center">
+                    <app-card-account [member]="member" [isOwner]="group.createdBy === member.id" />
+                    <span class="text-xs text-zinc-500 dark:text-zinc-400 px-2 py-1 bg-zinc-100 dark:bg-zinc-600 rounded-full mr-2">
+                        {{ member.games.length }} games
+                    </span>
+                </div>
+                }
+            </div>
+        </div>
 
-    <!-- MEMBERS DATA -->
-    <h3 class="pt-8 font-bold tracking-wider">Members</h3>
-    <ul>
-        @for (member of group.members; track $index) {
-        <li class="flex justify-between">
-            <app-card-account [member]="member" [isOwner]="group.createdBy === member.id" />
-            <div class="flex items-center justify-center">has {{ member.games.length }} games</div>
-        </li>
+        <!-- INVITATIONS -->
+        @if (invitations && invitations.length > 0) {
+        <div class="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-700">
+            <h3 class="text-sm uppercase font-semibold text-zinc-500 dark:text-zinc-400 mb-3 flex items-center">
+                <i class="bi bi-envelope mr-2"></i> Pending Invitations ({{ invitations.length }})
+            </h3>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-2">
+                @for (invitation of invitations; track invitation.id) {
+                <div class="bg-zinc-50 dark:bg-zinc-700/50 rounded-md p-2 opacity-70">
+                    <app-card-account [member]="invitation.toAccount" />
+                </div>
+                }
+            </div>
+        </div>
         }
-    </ul>
+    </div>
 
-    <!-- INVITED MEMBERS -->
-    @if (invitations && invitations.length > 0) {
-    <hr />
-    <h3 class="pt-8 font-bold tracking-wider">Invitations pending</h3>
-    <ul class="pb-8 grid md:grid-cols-2">
-        @for (invitation of invitations; track $index) {
-        <li class="opacity-40">
-            <app-card-account [member]="invitation.toAccount" />
-        </li>
-        }
-    </ul>
-    }
-</div>
+    <!-- FOOTER -->
+    <div class="bg-zinc-50 dark:bg-zinc-900/50 p-3 flex flex-col sm:flex-row gap-y-4 justify-between items-center">
+        <!-- LAST ACTIVITY -->
+        <div class="text-xs text-zinc-500 dark:text-zinc-400">
+            @if (lastMeeting) {
+            <i class="bi bi-calendar-event mr-1"></i> Last meeting: {{ lastMeeting.meetDate | customDate }}
+            }
+        </div>
+        <!-- CALL TO ACTION -->
+        <span class="text-indigo-600 dark:text-indigo-400 font-medium text-sm flex items-center group-hover:underline">
+            View Group Details <i class="bi bi-arrow-right ml-1 transition-transform group-hover:translate-x-1"></i>
+        </span>
+    </div>
+</button>
