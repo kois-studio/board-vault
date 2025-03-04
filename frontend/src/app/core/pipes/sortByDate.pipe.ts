@@ -2,7 +2,6 @@ import { Pipe, PipeTransform } from '@angular/core'
 
 @Pipe({
     name: 'sortByDate',
-    standalone: true,
 })
 export class SortByDatePipe implements PipeTransform {
     transform(value: any[], order = 'asc', property = 'createdAt'): any[] {

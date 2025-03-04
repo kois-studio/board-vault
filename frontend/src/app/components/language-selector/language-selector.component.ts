@@ -2,7 +2,6 @@ import { Component } from '@angular/core'
 import { language_titles } from './translations'
 
 @Component({
-    standalone: true,
     imports: [],
     selector: 'language-selector',
     templateUrl: 'language-selector.component.html',
