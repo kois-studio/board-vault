@@ -2,9 +2,9 @@ import { CommonModule } from '@angular/common'
 import { Component, effect } from '@angular/core'
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router'
-import { GameType } from '../../api/api.types'
-import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
-import { DataService } from '../../core/services/data.service'
+import { GameType } from '../../../api/api.types'
+import { ImageProfileComponent } from '../../../components/image-profile/image-profile.component'
+import { DataService } from '../../../core/services/data.service'
 
 @Component({
     imports: [CommonModule, ImageProfileComponent, ReactiveFormsModule],
