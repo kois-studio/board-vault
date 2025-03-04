@@ -1,5 +1,5 @@
 <div
-    class="rounded-xl shadow-sm border hover:shadow-md transition overflow-hidden group"
+    class="rounded-xl shadow-sm border hover:shadow-md transition overflow-hidden group relative"
     [ngClass]="{
         'border-red-200     dark:border-red-800     hover:border-red-200     dark:hover:border-red-800      bg-red-100      dark:bg-red-800/20': color === 'red',
         'border-orange-200  dark:border-orange-800  hover:border-orange-200  dark:hover:border-orange-800   bg-orange-100   dark:bg-orange-800/20': color === 'orange',
@@ -23,9 +23,15 @@
         'border-zinc-200    dark:border-zinc-800    hover:border-zinc-200    dark:hover:border-zinc-800     bg-zinc-100     dark:bg-zinc-800/20': color === 'zinc',
         'border-neutral-200 dark:border-neutral-800 hover:border-neutral-200 dark:hover:border-neutral-800  bg-neutral-100  dark:bg-neutral-800/20': color === 'neutral',
         'border-stone-200   dark:border-stone-800   hover:border-stone-200   dark:hover:border-stone-800    bg-stone-100    dark:bg-stone-800/20': color === 'stone',
+        'opacity-60 cursor-not-allowed': comingSoon
     }"
 >
-    <a routerLink="{{ cardLink }}" class="block p-6">
+    <!-- Coming Soon badge -->
+    <div *ngIf="comingSoon" class="absolute top-0 right-0 bg-gray-800 text-white px-3 py-1 text-sm font-medium z-10 rounded-bl-lg">
+        Coming Soon
+    </div>
+
+    <a [routerLink]="comingSoon ? null : cardLink" [attr.disabled]="comingSoon ? true : null" class="block p-6">
         <div class="flex items-start">
             <!-- Icon -->
             <div

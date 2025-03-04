@@ -14,4 +14,5 @@ export class CardSectionComponent {
     @Input({ required: true }) description!: string
     @Input({ required: true }) cardLink!: string
     @Input() color: TailwindColor = 'indigo'
+    @Input() comingSoon = false
 }
