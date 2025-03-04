@@ -16,7 +16,7 @@
         @for (dateGroup of groupedGamesByDateComputed() | keyvalue; track dateGroup.key) {
             <div class="mb-8">
                 <h2 class="text-2xl font-semibold mb-4 text-zinc-300">
-                    {{ dateGroup.key | customDate }}
+                    {{ dateGroup.key && isValidDate(dateGroup.key) ? (dateGroup.key | customDate) : '' }}
                 </h2>
                 <ul class="grid lg:grid-cols-2 xl:grid-cols-3 gap-4">
                     @for (item of dateGroup.value; track $index) {
