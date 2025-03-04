@@ -8,7 +8,7 @@ import { PageHeaderComponent } from '../../components/ui/page-header/page-header
 import { DataService } from '../../core/services/data.service'
 
 @Component({
-    imports: [ContainerWrapperComponent, PageHeaderComponent, ButtonComponent, CardSectionComponent, BadgeComponent, ImageProfileComponent],
+    imports: [ContainerWrapperComponent, PageHeaderComponent, CardSectionComponent, BadgeComponent, ImageProfileComponent],
     templateUrl: 'dashboard-page.component.html',
 })
 export class DashboardPageComponent {
@@ -20,4 +20,6 @@ export class DashboardPageComponent {
     // dataService
     public readonly currentUser$ = this.dataService.currentUser
     public readonly userGroups$ = this.dataService.userGroups
+    public readonly userGames$ = this.dataService.userGames
+    public readonly userMeets$ = this.dataService.userMeets
 }
