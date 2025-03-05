@@ -14,6 +14,9 @@ export class GamesOwnedService {
         const ownedGames = resultSet.rows.map(row => ({
             accountId: Number(row[0]),
             gameId: Number(row[1]),
+            purchasePrice: Number(row[2]),
+            purchaseDate: String(row[3]),
+            purchaseNotes: String(row[4]),
         }))
 
         const result = gameOwnedsSchema.safeParse(ownedGames)
