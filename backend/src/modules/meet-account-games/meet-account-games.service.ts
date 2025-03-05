@@ -28,13 +28,6 @@ export class MeetAccountGamesService {
         return result.data
     }
 
-    async getMeetAccountGames(): Promise<Array<MeetAccountGameDto>> {
-        this.LOGGER.log('Getting all meetAccountGames')
-        const resultSet = await this.databaseService.getMeetAccountGames()
-
-        return this._parseResultSet(resultSet)
-    }
-
     async createMeetAccountGame(accountId: number, meetId: number, gameId: number): Promise<MeetAccountGameDto> {
         this.LOGGER.log(`Creating meetAccountGame with accountId ${accountId}, meetId ${meetId} and gameId ${gameId}`)
         const resultSet = await this.databaseService.createMeetAccountGame(accountId, meetId, gameId)
