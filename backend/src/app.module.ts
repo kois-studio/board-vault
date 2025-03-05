@@ -11,7 +11,6 @@ import { GamesOwnedModule } from './modules/games-owned/games-owned.module'
 import { InvitationsModule } from './modules/invitations/invitations.module'
 import { NotificationsModule } from './modules/notifications/notifications.module'
 import { GameReviewsModule } from './modules/reviews/reviews.module'
-import { GamePlaySessionModule } from './modules/game-play-session/game-play-session.module'
 import { MeetsModule } from './modules/meets/meets.module'
 import { MeetAttendeesModule } from './modules/meet-attendees/meet-attendees.module'
 import { MeetAccountGamesModule } from './modules/meet-account-games/meet-account-games.module'
@@ -30,7 +29,6 @@ import { EmailModule } from './modules/email/email.module'
         InvitationsModule,
         NotificationsModule,
         GameReviewsModule,
-        GamePlaySessionModule,
         MeetsModule,
         MeetAttendeesModule,
         MeetAccountGamesModule,

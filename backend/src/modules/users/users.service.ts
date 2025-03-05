@@ -11,7 +11,7 @@ import { GroupMembershipsService } from '../group-memberships/group-memberships.
 import { GameReviewAndGameData } from '../../common/types/game-review.type'
 import { MeetsService } from '../meets/meets.service'
 import { MeetDto } from '../../common/types/meet.type'
-import { GamePlayHistoryDto } from 'src/common/types/game-play-session.type'
+import { AccountGameHistoryDto } from 'src/common/types/meet-account-game.type'
 
 @Injectable()
 export class UsersService {
@@ -237,7 +237,7 @@ export class UsersService {
         }
     }
 
-    async getUserGamesHistory(userId: number): Promise<Array<GamePlayHistoryDto>> {
+    async getUserGamesHistory(userId: number): Promise<Array<AccountGameHistoryDto>> {
         this.LOGGER.log(`Getting games history for user ${userId}`)
         const resultSet = await this.databaseService.getUserGamesHistory(userId)
 
