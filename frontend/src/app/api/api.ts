@@ -208,11 +208,11 @@ export class Api {
 
     // #region meet games
 
-    createMeetGame(meetId: number, gameId: number) {
-        return this.http.post<MeetGameType>(`${this.url}/meetGames/${meetId}/${gameId}`, {})
+    createMeetAccountGame(accountId: number, meetId: number, gameId: number) {
+        return this.http.post<MeetGameType>(`${this.url}/meetAccountGames/${accountId}/${meetId}/${gameId}`, {})
     }
 
-    deleteMeetGame(meetId: number, gameId: number) {
-        return this.http.delete<{ success: true }>(`${this.url}/meetGames/${meetId}/${gameId}`)
+    deleteMeetAccountGame(accountId: number, meetId: number, gameId: number) {
+        return this.http.delete<{ success: true }>(`${this.url}/meetAccountGames/${accountId}/${meetId}/${gameId}`)
     }
 }

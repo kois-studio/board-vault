@@ -205,7 +205,7 @@ export class MeetViewComponent {
     }
 
     #saveGamesPlayedSelection(): void {
-        if (!this.groupData || !this.meetData || !this.meetDataCopyOriginal) {
+        if (!this.userData || !this.groupData || !this.meetData || !this.meetDataCopyOriginal) {
             return
         }
 
@@ -215,9 +215,9 @@ export class MeetViewComponent {
 
             if (isPlaying !== isPlayingOriginal) {
                 if (isPlaying) {
-                    this.dataService.createMeetGame(this.meetData.id, game.id)
+                    this.dataService.createMeetAccountGame(this.userData.id, this.meetData.id, game.id)
                 } else {
-                    this.dataService.deleteMeetGame(this.meetData.id, game.id)
+                    this.dataService.deleteMeetAccountGame(this.userData.id, this.meetData.id, game.id)
                 }
             }
         }
