@@ -14,7 +14,7 @@ import { GameReviewsModule } from './modules/reviews/reviews.module'
 import { GamePlaySessionModule } from './modules/game-play-session/game-play-session.module'
 import { MeetsModule } from './modules/meets/meets.module'
 import { MeetAttendeesModule } from './modules/meet-attendees/meet-attendees.module'
-import { MeetGamesModule } from './modules/meet-games/meet-games.module'
+import { MeetAccountGamesModule } from './modules/meet-account-games/meet-account-games.module'
 import { EmailModule } from './modules/email/email.module'
 
 @Module({
@@ -33,7 +33,7 @@ import { EmailModule } from './modules/email/email.module'
         GamePlaySessionModule,
         MeetsModule,
         MeetAttendeesModule,
-        MeetGamesModule,
+        MeetAccountGamesModule,
         EmailModule,
     ],
     controllers: [],
