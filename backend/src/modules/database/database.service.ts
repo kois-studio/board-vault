@@ -298,7 +298,7 @@ export class DatabaseService implements OnModuleInit {
     getUserGamesHistory(userId: number) {
         return this._tursoExecute({
             sql: `SELECT 
-            gps.accountId,
+            mag.accountId,
             json_object(
                 'id', g.id,
                 'title', g.title,
@@ -314,10 +314,10 @@ export class DatabaseService implements OnModuleInit {
                 'meetDate', m.meetDate,
                 'isConfirmed', m.isConfirmed
             ) AS meetData
-            FROM GamePlaySession gps
-            JOIN Game g ON gps.gameId = g.id
-            JOIN Meet m ON gps.meetId = m.id
-            WHERE gps.accountId = ?
+            FROM MeetAccountGame mag
+            JOIN Game g ON mag.gameId = g.id
+            JOIN Meet m ON mag.meetId = m.id
+            WHERE mag.accountId = ?
             ORDER BY m.meetDate DESC;
             `,
             args: [userId],
