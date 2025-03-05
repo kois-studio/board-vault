@@ -691,8 +691,8 @@ export class DataService {
         })
     }
 
-    public createMeetGame(meetId: number, gameId: number) {
-        this.api.createMeetGame(meetId, gameId).subscribe({
+    public createMeetAccountGame(accountId: number, meetId: number, gameId: number) {
+        this.api.createMeetAccountGame(accountId, meetId, gameId).subscribe({
             next: (res) => {},
             error: (error) => {
                 if (error.status === 404) {
@@ -703,8 +703,8 @@ export class DataService {
         })
     }
 
-    public deleteMeetGame(meetId: number, gameId: number) {
-        this.api.deleteMeetGame(meetId, gameId).subscribe({
+    public deleteMeetAccountGame(accountId: number, meetId: number, gameId: number) {
+        this.api.deleteMeetAccountGame(accountId, meetId, gameId).subscribe({
             next: (res) => {},
             error: (error) => {
                 if (error.status === 404) {
