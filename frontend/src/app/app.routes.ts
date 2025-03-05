@@ -13,6 +13,7 @@ import { MyGamesPageComponent } from './pages/collection-page/my-games-page/my-g
 import { ReviewsPageComponent } from './pages/collection-page/reviews-page/reviews-page.component'
 import { DashboardPageComponent } from './pages/dashboard-page/dashboard-page.component'
 import { PageNotFoundComponent } from './pages/errors/page-not-found/page-not-found.component'
+import { GameViewPageComponent } from './pages/games/game-view/game-view.component'
 import { GroupDeleteComponent } from './pages/group-delete/group-delete.component'
 import { GroupLeaveComponent } from './pages/group-leave/group-leave.component'
 import { GroupViewComponent } from './pages/group-view/group-view.component'
@@ -60,6 +61,7 @@ export const routes: Routes = [
             { path: 'collection', component: CollectionPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'collection/games', component: MyGamesPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'collection/reviews', component: ReviewsPageComponent, canActivate: [AuthOnlyGuard] },
+            { path: 'games/:gameId', component: GameViewPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'play', component: PlayPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'play/history', component: HistoryPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'groups/:groupId', component: GroupViewComponent, canActivate: [AuthOnlyGuard] },
