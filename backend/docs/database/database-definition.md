@@ -2,8 +2,6 @@
 
 The main database is a SQLite hosted in turso.tech.
 
-I will describe you the DB structure, so then you confirm me with a "OK" if everything is clear.
-
 ```sql
 -- -----------------------------------------------------
 -- Table 'Account'
@@ -67,6 +65,17 @@ CREATE TABLE IF NOT EXISTS WishlistedGame (
 -- Table 'Tag'
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS Tag (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT UNIQUE NOT NULL,
+    categoryId INTEGER NOT NULL,
+    FOREIGN KEY (categoryId) REFERENCES TagCategory(id) ON DELETE CASCADE,
+    UNIQUE (id, categoryId)
+);
+
+-- -----------------------------------------------------
+-- Table 'TagCategory'
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS TagCategory (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT UNIQUE NOT NULL
 );
