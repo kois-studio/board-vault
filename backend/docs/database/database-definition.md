@@ -146,19 +146,6 @@ CREATE TABLE IF NOT EXISTS GameReview (
 );
 
 -- -----------------------------------------------------
--- Table 'GamePlaySession' (Tracks each play session)
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS GamePlaySession (
-    accountId INTEGER NOT NULL,
-    gameId INTEGER NOT NULL,
-    meetId INTEGER NOT NULL,
-    PRIMARY KEY (accountId, gameId, meetId), -- Composite primary key
-    FOREIGN KEY (accountId) REFERENCES Account(id) ON DELETE CASCADE,
-    FOREIGN KEY (gameId) REFERENCES Game(id) ON DELETE CASCADE,
-    FOREIGN KEY (meetId) REFERENCES Meet(id) ON DELETE CASCADE
-);
-
--- -----------------------------------------------------
 -- Table 'Meet'
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS Meet (
@@ -183,14 +170,16 @@ CREATE TABLE IF NOT EXISTS MeetAttendee (
 );
 
 -- -----------------------------------------------------
--- Table 'MeetGame' (Games selected for the meet)
+-- Table 'MeetAccountGame' (Who played which games at which meet)
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS MeetGame (
+CREATE TABLE IF NOT EXISTS MeetAccountGame (
     meetId INTEGER NOT NULL,
+    accountId INTEGER NOT NULL,
     gameId INTEGER NOT NULL,
     FOREIGN KEY (meetId) REFERENCES Meet(id) ON DELETE CASCADE,
+    FOREIGN KEY (accountId) REFERENCES Account(id) ON DELETE CASCADE,
     FOREIGN KEY (gameId) REFERENCES Game(id) ON DELETE CASCADE,
-    PRIMARY KEY (meetId, gameId)
+    PRIMARY KEY (meetId, accountId, gameId)
 );
 
 -- -----------------------------------------------------
