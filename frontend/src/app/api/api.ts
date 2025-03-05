@@ -100,7 +100,7 @@ export class Api {
     }
 
     getUserGamesHistory(accountId: number) {
-        return this.http.get<Array<GamePlayHistoryType>>(`${this.url}/users/${accountId}/history/games`)
+        return this.http.get<Array<GamePlayHistoryType>>(`${this.url}/users/${accountId}/history`)
     }
 
     // #region groups
