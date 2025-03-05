@@ -5,6 +5,7 @@ import type {
     GamePlayHistoryType,
     GameReviewType,
     GameType,
+    GameViewType,
     GroupWithMembersAndGames,
     InvitationWithAccountsData,
     InvitationWithExtraData,
@@ -101,6 +102,10 @@ export class Api {
 
     getUserGamesHistory(accountId: number) {
         return this.http.get<Array<GamePlayHistoryType>>(`${this.url}/users/${accountId}/history`)
+    }
+
+    getUserGame(accountId: number, gameId: number) {
+        return this.http.get<GameViewType>(`${this.url}/users/${accountId}/game/${gameId}`)
     }
 
     // #region groups

@@ -35,6 +35,30 @@ export type GameType = {
     maxPlayers: number
 }
 
+export type GameViewType = {
+    gameData: GameType
+    ownedGameData: null | {
+        purchaseDate: string
+        purchasePrice: number
+        purchaseNotes: string
+    }
+    tags: Array<{
+        tag: string
+        category: string
+    }>
+    wishlistedGameData: null | {
+        dateAdded: string
+        notes: string
+    }
+    ratingData: {
+        userRating: number
+        avgGroupsRating: number
+        avgPlayersRating: number
+    }
+    playHistory: Array<MeetType>
+    similarGames: Array<GameType>
+}
+
 // #region Group
 
 export type GameReviewDto = {
