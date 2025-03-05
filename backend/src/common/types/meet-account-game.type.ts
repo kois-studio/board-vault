@@ -1,6 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger'
 
-export class MeetGameDto {
+export class MeetAccountGameDto {
+    @ApiProperty({ example: 12345, description: 'The unique identifier for the Account.' })
+    accountId: number
+
     @ApiProperty({ example: 12345, description: 'The unique identifier for the Meeting.' })
     meetId: number
 

@@ -837,8 +837,8 @@ export class DatabaseService implements OnModuleInit {
         return this._tursoExecute('SELECT * FROM MeetAttendee')
     }
 
-    getMeetGames() {
-        return this._tursoExecute('SELECT * FROM MeetGame')
+    getMeetAccountGames() {
+        return this._tursoExecute('SELECT * FROM MeetAccountGame')
     }
 
     getMeetById(meetId: number) {
@@ -931,17 +931,17 @@ export class DatabaseService implements OnModuleInit {
 
     // #region MeetGame
 
-    createMeetGame(meetId: number, gameId: number) {
+    createMeetAccountGame(accountId: number, meetId: number, gameId: number) {
         return this._tursoExecute({
-            sql: 'INSERT INTO MeetGame (meetId, gameId) VALUES (?, ?)',
-            args: [meetId, gameId],
+            sql: 'INSERT INTO MeetAccountGame (accountId, meetId, gameId) VALUES (?, ?, ?)',
+            args: [accountId, meetId, gameId],
         })
     }
 
-    deleteMeetGame(meetId: number, gameId: number) {
+    deleteMeetAccountGame(accountId: number, meetId: number, gameId: number) {
         return this._tursoExecute({
-            sql: 'DELETE FROM MeetGame WHERE meetId = ? AND gameId = ?',
-            args: [meetId, gameId],
+            sql: 'DELETE FROM MeetAccountGame WHERE accountId = ? AND meetId = ? AND gameId = ?',
+            args: [accountId, meetId, gameId],
         })
     }
 }
