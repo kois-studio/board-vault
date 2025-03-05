@@ -12,14 +12,7 @@ import { SuccessDto } from '../../common/types/auth.type'
 export class MeetAccountGamesController {
     constructor(private readonly meetAccountGamesService: MeetAccountGamesService) {}
 
-    @Get('/')
-    @ApiOperation({ summary: 'Get all meet account games', deprecated: true })
-    @ApiResponse({ status: 200, type: [MeetAccountGameDto], description: 'List of all meet account games' })
-    async getMeetAccountGames() {
-        return this.meetAccountGamesService.getMeetAccountGames()
-    }
-
-    @Post(':meetId/:gameId')
+    @Post(':accountId/:meetId/:gameId')
     @ApiOperation({ summary: 'Create meetAccountGames ', deprecated: false })
     @ApiResponse({ status: 200, type: MeetAccountGameDto, description: 'The meetAccountGames has been successfully created.' })
     @ApiResponse({ status: 404, description: 'MeetId not found.' })
@@ -31,7 +24,7 @@ export class MeetAccountGamesController {
         return this.meetAccountGamesService.createMeetAccountGame(accountId, meetId, gameId)
     }
 
-    @Delete(':meetId/:gameId')
+    @Delete(':accountId/:meetId/:gameId')
     @ApiOperation({ summary: 'Update meetAccountGames ', deprecated: false })
     @ApiResponse({ status: 200, type: SuccessDto, description: 'The meetGames has been successfully updated.' })
     @ApiResponse({ status: 404, description: 'MeetId not found.' })

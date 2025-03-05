@@ -816,10 +816,6 @@ export class DatabaseService implements OnModuleInit {
         return this._tursoExecute('SELECT * FROM MeetAttendee')
     }
 
-    getMeetAccountGames() {
-        return this._tursoExecute('SELECT * FROM MeetAccountGame')
-    }
-
     getMeetById(meetId: number) {
         return this._tursoExecute({
             sql: 'SELECT * FROM Meet WHERE id = ?',
