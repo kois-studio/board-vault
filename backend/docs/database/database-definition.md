@@ -41,9 +41,45 @@ CREATE TABLE IF NOT EXISTS Game (
 CREATE TABLE IF NOT EXISTS OwnedGame (
     accountId INTEGER NOT NULL,
     gameId INTEGER NOT NULL,
+    purchasePrice DECIMAL(10, 2),
+    purchaseDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    purchaseNotes TEXT, -- for recording if it was a gift or other details
     FOREIGN KEY (accountId) REFERENCES Account(id) ON DELETE CASCADE,
     FOREIGN KEY (gameId) REFERENCES Game(id) ON DELETE CASCADE,
     PRIMARY KEY (accountId, gameId)
+);
+
+-- -----------------------------------------------------
+-- Table 'WishlistedGame' (Account-Game n:m)
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS WishlistedGame (
+    accountId INTEGER NOT NULL,
+    gameId INTEGER NOT NULL,
+    dateAdded DATETIME DEFAULT CURRENT_TIMESTAMP,
+    priority INTEGER DEFAULT 3, -- 1-5 scale for wishlist priority
+    notes TEXT, -- any note you want to add to the game
+    FOREIGN KEY (accountId) REFERENCES Account(id) ON DELETE CASCADE,
+    FOREIGN KEY (gameId) REFERENCES Game(id) ON DELETE CASCADE,
+    PRIMARY KEY (accountId, gameId)
+);
+
+-- -----------------------------------------------------
+-- Table 'Tag'
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS Tag (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT UNIQUE NOT NULL
+);
+
+-- -----------------------------------------------------
+-- Table 'GameTag' (Game-Tag n:m)
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS GameTag (
+    gameId INTEGER NOT NULL,
+    tagId INTEGER NOT NULL,
+    FOREIGN KEY (gameId) REFERENCES Game(id) ON DELETE CASCADE,
+    FOREIGN KEY (tagId) REFERENCES Tag(id) ON DELETE CASCADE,
+    PRIMARY KEY (gameId, tagId)
 );
 
 -- -----------------------------------------------------
