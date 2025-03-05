@@ -5,7 +5,7 @@ import { MeetDto, MeetWithAttendeesAndGames } from '../../common/types/meet.type
 import { meetsSchema } from '../../common/schemas/db-meet.schema'
 import { UserGetDto } from '../../common/types/user.type'
 import { GameDto } from '../../common/types/game.type'
-import { GamePlaySessionService } from '../game-play-session/game-play-session.service'
+import { MeetAccountGamesService } from '../meet-account-games/meet-account-games.service'
 
 @Injectable()
 export class MeetsService {
@@ -13,7 +13,7 @@ export class MeetsService {
 
     constructor(
         private readonly databaseService: DatabaseService,
-        private readonly gamePlaySessionService: GamePlaySessionService,
+        private readonly meetAccountGamesService: MeetAccountGamesService,
     ) {}
 
     private _parseResultSet(resultSet: ResultSet): Array<MeetDto> {
@@ -101,7 +101,7 @@ export class MeetsService {
         // Create gameplay sessions for each game and attendee
         for (const accountId of meetDetails.attendees) {
             for (const gameId of meetDetails.playedGames) {
-                await this.gamePlaySessionService.createGamePlaySession({ accountId, gameId, meetId })
+                await this.meetAccountGamesService.createMeetAccountGame(accountId, meetId, gameId)
             }
         }
 

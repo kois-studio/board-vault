@@ -10,7 +10,6 @@ import type { CreateInvitationBody, CreateInvitationByUsernameBody } from '../..
 import type { GameOwnedDto } from '../../common/types/game-owned.type'
 import type { CreateNotificationBody, UpdateNotificationBody } from '../../common/types/notification.type'
 import type { CreateGameReviewBody } from '../../common/types/game-review.type'
-import type { GamePlaySessionDto } from '../../common/types/game-play-session.type'
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
@@ -804,26 +803,6 @@ export class DatabaseService implements OnModuleInit {
         return this._tursoExecute({
             sql: 'DELETE FROM GameReview WHERE accountId = ? AND gameId = ?',
             args: [accountId, gameId],
-        })
-    }
-
-    // #region gamePlaySession
-
-    getGamePlaySession() {
-        return this._tursoExecute('SELECT * FROM GamePlaySession')
-    }
-
-    getGamePlaySessionById(accountId: number, gameId: number) {
-        return this._tursoExecute({
-            sql: 'SELECT * FROM GamePlaySession WHERE accountId = ? AND gameId = ?',
-            args: [accountId, gameId],
-        })
-    }
-
-    async createGamePlaySession(gamePlaySessionDto: GamePlaySessionDto) {
-        await this._tursoExecute({
-            sql: 'INSERT INTO GamePlaySession (accountId, gameId, meetId) VALUES (?, ?, ?)',
-            args: [gamePlaySessionDto.accountId, gamePlaySessionDto.gameId, gamePlaySessionDto.meetId],
         })
     }
 
