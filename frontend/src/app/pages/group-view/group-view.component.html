@@ -26,20 +26,22 @@
                 @for (member of groupData$()?.members ?? []; track $index) {
                 <button
                     (click)="onClickMember(member.id)"
-                    class="rounded-lg cursor-pointer flex items-center justify-start border border-zinc-800"
+                    class="rounded-lg cursor-pointer flex items-center justify-start border"
                     [ngClass]="{
-                            'bg-zinc-800/30 border-zinc-800': !selectedMembers$().includes(member.id),
-                            'bg-zinc-800 border-green-400': selectedMembers$().includes(member.id),
+                            'bg-zinc-200 dark:bg-zinc-800/30 border-zinc-300 dark:border-zinc-800': !selectedMembers$().includes(member.id),
+                            'bg-white dark:bg-zinc-800 border-green-400': selectedMembers$().includes(member.id),
                         }"
                 >
                     <!-- indicator -->
-                    <div
-                        class="h-4 w-4 rounded-full mx-4"
-                        [ngClass]="{
+                    <div class="pl-4 grid">
+                        <span
+                            class="h-4 w-4 rounded-full"
+                            [ngClass]="{
                                 'bg-gray-400': !selectedMembers$().includes(member.id),
                                 'bg-green-400': selectedMembers$().includes(member.id),
                             }"
-                    ></div>
+                        ></span>
+                    </div>
                     <div class="flex items-center justify-between w-full">
                         <app-card-account
                             [member]="member"
@@ -83,24 +85,24 @@
                 <ul class="flex gap-2">
                     <button
                         title="Recalculate reviews for the selected members"
-                        class="text-gray-400 hover:text-white px-2 py-1 rounded-lg" 
-                        [ngClass]="{'text-white bg-zinc-700': isRecalculatingReviews$()}"
+                        class="text-gray-400 hover:text-black hover:dark:text-white px-2 py-1 rounded-lg cursor-pointer" 
+                        [ngClass]="{'text-black! dark:text-white! bg-zinc-200 dark:bg-zinc-700': isRecalculatingReviews$()}"
                         (click)="toggleRecalculateReviews()"
                         >
                             <i class="bi bi-star text-xl"></i>
                     </button>
                     <button
                         title="Disable games whose min/max players don't match the selected members"
-                        class="text-gray-400 hover:text-white px-2 py-1 rounded-lg" 
-                        [ngClass]="{'text-white bg-zinc-700': isHidingMaxPlayers$()}"
+                        class="text-gray-400 hover:text-black hover:dark:text-white px-2 py-1 rounded-lg cursor-pointer" 
+                        [ngClass]="{'text-black! dark:text-white! bg-zinc-200 dark:bg-zinc-700': isHidingMaxPlayers$()}"
                         (click)="toggleMaxPlayersFilter()"
                         >
                             <i class="bi bi-people text-xl"></i>
                     </button>
                     <button
                         title="Hide disabled games"
-                        class="text-gray-400 hover:text-white px-2 py-1 rounded-lg" 
-                        [ngClass]="{'text-white bg-zinc-700': isFilteringGames$()}"
+                        class="text-gray-400 hover:text-black hover:dark:text-white px-2 py-1 rounded-lg cursor-pointer" 
+                        [ngClass]="{'text-black! dark:text-white! bg-zinc-200 dark:bg-zinc-700': isFilteringGames$()}"
                         (click)="toggleGamesFilter()"
                     >
                         <i class="bi bi-filter text-xl"></i>
@@ -126,7 +128,7 @@
 
                 @for (game of totalUniqueGamesComputed(); track $index) {
                 <div
-                    class="rounded bg-zinc-800 p-2 flex justify-between items-center"
+                    class="rounded bg-zinc-200 dark:bg-zinc-800 p-2 flex justify-between items-center"
                     [ngClass]="{
                         'opacity-30': !game.active,
                     }"
@@ -141,11 +143,11 @@
                             }
                         </div>
                         <div class="ml-3 text-nowrap overflow-hidden text-ellipsis whitespace-nowrap">
-                            <p class="font-semibold text-white">{{ game.title }}</p>
-                            <p class="text-gray-400 text-sm text-start w-full">
+                            <p class="font-semibold">{{ game.title }}</p>
+                            <p class="text-secondary text-sm text-start w-full">
                                 <i class="bi bi-clock-fill"></i> {{ game.gameAvgDuration }} mins
                             </p>
-                            <p class="text-gray-400 text-sm text-start">
+                            <p class="text-secondary text-sm text-start">
                                 <i class="bi bi-people-fill"></i> {{ game.minPlayers }} - {{ game.maxPlayers }}
                             </p>
                         </div>
@@ -153,7 +155,7 @@
                     @if (avgReviewsIndexComputed()[game.id]) {
                     <div class="px-3 flex flex-col items-center">
                         <review-display [review]="avgReviewsIndexComputed()[game.id].average" [flexCol]="true" />
-                        <span class="text-xs text-gray-400 mt-1">{{ avgReviewsIndexComputed()[game.id].voters }} voters</span>
+                        <span class="text-xs text-secondary mt-1">{{ avgReviewsIndexComputed()[game.id].voters }} voters</span>
                     </div>
                     }
                 </div>
