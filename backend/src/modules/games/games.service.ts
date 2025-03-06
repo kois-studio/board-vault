@@ -3,12 +3,17 @@ import { DatabaseService } from '../database/database.service'
 import { ResultSet } from '@libsql/client/.'
 import { CreateGameBody, GameDto, UpdateGameBody } from '../../common/types/game.type'
 import { gamesSchema } from '../../common/schemas'
+import { CacheService } from '../cache/cache.service'
 
 @Injectable()
 export class GamesService {
     private readonly LOGGER: Logger = new Logger(this.constructor.name)
+    private readonly CACHE_KEY = 'games'
 
-    constructor(private readonly databaseService: DatabaseService) {}
+    constructor(
+        private readonly databaseService: DatabaseService,
+        private readonly cacheService: CacheService,
+    ) {}
 
     private _parseResultSet(resultSet: ResultSet): Array<GameDto> {
         const games = resultSet.rows.map(row => ({
@@ -19,7 +24,11 @@ export class GamesService {
             minPlayers: Number(row[4]),
             maxPlayers: Number(row[5]),
         }))
+        
+        return this._validateSchema(games)
+    }
 
+    private _validateSchema(games: Array<GameDto>): Array<GameDto> {
         const result = gamesSchema.safeParse(games)
 
         if (!result.success) {
@@ -31,6 +40,8 @@ export class GamesService {
         return result.data
     }
 
+    // #region methods
+
     async getGames(): Promise<Array<GameDto>> {
         this.LOGGER.log('Getting all games')
         const resultSet = await this.databaseService.getGames()
@@ -39,13 +50,25 @@ export class GamesService {
     }
 
     async getGameById(id: number): Promise<GameDto> {
-        this.LOGGER.log(`Getting game with id ${id}`)
+        this.LOGGER.log(`Getting game by id ${id}`)
+
+        // Step 1: Try to get them from cache
+        const cachedGame = await this.cacheService.get(`${this.CACHE_KEY}:byId:${id}`)
+        if (cachedGame) {
+            this.LOGGER.log(`Returning cached game by id ${id}`)
+            return this._validateSchema([cachedGame])[0]
+        }
+
+        // Step 2: If no cached, get them from database
         const resultSet = await this.databaseService.getGameById(id)
         const games = this._parseResultSet(resultSet)
 
         if (games.length === 0) {
             throw new NotFoundException(`Game with id ${id} not found`)
         }
+
+        // Step 3: Save them to cache
+        await this.cacheService.set(`${this.CACHE_KEY}:byId:${id}`, games[0])
         return games[0]
     }
 
