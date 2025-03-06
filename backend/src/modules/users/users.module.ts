@@ -8,9 +8,10 @@ import { GroupsModule } from '../groups/groups.module'
 import { GroupMembershipsModule } from '../group-memberships/group-memberships.module'
 import { GamesModule } from '../games/games.module'
 import { GamesOwnedModule } from '../games-owned/games-owned.module'
+import { TagsModule } from '../tags/tags.module'
 
 @Module({
-    imports: [MeetsModule, DatabaseModule, GroupsModule, GroupMembershipsModule, GamesModule, GamesOwnedModule],
+    imports: [MeetsModule, DatabaseModule, GroupsModule, GroupMembershipsModule, GamesModule, GamesOwnedModule, TagsModule],
     providers: [UsersService],
     exports: [UsersService],
     controllers: [UsersController],

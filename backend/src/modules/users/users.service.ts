@@ -11,9 +11,10 @@ import { GroupMembershipsService } from '../group-memberships/group-memberships.
 import { GameReviewAndGameData } from '../../common/types/game-review.type'
 import { MeetsService } from '../meets/meets.service'
 import { MeetDto } from '../../common/types/meet.type'
-import { AccountGameHistoryDto } from 'src/common/types/meet-account-game.type'
+import { AccountGameHistoryDto } from '../../common/types/meet-account-game.type'
 import { GamesService } from '../games/games.service'
 import { GamesOwnedService } from '../games-owned/games-owned.service'
+import { TagsService } from '../tags/tags.service'
 
 @Injectable()
 export class UsersService {
@@ -26,6 +27,7 @@ export class UsersService {
         private readonly meetsService: MeetsService,
         private readonly gamesService: GamesService,
         private readonly gamesOwnedService: GamesOwnedService,
+        private readonly tagsService: TagsService,
     ) {}
 
     private _parseResultSet(resultSet: ResultSet): Array<UserCompleteDto> {
@@ -353,7 +355,7 @@ export class UsersService {
 
         // TODO: extract tag and category to TagService? maybe?
         // Step 4: GameTags
-        const gameTags = await this.databaseService.getGameTags(gameId)
+        const gameTags = await this.tagsService.getGameTags(gameId)
 
         // Get similar games
         const similarGames = (await Promise.all([
@@ -371,7 +373,7 @@ export class UsersService {
                 purchasePrice: ownedGameData.purchasePrice,
                 purchaseNotes: ownedGameData.purchaseNotes,
             },
-            tags: gameTags.rows.map(row => ({ tag: String(row[0]), category: '' })),
+            tags: gameTags,
             wishlistedGameData: null,
             ratingData: {
                 userRating: 0,
