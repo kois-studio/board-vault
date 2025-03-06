@@ -6,9 +6,11 @@ import { Api } from '../../../api/api'
 import type { GameViewType } from '../../../api/api.types'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { DataService } from '../../../core/services/data.service'
+import { ImageBackgroundComponent } from "../../../components/ui/image-background/image-background.component";
+import { ReviewDisplayComponent } from "../../../components/ui/review-display/review-display.component";
 
 @Component({
-    imports: [CommonModule, FormsModule, RouterLink, ContainerWrapperComponent],
+    imports: [CommonModule, FormsModule, RouterLink, ContainerWrapperComponent, ImageBackgroundComponent, ReviewDisplayComponent],
     templateUrl: './game-view.component.html',
 })
 export class GameViewPageComponent {
@@ -85,7 +87,9 @@ export class GameViewPageComponent {
 
     shareGame() {}
     addToCollection() {}
-    toggleWishlist() {}
+    toggleWishlist() {
+        this.isWishlisted = !this.isWishlisted
+    }
     saveOwnedGameDetails() {}
     removeFromCollection() {}
     rateGame(rating: number) {}
