@@ -2,6 +2,7 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common'
 import { LoggerMiddleware } from './common/middlewares/logger.middleware'
 import { ConfigModule } from '@nestjs/config'
 import { DatabaseModule } from './modules/database/database.module'
+import { CacheModule } from './modules/cache/cache.module'
 import { UsersModule } from './modules/users/users.module'
 import { AuthModule } from './modules/auth/auth.module'
 import { GroupsModule } from './modules/groups/groups.module'
@@ -20,6 +21,7 @@ import { EmailModule } from './modules/email/email.module'
     imports: [
         ConfigModule.forRoot({ isGlobal: true }),
         DatabaseModule,
+        CacheModule,
         AuthModule,
         UsersModule,
         GroupsModule,
