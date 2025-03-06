@@ -106,7 +106,8 @@ export class ReviewsService {
         const avgGlobalRating = Number(resultSet.rows[0].avgGlobalRating)
 
         // Step 3: Save them to cache
-        await this.cacheService.set(`${this.CACHE_KEY}:avgGlobalRating:${gameId}`, avgGlobalRating)
+        const cacheDuration = 60 * 60 * 24 * 30 // 30 days
+        await this.cacheService.set(`${this.CACHE_KEY}:avgGlobalRating:${gameId}`, avgGlobalRating, cacheDuration)
 
         return avgGlobalRating
     }
