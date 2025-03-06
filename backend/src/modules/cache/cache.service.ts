@@ -91,12 +91,19 @@ export class CacheService {
 
     // #region non-endpoints
     /**
-     * ## POST data in a key
+     * default ttl is 1 year
      */
     @Wrapper()
-    async set(key: string, data: any): Promise<void> {
-        this.LOGGER.log(`REDIS: saving ${key} data -> ${data.gamesUsed.length} games`)
+    async set(key: string, data: any, ttl: number = 60 * 60 * 24 * 30 * 12): Promise<void> {
+        this.LOGGER.log(`REDIS: saving ${key} data -> ${JSON.stringify(data)}`)
 
-        await this.REDIS.set(key, data)
+        await this.REDIS.set(key, data, { ex: ttl })
+    }
+
+    @Wrapper()
+    async get(key: string): Promise<any> {
+        this.LOGGER.log(`REDIS: getting ${key} data...`)
+
+        return await this.REDIS.get(key)
     }
 }
