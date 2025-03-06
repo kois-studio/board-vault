@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { Redis } from '@upstash/redis'
 import { ConfigService } from '@nestjs/config'
-import { PrintKeysDto } from 'src/common/types/cache.type'
+import { PrintKeysDto } from '../../common/types/cache.type'
 
 let is_redis_disabled = false
 
