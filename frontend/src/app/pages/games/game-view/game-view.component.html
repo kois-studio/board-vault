@@ -178,7 +178,7 @@
     
             <div class="flex flex-wrap gap-4">
                 @for (similarGame of gameView$()?.similarGames; track $index) {
-                    <a [routerLink]="['/games', similarGame.id]" class="hover:scale-105 transition-transform">
+                    <button (click)="navigateToGame(similarGame.id)" class="hover:scale-105 transition-transform">
                         <app-card-game
                             [title]="similarGame.title"
                             [imageUrl]="similarGame.imageUrl"
@@ -186,7 +186,7 @@
                             [minPlayers]="similarGame.minPlayers"
                             [maxPlayers]="similarGame.maxPlayers"
                         />
-                    </a>
+                    </button>
                 }
             </div>
         </div>
