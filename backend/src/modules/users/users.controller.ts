@@ -3,7 +3,7 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 import { UsersService } from './users.service'
 import { CreateUserBody, UpdateUserBody, UserGetDto, UserUpdateGamesBody } from '../../common/types/user.type'
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
-import { GameDto } from '../../common/types/game.type'
+import { GameDto, GameViewDto } from '../../common/types/game.type'
 import { InvitationWithExtraData } from '../../common/types/invitation.type'
 import { SuccessDto } from '../../common/types/auth.type'
 import { NotificationDto } from '../../common/types/notification.type'
@@ -159,5 +159,13 @@ export class UsersController {
     @ApiResponse({ status: 404, description: 'User or group not found.' })
     deleteGroup(@Param('userId', ParseIntPipe) userId: number, @Param('groupId', ParseIntPipe) groupId: number) {
         return this.usersService.deleteGroup(userId, groupId)
+    }
+
+    @UseGuards(UserOwnershipGuard)
+    @Get('/:userId/games/:gameId')
+    @ApiOperation({ summary: 'Get game view for user' })
+    @ApiResponse({ status: 200, type: GameViewDto })
+    getUserGame(@Param('userId', ParseIntPipe) userId: number, @Param('gameId', ParseIntPipe) gameId: number) {
+        return this.usersService.getUserGame(userId, gameId)
     }
 }
