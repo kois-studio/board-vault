@@ -42,7 +42,7 @@
                 <review-display [review]="7.26" />
                 <i title="Your Friends avg" class="bi bi-people"></i>
             </div>
-            <app-tags [tags]="tags" />
+            <app-tags [tags]="gameView$()?.tags ?? []" />
 
             <div class="bg-gray-50 dark:bg-zinc-800 rounded-xl py-2 px-4 mt-4 border border-gray-200">
                 <h4 class="font-semibold">Your review</h4>
