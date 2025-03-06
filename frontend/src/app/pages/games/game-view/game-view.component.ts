@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, RouterLink } from '@angular/router'
 import { Api } from '../../../api/api'
 import type { GameViewType } from '../../../api/api.types'
+import { CardGameComponent } from '../../../components/card-game/card-game.component'
 import { TagsComponent } from '../../../components/tags/tags.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
@@ -21,6 +22,7 @@ import { DataService } from '../../../core/services/data.service'
         ReviewDisplayComponent,
         TagsComponent,
         ButtonComponent,
+        CardGameComponent,
     ],
     templateUrl: './game-view.component.html',
 })
@@ -78,6 +80,7 @@ export class GameViewPageComponent {
             rating: 7.5,
             minPlayers: 1,
             maxPlayers: 4,
+            gameAvgDuration: 120,
         },
     ]
 

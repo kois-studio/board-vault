@@ -176,8 +176,15 @@
         <div>
             <h2 class="text-xl font-bold mb-4">Similar Games You Might Like</h2>
     
-            <div class="flex overflow-x-auto pb-4 gap-4 snap-x">
-                <div *ngFor="let similarGame of similarGames" class="flex-shrink-0 w-48 snap-center">
+            <div class="flex flex-wrap gap-4">
+                @for (similarGame of similarGames; track $index) {
+                    <app-card-game
+                        [title]="similarGame.title"
+                        [imageUrl]="similarGame.imageUrl"
+                        [gameAvgDuration]="similarGame.gameAvgDuration"
+                        [minPlayers]="similarGame.minPlayers"
+                        [maxPlayers]="similarGame.maxPlayers"
+                    />
                     <div
                         class="rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow cursor-pointer"
                         [routerLink]="['/games', similarGame.id]"
@@ -198,7 +205,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                }
             </div>
         </div>
     </div>
