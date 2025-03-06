@@ -920,5 +920,18 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
-    // #region GameView
+    // #region GameTag
+
+    getGameTags(gameId: number) {
+        return this._tursoExecute({
+            sql: `
+                SELECT t.name
+                FROM GameTag gt
+                INNER JOIN Tag t ON gt.tagId = t.id
+                WHERE gt.gameId = ?
+            `,
+            args: [gameId],
+        })
+    }
+    
 }

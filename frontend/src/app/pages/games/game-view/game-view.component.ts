@@ -74,21 +74,32 @@ export class GameViewPageComponent {
 
     constructor() {
         effect(() => {
+            // Initial load
             const gameId = Number.parseInt(this.route.snapshot.paramMap.get('gameId') || '')
             const currentUser = this.currentUser$()
 
-            if (Number.isNaN(gameId) || !currentUser) {
-                return
-            }
+            this._loadGameData(currentUser?.id, gameId)
 
-            this.api.getUserGame(currentUser.id, gameId).subscribe({
-                next: (game) => {
-                    this.gameView$.set(game)
-                },
-                error: (error) => {
-                    console.error(error)
-                },
+            // On route change
+            this.route.paramMap.subscribe((params) => {
+                const gameId = Number.parseInt(params.get('gameId') || '')
+                this._loadGameData(currentUser?.id, gameId)
             })
+        })
+    }
+
+    private _loadGameData(userId: undefined | number, gameId: number) {
+        if (Number.isNaN(gameId) || !userId) {
+            return
+        }
+
+        this.api.getUserGame(userId, gameId).subscribe({
+            next: (game) => {
+                this.gameView$.set(game)
+            },
+            error: (error) => {
+                console.error(error)
+            },
         })
     }
 

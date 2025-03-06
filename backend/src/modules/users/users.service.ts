@@ -351,6 +351,10 @@ export class UsersService {
         // Step 3: Get owned game data
         const ownedGameData = await this.gamesOwnedService.getGamesOwnedById(userId, gameId, false)
 
+        // TODO: extract tag and category to TagService? maybe?
+        // Step 4: GameTags
+        const gameTags = await this.databaseService.getGameTags(gameId)
+
         // Get similar games
         const similarGames = (await Promise.all([
             this.gamesService.getSafeGameById(gameId + 2),
@@ -367,7 +371,7 @@ export class UsersService {
                 purchasePrice: ownedGameData.purchasePrice,
                 purchaseNotes: ownedGameData.purchaseNotes,
             },
-            tags: [],
+            tags: gameTags.rows.map(row => ({ tag: String(row[0]), category: '' })),
             wishlistedGameData: null,
             ratingData: {
                 userRating: 0,
