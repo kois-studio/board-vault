@@ -3,12 +3,17 @@ import { DatabaseService } from '../database/database.service'
 import { ResultSet } from '@libsql/client/.'
 import { CreateGameReviewBody, GameReviewDto } from '../../common/types/game-review.type'
 import { gameReviewsSchema } from '../../common/schemas/db-game-review.schema'
+import { CacheService } from '../cache/cache.service'
 
 @Injectable()
 export class ReviewsService {
     private readonly LOGGER: Logger = new Logger(this.constructor.name)
+    private readonly CACHE_KEY = 'reviews'
 
-    constructor(private readonly databaseService: DatabaseService) {}
+    constructor(
+        private readonly databaseService: DatabaseService,
+        private readonly cacheService: CacheService,
+    ) {}
 
     private _parseResultSet(resultSet: ResultSet): Array<GameReviewDto> {
         const reviews = resultSet.rows.map(row => ({
@@ -87,7 +92,22 @@ export class ReviewsService {
     // #region special methods
 
     async getAvgGlobalRating(gameId: number): Promise<null | number> {
+        this.LOGGER.log(`Getting avg global rating for game ${gameId}`)
+
+        // Step 1: Try to get them from cache
+        const cachedRating = await this.cacheService.get(`${this.CACHE_KEY}:avgGlobalRating:${gameId}`)
+        if (cachedRating) {
+            this.LOGGER.log(`Returning cached avg global rating for game ${gameId}`)
+            return Number(cachedRating)
+        }
+
+        // Step 2: If no cached, get them from database
         const resultSet = await this.databaseService.getAvgGlobalRating(gameId)
-        return Number(resultSet.rows[0].avgGlobalRating)
+        const avgGlobalRating = Number(resultSet.rows[0].avgGlobalRating)
+
+        // Step 3: Save them to cache
+        await this.cacheService.set(`${this.CACHE_KEY}:avgGlobalRating:${gameId}`, avgGlobalRating)
+
+        return avgGlobalRating
     }
 }
