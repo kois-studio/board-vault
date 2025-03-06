@@ -51,9 +51,9 @@ export type GameViewType = {
         notes: string
     }
     ratingData: {
-        userRating: number
-        avgGroupsRating: number
-        avgPlayersRating: number
+        userRating: null | number
+        avgGroupsRating: null | number
+        avgGlobalRating: null | number
     }
     playHistory: Array<MeetType>
     similarGames: Array<GameType>

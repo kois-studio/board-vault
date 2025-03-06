@@ -806,6 +806,16 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    getAvgGlobalRating(gameId: number) {
+        return this._tursoExecute({
+            sql: `
+            SELECT AVG(review) as avgGlobalRating
+            FROM GameReview
+            WHERE gameId = ?`,
+            args: [gameId],
+        })
+    }
+
     // #region Meetings
 
     getMeets() {
