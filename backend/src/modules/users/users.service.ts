@@ -15,6 +15,7 @@ import { AccountGameHistoryDto } from '../../common/types/meet-account-game.type
 import { GamesService } from '../games/games.service'
 import { GamesOwnedService } from '../games-owned/games-owned.service'
 import { TagsService } from '../tags/tags.service'
+import { ReviewsService } from '../reviews/reviews.service'
 
 @Injectable()
 export class UsersService {
@@ -28,6 +29,7 @@ export class UsersService {
         private readonly gamesService: GamesService,
         private readonly gamesOwnedService: GamesOwnedService,
         private readonly tagsService: TagsService,
+        private readonly reviewsService: ReviewsService,
     ) {}
 
     private _parseResultSet(resultSet: ResultSet): Array<UserCompleteDto> {
@@ -353,9 +355,13 @@ export class UsersService {
         // Step 3: Get owned game data
         const ownedGameData = await this.gamesOwnedService.getGamesOwnedById(userId, gameId, false)
 
-        // TODO: extract tag and category to TagService? maybe?
         // Step 4: GameTags
         const gameTags = await this.tagsService.getGameTags(gameId)
+
+        // Step 5: Get reviews
+        const myReview = await this.reviewsService.getSafeGameReviewsById(userId, gameId)
+        // const avgGroupsRating = await this.reviewsService.getAvgGroupsRating(gameId)
+        const avgGlobalRating = await this.reviewsService.getAvgGlobalRating(gameId)
 
         // Get similar games
         const similarGames = (await Promise.all([
@@ -376,9 +382,9 @@ export class UsersService {
             tags: gameTags,
             wishlistedGameData: null,
             ratingData: {
-                userRating: 0,
+                userRating: myReview?.review ?? null,
                 avgGroupsRating: 0,
-                avgPlayersRating: 0,
+                avgGlobalRating: avgGlobalRating,
             },
             playHistory: [],
             similarGames: similarGamesFiltered,

@@ -56,9 +56,9 @@ export class GameViewDto {
         notes: string
     }
     ratingData: {
-        userRating: number
-        avgGroupsRating: number
-        avgPlayersRating: number
+        userRating: null | number
+        avgGroupsRating: null | number
+        avgGlobalRating: null | number
     }
     playHistory: Array<MeetDto>
     similarGames: Array<GameDto>

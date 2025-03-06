@@ -17,6 +17,11 @@ export class ReviewsService {
             review: Number(row[2]),
             reviewDate: String(row[3]),
         }))
+
+        return this._validateSchema(reviews)
+    }
+
+    private _validateSchema(reviews: Array<GameReviewDto>): Array<GameReviewDto> {
         const result = gameReviewsSchema.safeParse(reviews)
 
         if (!result.success) {
@@ -27,6 +32,8 @@ export class ReviewsService {
 
         return result.data
     }
+
+    // #region methods
 
     async getGameReviews(): Promise<Array<GameReviewDto>> {
         this.LOGGER.log('Getting all reviews')
@@ -44,6 +51,14 @@ export class ReviewsService {
             throw new NotFoundException(`Review with accountId ${accountId} and gameId ${gameId} not found`)
         }
         return reviews[0]
+    }
+
+    async getSafeGameReviewsById(accountId: number, gameId: number): Promise<null | GameReviewDto> {
+        try {
+            return await this.getGameReviewsById(accountId, gameId)
+        } catch (error) {
+            return null
+        }
     }
 
     async createGameReview(gameReviewDto: CreateGameReviewBody) {
@@ -67,5 +82,12 @@ export class ReviewsService {
         }
 
         return { success: true }
+    }
+
+    // #region special methods
+
+    async getAvgGlobalRating(gameId: number): Promise<null | number> {
+        const resultSet = await this.databaseService.getAvgGlobalRating(gameId)
+        return Number(resultSet.rows[0].avgGlobalRating)
     }
 }
