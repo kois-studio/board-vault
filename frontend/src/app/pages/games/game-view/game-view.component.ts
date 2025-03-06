@@ -72,14 +72,14 @@ export class GameViewPageComponent {
                 return
             }
 
-            // this.api.getGame(gameId).subscribe({
-            //     next: (game) => {
-            //         this.gameData$.set(game)
-            //     },
-            //     error: (error) => {
-            //         console.error(error)
-            //     },
-            // })
+            this.api.getUserGame(this.currentUser$()!.id, gameId).subscribe({
+                next: (game) => {
+                    this.gameView$.set(game)
+                },
+                error: (error) => {
+                    console.error(error)
+                },
+            })
         })
     }
 
