@@ -49,6 +49,14 @@ export class GamesService {
         return games[0]
     }
 
+    async getSafeGameById(id: number): Promise<null | GameDto> {
+        try {
+            return await this.getGameById(id)
+        } catch (error) {
+            return null
+        }
+    }
+
     async createGame(gameDto: CreateGameBody) {
         this.LOGGER.log(`Creating game ${gameDto.title}`)
         try {

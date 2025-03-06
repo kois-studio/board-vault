@@ -347,7 +347,18 @@ export class UsersService {
 
         // Step 2: Get each part of data to construct the GameView
         const gameData = await this.gamesService.getGameById(gameId)
+
+        // Step 3: Get owned game data
         const ownedGameData = await this.gamesOwnedService.getGamesOwnedById(userId, gameId, false)
+
+        // Get similar games
+        const similarGames = (await Promise.all([
+            this.gamesService.getSafeGameById(gameId + 2),
+            this.gamesService.getSafeGameById(gameId + 1),
+            this.gamesService.getSafeGameById(gameId - 1),
+            this.gamesService.getSafeGameById(gameId - 2),
+        ])).filter(Boolean)
+        const similarGamesFiltered = similarGames.filter(Boolean) as Array<GameDto>
 
         return {
             gameData: gameData,
@@ -364,7 +375,7 @@ export class UsersService {
                 avgPlayersRating: 0,
             },
             playHistory: [],
-            similarGames: [],
+            similarGames: similarGamesFiltered,
         }
     }
 }
