@@ -13,6 +13,7 @@ import { MeetsService } from '../meets/meets.service'
 import { MeetDto } from '../../common/types/meet.type'
 import { AccountGameHistoryDto } from 'src/common/types/meet-account-game.type'
 import { GamesService } from '../games/games.service'
+import { GamesOwnedService } from '../games-owned/games-owned.service'
 
 @Injectable()
 export class UsersService {
@@ -24,6 +25,7 @@ export class UsersService {
         private readonly groupMembershipsService: GroupMembershipsService,
         private readonly meetsService: MeetsService,
         private readonly gamesService: GamesService,
+        private readonly gamesOwnedService: GamesOwnedService,
     ) {}
 
     private _parseResultSet(resultSet: ResultSet): Array<UserCompleteDto> {
@@ -345,10 +347,15 @@ export class UsersService {
 
         // Step 2: Get each part of data to construct the GameView
         const gameData = await this.gamesService.getGameById(gameId)
+        const ownedGameData = await this.gamesOwnedService.getGamesOwnedById(userId, gameId, false)
 
         return {
             gameData: gameData,
-            ownedGameData: null,
+            ownedGameData: !ownedGameData ? null : {
+                purchaseDate: ownedGameData.purchaseDate,
+                purchasePrice: ownedGameData.purchasePrice,
+                purchaseNotes: ownedGameData.purchaseNotes,
+            },
             tags: [],
             wishlistedGameData: null,
             ratingData: {

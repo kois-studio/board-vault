@@ -38,9 +38,9 @@ export type GameType = {
 export type GameViewType = {
     gameData: GameType
     ownedGameData: null | {
-        purchaseDate: string
-        purchasePrice: number
-        purchaseNotes: string
+        purchaseDate: string | null
+        purchasePrice: number | null
+        purchaseNotes: string | null
     }
     tags: Array<{
         tag: string

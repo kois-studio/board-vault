@@ -14,9 +14,9 @@ export class GamesOwnedService {
         const ownedGames = resultSet.rows.map(row => ({
             accountId: Number(row[0]),
             gameId: Number(row[1]),
-            purchasePrice: Number(row[2]),
-            purchaseDate: String(row[3]),
-            purchaseNotes: String(row[4]),
+            purchasePrice: row[2] ? Number(row[2]) : null,
+            purchaseDate: row[3] ? String(row[3]) : null,
+            purchaseNotes: row[4] ? String(row[4]) : null,
         }))
 
         const result = gameOwnedsSchema.safeParse(ownedGames)
@@ -37,13 +37,15 @@ export class GamesOwnedService {
         return this._parseResultSet(resultSet)
     }
 
-    async getGamesOwnedById(accountId: number, gameId: number): Promise<GameOwnedDto> {
+    async getGamesOwnedById(accountId: number, gameId: number, throwError = true): Promise<GameOwnedDto | null> {
         this.LOGGER.log(`Getting ownedGame with id ${accountId} ${gameId}`)
         const resultSet = await this.databaseService.getOwnedGameById(accountId, gameId)
         const ownedGames = this._parseResultSet(resultSet)
 
-        if (ownedGames.length === 0) {
+        if (ownedGames.length === 0 && throwError) {
             throw new NotFoundException(`OwnedGame with id ${accountId} ${gameId} not found`)
+        } else if (ownedGames.length === 0) {
+            return null
         }
 
         return ownedGames[0]

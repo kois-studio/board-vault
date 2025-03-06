@@ -43,9 +43,9 @@ export class GameViewDto {
 
     // TODO: add missing @ApiProperty
     ownedGameData: null | {
-        purchaseDate: string
-        purchasePrice: number
-        purchaseNotes: string
+        purchaseDate: string | null
+        purchasePrice: number | null
+        purchaseNotes: string | null
     }
     tags: Array<{
         tag: string
