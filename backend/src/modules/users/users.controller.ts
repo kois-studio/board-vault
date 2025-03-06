@@ -10,7 +10,7 @@ import { NotificationDto } from '../../common/types/notification.type'
 import { UserOwnershipGuard } from '../../common/guards/ownership.guard'
 import { GameReviewAndGameData } from '../../common/types/game-review.type'
 import { MeetDto } from '../../common/types/meet.type'
-import { AccountGameHistoryDto } from 'src/common/types/meet-account-game.type'
+import { AccountGameHistoryDto } from '../../common/types/meet-account-game.type'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('users')

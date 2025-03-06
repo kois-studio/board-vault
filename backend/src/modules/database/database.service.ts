@@ -925,10 +925,15 @@ export class DatabaseService implements OnModuleInit {
     getGameTags(gameId: number) {
         return this._tursoExecute({
             sql: `
-                SELECT t.name
-                FROM GameTag gt
-                INNER JOIN Tag t ON gt.tagId = t.id
-                WHERE gt.gameId = ?
+            SELECT
+                t.name AS tag,
+                tc.name AS category
+            FROM
+                GameTag gt
+                JOIN Tag t ON gt.tagId = t.id
+                JOIN TagCategory tc ON t.categoryId = tc.id
+            WHERE
+                gt.gameId = ?;
             `,
             args: [gameId],
         })
