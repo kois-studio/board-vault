@@ -1,10 +1,10 @@
-<div class="grid grid-rows-2 rounded text-white bg-zinc-800 p-4 w-40">
-    <image-background [src]="imageUrl" />
+<div class="flex flex-col rounded-lg bg-zinc-100 dark:bg-zinc-800 shadow-md hover:shadow-lg transition-shadow cursor-pointer w-40">
+    <image-background class="aspect-square rounded-t-lg overflow-hidden" [src]="imageUrl" />
 
-    <div class="relative overflow-hidden">
-        <h3 class="py-2 text-lg overflow-hidden text-ellipsis whitespace-nowrap">{{ title }}</h3>
-        <p><i class="bi bi-clock-fill"></i> {{ gameAvgDuration }} mins</p>
-        <p><i class="bi bi-people-fill"></i> {{ minPlayers }} - {{ maxPlayers }}</p>
+    <div class="overflow-hidden px-4 py-2">
+        <h3 class="font-medium overflow-hidden text-ellipsis whitespace-nowrap">{{ title }}</h3>
+        <p class="text-secondary text-sm"><i class="bi bi-clock-fill"></i> {{ gameAvgDuration }} mins</p>
+        <p class="text-secondary text-sm"><i class="bi bi-people-fill"></i> {{ minPlayers }} - {{ maxPlayers }}</p>
         @if (review) {
         <review-display [review]="review" />
         }
