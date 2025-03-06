@@ -105,7 +105,7 @@ export class Api {
     }
 
     getUserGame(accountId: number, gameId: number) {
-        return this.http.get<GameViewType>(`${this.url}/users/${accountId}/game/${gameId}`)
+        return this.http.get<GameViewType>(`${this.url}/users/${accountId}/games/${gameId}`)
     }
 
     // #region groups

@@ -27,7 +27,7 @@ export class GameViewPageComponent {
     //        Component props
     // --------------------------------------------------------------------------
     public isLoading = false
-    public gameData$ = signal<GameViewType | null>(null)
+    public gameView$ = signal<GameViewType | null>(null)
 
     // TODO: delete this
     averageRating = 7.5
