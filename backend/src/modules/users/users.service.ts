@@ -3,7 +3,7 @@ import { DatabaseService } from '../database/database.service'
 import { AvatarDto, CreateUserBody, UpdateUserBody, UserCompleteDto, UserGetDto } from '../../common/types/user.type'
 import { ResultSet } from '@libsql/client/.'
 import { usersSchema } from '../../common/schemas'
-import { GameDto } from '../../common/types/game.type'
+import { GameDto, GameViewDto } from '../../common/types/game.type'
 import { InvitationWithExtraData } from '../../common/types/invitation.type'
 import { GroupsService } from '../groups/groups.service'
 import { NotificationDto } from '../../common/types/notification.type'
@@ -12,6 +12,7 @@ import { GameReviewAndGameData } from '../../common/types/game-review.type'
 import { MeetsService } from '../meets/meets.service'
 import { MeetDto } from '../../common/types/meet.type'
 import { AccountGameHistoryDto } from 'src/common/types/meet-account-game.type'
+import { GamesService } from '../games/games.service'
 
 @Injectable()
 export class UsersService {
@@ -22,6 +23,7 @@ export class UsersService {
         private readonly groupsService: GroupsService,
         private readonly groupMembershipsService: GroupMembershipsService,
         private readonly meetsService: MeetsService,
+        private readonly gamesService: GamesService,
     ) {}
 
     private _parseResultSet(resultSet: ResultSet): Array<UserCompleteDto> {
@@ -333,5 +335,29 @@ export class UsersService {
         await this.groupsService.deleteGroupById(groupId)
 
         return { success: true }
+    }
+
+    async getUserGame(userId: number, gameId: number): Promise<GameViewDto> {
+        this.LOGGER.log(`Getting game view for user ${userId} and game ${gameId}`)
+
+        // Step 1: Validate that the user exists
+        await this.getUserById(userId)
+
+        // Step 2: Get each part of data to construct the GameView
+        const gameData = await this.gamesService.getGameById(gameId)
+
+        return {
+            gameData: gameData,
+            ownedGameData: null,
+            tags: [],
+            wishlistedGameData: null,
+            ratingData: {
+                userRating: 0,
+                avgGroupsRating: 0,
+                avgPlayersRating: 0,
+            },
+            playHistory: [],
+            similarGames: [],
+        }
     }
 }
