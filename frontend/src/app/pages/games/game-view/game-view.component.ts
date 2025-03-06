@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { Component, effect, inject, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { ActivatedRoute, RouterLink } from '@angular/router'
+import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { Api } from '../../../api/api'
 import type { GameViewType } from '../../../api/api.types'
 import { CardGameComponent } from '../../../components/card-game/card-game.component'
@@ -16,7 +16,6 @@ import { DataService } from '../../../core/services/data.service'
     imports: [
         CommonModule,
         FormsModule,
-        RouterLink,
         ContainerWrapperComponent,
         ImageBackgroundComponent,
         ReviewDisplayComponent,
@@ -29,6 +28,7 @@ import { DataService } from '../../../core/services/data.service'
 export class GameViewPageComponent {
     private readonly dataService = inject(DataService)
     private readonly route = inject(ActivatedRoute)
+    private readonly router = inject(Router)
     private readonly api = inject(Api)
 
     // --------------------------------------------------------------------------
@@ -46,7 +46,6 @@ export class GameViewPageComponent {
 
     // TODO: delete this
     averageRating = 7.5
-    isOwned = false
     isWishlisted = false
     tags = [
         { tag: 'tag1', category: 'category1' },
@@ -72,17 +71,6 @@ export class GameViewPageComponent {
         },
     ]
     userRating = 5
-    similarGames = [
-        {
-            id: 1,
-            title: 'Game 1',
-            imageUrl: 'https://th.bing.com/th/id/OIP.Nov0duOiE7Mh5CjeKhbGBgHaE8?w=244&h=180&c=7&r=0&o=5&pid=1.7',
-            rating: 7.5,
-            minPlayers: 1,
-            maxPlayers: 4,
-            gameAvgDuration: 120,
-        },
-    ]
 
     constructor() {
         effect(() => {
@@ -101,6 +89,26 @@ export class GameViewPageComponent {
                     console.error(error)
                 },
             })
+        })
+    }
+
+    public navigateToGame(gameId: number) {
+        const currentUser = this.currentUser$()
+        if (!currentUser) {
+            return
+        }
+
+        // changes the URL but doesn't triggers the effect
+        this.router.navigate(['/games', gameId])
+
+        // re-fetch the game data
+        this.api.getUserGame(currentUser.id, gameId).subscribe({
+            next: (game) => {
+                this.gameView$.set(game)
+            },
+            error: (error) => {
+                console.error(error)
+            },
         })
     }
 
