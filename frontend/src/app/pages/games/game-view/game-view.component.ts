@@ -8,9 +8,10 @@ import { ContainerWrapperComponent } from '../../../components/ui/container-wrap
 import { DataService } from '../../../core/services/data.service'
 import { ImageBackgroundComponent } from "../../../components/ui/image-background/image-background.component";
 import { ReviewDisplayComponent } from "../../../components/ui/review-display/review-display.component";
+import { TagsComponent } from "../../../components/tags/tags.component";
 
 @Component({
-    imports: [CommonModule, FormsModule, RouterLink, ContainerWrapperComponent, ImageBackgroundComponent, ReviewDisplayComponent],
+    imports: [CommonModule, FormsModule, RouterLink, ContainerWrapperComponent, ImageBackgroundComponent, ReviewDisplayComponent, TagsComponent],
     templateUrl: './game-view.component.html',
 })
 export class GameViewPageComponent {
@@ -35,7 +36,11 @@ export class GameViewPageComponent {
     averageRating = 7.5
     isOwned = false
     isWishlisted = false
-    tags = ['tag1', 'tag2', 'tag3']
+    tags = [
+        { tag: 'tag1', category: 'category1' },
+        { tag: 'tag2', category: 'category2' },
+        { tag: 'tag3', category: 'category3' },
+    ]
     description = 'This is a description of the game'
     purchaseDate = new Date()
     purchasePrice = 100
