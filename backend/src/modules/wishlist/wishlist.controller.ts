@@ -1,14 +1,12 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common'
+import { Controller, Get, Param, ParseIntPipe, Put, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
-import { SuccessDto } from '../../common/types/auth.type'
-import { CreateGameReviewBody, GameReviewDto } from '../../common/types/game-review.type'
 import { WishlistService } from './wishlist.service'
 import { UserOwnershipGuard } from 'src/common/guards/ownership.guard'
-import { boolean } from 'zod'
 import { WishlistResponseDto } from 'src/common/types/wishlisted-game.type'
+import { VerifiedUserGuard } from 'src/common/guards/verified-user.guard'
 
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, VerifiedUserGuard)
 @ApiTags('wishlist')
 @ApiBearerAuth()
 @Controller('wishlist')
