@@ -53,13 +53,21 @@
 
             <div class="bg-gray-50 dark:bg-zinc-800 rounded-xl py-2 px-4 mt-4 border border-gray-200">
                 <h4 class="font-semibold">Your review</h4>
-                {{ gameView$()?.ratingData?.avgGroupsRating?.review }}
-                <app-review-game
-                    [accountId]="currentUser$()?.id"
-                    [gameId]="gameView$()?.gameData?.id"
-                    [reviewValue]="gameView$()?.ratingData?.avgGroupsRating?.review ?? 0"
-                    (reviewValueChanged)="onReviewValueChanged($event)"
-                />
+
+                <div class="flex items-center gap-0.5">
+                    @for (star of [2, 4, 6, 8, 10]; track $index) {
+                    <button
+                        (click)="saveGameReview(star)"
+                        (mouseover)="reviewHoverValue = star"
+                        class="p-0.5 hover:scale-110 transition-transform cursor-pointer"
+                    >
+                        <i class="text-lg" [ngClass]="{
+                            'bi bi-star-fill text-yellow-400': star <= gameUserReviewComputed(),
+                            'bi bi-star text-zinc-500': star > gameUserReviewComputed(),
+                        }"></i>
+                    </button>
+                    }
+                </div>
             </div>
         </div>
     </div>
