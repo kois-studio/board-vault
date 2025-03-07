@@ -45,6 +45,7 @@ export class GameViewPageComponent implements OnDestroy {
     // --------------------------------------------------------------------------
     public gameView$ = signal<GameViewType | null>(null)
     public gameUserReviewComputed = computed(() => this.gameView$()?.ratingData?.userRating ?? 0)
+    public isWishlistedComputed = computed(() => !!this.gameView$()?.wishlistedGameData)
 
     // --------------------------------------------------------------------------
     //        Component props
@@ -53,10 +54,12 @@ export class GameViewPageComponent implements OnDestroy {
     public isLoading = false
     public wishlistAnimation = false // used for a little scale animation
     public reviewHoverValue = 0
+    private readonly PREVENT_SPAM = {
+        isLoadingWishlist: false,
+    }
 
     // TODO: delete this
     averageRating = 7.5
-    isWishlisted = false
     tags = [
         { tag: 'tag1', category: 'category1' },
         { tag: 'tag2', category: 'category2' },
@@ -127,9 +130,55 @@ export class GameViewPageComponent implements OnDestroy {
         })
     }
 
+    // #region Wishlist
+
+    public toggleWishlist(): void {
+        const currentUser = this.currentUser$()
+        const gameId = this.gameView$()?.gameData?.id
+
+        if (!currentUser?.id || !gameId || this.PREVENT_SPAM.isLoadingWishlist) {
+            return
+        }
+
+        this.PREVENT_SPAM.isLoadingWishlist = true
+
+        // Trigger the animation
+        this.wishlistAnimation = true
+        setTimeout(() => {
+            this.wishlistAnimation = false
+        }, 300)
+
+        // save the wishlist status
+        this.api.toggleWishlist(currentUser.id, gameId).subscribe({
+            next: (response) => {
+                this.gameView$.update((game) => {
+                    if (!game) {
+                        return null
+                    }
+
+                    return {
+                        ...game,
+                        wishlistedGameData: response.isWishlisted
+                            ? {
+                                  dateAdded: new Date().toISOString(),
+                                  notes: '',
+                              }
+                            : null,
+                    }
+                })
+            },
+            error: (error) => {
+                console.error(error)
+            },
+            complete: () => {
+                this.PREVENT_SPAM.isLoadingWishlist = false
+            },
+        })
+    }
+
     // #region Review
 
-    public saveGameReview(reviewValue: number) {
+    public saveGameReview(reviewValue: number): void {
         const currentUser = this.currentUser$()
         const gameId = this.gameView$()?.gameData?.id
 
@@ -156,15 +205,6 @@ export class GameViewPageComponent implements OnDestroy {
 
     shareGame() {}
     addToCollection() {}
-    toggleWishlist() {
-        this.isWishlisted = !this.isWishlisted
-
-        // Trigger the animation
-        this.wishlistAnimation = true
-        setTimeout(() => {
-            this.wishlistAnimation = false
-        }, 300)
-    }
     saveOwnedGameDetails() {}
     removeFromCollection() {}
     rateGame(rating: number) {}
