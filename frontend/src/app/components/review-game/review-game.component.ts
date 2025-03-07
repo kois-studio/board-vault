@@ -1,14 +1,12 @@
-import { Component, computed, inject, Input } from '@angular/core';
-import { Api } from '../../api/api';
-import { DataService } from '../../core/services/data.service';
+import { Component, EventEmitter, Input, Output, computed, inject } from '@angular/core'
+import { DataService } from '../../core/services/data.service'
 
 @Component({
     imports: [],
     selector: 'app-review-game',
-    templateUrl: './review-game.component.html'
+    templateUrl: './review-game.component.html',
 })
 export class ReviewGameComponent {
-    private readonly api = inject(Api)
     private readonly dataService = inject(DataService)
 
     private readonly userReviews$ = this.dataService.userReviews
@@ -16,7 +14,8 @@ export class ReviewGameComponent {
 
     @Input({ required: true }) accountId: number | undefined = 0
     @Input({ required: true }) gameId: number | undefined = 0
-    @Input({ required: true }) reviewValue: number = 0
+    @Input({ required: true }) reviewValue = 0
+    @Output() reviewValueChanged = new EventEmitter<number>()
 
     // #region methods
 
@@ -25,13 +24,8 @@ export class ReviewGameComponent {
             return
         }
 
-        const currentReview = this.currentReviewComputed()
-        if (!currentReview) {
-            // the game has no review yet, so we create a new one
-            this.dataService.createGameReview(this.accountId, this.gameId, reviewValue)
-        } else if (currentReview.review !== reviewValue) {
-            // the game has a review, so we update it
-            this.dataService.updateGameReview(this.accountId, this.gameId, reviewValue)
-        }
+        this.dataService.saveGameReview(this.accountId, this.gameId, reviewValue)
+
+        this.reviewValueChanged.emit(reviewValue)
     }
 }
