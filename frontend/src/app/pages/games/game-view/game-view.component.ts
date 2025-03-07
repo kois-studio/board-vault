@@ -6,7 +6,6 @@ import { Subscription } from 'rxjs'
 import { Api } from '../../../api/api'
 import type { GameViewType } from '../../../api/api.types'
 import { CardGameComponent } from '../../../components/card-game/card-game.component'
-import { ReviewGameComponent } from '../../../components/review-game/review-game.component'
 import { TagsComponent } from '../../../components/tags/tags.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
@@ -24,7 +23,6 @@ import { DataService } from '../../../core/services/data.service'
         TagsComponent,
         ButtonComponent,
         CardGameComponent,
-        ReviewGameComponent,
         FormsModule,
     ],
     templateUrl: './game-view.component.html',
@@ -43,12 +41,18 @@ export class GameViewPageComponent implements OnDestroy {
     public readonly userGames$ = this.dataService.userGames
 
     // --------------------------------------------------------------------------
+    //        Component singals
+    // --------------------------------------------------------------------------
+    public gameView$ = signal<GameViewType | null>(null)
+    public gameUserReviewComputed = computed(() => this.gameView$()?.ratingData?.userRating ?? 0)
+
+    // --------------------------------------------------------------------------
     //        Component props
     // --------------------------------------------------------------------------
     private _routeSub: Subscription | undefined
     public isLoading = false
-    public gameView$ = signal<GameViewType | null>(null)
     public wishlistAnimation = false // used for a little scale animation
+    public reviewHoverValue = 0
 
     // TODO: delete this
     averageRating = 7.5
@@ -58,7 +62,6 @@ export class GameViewPageComponent implements OnDestroy {
         { tag: 'tag2', category: 'category2' },
         { tag: 'tag3', category: 'category3' },
     ]
-    description = 'This is a description of the game'
     purchaseDate = new Date()
     purchasePrice = 100
     purchaseNotes = 'This is a note about the game'
@@ -76,7 +79,6 @@ export class GameViewPageComponent implements OnDestroy {
             ],
         },
     ]
-    userRating = 5
 
     constructor() {
         effect(() => {
@@ -125,7 +127,18 @@ export class GameViewPageComponent implements OnDestroy {
         })
     }
 
-    public onReviewValueChanged(reviewValue: number) {
+    // #region Review
+
+    public saveGameReview(reviewValue: number) {
+        const currentUser = this.currentUser$()
+        const gameId = this.gameView$()?.gameData?.id
+
+        if (!currentUser?.id || !gameId) {
+            return
+        }
+
+        this.dataService.saveGameReview(currentUser.id, gameId, reviewValue)
+        console.log('reviewValue', reviewValue)
         this.gameView$.update((game) => {
             if (!game) {
                 return null
