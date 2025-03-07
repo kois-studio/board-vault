@@ -7,6 +7,7 @@ import { Api } from '../../../api/api'
 import type { GameViewType } from '../../../api/api.types'
 import { CardGameComponent } from '../../../components/card-game/card-game.component'
 import { TagsComponent } from '../../../components/tags/tags.component'
+import { ToastService } from '../../../components/toast/toast.service'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { ImageBackgroundComponent } from '../../../components/ui/image-background/image-background.component'
@@ -28,10 +29,11 @@ import { DataService } from '../../../core/services/data.service'
     templateUrl: './game-view.component.html',
 })
 export class GameViewPageComponent implements OnDestroy {
-    private readonly dataService = inject(DataService)
+    private readonly api = inject(Api)
     private readonly route = inject(ActivatedRoute)
     private readonly router = inject(Router)
-    private readonly api = inject(Api)
+    private readonly dataService = inject(DataService)
+    private readonly toastService = inject(ToastService)
 
     // --------------------------------------------------------------------------
     //        Services signals
@@ -56,6 +58,7 @@ export class GameViewPageComponent implements OnDestroy {
     public reviewHoverValue = 0
     private readonly PREVENT_SPAM = {
         isLoadingWishlist: false,
+        isLoadingReview: false,
     }
 
     // TODO: delete this
@@ -105,7 +108,7 @@ export class GameViewPageComponent implements OnDestroy {
                 this.gameView$.set(game)
             },
             error: (error) => {
-                console.error(error)
+                this.toastService.error('Error loading game data')
             },
         })
     }
@@ -125,7 +128,7 @@ export class GameViewPageComponent implements OnDestroy {
                 this.gameView$.set(game)
             },
             error: (error) => {
-                console.error(error)
+                this.toastService.error('Error loading game data')
             },
         })
     }
@@ -168,7 +171,7 @@ export class GameViewPageComponent implements OnDestroy {
                 })
             },
             error: (error) => {
-                console.error(error)
+                this.toastService.error('Error saving wishlist')
             },
             complete: () => {
                 this.PREVENT_SPAM.isLoadingWishlist = false
@@ -182,24 +185,35 @@ export class GameViewPageComponent implements OnDestroy {
         const currentUser = this.currentUser$()
         const gameId = this.gameView$()?.gameData?.id
 
-        if (!currentUser?.id || !gameId) {
+        if (!currentUser?.id || !gameId || this.PREVENT_SPAM.isLoadingReview) {
             return
         }
 
-        this.dataService.saveGameReview(currentUser.id, gameId, reviewValue)
-        console.log('reviewValue', reviewValue)
-        this.gameView$.update((game) => {
-            if (!game) {
-                return null
-            }
+        this.PREVENT_SPAM.isLoadingReview = true
 
-            return {
-                ...game,
-                ratingData: {
-                    ...game.ratingData,
-                    userRating: reviewValue,
-                },
-            }
+        this.api.saveGameReview(currentUser.id, gameId, reviewValue).subscribe({
+            next: (res) => {
+                this.gameView$.update((game) => {
+                    if (!game) {
+                        return null
+                    }
+
+                    return {
+                        ...game,
+                        ratingData: {
+                            ...game.ratingData,
+                            userRating: reviewValue,
+                        },
+                    }
+                })
+            },
+            error: (error) => {
+                this.toastService.error('Error saving review')
+            },
+            complete: () => {
+                this.PREVENT_SPAM.isLoadingReview = false
+                this.dataService.refreshGameReviews()
+            },
         })
     }
 
@@ -207,7 +221,6 @@ export class GameViewPageComponent implements OnDestroy {
     addToCollection() {}
     saveOwnedGameDetails() {}
     removeFromCollection() {}
-    rateGame(rating: number) {}
 
     ngOnDestroy(): void {
         // unsubscribe from the route params
