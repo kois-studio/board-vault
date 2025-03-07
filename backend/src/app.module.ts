@@ -16,6 +16,7 @@ import { MeetsModule } from './modules/meets/meets.module'
 import { MeetAttendeesModule } from './modules/meet-attendees/meet-attendees.module'
 import { MeetAccountGamesModule } from './modules/meet-account-games/meet-account-games.module'
 import { EmailModule } from './modules/email/email.module'
+import { WishlistModule } from './modules/wishlist/wishlist.module'
 
 @Module({
     imports: [
@@ -35,6 +36,7 @@ import { EmailModule } from './modules/email/email.module'
         MeetAttendeesModule,
         MeetAccountGamesModule,
         EmailModule,
+        WishlistModule,
     ],
     controllers: [],
     providers: [],
