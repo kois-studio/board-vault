@@ -1,6 +1,6 @@
 <div class="fixed bottom-5 right-5">
     @for (toast of toastService.toasts; track $index) {
-    <div class="w-80 animate__animated animate__fadeIn bg-zinc-900">
+    <div class="w-80 animate__animated animate__fadeIn bg-zinc-900 rounded-lg">
         <div
             class="text-white border-l-4 p-4 mb-4 rounded-lg shadow-lg relative"
             [ngClass]="{
@@ -19,7 +19,7 @@
                 <i *ngIf="toast.type === 'generic'" class="bi bi-info-circle-fill"></i>
 
                 <span class="px-4">{{ toast.message }}</span>
-                <button (click)="closeToast($index)">&times;</button>
+                <button (click)="closeToast($index)" class="cursor-pointer">&times;</button>
             </div>
             <div
                 class="h-1 absolute bottom-1 m-auto opacity-0 rounded-full bg-gradient-to-r origin-left animate-toast-progress"
