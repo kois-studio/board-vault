@@ -91,19 +91,22 @@ export class ReviewsService {
 
     // #region special methods
 
-    async getAvgGlobalRating(gameId: number): Promise<null | number> {
+    async getAvgGlobalRating(gameId: number): Promise<null | { review: number, count: number }> {
         this.LOGGER.log(`Getting avg global rating for game ${gameId}`)
 
         // Step 1: Try to get them from cache
         const cachedRating = await this.cacheService.get(`${this.CACHE_KEY}:avgGlobalRating:${gameId}`)
         if (cachedRating) {
             this.LOGGER.log(`Returning cached avg global rating for game ${gameId}`)
-            return Number(cachedRating)
+            return { review: Number(cachedRating.review), count: Number(cachedRating.count) }
         }
 
         // Step 2: If no cached, get them from database
         const resultSet = await this.databaseService.getAvgGlobalRating(gameId)
-        const avgGlobalRating = Number(resultSet.rows[0].avgGlobalRating)
+        const avgGlobalRating = {
+            review: Number(resultSet.rows[0].avgGlobalRating),
+            count: Number(resultSet.rows[0].count),
+        }
 
         // Step 3: Save them to cache
         const cacheDuration = 60 * 60 * 24 * 30 // 30 days
@@ -112,19 +115,22 @@ export class ReviewsService {
         return avgGlobalRating
     }
 
-    async getAvgGroupsRating(accountId: number, gameId: number): Promise<null | number> {
+    async getAvgGroupsRating(accountId: number, gameId: number): Promise<null | { review: number, count: number }> {
         this.LOGGER.log(`Getting avg groups rating for game ${gameId}`)
         
         // Step 1: Try to get them from cache
         const cachedRating = await this.cacheService.get(`${this.CACHE_KEY}:avgGroupsRating:${accountId}:${gameId}`)
         if (cachedRating) {
             this.LOGGER.log(`Returning cached avg groups rating for game ${gameId}`)
-            return Number(cachedRating)
+            return { review: Number(cachedRating.review), count: Number(cachedRating.count) }
         }
 
         // Step 2: If no cached, get them from database
         const resultSet = await this.databaseService.getAvgGroupsRating(accountId, gameId)
-        const avgGroupsRating = Number(resultSet.rows[0].avgGroupsRating)
+        const avgGroupsRating = {
+            review: Number(resultSet.rows[0].avgGroupsRating),
+            count: Number(resultSet.rows[0].count),
+        }
 
         // Step 3: Save them to cache
         const cacheDuration = 60 * 60 * 24 * 30 // 30 days
