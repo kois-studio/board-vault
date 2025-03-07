@@ -72,18 +72,23 @@ export class ReviewsService {
         try {
             // check if the review already exists
             const existingReview = await this.getSafeGameReviewsById(gameReviewDto.accountId, gameReviewDto.gameId)
+
+            // its the same, so skip 1 query
+            if (existingReview && existingReview?.review === gameReviewDto.review) {
+                this.LOGGER.log(`Review ${gameReviewDto.accountId} - ${gameReviewDto.gameId} already exists, skipping`)
+                return { success: true }
+            }
+
             if (existingReview) {
                 // update the review
                 await this.databaseService.deleteGameReviewById(gameReviewDto.accountId, gameReviewDto.gameId)
             }
 
-            // its the same, so skip 1 query
-            if (existingReview?.review === gameReviewDto.review) {
-                return { success: true }
-            }
-
             // create the review
             await this.databaseService.createGameReview(gameReviewDto)
+
+            // invalidate the cache
+            await this.cacheService.deleteOne(`${this.CACHE_KEY}:userReviewsWithGameData:${gameReviewDto.accountId}`)
 
             return { success: true }
         } catch (error) {
@@ -103,7 +108,28 @@ export class ReviewsService {
         return { success: true }
     }
 
-    // #region special methods
+    async getUserReviews(userId: number): Promise<Array<GameReviewDto>> {
+        this.LOGGER.log(`Getting reviews for user ${userId}`)
+
+        // Step 1: Try to get them from cache
+        const cachedReviews = await this.cacheService.get(`${this.CACHE_KEY}:userReviewsWithGameData:${userId}`)
+        if (cachedReviews) {
+            this.LOGGER.log(`Returning cached reviews for user ${userId}`)
+            return cachedReviews
+        }
+
+        // Step 2: If no cached, get them from database
+        const resultSet = await this.databaseService.getUserReviews(userId)
+        const reviews = this._parseResultSet(resultSet)
+
+        // Step 3: Save them to cache
+        const cacheDuration = 60 * 60 // 1 hour
+        await this.cacheService.set(`${this.CACHE_KEY}:userReviewsWithGameData:${userId}`, reviews, cacheDuration)
+
+        return reviews
+    }
+
+    // #region avg methods
 
     async getAvgGlobalRating(gameId: number): Promise<null | { review: number, count: number }> {
         this.LOGGER.log(`Getting avg global rating for game ${gameId}`)
