@@ -58,6 +58,7 @@
                     [accountId]="currentUser$()?.id"
                     [gameId]="gameView$()?.gameData?.id"
                     [reviewValue]="gameView$()?.ratingData?.avgGroupsRating?.review ?? 0"
+                    (reviewValueChanged)="onReviewValueChanged($event)"
                 />
             </div>
         </div>

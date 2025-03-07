@@ -172,12 +172,8 @@ export class Api {
 
     // #region game reviews
 
-    createGameReview(accountId: number, gameId: number, review: number) {
+    saveGameReview(accountId: number, gameId: number, review: number) {
         return this.http.post<{ success: true }>(`${this.url}/reviews/`, { accountId, gameId, review })
-    }
-
-    deleteGameReview(accountId: number, gameId: number) {
-        return this.http.delete<{ success: true }>(`${this.url}/reviews/${accountId}/${gameId}`)
     }
 
     // #region meetings

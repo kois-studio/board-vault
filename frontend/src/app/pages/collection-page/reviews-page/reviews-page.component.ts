@@ -69,18 +69,7 @@ export class ReviewsPageComponent {
     public setReview(gameId: number, reviewValue: number) {
         const accountId = this.userData?.id
         if (accountId) {
-            if (this.getReview(gameId) === -1) {
-                this.dataService.createGameReview(accountId, gameId, reviewValue)
-            } else {
-                this.dataService.updateGameReview(accountId, gameId, reviewValue)
-            }
-        }
-    }
-
-    public deleteReview(gameId: number) {
-        const accountId = this.userData?.id
-        if (accountId) {
-            this.dataService.deleteGameReview(accountId, gameId)
+            this.dataService.saveGameReview(accountId, gameId, reviewValue)
         }
     }
 }
