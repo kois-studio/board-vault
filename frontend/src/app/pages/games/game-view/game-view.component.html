@@ -1,6 +1,6 @@
 <container-wrapper>
     <!-- Game data (image, title, etc) -->
-    <div class="grid grid-cols-3">
+    <div class="grid grid-cols-3 mb-4">
         <!-- Image, wishlist and -->
         <div class="relative aspect-square">
             <image-background [src]="gameView$()?.gameData?.imageUrl ?? ''" />
@@ -35,11 +35,11 @@
                 <i class="bi bi-people-fill"></i> {{ gameView$()?.gameData?.minPlayers }}-{{ gameView$()?.gameData?.maxPlayers }} players
             </p>
             <div class="flex gap-4">
-                <review-display [review]="9.84" />
+                <review-display [review]="gameView$()?.ratingData?.avgGlobalRating ?? 0" />
                 <i title="Global avg" class="bi bi-globe2"></i>
             </div>
             <div class="flex gap-4">
-                <review-display [review]="7.26" />
+                <review-display [review]="gameView$()?.ratingData?.avgGroupsRating ?? 0" />
                 <i title="Your Friends avg" class="bi bi-people"></i>
             </div>
             <app-tags [tags]="gameView$()?.tags ?? []" />
