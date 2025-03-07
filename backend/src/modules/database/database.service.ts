@@ -809,7 +809,9 @@ export class DatabaseService implements OnModuleInit {
     getAvgGlobalRating(gameId: number) {
         return this._tursoExecute({
             sql: `
-            SELECT AVG(review) as avgGlobalRating
+            SELECT
+                AVG(review) as avgGlobalRating,
+                COUNT(review) as count
             FROM GameReview
             WHERE gameId = ?`,
             args: [gameId],
@@ -820,7 +822,9 @@ export class DatabaseService implements OnModuleInit {
     getAvgGroupsRating(accountId: number, gameId: number) {
         return this._tursoExecute({
             sql: `
-            SELECT AVG(gr.review) AS avgGroupsRating
+            SELECT
+                AVG(gr.review) AS avgGroupsRating,
+                COUNT(gr.review) AS count
             FROM GameReview gr
             JOIN GroupMembership gm ON gr.accountId = gm.accountId  -- Link review to group membership
             JOIN GroupMembership gm2 ON gm.groupId = gm2.groupId  -- Find groups user is also in
