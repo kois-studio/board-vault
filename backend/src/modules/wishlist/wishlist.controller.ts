@@ -2,9 +2,9 @@ import { Controller, Get, Param, ParseIntPipe, Put, UseGuards } from '@nestjs/co
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
 import { WishlistService } from './wishlist.service'
-import { UserOwnershipGuard } from 'src/common/guards/ownership.guard'
-import { WishlistResponseDto } from 'src/common/types/wishlisted-game.type'
-import { VerifiedUserGuard } from 'src/common/guards/verified-user.guard'
+import { UserOwnershipGuard } from '../../common/guards/ownership.guard'
+import { WishlistResponseDto } from '../../common/types/wishlisted-game.type'
+import { VerifiedUserGuard } from '../../common/guards/verified-user.guard'
 
 @UseGuards(JwtAuthGuard, VerifiedUserGuard)
 @ApiTags('wishlist')
