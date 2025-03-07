@@ -1,6 +1,6 @@
 <container-wrapper>
     <!-- Game data (image, title, etc) -->
-    <div class="grid grid-cols-3 mb-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mb-4">
         <!-- Image, wishlist and -->
         <div class="relative aspect-square">
             <image-background [src]="gameView$()?.gameData?.imageUrl ?? ''" />
@@ -9,9 +9,12 @@
                 <!-- Wishlist Button -->
                 <button
                     (click)="toggleWishlist()"
-                    class="p-2 rounded-full bg-white/90 hover:bg-white shadow-md transition-all w-10 h-10 cursor-pointer"
-                    [class.text-rose-500]="isWishlisted"
-                    [class.text-gray-400]="!isWishlisted"
+                    class="p-2 rounded-full bg-white/90 shadow-md w-10 h-10 cursor-pointer transition-transform duration-300 ease-linear"
+                    [ngClass]="{
+                        'text-rose-500': isWishlisted,
+                        'text-gray-400': !isWishlisted,
+                        'scale-130': wishlistAnimation,
+                    }"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" stroke="currentColor">
                         <path
