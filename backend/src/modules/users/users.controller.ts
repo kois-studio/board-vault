@@ -8,9 +8,9 @@ import { InvitationWithExtraData } from '../../common/types/invitation.type'
 import { SuccessDto } from '../../common/types/auth.type'
 import { NotificationDto } from '../../common/types/notification.type'
 import { UserOwnershipGuard } from '../../common/guards/ownership.guard'
-import { GameReviewAndGameData } from '../../common/types/game-review.type'
 import { MeetDto } from '../../common/types/meet.type'
 import { AccountGameHistoryDto } from '../../common/types/meet-account-game.type'
+import { GameReviewDto } from 'src/common/types/game-review.type'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('users')
@@ -82,7 +82,7 @@ export class UsersController {
 
     @Get('/:userId/reviews')
     @ApiOperation({ summary: 'Get reviews by user' })
-    @ApiResponse({ status: 200, type: [GameReviewAndGameData] })
+    @ApiResponse({ status: 200, type: [GameReviewDto] })
     getUserReviews(@Param('userId', ParseIntPipe) userId: number) {
         return this.usersService.getUserReviews(userId)
     }
