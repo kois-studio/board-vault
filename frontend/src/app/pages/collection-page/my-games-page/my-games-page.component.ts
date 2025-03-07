@@ -5,9 +5,10 @@ import { CardGameComponent } from '../../../components/card-game/card-game.compo
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { TitleSubtitleComponent } from '../../../components/ui/title-subtitle/title-subtitle.component'
 import { DataService } from '../../../core/services/data.service'
+import { RouterLink } from '@angular/router'
 
 @Component({
-    imports: [CardGameComponent, ReactiveFormsModule, ContainerWrapperComponent, TitleSubtitleComponent],
+    imports: [CardGameComponent, ReactiveFormsModule, ContainerWrapperComponent, TitleSubtitleComponent, RouterLink],
     templateUrl: 'my-games-page.component.html',
 })
 export class MyGamesPageComponent {
