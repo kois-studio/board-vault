@@ -588,7 +588,7 @@ export class DataService {
                         )
 
                         // 3.
-                        this.toastService.success('You have created the review')
+                        this.toastService.success('Review updated')
                     },
                     error: (error) => {
                         if (error.status === 404) {
@@ -636,7 +636,7 @@ export class DataService {
                 this._getUserReviews(accountId)
 
                 // 3.
-                this.toastService.success('You have created the review')
+                this.toastService.success('Review created')
             },
             error: (error) => {
                 if (error.status === 404) {
