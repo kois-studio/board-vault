@@ -17,14 +17,14 @@
     <div class="flex gap-4 border-b border-gray-700">
         <button
             [class]="activeTab === 'collection' ? 'border-b-2 border-primary text-primary' : 'text-gray-400'"
-            class="pb-4 px-2 font-medium"
+            class="pb-4 px-2 font-medium cursor-pointer"
             (click)="activeTab = 'collection'"
         >
             My Collection ({{ userGames.length }})
         </button>
         <button
             [class]="activeTab === 'browse' ? 'border-b-2 border-primary text-primary' : 'text-gray-400'"
-            class="pb-4 px-2 font-medium"
+            class="pb-4 px-2 font-medium cursor-pointer"
             (click)="activeTab = 'browse'"
         >
             Browse Games
@@ -45,7 +45,8 @@
                     [maxPlayers]="game.maxPlayers"
                 />
                 <div
-                    class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
+                    [routerLink]="['/games', game.id]"
+                    class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                 >
                     <button
                         (click)="onClickGame(game.id)"
@@ -86,7 +87,8 @@
                     [maxPlayers]="game.maxPlayers"
                 />
                 <div
-                    class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
+                    [routerLink]="['/games', game.id]"
+                    class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                 >
                     <button
                         (click)="onClickGame(game.id)"
