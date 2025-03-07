@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { Component, effect, inject, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { ActivatedRoute, Router, RouterLink } from '@angular/router'
+import { ActivatedRoute, Router } from '@angular/router'
 import { Api } from '../../../api/api'
 import type { GameViewType } from '../../../api/api.types'
 import { CardGameComponent } from '../../../components/card-game/card-game.component'
@@ -11,18 +11,20 @@ import { ContainerWrapperComponent } from '../../../components/ui/container-wrap
 import { ImageBackgroundComponent } from '../../../components/ui/image-background/image-background.component'
 import { ReviewDisplayComponent } from '../../../components/ui/review-display/review-display.component'
 import { DataService } from '../../../core/services/data.service'
+import { ReviewGameComponent } from "../../../components/review-game/review-game.component";
 
 @Component({
     imports: [
-        CommonModule,
-        FormsModule,
-        ContainerWrapperComponent,
-        ImageBackgroundComponent,
-        ReviewDisplayComponent,
-        TagsComponent,
-        ButtonComponent,
-        CardGameComponent,
-    ],
+    CommonModule,
+    FormsModule,
+    ContainerWrapperComponent,
+    ImageBackgroundComponent,
+    ReviewDisplayComponent,
+    TagsComponent,
+    ButtonComponent,
+    CardGameComponent,
+    ReviewGameComponent
+],
     templateUrl: './game-view.component.html',
 })
 export class GameViewPageComponent {
