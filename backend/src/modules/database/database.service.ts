@@ -816,6 +816,20 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    // The average rating of the game from the groups the user is a member of
+    getAvgGroupsRating(accountId: number, gameId: number) {
+        return this._tursoExecute({
+            sql: `
+            SELECT AVG(gr.review) AS avgGroupsRating
+            FROM GameReview gr
+            JOIN GroupMembership gm ON gr.accountId = gm.accountId  -- Link review to group membership
+            JOIN GroupMembership gm2 ON gm.groupId = gm2.groupId  -- Find groups user is also in
+            WHERE gm2.accountId = ?  -- Filter: user must be in the same group
+            AND gr.gameId = ?;  -- Filter: only for the specific game`,
+            args: [accountId, gameId]
+        })
+    }
+
     // #region Meetings
 
     getMeets() {
@@ -948,5 +962,4 @@ export class DatabaseService implements OnModuleInit {
             args: [gameId],
         })
     }
-    
 }
