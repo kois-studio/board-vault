@@ -1,8 +1,10 @@
-import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common'
+import { Injectable, CanActivate, ExecutionContext, ForbiddenException, Logger } from '@nestjs/common'
 import { DatabaseService } from '../../modules/database/database.service'
 
 @Injectable()
 export class VerifiedUserGuard implements CanActivate {
+    private readonly LOGGER = new Logger(this.constructor.name)
+
     constructor(private readonly databaseService: DatabaseService) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -10,6 +12,7 @@ export class VerifiedUserGuard implements CanActivate {
         const user = request.user // This is set by the JwtStrategy validate method.
 
         if (!user) {
+            this.LOGGER.error('Access denied. User not found in request')
             return false // Or throw an UnauthorizedException if you prefer
         }
 
@@ -17,11 +20,13 @@ export class VerifiedUserGuard implements CanActivate {
 
         const userRecord = await this.databaseService.getUserById(userId) // Fetch the user from the database
         if (userRecord.rows.length === 0) {
+            this.LOGGER.error('Access denied. User not found in database')
             return false // Or throw an exception
         }
 
         if (!userRecord.rows[0].email_verified) {
-            throw new ForbiddenException('Your email address has not been verified.')
+            this.LOGGER.error('Access denied. User email not verified yet')
+            throw new ForbiddenException('Your email address has not been verified yet.')
         }
 
         return true
