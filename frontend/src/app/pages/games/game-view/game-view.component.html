@@ -1,6 +1,6 @@
 <container-wrapper>
     <!-- Game data (image, title, etc) -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mb-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mb-4">
         <!-- Image, wishlist and -->
         <div class="relative aspect-square">
             <image-background [src]="gameView$()?.gameData?.imageUrl ?? ''" />
@@ -52,7 +52,8 @@
             <app-tags [tags]="gameView$()?.tags ?? []" />
 
             <div class="bg-gray-50 dark:bg-zinc-800 rounded-xl py-2 px-4 mt-4 border border-gray-200">
-                <h4 class="font-semibold">Your review</h4>
+                <h4 class="font-semibold" *ngIf="gameUserReviewComputed() > 0">Your review</h4>
+                <h4 class="font-semibold" *ngIf="gameUserReviewComputed() === 0">Rate this game</h4>
 
                 <div class="flex items-center gap-0.5">
                     @for (star of [2, 4, 6, 8, 10]; track $index) {
