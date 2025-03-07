@@ -966,4 +966,34 @@ export class DatabaseService implements OnModuleInit {
             args: [gameId],
         })
     }
+
+    // #region Wishlist
+
+    getWishlistedGames(accountId: number) {
+        return this._tursoExecute({
+            sql: `SELECT w.gameId FROM WishlistedGame w WHERE w.accountId = ?`,
+            args: [accountId],
+        });
+    }
+
+    getWishlistById(accountId: number, gameId: number) {
+        return this._tursoExecute({
+            sql: 'SELECT * FROM WishlistedGame WHERE accountId = ? AND gameId = ?',
+            args: [accountId, gameId],
+        })
+    }
+
+    addGameToWishlist(accountId: number, gameId: number) {
+        return this._tursoExecute({
+            sql: 'INSERT INTO WishlistedGame (accountId, gameId) VALUES (?, ?)',
+            args: [accountId, gameId],
+        })
+    }
+
+    removeGameFromWishlist(accountId: number, gameId: number) {
+        return this._tursoExecute({
+            sql: 'DELETE FROM WishlistedGame WHERE accountId = ? AND gameId = ?',
+            args: [accountId, gameId],
+        })
+    }
 }
