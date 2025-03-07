@@ -74,11 +74,7 @@ export class GameViewPageComponent {
 
     constructor() {
         effect(() => {
-            // Initial load
-            const gameId = Number.parseInt(this.route.snapshot.paramMap.get('gameId') || '')
             const currentUser = this.currentUser$()
-
-            this._loadGameData(currentUser?.id, gameId)
 
             // On route change
             this.route.paramMap.subscribe((params) => {
