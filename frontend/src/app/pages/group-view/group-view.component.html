@@ -65,8 +65,8 @@
 
             <ul class="grid gap-y-4 mt-4">
                 @for (invitation of invitationsList; track $index) {
-                <li class="bg-zinc-800 rounded-lg flex items-center justify-start opacity-40">
-                    <app-card-account [member]="invitation.toAccount" />
+                <li class="bg-zinc-200 dark:bg-zinc-800/30 border-zinc-300 dark:border-zinc-800 rounded-lg flex items-center justify-start">
+                    <app-card-account class="opacity-30" [member]="invitation.toAccount" />
                 </li>
                 }
             </ul>
