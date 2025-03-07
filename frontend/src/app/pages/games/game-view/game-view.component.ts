@@ -1,33 +1,35 @@
 import { CommonModule } from '@angular/common'
-import { Component, effect, inject, signal } from '@angular/core'
+import { Component, OnDestroy, computed, effect, inject, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router'
+import { Subscription } from 'rxjs'
 import { Api } from '../../../api/api'
 import type { GameViewType } from '../../../api/api.types'
 import { CardGameComponent } from '../../../components/card-game/card-game.component'
+import { ReviewGameComponent } from '../../../components/review-game/review-game.component'
 import { TagsComponent } from '../../../components/tags/tags.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { ImageBackgroundComponent } from '../../../components/ui/image-background/image-background.component'
 import { ReviewDisplayComponent } from '../../../components/ui/review-display/review-display.component'
 import { DataService } from '../../../core/services/data.service'
-import { ReviewGameComponent } from "../../../components/review-game/review-game.component";
 
 @Component({
     imports: [
-    CommonModule,
-    FormsModule,
-    ContainerWrapperComponent,
-    ImageBackgroundComponent,
-    ReviewDisplayComponent,
-    TagsComponent,
-    ButtonComponent,
-    CardGameComponent,
-    ReviewGameComponent
-],
+        CommonModule,
+        FormsModule,
+        ContainerWrapperComponent,
+        ImageBackgroundComponent,
+        ReviewDisplayComponent,
+        TagsComponent,
+        ButtonComponent,
+        CardGameComponent,
+        ReviewGameComponent,
+        FormsModule,
+    ],
     templateUrl: './game-view.component.html',
 })
-export class GameViewPageComponent {
+export class GameViewPageComponent implements OnDestroy {
     private readonly dataService = inject(DataService)
     private readonly route = inject(ActivatedRoute)
     private readonly router = inject(Router)
@@ -43,6 +45,7 @@ export class GameViewPageComponent {
     // --------------------------------------------------------------------------
     //        Component props
     // --------------------------------------------------------------------------
+    private _routeSub: Subscription | undefined
     public isLoading = false
     public gameView$ = signal<GameViewType | null>(null)
     public wishlistAnimation = false // used for a little scale animation
@@ -80,7 +83,7 @@ export class GameViewPageComponent {
             const currentUser = this.currentUser$()
 
             // On route change
-            this.route.paramMap.subscribe((params) => {
+            this._routeSub = this.route.paramMap.subscribe((params) => {
                 const gameId = Number.parseInt(params.get('gameId') || '')
                 this._loadGameData(currentUser?.id, gameId)
             })
@@ -122,6 +125,22 @@ export class GameViewPageComponent {
         })
     }
 
+    public onReviewValueChanged(reviewValue: number) {
+        this.gameView$.update((game) => {
+            if (!game) {
+                return null
+            }
+
+            return {
+                ...game,
+                ratingData: {
+                    ...game.ratingData,
+                    userRating: reviewValue,
+                },
+            }
+        })
+    }
+
     shareGame() {}
     addToCollection() {}
     toggleWishlist() {
@@ -136,4 +155,9 @@ export class GameViewPageComponent {
     saveOwnedGameDetails() {}
     removeFromCollection() {}
     rateGame(rating: number) {}
+
+    ngOnDestroy(): void {
+        // unsubscribe from the route params
+        this._routeSub?.unsubscribe()
+    }
 }
