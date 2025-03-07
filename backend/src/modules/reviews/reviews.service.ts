@@ -111,4 +111,25 @@ export class ReviewsService {
 
         return avgGlobalRating
     }
+
+    async getAvgGroupsRating(accountId: number, gameId: number): Promise<null | number> {
+        this.LOGGER.log(`Getting avg groups rating for game ${gameId}`)
+        
+        // Step 1: Try to get them from cache
+        const cachedRating = await this.cacheService.get(`${this.CACHE_KEY}:avgGroupsRating:${accountId}:${gameId}`)
+        if (cachedRating) {
+            this.LOGGER.log(`Returning cached avg groups rating for game ${gameId}`)
+            return Number(cachedRating)
+        }
+
+        // Step 2: If no cached, get them from database
+        const resultSet = await this.databaseService.getAvgGroupsRating(accountId, gameId)
+        const avgGroupsRating = Number(resultSet.rows[0].avgGroupsRating)
+
+        // Step 3: Save them to cache
+        const cacheDuration = 60 * 60 * 24 * 30 // 30 days
+        await this.cacheService.set(`${this.CACHE_KEY}:avgGroupsRating:${accountId}:${gameId}`, avgGroupsRating, cacheDuration)
+
+        return avgGroupsRating
+    }
 }

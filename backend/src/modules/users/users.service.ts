@@ -360,7 +360,7 @@ export class UsersService {
 
         // Step 5: Get reviews
         const myReview = await this.reviewsService.getSafeGameReviewsById(userId, gameId)
-        // const avgGroupsRating = await this.reviewsService.getAvgGroupsRating(gameId)
+        const avgGroupsRating = await this.reviewsService.getAvgGroupsRating(userId, gameId)
         const avgGlobalRating = await this.reviewsService.getAvgGlobalRating(gameId)
 
         // Get similar games
@@ -383,7 +383,7 @@ export class UsersService {
             wishlistedGameData: null,
             ratingData: {
                 userRating: myReview?.review ?? null,
-                avgGroupsRating: 0,
+                avgGroupsRating: avgGroupsRating,
                 avgGlobalRating: avgGlobalRating,
             },
             playHistory: [],
