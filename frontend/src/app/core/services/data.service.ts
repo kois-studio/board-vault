@@ -593,6 +593,14 @@ export class DataService {
         })
     }
 
+    public refreshGameReviews() {
+        const currentUser = this.currentUser()
+        if (!currentUser) return
+
+        this.userReviews.set([])
+        this._getUserReviews(currentUser.id)
+    }
+
     // #region Meetings
 
     public createMeeting(accountId: number, groupId: number) {
