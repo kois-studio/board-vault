@@ -216,4 +216,14 @@ export class Api {
     deleteMeetAccountGame(accountId: number, meetId: number, gameId: number) {
         return this.http.delete<{ success: true }>(`${this.url}/meetAccountGames/${accountId}/${meetId}/${gameId}`)
     }
+
+    // #region wishlist
+
+    getWishlist(accountId: number) {
+        return this.http.get<Array<{ isWishlisted: boolean }>>(`${this.url}/wishlist/${accountId}`)
+    }
+
+    toggleWishlist(accountId: number, gameId: number) {
+        return this.http.put<{ isWishlisted: boolean }>(`${this.url}/wishlist/${accountId}/${gameId}`, {})
+    }
 }
