@@ -226,18 +226,8 @@ export class DatabaseService implements OnModuleInit {
                     gr.accountId,
                     gr.gameId, 
                     gr.review, 
-                    gr.reviewDate, 
-                    json_object(
-                        'id', g.id, 
-                        'title', g.title, 
-                        'imageUrl', g.imageUrl, 
-                        'gameAvgDuration', g.gameAvgDuration, 
-                        'minPlayers', g.minPlayers, 
-                        'maxPlayers', g.maxPlayers
-                    ) AS gameData
-                FROM 
-                    GameReview gr
-                JOIN Game g ON gr.gameId = g.id
+                    gr.reviewDate 
+                FROM GameReview gr
                 WHERE gr.accountId = ?;
             `,
             args: [userId],

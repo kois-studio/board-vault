@@ -125,7 +125,6 @@ export type GameReviewType = {
     gameId: number
     review: number
     reviewDate: string
-    gameData: GameType
 }
 
 // #region GamePlaySession

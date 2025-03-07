@@ -8,7 +8,7 @@ import { InvitationWithExtraData } from '../../common/types/invitation.type'
 import { GroupsService } from '../groups/groups.service'
 import { NotificationDto } from '../../common/types/notification.type'
 import { GroupMembershipsService } from '../group-memberships/group-memberships.service'
-import { GameReviewAndGameData } from '../../common/types/game-review.type'
+import { GameReviewDto } from '../../common/types/game-review.type'
 import { MeetsService } from '../meets/meets.service'
 import { MeetDto } from '../../common/types/meet.type'
 import { AccountGameHistoryDto } from '../../common/types/meet-account-game.type'
@@ -157,17 +157,9 @@ export class UsersService {
         }))
     }
 
-    async getUserReviews(userId: number): Promise<Array<GameReviewAndGameData>> {
+    async getUserReviews(userId: number): Promise<Array<GameReviewDto>> {
         this.LOGGER.log(`Getting reviews for user ${userId}`)
-        const resultSet = await this.databaseService.getUserReviews(userId)
-
-        return resultSet.rows.map(row => ({
-            accountId: Number(row[0]),
-            gameId: Number(row[1]),
-            review: Number(row[2]),
-            reviewDate: String(row[3]),
-            gameData: JSON.parse(String(row[4])) as GameDto,
-        }))
+        return this.reviewsService.getUserReviews(userId)
     }
 
     async getUserNotifications(userId: number): Promise<Array<NotificationDto>> {
