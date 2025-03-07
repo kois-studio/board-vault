@@ -43,6 +43,7 @@ export class GameViewPageComponent {
     // --------------------------------------------------------------------------
     public isLoading = false
     public gameView$ = signal<GameViewType | null>(null)
+    public wishlistAnimation = false // used for a little scale animation
 
     // TODO: delete this
     averageRating = 7.5
@@ -123,6 +124,12 @@ export class GameViewPageComponent {
     addToCollection() {}
     toggleWishlist() {
         this.isWishlisted = !this.isWishlisted
+
+        // Trigger the animation
+        this.wishlistAnimation = true
+        setTimeout(() => {
+            this.wishlistAnimation = false
+        }, 300)
     }
     saveOwnedGameDetails() {}
     removeFromCollection() {}
