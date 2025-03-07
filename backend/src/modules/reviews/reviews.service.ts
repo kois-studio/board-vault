@@ -66,15 +66,29 @@ export class ReviewsService {
         }
     }
 
-    async createGameReview(gameReviewDto: CreateGameReviewBody) {
-        this.LOGGER.log(`Creating gameReview ${gameReviewDto.accountId} - ${gameReviewDto.gameId}`)
+    async saveGameReview(gameReviewDto: CreateGameReviewBody) {
+        // NOTE: the review may alread exist
+        this.LOGGER.log(`Saving gameReview ${gameReviewDto.accountId} - ${gameReviewDto.gameId}`)
         try {
+            // check if the review already exists
+            const existingReview = await this.getSafeGameReviewsById(gameReviewDto.accountId, gameReviewDto.gameId)
+            if (existingReview) {
+                // update the review
+                await this.databaseService.deleteGameReviewById(gameReviewDto.accountId, gameReviewDto.gameId)
+            }
+
+            // its the same, so skip 1 query
+            if (existingReview?.review === gameReviewDto.review) {
+                return { success: true }
+            }
+
+            // create the review
             await this.databaseService.createGameReview(gameReviewDto)
 
             return { success: true }
         } catch (error) {
-            this.LOGGER.error('Review creation failed', error)
-            throw new BadRequestException('Review creation failed')
+            this.LOGGER.error('Review save failed', error)
+            throw new BadRequestException('Review save failed')
         }
     }
 

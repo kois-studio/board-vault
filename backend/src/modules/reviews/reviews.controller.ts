@@ -20,10 +20,10 @@ export class ReviewsController {
     }
 
     @Post('/')
-    @ApiOperation({ summary: 'Create a new game Review', deprecated: true })
+    @ApiOperation({ summary: 'Create a new game Review', deprecated: false })
     @ApiResponse({ status: 201, type: SuccessDto, description: 'The Game Review has been succesfully created' })
-    async createGameReview(@Body() gameReviewDto: CreateGameReviewBody) {
-        return this.reviewsService.createGameReview(gameReviewDto)
+    async saveGameReview(@Body() gameReviewDto: CreateGameReviewBody) {
+        return this.reviewsService.saveGameReview(gameReviewDto)
     }
 
     @Get('/:accountId/:gameId')
