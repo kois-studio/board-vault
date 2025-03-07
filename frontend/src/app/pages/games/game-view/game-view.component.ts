@@ -62,12 +62,6 @@ export class GameViewPageComponent implements OnDestroy {
     }
 
     // TODO: delete this
-    averageRating = 7.5
-    tags = [
-        { tag: 'tag1', category: 'category1' },
-        { tag: 'tag2', category: 'category2' },
-        { tag: 'tag3', category: 'category3' },
-    ]
     purchaseDate = new Date()
     purchasePrice = 100
     purchaseNotes = 'This is a note about the game'
@@ -169,6 +163,11 @@ export class GameViewPageComponent implements OnDestroy {
                             : null,
                     }
                 })
+                if (response.isWishlisted) {
+                    this.toastService.success('Game added to wishlist')
+                } else {
+                    this.toastService.success('Game removed from wishlist')
+                }
             },
             error: (error) => {
                 this.toastService.error('Error saving wishlist')
@@ -206,6 +205,7 @@ export class GameViewPageComponent implements OnDestroy {
                         },
                     }
                 })
+                this.toastService.success('Review saved')
             },
             error: (error) => {
                 this.toastService.error('Error saving review')
