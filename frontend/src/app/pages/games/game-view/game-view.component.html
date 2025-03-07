@@ -35,12 +35,16 @@
                 <i class="bi bi-people-fill"></i> {{ gameView$()?.gameData?.minPlayers }}-{{ gameView$()?.gameData?.maxPlayers }} players
             </p>
             <div class="flex gap-4">
-                <review-display [review]="gameView$()?.ratingData?.avgGlobalRating ?? 0" />
-                <i title="Global avg" class="bi bi-globe2"></i>
+                <review-display [review]="gameView$()?.ratingData?.avgGlobalRating?.review ?? 0" />
+                <span>
+                    <i title="Global avg" class="bi bi-globe2 text-secondary"></i> {{ gameView$()?.ratingData?.avgGlobalRating?.count ?? 0 }} votes
+                </span>
             </div>
             <div class="flex gap-4">
-                <review-display [review]="gameView$()?.ratingData?.avgGroupsRating ?? 0" />
-                <i title="Your Friends avg" class="bi bi-people"></i>
+                <review-display [review]="gameView$()?.ratingData?.avgGroupsRating?.review ?? 0" />
+                <span>
+                    <i title="Your Friends avg" class="bi bi-people-fill text-secondary"></i> {{ gameView$()?.ratingData?.avgGroupsRating?.count ?? 0 }} votes
+                </span>
             </div>
             <app-tags [tags]="gameView$()?.tags ?? []" />
 
