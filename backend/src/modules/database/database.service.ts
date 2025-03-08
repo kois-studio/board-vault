@@ -287,16 +287,9 @@ export class DatabaseService implements OnModuleInit {
 
     getUserGamesHistory(userId: number) {
         return this._tursoExecute({
-            sql: `SELECT 
+            sql: `SELECT
             mag.accountId,
-            json_object(
-                'id', g.id,
-                'title', g.title,
-                'imageUrl', g.imageUrl,
-                'gameAvgDuration', g.gameAvgDuration,
-                'minPlayers', g.minPlayers,
-                'maxPlayers', g.maxPlayers
-            ) AS gameData,
+            mag.gameId,
             json_object(
                 'id', m.id,
                 'groupId', m.groupId,
@@ -305,7 +298,6 @@ export class DatabaseService implements OnModuleInit {
                 'isConfirmed', m.isConfirmed
             ) AS meetData
             FROM MeetAccountGame mag
-            JOIN Game g ON mag.gameId = g.id
             JOIN Meet m ON mag.meetId = m.id
             WHERE mag.accountId = ?
             ORDER BY m.meetDate DESC;
