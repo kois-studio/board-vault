@@ -1,3 +1,9 @@
+@if (isLoadingGameData) {
+<p class="flex flex-col items-center justify-center text-gray-500 gap-x-2 min-h-[50vh]">
+    <app-spinner size="large" />
+    Loading game data...
+</p>
+} @else {
 <container-wrapper>
     <!-- Game data (image, title, etc) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mb-6">
@@ -215,7 +221,7 @@
 
             <div class="flex flex-wrap gap-4">
                 @for (similarGame of gameView$()?.similarGames; track similarGame.id) {
-                <button (click)="navigateToGame(similarGame.id)" class="hover:scale-105 transition-transform">
+                <button routerLink="/games/{{similarGame.id}}" class="hover:scale-105 transition-transform">
                     <app-card-game
                         [title]="similarGame.title"
                         [imageUrl]="similarGame.imageUrl"
@@ -229,3 +235,4 @@
         </div>
     </div>
 </container-wrapper>
+}
