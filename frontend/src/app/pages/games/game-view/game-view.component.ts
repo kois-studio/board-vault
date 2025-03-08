@@ -1,24 +1,25 @@
 import { CommonModule } from '@angular/common'
 import { Component, OnDestroy, computed, effect, inject, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { ActivatedRoute, Router } from '@angular/router'
+import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { Subscription } from 'rxjs'
 import { Api } from '../../../api/api'
 import type { GameViewType } from '../../../api/api.types'
 import { CardGameComponent } from '../../../components/card-game/card-game.component'
 import { TagsComponent } from '../../../components/tags/tags.component'
 import { ToastService } from '../../../components/toast/toast.service'
-import { BadgeComponent } from '../../../components/ui/badge/badge.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { ImageBackgroundComponent } from '../../../components/ui/image-background/image-background.component'
 import { ReviewDisplayComponent } from '../../../components/ui/review-display/review-display.component'
+import { SpinnerComponent } from '../../../components/ui/spinner/spinner.component'
 import { DataService } from '../../../core/services/data.service'
 
 @Component({
     imports: [
         CommonModule,
         FormsModule,
+        RouterLink,
         ContainerWrapperComponent,
         ImageBackgroundComponent,
         ReviewDisplayComponent,
@@ -26,7 +27,7 @@ import { DataService } from '../../../core/services/data.service'
         ButtonComponent,
         CardGameComponent,
         FormsModule,
-        BadgeComponent,
+        SpinnerComponent,
     ],
     templateUrl: './game-view.component.html',
 })
@@ -42,7 +43,6 @@ export class GameViewPageComponent implements OnDestroy {
     // --------------------------------------------------------------------------
     // dataService
     public readonly currentUser$ = this.dataService.currentUser
-    public readonly userGames$ = this.dataService.userGames
 
     // --------------------------------------------------------------------------
     //        Component singals
@@ -55,9 +55,10 @@ export class GameViewPageComponent implements OnDestroy {
     //        Component props
     // --------------------------------------------------------------------------
     private _routeSub: Subscription | undefined
-    public isLoading = false
     public wishlistAnimation = false // used for a little scale animation
     public reviewHoverValue = 0
+    public isLoadingGameData = true // initial loading state
+    // to prevent spamming actions
     private readonly PREVENT_SPAM = {
         isLoadingWishlist: false,
         isLoadingReview: false,
@@ -100,29 +101,14 @@ export class GameViewPageComponent implements OnDestroy {
             return
         }
 
+        // scroll to the top of the page
+        window.scrollTo(0, 0)
+        this.isLoadingGameData = true
+
         this.api.getUserGame(userId, gameId).subscribe({
             next: (game) => {
                 this.gameView$.set(game)
-            },
-            error: (error) => {
-                this.toastService.error('Error loading game data')
-            },
-        })
-    }
-
-    public navigateToGame(gameId: number) {
-        const currentUser = this.currentUser$()
-        if (!currentUser) {
-            return
-        }
-
-        // changes the URL but doesn't triggers the effect
-        this.router.navigate(['/games', gameId])
-
-        // re-fetch the game data
-        this.api.getUserGame(currentUser.id, gameId).subscribe({
-            next: (game) => {
-                this.gameView$.set(game)
+                this.isLoadingGameData = false
             },
             error: (error) => {
                 this.toastService.error('Error loading game data')
