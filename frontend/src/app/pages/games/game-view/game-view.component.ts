@@ -8,6 +8,7 @@ import type { GameViewType } from '../../../api/api.types'
 import { CardGameComponent } from '../../../components/card-game/card-game.component'
 import { TagsComponent } from '../../../components/tags/tags.component'
 import { ToastService } from '../../../components/toast/toast.service'
+import { BadgeComponent } from '../../../components/ui/badge/badge.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { ImageBackgroundComponent } from '../../../components/ui/image-background/image-background.component'
@@ -25,6 +26,7 @@ import { DataService } from '../../../core/services/data.service'
         ButtonComponent,
         CardGameComponent,
         FormsModule,
+        BadgeComponent,
     ],
     templateUrl: './game-view.component.html',
 })
@@ -62,6 +64,7 @@ export class GameViewPageComponent implements OnDestroy {
     }
 
     // TODO: delete this
+    isInCollection = false
     purchaseDate = new Date()
     purchasePrice = 100
     purchaseNotes = 'This is a note about the game'
@@ -217,10 +220,16 @@ export class GameViewPageComponent implements OnDestroy {
         })
     }
 
+    // #region Ownership
+
     shareGame() {}
-    addToCollection() {}
+    addToCollection() {
+        this.isInCollection = true
+    }
     saveOwnedGameDetails() {}
-    removeFromCollection() {}
+    removeFromCollection() {
+        this.isInCollection = false
+    }
 
     ngOnDestroy(): void {
         // unsubscribe from the route params
