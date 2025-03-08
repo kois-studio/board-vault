@@ -15,7 +15,7 @@ import { AccountGameHistoryDto } from '../../common/types/meet-account-game.type
 import { GamesService } from '../core/games/games.service'
 import { GamesOwnedService } from '../core/games-owned/games-owned.service'
 import { TagsService } from '../core/tags/tags.service'
-import { ReviewsService } from '../reviews/reviews.service'
+import { ReviewsService } from '../core/reviews/reviews.service'
 import { WishlistService } from '../core/wishlist/wishlist.service'
 
 @Injectable()
