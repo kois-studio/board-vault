@@ -16,6 +16,7 @@ import { GamesService } from '../games/games.service'
 import { GamesOwnedService } from '../games-owned/games-owned.service'
 import { TagsService } from '../tags/tags.service'
 import { ReviewsService } from '../reviews/reviews.service'
+import { WishlistService } from '../wishlist/wishlist.service'
 
 @Injectable()
 export class UsersService {
@@ -30,6 +31,7 @@ export class UsersService {
         private readonly gamesOwnedService: GamesOwnedService,
         private readonly tagsService: TagsService,
         private readonly reviewsService: ReviewsService,
+        private readonly wishlistService: WishlistService,
     ) {}
 
     private _parseResultSet(resultSet: ResultSet): Array<UserCompleteDto> {
@@ -350,7 +352,10 @@ export class UsersService {
         // Step 4: GameTags
         const gameTags = await this.tagsService.getGameTags(gameId)
 
-        // Step 5: Get reviews
+        // Step 5: Wishlist
+        const wishlistGameData = await this.wishlistService.isGameWishlisted(userId, gameId)
+
+        // Step 6: Get reviews
         const myReview = await this.reviewsService.getSafeGameReviewsById(userId, gameId)
         const avgGroupsRating = await this.reviewsService.getAvgGroupsRating(userId, gameId)
         const avgGlobalRating = await this.reviewsService.getAvgGlobalRating(gameId)
@@ -372,7 +377,10 @@ export class UsersService {
                 purchaseNotes: ownedGameData.purchaseNotes,
             },
             tags: gameTags,
-            wishlistedGameData: null,
+            wishlistedGameData: wishlistGameData ? {
+                dateAdded: '',
+                notes: '',
+            } : null,
             ratingData: {
                 userRating: myReview?.review ?? null,
                 avgGroupsRating: avgGroupsRating,
