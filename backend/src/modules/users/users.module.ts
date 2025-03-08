@@ -10,9 +10,10 @@ import { GamesModule } from '../games/games.module'
 import { GamesOwnedModule } from '../games-owned/games-owned.module'
 import { TagsModule } from '../tags/tags.module'
 import { GameReviewsModule } from '../reviews/reviews.module'
+import { WishlistModule } from '../wishlist/wishlist.module'
 
 @Module({
-    imports: [MeetsModule, DatabaseModule, GroupsModule, GroupMembershipsModule, GamesModule, GamesOwnedModule, TagsModule, GameReviewsModule],
+    imports: [MeetsModule, DatabaseModule, GroupsModule, GroupMembershipsModule, GamesModule, GamesOwnedModule, TagsModule, GameReviewsModule, WishlistModule],
     providers: [UsersService],
     exports: [UsersService],
     controllers: [UsersController],
