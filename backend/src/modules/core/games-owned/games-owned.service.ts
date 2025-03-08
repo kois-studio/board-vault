@@ -34,6 +34,8 @@ export class GamesOwnedService {
         return result.data
     }
 
+    // #region methods
+
     async getGamesOwneds() {
         this.LOGGER.log('Getting all ownedGames')
         const resultSet = await this.databaseService.getOwnedGames()
@@ -48,6 +50,7 @@ export class GamesOwnedService {
         return this._parseResultSet(resultSet)
     }
 
+    // TODO: boolean? what is this method for?
     async isGameIdOwnedByAccountId(accountId: number, gameId: number, throwError = true): Promise<GameOwnedDto | null> {
         this.LOGGER.log(`Getting ownedGame with id ${accountId} ${gameId}`)
         const resultSet = await this.databaseService.isGameIdOwnedByAccountId(accountId, gameId)
