@@ -16,7 +16,7 @@ import { GamesService } from '../games/games.service'
 import { GamesOwnedService } from '../core/games-owned/games-owned.service'
 import { TagsService } from '../core/tags/tags.service'
 import { ReviewsService } from '../reviews/reviews.service'
-import { WishlistService } from '../wishlist/wishlist.service'
+import { WishlistService } from '../core/wishlist/wishlist.service'
 
 @Injectable()
 export class UsersService {

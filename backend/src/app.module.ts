@@ -16,7 +16,7 @@ import { MeetsModule } from './modules/meets/meets.module'
 import { MeetAttendeesModule } from './modules/meet-attendees/meet-attendees.module'
 import { MeetAccountGamesModule } from './modules/meet-account-games/meet-account-games.module'
 import { EmailModule } from './modules/common/email/email.module'
-import { WishlistModule } from './modules/wishlist/wishlist.module'
+import { WishlistModule } from './modules/core/wishlist/wishlist.module'
 
 @Module({
     imports: [

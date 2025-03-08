@@ -10,7 +10,7 @@ import { GamesModule } from '../games/games.module'
 import { GamesOwnedModule } from '../core/games-owned/games-owned.module'
 import { TagsModule } from '../core/tags/tags.module'
 import { GameReviewsModule } from '../reviews/reviews.module'
-import { WishlistModule } from '../wishlist/wishlist.module'
+import { WishlistModule } from '../core/wishlist/wishlist.module'
 
 @Module({
     imports: [
