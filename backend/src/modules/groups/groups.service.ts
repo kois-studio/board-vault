@@ -1,18 +1,28 @@
 import { ResultSet } from '@libsql/client/.'
-import { Injectable, Logger, NotFoundException } from '@nestjs/common'
-import { CreateGroupBody, GroupDto, GroupMemberWithGames, GroupWithMembersAndGames, UpdateGroupBody } from '../../common/types/group.type'
+import { forwardRef, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common'
+import type { CreateGroupBody, GroupDto, GroupMemberWithGames, GroupWithMembersAndGames, UpdateGroupBody } from '../../common/types/group.type'
 import { DatabaseService } from '../database/database.service'
 import { groupsSchema } from '../../common/schemas'
-import { InvitationWithAccountsData } from '../../common/types/invitation.type'
-import { AvatarDto, UserGetDto } from '../../common/types/user.type'
-import { MeetWithAttendeesAndGames } from '../../common/types/meet.type'
+import type { InvitationWithAccountsData } from '../../common/types/invitation.type'
+import type { AvatarDto, UserGetDto } from '../../common/types/user.type'
+import type { MeetWithAttendeesAndGames } from '../../common/types/meet.type'
 import type { GameDto } from '../../common/types/game.type'
+import { UsersService } from '../users/users.service'
+import { GamesOwnedService } from '../games-owned/games-owned.service'
+import { GamesService } from '../games/games.service'
+import { ReviewsService } from '../reviews/reviews.service'
 
 @Injectable()
 export class GroupsService {
     private readonly LOGGER: Logger = new Logger(this.constructor.name)
 
-    constructor(private readonly databaseService: DatabaseService) {}
+    constructor(
+        private readonly databaseService: DatabaseService,
+        @Inject(forwardRef(() => UsersService)) private readonly usersService: UsersService,
+        private readonly gamesOwnedService: GamesOwnedService,
+        private readonly gamesService: GamesService,
+        private readonly reviewsService: ReviewsService,
+    ) {}
 
     private _parseResultSet(resultSet: ResultSet): Array<GroupDto> {
         const groups = resultSet.rows.map(row => ({
@@ -22,16 +32,22 @@ export class GroupsService {
             createdAt: String(row[3]),
         }))
 
+        return this._validateSchema(groups)
+    }
+
+    private _validateSchema(groups: Array<GroupDto>): Array<GroupDto> {
         const result = groupsSchema.safeParse(groups)
 
         if (!result.success) {
-            this.LOGGER.error('Failed to parse groups from database')
+            this.LOGGER.error('Failed to parse Groups from database')
             this.LOGGER.error(result.error)
             return []
         }
 
         return result.data
     }
+
+    // #region methods
 
     async getGroups(): Promise<Array<GroupDto>> {
         this.LOGGER.log('Getting all groups')
@@ -100,22 +116,50 @@ export class GroupsService {
 
     async getGroupWithMembersAndGames(groupId: number): Promise<GroupWithMembersAndGames> {
         this.LOGGER.log(`Getting group with members and games for group ${groupId}`)
-        const resultSet = await this.databaseService.getGroupWithMembersAndGames(groupId)
 
-        if (resultSet.rows.length === 0) {
-            throw new NotFoundException(`Group with id ${groupId} not found`)
-        }
+        // Step 1: Get basic group data
+        const group = await this.getGroupById(groupId)
+    
+        // Step 2: Get members with their join dates
+        const membershipRows = await this.databaseService.getGroupMembers(groupId);
+        const memberships = membershipRows.rows.map(row => ({
+            accountId: Number(row[0]),
+            joinedAt: String(row[1]),
+        }))
 
-        return resultSet.rows.map(row => ({
-            id: Number(row[0]),
-            name: String(row[1]),
-            createdBy: Number(row[2]),
-            createdAt: String(row[3]),
-            members: (JSON.parse(String(row[4])) as Array<GroupMemberWithGames>).map(member => ({
-                ...member,
-                avatar: JSON.parse(String(member.avatar)) as AvatarDto,
-            })),
-        }))[0]
+        // Step 3: Get all user profiles in parallel
+        const userProfiles = await Promise.all(memberships.map(membership => this.usersService.getUserById(membership.accountId)))
+
+        // Step 4: Enrich each user with games and reviews
+        const members: Array<GroupMemberWithGames> = await Promise.all(
+            userProfiles.map(async (userProfile) => {
+                const joinedAt = memberships.find(m => m.accountId === userProfile.id)?.joinedAt || '';
+                
+                // Get owned games IDs
+                const ownedGamesIds = (await this.gamesOwnedService.getGamesOwnedByAccountId(userProfile.id))
+                    .map(game => game.gameId);
+                
+                // Get full game data for each ID
+                const games = await Promise.all(
+                    ownedGamesIds.map(gameId => 
+                        this.gamesService.getGameById(gameId)
+                    )
+                );
+                
+                // Get reviews for this user
+                const reviews = await this.reviewsService.getUserReviews(userProfile.id);
+                
+                // Return the complete member object
+                return {
+                    ...userProfile,
+                    joinedAt,
+                    games,
+                    reviews,
+                };
+            })
+        );
+
+        return { ...group, members};
     }
 
     async getGroupInvitations(groupId: number): Promise<Array<InvitationWithAccountsData>> {

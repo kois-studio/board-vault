@@ -19,6 +19,10 @@ export class GamesOwnedService {
             purchaseNotes: row[4] ? String(row[4]) : null,
         }))
 
+        return this._validateSchema(ownedGames)
+    }
+
+    private _validateSchema(ownedGames: Array<GameOwnedDto>): Array<GameOwnedDto> {
         const result = gameOwnedsSchema.safeParse(ownedGames)
 
         if (!result.success) {
@@ -37,9 +41,16 @@ export class GamesOwnedService {
         return this._parseResultSet(resultSet)
     }
 
-    async getGamesOwnedById(accountId: number, gameId: number, throwError = true): Promise<GameOwnedDto | null> {
+    async getGamesOwnedByAccountId(accountId: number): Promise<Array<GameOwnedDto>> {
+        this.LOGGER.log(`Getting ownedGames with accountId ${accountId}`)
+        const resultSet = await this.databaseService.getOwnedGamesByAccountId(accountId)
+
+        return this._parseResultSet(resultSet)
+    }
+
+    async isGameIdOwnedByAccountId(accountId: number, gameId: number, throwError = true): Promise<GameOwnedDto | null> {
         this.LOGGER.log(`Getting ownedGame with id ${accountId} ${gameId}`)
-        const resultSet = await this.databaseService.getOwnedGameById(accountId, gameId)
+        const resultSet = await this.databaseService.isGameIdOwnedByAccountId(accountId, gameId)
         const ownedGames = this._parseResultSet(resultSet)
 
         if (ownedGames.length === 0 && throwError) {

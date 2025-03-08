@@ -29,8 +29,8 @@ export class GamesOwnedController {
     @ApiOperation({ summary: 'Get owned game by id', deprecated: true })
     @ApiResponse({ status: 200, type: GameOwnedDto, description: 'OwnedGame found' })
     @ApiResponse({ status: 404, description: 'OwnedGame not found' })
-    getGamesOwnedById(@Param('accountId', ParseIntPipe) accountId: number, @Param('gameId', ParseIntPipe) gameId: number) {
-        return this.gamesOwnedService.getGamesOwnedById(accountId, gameId)
+    isGameIdOwnedByAccountId(@Param('accountId', ParseIntPipe) accountId: number, @Param('gameId', ParseIntPipe) gameId: number) {
+        return this.gamesOwnedService.isGameIdOwnedByAccountId(accountId, gameId)
     }
 
     @Delete('/:accountId/:gameId')
