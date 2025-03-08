@@ -22,6 +22,8 @@ export type UserType = {
     }
     createdAt: string
     isDeleted: boolean
+    isAdmin: boolean
+    email_verified: boolean
 }
 
 // #region Game
