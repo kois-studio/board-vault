@@ -1,6 +1,6 @@
 <container-wrapper>
     <!-- Game data (image, title, etc) -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mb-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mb-6">
         <!-- Image, wishlist and -->
         <div class="relative aspect-square">
             <image-background [src]="gameView$()?.gameData?.imageUrl ?? ''" />
@@ -40,14 +40,14 @@
             </p>
             <div class="flex gap-4">
                 <review-display [review]="gameView$()?.ratingData?.avgGlobalRating?.review ?? 0" />
-                <span>
+                <span class="text-secondary">
                     <i title="Global avg" class="bi bi-globe2 text-secondary"></i>
                     {{ gameView$()?.ratingData?.avgGlobalRating?.count ?? 0 }} votes
                 </span>
             </div>
             <div class="flex gap-4">
                 <review-display [review]="gameView$()?.ratingData?.avgGroupsRating?.review ?? 0" />
-                <span>
+                <span class="text-secondary">
                     <i title="Your Friends avg" class="bi bi-people-fill text-secondary"></i>
                     {{ gameView$()?.ratingData?.avgGroupsRating?.count ?? 0 }} votes
                 </span>
@@ -79,73 +79,98 @@
         </div>
     </div>
 
-    <!-- Ownership and Rating Section -->
-    <div class="bg-gray-50 rounded-xl p-6 border border-gray-200">
-        <h3 class="font-semibold text-lg mb-4">Ownership</h3>
-        <app-button>I own this game</app-button>
-        <!-- Ownership Status Section -->
-        <div class="bg-gray-50 rounded-xl p-6 border border-gray-200">
-            <!-- When User OWNS the game -->
-            <div *ngIf="true">
-                <h3 class="font-semibold text-lg mb-4">In Your Collection</h3>
+    <!-- Ownership Section -->
+    <div class="app-bg-secondary rounded-xl mb-6">
+        <!-- <div class="flex items-center justify-between mb-4">
+            @if (isInCollection) {
+            <app-badge text="Owned" color="green" />
+            }
+        </div> -->
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Purchase Info -->
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Purchase Date</label>
-                            <input
-                                type="date"
-                                [(ngModel)]="purchaseDate"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                            />
-                        </div>
+        <!-- When User DOESN'T OWN the game -->
+        @if (!isInCollection) {
+        <div class="text-center px-4 py-8">
+            <p class="text-secondary mb-4">Do you own this game?</p>
+            <app-button (click)="addToCollection()" color="primary">
+                <i class="fas fa-plus-circle mr-2"></i>Add to My Collection
+            </app-button>
+        </div>
+        }
 
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Purchase Price</label>
-                            <div class="relative rounded-md shadow-sm">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <span class="text-gray-500 sm:text-sm">$</span>
-                                </div>
-                                <input
-                                    type="number"
-                                    [(ngModel)]="purchasePrice"
-                                    class="w-full pl-7 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                    placeholder="0.00"
-                                />
-                            </div>
-                        </div>
+        <!-- When User OWNS the game -->
+        @if (isInCollection) {
+        <div class="bg-green-200 dark:bg-green-900/50 text-green-800 dark:text-green-100 rounded-t-xl p-4">
+            <h3 class="font-semibold text-lg">This game is in your collection</h3>
+        </div>
+        <div class="p-4">
+            <div class="flex items-center justify-between"></div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Purchase Info -->
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Purchase Date <span class="text-gray-400 text-xs">(optional)</span>
+                        </label>
+                        <input
+                            type="date"
+                            [(ngModel)]="purchaseDate"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                        />
                     </div>
 
-                    <!-- Notes and Save Button -->
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Purchase Notes</label>
-                            <textarea
-                                [(ngModel)]="purchaseNotes"
-                                rows="3"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="Add notes about your purchase..."
-                            ></textarea>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Purchase Price <span class="text-gray-400 text-xs">(optional)</span>
+                        </label>
+                        <div class="relative rounded-md shadow-sm">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span class="text-gray-500 sm:text-sm">$</span>
+                            </div>
+                            <input
+                                type="number"
+                                [(ngModel)]="purchasePrice"
+                                class="w-full pl-7 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                                placeholder="0.00"
+                                step="0.01"
+                            />
                         </div>
+                    </div>
+                </div>
 
+                <!-- Notes and Buttons -->
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Purchase Notes <span class="text-gray-400 text-xs">(optional)</span>
+                        </label>
+                        <textarea
+                            [(ngModel)]="purchaseNotes"
+                            rows="3"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                            placeholder="Add notes about your purchase (e.g., 'Gift from Mom')"
+                        ></textarea>
+                    </div>
+
+                    <div class="flex space-x-3 pt-2">
                         <button
                             (click)="saveOwnedGameDetails()"
-                            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+                            class="flex-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors flex items-center justify-center"
                         >
-                            Save Details
+                            <i class="fas fa-save mr-2"></i>Save Details
                         </button>
 
                         <button
                             (click)="removeFromCollection()"
-                            class="px-4 py-2 bg-white hover:bg-gray-100 text-red-600 font-medium rounded-lg border border-gray-300 transition-colors ml-2"
+                            class="px-4 py-2 bg-white hover:bg-gray-100 text-red-600 font-medium rounded-lg border border-gray-300 transition-colors flex items-center justify-center"
                         >
-                            Remove from collection
+                            <i class="fas fa-trash-alt mr-2"></i>Remove
                         </button>
                     </div>
                 </div>
             </div>
         </div>
+        }
     </div>
 
     <!-- Main Content Container -->
