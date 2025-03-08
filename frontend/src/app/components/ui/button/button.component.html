@@ -1,10 +1,10 @@
 <button
     [type]="type"
     [disabled]="disabled || loading"
-    class="rounded shadow tracking-wide transition-colors disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed font-bold text-white"
+    class="rounded shadow tracking-wide transition-colors disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed text-white"
     [ngClass]="{
-        'px-2 py-1 font-normal text-sm': size === 'small',
-        'px-4 py-2 font-normal text-base': size === 'medium',
+        'px-2 py-1 font-semibold text-sm': size === 'small',
+        'px-4 py-2 font-semibold text-base': size === 'medium',
         'px-6 py-4 font-bold text-lg': size === 'large',
         'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-500/50': variant === 'primary',
         'bg-zinc-700 hover:bg-zinc-800 shadow-zinc-500/50': variant === 'secondary',
