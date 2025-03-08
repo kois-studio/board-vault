@@ -5,7 +5,7 @@ import { GroupsController } from './groups.controller'
 import { DatabaseModule } from '../common/database/database.module'
 import { UsersModule } from '../users/users.module'
 import { GamesOwnedModule } from '../core/games-owned/games-owned.module'
-import { GamesModule } from '../games/games.module'
+import { GamesModule } from '../core/games/games.module'
 import { GameReviewsModule } from '../reviews/reviews.module'
 
 @Module({
