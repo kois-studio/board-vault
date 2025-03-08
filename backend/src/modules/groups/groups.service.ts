@@ -10,7 +10,7 @@ import type { GameDto } from '../../common/types/game.type'
 import { UsersService } from '../users/users.service'
 import { GamesOwnedService } from '../core/games-owned/games-owned.service'
 import { GamesService } from '../core/games/games.service'
-import { ReviewsService } from '../reviews/reviews.service'
+import { ReviewsService } from '../core/reviews/reviews.service'
 
 @Injectable()
 export class GroupsService {
