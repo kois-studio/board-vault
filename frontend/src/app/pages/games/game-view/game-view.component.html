@@ -16,7 +16,7 @@
                 <button
                     title="Add to wishlist"
                     (click)="toggleWishlist()"
-                    class="p-2 rounded-full bg-white/90 shadow-md w-10 h-10 cursor-pointer transition-transform duration-300 ease-linear"
+                    class="p-2 rounded-full bg-white/90 shadow-md border border-zinc-200 w-10 h-10 cursor-pointer transition-transform duration-300 ease-linear"
                     [ngClass]="{
                         'text-rose-500': isWishlistedComputed(),
                         'text-gray-400': !isWishlistedComputed(),
