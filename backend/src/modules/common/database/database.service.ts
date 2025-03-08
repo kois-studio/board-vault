@@ -2,14 +2,14 @@ import { BadRequestException, Injectable, Logger, NotFoundException, OnModuleIni
 import { ConfigService } from '@nestjs/config'
 import { Client, createClient, type InStatement } from '@libsql/client'
 import * as bcrypt from 'bcrypt'
-import type { CreateUserBody, UpdateUserBody } from '../../common/types/user.type'
-import type { CreateGroupBody, UpdateGroupBody } from '../../common/types/group.type'
-import type { CreateGroupMembershipBody } from '../../common/types/group-membership.type'
-import type { CreateGameBody, UpdateGameBody } from '../../common/types/game.type'
-import type { CreateInvitationBody, CreateInvitationByUsernameBody } from '../../common/types/invitation.type'
-import type { GameOwnedDto } from '../../common/types/game-owned.type'
-import type { CreateNotificationBody, UpdateNotificationBody } from '../../common/types/notification.type'
-import type { CreateGameReviewBody } from '../../common/types/game-review.type'
+import type { CreateUserBody, UpdateUserBody } from '../../../common/types/user.type'
+import type { CreateGroupBody, UpdateGroupBody } from '../../../common/types/group.type'
+import type { CreateGroupMembershipBody } from '../../../common/types/group-membership.type'
+import type { CreateGameBody, UpdateGameBody } from '../../../common/types/game.type'
+import type { CreateInvitationBody, CreateInvitationByUsernameBody } from '../../../common/types/invitation.type'
+import type { GameOwnedDto } from '../../../common/types/game-owned.type'
+import type { CreateNotificationBody, UpdateNotificationBody } from '../../../common/types/notification.type'
+import type { CreateGameReviewBody } from '../../../common/types/game-review.type'
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {

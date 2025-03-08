@@ -1,7 +1,7 @@
 import { ResultSet } from '@libsql/client/.'
 import { forwardRef, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common'
 import type { CreateGroupBody, GroupDto, GroupMemberWithGames, GroupWithMembersAndGames, UpdateGroupBody } from '../../common/types/group.type'
-import { DatabaseService } from '../database/database.service'
+import { DatabaseService } from '../common/database/database.service'
 import { groupsSchema } from '../../common/schemas'
 import type { InvitationWithAccountsData } from '../../common/types/invitation.type'
 import type { AvatarDto, UserGetDto } from '../../common/types/user.type'
