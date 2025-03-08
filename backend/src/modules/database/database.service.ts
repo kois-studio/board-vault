@@ -380,56 +380,14 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
-    getGroupWithMembersAndGames(groupId: number) {
+    getGroupMembers(groupId: number) {
         return this._tursoExecute({
-            sql: `SELECT 
-                g.id,
-                g.name,
-                g.createdBy,
-                g.createdAt,
-                json_group_array(
-                    json_object(
-                        'id', a.id,
-                        'username', a.username,
-                        'displayName', a.displayName,
-                        'email', a.email,
-                        'avatar', a.avatar,
-                        'joinedAt', gm.joinedAt,
-                        'games', (
-                            SELECT json_group_array(
-                                json_object(
-                                    'id', og.gameId,
-                                    'title', ga.title,
-                                    'imageUrl', ga.imageUrl,
-                                    'gameAvgDuration', ga.gameAvgDuration,
-                                    'minPlayers', ga.minPlayers,
-                                    'maxPlayers', ga.maxPlayers
-                                )
-                            )
-                            FROM OwnedGame og
-                            JOIN Game ga ON og.gameId = ga.id
-                            WHERE og.accountId = a.id
-                        ),
-                        'reviews', (
-                            SELECT json_group_array(
-                                json_object(
-                                    'accountId', gr.accountId,
-                                    'gameId', gr.gameId,
-                                    'review', gr.review,
-                                    'reviewDate', gr.reviewDate
-                                )
-                            )
-                            FROM GameReview gr
-                            WHERE gr.accountId = a.id
-                        )
-                    )
-                ) AS members
-            FROM UserGroup g
-            JOIN GroupMembership gm ON gm.groupId = g.id
-            JOIN Account a ON a.id = gm.accountId
-            WHERE g.id = ?
-            GROUP BY g.id
-            ORDER BY g.id;
+            sql: `
+            SELECT 
+                gm.accountId,
+                gm.joinedAt
+            FROM GroupMembership gm
+            WHERE gm.groupId = ?
             `,
             args: [groupId],
         })
@@ -615,7 +573,14 @@ export class DatabaseService implements OnModuleInit {
         return this._tursoExecute('SELECT * FROM OwnedGame')
     }
 
-    getOwnedGameById(accountId: number, gameId: number) {
+    getOwnedGamesByAccountId(accountId: number) {
+        return this._tursoExecute({
+            sql: 'SELECT * FROM OwnedGame WHERE accountId = ?',
+            args: [accountId],
+        })
+    }
+
+    isGameIdOwnedByAccountId(accountId: number, gameId: number) {
         return this._tursoExecute({
             sql: 'SELECT * FROM OwnedGame WHERE accountId = ? AND gameId = ?',
             args: [accountId, gameId],
