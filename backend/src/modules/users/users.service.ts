@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common'
+import { BadRequestException, ConflictException, forwardRef, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { DatabaseService } from '../database/database.service'
 import { AvatarDto, CreateUserBody, UpdateUserBody, UserCompleteDto, UserGetDto } from '../../common/types/user.type'
 import { ResultSet } from '@libsql/client/.'
@@ -24,7 +24,7 @@ export class UsersService {
 
     constructor(
         private readonly databaseService: DatabaseService,
-        private readonly groupsService: GroupsService,
+        @Inject(forwardRef(() => GroupsService)) private readonly groupsService: GroupsService,
         private readonly groupMembershipsService: GroupMembershipsService,
         private readonly meetsService: MeetsService,
         private readonly gamesService: GamesService,
@@ -81,6 +81,8 @@ export class UsersService {
             throw new NotFoundException(`User with id ${id} not found`)
         }
         users[0].password = undefined!
+        users[0].verification_token = undefined!
+        users[0].password_reset_token = undefined!
 
         return users[0]
     }
@@ -249,11 +251,13 @@ export class UsersService {
             meetData: JSON.parse(String(row[2])) as MeetDto,
         }))
 
-        return Promise.all(history.map(async historyRecord => ({
-            accountId: historyRecord.accountId,
-            gameData: await this.gamesService.getGameById(historyRecord.gameId),
-            meetData: historyRecord.meetData,
-        })))
+        return Promise.all(
+            history.map(async historyRecord => ({
+                accountId: historyRecord.accountId,
+                gameData: await this.gamesService.getGameById(historyRecord.gameId),
+                meetData: historyRecord.meetData,
+            })),
+        )
     }
 
     async leaveGroup(userId: number, groupId: number): Promise<{ success: boolean }> {
@@ -353,7 +357,7 @@ export class UsersService {
         const gameData = await this.gamesService.getGameById(gameId)
 
         // Step 3: Get owned game data
-        const ownedGameData = await this.gamesOwnedService.getGamesOwnedById(userId, gameId, false)
+        const ownedGameData = await this.gamesOwnedService.isGameIdOwnedByAccountId(userId, gameId, false)
 
         // Step 4: GameTags
         const gameTags = await this.tagsService.getGameTags(gameId)
@@ -367,26 +371,32 @@ export class UsersService {
         const avgGlobalRating = await this.reviewsService.getAvgGlobalRating(gameId)
 
         // Get similar games
-        const similarGames = (await Promise.all([
-            this.gamesService.getSafeGameById(gameId + 2),
-            this.gamesService.getSafeGameById(gameId + 1),
-            this.gamesService.getSafeGameById(gameId - 1),
-            this.gamesService.getSafeGameById(gameId - 2),
-        ])).filter(Boolean)
+        const similarGames = (
+            await Promise.all([
+                this.gamesService.getSafeGameById(gameId + 2),
+                this.gamesService.getSafeGameById(gameId + 1),
+                this.gamesService.getSafeGameById(gameId - 1),
+                this.gamesService.getSafeGameById(gameId - 2),
+            ])
+        ).filter(Boolean)
         const similarGamesFiltered = similarGames.filter(Boolean) as Array<GameDto>
 
         return {
             gameData: gameData,
-            ownedGameData: !ownedGameData ? null : {
-                purchaseDate: ownedGameData.purchaseDate,
-                purchasePrice: ownedGameData.purchasePrice,
-                purchaseNotes: ownedGameData.purchaseNotes,
-            },
+            ownedGameData: !ownedGameData
+                ? null
+                : {
+                      purchaseDate: ownedGameData.purchaseDate,
+                      purchasePrice: ownedGameData.purchasePrice,
+                      purchaseNotes: ownedGameData.purchaseNotes,
+                  },
             tags: gameTags,
-            wishlistedGameData: wishlistGameData ? {
-                dateAdded: '',
-                notes: '',
-            } : null,
+            wishlistedGameData: wishlistGameData
+                ? {
+                      dateAdded: '',
+                      notes: '',
+                  }
+                : null,
             ratingData: {
                 userRating: myReview?.review ?? null,
                 avgGroupsRating: avgGroupsRating,
