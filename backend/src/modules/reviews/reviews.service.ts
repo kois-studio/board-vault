@@ -1,9 +1,9 @@
 import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common'
-import { DatabaseService } from '../database/database.service'
+import { DatabaseService } from '../common/database/database.service'
 import { ResultSet } from '@libsql/client/.'
 import { CreateGameReviewBody, GameReviewDto } from '../../common/types/game-review.type'
 import { gameReviewsSchema } from '../../common/schemas/db-game-review.schema'
-import { CacheService } from '../cache/cache.service'
+import { CacheService } from '../common/cache/cache.service'
 
 @Injectable()
 export class ReviewsService {

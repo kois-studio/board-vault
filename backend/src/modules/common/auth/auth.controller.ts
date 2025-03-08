@@ -1,8 +1,8 @@
 import { BadRequestException, Body, Controller, Get, Post, Query, Param, NotFoundException } from '@nestjs/common'
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { AuthService } from './auth.service'
-import { LoginUserDto, RegisterUserDto } from '../../common/types/user.type'
-import { AccessTokenDto, ForgotPasswordDto, ResetPasswordDto, SuccessDto } from '../../common/types/auth.type'
+import { LoginUserDto, RegisterUserDto } from '../../../common/types/user.type'
+import { AccessTokenDto, ForgotPasswordDto, ResetPasswordDto, SuccessDto } from '../../../common/types/auth.type'
 
 @ApiTags('auth')
 @Controller('auth')

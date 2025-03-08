@@ -3,7 +3,7 @@ import { UsersService } from './users.service'
 import { UsersController } from './users.controller'
 // module dependencies
 import { MeetsModule } from '../meets/meets.module'
-import { DatabaseModule } from '../database/database.module'
+import { DatabaseModule } from '../common/database/database.module'
 import { GroupsModule } from '../groups/groups.module'
 import { GroupMembershipsModule } from '../group-memberships/group-memberships.module'
 import { GamesModule } from '../games/games.module'

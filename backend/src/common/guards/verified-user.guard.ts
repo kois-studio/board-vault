@@ -1,5 +1,5 @@
 import { Injectable, CanActivate, ExecutionContext, ForbiddenException, Logger } from '@nestjs/common'
-import { DatabaseService } from '../../modules/database/database.service'
+import { DatabaseService } from '../../modules/common/database/database.service'
 
 @Injectable()
 export class VerifiedUserGuard implements CanActivate {

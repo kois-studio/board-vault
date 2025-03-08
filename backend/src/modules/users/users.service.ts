@@ -1,5 +1,5 @@
 import { BadRequestException, ConflictException, forwardRef, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common'
-import { DatabaseService } from '../database/database.service'
+import { DatabaseService } from '../common/database/database.service'
 import { AvatarDto, CreateUserBody, UpdateUserBody, UserCompleteDto, UserGetDto } from '../../common/types/user.type'
 import { ResultSet } from '@libsql/client/.'
 import { usersSchema } from '../../common/schemas'
