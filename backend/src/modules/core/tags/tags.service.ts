@@ -1,9 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common'
-import { DatabaseService } from '../common/database/database.service'
+import { DatabaseService } from '../../common/database/database.service'
 import { ResultSet } from '@libsql/client/.'
-import { TagDto } from '../../common/types/tag.type'
-import { tagsSchema } from '../../common/schemas/db-tag.schema'
-import { CacheService } from '../common/cache/cache.service'
+import { TagDto } from '../../../common/types/tag.type'
+import { tagsSchema } from '../../../common/schemas/db-tag.schema'
+import { CacheService } from '../../common/cache/cache.service'
 
 @Injectable()
 export class TagsService {

@@ -1,8 +1,8 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
+import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
 import { GamesOwnedService } from './games-owned.service'
-import { GameOwnedDto } from '../../common/types/game-owned.type'
+import { GameOwnedDto } from '../../../common/types/game-owned.type'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('gamesOwned')
