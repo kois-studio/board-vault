@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common'
 import { WishlistService } from './wishlist.service'
 // module dependencies
-import { DatabaseModule } from '../common/database/database.module'
+import { DatabaseModule } from '../../common/database/database.module'
 import { WishlistController } from './wishlist.controller'
 
 @Module({
