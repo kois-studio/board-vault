@@ -2,7 +2,7 @@ import { forwardRef, Module } from '@nestjs/common'
 import { GroupsService } from './groups.service'
 import { GroupsController } from './groups.controller'
 // module dependencies
-import { DatabaseModule } from '../database/database.module'
+import { DatabaseModule } from '../common/database/database.module'
 import { UsersModule } from '../users/users.module'
 import { GamesOwnedModule } from '../games-owned/games-owned.module'
 import { GamesModule } from '../games/games.module'

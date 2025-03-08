@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import * as bcrypt from 'bcrypt'
-import { UsersService } from '../users/users.service'
+import { UsersService } from '../../users/users.service'
 import { DatabaseService } from '../database/database.service'
 import { randomUUID } from 'node:crypto'
 import { EmailService } from '../email/email.service'

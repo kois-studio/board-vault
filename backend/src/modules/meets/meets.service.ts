@@ -1,6 +1,6 @@
 import { ResultSet } from '@libsql/client/.'
 import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common'
-import { DatabaseService } from '../database/database.service'
+import { DatabaseService } from '../common/database/database.service'
 import { MeetDto, MeetWithAttendeesAndGames } from '../../common/types/meet.type'
 import { meetsSchema } from '../../common/schemas/db-meet.schema'
 import { UserGetDto } from '../../common/types/user.type'
