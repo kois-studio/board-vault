@@ -1,9 +1,9 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
-import { SuccessDto } from '../../common/types/auth.type'
+import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
+import { SuccessDto } from '../../../common/types/auth.type'
 import { ReviewsService } from './reviews.service'
-import { CreateGameReviewBody, GameReviewDto } from '../../common/types/game-review.type'
+import { CreateGameReviewBody, GameReviewDto } from '../../../common/types/game-review.type'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('reviews')
