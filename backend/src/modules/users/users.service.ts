@@ -243,11 +243,17 @@ export class UsersService {
         this.LOGGER.log(`Getting games history for user ${userId}`)
         const resultSet = await this.databaseService.getUserGamesHistory(userId)
 
-        return resultSet.rows.map(row => ({
+        const history = resultSet.rows.map(row => ({
             accountId: Number(row[0]),
-            gameData: JSON.parse(String(row[1])) as GameDto,
+            gameId: Number(row[1]),
             meetData: JSON.parse(String(row[2])) as MeetDto,
         }))
+
+        return Promise.all(history.map(async historyRecord => ({
+            accountId: historyRecord.accountId,
+            gameData: await this.gamesService.getGameById(historyRecord.gameId),
+            meetData: historyRecord.meetData,
+        })))
     }
 
     async leaveGroup(userId: number, groupId: number): Promise<{ success: boolean }> {
