@@ -9,7 +9,7 @@ import type { MeetWithAttendeesAndGames } from '../../common/types/meet.type'
 import type { GameDto } from '../../common/types/game.type'
 import { UsersService } from '../users/users.service'
 import { GamesOwnedService } from '../core/games-owned/games-owned.service'
-import { GamesService } from '../games/games.service'
+import { GamesService } from '../core/games/games.service'
 import { ReviewsService } from '../reviews/reviews.service'
 
 @Injectable()
