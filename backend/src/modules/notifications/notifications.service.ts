@@ -20,10 +20,14 @@ export class NotificationsService {
             isRead: Boolean(row[5]),
         }))
 
+        return this._validateSchema(notifications)
+    }
+
+    private _validateSchema(notifications: Array<NotificationDto>): Array<NotificationDto> {
         const result = notificationsSchema.safeParse(notifications)
 
         if (!result.success) {
-            this.LOGGER.error('Failed to parse notifications from database')
+            this.LOGGER.error('Failed to parse Notifications from database')
             this.LOGGER.error(result.error)
             return []
         }
