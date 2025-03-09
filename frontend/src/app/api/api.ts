@@ -80,10 +80,6 @@ export class Api {
         return this.http.get<Array<GameType>>(`${this.url}/users/${userId}/games`)
     }
 
-    getUserReviews(userId: number) {
-        return this.http.get<Array<GameReviewType>>(`${this.url}/users/${userId}/reviews`)
-    }
-
     getUserMeets(userId: number) {
         return this.http.get<Array<MeetType>>(`${this.url}/users/${userId}/meets`)
     }
@@ -225,5 +221,12 @@ export class Api {
 
     toggleWishlist(accountId: number, gameId: number) {
         return this.http.put<{ isWishlisted: boolean }>(`${this.url}/wishlist/${accountId}/${gameId}`, {})
+    }
+
+    // --------------------------------------------------------------------------
+    // #region collection
+    // --------------------------------------------------------------------------
+    getUserReviews(accountId: number) {
+        return this.http.get<Array<GameReviewType>>(`${this.url}/collection/users/${accountId}/games/reviews`)
     }
 }
