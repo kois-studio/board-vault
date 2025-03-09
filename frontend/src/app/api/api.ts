@@ -4,6 +4,7 @@ import { environment } from '../../environments/environment'
 import type {
     GamePlayHistoryType,
     GameReviewType,
+    GameReviewWithGameData,
     GameType,
     GameViewType,
     GroupWithMembersAndGames,
@@ -227,6 +228,6 @@ export class Api {
     // #region collection
     // --------------------------------------------------------------------------
     getUserReviews(accountId: number) {
-        return this.http.get<Array<GameReviewType>>(`${this.url}/collection/users/${accountId}/games/reviews`)
+        return this.http.get<Array<GameReviewWithGameData>>(`${this.url}/collection/users/${accountId}/games/reviews`)
     }
 }
