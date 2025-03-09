@@ -16,17 +16,23 @@ export class MeetAccountGamesService {
             meetId: Number(row[1]),
             gameId: Number(row[2]),
         }))
+        
+        return this._validateSchema(meetAccountGames)
+    }
 
+    private _validateSchema(meetAccountGames: Array<MeetAccountGameDto>): Array<MeetAccountGameDto> {
         const result = meetAccountGamesSchema.safeParse(meetAccountGames)
 
         if (!result.success) {
-            this.LOGGER.error('Failed to parse meet games from database')
+            this.LOGGER.error('Failed to parse MeetAccountGames from database')
             this.LOGGER.error(result.error)
             return []
         }
 
         return result.data
     }
+
+    // #region methods
 
     async createMeetAccountGame(accountId: number, meetId: number, gameId: number): Promise<MeetAccountGameDto> {
         this.LOGGER.log(`Creating meetAccountGame with accountId ${accountId}, meetId ${meetId} and gameId ${gameId}`)
