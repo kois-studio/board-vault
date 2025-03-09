@@ -8,7 +8,6 @@ import { InvitationWithExtraData } from '../../common/types/invitation.type'
 import { GroupsService } from '../groups/groups.service'
 import { NotificationDto } from '../../common/types/notification.type'
 import { GroupMembershipsService } from '../core/group-memberships/group-memberships.service'
-import { GameReviewDto } from '../../common/types/game-review.type'
 import { MeetsService } from '../meets/meets.service'
 import { MeetDto } from '../../common/types/meet.type'
 import { AccountGameHistoryDto } from '../../common/types/meet-account-game.type'
@@ -159,11 +158,6 @@ export class UsersService {
             minPlayers: Number(row[4]),
             maxPlayers: Number(row[5]),
         }))
-    }
-
-    async getUserReviews(userId: number): Promise<Array<GameReviewDto>> {
-        this.LOGGER.log(`Getting reviews for user ${userId}`)
-        return this.reviewsService.getUserReviews(userId)
     }
 
     async getUserNotifications(userId: number): Promise<Array<NotificationDto>> {
