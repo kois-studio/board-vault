@@ -1,9 +1,10 @@
 import { Controller, Get, Param, ParseIntPipe, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { CollectionService } from './collection.service'
-import { GameDto } from 'src/common/types/game.type'
-import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard'
-import { VerifiedUserGuard } from 'src/common/guards/verified-user.guard'
+import { GameDto } from '../../../common/types/game.type'
+import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
+import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
+import { GameReviewDto } from '../../../common/types/game-review.type'
 
 @UseGuards(JwtAuthGuard, VerifiedUserGuard)
 @ApiTags('collection')
