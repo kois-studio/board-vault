@@ -14,7 +14,7 @@ import { NotificationsModule } from './modules/core/notifications/notifications.
 import { GameReviewsModule } from './modules/core/reviews/reviews.module'
 import { MeetsModule } from './modules/meets/meets.module'
 import { MeetAttendeesModule } from './modules/meet-attendees/meet-attendees.module'
-import { MeetAccountGamesModule } from './modules/meet-account-games/meet-account-games.module'
+import { MeetAccountGamesModule } from './modules/core/meet-account-games/meet-account-games.module'
 import { EmailModule } from './modules/common/email/email.module'
 import { WishlistModule } from './modules/core/wishlist/wishlist.module'
 

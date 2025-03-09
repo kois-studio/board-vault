@@ -3,7 +3,7 @@ import { MeetsService } from './meets.service'
 import { MeetsController } from './meets.controller'
 // module dependencies
 import { DatabaseModule } from '../common/database/database.module'
-import { MeetAccountGamesModule } from '../meet-account-games/meet-account-games.module'
+import { MeetAccountGamesModule } from '../core/meet-account-games/meet-account-games.module'
 
 @Module({
     imports: [DatabaseModule, MeetAccountGamesModule],
