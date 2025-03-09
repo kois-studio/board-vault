@@ -9,7 +9,7 @@ import { GroupMembershipsModule } from '../core/group-memberships/group-membersh
 import { GamesModule } from '../core/games/games.module'
 import { GamesOwnedModule } from '../core/games-owned/games-owned.module'
 import { TagsModule } from '../core/tags/tags.module'
-import { GameReviewsModule } from '../core/reviews/reviews.module'
+import { ReviewsModule } from '../core/reviews/reviews.module'
 import { WishlistModule } from '../core/wishlist/wishlist.module'
 
 @Module({
@@ -21,7 +21,7 @@ import { WishlistModule } from '../core/wishlist/wishlist.module'
         GamesModule,
         GamesOwnedModule,
         TagsModule,
-        GameReviewsModule,
+        ReviewsModule,
         WishlistModule],
     providers: [UsersService],
     exports: [UsersService],

@@ -11,4 +11,4 @@ import { CacheModule } from '../../common/cache/cache.module'
     exports: [ReviewsService],
     controllers: [ReviewsController],
 })
-export class GameReviewsModule {}
+export class ReviewsModule {}

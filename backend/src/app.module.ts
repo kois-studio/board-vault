@@ -11,12 +11,14 @@ import { GamesModule } from './modules/core/games/games.module'
 import { GamesOwnedModule } from './modules/core/games-owned/games-owned.module'
 import { InvitationsModule } from './modules/invitations/invitations.module'
 import { NotificationsModule } from './modules/core/notifications/notifications.module'
-import { GameReviewsModule } from './modules/core/reviews/reviews.module'
+import { ReviewsModule } from './modules/core/reviews/reviews.module'
 import { MeetsModule } from './modules/meets/meets.module'
 import { MeetAttendeesModule } from './modules/core/meet-attendees/meet-attendees.module'
 import { MeetAccountGamesModule } from './modules/core/meet-account-games/meet-account-games.module'
 import { EmailModule } from './modules/common/email/email.module'
 import { WishlistModule } from './modules/core/wishlist/wishlist.module'
+// Features
+import { CollectionModule } from './modules/features/collection/collection.module'
 
 @Module({
     imports: [
@@ -31,12 +33,14 @@ import { WishlistModule } from './modules/core/wishlist/wishlist.module'
         GamesOwnedModule,
         InvitationsModule,
         NotificationsModule,
-        GameReviewsModule,
+        ReviewsModule,
         MeetsModule,
         MeetAttendeesModule,
         MeetAccountGamesModule,
         EmailModule,
         WishlistModule,
+        // Features
+        CollectionModule,
     ],
     controllers: [],
     providers: [],
