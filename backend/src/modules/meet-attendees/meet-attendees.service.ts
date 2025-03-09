@@ -15,17 +15,23 @@ export class MeetAttendeesService {
             meetId: Number(row[0]),
             accountId: Number(row[1]),
         }))
+        
+        return this._validateSchema(meetAttendees)
+    }
 
+    private _validateSchema(meetAttendees: Array<MeetAttendeeDto>): Array<MeetAttendeeDto> {
         const result = meetAttendeesSchema.safeParse(meetAttendees)
 
         if (!result.success) {
-            this.LOGGER.error('Failed to parse meet atendees from database')
+            this.LOGGER.error('Failed to parse MeetAttendees from database')
             this.LOGGER.error(result.error)
             return []
         }
 
         return result.data
     }
+
+    // #region methods
 
     async getMeetAttendees(): Promise<Array<MeetAttendeeDto>> {
         this.LOGGER.log('Getting all meet attendees')
