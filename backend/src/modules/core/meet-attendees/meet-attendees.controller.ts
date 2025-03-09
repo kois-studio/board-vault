@@ -1,9 +1,9 @@
 import { Controller, Delete, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
+import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
 import { MeetAttendeesService } from './meet-attendees.service'
-import { MeetAttendeeDto } from '../../common/types/meet-attendee.type'
-import { SuccessDto } from '../../common/types/auth.type'
+import { MeetAttendeeDto } from '../../../common/types/meet-attendee.type'
+import { SuccessDto } from '../../../common/types/auth.type'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('meetAttendees')
