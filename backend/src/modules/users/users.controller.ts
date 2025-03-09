@@ -10,7 +10,6 @@ import { NotificationDto } from '../../common/types/notification.type'
 import { UserOwnershipGuard } from '../../common/guards/ownership.guard'
 import { MeetDto } from '../../common/types/meet.type'
 import { AccountGameHistoryDto } from '../../common/types/meet-account-game.type'
-import { GameReviewDto } from '../../common/types/game-review.type'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('users')
@@ -78,13 +77,6 @@ export class UsersController {
     @ApiResponse({ status: 200, type: [GameDto] })
     getUserGames(@Param('userId', ParseIntPipe) userId: number) {
         return this.usersService.getUserGames(userId)
-    }
-
-    @Get('/:userId/reviews')
-    @ApiOperation({ summary: 'Get reviews by user' })
-    @ApiResponse({ status: 200, type: [GameReviewDto] })
-    getUserReviews(@Param('userId', ParseIntPipe) userId: number) {
-        return this.usersService.getUserReviews(userId)
     }
 
     @Get('/:userId/meets')

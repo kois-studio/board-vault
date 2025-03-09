@@ -21,4 +21,10 @@ export class CollectionService {
         const gamesOwned = await this.gamesOwnedService.getGamesOwnedByAccountId(userId)
         return Promise.all(gamesOwned.map(async game => this.gamesService.getGameById(game.gameId)))
     }
+
+    @LogFeature(new Logger('CollectionService'))
+    async getReviewsOfUser(userId: number): Promise<Array<GameReviewDto>> {
+        const reviews = await this.reviewsService.getUserReviews(userId)
+        return reviews
+    }
 }

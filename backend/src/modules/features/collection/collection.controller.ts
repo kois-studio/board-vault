@@ -13,10 +13,17 @@ import { GameReviewDto } from '../../../common/types/game-review.type'
 export class CollectionController {
     constructor(private readonly collectionService: CollectionService) {}
 
-    @Get('/user/:userId/games')
+    @Get('/users/:userId/games')
     @ApiOperation({ summary: 'Get all games owned by a user', deprecated: false })
     @ApiResponse({ status: 200, type: [GameDto], description: 'List of all games owned by the user' })
     async getGamesOwnedByUser(@Param('userId', ParseIntPipe) userId: number) {
         return this.collectionService.getGamesOwnedByUser(userId)
+    }
+
+    @Get('/users/:userId/games/reviews')
+    @ApiOperation({ summary: 'Get all reviews of a user', deprecated: false })
+    @ApiResponse({ status: 200, type: [GameReviewDto], description: 'List of all reviews of the user' })
+    async getReviewsOfUser(@Param('userId', ParseIntPipe) userId: number) {
+        return this.collectionService.getReviewsOfUser(userId)
     }
 }
