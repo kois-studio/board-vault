@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { LogFeature } from '../../../common/decorators/logger.decorator'
-import type { GameReviewDto } from '../../../common/types/game-review.type'
+import type { GameReviewWithGameDataDto } from '../../../common/types/game-review.type'
 import type { GameDto } from '../../../common/types/game.type'
 import { GamesOwnedService } from '../../core/games-owned/games-owned.service'
 import { GamesService } from '../../core/games/games.service'
@@ -23,8 +23,13 @@ export class CollectionService {
     }
 
     @LogFeature(new Logger('CollectionService'))
-    async getReviewsOfUser(userId: number): Promise<Array<GameReviewDto>> {
+    async getReviewsOfUser(userId: number): Promise<Array<GameReviewWithGameDataDto>> {
         const reviews = await this.reviewsService.getUserReviews(userId)
-        return reviews
+        return Promise.all(
+            reviews.map(async review => {
+                const game = await this.gamesService.getGameById(review.gameId)
+                return { ...review, gameData: game }
+            }),
+        )
     }
 }

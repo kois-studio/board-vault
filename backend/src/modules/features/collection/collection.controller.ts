@@ -4,7 +4,7 @@ import { CollectionService } from './collection.service'
 import { GameDto } from '../../../common/types/game.type'
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
 import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
-import { GameReviewDto } from '../../../common/types/game-review.type'
+import { GameReviewWithGameDataDto } from '../../../common/types/game-review.type'
 
 @UseGuards(JwtAuthGuard, VerifiedUserGuard)
 @ApiTags('collection')
@@ -22,7 +22,7 @@ export class CollectionController {
 
     @Get('/users/:userId/games/reviews')
     @ApiOperation({ summary: 'Get all reviews of a user', deprecated: false })
-    @ApiResponse({ status: 200, type: [GameReviewDto], description: 'List of all reviews of the user' })
+    @ApiResponse({ status: 200, type: [GameReviewWithGameDataDto], description: 'List of all reviews of the user' })
     async getReviewsOfUser(@Param('userId', ParseIntPipe) userId: number) {
         return this.collectionService.getReviewsOfUser(userId)
     }
