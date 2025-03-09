@@ -5,7 +5,7 @@ import { GameDto } from 'src/common/types/game.type'
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard'
 import { VerifiedUserGuard } from 'src/common/guards/verified-user.guard'
 
-// @UseGuards(JwtAuthGuard, VerifiedUserGuard)
+@UseGuards(JwtAuthGuard, VerifiedUserGuard)
 @ApiTags('collection')
 @ApiBearerAuth()
 @Controller('collection')
