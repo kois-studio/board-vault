@@ -7,7 +7,7 @@ import { AvatarDto, UserGetDto } from '../../common/types/user.type'
 import { GroupsService } from '../groups/groups.service'
 import { GroupMembershipsService } from '../core/group-memberships/group-memberships.service'
 import { UsersService } from '../users/users.service'
-import { NotificationsService } from '../notifications/notifications.service'
+import { NotificationsService } from '../core/notifications/notifications.service'
 import { NotificationTypeEnum } from '../../common/types/notification.type'
 
 @Injectable()

@@ -10,7 +10,7 @@ import { GroupMembershipsModule } from './modules/core/group-memberships/group-m
 import { GamesModule } from './modules/core/games/games.module'
 import { GamesOwnedModule } from './modules/core/games-owned/games-owned.module'
 import { InvitationsModule } from './modules/invitations/invitations.module'
-import { NotificationsModule } from './modules/notifications/notifications.module'
+import { NotificationsModule } from './modules/core/notifications/notifications.module'
 import { GameReviewsModule } from './modules/core/reviews/reviews.module'
 import { MeetsModule } from './modules/meets/meets.module'
 import { MeetAttendeesModule } from './modules/meet-attendees/meet-attendees.module'
