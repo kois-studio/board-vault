@@ -20,7 +20,7 @@ function Wrapper(response_on_error: any = null) {
         descriptor.value = async function (...args: any[]) {
             // Before running any method, check if redis is disabled
             if (is_redis_disabled) {
-                LOGGER.warn('REDIS: Redis is disabled')
+                LOGGER.warn(`[${propertyKey}] Redis is disabled`)
                 return response_on_error
             }
 
@@ -28,7 +28,7 @@ function Wrapper(response_on_error: any = null) {
             try {
                 return originalMethod.apply(this, args)
             } catch (err) {
-                LOGGER.error('Error with Redis!', err)
+                LOGGER.error(`[${propertyKey}] Error with Redis!`, err)
                 return response_on_error
             }
         }
@@ -95,14 +95,14 @@ export class CacheService {
      */
     @Wrapper()
     async set(key: string, data: any, ttl: number = 60 * 60 * 24 * 30 * 12): Promise<void> {
-        this.LOGGER.log(`REDIS: saving ${key} data -> ${JSON.stringify(data)}`)
+        this.LOGGER.log(`REDIS: set ${key} -> ${JSON.stringify(data)}`)
 
         await this.REDIS.set(key, data, { ex: ttl })
     }
 
     @Wrapper()
     async get(key: string): Promise<any> {
-        this.LOGGER.log(`REDIS: getting ${key} data...`)
+        this.LOGGER.log(`REDIS: get ${key}`)
 
         return await this.REDIS.get(key)
     }
