@@ -1,8 +1,8 @@
 import { ResultSet } from '@libsql/client/.'
 import { Injectable, Logger, NotFoundException } from '@nestjs/common'
-import { DatabaseService } from '../common/database/database.service'
-import { meetAccountGamesSchema } from '../../common/schemas/db-meet-account-game.schema'
-import { MeetAccountGameDto } from '../../common/types/meet-account-game.type'
+import { DatabaseService } from '../../common/database/database.service'
+import { meetAccountGamesSchema } from '../../../common/schemas/db-meet-account-game.schema'
+import { MeetAccountGameDto } from '../../../common/types/meet-account-game.type'
 
 @Injectable()
 export class MeetAccountGamesService {

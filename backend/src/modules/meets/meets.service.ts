@@ -5,7 +5,7 @@ import { MeetDto, MeetWithAttendeesAndGames } from '../../common/types/meet.type
 import { meetsSchema } from '../../common/schemas/db-meet.schema'
 import { UserGetDto } from '../../common/types/user.type'
 import { GameDto } from '../../common/types/game.type'
-import { MeetAccountGamesService } from '../meet-account-games/meet-account-games.service'
+import { MeetAccountGamesService } from '../core/meet-account-games/meet-account-games.service'
 
 @Injectable()
 export class MeetsService {
