@@ -7,8 +7,6 @@ import type { AvatarDto, UserGetDto } from '../../common/types/user.type'
 import { GroupsService } from '../groups/groups.service'
 import { GroupMembershipsService } from '../core/group-memberships/group-memberships.service'
 import { UsersService } from '../users/users.service'
-import { NotificationsService } from '../core/notifications/notifications.service'
-import { NotificationTypeEnum } from '../../common/types/notification.type'
 
 @Injectable()
 export class InvitationsService {
@@ -17,7 +15,6 @@ export class InvitationsService {
     constructor(
         private readonly databaseService: DatabaseService,
         private readonly usersService: UsersService,
-        private readonly notificationsService: NotificationsService,
         private readonly groupsService: GroupsService,
         private readonly groupMembershipsService: GroupMembershipsService,
     ) {}
@@ -132,11 +129,11 @@ export class InvitationsService {
         const invited = await this.usersService.getUserById(invitationData.toAccountId)
         const owner = await this.usersService.getUserById(groupData.createdBy)
 
-        await this.notificationsService.createNotification({
-            accountId: owner.id,
-            type: NotificationTypeEnum.InvitationAccepted,
-            message: `${invited.displayName} joined your group ${groupData.name}`,
-        })
+        // await this.notificationsService.createNotification({
+        //     accountId: owner.id,
+        //     type: NotificationTypeEnum.InvitationAccepted,
+        //     message: `${invited.displayName} joined your group ${groupData.name}`,
+        // })
 
         return { success: true }
     }

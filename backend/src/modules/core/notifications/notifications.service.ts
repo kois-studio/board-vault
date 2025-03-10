@@ -3,6 +3,7 @@ import { DatabaseService } from '../../common/database/database.service'
 import { ResultSet } from '@libsql/client/.'
 import { CreateNotificationBody, NotificationDto, UpdateNotificationBody } from '../../../common/types/notification.type'
 import { notificationsSchema } from '../../../common/schemas'
+import { NotificationDataMap, NotificationTypeEnum } from './notifications-enum.type'
 
 @Injectable()
 export class NotificationsService {
@@ -16,8 +17,9 @@ export class NotificationsService {
             accountId: Number(row[1]),
             type: String(row[2]),
             message: String(row[3]),
-            createdAt: String(row[4]),
-            isRead: Boolean(row[5]),
+            data: JSON.parse(String(row[4])) as NotificationDataMap[NotificationTypeEnum],
+            createdAt: String(row[5]),
+            isRead: Boolean(row[6]),
         }))
 
         return this._validateSchema(notifications)
