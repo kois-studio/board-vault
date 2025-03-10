@@ -53,6 +53,13 @@ export class NotificationsService {
         return notifications[0]
     }
 
+    async getNotificationsByAccountId(accountId: number): Promise<Array<NotificationDto>> {
+        this.LOGGER.log(`Getting notifications for account with id ${accountId}`)
+        const resultSet = await this.databaseService.getNotificationsByAccountId(accountId)
+
+        return this._parseResultSet(resultSet)
+    }
+
     async createNotification(notificationDto: CreateNotificationBody) {
         this.LOGGER.log('Creating notification')
         try {

@@ -6,7 +6,6 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
 import { GameDto, GameViewDto } from '../../common/types/game.type'
 import { InvitationWithExtraData } from '../../common/types/invitation.type'
 import { SuccessDto } from '../../common/types/auth.type'
-import { NotificationDto } from '../../common/types/notification.type'
 import { UserOwnershipGuard } from '../../common/guards/ownership.guard'
 import { MeetDto } from '../../common/types/meet.type'
 import { AccountGameHistoryDto } from '../../common/types/meet-account-game.type'
@@ -85,14 +84,6 @@ export class UsersController {
     @ApiResponse({ status: 404, description: 'User not found.' })
     updateUserGames(@Param('userId', ParseIntPipe) userId: number, @Body() userUpdateGamesBody: UserUpdateGamesBody) {
         return this.usersService.updateGames(userId, userUpdateGamesBody.gamesToAdd, userUpdateGamesBody.gamesToRemove)
-    }
-
-    @Get('/:userId/notifications')
-    @ApiOperation({ summary: 'Get notifications for user' })
-    @ApiResponse({ status: 200, type: [NotificationDto] })
-    @ApiResponse({ status: 404, description: 'User not found.' })
-    getUserNotifications(@Param('userId', ParseIntPipe) userId: number) {
-        return this.usersService.getUserNotifications(userId)
     }
 
     @Get('/:userId/invitationsReceived')
