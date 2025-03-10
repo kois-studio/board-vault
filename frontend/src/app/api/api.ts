@@ -81,10 +81,6 @@ export class Api {
         return this.http.put<{ success: true }>(`${this.url}/users/${userId}/games`, { gamesToAdd, gamesToRemove })
     }
 
-    getInvitationsReceived(accountId: number) {
-        return this.http.get<Array<InvitationWithExtraData>>(`${this.url}/users/${accountId}/invitationsReceived`)
-    }
-
     getUserGamesHistory(accountId: number) {
         return this.http.get<Array<GamePlayHistoryType>>(`${this.url}/users/${accountId}/history`)
     }
@@ -232,5 +228,9 @@ export class Api {
 
     getUserNotifications(accountId: number) {
         return this.http.get<Array<NotificationType>>(`${this.url}/profile/users/${accountId}/notifications`)
+    }
+
+    getUserInvitationsReceived(accountId: number) {
+        return this.http.get<Array<InvitationWithExtraData>>(`${this.url}/profile/users/${accountId}/invitationsReceived`)
     }
 }

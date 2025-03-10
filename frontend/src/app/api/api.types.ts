@@ -62,12 +62,14 @@ export type GameViewType = {
 }
 
 // #region Group
-
-export type GroupWithMembersAndGames = {
+export type GroupType = {
     id: number
     name: string
     createdBy: number
     createdAt: string
+}
+
+export type GroupWithMembersAndGames = GroupType & {
     members: Array<
         UserType & {
             joinedAt: string
@@ -84,13 +86,12 @@ export type InvitationType = {
     groupId: number
     fromAccountId: number
     toAccountId: number
-    status: string // enum: ['pending', 'accepted', 'rejected']
     sentAt: string
 }
 
 export type InvitationWithExtraData = InvitationType & {
     fromAccount: UserType
-    group: GroupWithMembersAndGames
+    group: GroupType
 }
 
 export type InvitationWithAccountsData = InvitationType & {
