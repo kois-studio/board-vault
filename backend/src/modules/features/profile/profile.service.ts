@@ -27,6 +27,7 @@ export class ProfileService {
         return this.notificationsService.getNotificationsByAccountId(accountId)
     }
 
+    @LogFeature(new Logger('ProfileService'))
     async getUserInvitationsReceived(accountId: number): Promise<Array<InvitationWithExtraData>> {
         const invitations = await this.invitationsService.getUserInvitationsReceived(accountId)
         return Promise.all(
