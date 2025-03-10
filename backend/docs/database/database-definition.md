@@ -139,7 +139,7 @@ CREATE TABLE IF NOT EXISTS Notification (
     data TEXT NOT NULL, -- JSON data containing relevant IDs and context
     createdAt DATETIME DEFAULT CURRENT_TIMESTAMP, -- Timestamp when the notification was created
     isRead BOOLEAN DEFAULT 0, -- 0 = Unread, 1 = Read
-    FOREIGN KEY (accountId) REFERENCES Account(id) ON DELETE CASCADE,
+    FOREIGN KEY (accountId) REFERENCES Account(id) ON DELETE CASCADE
 );
 
 -- -----------------------------------------------------

@@ -1,4 +1,5 @@
 import { ApiProperty, OmitType, PartialType, PickType } from '@nestjs/swagger'
+import { NotificationDataMap, NotificationTypeEnum } from 'src/modules/core/notifications/notifications-enum.type'
 
 /**
  * base Notification as it comes from db
@@ -16,6 +17,9 @@ export class NotificationDto {
     @ApiProperty({ example: 'message' })
     message: string
 
+    @ApiProperty({ example: '{}' })
+    data: NotificationDataMap[NotificationTypeEnum]
+
     @ApiProperty({ example: '2022-03-07T16:00:00.000Z' })
     createdAt: string
 
@@ -32,7 +36,3 @@ export class CreateNotificationBody extends OmitType(NotificationDto, ['id', 'cr
  * PUT requests --> editable fields
  */
 export class UpdateNotificationBody extends PartialType(PickType(NotificationDto, ['accountId', 'type', 'message', 'isRead'])) {}
-
-export const NotificationTypeEnum = {
-    InvitationAccepted: 'invitation_accepted',
-}
