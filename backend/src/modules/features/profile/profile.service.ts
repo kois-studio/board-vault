@@ -4,9 +4,9 @@ import { UsersService } from '../../users/users.service'
 import { NotificationsService } from '../../core/notifications/notifications.service'
 import type { UserGetDto } from '../../../common/types/user.type'
 import type { NotificationDto } from '../../../common/types/notification.type'
-import { InvitationWithExtraData } from 'src/common/types/invitation.type'
-import { InvitationsService } from 'src/modules/invitations/invitations.service'
-import { GroupsService } from 'src/modules/groups/groups.service'
+import { InvitationWithExtraData } from '../../../common/types/invitation.type'
+import { InvitationsService } from '../../invitations/invitations.service'
+import { GroupsService } from '../../groups/groups.service'
 
 @Injectable()
 export class ProfileService {

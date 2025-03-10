@@ -4,9 +4,9 @@ import { ProfileController } from './profile.controller'
 // module dependencies
 import { DatabaseModule } from '../../common/database/database.module'
 import { UsersModule } from '../../users/users.module'
-import { NotificationsModule } from 'src/modules/core/notifications/notifications.module'
-import { GroupsModule } from 'src/modules/groups/groups.module'
-import { InvitationsModule } from 'src/modules/invitations/invitations.module'
+import { NotificationsModule } from '../../core/notifications/notifications.module'
+import { GroupsModule } from '../../groups/groups.module'
+import { InvitationsModule } from '../../invitations/invitations.module'
 
 @Module({
     imports: [

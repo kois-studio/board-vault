@@ -3,9 +3,9 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 import { ProfileService } from './profile.service'
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
 import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
-import { UserGetDto } from 'src/common/types/user.type'
-import { NotificationDto } from 'src/common/types/notification.type'
-import { InvitationWithExtraData } from 'src/common/types/invitation.type'
+import { UserGetDto } from '../../../common/types/user.type'
+import { NotificationDto } from '../../../common/types/notification.type'
+import { InvitationWithExtraData } from '../../../common/types/invitation.type'
 
 @UseGuards(JwtAuthGuard, VerifiedUserGuard)
 @ApiTags('profile')
