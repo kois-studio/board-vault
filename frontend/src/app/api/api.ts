@@ -69,10 +69,6 @@ export class Api {
         return this.http.put<{ success: true }>(`${this.url}/users/${userId}`, requesBody)
     }
 
-    getUserByEmail(email: string) {
-        return this.http.get<UserType>(`${this.url}/users/byEmail/${email}`)
-    }
-
     getUserGroups(userId: number) {
         return this.http.get<Array<number>>(`${this.url}/users/${userId}/groups`)
     }
@@ -229,5 +225,12 @@ export class Api {
     // --------------------------------------------------------------------------
     getUserReviews(accountId: number) {
         return this.http.get<Array<GameReviewWithGameData>>(`${this.url}/collection/users/${accountId}/games/reviews`)
+    }
+
+    // --------------------------------------------------------------------------
+    // #region profile
+    // --------------------------------------------------------------------------
+    getUserByEmail(email: string) {
+        return this.http.get<UserType>(`${this.url}/profile/users/byEmail/${email}`)
     }
 }
