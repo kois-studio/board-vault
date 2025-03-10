@@ -5,6 +5,7 @@ import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
 import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
 import { UserGetDto } from 'src/common/types/user.type'
 import { NotificationDto } from 'src/common/types/notification.type'
+import { InvitationWithExtraData } from 'src/common/types/invitation.type'
 
 @UseGuards(JwtAuthGuard, VerifiedUserGuard)
 @ApiTags('profile')
@@ -27,5 +28,12 @@ export class ProfileController {
     @ApiResponse({ status: 404, description: 'Notifications not found' })
     async getNotificationsByAccountId(@Param('userId', ParseIntPipe) userId: number) {
         return this.profileService.getNotificationsByAccountId(userId)
+    }
+
+    @Get('/users/:userId/invitationsReceived')
+    @ApiOperation({ summary: 'Get invitations received' })
+    @ApiResponse({ status: 200, type: [InvitationWithExtraData] })
+    getUserInvitationsReceived(@Param('userId', ParseIntPipe) userId: number) {
+        return this.profileService.getUserInvitationsReceived(userId)
     }
 }

@@ -2,8 +2,8 @@ import { BadRequestException, Injectable, Logger, NotFoundException } from '@nes
 import { DatabaseService } from '../common/database/database.service'
 import { ResultSet } from '@libsql/client/.'
 import { invitationsSchema } from '../../common/schemas'
-import { CreateInvitationBody, CreateInvitationByUsernameBody, InvitationDto } from '../../common/types/invitation.type'
-import { AvatarDto, UserGetDto } from '../../common/types/user.type'
+import type { CreateInvitationBody, CreateInvitationByUsernameBody, InvitationDto } from '../../common/types/invitation.type'
+import type { AvatarDto, UserGetDto } from '../../common/types/user.type'
 import { GroupsService } from '../groups/groups.service'
 import { GroupMembershipsService } from '../core/group-memberships/group-memberships.service'
 import { UsersService } from '../users/users.service'
@@ -58,6 +58,14 @@ export class InvitationsService {
         }
         return invitations[0]
     }
+
+    async getUserInvitationsReceived(accountId: number): Promise<Array<InvitationDto>> {
+        this.LOGGER.log(`Getting invitations for user with id ${accountId}`)
+        const resultSet = await this.databaseService.getUserInvitationsReceived(accountId)
+
+        return this._parseResultSet(resultSet)
+    }
+
 
     async createInvitation(invitationDto: CreateInvitationBody) {
         this.LOGGER.log(

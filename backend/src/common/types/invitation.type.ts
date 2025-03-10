@@ -1,6 +1,6 @@
 import { ApiProperty, OmitType } from '@nestjs/swagger'
 import type { UserGetDto } from './user.type'
-import { GroupWithMembersAndGames } from './group.type'
+import { GroupDto, GroupWithMembersAndGames } from './group.type'
 
 /**
  * base Invitation as it comes from db
@@ -47,5 +47,5 @@ export class InvitationWithExtraData extends InvitationDto {
     fromAccount: UserGetDto
 
     @ApiProperty({ description: 'The group data of the group the user was invited to.' })
-    group: GroupWithMembersAndGames
+    group: GroupDto
 }

@@ -245,17 +245,6 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
-    getUserInvitationsReceived(userId: number) {
-        return this._tursoExecute({
-            sql: `
-                SELECT i.id, i.groupId, i.fromAccountId, i.toAccountId, i.sentAt
-                FROM Invitation i
-                WHERE i.toAccountId = ?
-            `,
-            args: [userId],
-        })
-    }
-
     async updateGames(accountId: number, gamesToAdd: number[], gamesToRemove: number[]): Promise<void> {
         // Remove games
         for (const gameId of gamesToRemove) {
@@ -600,6 +589,13 @@ export class DatabaseService implements OnModuleInit {
         return this._tursoExecute({
             sql: 'SELECT * FROM Invitation WHERE id = ?',
             args: [id],
+        })
+    }
+
+    getUserInvitationsReceived(accountId: number) {
+        return this._tursoExecute({
+            sql: 'SELECT * FROM Invitation WHERE toAccountId = ?',
+            args: [accountId],
         })
     }
 

@@ -13,14 +13,6 @@ export class CardInvitationComponent {
 
     constructor(private readonly dataService: DataService) {}
 
-    get groupGamesCount(): number {
-        if (!this.invitation) {
-            return 0
-        }
-
-        return this.invitation.group.members.reduce((acc, member) => acc + member.games.length, 0)
-    }
-
     acceptInvitation() {
         if (!this.invitation) return
         this.dataService.acceptInvitation(this.invitation.id)

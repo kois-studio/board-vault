@@ -112,7 +112,7 @@ export class DataService {
     }
 
     private _getUserInvitations(userId: number) {
-        this.api.getInvitationsReceived(userId).subscribe({
+        this.api.getUserInvitationsReceived(userId).subscribe({
             next: (invitations) => {
                 this.userInvitations.set(invitations)
             },
