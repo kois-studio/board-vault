@@ -99,6 +99,9 @@ export class UsersService {
             throw new NotFoundException(`User with email ${email} not found`)
         }
 
+        users[0].verification_token = undefined!
+        users[0].password_reset_token = undefined!
+
         return {
             ...users[0],
             password: include_password ? users[0].password : undefined!,
