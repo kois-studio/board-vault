@@ -57,14 +57,6 @@ export class UsersController {
         return this.usersService.deleteUserById(userId)
     }
 
-    @Get('/byEmail/:email')
-    @ApiOperation({ summary: 'Get user by email' })
-    @ApiResponse({ status: 200, type: UserGetDto, description: 'User found' })
-    @ApiResponse({ status: 404, description: 'User not found' })
-    getUserByEmail(@Param('email') email: string) {
-        return this.usersService.getUserByEmail(email)
-    }
-
     @Get('/:userId/groups')
     @ApiOperation({ summary: 'Get groups with members' })
     @ApiResponse({ status: 200, type: [Number] })
