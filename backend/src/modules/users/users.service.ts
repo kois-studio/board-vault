@@ -6,7 +6,6 @@ import { usersSchema } from '../../common/schemas'
 import { GameDto, GameViewDto } from '../../common/types/game.type'
 import { InvitationWithExtraData } from '../../common/types/invitation.type'
 import { GroupsService } from '../groups/groups.service'
-import { NotificationDto } from '../../common/types/notification.type'
 import { GroupMembershipsService } from '../core/group-memberships/group-memberships.service'
 import { MeetsService } from '../meets/meets.service'
 import { MeetDto } from '../../common/types/meet.type'
@@ -160,21 +159,6 @@ export class UsersService {
             gameAvgDuration: Number(row[3]),
             minPlayers: Number(row[4]),
             maxPlayers: Number(row[5]),
-        }))
-    }
-
-    async getUserNotifications(userId: number): Promise<Array<NotificationDto>> {
-        this.LOGGER.log(`Getting all notifications for user ${userId}`)
-        const userData = await this.getUserById(userId)
-        const resultSet = await this.databaseService.getUserNotifications(userData.id)
-
-        return resultSet.rows.map(row => ({
-            id: Number(row[0]),
-            accountId: Number(row[1]),
-            type: String(row[2]),
-            message: String(row[3]),
-            createdAt: String(row[4]),
-            isRead: Boolean(row[5]),
         }))
     }
 
