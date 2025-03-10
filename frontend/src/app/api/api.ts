@@ -73,10 +73,6 @@ export class Api {
         return this.http.get<Array<number>>(`${this.url}/users/${userId}/groups`)
     }
 
-    getUserGames(userId: number) {
-        return this.http.get<Array<GameType>>(`${this.url}/users/${userId}/games`)
-    }
-
     getUserMeets(userId: number) {
         return this.http.get<Array<MeetType>>(`${this.url}/users/${userId}/meets`)
     }
@@ -87,10 +83,6 @@ export class Api {
 
     getInvitationsReceived(accountId: number) {
         return this.http.get<Array<InvitationWithExtraData>>(`${this.url}/users/${accountId}/invitationsReceived`)
-    }
-
-    getUserNotifications(accountId: number) {
-        return this.http.get<Array<NotificationType>>(`${this.url}/users/${accountId}/notifications`)
     }
 
     getUserGamesHistory(accountId: number) {
@@ -227,10 +219,18 @@ export class Api {
         return this.http.get<Array<GameReviewWithGameData>>(`${this.url}/collection/users/${accountId}/games/reviews`)
     }
 
+    getUserGames(userId: number) {
+        return this.http.get<Array<GameType>>(`${this.url}/users/${userId}/games`)
+    }
+
     // --------------------------------------------------------------------------
     // #region profile
     // --------------------------------------------------------------------------
     getUserByEmail(email: string) {
         return this.http.get<UserType>(`${this.url}/profile/users/byEmail/${email}`)
+    }
+
+    getUserNotifications(accountId: number) {
+        return this.http.get<Array<NotificationType>>(`${this.url}/profile/users/${accountId}/notifications`)
     }
 }

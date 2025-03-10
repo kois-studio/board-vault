@@ -234,17 +234,6 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
-    getUserNotifications(userId: number) {
-        return this._tursoExecute({
-            sql: `
-                SELECT n.id, n.accountId, n.type, n.message, n.createdAt, n.isRead
-                FROM Notification n
-                WHERE n.accountId = ?
-            `,
-            args: [userId],
-        })
-    }
-
     getGroupMeets(groupId: number) {
         return this._tursoExecute({
             sql: `
@@ -664,6 +653,17 @@ export class DatabaseService implements OnModuleInit {
         return this._tursoExecute({
             sql: 'SELECT * FROM Notification WHERE id = ?',
             args: [id],
+        })
+    }
+
+    getNotificationsByAccountId(accountId: number) {
+        return this._tursoExecute({
+            sql: `
+                SELECT n.id, n.accountId, n.type, n.message, n.createdAt, n.isRead
+                FROM Notification n
+                WHERE n.accountId = ?
+            `,
+            args: [accountId],
         })
     }
 
