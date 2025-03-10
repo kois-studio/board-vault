@@ -134,8 +134,9 @@ CREATE TABLE IF NOT EXISTS Invitation (
 CREATE TABLE IF NOT EXISTS Notification (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     accountId INTEGER NOT NULL,
-    type TEXT NOT NULL, -- Example values: 'expelled', 'member_left', 'invitation', 'new_game_added'
-    message TEXT NOT NULL, -- Description of the notification
+    type TEXT NOT NULL, -- Example values: 'meeting_scheduled', 'games_added', 'user_joined_group'
+    message TEXT NOT NULL, -- Can be a template with placeholders like "{user} added {count} games"
+    data TEXT NOT NULL, -- JSON data containing relevant IDs and context
     createdAt DATETIME DEFAULT CURRENT_TIMESTAMP, -- Timestamp when the notification was created
     isRead BOOLEAN DEFAULT 0, -- 0 = Unread, 1 = Read
     FOREIGN KEY (accountId) REFERENCES Account(id) ON DELETE CASCADE,
