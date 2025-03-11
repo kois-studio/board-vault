@@ -6,7 +6,7 @@ import type { UserGetDto } from '../../../common/types/user.type'
 import type { NotificationDto } from '../../../common/types/notification.type'
 import { InvitationWithExtraData } from '../../../common/types/invitation.type'
 import { InvitationsService } from '../../invitations/invitations.service'
-import { GroupsService } from '../../groups/groups.service'
+import { GroupsService } from '../../core/groups/groups.service'
 
 @Injectable()
 export class ProfileService {

@@ -1,12 +1,12 @@
 import { ResultSet } from '@libsql/client/.'
 import { Injectable, Logger, NotFoundException } from '@nestjs/common'
-import type { CreateGroupBody, GroupDto, UpdateGroupBody } from '../../common/types/group.type'
-import { DatabaseService } from '../common/database/database.service'
-import { groupsSchema } from '../../common/schemas'
-import type { InvitationWithAccountsData } from '../../common/types/invitation.type'
-import type { AvatarDto, UserGetDto } from '../../common/types/user.type'
-import type { MeetWithAttendeesAndGames } from '../../common/types/meet.type'
-import type { GameDto } from '../../common/types/game.type'
+import type { CreateGroupBody, GroupDto, UpdateGroupBody } from '../../../common/types/group.type'
+import { DatabaseService } from '../../common/database/database.service'
+import { groupsSchema } from '../../../common/schemas'
+import type { InvitationWithAccountsData } from '../../../common/types/invitation.type'
+import type { AvatarDto, UserGetDto } from '../../../common/types/user.type'
+import type { MeetWithAttendeesAndGames } from '../../../common/types/meet.type'
+import type { GameDto } from '../../../common/types/game.type'
 
 @Injectable()
 export class GroupsService {

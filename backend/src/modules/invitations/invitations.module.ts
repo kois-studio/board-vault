@@ -3,7 +3,7 @@ import { InvitationsService } from './invitations.service'
 import { InvitationsController } from './invitations.controller'
 // module dependencies
 import { DatabaseModule } from '../common/database/database.module'
-import { GroupsModule } from '../groups/groups.module'
+import { GroupsModule } from '../core/groups/groups.module'
 import { GroupMembershipsModule } from '../core/group-memberships/group-memberships.module'
 import { UsersModule } from '../users/users.module'
 import { NotificationsModule } from '../core/notifications/notifications.module'

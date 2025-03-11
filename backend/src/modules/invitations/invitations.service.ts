@@ -4,7 +4,7 @@ import { ResultSet } from '@libsql/client/.'
 import { invitationsSchema } from '../../common/schemas'
 import type { CreateInvitationBody, CreateInvitationByUsernameBody, InvitationDto } from '../../common/types/invitation.type'
 import type { AvatarDto, UserGetDto } from '../../common/types/user.type'
-import { GroupsService } from '../groups/groups.service'
+import { GroupsService } from '../core/groups/groups.service'
 import { GroupMembershipsService } from '../core/group-memberships/group-memberships.service'
 import { UsersService } from '../users/users.service'
 
