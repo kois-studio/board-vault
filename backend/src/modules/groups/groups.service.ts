@@ -114,54 +114,6 @@ export class GroupsService {
         return { success: true }
     }
 
-    async getGroupWithMembersAndGames(groupId: number): Promise<GroupWithMembersAndGames> {
-        this.LOGGER.log(`Getting group with members and games for group ${groupId}`)
-
-        // Step 1: Get basic group data
-        const group = await this.getGroupById(groupId)
-    
-        // Step 2: Get members with their join dates
-        const membershipRows = await this.databaseService.getGroupMembers(groupId);
-        const memberships = membershipRows.rows.map(row => ({
-            accountId: Number(row[0]),
-            joinedAt: String(row[1]),
-        }))
-
-        // Step 3: Get all user profiles in parallel
-        const userProfiles = await Promise.all(memberships.map(membership => this.usersService.getUserById(membership.accountId)))
-
-        // Step 4: Enrich each user with games and reviews
-        const members: Array<GroupMemberWithGames> = await Promise.all(
-            userProfiles.map(async (userProfile) => {
-                const joinedAt = memberships.find(m => m.accountId === userProfile.id)?.joinedAt || '';
-                
-                // Get owned games IDs
-                const ownedGamesIds = (await this.gamesOwnedService.getGamesOwnedByAccountId(userProfile.id))
-                    .map(game => game.gameId);
-                
-                // Get full game data for each ID
-                const games = await Promise.all(
-                    ownedGamesIds.map(gameId => 
-                        this.gamesService.getGameById(gameId)
-                    )
-                );
-                
-                // Get reviews for this user
-                const reviews = await this.reviewsService.getUserReviews(userProfile.id);
-                
-                // Return the complete member object
-                return {
-                    ...userProfile,
-                    joinedAt,
-                    games,
-                    reviews,
-                };
-            })
-        );
-
-        return { ...group, members};
-    }
-
     async getGroupInvitations(groupId: number): Promise<Array<InvitationWithAccountsData>> {
         this.LOGGER.log(`Getting all invitations for group ${groupId}`)
         const resultSet = await this.databaseService.getGroupInvitations(groupId)
