@@ -440,6 +440,13 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    getGroupMembershipsByGroupId(groupId: number) {
+        return this._tursoExecute({
+            sql: 'SELECT * FROM GroupMembership WHERE groupId = ?',
+            args: [groupId],
+        })
+    }
+
     async createGroupMembership(groupDto: CreateGroupMembershipBody) {
         await this._tursoExecute({
             sql: 'INSERT INTO GroupMembership (accountId, groupId) VALUES (?, ?)',
@@ -728,6 +735,13 @@ export class DatabaseService implements OnModuleInit {
         return this._tursoExecute({
             sql: 'SELECT * FROM GameReview WHERE accountId = ? AND gameId = ?',
             args: [accountId, gameId],
+        })
+    }
+
+    getGameReviewsByAccountId(accountId: number) {
+        return this._tursoExecute({
+            sql: 'SELECT * FROM GameReview WHERE accountId = ?',
+            args: [accountId],
         })
     }
 

@@ -2,7 +2,6 @@ import { Controller, Get, Param, ParseIntPipe, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
 import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
-import { GameReviewWithGameDataDto } from '../../../common/types/game-review.type'
 import { DashboardService } from './dashboard.service'
 import { GroupWithMembersAndGames } from '../../../common/types/group.type'
 

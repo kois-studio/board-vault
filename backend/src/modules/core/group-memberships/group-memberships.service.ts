@@ -54,6 +54,13 @@ export class GroupMembershipsService {
         return this._parseResultSet(resultSet)
     }
 
+    async getGroupMembershipsByGroupId(groupId: number): Promise<Array<GroupMembershipDto>> {
+        this.LOGGER.log(`Getting memberships for group ${groupId}`)
+        const resultSet = await this.databaseService.getGroupMembershipsByGroupId(groupId)
+
+        return this._parseResultSet(resultSet)
+    }
+
     async createGroupMembership(membershipDto: CreateGroupMembershipBody) {
         this.LOGGER.log(`Creating membership ${membershipDto.accountId} - ${membershipDto.groupId}`)
         try {
