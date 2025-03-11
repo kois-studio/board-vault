@@ -347,19 +347,6 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
-    getGroupMembers(groupId: number) {
-        return this._tursoExecute({
-            sql: `
-            SELECT 
-                gm.accountId,
-                gm.joinedAt
-            FROM GroupMembership gm
-            WHERE gm.groupId = ?
-            `,
-            args: [groupId],
-        })
-    }
-
     getGroupInvitations(groupId: number) {
         return this._tursoExecute({
             sql: `
