@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, forwardRef, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common'
+import { BadRequestException, ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { DatabaseService } from '../common/database/database.service'
 import { AvatarDto, CreateUserBody, UpdateUserBody, UserCompleteDto, UserGetDto } from '../../common/types/user.type'
 import { ResultSet } from '@libsql/client/.'
@@ -21,7 +21,7 @@ export class UsersService {
 
     constructor(
         private readonly databaseService: DatabaseService,
-        @Inject(forwardRef(() => GroupsService)) private readonly groupsService: GroupsService,
+        private readonly groupsService: GroupsService,
         private readonly groupMembershipsService: GroupMembershipsService,
         private readonly meetsService: MeetsService,
         private readonly gamesService: GamesService,

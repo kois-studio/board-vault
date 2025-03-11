@@ -1,4 +1,4 @@
-import { forwardRef, Module } from '@nestjs/common'
+import { Module } from '@nestjs/common'
 import { UsersService } from './users.service'
 import { UsersController } from './users.controller'
 // module dependencies
@@ -16,7 +16,7 @@ import { WishlistModule } from '../core/wishlist/wishlist.module'
     imports: [
         MeetsModule,
         DatabaseModule,
-        forwardRef(() => GroupsModule),
+        GroupsModule,
         GroupMembershipsModule,
         GamesModule,
         GamesOwnedModule,

@@ -1,16 +1,12 @@
 import { ResultSet } from '@libsql/client/.'
-import { forwardRef, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common'
-import type { CreateGroupBody, GroupDto, GroupMemberWithGames, GroupWithMembersAndGames, UpdateGroupBody } from '../../common/types/group.type'
+import { Injectable, Logger, NotFoundException } from '@nestjs/common'
+import type { CreateGroupBody, GroupDto, UpdateGroupBody } from '../../common/types/group.type'
 import { DatabaseService } from '../common/database/database.service'
 import { groupsSchema } from '../../common/schemas'
 import type { InvitationWithAccountsData } from '../../common/types/invitation.type'
 import type { AvatarDto, UserGetDto } from '../../common/types/user.type'
 import type { MeetWithAttendeesAndGames } from '../../common/types/meet.type'
 import type { GameDto } from '../../common/types/game.type'
-import { UsersService } from '../users/users.service'
-import { GamesOwnedService } from '../core/games-owned/games-owned.service'
-import { GamesService } from '../core/games/games.service'
-import { ReviewsService } from '../core/reviews/reviews.service'
 
 @Injectable()
 export class GroupsService {
@@ -18,10 +14,6 @@ export class GroupsService {
 
     constructor(
         private readonly databaseService: DatabaseService,
-        @Inject(forwardRef(() => UsersService)) private readonly usersService: UsersService,
-        private readonly gamesOwnedService: GamesOwnedService,
-        private readonly gamesService: GamesService,
-        private readonly reviewsService: ReviewsService,
     ) {}
 
     private _parseResultSet(resultSet: ResultSet): Array<GroupDto> {
