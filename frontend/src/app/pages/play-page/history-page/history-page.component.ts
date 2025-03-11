@@ -32,11 +32,13 @@ export class HistoryPageComponent {
     public readonly groupedGamesByDateComputed = computed(() => {
         return this.userHistory$().reduce(
             (groups, game) => {
-                const date = new Date(game.meetData.meetDate).toLocaleDateString()
-                if (!groups[date]) {
-                    groups[date] = []
+                // Use ISO format for consistent date handling
+                const date = new Date(game.meetData.meetDate);
+                const dateKey = date.toISOString().split('T')[0]; // 'YYYY-MM-DD' format
+                if (!groups[dateKey]) {
+                    groups[dateKey] = []
                 }
-                groups[date].push(game)
+                groups[dateKey].push(game)
                 return groups
             },
             {} as Record<string, Array<HistoryRecordType>>,
