@@ -5,7 +5,7 @@ import { ProfileController } from './profile.controller'
 import { DatabaseModule } from '../../common/database/database.module'
 import { UsersModule } from '../../users/users.module'
 import { NotificationsModule } from '../../core/notifications/notifications.module'
-import { GroupsModule } from '../../groups/groups.module'
+import { GroupsModule } from '../../core/groups/groups.module'
 import { InvitationsModule } from '../../invitations/invitations.module'
 
 @Module({

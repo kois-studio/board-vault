@@ -4,7 +4,7 @@ import { AvatarDto, CreateUserBody, UpdateUserBody, UserCompleteDto, UserGetDto 
 import { ResultSet } from '@libsql/client/.'
 import { usersSchema } from '../../common/schemas'
 import { GameDto, GameViewDto } from '../../common/types/game.type'
-import { GroupsService } from '../groups/groups.service'
+import { GroupsService } from '../core/groups/groups.service'
 import { GroupMembershipsService } from '../core/group-memberships/group-memberships.service'
 import { MeetsService } from '../meets/meets.service'
 import { MeetDto } from '../../common/types/meet.type'

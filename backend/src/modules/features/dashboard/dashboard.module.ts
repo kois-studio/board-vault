@@ -4,10 +4,10 @@ import { DashboardController } from './dashboard.controller'
 // module dependencies
 import { DatabaseModule } from '../../common/database/database.module'
 import { UsersModule } from '../../users/users.module'
-import { GroupsModule } from '../../../modules/groups/groups.module'
-import { GroupMembershipsModule } from '../../../modules/core/group-memberships/group-memberships.module'
-import { GamesOwnedModule } from '../../../modules/core/games-owned/games-owned.module'
-import { GamesModule } from '../../../modules/core/games/games.module'
+import { GroupsModule } from '../../core/groups/groups.module'
+import { GroupMembershipsModule } from '../../core/group-memberships/group-memberships.module'
+import { GamesOwnedModule } from '../../core/games-owned/games-owned.module'
+import { GamesModule } from '../../core/games/games.module'
 import { ReviewsModule } from '../../../modules/core/reviews/reviews.module'
 
 @Module({
