@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { Component, computed, inject } from '@angular/core'
-import type { GamePlayHistoryType } from '../../../api/api.types'
+import type { HistoryRecordType } from '../../../api/api.types'
 import { SkeletonCardGroupComponent } from '../../../components/skeletons/skeleton-card-group/skeleton-card-group.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { TitleSubtitleComponent } from '../../../components/ui/title-subtitle/title-subtitle.component'
@@ -39,7 +39,7 @@ export class HistoryPageComponent {
                 groups[date].push(game)
                 return groups
             },
-            {} as Record<string, Array<GamePlayHistoryType>>,
+            {} as Record<string, Array<HistoryRecordType>>,
         )
     })
 
