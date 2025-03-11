@@ -40,6 +40,13 @@ export class MeetAttendeesService {
         return this._parseResultSet(resultSet)
     }
 
+    async getMeetAttendeesByMeetId(meetId: number): Promise<Array<MeetAttendeeDto>> {
+        this.LOGGER.log(`Getting all meet attendees for meetId ${meetId}`)
+        const resultSet = await this.databaseService.getMeetAttendeesByMeetId(meetId)
+
+        return this._parseResultSet(resultSet)
+    }
+
     async createMeetAttendee(meetId: number, accountId: number): Promise<MeetAttendeeDto> {
         this.LOGGER.log(`Creating meetAttendee with accountId ${accountId} and meetId ${meetId}`)
         const resultSet = await this.databaseService.createMeetAttendee(meetId, accountId)
