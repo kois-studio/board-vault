@@ -5,7 +5,7 @@ import { GamesService } from '../../core/games/games.service'
 import { MeetsService } from '../../meets/meets.service'
 import { MeetAttendeesService } from '../../core/meet-attendees/meet-attendees.service'
 import { MeetAccountGamesService } from '../../core/meet-account-games/meet-account-games.service'
-import type { HistoryRecordDto } from '../../../common/types/meet-account-game.type'
+import type { HistoryRecordDto } from './play.types'
 
 @Injectable()
 export class PlayService {

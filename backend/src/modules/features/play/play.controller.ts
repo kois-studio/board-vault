@@ -3,9 +3,9 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 import { PlayService } from './play.service'
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
 import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
-import { HistoryRecordDto } from '../../../common/types/meet-account-game.type'
+import { HistoryRecordDto } from './play.types'
 
-// @UseGuards(JwtAuthGuard, VerifiedUserGuard)
+@UseGuards(JwtAuthGuard, VerifiedUserGuard)
 @ApiTags('play')
 @ApiBearerAuth()
 @Controller('play')
