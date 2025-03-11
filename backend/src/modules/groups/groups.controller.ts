@@ -50,13 +50,6 @@ export class GroupsController {
         return this.groupsService.deleteGroupById(groupId)
     }
 
-    @Get('/:groupId/withMembersAndGames')
-    @ApiOperation({ summary: 'Get group data with members and games inserted' })
-    @ApiResponse({ status: 200, type: GroupWithMembersAndGames })
-    getGroupWithMembersAndGames(@Param('groupId', ParseIntPipe) groupId: number) {
-        return this.groupsService.getGroupWithMembersAndGames(groupId)
-    }
-
     @Get('/:groupId/invitations')
     @ApiOperation({ summary: 'Get all group invitations' })
     @ApiResponse({ status: 200, type: [InvitationWithAccountsData] })
