@@ -66,6 +66,12 @@ export class ReviewsService {
         }
     }
 
+    async getGameReviewsByAccountId(accountId: number): Promise<Array<GameReviewDto>> {
+        this.LOGGER.log(`Getting reviews for account ${accountId}`)
+        const resultSet = await this.databaseService.getGameReviewsByAccountId(accountId)
+        return this._parseResultSet(resultSet)
+    }
+
     async saveGameReview(gameReviewDto: CreateGameReviewBody) {
         // NOTE: the review may alread exist
         this.LOGGER.log(`Saving gameReview ${gameReviewDto.accountId} - ${gameReviewDto.gameId}`)
