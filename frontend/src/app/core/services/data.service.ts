@@ -3,10 +3,10 @@ import { Router } from '@angular/router'
 import { catchError, concatMap, from, of, tap } from 'rxjs'
 import { Api } from '../../api/api'
 import type {
-    GamePlayHistoryType,
     GameReviewWithGameData,
     GameType,
     GroupWithMembersAndGames,
+    HistoryRecordType,
     InvitationWithAccountsData,
     InvitationWithExtraData,
     MeetType,
@@ -44,7 +44,7 @@ export class DataService {
     public readonly userInvitations = signal<Array<InvitationWithExtraData>>([])
     public readonly userReviews = signal<Array<GameReviewWithGameData>>([])
     public readonly userMeets = signal<Array<MeetType>>([])
-    public readonly userHistory = signal<Array<GamePlayHistoryType>>([])
+    public readonly userHistory = signal<Array<HistoryRecordType>>([])
 
     // list of all games available to select
     public readonly gamesList = signal<Array<GameType>>([])
