@@ -1,13 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { LogFeature } from '../../../common/decorators/logger.decorator'
 import { UsersService } from '../../users/users.service'
-import type { GroupMemberWithGames, GroupWithMembersAndGames } from 'src/common/types/group.type'
-import { GroupsService } from 'src/modules/groups/groups.service'
-import { GroupMembershipsService } from 'src/modules/core/group-memberships/group-memberships.service'
-import { UserWithGames } from 'src/common/types/user.type'
-import { GamesOwnedService } from 'src/modules/core/games-owned/games-owned.service'
-import { GamesService } from 'src/modules/core/games/games.service'
-import { ReviewsService } from 'src/modules/core/reviews/reviews.service'
+import { GroupsService } from '../../../modules/groups/groups.service'
+import { GroupMembershipsService } from '../../../modules/core/group-memberships/group-memberships.service'
+import { GamesOwnedService } from '../../../modules/core/games-owned/games-owned.service'
+import { GamesService } from '../../../modules/core/games/games.service'
+import { ReviewsService } from '../../../modules/core/reviews/reviews.service'
+import type { GroupMemberWithGames, GroupWithMembersAndGames } from '../../../common/types/group.type'
+import type { UserWithGames } from '../../../common/types/user.type'
 
 @Injectable()
 export class DashboardService {
