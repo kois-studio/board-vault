@@ -144,68 +144,32 @@ export class DataService {
         })
     }
 
-    private _getUserGroups(userId: number) {
-        this.api
-            .getUserGroups(userId)
-            .pipe(
-                // If no groupIds, loading=false because there is nothing to fetch
-                tap((groupIds) => {
-                    if (groupIds.length === 0) {
-                        // early finish because no groupIds to fetch
-                        this.loadingService.finish(LOADING_KEYS.USER_GROUPS)
-                    }
-                }),
-                catchError((err) => {
-                    // early finish because no groupIds to fetch
-                    this.toastService.error("Error retrieving user's groups")
-                    this.loadingService.finish(LOADING_KEYS.USER_GROUPS)
-                    return of([])
-                }),
-                concatMap((groupIds) =>
-                    from(groupIds).pipe(
-                        concatMap((groupId) =>
-                            this.api.getGroupWithMembersAndGames(groupId).pipe(
-                                tap((group) => {
-                                    this.userGroups.update((groups) => [...groups, group])
-                                }),
-                                catchError((err) => {
-                                    this.toastService.error(`Error retrieving group data for groupId: ${groupId}`)
-                                    return of(null) // Returning null or empty to continue fetching other groups
-                                }),
-                                concatMap((group) =>
-                                    group
-                                        ? this.api.getGroupInvitations(groupId).pipe(
-                                              tap((invitations) => {
-                                                  this.invitationsGroupIndex.update((index) => ({
-                                                      ...index,
-                                                      [groupId]: invitations,
-                                                  }))
+    private _getUserGroups(accountId: number) {
+        this.api.getUserGroups(accountId).subscribe({
+            next: (groups) => {
+                this.userGroups.set(groups)
 
-                                                  // after all, add the currentUser games list
-                                                  for (const member of group.members) {
-                                                      if (member.id === userId) {
-                                                          this.userGames.update((games) => member.games)
-                                                          break
-                                                      }
-                                                  }
-                                              }),
-                                              catchError((err) => {
-                                                  this.toastService.error(`Error retrieving invitations for groupId: ${groupId}`)
-                                                  return of([]) // Return empty invitations to continue
-                                              }),
-                                          )
-                                        : of(null),
-                                ),
-                            ),
-                        ),
-                    ),
-                ),
-            )
-            .subscribe({
-                complete: () => {
-                    this.loadingService.finish(LOADING_KEYS.USER_GROUPS)
-                },
-            })
+                for (const group of groups) {
+                    this.api.getGroupInvitations(group.id).subscribe({
+                        next: (invitations) => {
+                            this.invitationsGroupIndex.update((index) => ({
+                                ...index,
+                                [group.id]: invitations,
+                            }))
+                        },
+                        error: () => {
+                            this.toastService.error(`Error retrieving invited members for group: ${group.name}`)
+                        },
+                    })
+                }
+            },
+            error: () => {
+                this.toastService.error("Error retrieving user's groups")
+            },
+            complete: () => {
+                this.loadingService.finish(LOADING_KEYS.USER_GROUPS)
+            },
+        })
     }
 
     private _getUserMeets(userId: number) {
