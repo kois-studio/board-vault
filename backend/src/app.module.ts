@@ -19,6 +19,7 @@ import { EmailModule } from './modules/common/email/email.module'
 import { WishlistModule } from './modules/core/wishlist/wishlist.module'
 // Features
 import { CollectionModule } from './modules/features/collection/collection.module'
+import { DashboardModule } from './modules/features/dashboard/dashboard.module'
 import { ProfileModule } from './modules/features/profile/profile.module'
 
 @Module({
@@ -42,6 +43,7 @@ import { ProfileModule } from './modules/features/profile/profile.module'
         WishlistModule,
         // Features
         CollectionModule,
+        DashboardModule,
         ProfileModule,
     ],
     controllers: [],
