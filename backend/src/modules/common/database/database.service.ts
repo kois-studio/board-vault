@@ -195,19 +195,6 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
-    getUserGames(userId: number) {
-        return this._tursoExecute({
-            sql: `
-                SELECT g.id, g.title, g.imageUrl, g.gameAvgDuration, g.minPlayers, g.maxPlayers
-                FROM Game g
-                JOIN OwnedGame og
-                ON g.id = og.gameId
-                WHERE og.accountId = ?
-            `,
-            args: [userId],
-        })
-    }
-
     getUserReviews(userId: number) {
         return this._tursoExecute({
             sql: `
