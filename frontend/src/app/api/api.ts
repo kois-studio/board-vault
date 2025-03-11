@@ -203,12 +203,12 @@ export class Api {
     // --------------------------------------------------------------------------
     // #region collection
     // --------------------------------------------------------------------------
-    getUserReviews(accountId: number) {
-        return this.http.get<Array<GameReviewWithGameData>>(`${this.url}/collection/users/${accountId}/games/reviews`)
+    getUserGames(userId: number) {
+        return this.http.get<Array<GameType>>(`${this.url}/collection/users/${userId}/games`)
     }
 
-    getUserGames(userId: number) {
-        return this.http.get<Array<GameType>>(`${this.url}/users/${userId}/games`)
+    getUserReviews(accountId: number) {
+        return this.http.get<Array<GameReviewWithGameData>>(`${this.url}/collection/users/${accountId}/games/reviews`)
     }
 
     // --------------------------------------------------------------------------
