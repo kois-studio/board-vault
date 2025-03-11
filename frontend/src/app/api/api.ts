@@ -69,10 +69,6 @@ export class Api {
         return this.http.put<{ success: true }>(`${this.url}/users/${userId}`, requesBody)
     }
 
-    getUserGroups(userId: number) {
-        return this.http.get<Array<number>>(`${this.url}/users/${userId}/groups`)
-    }
-
     getUserMeets(userId: number) {
         return this.http.get<Array<MeetType>>(`${this.url}/users/${userId}/meets`)
     }
@@ -217,6 +213,13 @@ export class Api {
 
     getUserGames(userId: number) {
         return this.http.get<Array<GameType>>(`${this.url}/users/${userId}/games`)
+    }
+
+    // --------------------------------------------------------------------------
+    // #region dashboard
+    // --------------------------------------------------------------------------
+    getUserGroups(userId: number) {
+        return this.http.get<Array<GroupWithMembersAndGames>>(`${this.url}/dashboard/users/${userId}/groups`)
     }
 
     // --------------------------------------------------------------------------
