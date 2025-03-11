@@ -9,7 +9,7 @@
         <app-skeleton-card-group />
     } @else if (userHistory$().length === 0) {
         <!-- no data -->
-        <div class="text-center py-8 text-zinc-400">
+        <div class="text-center py-8 text-secondary">
             <p>No games played yet</p>
         </div>
     } @else {
@@ -18,9 +18,11 @@
                 <h2 class="text-2xl font-semibold mb-4">
                     {{ dateGroup.key | customDate }}
                 </h2>
+
+                <!-- Games played on this date -->
                 <ul class="grid lg:grid-cols-2 xl:grid-cols-3 gap-4">
                     @for (item of dateGroup.value; track $index) {
-                        <div class="app-bg-tertiary rounded-lg p-4 flex gap-4 cursor-pointer">
+                        <div class="app-bg-tertiary rounded-lg p-4 flex gap-4">
                             <!-- Game image -->
                             <img
                                 [src]="item.gameData.imageUrl"
@@ -31,16 +33,11 @@
 
                             <!-- Game info -->
                             <div class="flex flex-col justify-between flex-1">
-                                <div>
-                                    <h3 class="text-xl font-semibold mb-1">{{ item.gameData.title }}</h3>
-                                    <p class="text-zinc-400 text-sm">
-                                        Played {{ item.meetData.meetDate | customDate }}
-                                    </p>
-                                </div>
+                                <h3 class="text-xl font-semibold mb-1">{{ item.gameData.title }}</h3>
 
                                 <div class="flex justify-between items-end">
                                     <!-- Meet info -->
-                                    <div class="text-sm text-zinc-400">
+                                    <div class="text-secondary text-sm">
                                         <p>Group #{{ item.meetData.groupId }}</p>
                                         <p>Meet #{{ item.meetData.id }}</p>
                                     </div>
@@ -48,36 +45,13 @@
                                     <!-- Players -->
                                     <div class="relative h-8 flex items-center">
                                         <!-- Player avatars -->
-                                        <div class="flex relative pr-2">
-                                            @for (player of item.playedBy.slice(0, 3); track player.id) {
-                                                <div class="w-8 h-8 rounded-full bg-zinc-700 border-2 border-zinc-800 absolute"
-                                                     [style.left.px]="$index * 16">
-                                                    @if (player.avatar.type === 'icon') {
-                                                        <div class="w-full h-full flex items-center justify-center text-white"
-                                                            [style.background-color]="player.avatar.backgroundColor">
-                                                            <!-- Icon implementation would go here -->
-                                                            {{ player.avatar.initials }}
-                                                        </div>
-                                                    } @else if (player.avatar.type === 'emoji') {
-                                                        <div class="w-full h-full flex items-center justify-center"
-                                                            [style.background-color]="player.avatar.backgroundColor">
-                                                            {{ player.avatar.emoji }}
-                                                        </div>
-                                                    } @else {
-                                                        <div class="w-full h-full flex items-center justify-center text-white"
-                                                            [style.background-color]="player.avatar.backgroundColor">
-                                                            {{ player.avatar.initials }}
-                                                        </div>
-                                                    }
-                                                </div>
-                                            }
-                                            
-                                            <!-- Show additional players count if needed -->
-                                            @if (item.playedBy.length > 3) {
-                                                <div class="w-8 h-8 rounded-full bg-zinc-600 border-2 border-zinc-800 absolute flex items-center justify-center text-xs"
-                                                     [style.left.px]="3 * 16">
-                                                    +{{ item.playedBy.length - 3 }}
-                                                </div>
+                                        <div class="flex -space-x-2">
+                                            @for (player of item.playedBy; track player.id) {
+                                                <app-image-profile
+                                                    class="border-2 rounded-full border-indigo-100 dark:border-zinc-800"
+                                                    [avatar]="player.avatar"
+                                                    [style.zIndex]="$index"
+                                                />
                                             }
                                         </div>
                                     </div>

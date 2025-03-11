@@ -8,9 +8,17 @@ import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
 import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
+import { ImageProfileComponent } from '../../../components/image-profile/image-profile.component'
 
 @Component({
-    imports: [CommonModule, TitleSubtitleComponent, ContainerWrapperComponent, CustomDatePipe, SkeletonCardGroupComponent],
+    imports: [
+        CommonModule,
+        TitleSubtitleComponent,
+        ContainerWrapperComponent,
+        CustomDatePipe,
+        SkeletonCardGroupComponent,
+        ImageProfileComponent,
+    ],
     templateUrl: 'history-page.component.html',
 })
 export class HistoryPageComponent {
@@ -30,18 +38,15 @@ export class HistoryPageComponent {
     //        Computed
     // --------------------------------------------------------------------------
     public readonly groupedGamesByDateComputed = computed(() => {
-        return this.userHistory$().reduce(
-            (groups, game) => {
-                // Use ISO format for consistent date handling
-                const date = new Date(game.meetData.meetDate);
-                const dateKey = date.toISOString().split('T')[0]; // 'YYYY-MM-DD' format
-                if (!groups[dateKey]) {
-                    groups[dateKey] = []
-                }
-                groups[dateKey].push(game)
-                return groups
-            },
-            {} as Record<string, Array<HistoryRecordType>>,
-        )
+        return this.userHistory$().reduce((groups, game) => {
+            // Use ISO format for consistent date handling
+            const date = new Date(game.meetData.meetDate)
+            const dateKey = date.toISOString().split('T')[0] // 'YYYY-MM-DD' format
+            if (!groups[dateKey]) {
+                groups[dateKey] = []
+            }
+            groups[dateKey].push(game)
+            return groups
+        }, {} as Record<string, Array<HistoryRecordType>>)
     })
 }
