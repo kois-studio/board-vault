@@ -140,20 +140,6 @@ export class UsersService {
         return { success: true }
     }
 
-    async getUserGames(userId: number): Promise<Array<GameDto>> {
-        this.LOGGER.log(`Getting all games for user ${userId}`)
-        const resultSet = await this.databaseService.getUserGames(userId)
-
-        return resultSet.rows.map(row => ({
-            id: Number(row[0]),
-            title: String(row[1]),
-            imageUrl: String(row[2]),
-            gameAvgDuration: Number(row[3]),
-            minPlayers: Number(row[4]),
-            maxPlayers: Number(row[5]),
-        }))
-    }
-
     async getUserMeets(userId: number): Promise<Array<MeetDto>> {
         this.LOGGER.log(`Getting all meets for user ${userId}`)
         return []

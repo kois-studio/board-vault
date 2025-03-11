@@ -56,13 +56,6 @@ export class UsersController {
         return this.usersService.deleteUserById(userId)
     }
 
-    @Get('/:userId/games')
-    @ApiOperation({ summary: 'Get games owned by user' })
-    @ApiResponse({ status: 200, type: [GameDto] })
-    getUserGames(@Param('userId', ParseIntPipe) userId: number) {
-        return this.usersService.getUserGames(userId)
-    }
-
     @Get('/:userId/meets')
     @ApiOperation({ summary: 'Get meets by user' })
     @ApiResponse({ status: 200, type: [MeetDto] })
