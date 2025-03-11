@@ -4,7 +4,6 @@ import { AvatarDto, CreateUserBody, UpdateUserBody, UserCompleteDto, UserGetDto 
 import { ResultSet } from '@libsql/client/.'
 import { usersSchema } from '../../common/schemas'
 import { GameDto, GameViewDto } from '../../common/types/game.type'
-import { InvitationWithExtraData } from '../../common/types/invitation.type'
 import { GroupsService } from '../groups/groups.service'
 import { GroupMembershipsService } from '../core/group-memberships/group-memberships.service'
 import { MeetsService } from '../meets/meets.service'
@@ -183,27 +182,6 @@ export class UsersService {
         })
     }
 
-    async getUserInvitationsReceived(userId: number): Promise<Array<InvitationWithExtraData>> {
-        this.LOGGER.log('Getting invitations for user')
-        const resultSet1 = await this.databaseService.getUserInvitationsReceived(userId)
-        const invitations: Array<InvitationWithExtraData> = resultSet1.rows.map(row => ({
-            id: Number(row[0]),
-            groupId: Number(row[1]),
-            fromAccountId: Number(row[2]),
-            toAccountId: Number(row[3]),
-            sentAt: String(row[4]),
-            fromAccount: undefined!,
-            group: undefined!,
-        }))
-
-        for (const invitation of invitations) {
-            invitation.group = await this.groupsService.getGroupWithMembersAndGames(invitation.groupId)
-            invitation.fromAccount = await this.getUserById(invitation.fromAccountId)
-        }
-
-        return invitations
-    }
-
     async updateGames(accountId: number, gamesToAdd: number[], gamesToRemove: number[]): Promise<{ success: boolean }> {
         this.LOGGER.log(`Updating games for user with id ${accountId}`)
         try {
@@ -242,7 +220,7 @@ export class UsersService {
         const userData = await this.getUserById(userId)
 
         // Step 2: Get group data
-        const groupData = await this.groupsService.getGroupWithMembersAndGames(groupId)
+        const groupData = await this.groupsService.getGroupById(groupId)
 
         // Step 3: Check if user is owner
         if (groupData.createdBy === userData.id) {
@@ -262,7 +240,7 @@ export class UsersService {
         const userData = await this.getUserById(userId)
 
         // Step 2: Get group data
-        const groupData = await this.groupsService.getGroupWithMembersAndGames(groupId)
+        const groupData = await this.groupsService.getGroupById(groupId)
 
         // Step 3: Create meeting
         const createResultSet = await this.databaseService.createMeeting(groupData.id, userData.id)
@@ -310,7 +288,7 @@ export class UsersService {
 
         // Step 1: Validate user and group exists.
         await this.getUserById(userId)
-        await this.groupsService.getGroupWithMembersAndGames(groupId)
+        await this.groupsService.getGroupById(groupId)
 
         // Step 2: Clear related tables
         await this.databaseService.deleteAllGroupMembershipByGroupId(groupId)

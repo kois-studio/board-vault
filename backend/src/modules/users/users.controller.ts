@@ -79,14 +79,6 @@ export class UsersController {
         return this.usersService.updateGames(userId, userUpdateGamesBody.gamesToAdd, userUpdateGamesBody.gamesToRemove)
     }
 
-    @Get('/:userId/invitationsReceived')
-    @ApiOperation({ summary: 'Get invitations received by user' })
-    @ApiResponse({ status: 200, type: [InvitationWithExtraData] })
-    getUserInvitationsReceived(@Param('userId', ParseIntPipe) userId: number) {
-        // TODO: in a future, trim unnecessary data from the response
-        return this.usersService.getUserInvitationsReceived(userId)
-    }
-
     @Get('/:userId/history')
     @ApiOperation({ summary: 'Get games history for user' })
     @ApiResponse({ status: 200, type: [AccountGameHistoryDto] })
