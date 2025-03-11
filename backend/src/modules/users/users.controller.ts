@@ -3,12 +3,10 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 import { UsersService } from './users.service'
 import { CreateUserBody, UpdateUserBody, UserGetDto, UserUpdateGamesBody } from '../../common/types/user.type'
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
-import { GameDto, GameViewDto } from '../../common/types/game.type'
-import { InvitationWithExtraData } from '../../common/types/invitation.type'
+import { GameViewDto } from '../../common/types/game.type'
 import { SuccessDto } from '../../common/types/auth.type'
 import { UserOwnershipGuard } from '../../common/guards/ownership.guard'
 import { MeetDto } from '../../common/types/meet.type'
-import { AccountGameHistoryDto } from '../../common/types/meet-account-game.type'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('users')
@@ -70,13 +68,6 @@ export class UsersController {
     @ApiResponse({ status: 404, description: 'User not found.' })
     updateUserGames(@Param('userId', ParseIntPipe) userId: number, @Body() userUpdateGamesBody: UserUpdateGamesBody) {
         return this.usersService.updateGames(userId, userUpdateGamesBody.gamesToAdd, userUpdateGamesBody.gamesToRemove)
-    }
-
-    @Get('/:userId/history')
-    @ApiOperation({ summary: 'Get games history for user' })
-    @ApiResponse({ status: 200, type: [AccountGameHistoryDto] })
-    getUserGamesHistory(@Param('userId', ParseIntPipe) userId: number) {
-        return this.usersService.getUserGamesHistory(userId)
     }
 
     @UseGuards(UserOwnershipGuard)

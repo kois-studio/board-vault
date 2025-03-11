@@ -8,7 +8,6 @@ import { GroupsService } from '../core/groups/groups.service'
 import { GroupMembershipsService } from '../core/group-memberships/group-memberships.service'
 import { MeetsService } from '../meets/meets.service'
 import { MeetDto } from '../../common/types/meet.type'
-import { AccountGameHistoryDto } from '../../common/types/meet-account-game.type'
 import { GamesService } from '../core/games/games.service'
 import { GamesOwnedService } from '../core/games-owned/games-owned.service'
 import { TagsService } from '../core/tags/tags.service'
@@ -178,25 +177,6 @@ export class UsersService {
             this.LOGGER.error('Failed to update games for user', error)
             throw new NotFoundException('Failed to update games for user')
         }
-    }
-
-    async getUserGamesHistory(userId: number): Promise<Array<AccountGameHistoryDto>> {
-        this.LOGGER.log(`Getting games history for user ${userId}`)
-        const resultSet = await this.databaseService.getUserGamesHistory(userId)
-
-        const history = resultSet.rows.map(row => ({
-            accountId: Number(row[0]),
-            gameId: Number(row[1]),
-            meetData: JSON.parse(String(row[2])) as MeetDto,
-        }))
-
-        return Promise.all(
-            history.map(async historyRecord => ({
-                accountId: historyRecord.accountId,
-                gameData: await this.gamesService.getGameById(historyRecord.gameId),
-                meetData: historyRecord.meetData,
-            })),
-        )
     }
 
     async leaveGroup(userId: number, groupId: number): Promise<{ success: boolean }> {

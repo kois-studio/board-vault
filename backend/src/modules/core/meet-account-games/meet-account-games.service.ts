@@ -12,8 +12,8 @@ export class MeetAccountGamesService {
 
     private _parseResultSet(resultSet: ResultSet): Array<MeetAccountGameDto> {
         const meetAccountGames = resultSet.rows.map(row => ({
-            accountId: Number(row[0]),
-            meetId: Number(row[1]),
+            meetId: Number(row[0]),
+            accountId: Number(row[1]),
             gameId: Number(row[2]),
         }))
         
@@ -33,6 +33,12 @@ export class MeetAccountGamesService {
     }
 
     // #region methods
+
+    async getMeetAccountGamesByAccountId(accountId: number): Promise<Array<MeetAccountGameDto>> {
+        this.LOGGER.log(`Getting meetAccountGames by accountId ${accountId}`)
+        const resultSet = await this.databaseService.getMeetAccountGamesByAccountId(accountId)
+        return this._parseResultSet(resultSet)
+    }
 
     async createMeetAccountGame(accountId: number, meetId: number, gameId: number): Promise<MeetAccountGameDto> {
         this.LOGGER.log(`Creating meetAccountGame with accountId ${accountId}, meetId ${meetId} and gameId ${gameId}`)

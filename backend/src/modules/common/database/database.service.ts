@@ -239,27 +239,6 @@ export class DatabaseService implements OnModuleInit {
         }
     }
 
-    getUserGamesHistory(userId: number) {
-        return this._tursoExecute({
-            sql: `SELECT
-            mag.accountId,
-            mag.gameId,
-            json_object(
-                'id', m.id,
-                'groupId', m.groupId,
-                'createdBy', m.createdBy,
-                'meetDate', m.meetDate,
-                'isConfirmed', m.isConfirmed
-            ) AS meetData
-            FROM MeetAccountGame mag
-            JOIN Meet m ON mag.meetId = m.id
-            WHERE mag.accountId = ?
-            ORDER BY m.meetDate DESC;
-            `,
-            args: [userId],
-        })
-    }
-
     async findUserByVerificationToken(token: string) {
         return this._tursoExecute({
             sql: 'SELECT * FROM Account WHERE verification_token = ?',
@@ -771,6 +750,13 @@ export class DatabaseService implements OnModuleInit {
         return this._tursoExecute('SELECT * FROM MeetAttendee')
     }
 
+    getMeetAttendeesByMeetId(meetId: number) {
+        return this._tursoExecute({
+            sql: 'SELECT * FROM MeetAttendee WHERE meetId = ?',
+            args: [meetId],
+        })
+    }
+
     getMeetById(meetId: number) {
         return this._tursoExecute({
             sql: 'SELECT * FROM Meet WHERE id = ?',
@@ -859,7 +845,14 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
-    // #region MeetGame
+    // #region MeetAccountGame
+
+    getMeetAccountGamesByAccountId(accountId: number) {
+        return this._tursoExecute({
+            sql: 'SELECT * FROM MeetAccountGame WHERE accountId = ?',
+            args: [accountId],
+        })
+    }
 
     createMeetAccountGame(accountId: number, meetId: number, gameId: number) {
         return this._tursoExecute({
