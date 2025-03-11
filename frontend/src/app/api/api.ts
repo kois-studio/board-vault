@@ -2,12 +2,11 @@ import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { environment } from '../../environments/environment'
 import type {
-    GamePlayHistoryType,
-    GameReviewType,
     GameReviewWithGameData,
     GameType,
     GameViewType,
     GroupWithMembersAndGames,
+    HistoryRecordType,
     InvitationWithAccountsData,
     InvitationWithExtraData,
     MeetAttendeeType,
@@ -75,10 +74,6 @@ export class Api {
 
     updateUserGames(userId: number, gamesToAdd: Array<number>, gamesToRemove: Array<number>) {
         return this.http.put<{ success: true }>(`${this.url}/users/${userId}/games`, { gamesToAdd, gamesToRemove })
-    }
-
-    getUserGamesHistory(accountId: number) {
-        return this.http.get<Array<GamePlayHistoryType>>(`${this.url}/users/${accountId}/history`)
     }
 
     getUserGame(accountId: number, gameId: number) {
@@ -216,6 +211,13 @@ export class Api {
     // --------------------------------------------------------------------------
     getUserGroups(userId: number) {
         return this.http.get<Array<GroupWithMembersAndGames>>(`${this.url}/dashboard/users/${userId}/groups`)
+    }
+
+    // --------------------------------------------------------------------------
+    // #region play
+    // --------------------------------------------------------------------------
+    getUserGamesHistory(userId: number) {
+        return this.http.get<Array<HistoryRecordType>>(`${this.url}/play/users/${userId}/history`)
     }
 
     // --------------------------------------------------------------------------

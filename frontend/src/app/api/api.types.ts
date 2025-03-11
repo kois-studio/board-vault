@@ -123,14 +123,6 @@ export type GameReviewType = {
     reviewDate: string
 }
 
-// #region GamePlaySession
-
-export type GamePlayHistoryType = {
-    accountId: number
-    gameData: GameType
-    meetData: MeetType
-}
-
 // #region Meeting
 
 export type MeetType = {
@@ -168,4 +160,13 @@ export type GameReviewDto = {
 
 export type GameReviewWithGameData = GameReviewDto & {
     gameData: GameType
+}
+
+// --------------------------------------------------------------------------
+// #region play
+// --------------------------------------------------------------------------
+export type HistoryRecordType = {
+    gameData: GameType
+    meetData: MeetType
+    playedBy: Array<UserType>
 }
