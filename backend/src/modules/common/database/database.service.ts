@@ -195,17 +195,6 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
-    getUserGroups(userId: number) {
-        return this._tursoExecute({
-            sql: `
-                SELECT gm.groupId
-                FROM GroupMembership gm
-                WHERE gm.accountId = ?
-            `,
-            args: [userId],
-        })
-    }
-
     getUserGames(userId: number) {
         return this._tursoExecute({
             sql: `
@@ -441,6 +430,13 @@ export class DatabaseService implements OnModuleInit {
         return this._tursoExecute({
             sql: 'SELECT * FROM GroupMembership WHERE accountId = ? AND groupId = ?',
             args: [accountId, groupId],
+        })
+    }
+
+    getGroupMembershipsByAccountId(accountId: number) {
+        return this._tursoExecute({
+            sql: 'SELECT * FROM GroupMembership WHERE accountId = ?',
+            args: [accountId],
         })
     }
 

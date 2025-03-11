@@ -141,13 +141,6 @@ export class UsersService {
         return { success: true }
     }
 
-    async getUserGroups(userId: number) {
-        this.LOGGER.log('Getting groups for user')
-        const resultSet = await this.databaseService.getUserGroups(userId)
-
-        return resultSet.rows.map(row => Number(row[0]))
-    }
-
     async getUserGames(userId: number): Promise<Array<GameDto>> {
         this.LOGGER.log(`Getting all games for user ${userId}`)
         const resultSet = await this.databaseService.getUserGames(userId)
@@ -164,14 +157,15 @@ export class UsersService {
 
     async getUserMeets(userId: number): Promise<Array<MeetDto>> {
         this.LOGGER.log(`Getting all meets for user ${userId}`)
+        return []
         // Step 1: Get all groups for user
-        const getUserGroups = await this.databaseService.getUserGroups(userId)
-        const groupIds = getUserGroups.rows.map(row => Number(row[0]))
+        // const getUserGroups = await this.databaseService.getUserGroups(userId)
+        // const groupIds = getUserGroups.rows.map(row => Number(row[0]))
 
         // Step 2: Get meets for each group
         const resultMeets: Array<MeetDto> = []
 
-        for (const groupId of groupIds) {
+        for (const groupId of []) {
             const resultSet = await this.databaseService.getGroupMeets(groupId)
 
             const meets = resultSet.rows.map(row => ({
