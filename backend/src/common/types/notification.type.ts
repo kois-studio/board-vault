@@ -1,5 +1,5 @@
 import { ApiProperty, OmitType, PartialType, PickType } from '@nestjs/swagger'
-import { NotificationDataMap, NotificationTypeEnum } from 'src/modules/core/notifications/notifications-enum.type'
+import { NotificationDataMap, NotificationTypeEnum } from '../../modules/core/notifications/notifications-enum.type'
 
 /**
  * base Notification as it comes from db
