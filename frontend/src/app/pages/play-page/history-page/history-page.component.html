@@ -14,13 +14,13 @@
         </div>
     } @else {
         @for (dateGroup of groupedGamesByDateComputed() | keyvalue; track dateGroup.key) {
-            <div class="mb-8">
-                <h2 class="text-2xl font-semibold mb-4 text-zinc-300">
-                    {{ dateGroup.key && isValidDate(dateGroup.key) ? (dateGroup.key | customDate) : '' }}
+            <div class="app-bg-secondary p-4 mb-8">
+                <h2 class="text-2xl font-semibold mb-4">
+                    {{ dateGroup.key | customDate }}
                 </h2>
                 <ul class="grid lg:grid-cols-2 xl:grid-cols-3 gap-4">
                     @for (item of dateGroup.value; track $index) {
-                        <div class="bg-zinc-800 rounded-lg p-4 flex gap-4 hover:bg-zinc-700 transition-colors cursor-pointer">
+                        <div class="app-bg-tertiary rounded-lg p-4 flex gap-4 cursor-pointer">
                             <!-- Game image -->
                             <img
                                 [src]="item.gameData.imageUrl"
@@ -44,6 +44,41 @@
                                         <p>Group #{{ item.meetData.groupId }}</p>
                                         <p>Meet #{{ item.meetData.id }}</p>
                                     </div>
+                                    
+                                    <!-- Players -->
+                                    <div class="relative h-8 flex items-center">
+                                        <!-- Player avatars -->
+                                        <div class="flex relative pr-2">
+                                            @for (player of item.playedBy; track player.id) {
+                                                <div class="w-8 h-8 rounded-full bg-zinc-700 border-2 border-zinc-800 absolute">
+                                                    @if (player.avatar.type === 'icon') {
+                                                        <div class="w-full h-full flex items-center justify-center text-white"
+                                                            [style.background-color]="player.avatar.backgroundColor">
+                                                            <!-- Icon implementation would go here -->
+                                                            {{ player.avatar.initials }}
+                                                        </div>
+                                                    } @else if (player.avatar.type === 'emoji') {
+                                                        <div class="w-full h-full flex items-center justify-center"
+                                                            [style.background-color]="player.avatar.backgroundColor">
+                                                            {{ player.avatar.emoji }}
+                                                        </div>
+                                                    } @else {
+                                                        <div class="w-full h-full flex items-center justify-center text-white"
+                                                            [style.background-color]="player.avatar.backgroundColor">
+                                                            {{ player.avatar.initials }}
+                                                        </div>
+                                                    }
+                                                </div>
+                                            }
+                                            
+                                            <!-- Show additional players count if needed -->
+                                            @if (true) {
+                                                <div class="w-8 h-8 rounded-full bg-zinc-600 border-2 border-zinc-800 absolute flex items-center justify-center text-xs">
+                                                    +{{ item.playedBy.length - 3 }}
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -51,6 +86,5 @@
                 </ul>
             </div>
         }
-        
     }
 </container-wrapper>
