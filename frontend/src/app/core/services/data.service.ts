@@ -76,6 +76,7 @@ export class DataService {
                 this.currentUser.set(userType)
 
                 // GET derived data
+                this._getUserGames(userType.id)
                 this._getUserGroups(userType.id)
                 this._getUserNotifications(userType.id)
                 this._getUserInvitations(userType.id)
@@ -96,6 +97,17 @@ export class DataService {
             },
             complete: () => {
                 this.loadingService.finish(LOADING_KEYS.USER_DATA)
+            },
+        })
+    }
+
+    private _getUserGames(userId: number) {
+        this.api.getUserGames(userId).subscribe({
+            next: (games) => {
+                this.userGames.set(games)
+            },
+            error: () => {
+                this.toastService.error('Error retrieving user games')
             },
         })
     }
