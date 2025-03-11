@@ -49,8 +49,9 @@
                                     <div class="relative h-8 flex items-center">
                                         <!-- Player avatars -->
                                         <div class="flex relative pr-2">
-                                            @for (player of item.playedBy; track player.id) {
-                                                <div class="w-8 h-8 rounded-full bg-zinc-700 border-2 border-zinc-800 absolute">
+                                            @for (player of item.playedBy.slice(0, 3); track player.id) {
+                                                <div class="w-8 h-8 rounded-full bg-zinc-700 border-2 border-zinc-800 absolute"
+                                                     [style.left.px]="$index * 16">
                                                     @if (player.avatar.type === 'icon') {
                                                         <div class="w-full h-full flex items-center justify-center text-white"
                                                             [style.background-color]="player.avatar.backgroundColor">
@@ -72,8 +73,9 @@
                                             }
                                             
                                             <!-- Show additional players count if needed -->
-                                            @if (true) {
-                                                <div class="w-8 h-8 rounded-full bg-zinc-600 border-2 border-zinc-800 absolute flex items-center justify-center text-xs">
+                                            @if (item.playedBy.length > 3) {
+                                                <div class="w-8 h-8 rounded-full bg-zinc-600 border-2 border-zinc-800 absolute flex items-center justify-center text-xs"
+                                                     [style.left.px]="3 * 16">
                                                     +{{ item.playedBy.length - 3 }}
                                                 </div>
                                             }
