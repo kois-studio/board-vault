@@ -56,13 +56,6 @@ export class UsersController {
         return this.usersService.deleteUserById(userId)
     }
 
-    @Get('/:userId/groups')
-    @ApiOperation({ summary: 'Get groups with members' })
-    @ApiResponse({ status: 200, type: [Number] })
-    getUserGroups(@Param('userId', ParseIntPipe) userId: number) {
-        return this.usersService.getUserGroups(userId)
-    }
-
     @Get('/:userId/games')
     @ApiOperation({ summary: 'Get games owned by user' })
     @ApiResponse({ status: 200, type: [GameDto] })
