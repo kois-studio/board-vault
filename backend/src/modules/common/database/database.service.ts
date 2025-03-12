@@ -7,7 +7,7 @@ import type { CreateGroupBody, UpdateGroupBody } from '../../../common/types/gro
 import type { CreateGroupMembershipBody } from '../../../common/types/group-membership.type'
 import type { CreateGameBody, UpdateGameBody } from '../../../common/types/game.type'
 import type { CreateInvitationBody, CreateInvitationByUsernameBody } from '../../../common/types/invitation.type'
-import type { GameOwnedDto } from '../../../common/types/game-owned.type'
+import type { GameOwnedDto, UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
 import type { CreateNotificationBody, UpdateNotificationBody } from '../../../common/types/notification.type'
 import type { CreateGameReviewBody } from '../../../common/types/game-review.type'
 
@@ -507,6 +507,13 @@ export class DatabaseService implements OnModuleInit {
         return this._tursoExecute('SELECT * FROM OwnedGame')
     }
 
+    getGameOwnedByAccountIdAndGameId(accountId: number, gameId: number) {
+        return this._tursoExecute({
+            sql: 'SELECT * FROM OwnedGame WHERE accountId = ? AND gameId = ?',
+            args: [accountId, gameId],
+        })
+    }
+
     getOwnedGamesByAccountId(accountId: number) {
         return this._tursoExecute({
             sql: 'SELECT * FROM OwnedGame WHERE accountId = ?',
@@ -526,6 +533,40 @@ export class DatabaseService implements OnModuleInit {
             sql: 'INSERT INTO OwnedGame (accountId, gameId) VALUES (?, ?)',
             args: [groupDto.accountId, groupDto.gameId],
         })
+    }
+
+    updateGameOwned(accountId: number, gameId: number, ownedGameDto: UpdateGameOwnedDto) {
+        const fields = []
+        const args = []
+
+        if (ownedGameDto.purchaseDate) {
+            fields.push('purchaseDate = ?')
+            args.push(ownedGameDto.purchaseDate)
+        }
+
+        if (ownedGameDto.purchaseNotes) {
+            fields.push('purchaseNotes = ?')
+            args.push(ownedGameDto.purchaseNotes)
+        }
+
+        if (ownedGameDto.purchasePrice) {
+            fields.push('purchasePrice = ?')
+            args.push(ownedGameDto.purchasePrice)
+        }
+
+        if (fields.length === 0) {
+            throw new BadRequestException('No fields to update')
+        }
+
+        args.push(accountId, gameId)
+
+        const sql = `
+          UPDATE OwnedGame
+          SET ${fields.join(', ')}
+          WHERE accountId = ? AND gameId = ?
+        `
+
+        return this._tursoExecute({ sql, args })
     }
 
     deleteOwnedGameById(accountId: number, gameId: number) {
