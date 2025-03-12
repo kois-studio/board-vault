@@ -10,18 +10,18 @@ export class CustomDatePipe implements PipeTransform {
         }
 
         // If the value is a string, try to parse it as a date
-        let date: Date;
+        let date: Date
         if (typeof value === 'string') {
             // Check if it's already a formatted date from toLocaleDateString()
             if (value.includes('/')) {
                 // For dateGroup.key which is already formatted with toLocaleDateString()
                 // Just return it as is
-                return value;
+                return value
             }
             // Otherwise, try to parse it as a proper ISO date
-            date = new Date(value.replace(' ', 'T'));
+            date = new Date(value.replace(' ', 'T'))
         } else {
-            date = value;
+            date = value
         }
 
         // Format the date using Intl.DateTimeFormat
