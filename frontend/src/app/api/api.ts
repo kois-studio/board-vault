@@ -90,10 +90,6 @@ export class Api {
         return this.http.post<{ success: true }>(`${this.url}/users/${accountId}/group/${groupId}/leave`, {})
     }
 
-    deleteGroup(accountId: number, groupId: number) {
-        return this.http.delete<{ success: true }>(`${this.url}/users/${accountId}/group/${groupId}/delete`, {})
-    }
-
     removeMember(groupId: number, memberId: number) {
         return this.http.delete<{ success: true }>(`${this.url}/memberships/${memberId}/${groupId}`, {})
     }
@@ -211,6 +207,10 @@ export class Api {
 
     createGroup(userId: number, groupName: string) {
         return this.http.post<{ success: true }>(`${this.url}/dashboard/users/${userId}/groups/create/${groupName}`, {})
+    }
+
+    deleteGroup(userId: number, groupId: number) {
+        return this.http.delete<{ success: true }>(`${this.url}/dashboard/users/${userId}/groups/${groupId}/delete`, {})
     }
 
     // --------------------------------------------------------------------------
