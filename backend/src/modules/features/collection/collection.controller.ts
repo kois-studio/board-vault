@@ -1,9 +1,12 @@
 import { Controller, Get, Param, ParseIntPipe, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { CollectionService } from './collection.service'
-import { GameDto } from '../../../common/types/game.type'
+// Guards
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
+import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
 import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
+// Types
+import { GameDto, GameViewDto } from '../../../common/types/game.type'
 import { GameReviewWithGameDataDto } from '../../../common/types/game-review.type'
 
 @UseGuards(JwtAuthGuard, VerifiedUserGuard)
@@ -18,6 +21,14 @@ export class CollectionController {
     @ApiResponse({ status: 200, type: [GameDto], description: 'List of all games owned by the user' })
     async getGamesOwnedByUser(@Param('userId', ParseIntPipe) userId: number) {
         return this.collectionService.getGamesOwnedByUser(userId)
+    }
+
+    @UseGuards(UserOwnershipGuard)
+    @Get('/users/:userId/games/:gameId')
+    @ApiOperation({ summary: 'Game view for a user (not owned necessarily)', deprecated: false })
+    @ApiResponse({ status: 200, type: GameViewDto, description: 'Game view for the user' })
+    async getGameViewByUserId(@Param('userId', ParseIntPipe) userId: number, @Param('gameId', ParseIntPipe) gameId: number) {
+        return this.collectionService.getGameViewByUserId(userId, gameId)
     }
 
     @Get('/users/:userId/games/reviews')

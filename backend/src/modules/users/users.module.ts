@@ -5,22 +5,13 @@ import { UsersController } from './users.controller'
 import { MeetsModule } from '../meets/meets.module'
 import { DatabaseModule } from '../common/database/database.module'
 import { GroupsModule } from '../core/groups/groups.module'
-import { GamesModule } from '../core/games/games.module'
-import { GamesOwnedModule } from '../core/games-owned/games-owned.module'
-import { TagsModule } from '../core/tags/tags.module'
-import { ReviewsModule } from '../core/reviews/reviews.module'
-import { WishlistModule } from '../core/wishlist/wishlist.module'
 
 @Module({
     imports: [
         MeetsModule,
         DatabaseModule,
         GroupsModule,
-        GamesModule,
-        GamesOwnedModule,
-        TagsModule,
-        ReviewsModule,
-        WishlistModule],
+    ],
     providers: [UsersService],
     exports: [UsersService],
     controllers: [UsersController],

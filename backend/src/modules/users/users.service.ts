@@ -3,15 +3,9 @@ import { DatabaseService } from '../common/database/database.service'
 import { AvatarDto, CreateUserBody, UpdateUserBody, UserCompleteDto, UserGetDto } from '../../common/types/user.type'
 import { ResultSet } from '@libsql/client/.'
 import { usersSchema } from '../../common/schemas'
-import { GameDto, GameViewDto } from '../../common/types/game.type'
 import { GroupsService } from '../core/groups/groups.service'
 import { MeetsService } from '../meets/meets.service'
 import { MeetDto } from '../../common/types/meet.type'
-import { GamesService } from '../core/games/games.service'
-import { GamesOwnedService } from '../core/games-owned/games-owned.service'
-import { TagsService } from '../core/tags/tags.service'
-import { ReviewsService } from '../core/reviews/reviews.service'
-import { WishlistService } from '../core/wishlist/wishlist.service'
 
 @Injectable()
 export class UsersService {
@@ -21,11 +15,6 @@ export class UsersService {
         private readonly databaseService: DatabaseService,
         private readonly groupsService: GroupsService,
         private readonly meetsService: MeetsService,
-        private readonly gamesService: GamesService,
-        private readonly gamesOwnedService: GamesOwnedService,
-        private readonly tagsService: TagsService,
-        private readonly reviewsService: ReviewsService,
-        private readonly wishlistService: WishlistService,
     ) {}
 
     private _parseResultSet(resultSet: ResultSet): Array<UserCompleteDto> {
@@ -222,65 +211,5 @@ export class UsersService {
         // TODO:
         // await this.databaseService.notifyGroupMembers(groupId, 'Meeting created')
         return { success: true, meetId: meetingData.id }
-    }
-
-    async getUserGame(userId: number, gameId: number): Promise<GameViewDto> {
-        this.LOGGER.log(`Getting game view for user ${userId} and game ${gameId}`)
-
-        // Step 1: Validate that the user exists
-        await this.getUserById(userId)
-
-        // Step 2: Get each part of data to construct the GameView
-        const gameData = await this.gamesService.getGameById(gameId)
-
-        // Step 3: Get owned game data
-        const ownedGameData = await this.gamesOwnedService.isGameIdOwnedByAccountId(userId, gameId, false)
-
-        // Step 4: GameTags
-        const gameTags = await this.tagsService.getGameTags(gameId)
-
-        // Step 5: Wishlist
-        const wishlistGameData = await this.wishlistService.isGameWishlisted(userId, gameId)
-
-        // Step 6: Get reviews
-        const myReview = await this.reviewsService.getSafeGameReviewsById(userId, gameId)
-        const avgGroupsRating = await this.reviewsService.getAvgGroupsRating(userId, gameId)
-        const avgGlobalRating = await this.reviewsService.getAvgGlobalRating(gameId)
-
-        // Get similar games
-        const similarGames = (
-            await Promise.all([
-                this.gamesService.getSafeGameById(gameId + 2),
-                this.gamesService.getSafeGameById(gameId + 1),
-                this.gamesService.getSafeGameById(gameId - 1),
-                this.gamesService.getSafeGameById(gameId - 2),
-            ])
-        ).filter(Boolean)
-        const similarGamesFiltered = similarGames.filter(Boolean) as Array<GameDto>
-
-        return {
-            gameData: gameData,
-            ownedGameData: !ownedGameData
-                ? null
-                : {
-                      purchaseDate: ownedGameData.purchaseDate,
-                      purchasePrice: ownedGameData.purchasePrice,
-                      purchaseNotes: ownedGameData.purchaseNotes,
-                  },
-            tags: gameTags,
-            wishlistedGameData: wishlistGameData
-                ? {
-                      dateAdded: '',
-                      notes: '',
-                  }
-                : null,
-            ratingData: {
-                userRating: myReview?.review ?? null,
-                avgGroupsRating: avgGroupsRating,
-                avgGlobalRating: avgGlobalRating,
-            },
-            playHistory: [],
-            similarGames: similarGamesFiltered,
-        }
     }
 }
