@@ -51,19 +51,16 @@ export class DashboardService {
 
     @LogFeature(new Logger('DashboardService'))
     async createGroup(userId: number, groupName: string): Promise<{ success: boolean }> {
-        // Step 1: Get user (to be the owner) as a validation
-        const userData = await this.usersService.getUserById(userId)
-
-        // Step 2: Create group
+        // Step 1: Create group
         await this.groupsService.createGroup({
             name: groupName,
-            createdBy: userData.id,
+            createdBy: userId,
         })
 
-        // Step 3: Get groupId
+        // Step 2: Get groupId
         const groupData = await this.groupsService.getGroupByName(groupName)
 
-        // Step 4: Create the owner<->group membership
+        // Step 3: Create the owner<->group membership
         await this.groupMembershipsService.createGroupMembership({
             accountId: userData.id,
             groupId: groupData.id,
