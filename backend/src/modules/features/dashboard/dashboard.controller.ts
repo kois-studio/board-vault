@@ -1,11 +1,13 @@
 import { Controller, Delete, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { DashboardService } from './dashboard.service'
+// Guards
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
 import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
-import { DashboardService } from './dashboard.service'
+import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
+// Types
+import { SuccessDto } from '../../../common/types/auth.type'
 import { GroupWithMembersAndGames } from '../../../common/types/group.type'
-import { SuccessDto } from 'src/common/types/auth.type'
-import { UserOwnershipGuard } from 'src/common/guards/ownership.guard'
 
 @UseGuards(JwtAuthGuard, VerifiedUserGuard)
 @ApiTags('dashboard')
