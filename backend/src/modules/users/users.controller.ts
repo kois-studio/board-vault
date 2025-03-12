@@ -87,12 +87,4 @@ export class UsersController {
     createMeeting(@Param('userId', ParseIntPipe) userId: number, @Param('groupId', ParseIntPipe) groupId: number) {
         return this.usersService.createMeeting(userId, groupId)
     }
-
-    @UseGuards(UserOwnershipGuard)
-    @Get('/:userId/games/:gameId')
-    @ApiOperation({ summary: 'Get game view for user' })
-    @ApiResponse({ status: 200, type: GameViewDto })
-    getUserGame(@Param('userId', ParseIntPipe) userId: number, @Param('gameId', ParseIntPipe) gameId: number) {
-        return this.usersService.getUserGame(userId, gameId)
-    }
 }
