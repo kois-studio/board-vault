@@ -99,8 +99,9 @@
 
         <!-- When User OWNS the game -->
         @if (gameView$()?.ownedGameData) {
-        <div class="bg-green-200 dark:bg-green-900/50 text-green-800 dark:text-green-100 rounded-t-xl p-4">
+        <div class="bg-green-200 dark:bg-green-900/50 text-green-800 dark:text-green-100 rounded-t-xl p-4 flex items-center justify-between">
             <h3 class="font-semibold text-lg">This game is in your collection</h3>
+            <app-button variant="danger" icon="x-circle" size="small" (click)="removeFromCollection()">remove</app-button>
         </div>
         <div class="p-4">
             <div class="flex items-center justify-between"></div>
@@ -156,12 +157,6 @@
 
                     <div class="flex justify-end gap-2 pt-2">
                         <app-button type="submit">Save Details</app-button>
-                        <button
-                            (click)="removeFromCollection()"
-                            class="px-4 py-2 bg-white hover:bg-gray-100 text-red-600 font-medium rounded-lg border border-gray-300 transition-colors flex items-center justify-center"
-                        >
-                            <i class="fas fa-trash-alt mr-2"></i>Remove
-                        </button>
                     </div>
                 </div>
             </form>
