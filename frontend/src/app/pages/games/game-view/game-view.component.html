@@ -16,7 +16,7 @@
                 <button
                     title="Add to wishlist"
                     (click)="toggleWishlist()"
-                    class="p-2 rounded-full bg-white/90 shadow-md border border-zinc-200 w-10 h-10 cursor-pointer transition-transform duration-300 ease-linear"
+                    class="p-2 rounded-full bg-white/90 shadow-md border border-zinc-200 w-10 h-10 cursor-pointer transition-transform duration-300 ease-linear hover:scale-110"
                     [ngClass]="{
                         'text-rose-500': isWishlistedComputed(),
                         'text-gray-400': !isWishlistedComputed(),
@@ -94,7 +94,7 @@
         </div> -->
 
         <!-- When User DOESN'T OWN the game -->
-        @if (!isInCollection) {
+        @if (!gameView$()?.ownedGameData) {
         <div class="text-center px-4 py-8">
             <p class="text-secondary mb-4">Do you own this game?</p>
             <app-button (click)="addToCollection()" color="primary">
@@ -104,7 +104,7 @@
         }
 
         <!-- When User OWNS the game -->
-        @if (isInCollection) {
+        @if (gameView$()?.ownedGameData) {
         <div class="bg-green-200 dark:bg-green-900/50 text-green-800 dark:text-green-100 rounded-t-xl p-4">
             <h3 class="font-semibold text-lg">This game is in your collection</h3>
         </div>
