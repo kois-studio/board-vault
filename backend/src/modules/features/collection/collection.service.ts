@@ -29,22 +29,12 @@ export class CollectionService {
 
     @LogFeature(new Logger('CollectionService'))
     async getGameViewByUserId(userId: number, gameId: number): Promise<GameViewDto> {
-        // Step 1: Validate that the user exists
-        await this.usersService.getUserById(userId)
-
-        // Step 2: Get each part of data to construct the GameView
+        // Step 1: Get each part of data needed in the view
         const gameData = await this.gamesService.getGameById(gameId)
-
-        // Step 3: Get owned game data
-        const ownedGameData = await this.gamesOwnedService.isGameIdOwnedByAccountId(userId, gameId, false)
-
-        // Step 4: GameTags
         const gameTags = await this.tagsService.getGameTags(gameId)
-
-        // Step 5: Wishlist
+        const ownedGameData = await this.gamesOwnedService.isGameIdOwnedByAccountId(userId, gameId, false)
         const wishlistGameData = await this.wishlistService.isGameWishlisted(userId, gameId)
-
-        // Step 6: Get reviews
+        // reviews
         const myReview = await this.reviewsService.getSafeGameReviewsById(userId, gameId)
         const avgGroupsRating = await this.reviewsService.getAvgGroupsRating(userId, gameId)
         const avgGlobalRating = await this.reviewsService.getAvgGlobalRating(gameId)
@@ -60,6 +50,7 @@ export class CollectionService {
         ).filter(Boolean)
         const similarGamesFiltered = similarGames.filter(Boolean) as Array<GameDto>
 
+        // Step 2: Construct the GameView
         return {
             gameData: gameData,
             ownedGameData: !ownedGameData
@@ -81,7 +72,7 @@ export class CollectionService {
                 avgGroupsRating: avgGroupsRating,
                 avgGlobalRating: avgGlobalRating,
             },
-            playHistory: [],
+            playHistory: [], // TODO: implement game history
             similarGames: similarGamesFiltered,
         }
     }
