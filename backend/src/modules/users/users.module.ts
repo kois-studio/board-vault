@@ -5,7 +5,6 @@ import { UsersController } from './users.controller'
 import { MeetsModule } from '../meets/meets.module'
 import { DatabaseModule } from '../common/database/database.module'
 import { GroupsModule } from '../core/groups/groups.module'
-import { GroupMembershipsModule } from '../core/group-memberships/group-memberships.module'
 import { GamesModule } from '../core/games/games.module'
 import { GamesOwnedModule } from '../core/games-owned/games-owned.module'
 import { TagsModule } from '../core/tags/tags.module'
@@ -17,7 +16,6 @@ import { WishlistModule } from '../core/wishlist/wishlist.module'
         MeetsModule,
         DatabaseModule,
         GroupsModule,
-        GroupMembershipsModule,
         GamesModule,
         GamesOwnedModule,
         TagsModule,

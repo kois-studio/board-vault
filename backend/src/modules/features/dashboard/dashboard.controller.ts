@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common'
+import { Controller, Delete, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
 import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
@@ -27,5 +27,13 @@ export class DashboardController {
     @ApiResponse({ status: 200, type: SuccessDto, description: 'Group created successfully' })
     async createGroup(@Param('userId', ParseIntPipe) userId: number, @Param('groupName') groupName: string) {
         return this.dashboardService.createGroup(userId, groupName)
+    }
+
+    @UseGuards(UserOwnershipGuard)
+    @Delete('/users/:userId/groups/:groupId/delete')
+    @ApiOperation({ summary: 'Delete a group', deprecated: false })
+    @ApiResponse({ status: 200, type: SuccessDto, description: 'Group deleted successfully' })
+    async deleteGroup(@Param('userId', ParseIntPipe) userId: number, @Param('groupId', ParseIntPipe) groupId: number) {
+        return this.dashboardService.deleteGroup(userId, groupId)
     }
 }

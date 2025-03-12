@@ -5,7 +5,6 @@ import { ResultSet } from '@libsql/client/.'
 import { usersSchema } from '../../common/schemas'
 import { GameDto, GameViewDto } from '../../common/types/game.type'
 import { GroupsService } from '../core/groups/groups.service'
-import { GroupMembershipsService } from '../core/group-memberships/group-memberships.service'
 import { MeetsService } from '../meets/meets.service'
 import { MeetDto } from '../../common/types/meet.type'
 import { GamesService } from '../core/games/games.service'
@@ -21,7 +20,6 @@ export class UsersService {
     constructor(
         private readonly databaseService: DatabaseService,
         private readonly groupsService: GroupsService,
-        private readonly groupMembershipsService: GroupMembershipsService,
         private readonly meetsService: MeetsService,
         private readonly gamesService: GamesService,
         private readonly gamesOwnedService: GamesOwnedService,
@@ -224,23 +222,6 @@ export class UsersService {
         // TODO:
         // await this.databaseService.notifyGroupMembers(groupId, 'Meeting created')
         return { success: true, meetId: meetingData.id }
-    }
-
-    async deleteGroup(userId: number, groupId: number): Promise<{ success: boolean }> {
-        this.LOGGER.log(`User with id ${userId} deleting group with id ${groupId}`)
-
-        // Step 1: Validate user and group exists.
-        await this.getUserById(userId)
-        await this.groupsService.getGroupById(groupId)
-
-        // Step 2: Clear related tables
-        await this.databaseService.deleteAllGroupMembershipByGroupId(groupId)
-        await this.databaseService.deleteAllInvitationsByGroupId(groupId)
-
-        // Step 3: Delete Group
-        await this.groupsService.deleteGroupById(groupId)
-
-        return { success: true }
     }
 
     async getUserGame(userId: number, gameId: number): Promise<GameViewDto> {
