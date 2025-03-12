@@ -48,6 +48,7 @@
                                         <div class="flex -space-x-2">
                                             @for (player of item.playedBy; track player.id) {
                                                 <app-image-profile
+                                                    [title]="player.username"
                                                     class="border-2 rounded-full border-indigo-100 dark:border-zinc-800"
                                                     [avatar]="player.avatar"
                                                     [style.zIndex]="$index"
