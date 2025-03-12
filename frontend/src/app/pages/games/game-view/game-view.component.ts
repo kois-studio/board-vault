@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { Component, OnDestroy, computed, effect, inject, signal } from '@angular/core'
-import { FormsModule } from '@angular/forms'
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { Subscription } from 'rxjs'
 import { Api } from '../../../api/api'
@@ -28,6 +28,7 @@ import { DataService } from '../../../core/services/data.service'
         CardGameComponent,
         FormsModule,
         SpinnerComponent,
+        ReactiveFormsModule,
     ],
     templateUrl: './game-view.component.html',
 })
@@ -58,6 +59,13 @@ export class GameViewPageComponent implements OnDestroy {
     public wishlistAnimation = false // used for a little scale animation
     public reviewHoverValue = 0
     public isLoadingGameData = true // initial loading state
+    // ownership form
+    public ownershipFormGroup = new FormGroup({
+        purchaseDate: new FormControl<string | null>(null, []),
+        purchasePrice: new FormControl<number | null>(null, [Validators.min(0)]),
+        purchaseNotes: new FormControl<string | null>(null, [Validators.maxLength(255)]),
+    })
+
     // to prevent spamming actions
     private readonly PREVENT_SPAM = {
         isLoadingWishlist: false,
@@ -65,9 +73,6 @@ export class GameViewPageComponent implements OnDestroy {
     }
 
     // TODO: delete this
-    purchaseDate = new Date()
-    purchasePrice = 100
-    purchaseNotes = 'This is a note about the game'
     playHistory = [
         {
             playDate: new Date(),
@@ -108,6 +113,14 @@ export class GameViewPageComponent implements OnDestroy {
             next: (game) => {
                 this.gameView$.set(game)
                 this.isLoadingGameData = false
+                // ownership form
+                if (game.ownedGameData) {
+                    this.ownershipFormGroup.patchValue({
+                        purchaseDate: game.ownedGameData.purchaseDate,
+                        purchasePrice: game.ownedGameData.purchasePrice,
+                        purchaseNotes: game.ownedGameData.purchaseNotes,
+                    })
+                }
             },
             error: (error) => {
                 this.toastService.error('Error loading game data')
@@ -206,13 +219,25 @@ export class GameViewPageComponent implements OnDestroy {
     }
 
     // #region Ownership
+    saveOwnedGameDetails() {
+        if (this.ownershipFormGroup.invalid) {
+            return
+        }
+
+        const formValue = this.ownershipFormGroup.value
+        const updatedOwnedGameData: GameViewType['ownedGameData'] = {
+            purchaseDate: formValue.purchaseDate ?? null,
+            purchasePrice: formValue.purchasePrice ?? null,
+            purchaseNotes: formValue.purchaseNotes ?? null,
+        }
+
+        console.log('Form Values', updatedOwnedGameData)
+        // Here, you would typically send this data to your backend.
+    }
 
     shareGame() {}
-    addToCollection() {
-    }
-    saveOwnedGameDetails() {}
-    removeFromCollection() {
-    }
+    addToCollection() {}
+    removeFromCollection() {}
 
     ngOnDestroy(): void {
         // unsubscribe from the route params
