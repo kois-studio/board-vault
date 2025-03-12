@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { GameDto } from 'src/common/types/game.type'
-import { MeetDto } from 'src/common/types/meet.type'
-import { UserGetDto } from 'src/common/types/user.type'
+import { GameDto } from '../../../common/types/game.type'
+import { MeetDto } from '../../../common/types/meet.type'
+import { UserGetDto } from '../../../common/types/user.type'
 
 export class HistoryRecordDto {
     @ApiProperty({ type: GameDto, description: 'The game data.' })
