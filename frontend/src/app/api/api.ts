@@ -76,10 +76,6 @@ export class Api {
         return this.http.put<{ success: true }>(`${this.url}/users/${userId}/games`, { gamesToAdd, gamesToRemove })
     }
 
-    getUserGame(accountId: number, gameId: number) {
-        return this.http.get<GameViewType>(`${this.url}/users/${accountId}/games/${gameId}`)
-    }
-
     // #region groups
 
     getGroupInvitations(groupId: number) {
@@ -194,8 +190,12 @@ export class Api {
         return this.http.get<Array<GameType>>(`${this.url}/collection/users/${userId}/games`)
     }
 
-    getUserReviews(accountId: number) {
-        return this.http.get<Array<GameReviewWithGameData>>(`${this.url}/collection/users/${accountId}/games/reviews`)
+    getGameView(userId: number, gameId: number) {
+        return this.http.get<GameViewType>(`${this.url}/collection/users/${userId}/games/${gameId}`)
+    }
+
+    getUserReviews(userId: number) {
+        return this.http.get<Array<GameReviewWithGameData>>(`${this.url}/collection/users/${userId}/games/reviews`)
     }
 
     // --------------------------------------------------------------------------

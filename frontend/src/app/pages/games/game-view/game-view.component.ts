@@ -105,7 +105,7 @@ export class GameViewPageComponent implements OnDestroy {
         window.scrollTo(0, 0)
         this.isLoadingGameData = true
 
-        this.api.getUserGame(userId, gameId).subscribe({
+        this.api.getGameView(userId, gameId).subscribe({
             next: (game) => {
                 this.gameView$.set(game)
                 this.isLoadingGameData = false
