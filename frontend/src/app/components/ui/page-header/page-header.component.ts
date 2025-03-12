@@ -11,7 +11,7 @@ export class PageHeaderComponent {
     @Input({ required: true }) titleText = ''
 
     // Aside of the title/subtitle, you may display a main-action button
-    @Input({ required: true }) showActionButton = false
+    @Input() showActionButton = false
 
     // TODO: a (?) icon to display extra info? check title-subtitle.component.ts
     // The text to display in the help text of the page header.
