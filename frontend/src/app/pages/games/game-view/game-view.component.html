@@ -13,6 +13,7 @@
             <!-- Action Buttons -->
             <div class="absolute top-2 right-2 flex gap-2">
                 <!-- Wishlist Button -->
+                @if (!gameView$()?.ownedGameData) {
                 <button
                     title="Add to wishlist"
                     (click)="toggleWishlist()"
@@ -32,6 +33,7 @@
                         />
                     </svg>
                 </button>
+                }
             </div>
         </div>
 
