@@ -66,10 +66,11 @@ export class GameViewPageComponent implements OnDestroy {
         purchaseNotes: new FormControl<string | null>(null, [Validators.maxLength(255)]),
     })
 
-    // to prevent spamming actions
-    private readonly PREVENT_SPAM = {
+    // to prevent spamming actions, basically isLoading flags
+    public readonly PREVENT_SPAM = {
         isLoadingWishlist: false,
         isLoadingReview: false,
+        isLoadingUpdateOwnership: false,
     }
 
     // TODO: delete this
@@ -220,19 +221,40 @@ export class GameViewPageComponent implements OnDestroy {
 
     // #region Ownership
     saveOwnedGameDetails() {
-        if (this.ownershipFormGroup.invalid) {
+        const currentUser = this.currentUser$()
+        const gameId = this.gameView$()?.gameData?.id
+
+        if (this.ownershipFormGroup.invalid || !currentUser?.id || !gameId || this.PREVENT_SPAM.isLoadingUpdateOwnership) {
             return
         }
 
         const formValue = this.ownershipFormGroup.value
         const updatedOwnedGameData: GameViewType['ownedGameData'] = {
-            purchaseDate: formValue.purchaseDate ?? null,
-            purchasePrice: formValue.purchasePrice ?? null,
-            purchaseNotes: formValue.purchaseNotes ?? null,
+            purchaseDate: formValue.purchaseDate || null,
+            purchasePrice: formValue.purchasePrice || null,
+            purchaseNotes: formValue.purchaseNotes || null,
         }
 
-        console.log('Form Values', updatedOwnedGameData)
-        // Here, you would typically send this data to your backend.
+        this.PREVENT_SPAM.isLoadingUpdateOwnership = true
+
+        this.api.patchGameOwnership(currentUser.id, gameId, updatedOwnedGameData).subscribe({
+            next: (res) => {
+                this.gameView$.update((game) => {
+                    if (!game) {
+                        return null
+                    }
+
+                    return { ...game, ownedGameData: res }
+                })
+                this.toastService.success('Purchase details updated')
+            },
+            error: (error) => {
+                this.toastService.error('Error updating purchase details')
+            },
+            complete: () => {
+                this.PREVENT_SPAM.isLoadingUpdateOwnership = false
+            },
+        })
     }
 
     shareGame() {}

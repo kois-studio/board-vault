@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { environment } from '../../environments/environment'
 import type {
+    GameOwnedType,
     GameReviewWithGameData,
     GameType,
     GameViewType,
@@ -14,6 +15,7 @@ import type {
     MeetType,
     MeetWithAttendeesAndGamesType,
     NotificationType,
+    UpdateGameOwnedType,
     UserType,
 } from './api.types'
 
@@ -192,6 +194,10 @@ export class Api {
 
     getGameView(userId: number, gameId: number) {
         return this.http.get<GameViewType>(`${this.url}/collection/users/${userId}/games/${gameId}`)
+    }
+
+    patchGameOwnership(userId: number, gameId: number, ownedGameDto: UpdateGameOwnedType) {
+        return this.http.patch<GameOwnedType>(`${this.url}/collection/users/${userId}/games/${gameId}/ownership`, ownedGameDto)
     }
 
     getUserReviews(userId: number) {

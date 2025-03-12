@@ -61,6 +61,21 @@ export type GameViewType = {
     similarGames: Array<GameType>
 }
 
+// #region GameOwned
+export type GameOwnedType = {
+    accountId: number
+    gameId: number
+    purchaseDate: string | null
+    purchasePrice: number | null
+    purchaseNotes: string | null
+}
+
+export type UpdateGameOwnedType = {
+    purchaseDate?: string | null
+    purchasePrice?: number | null
+    purchaseNotes?: string | null
+}
+
 // #region Group
 export type GroupType = {
     id: number
