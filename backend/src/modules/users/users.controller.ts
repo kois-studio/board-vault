@@ -89,14 +89,6 @@ export class UsersController {
     }
 
     @UseGuards(UserOwnershipGuard)
-    @Post('/:userId/group/create/:groupName')
-    @ApiOperation({ summary: 'Create and assign owner to group' })
-    @ApiResponse({ status: 200, type: SuccessDto, description: 'You create the group.' })
-    createGroup(@Param('userId', ParseIntPipe) userId: number, @Param('groupName') groupName: string) {
-        return this.usersService.createGroup(userId, groupName)
-    }
-
-    @UseGuards(UserOwnershipGuard)
     @Delete('/:userId/group/:groupId/delete')
     @ApiOperation({ summary: 'Delete a group and delete all memberships' })
     @ApiResponse({ status: 200, type: SuccessDto, description: 'You have deleted the group.' })
