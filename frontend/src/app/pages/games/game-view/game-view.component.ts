@@ -65,7 +65,6 @@ export class GameViewPageComponent implements OnDestroy {
     }
 
     // TODO: delete this
-    isInCollection = false
     purchaseDate = new Date()
     purchasePrice = 100
     purchaseNotes = 'This is a note about the game'
@@ -210,11 +209,9 @@ export class GameViewPageComponent implements OnDestroy {
 
     shareGame() {}
     addToCollection() {
-        this.isInCollection = true
     }
     saveOwnedGameDetails() {}
     removeFromCollection() {
-        this.isInCollection = false
     }
 
     ngOnDestroy(): void {
