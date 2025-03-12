@@ -31,7 +31,7 @@ export class CollectionController {
         return this.collectionService.getGameViewByUserId(userId, gameId)
     }
 
-    @Get('/users/:userId/games/reviews')
+    @Get('/users/:userId/reviews')
     @ApiOperation({ summary: 'Get all reviews of a user', deprecated: false })
     @ApiResponse({ status: 200, type: [GameReviewWithGameDataDto], description: 'List of all reviews of the user' })
     async getReviewsOfUser(@Param('userId', ParseIntPipe) userId: number) {
