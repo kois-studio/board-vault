@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger'
+import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger'
 
 // base GameOwned as it comes from db
 export class GameOwnedDto {
@@ -17,3 +17,5 @@ export class GameOwnedDto {
     @ApiProperty({ example: 'I got this as a gift from my friend.', description: 'Any notes about the purchase.' })
     purchaseNotes: string | null
 }
+
+export class UpdateGameOwnedDto extends PartialType(OmitType(GameOwnedDto, ['accountId', 'gameId'])) {}

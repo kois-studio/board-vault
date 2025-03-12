@@ -9,6 +9,7 @@ import { TagsService } from '../../core/tags/tags.service'
 import { ReviewsService } from '../../core/reviews/reviews.service'
 import { WishlistService } from '../../core/wishlist/wishlist.service'
 import { GamesOwnedService } from '../../core/games-owned/games-owned.service'
+import { UpdateGameOwnedDto } from 'src/common/types/game-owned.type'
 
 @Injectable()
 export class CollectionService {
@@ -75,6 +76,11 @@ export class CollectionService {
             playHistory: [], // TODO: implement game history
             similarGames: similarGamesFiltered,
         }
+    }
+
+    async updateGameOwnership(userId: number, gameId: number, body: UpdateGameOwnedDto) {
+        const updatedGameOwned = await this.gamesOwnedService.updateGameOwned(userId, gameId, body)
+        return updatedGameOwned
     }
 
     @LogFeature(new Logger('CollectionService'))

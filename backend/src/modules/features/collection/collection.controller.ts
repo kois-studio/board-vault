@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseIntPipe, UseGuards } from '@nestjs/common'
+import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { CollectionService } from './collection.service'
 // Guards
@@ -8,6 +8,7 @@ import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
 // Types
 import { GameDto, GameViewDto } from '../../../common/types/game.type'
 import { GameReviewWithGameDataDto } from '../../../common/types/game-review.type'
+import { GameOwnedDto, UpdateGameOwnedDto } from 'src/common/types/game-owned.type'
 
 @UseGuards(JwtAuthGuard, VerifiedUserGuard)
 @ApiTags('collection')
@@ -29,6 +30,18 @@ export class CollectionController {
     @ApiResponse({ status: 200, type: GameViewDto, description: 'Game view for the user' })
     async getGameViewByUserId(@Param('userId', ParseIntPipe) userId: number, @Param('gameId', ParseIntPipe) gameId: number) {
         return this.collectionService.getGameViewByUserId(userId, gameId)
+    }
+
+    @UseGuards(UserOwnershipGuard)
+    @Patch('/users/:userId/games/:gameId/ownership')
+    @ApiOperation({ summary: 'Update ownership details of a game', deprecated: false })
+    @ApiResponse({ status: 200, type: GameOwnedDto, description: 'Updated game ownership details' })
+    async updateGameOwnership(
+        @Param('userId', ParseIntPipe) userId: number,
+        @Param('gameId', ParseIntPipe) gameId: number,
+        @Body() body: UpdateGameOwnedDto,
+    ) {
+        return this.collectionService.updateGameOwnership(userId, gameId, body)
     }
 
     @Get('/users/:userId/reviews')
