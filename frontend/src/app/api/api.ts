@@ -94,10 +94,6 @@ export class Api {
         return this.http.delete<{ success: true }>(`${this.url}/users/${accountId}/group/${groupId}/delete`, {})
     }
 
-    createGroup(accountId: number, groupName: string) {
-        return this.http.post<{ success: true }>(`${this.url}/users/${accountId}/group/create/${groupName}`, {})
-    }
-
     removeMember(groupId: number, memberId: number) {
         return this.http.delete<{ success: true }>(`${this.url}/memberships/${memberId}/${groupId}`, {})
     }
@@ -211,6 +207,10 @@ export class Api {
     // --------------------------------------------------------------------------
     getUserGroups(userId: number) {
         return this.http.get<Array<GroupWithMembersAndGames>>(`${this.url}/dashboard/users/${userId}/groups`)
+    }
+
+    createGroup(userId: number, groupName: string) {
+        return this.http.post<{ success: true }>(`${this.url}/dashboard/users/${userId}/groups/create/${groupName}`, {})
     }
 
     // --------------------------------------------------------------------------

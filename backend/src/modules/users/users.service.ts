@@ -226,29 +226,6 @@ export class UsersService {
         return { success: true, meetId: meetingData.id }
     }
 
-    async createGroup(userId: number, groupName: string): Promise<{ success: boolean }> {
-        this.LOGGER.log(`${userId} is creating group ${groupName}`)
-        // Step 1: Get user data(to be the owner)
-        const userData = await this.getUserById(userId)
-
-        // Step 2: Create group
-        await this.groupsService.createGroup({
-            name: groupName,
-            createdBy: userData.id,
-        })
-
-        // Step 3:Get groupId by GroupName
-        const groupData = await this.groupsService.getGroupByName(groupName)
-
-        // Step 4: Put the owner in the group
-        await this.groupMembershipsService.createGroupMembership({
-            accountId: userData.id,
-            groupId: groupData.id,
-        })
-
-        return { success: true }
-    }
-
     async deleteGroup(userId: number, groupId: number): Promise<{ success: boolean }> {
         this.LOGGER.log(`User with id ${userId} deleting group with id ${groupId}`)
 
