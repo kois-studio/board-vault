@@ -123,9 +123,9 @@ CREATE TABLE IF NOT EXISTS Invitation (
     fromAccountId INTEGER NOT NULL,
     toAccountId INTEGER NOT NULL,
     sentAt DATETIME DEFAULT CURRENT_TIMESTAMP, -- auto set to current time
-    FOREIGN KEY (groupId) REFERENCES UserGroup(id),
-    FOREIGN KEY (fromAccountId) REFERENCES Account(id),
-    FOREIGN KEY (toAccountId) REFERENCES Account(id)
+    FOREIGN KEY (groupId) REFERENCES UserGroup(id) ON DELETE CASCADE,
+    FOREIGN KEY (fromAccountId) REFERENCES Account(id) ON DELETE CASCADE,
+    FOREIGN KEY (toAccountId) REFERENCES Account(id) ON DELETE CASCADE
 );
 
 -- -----------------------------------------------------
