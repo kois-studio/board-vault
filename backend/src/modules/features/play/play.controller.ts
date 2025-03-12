@@ -13,8 +13,8 @@ export class PlayController {
     constructor(private readonly playService: PlayService) {}
 
     @Get('/users/:userId/history')
-    @ApiOperation({ summary: 'Get all games owned by a user', deprecated: false })
-    @ApiResponse({ status: 200, type: [HistoryRecordDto], description: 'List of all games owned by the user' })
+    @ApiOperation({ summary: 'List of all games played by the user', deprecated: false })
+    @ApiResponse({ status: 200, type: [HistoryRecordDto], description: 'List of all games played by the user' })
     async getUserGamesHistory(@Param('userId', ParseIntPipe) userId: number) {
         return this.playService.getUserGamesHistory(userId)
     }
