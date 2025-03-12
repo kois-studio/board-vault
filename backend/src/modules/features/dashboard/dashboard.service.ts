@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common'
+import { ForbiddenException, Injectable, Logger } from '@nestjs/common'
 import { LogFeature } from '../../../common/decorators/logger.decorator'
 import { UsersService } from '../../users/users.service'
 import { GroupsService } from '../../core/groups/groups.service'
@@ -62,9 +62,25 @@ export class DashboardService {
 
         // Step 3: Create the owner<->group membership
         await this.groupMembershipsService.createGroupMembership({
-            accountId: userData.id,
+            accountId: userId,
             groupId: groupData.id,
         })
+
+        return { success: true }
+    }
+
+    @LogFeature(new Logger('DashboardService'))
+    async deleteGroup(userId: number, groupId: number): Promise<{ success: boolean }> {
+        // Step 1: Get the group data
+        const groupData = await this.groupsService.getGroupById(groupId)
+
+        // Step 2: If the group is not owned by the user, throw an error
+        if (groupData.createdBy !== userId) {
+            throw new ForbiddenException('You are not the owner of this group')
+        }
+
+        // Step 3: If owner, then delete the group
+        await this.groupsService.deleteGroupById(groupId)
 
         return { success: true }
     }
