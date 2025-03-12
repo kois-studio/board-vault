@@ -3,8 +3,8 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 import { CollectionService } from './collection.service'
 // Guards
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
-import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
 import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
+import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
 // Types
 import { GameDto, GameViewDto } from '../../../common/types/game.type'
 import { GameReviewWithGameDataDto } from '../../../common/types/game-review.type'

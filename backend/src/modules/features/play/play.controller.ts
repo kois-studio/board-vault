@@ -1,8 +1,10 @@
 import { Controller, Get, Param, ParseIntPipe, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { PlayService } from './play.service'
+// Guards
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
 import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
+// Types
 import { HistoryRecordDto } from './play.types'
 
 @UseGuards(JwtAuthGuard, VerifiedUserGuard)
