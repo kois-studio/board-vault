@@ -156,7 +156,11 @@
                     </div>
 
                     <div class="flex justify-end gap-2 pt-2">
-                        <app-button type="submit">Save Details</app-button>
+                        <app-button
+                            type="submit"
+                            [loading]="PREVENT_SPAM.isLoadingUpdateOwnership"
+                            [disabled]="ownershipFormGroup.invalid"
+                        >Save Details</app-button>
                     </div>
                 </div>
             </form>
