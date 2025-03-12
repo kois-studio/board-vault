@@ -17,7 +17,7 @@ export type NotificationDataMap = {
         group: number
         games: number[]
     }
-    // {account} joined {group}
+    // {account} joined/left {group}
     [NotificationTypeEnum.USER_JOINED_GROUP]: {
         account: number
         group: number
