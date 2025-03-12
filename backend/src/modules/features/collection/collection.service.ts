@@ -9,7 +9,7 @@ import { TagsService } from '../../core/tags/tags.service'
 import { ReviewsService } from '../../core/reviews/reviews.service'
 import { WishlistService } from '../../core/wishlist/wishlist.service'
 import { GamesOwnedService } from '../../core/games-owned/games-owned.service'
-import { UpdateGameOwnedDto } from 'src/common/types/game-owned.type'
+import { UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
 
 @Injectable()
 export class CollectionService {
