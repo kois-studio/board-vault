@@ -8,7 +8,6 @@ import { AuthModule } from './modules/common/auth/auth.module'
 import { GroupsModule } from './modules/core/groups/groups.module'
 import { GroupMembershipsModule } from './modules/core/group-memberships/group-memberships.module'
 import { GamesModule } from './modules/core/games/games.module'
-import { GamesOwnedModule } from './modules/core/games-owned/games-owned.module'
 import { InvitationsModule } from './modules/invitations/invitations.module'
 import { NotificationsModule } from './modules/core/notifications/notifications.module'
 import { ReviewsModule } from './modules/core/reviews/reviews.module'
@@ -26,22 +25,24 @@ import { ProfileModule } from './modules/features/profile/profile.module'
 @Module({
     imports: [
         ConfigModule.forRoot({ isGlobal: true }),
-        DatabaseModule,
-        CacheModule,
+        // Common
         AuthModule,
-        UsersModule,
-        GroupsModule,
-        GroupMembershipsModule,
+        CacheModule,
+        DatabaseModule,
+        EmailModule,
+        // Core
         GamesModule,
-        GamesOwnedModule,
-        InvitationsModule,
+        GroupMembershipsModule,
+        GroupsModule,
+        MeetAccountGamesModule,
+        MeetAttendeesModule,
         NotificationsModule,
         ReviewsModule,
-        MeetsModule,
-        MeetAttendeesModule,
-        MeetAccountGamesModule,
-        EmailModule,
         WishlistModule,
+        // TODO: pending migration
+        InvitationsModule,
+        MeetsModule,
+        UsersModule,
         // Features
         CollectionModule,
         DashboardModule,
