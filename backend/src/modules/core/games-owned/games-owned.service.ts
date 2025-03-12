@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common'
 import { DatabaseService } from '../../common/database/database.service'
 import { ResultSet } from '@libsql/client/.'
-import { GameOwnedDto } from '../../../common/types/game-owned.type'
+import { GameOwnedDto, UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
 import { gameOwnedsSchema } from '../../../common/schemas'
 
 @Injectable()
@@ -43,6 +43,19 @@ export class GamesOwnedService {
         return this._parseResultSet(resultSet)
     }
 
+    async getGameOwnedByAccountIdAndGameId(accountId: number, gameId: number): Promise<GameOwnedDto> {
+        this.LOGGER.log(`Getting ownedGame with accountId ${accountId} and gameId ${gameId}`)
+        const resultSet = await this.databaseService.getGameOwnedByAccountIdAndGameId(accountId, gameId)
+
+        const ownedGames = this._parseResultSet(resultSet)
+
+        if (ownedGames.length === 0) {
+            throw new NotFoundException(`OwnedGame with accountId ${accountId} and gameId ${gameId} not found`)
+        }
+
+        return ownedGames[0]
+    }
+
     async getGamesOwnedByAccountId(accountId: number): Promise<Array<GameOwnedDto>> {
         this.LOGGER.log(`Getting ownedGames with accountId ${accountId}`)
         const resultSet = await this.databaseService.getOwnedGamesByAccountId(accountId)
@@ -75,6 +88,17 @@ export class GamesOwnedService {
             this.LOGGER.error('Failed to create ownedGame', error)
             throw new InternalServerErrorException('Failed to create ownedGame')
         }
+    }
+
+    async updateGameOwned(accountId: number, gameId: number, ownedGameDto: UpdateGameOwnedDto) {
+        this.LOGGER.log(`Updating ownedGame with id ${accountId} ${gameId}`)
+        const resultSet = await this.databaseService.updateGameOwned(accountId, gameId, ownedGameDto)
+
+        if (resultSet.rowsAffected === 0) {
+            throw new NotFoundException(`OwnedGame with id ${accountId} ${gameId} not found`)
+        }
+
+        return this.getGameOwnedByAccountIdAndGameId(accountId, gameId)
     }
 
     async deleteGamesOwnedById(accountId: number, gameId: number): Promise<{ success: boolean }> {
