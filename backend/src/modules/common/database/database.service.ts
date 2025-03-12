@@ -538,18 +538,19 @@ export class DatabaseService implements OnModuleInit {
     updateGameOwned(accountId: number, gameId: number, ownedGameDto: UpdateGameOwnedDto) {
         const fields = []
         const args = []
-
-        if (ownedGameDto.purchaseDate) {
+    
+        // we allow update to `null` values  
+        if (ownedGameDto.purchaseDate !== undefined) {
             fields.push('purchaseDate = ?')
             args.push(ownedGameDto.purchaseDate)
         }
 
-        if (ownedGameDto.purchaseNotes) {
+        if (ownedGameDto.purchaseNotes !== undefined) {
             fields.push('purchaseNotes = ?')
             args.push(ownedGameDto.purchaseNotes)
         }
 
-        if (ownedGameDto.purchasePrice) {
+        if (ownedGameDto.purchasePrice !== undefined) {
             fields.push('purchasePrice = ?')
             args.push(ownedGameDto.purchasePrice)
         }
