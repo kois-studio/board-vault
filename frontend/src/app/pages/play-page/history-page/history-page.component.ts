@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { Component, computed, inject } from '@angular/core'
 import type { HistoryRecordType } from '../../../api/api.types'
+import { ImageProfileComponent } from '../../../components/image-profile/image-profile.component'
 import { SkeletonCardGroupComponent } from '../../../components/skeletons/skeleton-card-group/skeleton-card-group.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { TitleSubtitleComponent } from '../../../components/ui/title-subtitle/title-subtitle.component'
@@ -8,7 +9,6 @@ import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
 import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
-import { ImageProfileComponent } from '../../../components/image-profile/image-profile.component'
 
 @Component({
     imports: [
@@ -38,15 +38,18 @@ export class HistoryPageComponent {
     //        Computed
     // --------------------------------------------------------------------------
     public readonly groupedGamesByDateComputed = computed(() => {
-        return this.userHistory$().reduce((groups, game) => {
-            // Use ISO format for consistent date handling
-            const date = new Date(game.meetData.meetDate)
-            const dateKey = date.toISOString().split('T')[0] // 'YYYY-MM-DD' format
-            if (!groups[dateKey]) {
-                groups[dateKey] = []
-            }
-            groups[dateKey].push(game)
-            return groups
-        }, {} as Record<string, Array<HistoryRecordType>>)
+        return this.userHistory$().reduce(
+            (groups, game) => {
+                // Use ISO format for consistent date handling
+                const date = new Date(game.meetData.meetDate)
+                const dateKey = date.toISOString().split('T')[0] // 'YYYY-MM-DD' format
+                if (!groups[dateKey]) {
+                    groups[dateKey] = []
+                }
+                groups[dateKey].push(game)
+                return groups
+            },
+            {} as Record<string, Array<HistoryRecordType>>,
+        )
     })
 }
