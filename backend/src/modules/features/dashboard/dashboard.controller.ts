@@ -24,7 +24,7 @@ export class DashboardController {
     @UseGuards(UserOwnershipGuard)
     @Post('/users/:userId/groups/create/:groupName')
     @ApiOperation({ summary: 'Create a new group', deprecated: false })
-    @ApiResponse({ status: 200, type: SuccessDto, description: 'Group created successfully' })
+    @ApiResponse({ status: 201, type: SuccessDto, description: 'Group created successfully' })
     async createGroup(@Param('userId', ParseIntPipe) userId: number, @Param('groupName') groupName: string) {
         return this.dashboardService.createGroup(userId, groupName)
     }
@@ -32,7 +32,7 @@ export class DashboardController {
     @UseGuards(UserOwnershipGuard)
     @Delete('/users/:userId/groups/:groupId/delete')
     @ApiOperation({ summary: 'Delete a group', deprecated: false })
-    @ApiResponse({ status: 200, type: SuccessDto, description: 'Group deleted successfully' })
+    @ApiResponse({ status: 204, description: 'Group deleted successfully' })
     async deleteGroup(@Param('userId', ParseIntPipe) userId: number, @Param('groupId', ParseIntPipe) groupId: number) {
         return this.dashboardService.deleteGroup(userId, groupId)
     }
