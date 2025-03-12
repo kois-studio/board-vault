@@ -3,8 +3,9 @@ import { Component, computed, inject } from '@angular/core'
 import type { HistoryRecordType } from '../../../api/api.types'
 import { ImageProfileComponent } from '../../../components/image-profile/image-profile.component'
 import { SkeletonCardGroupComponent } from '../../../components/skeletons/skeleton-card-group/skeleton-card-group.component'
+import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
-import { TitleSubtitleComponent } from '../../../components/ui/title-subtitle/title-subtitle.component'
+import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
 import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
 import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { DataService } from '../../../core/services/data.service'
@@ -13,11 +14,12 @@ import { LoadingService } from '../../../core/services/loading.service'
 @Component({
     imports: [
         CommonModule,
-        TitleSubtitleComponent,
         ContainerWrapperComponent,
         CustomDatePipe,
         SkeletonCardGroupComponent,
         ImageProfileComponent,
+        PageHeaderComponent,
+        ButtonComponent,
     ],
     templateUrl: 'history-page.component.html',
 })
