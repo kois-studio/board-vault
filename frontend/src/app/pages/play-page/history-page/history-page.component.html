@@ -1,7 +1,13 @@
+<app-page-header titleText="History" [showActionButton]="true">
+    Your history of games played in the past meetings
+    <app-button
+        class="action-button"
+        icon="plus-lg"
+        routerLink="/create-group"
+    >Log a Play</app-button>
+</app-page-header>
+
 <container-wrapper>
-    <title-subtitle titleText="History">
-        Your history of games played in the past meetings
-    </title-subtitle>
 
     <!-- Loading state -->
     @if (isLoadingHistory()) {
