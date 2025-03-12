@@ -195,7 +195,7 @@ export class Api {
     }
 
     getUserReviews(userId: number) {
-        return this.http.get<Array<GameReviewWithGameData>>(`${this.url}/collection/users/${userId}/games/reviews`)
+        return this.http.get<Array<GameReviewWithGameData>>(`${this.url}/collection/users/${userId}/reviews`)
     }
 
     // --------------------------------------------------------------------------
