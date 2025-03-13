@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs'
 import { Api } from '../../../api/api'
 import type { GameViewType } from '../../../api/api.types'
 import { CardGameComponent } from '../../../components/card-game/card-game.component'
+import { ImageProfileComponent } from '../../../components/image-profile/image-profile.component'
 import { TagsComponent } from '../../../components/tags/tags.component'
 import { ToastService } from '../../../components/toast/toast.service'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
@@ -14,7 +15,6 @@ import { ImageBackgroundComponent } from '../../../components/ui/image-backgroun
 import { ReviewDisplayComponent } from '../../../components/ui/review-display/review-display.component'
 import { SpinnerComponent } from '../../../components/ui/spinner/spinner.component'
 import { DataService } from '../../../core/services/data.service'
-import { ImageProfileComponent } from "../../../components/image-profile/image-profile.component";
 
 @Component({
     imports: [
@@ -73,6 +73,7 @@ export class GameViewPageComponent implements OnDestroy {
         isLoadingWishlist: false,
         isLoadingReview: false,
         isLoadingUpdateOwnership: false,
+        isLoadingAddToCollection: false,
     }
 
     constructor() {
@@ -206,7 +207,46 @@ export class GameViewPageComponent implements OnDestroy {
     }
 
     // #region Ownership
-    saveOwnedGameDetails() {
+    public addToCollection() {
+        const currentUser = this.currentUser$()
+        const gameId = this.gameView$()?.gameData?.id
+
+        if (!currentUser?.id || !gameId || this.PREVENT_SPAM.isLoadingAddToCollection) {
+            return
+        }
+
+        this.PREVENT_SPAM.isLoadingAddToCollection = true
+
+        this.api.addGameToUserCollection(currentUser.id, gameId).subscribe({
+            next: (res) => {
+                this.toastService.success('Game added to collection')
+                this.gameView$.update((game) => {
+                    if (!game) {
+                        return null
+                    }
+
+                    return {
+                        ...game,
+                        ownedGameData: {
+                            purchaseDate: null,
+                            purchasePrice: null,
+                            purchaseNotes: null,
+                        },
+                    }
+                })
+            },
+            error: (error) => {
+                this.toastService.error('Error adding game to collection')
+            },
+            complete: () => {
+                this.PREVENT_SPAM.isLoadingAddToCollection = false
+            },
+        })
+    }
+
+    public removeFromCollection() {}
+
+    public saveOwnedGameDetails() {
         const currentUser = this.currentUser$()
         const gameId = this.gameView$()?.gameData?.id
 
@@ -244,8 +284,6 @@ export class GameViewPageComponent implements OnDestroy {
     }
 
     shareGame() {}
-    addToCollection() {}
-    removeFromCollection() {}
 
     ngOnDestroy(): void {
         // unsubscribe from the route params
