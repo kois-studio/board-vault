@@ -3,6 +3,7 @@ import { DatabaseService } from '../../common/database/database.service'
 import { ResultSet } from '@libsql/client/.'
 import { GameOwnedDto, UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
 import { gameOwnedsSchema } from '../../../common/schemas'
+import { SuccessDto } from 'src/common/types/auth.type'
 
 @Injectable()
 export class GamesOwnedService {
@@ -78,7 +79,7 @@ export class GamesOwnedService {
         return ownedGames[0]
     }
 
-    async createGamesOwned(ownedGameDto: GameOwnedDto) {
+    async createGamesOwned(ownedGameDto: GameOwnedDto): Promise<SuccessDto> {
         this.LOGGER.log(`Creating ownedGame ${ownedGameDto.accountId} - ${ownedGameDto.gameId}`)
         try {
             await this.databaseService.createOwnedGame(ownedGameDto)
@@ -104,12 +105,12 @@ export class GamesOwnedService {
         return this.getGameOwnedByAccountIdAndGameId(accountId, gameId)
     }
 
-    async deleteGamesOwnedById(accountId: number, gameId: number): Promise<{ success: boolean }> {
+    async deleteGamesOwnedById(accountId: number, gameId: number): Promise<SuccessDto> {
         this.LOGGER.log(`Deleting ownedGame with id ${accountId} ${gameId}`)
         const resultSet = await this.databaseService.deleteOwnedGameById(accountId, gameId)
 
         if (resultSet.rowsAffected === 0) {
-            throw new NotFoundException(`OwnedGame with id ${accountId} ${gameId} not found`)
+            throw new NotFoundException(`OwnedGame with accountId ${accountId} and gameId ${gameId} not found`)
         }
 
         return { success: true }
