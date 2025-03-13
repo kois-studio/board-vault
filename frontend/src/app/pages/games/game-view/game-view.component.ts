@@ -161,6 +161,8 @@ export class GameViewPageComponent implements OnDestroy {
             },
             error: (error) => {
                 this.toastService.error('Error saving wishlist')
+                // On error, reload the game data
+                this._loadGameData(currentUser.id, gameId)
             },
             complete: () => {
                 this.PREVENT_SPAM.isLoadingWishlist = false
@@ -199,6 +201,8 @@ export class GameViewPageComponent implements OnDestroy {
             },
             error: (error) => {
                 this.toastService.error('Error saving review')
+                // On error, reload the game data
+                this._loadGameData(currentUser.id, gameId)
             },
             complete: () => {
                 this.PREVENT_SPAM.isLoadingReview = false
@@ -309,6 +313,8 @@ export class GameViewPageComponent implements OnDestroy {
             },
             error: (error) => {
                 this.toastService.error('Error updating purchase details')
+                // On error, reload the game data
+                this._loadGameData(currentUser.id, gameId)
             },
             complete: () => {
                 this.PREVENT_SPAM.isLoadingUpdateOwnership = false
