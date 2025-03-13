@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { CollectionService } from './collection.service'
 // Guards
@@ -32,12 +32,20 @@ export class CollectionController {
         return this.collectionService.getGameViewByUserId(userId, gameId)
     }
 
-    @UseGuards(JwtAuthGuard, VerifiedUserGuard)
+    @UseGuards(UserOwnershipGuard)
     @Post('/users/:userId/games/:gameId')
     @ApiOperation({ summary: 'Add a game to a user\'s collection', deprecated: false })
     @ApiResponse({ status: 200, type: GameDto, description: 'Game added to the user\'s collection' })
     async addGameToUserCollection(@Param('userId', ParseIntPipe) userId: number, @Param('gameId', ParseIntPipe) gameId: number) {
         return this.collectionService.addGameToUserCollection(userId, gameId)
+    }
+
+    @UseGuards(UserOwnershipGuard)
+    @Delete('/users/:userId/games/:gameId')
+    @ApiOperation({ summary: 'Remove a game from a user\'s collection', deprecated: false })
+    @ApiResponse({ status: 200, type: GameDto, description: 'Game removed from the user\'s collection' })
+    async removeGameFromUserCollection(@Param('userId', ParseIntPipe) userId: number, @Param('gameId', ParseIntPipe) gameId: number) {
+        return this.collectionService.removeGameFromUserCollection(userId, gameId)
     }
 
     @UseGuards(UserOwnershipGuard)

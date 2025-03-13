@@ -111,6 +111,11 @@ export class CollectionService {
         return { success: result.success }
     }
 
+    async removeGameFromUserCollection(userId: number, gameId: number): Promise<SuccessDto> {
+        const result = await this.gamesOwnedService.deleteGamesOwnedById(userId, gameId)
+        return { success: result.success }
+    }
+
     async updateGameOwnership(userId: number, gameId: number, body: UpdateGameOwnedDto) {
         const updatedGameOwned = await this.gamesOwnedService.updateGameOwned(userId, gameId, body)
         return updatedGameOwned
