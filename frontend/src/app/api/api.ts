@@ -196,6 +196,14 @@ export class Api {
         return this.http.get<GameViewType>(`${this.url}/collection/users/${userId}/games/${gameId}`)
     }
 
+    addGameToUserCollection(userId: number, gameId: number) {
+        return this.http.post<{ success: true }>(`${this.url}/collection/users/${userId}/games/${gameId}`, {})
+    }
+
+    removeGameFromUserCollection(userId: number, gameId: number) {
+        return this.http.delete<{ success: true }>(`${this.url}/collection/users/${userId}/games/${gameId}`)
+    }
+
     patchGameOwnership(userId: number, gameId: number, ownedGameDto: UpdateGameOwnedType) {
         return this.http.patch<GameOwnedType>(`${this.url}/collection/users/${userId}/games/${gameId}/ownership`, ownedGameDto)
     }
