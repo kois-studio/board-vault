@@ -74,6 +74,7 @@ export class GameViewPageComponent implements OnDestroy {
         isLoadingReview: false,
         isLoadingUpdateOwnership: false,
         isLoadingAddToCollection: false,
+        isLoadingRemoveFromCollection: false,
     }
 
     constructor() {
@@ -244,7 +245,35 @@ export class GameViewPageComponent implements OnDestroy {
         })
     }
 
-    public removeFromCollection() {}
+    public removeFromCollection() {
+        const currentUser = this.currentUser$()
+        const gameId = this.gameView$()?.gameData?.id
+
+        if (!currentUser?.id || !gameId || this.PREVENT_SPAM.isLoadingRemoveFromCollection) {
+            return
+        }
+
+        this.PREVENT_SPAM.isLoadingRemoveFromCollection = true
+
+        this.api.removeGameFromUserCollection(currentUser.id, gameId).subscribe({
+            next: (res) => {
+                this.toastService.success('Game removed from collection')
+                this.gameView$.update((game) => {
+                    if (!game) {
+                        return null
+                    }
+
+                    return { ...game, ownedGameData: null }
+                })
+            },
+            error: (error) => {
+                this.toastService.error('Error removing game from collection')
+            },
+            complete: () => {
+                this.PREVENT_SPAM.isLoadingRemoveFromCollection = false
+            },
+        })
+    }
 
     public saveOwnedGameDetails() {
         const currentUser = this.currentUser$()
