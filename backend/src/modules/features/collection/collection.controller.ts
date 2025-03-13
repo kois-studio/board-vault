@@ -9,6 +9,7 @@ import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
 import { GameDto, GameViewDto } from '../../../common/types/game.type'
 import { GameReviewWithGameDataDto } from '../../../common/types/game-review.type'
 import { GameOwnedDto, UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
+import { SuccessDto } from 'src/common/types/auth.type'
 
 @UseGuards(JwtAuthGuard, VerifiedUserGuard)
 @ApiTags('collection')
@@ -35,7 +36,7 @@ export class CollectionController {
     @UseGuards(UserOwnershipGuard)
     @Post('/users/:userId/games/:gameId')
     @ApiOperation({ summary: 'Add a game to a user\'s collection', deprecated: false })
-    @ApiResponse({ status: 200, type: GameDto, description: 'Game added to the user\'s collection' })
+    @ApiResponse({ status: 200, type: SuccessDto, description: 'Game added to the user\'s collection' })
     async addGameToUserCollection(@Param('userId', ParseIntPipe) userId: number, @Param('gameId', ParseIntPipe) gameId: number) {
         return this.collectionService.addGameToUserCollection(userId, gameId)
     }
@@ -43,7 +44,7 @@ export class CollectionController {
     @UseGuards(UserOwnershipGuard)
     @Delete('/users/:userId/games/:gameId')
     @ApiOperation({ summary: 'Remove a game from a user\'s collection', deprecated: false })
-    @ApiResponse({ status: 200, type: GameDto, description: 'Game removed from the user\'s collection' })
+    @ApiResponse({ status: 200, type: SuccessDto, description: 'Game removed from the user\'s collection' })
     async removeGameFromUserCollection(@Param('userId', ParseIntPipe) userId: number, @Param('gameId', ParseIntPipe) gameId: number) {
         return this.collectionService.removeGameFromUserCollection(userId, gameId)
     }
