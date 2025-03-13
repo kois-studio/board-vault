@@ -14,6 +14,7 @@ import { MeetAccountGamesService } from 'src/modules/core/meet-account-games/mee
 import { MeetsService } from 'src/modules/meets/meets.service'
 import { GroupsService } from 'src/modules/core/groups/groups.service'
 import { MeetAttendeesService } from 'src/modules/core/meet-attendees/meet-attendees.service'
+import { SuccessDto } from 'src/common/types/auth.type'
 
 @Injectable()
 export class CollectionService {
@@ -97,6 +98,17 @@ export class CollectionService {
             similarGames: similarGamesFiltered,
             playHistory: playHistory,
         }
+    }
+
+    async addGameToUserCollection(userId: number, gameId: number): Promise<SuccessDto> {
+        const result = await this.gamesOwnedService.createGamesOwned({
+            accountId: userId,
+            gameId: gameId,
+            purchaseDate: null,
+            purchasePrice: null,
+            purchaseNotes: null,
+        })
+        return { success: result.success }
     }
 
     async updateGameOwnership(userId: number, gameId: number, body: UpdateGameOwnedDto) {

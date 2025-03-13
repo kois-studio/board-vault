@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common'
+import { HttpException, HttpStatus, Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { DatabaseService } from '../../common/database/database.service'
 import { ResultSet } from '@libsql/client/.'
 import { GameOwnedDto, UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
@@ -86,7 +86,10 @@ export class GamesOwnedService {
             return { success: true }
         } catch (error) {
             this.LOGGER.error('Failed to create ownedGame', error)
-            throw new InternalServerErrorException('Failed to create ownedGame')
+            throw new HttpException(
+                `OwnedGame with accountId ${ownedGameDto.accountId} and gameId ${ownedGameDto.gameId} already exists`,
+                HttpStatus.CONFLICT,
+            )
         }
     }
 
