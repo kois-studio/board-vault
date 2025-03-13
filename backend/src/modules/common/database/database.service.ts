@@ -889,11 +889,40 @@ export class DatabaseService implements OnModuleInit {
 
     // #region MeetAccountGame
 
-    getMeetAccountGamesByAccountId(accountId: number) {
+    getMeetAccountGamesBy(config: {
+        accountId?: number
+        meetId?: number
+        gameId?: number
+    }) {
+        let sql = 'SELECT * FROM MeetAccountGame';
+        const args: number[] = [];
+        const conditions: string[] = [];
+        
+        // Add conditions based on provided parameters
+        if (config.accountId !== undefined) {
+            conditions.push('accountId = ?');
+            args.push(config.accountId);
+        }
+        
+        if (config.meetId !== undefined) {
+            conditions.push('meetId = ?');
+            args.push(config.meetId);
+        }
+        
+        if (config.gameId !== undefined) {
+            conditions.push('gameId = ?');
+            args.push(config.gameId);
+        }
+        
+        // Add WHERE clause if any conditions exist
+        if (conditions.length > 0) {
+            sql += ' WHERE ' + conditions.join(' AND ');
+        }
+        
         return this._tursoExecute({
-            sql: 'SELECT * FROM MeetAccountGame WHERE accountId = ?',
-            args: [accountId],
-        })
+            sql,
+            args,
+        });
     }
 
     createMeetAccountGame(accountId: number, meetId: number, gameId: number) {

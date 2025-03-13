@@ -34,9 +34,13 @@ export class MeetAccountGamesService {
 
     // #region methods
 
-    async getMeetAccountGamesByAccountId(accountId: number): Promise<Array<MeetAccountGameDto>> {
-        this.LOGGER.log(`Getting meetAccountGames by accountId ${accountId}`)
-        const resultSet = await this.databaseService.getMeetAccountGamesByAccountId(accountId)
+    async getMeetAccountGamesBy(config: {
+        accountId?: number
+        meetId?: number
+        gameId?: number
+    }): Promise<Array<MeetAccountGameDto>> {
+        this.LOGGER.log(`Getting meetAccountGames by accountId ${config.accountId} meetId ${config.meetId} gameId ${config.gameId}`)
+        const resultSet = await this.databaseService.getMeetAccountGamesBy(config)
         return this._parseResultSet(resultSet)
     }
 
