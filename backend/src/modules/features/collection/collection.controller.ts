@@ -10,7 +10,7 @@ import { GameDto, GameViewDto } from '../../../common/types/game.type'
 import { GameReviewWithGameDataDto } from '../../../common/types/game-review.type'
 import { GameOwnedDto, UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
 
-// @UseGuards(JwtAuthGuard, VerifiedUserGuard)
+@UseGuards(JwtAuthGuard, VerifiedUserGuard)
 @ApiTags('collection')
 @ApiBearerAuth()
 @Controller('collection')
@@ -24,12 +24,20 @@ export class CollectionController {
         return this.collectionService.getGamesOwnedByUser(userId)
     }
 
-    // @UseGuards(UserOwnershipGuard)
+    @UseGuards(UserOwnershipGuard)
     @Get('/users/:userId/games/:gameId')
     @ApiOperation({ summary: 'Game view for a user (not owned necessarily)', deprecated: false })
     @ApiResponse({ status: 200, type: GameViewDto, description: 'Game view for the user' })
     async getGameViewByUserId(@Param('userId', ParseIntPipe) userId: number, @Param('gameId', ParseIntPipe) gameId: number) {
         return this.collectionService.getGameViewByUserId(userId, gameId)
+    }
+
+    @UseGuards(JwtAuthGuard, VerifiedUserGuard)
+    @Post('/users/:userId/games/:gameId')
+    @ApiOperation({ summary: 'Add a game to a user\'s collection', deprecated: false })
+    @ApiResponse({ status: 200, type: GameDto, description: 'Game added to the user\'s collection' })
+    async addGameToUserCollection(@Param('userId', ParseIntPipe) userId: number, @Param('gameId', ParseIntPipe) gameId: number) {
+        return this.collectionService.addGameToUserCollection(userId, gameId)
     }
 
     @UseGuards(UserOwnershipGuard)
