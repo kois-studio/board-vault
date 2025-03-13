@@ -6,9 +6,9 @@
 } @else {
 <container-wrapper>
     <!-- Game data (image, title, etc) -->
-    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mb-6">
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         <!-- Image, wishlist and -->
-        <div class="relative aspect-square">
+        <div class="relative aspect-square mb-6">
             <image-background [src]="gameView$()?.gameData?.imageUrl ?? ''" />
             <!-- Action Buttons -->
             <div class="absolute top-2 right-2 flex gap-2">
@@ -88,7 +88,7 @@
     </section>
 
     <!-- Ownership Section -->
-    <section class="app-bg-secondary rounded-xl mb-6">
+    <section class="app-bg-secondary rounded-xl mt-12">
         <!-- When User DOESN'T OWN the game -->
         @if (!gameView$()?.ownedGameData) {
         <div class="text-center px-4 py-8">
@@ -101,7 +101,9 @@
 
         <!-- When User OWNS the game -->
         @if (gameView$()?.ownedGameData) {
-        <div class="bg-green-200 dark:bg-green-900/50 text-green-800 dark:text-green-100 rounded-t-xl p-4 flex items-center justify-between">
+        <div
+            class="bg-green-200 dark:bg-green-900/50 text-green-800 dark:text-green-100 rounded-t-xl p-4 flex items-center justify-between"
+        >
             <h3 class="font-semibold text-lg">This game is in your collection</h3>
             <app-button variant="danger" icon="x-circle" size="small" (click)="removeFromCollection()">remove</app-button>
         </div>
@@ -158,11 +160,9 @@
                     </div>
 
                     <div class="flex justify-end gap-2 pt-2">
-                        <app-button
-                            type="submit"
-                            [loading]="PREVENT_SPAM.isLoadingUpdateOwnership"
-                            [disabled]="ownershipFormGroup.invalid"
-                        >Save Details</app-button>
+                        <app-button type="submit" [loading]="PREVENT_SPAM.isLoadingUpdateOwnership" [disabled]="ownershipFormGroup.invalid"
+                            >Save Details</app-button
+                        >
                     </div>
                 </div>
             </form>
@@ -170,43 +170,46 @@
         }
     </section>
 
-    <!-- Main Content Container -->
-    <div class="space-y-8">
-        <!-- History Section -->
-        <div *ngIf="playHistory && playHistory.length > 0">
-            <h2 class="text-xl font-bold mb-4">Your Play History</h2>
+    <!-- History Section -->
+    <section class="mt-12">
+        @if (gameView$()?.playHistory?.length) {
+        <h2 class="text-xl font-bold mb-4">Your Play History</h2>
 
-            <div class="border border-gray-200 rounded-lg overflow-hidden">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Group</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Players</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        <tr *ngFor="let session of playHistory">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ session.date | date }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ session.group }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                <div class="flex -space-x-2 overflow-hidden">
-                                    <img
-                                        *ngFor="let player of session.players"
-                                        [src]="player.avatar"
-                                        [alt]="player.name"
-                                        class="inline-block h-8 w-8 rounded-full ring-2 ring-white"
-                                        [title]="player.name"
-                                    />
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+        <div class="border border-gray-200 dark:border-zinc-800 rounded-lg overflow-hidden">
+            <table class="min-w-full">
+                <thead class="app-bg-secondary">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Group</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Players</th>
+                    </tr>
+                </thead>
+                <tbody class="app-bg-primary">
+                    @for (session of gameView$()?.playHistory ?? []; track session.meet.id) {
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ session.meet.meetDate | date }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ session.group.name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <div class="flex -space-x-2 overflow-hidden">
+                                @for (player of session.playedBy; track player.id) {
+                                <app-image-profile
+                                    [title]="player.username"
+                                    class="border-2 rounded-full border-indigo-100 dark:border-zinc-800"
+                                    [avatar]="player.avatar"
+                                />
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
         </div>
+        }
+    </section>
 
-        <!-- Similar Games Section -->
+    <!-- Similar Games Section -->
+    <section class="mt-12">
         <div>
             <h2 class="text-xl font-bold mb-4">Similar Games You Might Like</h2>
 
@@ -224,6 +227,6 @@
                 }
             </div>
         </div>
-    </div>
+    </section>
 </container-wrapper>
 }
