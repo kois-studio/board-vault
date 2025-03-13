@@ -19,10 +19,9 @@ export class PlayService {
 
     @LogFeature(new Logger('PlayService'))
     async getUserGamesHistory(userId: number): Promise<Array<HistoryRecordDto>> {
-        const meetAccountGames = await this.meetAccountGamesService.getMeetAccountGamesByAccountId(userId)
+        const meetAccountGames = await this.meetAccountGamesService.getMeetAccountGamesBy({ accountId: userId })
         return Promise.all(meetAccountGames.map(async record => {
             const meetAttendees = await this.meetAttendeesService.getMeetAttendeesByMeetId(record.meetId)
-            console.log(record)
             return {
                 accountId: record.accountId,
                 gameId: record.gameId,

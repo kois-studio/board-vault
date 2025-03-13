@@ -10,6 +10,10 @@ import { ReviewsService } from '../../core/reviews/reviews.service'
 import { WishlistService } from '../../core/wishlist/wishlist.service'
 import { GamesOwnedService } from '../../core/games-owned/games-owned.service'
 import { UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
+import { MeetAccountGamesService } from 'src/modules/core/meet-account-games/meet-account-games.service'
+import { MeetsService } from 'src/modules/meets/meets.service'
+import { GroupsService } from 'src/modules/core/groups/groups.service'
+import { MeetAttendeesService } from 'src/modules/core/meet-attendees/meet-attendees.service'
 
 @Injectable()
 export class CollectionService {
@@ -17,9 +21,13 @@ export class CollectionService {
         private readonly usersService: UsersService,
         private readonly gamesService: GamesService,
         private readonly tagsService: TagsService,
+        private readonly meetsService: MeetsService,
+        private readonly groupsService: GroupsService,
         private readonly reviewsService: ReviewsService,
         private readonly wishlistService: WishlistService,
         private readonly gamesOwnedService: GamesOwnedService,
+        private readonly meetAttendeesService: MeetAttendeesService,
+        private readonly meetAccountGamesService: MeetAccountGamesService,
     ) {}
 
     @LogFeature(new Logger('CollectionService'))
@@ -51,6 +59,19 @@ export class CollectionService {
         ).filter(Boolean)
         const similarGamesFiltered = similarGames.filter(Boolean) as Array<GameDto>
 
+        // Get play history
+        const playHistoryRecords = await this.meetAccountGamesService.getMeetAccountGamesBy({ accountId: userId, gameId })
+        const playHistory: GameViewDto['playHistory'] = await Promise.all(playHistoryRecords.map(async (record) => {
+            const meetData = await this.meetsService.getMeetById(record.meetId)
+            const groupData = await this.groupsService.getGroupById(meetData.groupId)
+            const meetAttendees = await this.meetAttendeesService.getMeetAttendeesByMeetId(record.meetId)
+            return {
+                group: groupData,
+                meet: meetData,
+                playedBy: await Promise.all(meetAttendees.map(async (attendee) => this.usersService.getUserById(attendee.accountId))),
+            }
+        }))
+
         // Step 2: Construct the GameView
         return {
             gameData: gameData,
@@ -73,8 +94,8 @@ export class CollectionService {
                 avgGroupsRating: avgGroupsRating,
                 avgGlobalRating: avgGlobalRating,
             },
-            playHistory: [], // TODO: implement game history
             similarGames: similarGamesFiltered,
+            playHistory: playHistory,
         }
     }
 
