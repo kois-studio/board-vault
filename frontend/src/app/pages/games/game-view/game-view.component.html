@@ -93,7 +93,7 @@
         @if (!gameView$()?.ownedGameData) {
         <div class="text-center px-4 py-8">
             <p class="text-secondary mb-4">Do you own this game?</p>
-            <app-button (click)="addToCollection()" color="primary">
+            <app-button (click)="addToCollection()" color="primary" [loading]="PREVENT_SPAM.isLoadingAddToCollection">
                 <i class="fas fa-plus-circle mr-2"></i>Add to My Collection
             </app-button>
         </div>

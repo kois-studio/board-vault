@@ -238,6 +238,8 @@ export class GameViewPageComponent implements OnDestroy {
             },
             error: (error) => {
                 this.toastService.error('Error adding game to collection')
+                // On error, reload the game data
+                this._loadGameData(currentUser.id, gameId)
             },
             complete: () => {
                 this.PREVENT_SPAM.isLoadingAddToCollection = false
@@ -268,6 +270,8 @@ export class GameViewPageComponent implements OnDestroy {
             },
             error: (error) => {
                 this.toastService.error('Error removing game from collection')
+                // On error, reload the game data
+                this._loadGameData(currentUser.id, gameId)
             },
             complete: () => {
                 this.PREVENT_SPAM.isLoadingRemoveFromCollection = false
