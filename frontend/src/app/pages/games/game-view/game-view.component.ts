@@ -14,6 +14,7 @@ import { ImageBackgroundComponent } from '../../../components/ui/image-backgroun
 import { ReviewDisplayComponent } from '../../../components/ui/review-display/review-display.component'
 import { SpinnerComponent } from '../../../components/ui/spinner/spinner.component'
 import { DataService } from '../../../core/services/data.service'
+import { ImageProfileComponent } from "../../../components/image-profile/image-profile.component";
 
 @Component({
     imports: [
@@ -29,6 +30,7 @@ import { DataService } from '../../../core/services/data.service'
         FormsModule,
         SpinnerComponent,
         ReactiveFormsModule,
+        ImageProfileComponent,
     ],
     templateUrl: './game-view.component.html',
 })
@@ -72,22 +74,6 @@ export class GameViewPageComponent implements OnDestroy {
         isLoadingReview: false,
         isLoadingUpdateOwnership: false,
     }
-
-    // TODO: delete this
-    playHistory = [
-        {
-            playDate: new Date(),
-            playNotes: 'This is a note about the play',
-            date: new Date(),
-            group: 'Group 1',
-            players: [
-                {
-                    name: 'Player 1',
-                    avatar: 'https://th.bing.com/th/id/OIP.Nov0duOiE7Mh5CjeKhbGBgHaE8?w=244&h=180&c=7&r=0&o=5&pid=1.7',
-                },
-            ],
-        },
-    ]
 
     constructor() {
         effect(() => {
