@@ -112,10 +112,6 @@ export class Api {
         return this.http.post<UserType>(`${this.url}/invitations/byUsername`, { groupId, fromAccountId, username })
     }
 
-    acceptInvitation(invitationId: number) {
-        return this.http.post<{ success: true }>(`${this.url}/invitations/${invitationId}/accept`, {})
-    }
-
     // #region notifications
 
     deleteNotification(notificationId: number) {
@@ -241,11 +237,15 @@ export class Api {
         return this.http.get<UserType>(`${this.url}/profile/users/byEmail/${email}`)
     }
 
-    getUserNotifications(accountId: number) {
-        return this.http.get<Array<NotificationType>>(`${this.url}/profile/users/${accountId}/notifications`)
+    getUserNotifications(userId: number) {
+        return this.http.get<Array<NotificationType>>(`${this.url}/profile/users/${userId}/notifications`)
     }
 
-    getUserInvitationsReceived(accountId: number) {
-        return this.http.get<Array<InvitationWithExtraData>>(`${this.url}/profile/users/${accountId}/invitationsReceived`)
+    getUserInvitations(userId: number) {
+        return this.http.get<Array<InvitationWithExtraData>>(`${this.url}/profile/users/${userId}/invitations`)
+    }
+
+    acceptInvitation(userId: number, invitationId: number) {
+        return this.http.post<{ success: true }>(`${this.url}/profile/users/${userId}/invitations/${invitationId}/accept`, {})
     }
 }

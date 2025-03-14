@@ -124,7 +124,7 @@ export class DataService {
     }
 
     private _getUserInvitations(userId: number) {
-        this.api.getUserInvitationsReceived(userId).subscribe({
+        this.api.getUserInvitations(userId).subscribe({
             next: (invitations) => {
                 this.userInvitations.set(invitations)
             },
@@ -489,7 +489,7 @@ export class DataService {
         if (!currentUser) return
 
         // 1.
-        this.api.acceptInvitation(invitationId).subscribe({
+        this.api.acceptInvitation(currentUser.id, invitationId).subscribe({
             next: (res) => {
                 // 2.
                 this.userInvitations.update((invitations) => invitations.filter((invitation) => invitation.id !== invitationId))

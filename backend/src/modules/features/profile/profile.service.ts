@@ -31,7 +31,7 @@ export class ProfileService {
     }
 
     @LogFeature(new Logger('ProfileService'))
-    async getUserInvitationsReceived(accountId: number): Promise<Array<InvitationWithExtraData>> {
+    async getUserInvitations(accountId: number): Promise<Array<InvitationWithExtraData>> {
         const invitations = await this.invitationsService.getUserInvitationsReceived(accountId)
         return Promise.all(
             invitations.map(async invitation => ({
