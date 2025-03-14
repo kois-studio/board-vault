@@ -1,10 +1,12 @@
 import { Controller, Get, Param, ParseIntPipe, Put, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
+
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
-import { WishlistService } from './wishlist.service'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
-import { WishlistResponseDto } from '../../../common/types/wishlisted-game.type'
 import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
+import { WishlistResponseDto } from '../../../common/types/wishlisted-game.type'
+
+import { WishlistService } from './wishlist.service'
 
 @UseGuards(JwtAuthGuard, VerifiedUserGuard)
 @ApiTags('wishlist')
@@ -21,6 +23,7 @@ export class WishlistController {
         @Param('gameId', ParseIntPipe) gameId: number,
     ): Promise<WishlistResponseDto> {
         const isWishlisted = await this.wishlistService.isGameWishlisted(accountId, gameId)
+
         return { isWishlisted }
     }
 
@@ -34,6 +37,7 @@ export class WishlistController {
     ): Promise<WishlistResponseDto> {
         await this.wishlistService.toggleWishlist(accountId, gameId)
         const isWishlisted = await this.wishlistService.isGameWishlisted(accountId, gameId)
+
         return { isWishlisted }
     }
 }

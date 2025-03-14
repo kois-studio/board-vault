@@ -1,4 +1,5 @@
 import { ApiProperty, OmitType, PartialType, PickType } from '@nestjs/swagger'
+
 import { GameDto } from './game.type'
 
 export class AvatarDto {
@@ -67,12 +68,32 @@ export class UserGetDto extends OmitType(UserCompleteDto, ['password', 'verifica
 /**
  * POST requests --> no db generated props
  */
-export class CreateUserBody extends OmitType(UserCompleteDto, ['id', 'createdAt', 'isDeleted', 'isAdmin', 'email_verified', 'verification_token', 'password_reset_token']) {}
+export class CreateUserBody extends OmitType(UserCompleteDto, [
+    'id',
+    'createdAt',
+    'isDeleted',
+    'isAdmin',
+    'email_verified',
+    'verification_token',
+    'password_reset_token',
+]) {}
 
 /**
  * PUT requests --> editable fields
  */
-export class UpdateUserBody extends PartialType(PickType(UserCompleteDto, ['email', 'username', 'password', 'displayName', 'avatar', 'isAdmin', 'email_verified', 'verification_token', 'password_reset_token'])) {}
+export class UpdateUserBody extends PartialType(
+    PickType(UserCompleteDto, [
+        'email',
+        'username',
+        'password',
+        'displayName',
+        'avatar',
+        'isAdmin',
+        'email_verified',
+        'verification_token',
+        'password_reset_token',
+    ]),
+) {}
 
 /**
  * POST /auth/register

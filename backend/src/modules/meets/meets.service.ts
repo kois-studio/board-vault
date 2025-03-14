@@ -1,10 +1,11 @@
 import { ResultSet } from '@libsql/client/.'
 import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common'
-import { DatabaseService } from '../common/database/database.service'
-import { MeetDto, MeetWithAttendeesAndGames } from '../../common/types/meet.type'
+
 import { meetsSchema } from '../../common/schemas/db-meet.schema'
-import { UserGetDto } from '../../common/types/user.type'
 import { GameDto } from '../../common/types/game.type'
+import { MeetDto, MeetWithAttendeesAndGames } from '../../common/types/meet.type'
+import { UserGetDto } from '../../common/types/user.type'
+import { DatabaseService } from '../common/database/database.service'
 import { MeetAccountGamesService } from '../core/meet-account-games/meet-account-games.service'
 
 @Injectable()

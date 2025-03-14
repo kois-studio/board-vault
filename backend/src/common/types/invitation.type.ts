@@ -1,6 +1,8 @@
 import { ApiProperty, OmitType } from '@nestjs/swagger'
-import type { UserGetDto } from './user.type'
+
 import { GroupDto, GroupWithMembersAndGames } from './group.type'
+
+import type { UserGetDto } from './user.type'
 
 /**
  * base Invitation as it comes from db

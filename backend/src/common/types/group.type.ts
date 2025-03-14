@@ -1,6 +1,7 @@
 import { ApiProperty, OmitType, PartialType, PickType } from '@nestjs/swagger'
-import { UserWithGames } from './user.type'
+
 import { GameReviewDto } from './game-review.type'
+import { UserWithGames } from './user.type'
 
 /**
  * base User as it comes from db

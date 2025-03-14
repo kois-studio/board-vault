@@ -1,11 +1,12 @@
-import { BadRequestException, ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common'
-import { DatabaseService } from '../common/database/database.service'
-import { AvatarDto, CreateUserBody, UpdateUserBody, UserCompleteDto, UserGetDto } from '../../common/types/user.type'
 import { ResultSet } from '@libsql/client/.'
+import { BadRequestException, ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common'
+
 import { usersSchema } from '../../common/schemas'
+import { MeetDto } from '../../common/types/meet.type'
+import { AvatarDto, CreateUserBody, UpdateUserBody, UserCompleteDto, UserGetDto } from '../../common/types/user.type'
+import { DatabaseService } from '../common/database/database.service'
 import { GroupsService } from '../core/groups/groups.service'
 import { MeetsService } from '../meets/meets.service'
-import { MeetDto } from '../../common/types/meet.type'
 
 @Injectable()
 export class UsersService {

@@ -1,8 +1,9 @@
 import { ResultSet } from '@libsql/client/.'
 import { Injectable, Logger, NotFoundException } from '@nestjs/common'
-import { DatabaseService } from '../../common/database/database.service'
+
 import { meetAccountGamesSchema } from '../../../common/schemas/db-meet-account-game.schema'
 import { MeetAccountGameDto } from '../../../common/types/meet-account-game.type'
+import { DatabaseService } from '../../common/database/database.service'
 
 @Injectable()
 export class MeetAccountGamesService {
@@ -16,7 +17,7 @@ export class MeetAccountGamesService {
             accountId: Number(row[1]),
             gameId: Number(row[2]),
         }))
-        
+
         return this._validateSchema(meetAccountGames)
     }
 
@@ -34,13 +35,10 @@ export class MeetAccountGamesService {
 
     // #region methods
 
-    async getMeetAccountGamesBy(config: {
-        accountId?: number
-        meetId?: number
-        gameId?: number
-    }): Promise<Array<MeetAccountGameDto>> {
+    async getMeetAccountGamesBy(config: { accountId?: number; meetId?: number; gameId?: number }): Promise<Array<MeetAccountGameDto>> {
         this.LOGGER.log(`Getting meetAccountGames by accountId ${config.accountId} meetId ${config.meetId} gameId ${config.gameId}`)
         const resultSet = await this.databaseService.getMeetAccountGamesBy(config)
+
         return this._parseResultSet(resultSet)
     }
 

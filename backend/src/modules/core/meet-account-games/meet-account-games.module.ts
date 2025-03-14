@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common'
-import { MeetAccountGamesService } from './meet-account-games.service'
-import { MeetAccountGamesController } from './meet-account-games.controller'
-// module dependencies
+
 import { DatabaseModule } from '../../common/database/database.module'
+
+import { MeetAccountGamesController } from './meet-account-games.controller'
+import { MeetAccountGamesService } from './meet-account-games.service'
+// module dependencies
 
 @Module({
     imports: [DatabaseModule],

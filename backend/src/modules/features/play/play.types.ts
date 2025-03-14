@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
+
 import { GameDto } from '../../../common/types/game.type'
 import { MeetDto } from '../../../common/types/meet.type'
 import { UserGetDto } from '../../../common/types/user.type'

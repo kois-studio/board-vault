@@ -1,9 +1,11 @@
 import { Controller, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
+
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
-import { MeetsService } from './meets.service'
-import { MeetDto, MeetWithAttendeesAndGames } from '../../common/types/meet.type'
 import { SuccessDto } from '../../common/types/auth.type'
+import { MeetDto, MeetWithAttendeesAndGames } from '../../common/types/meet.type'
+
+import { MeetsService } from './meets.service'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('meets')

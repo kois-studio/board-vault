@@ -1,9 +1,11 @@
+import { randomUUID } from 'node:crypto'
+
 import { BadRequestException, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import * as bcrypt from 'bcrypt'
+
 import { UsersService } from '../../users/users.service'
 import { DatabaseService } from '../database/database.service'
-import { randomUUID } from 'node:crypto'
 import { EmailService } from '../email/email.service'
 
 @Injectable()
@@ -113,6 +115,7 @@ export class AuthService {
     async forgotPassword(email: string): Promise<void> {
         // Check if the email exists in the database
         const user = await this.usersService.getUserByEmail(email, true)
+
         if (user instanceof Error || !user) {
             throw new NotFoundException('Email not found')
         }
@@ -129,6 +132,7 @@ export class AuthService {
 
     async resetPassword(token: string, password: string): Promise<boolean> {
         const user = await this.databaseService.getUserByPasswordResetToken(token)
+
         if (user.rows.length === 0) {
             return false // Invalid or expired token
         }

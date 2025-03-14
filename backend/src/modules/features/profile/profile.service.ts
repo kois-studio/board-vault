@@ -1,14 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common'
+
 import { LogFeature } from '../../../common/decorators/logger.decorator'
-import { UsersService } from '../../users/users.service'
-import { NotificationsService } from '../../core/notifications/notifications.service'
-import type { SuccessDto } from '../../../common/types/auth.type'
-import type { UserGetDto } from '../../../common/types/user.type'
-import type { NotificationDto } from '../../../common/types/notification.type'
 import { InvitationWithExtraData } from '../../../common/types/invitation.type'
-import { InvitationsService } from '../../core/invitations/invitations.service'
-import { GroupsService } from '../../core/groups/groups.service'
 import { GroupMembershipsService } from '../../core/group-memberships/group-memberships.service'
+import { GroupsService } from '../../core/groups/groups.service'
+import { InvitationsService } from '../../core/invitations/invitations.service'
+import { NotificationsService } from '../../core/notifications/notifications.service'
+import { UsersService } from '../../users/users.service'
+
+import type { SuccessDto } from '../../../common/types/auth.type'
+import type { NotificationDto } from '../../../common/types/notification.type'
+import type { UserGetDto } from '../../../common/types/user.type'
 
 @Injectable()
 export class ProfileService {
@@ -33,6 +35,7 @@ export class ProfileService {
     @LogFeature(new Logger('ProfileService'))
     async getUserInvitations(accountId: number): Promise<Array<InvitationWithExtraData>> {
         const invitations = await this.invitationsService.getUserInvitationsReceived(accountId)
+
         return Promise.all(
             invitations.map(async invitation => ({
                 ...invitation,

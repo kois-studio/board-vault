@@ -13,6 +13,7 @@ export class EmailService {
 
     constructor(private readonly configService: ConfigService) {
         const resendApiKey = this.configService.get<string>('RESEND_API_KEY')
+
         if (!resendApiKey) {
             this.LOGGER.error('RESEND_API_KEY is not defined in the environment variables.')
             throw new Error('RESEND_API_KEY is not defined.')
@@ -23,6 +24,7 @@ export class EmailService {
 
     async sendVerificationEmail(to: string, verificationToken: string): Promise<void> {
         const verificationLink = `${this.appBaseUrl}/verify-email/${verificationToken}`
+
         try {
             const { data, error } = await this.resend.emails.send({
                 from: this.noReplyEmail,
@@ -40,6 +42,7 @@ export class EmailService {
 
     async sendPasswordResetEmail(to: string, resetToken: string): Promise<void> {
         const resetLink = `${this.appBaseUrl}/reset-password/${resetToken}`
+
         try {
             const { data, error } = await this.resend.emails.send({
                 from: this.noReplyEmail,
@@ -47,6 +50,7 @@ export class EmailService {
                 subject: 'Reset Your Password',
                 html: `<p>Please click the following link to reset your password: <a href="${resetLink}">${resetLink}</a></p>`,
             })
+
             this.LOGGER.log(`Password reset email sent to ${to}. Message ID: ${data!.id}`)
         } catch (error) {
             this.LOGGER.error(`Failed to send password reset email to ${to}`, error)
@@ -62,6 +66,7 @@ export class EmailService {
                 subject: 'Important Notification',
                 html: `<p>${message}</p>`,
             })
+
             this.LOGGER.log(`Notification email sent to ${to}. Message ID: ${data!.id}`)
         } catch (error) {
             this.LOGGER.error(`Failed to send notification email to ${to}`, error)

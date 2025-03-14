@@ -1,18 +1,20 @@
 import { Module } from '@nestjs/common'
-import { CollectionService } from './collection.service'
-import { CollectionController } from './collection.controller'
+
 // module dependencies
 import { DatabaseModule } from '../../common/database/database.module'
-import { UsersModule } from '../../users/users.module'
 import { GamesModule } from '../../core/games/games.module'
-import { TagsModule } from '../../core/tags/tags.module'
-import { MeetsModule } from '../../meets/meets.module'
-import { GroupsModule } from '../../core/groups/groups.module'
-import { ReviewsModule } from '../../core/reviews/reviews.module'
-import { WishlistModule } from '../../core/wishlist/wishlist.module'
 import { GamesOwnedModule } from '../../core/games-owned/games-owned.module'
-import { MeetAttendeesModule } from '../../core/meet-attendees/meet-attendees.module'
+import { GroupsModule } from '../../core/groups/groups.module'
 import { MeetAccountGamesModule } from '../../core/meet-account-games/meet-account-games.module'
+import { MeetAttendeesModule } from '../../core/meet-attendees/meet-attendees.module'
+import { ReviewsModule } from '../../core/reviews/reviews.module'
+import { TagsModule } from '../../core/tags/tags.module'
+import { WishlistModule } from '../../core/wishlist/wishlist.module'
+import { MeetsModule } from '../../meets/meets.module'
+import { UsersModule } from '../../users/users.module'
+
+import { CollectionController } from './collection.controller'
+import { CollectionService } from './collection.service'
 
 @Module({
     imports: [

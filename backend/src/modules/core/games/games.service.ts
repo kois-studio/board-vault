@@ -1,9 +1,10 @@
-import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common'
-import { DatabaseService } from '../../common/database/database.service'
 import { ResultSet } from '@libsql/client/.'
-import { CreateGameBody, GameDto, UpdateGameBody } from '../../../common/types/game.type'
+import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common'
+
 import { gamesSchema } from '../../../common/schemas'
+import { CreateGameBody, GameDto, UpdateGameBody } from '../../../common/types/game.type'
 import { CacheService } from '../../common/cache/cache.service'
+import { DatabaseService } from '../../common/database/database.service'
 
 @Injectable()
 export class GamesService {
@@ -24,7 +25,7 @@ export class GamesService {
             minPlayers: Number(row[4]),
             maxPlayers: Number(row[5]),
         }))
-        
+
         return this._validateSchema(games)
     }
 
@@ -54,6 +55,7 @@ export class GamesService {
 
         // Step 1: Try to get them from cache
         const cachedGame = await this.cacheService.get(`${this.CACHE_KEY}:byId:${id}`)
+
         if (cachedGame) {
             this.LOGGER.log(`Returning cached game by id ${id}`)
             return this._validateSchema([cachedGame])[0]

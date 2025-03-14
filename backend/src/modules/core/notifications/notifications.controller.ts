@@ -1,8 +1,10 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
-import { NotificationsService } from './notifications.service'
+
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
 import { CreateNotificationBody, NotificationDto, UpdateNotificationBody } from '../../../common/types/notification.type'
+
+import { NotificationsService } from './notifications.service'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('notifications')

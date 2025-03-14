@@ -1,4 +1,5 @@
 import { Injectable, CanActivate, ExecutionContext, ForbiddenException, Logger } from '@nestjs/common'
+
 import { DatabaseService } from '../../modules/common/database/database.service'
 
 @Injectable()
@@ -19,6 +20,7 @@ export class VerifiedUserGuard implements CanActivate {
         const userId = user.userId
 
         const userRecord = await this.databaseService.getUserById(userId) // Fetch the user from the database
+
         if (userRecord.rows.length === 0) {
             this.LOGGER.error('Access denied. User not found in database')
             return false // Or throw an exception
