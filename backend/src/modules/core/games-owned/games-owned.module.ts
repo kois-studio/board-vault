@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common'
+
+import { DatabaseModule } from '../../common/database/database.module'
+
 import { GamesOwnedService } from './games-owned.service'
 // module dependencies
-import { DatabaseModule } from '../../common/database/database.module'
 
 @Module({
     imports: [DatabaseModule],

@@ -1,20 +1,23 @@
 import { Injectable, Logger } from '@nestjs/common'
+
 import { LogFeature } from '../../../common/decorators/logger.decorator'
+import { UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
+import { GamesService } from '../../core/games/games.service'
+import { GamesOwnedService } from '../../core/games-owned/games-owned.service'
+import { GroupsService } from '../../core/groups/groups.service'
+import { MeetAccountGamesService } from '../../core/meet-account-games/meet-account-games.service'
+import { MeetAttendeesService } from '../../core/meet-attendees/meet-attendees.service'
+import { ReviewsService } from '../../core/reviews/reviews.service'
+import { TagsService } from '../../core/tags/tags.service'
+import { UsersService } from '../../users/users.service'
+
 import type { SuccessDto } from '../../../common/types/auth.type'
 import type { GameReviewWithGameDataDto } from '../../../common/types/game-review.type'
 import type { GameDto, GameViewDto } from '../../../common/types/game.type'
+
 // Services
-import { UsersService } from '../../users/users.service'
-import { GamesService } from '../../core/games/games.service'
-import { TagsService } from '../../core/tags/tags.service'
-import { ReviewsService } from '../../core/reviews/reviews.service'
 import { WishlistService } from '../../core/wishlist/wishlist.service'
-import { GamesOwnedService } from '../../core/games-owned/games-owned.service'
-import { UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
-import { MeetAccountGamesService } from '../../core/meet-account-games/meet-account-games.service'
 import { MeetsService } from '../../meets/meets.service'
-import { GroupsService } from '../../core/groups/groups.service'
-import { MeetAttendeesService } from '../../core/meet-attendees/meet-attendees.service'
 
 @Injectable()
 export class CollectionService {
@@ -34,6 +37,7 @@ export class CollectionService {
     @LogFeature(new Logger('CollectionService'))
     async getGamesOwnedByUser(userId: number): Promise<Array<GameDto>> {
         const gamesOwned = await this.gamesOwnedService.getGamesOwnedByAccountId(userId)
+
         return Promise.all(gamesOwned.map(async game => this.gamesService.getGameById(game.gameId)))
     }
 
@@ -62,20 +66,23 @@ export class CollectionService {
 
         // Get play history
         const playHistoryRecords = await this.meetAccountGamesService.getMeetAccountGamesBy({ accountId: userId, gameId })
-        const playHistory: GameViewDto['playHistory'] = await Promise.all(playHistoryRecords.map(async (record) => {
-            const meetData = await this.meetsService.getMeetById(record.meetId)
-            const groupData = await this.groupsService.getGroupById(meetData.groupId)
-            const meetAttendees = await this.meetAttendeesService.getMeetAttendeesByMeetId(record.meetId)
-            return {
-                group: groupData,
-                meet: meetData,
-                playedBy: await Promise.all(meetAttendees.map(async (attendee) => this.usersService.getUserById(attendee.accountId))),
-            }
-        }))
+        const playHistory: GameViewDto['playHistory'] = await Promise.all(
+            playHistoryRecords.map(async record => {
+                const meetData = await this.meetsService.getMeetById(record.meetId)
+                const groupData = await this.groupsService.getGroupById(meetData.groupId)
+                const meetAttendees = await this.meetAttendeesService.getMeetAttendeesByMeetId(record.meetId)
+
+                return {
+                    group: groupData,
+                    meet: meetData,
+                    playedBy: await Promise.all(meetAttendees.map(async attendee => this.usersService.getUserById(attendee.accountId))),
+                }
+            }),
+        )
 
         // Step 2: Construct the GameView
         return {
-            gameData: gameData,
+            gameData,
             ownedGameData: !ownedGameData
                 ? null
                 : {
@@ -92,41 +99,46 @@ export class CollectionService {
                 : null,
             ratingData: {
                 userRating: myReview?.review ?? null,
-                avgGroupsRating: avgGroupsRating,
-                avgGlobalRating: avgGlobalRating,
+                avgGroupsRating,
+                avgGlobalRating,
             },
             similarGames: similarGamesFiltered,
-            playHistory: playHistory,
+            playHistory,
         }
     }
 
     async addGameToUserCollection(userId: number, gameId: number): Promise<SuccessDto> {
         const result = await this.gamesOwnedService.createGamesOwned({
             accountId: userId,
-            gameId: gameId,
+            gameId,
             purchaseDate: null,
             purchasePrice: null,
             purchaseNotes: null,
         })
+
         return { success: result.success }
     }
 
     async removeGameFromUserCollection(userId: number, gameId: number): Promise<SuccessDto> {
         const result = await this.gamesOwnedService.deleteGamesOwnedById(userId, gameId)
+
         return { success: result.success }
     }
 
     async updateGameOwnership(userId: number, gameId: number, body: UpdateGameOwnedDto) {
         const updatedGameOwned = await this.gamesOwnedService.updateGameOwned(userId, gameId, body)
+
         return updatedGameOwned
     }
 
     @LogFeature(new Logger('CollectionService'))
     async getReviewsOfUser(userId: number): Promise<Array<GameReviewWithGameDataDto>> {
         const reviews = await this.reviewsService.getUserReviews(userId)
+
         return Promise.all(
             reviews.map(async review => {
                 const game = await this.gamesService.getGameById(review.gameId)
+
                 return { ...review, gameData: game }
             }),
         )

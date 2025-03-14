@@ -1,9 +1,10 @@
-import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common'
-import { DatabaseService } from '../../common/database/database.service'
 import { ResultSet } from '@libsql/client/.'
-import { CreateGameReviewBody, GameReviewDto } from '../../../common/types/game-review.type'
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common'
+
 import { gameReviewsSchema } from '../../../common/schemas/db-game-review.schema'
+import { CreateGameReviewBody, GameReviewDto } from '../../../common/types/game-review.type'
 import { CacheService } from '../../common/cache/cache.service'
+import { DatabaseService } from '../../common/database/database.service'
 
 @Injectable()
 export class ReviewsService {
@@ -69,6 +70,7 @@ export class ReviewsService {
     async getGameReviewsByAccountId(accountId: number): Promise<Array<GameReviewDto>> {
         this.LOGGER.log(`Getting reviews for account ${accountId}`)
         const resultSet = await this.databaseService.getGameReviewsByAccountId(accountId)
+
         return this._parseResultSet(resultSet)
     }
 
@@ -119,6 +121,7 @@ export class ReviewsService {
 
         // Step 1: Try to get them from cache
         const cachedReviews = await this.cacheService.get(`${this.CACHE_KEY}:userReviewsWithGameData:${userId}`)
+
         if (cachedReviews) {
             this.LOGGER.log(`Returning cached reviews for user ${userId}`)
             return cachedReviews
@@ -130,6 +133,7 @@ export class ReviewsService {
 
         // Step 3: Save them to cache
         const cacheDuration = 60 * 60 // 1 hour
+
         await this.cacheService.set(`${this.CACHE_KEY}:userReviewsWithGameData:${userId}`, reviews, cacheDuration)
 
         return reviews
@@ -137,11 +141,12 @@ export class ReviewsService {
 
     // #region avg methods
 
-    async getAvgGlobalRating(gameId: number): Promise<null | { review: number, count: number }> {
+    async getAvgGlobalRating(gameId: number): Promise<null | { review: number; count: number }> {
         this.LOGGER.log(`Getting avg global rating for game ${gameId}`)
 
         // Step 1: Try to get them from cache
         const cachedRating = await this.cacheService.get(`${this.CACHE_KEY}:avgGlobalRating:${gameId}`)
+
         if (cachedRating) {
             this.LOGGER.log(`Returning cached avg global rating for game ${gameId}`)
             return { review: Number(cachedRating.review), count: Number(cachedRating.count) }
@@ -156,16 +161,18 @@ export class ReviewsService {
 
         // Step 3: Save them to cache
         const cacheDuration = 60 * 60 * 24 * 30 // 30 days
+
         await this.cacheService.set(`${this.CACHE_KEY}:avgGlobalRating:${gameId}`, avgGlobalRating, cacheDuration)
 
         return avgGlobalRating
     }
 
-    async getAvgGroupsRating(accountId: number, gameId: number): Promise<null | { review: number, count: number }> {
+    async getAvgGroupsRating(accountId: number, gameId: number): Promise<null | { review: number; count: number }> {
         this.LOGGER.log(`Getting avg groups rating for game ${gameId}`)
-        
+
         // Step 1: Try to get them from cache
         const cachedRating = await this.cacheService.get(`${this.CACHE_KEY}:avgGroupsRating:${accountId}:${gameId}`)
+
         if (cachedRating) {
             this.LOGGER.log(`Returning cached avg groups rating for game ${gameId}`)
             return { review: Number(cachedRating.review), count: Number(cachedRating.count) }
@@ -180,6 +187,7 @@ export class ReviewsService {
 
         // Step 3: Save them to cache
         const cacheDuration = 60 * 60 * 24 * 30 // 30 days
+
         await this.cacheService.set(`${this.CACHE_KEY}:avgGroupsRating:${accountId}:${gameId}`, avgGroupsRating, cacheDuration)
 
         return avgGroupsRating

@@ -1,9 +1,10 @@
-import { HttpException, HttpStatus, Injectable, Logger, NotFoundException } from '@nestjs/common'
-import { DatabaseService } from '../../common/database/database.service'
 import { ResultSet } from '@libsql/client/.'
-import { GameOwnedDto, UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
+import { HttpException, HttpStatus, Injectable, Logger, NotFoundException } from '@nestjs/common'
+
 import { gameOwnedsSchema } from '../../../common/schemas'
 import { SuccessDto } from '../../../common/types/auth.type'
+import { GameOwnedDto, UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
+import { DatabaseService } from '../../common/database/database.service'
 
 @Injectable()
 export class GamesOwnedService {

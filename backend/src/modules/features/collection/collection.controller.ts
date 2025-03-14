@@ -1,15 +1,17 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
-import { CollectionService } from './collection.service'
+
 // Guards
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
-import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
+import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
 // Types
-import { GameDto, GameViewDto } from '../../../common/types/game.type'
-import { GameReviewWithGameDataDto } from '../../../common/types/game-review.type'
-import { GameOwnedDto, UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
 import { SuccessDto } from '../../../common/types/auth.type'
+import { GameOwnedDto, UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
+import { GameReviewWithGameDataDto } from '../../../common/types/game-review.type'
+import { GameDto, GameViewDto } from '../../../common/types/game.type'
+
+import { CollectionService } from './collection.service'
 
 @UseGuards(JwtAuthGuard, VerifiedUserGuard)
 @ApiTags('collection')
@@ -35,16 +37,16 @@ export class CollectionController {
 
     @UseGuards(UserOwnershipGuard)
     @Post('/users/:userId/games/:gameId')
-    @ApiOperation({ summary: 'Add a game to a user\'s collection', deprecated: false })
-    @ApiResponse({ status: 200, type: SuccessDto, description: 'Game added to the user\'s collection' })
+    @ApiOperation({ summary: "Add a game to a user's collection", deprecated: false })
+    @ApiResponse({ status: 200, type: SuccessDto, description: "Game added to the user's collection" })
     async addGameToUserCollection(@Param('userId', ParseIntPipe) userId: number, @Param('gameId', ParseIntPipe) gameId: number) {
         return this.collectionService.addGameToUserCollection(userId, gameId)
     }
 
     @UseGuards(UserOwnershipGuard)
     @Delete('/users/:userId/games/:gameId')
-    @ApiOperation({ summary: 'Remove a game from a user\'s collection', deprecated: false })
-    @ApiResponse({ status: 200, type: SuccessDto, description: 'Game removed from the user\'s collection' })
+    @ApiOperation({ summary: "Remove a game from a user's collection", deprecated: false })
+    @ApiResponse({ status: 200, type: SuccessDto, description: "Game removed from the user's collection" })
     async removeGameFromUserCollection(@Param('userId', ParseIntPipe) userId: number, @Param('gameId', ParseIntPipe) gameId: number) {
         return this.collectionService.removeGameFromUserCollection(userId, gameId)
     }

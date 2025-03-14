@@ -1,8 +1,9 @@
-import { Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common'
-import { DatabaseService } from '../../common/database/database.service'
 import { ResultSet } from '@libsql/client/.'
+import { Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common'
+
 import { groupMembreshipsSchema } from '../../../common/schemas'
 import { CreateGroupMembershipBody, GroupMembershipDto } from '../../../common/types/group-membership.type'
+import { DatabaseService } from '../../common/database/database.service'
 
 @Injectable()
 export class GroupMembershipsService {

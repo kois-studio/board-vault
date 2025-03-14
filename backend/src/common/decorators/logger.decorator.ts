@@ -1,4 +1,4 @@
-import { Logger } from "@nestjs/common"
+import { Logger } from '@nestjs/common'
 
 export function LogFeature(logger: Logger) {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
@@ -7,6 +7,7 @@ export function LogFeature(logger: Logger) {
         descriptor.value = async function (...args: any[]) {
             logger.verbose(`[FEATURE] IN ${propertyKey}`)
             const result = await originalMethod.apply(this, args)
+
             logger.verbose(`[FEATURE] OUT ${propertyKey}`)
             return result
         }

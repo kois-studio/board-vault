@@ -1,6 +1,7 @@
 import { ApiProperty, OmitType, PartialType, PickType } from '@nestjs/swagger'
-import { MeetDto } from './meet.type'
+
 import { GroupDto } from './group.type'
+import { MeetDto } from './meet.type'
 import { UserGetDto } from './user.type'
 
 /**
@@ -49,19 +50,23 @@ export class GameViewDto {
         purchasePrice: number | null
         purchaseNotes: string | null
     }
+
     tags: Array<{
         tag: string
         category: string
     }>
+
     wishlistedGameData: null | {
         dateAdded: string
         notes: string
     }
+
     ratingData: {
         userRating: null | number
         avgGroupsRating: null | { review: number; count: number }
         avgGlobalRating: null | { review: number; count: number }
     }
+
     similarGames: Array<GameDto>
     playHistory: Array<{
         group: GroupDto
