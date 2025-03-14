@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { LogFeature } from '../../../common/decorators/logger.decorator'
+import type { SuccessDto } from '../../../common/types/auth.type'
 import type { GameReviewWithGameDataDto } from '../../../common/types/game-review.type'
 import type { GameDto, GameViewDto } from '../../../common/types/game.type'
 // Services
@@ -10,11 +11,10 @@ import { ReviewsService } from '../../core/reviews/reviews.service'
 import { WishlistService } from '../../core/wishlist/wishlist.service'
 import { GamesOwnedService } from '../../core/games-owned/games-owned.service'
 import { UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
-import { MeetAccountGamesService } from 'src/modules/core/meet-account-games/meet-account-games.service'
-import { MeetsService } from 'src/modules/meets/meets.service'
-import { GroupsService } from 'src/modules/core/groups/groups.service'
-import { MeetAttendeesService } from 'src/modules/core/meet-attendees/meet-attendees.service'
-import { SuccessDto } from 'src/common/types/auth.type'
+import { MeetAccountGamesService } from '../../core/meet-account-games/meet-account-games.service'
+import { MeetsService } from '../../meets/meets.service'
+import { GroupsService } from '../../core/groups/groups.service'
+import { MeetAttendeesService } from '../../core/meet-attendees/meet-attendees.service'
 
 @Injectable()
 export class CollectionService {
