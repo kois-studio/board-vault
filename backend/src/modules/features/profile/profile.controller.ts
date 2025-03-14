@@ -34,11 +34,11 @@ export class ProfileController {
         return this.profileService.getNotificationsByAccountId(userId)
     }
 
-    @Get('/users/:userId/invitationsReceived')
+    @Get('/users/:userId/invitations')
     @ApiOperation({ summary: 'Get invitations received', deprecated: false })
     @ApiResponse({ status: 200, type: [InvitationWithExtraData] })
-    getUserInvitationsReceived(@Param('userId', ParseIntPipe) userId: number) {
-        return this.profileService.getUserInvitationsReceived(userId)
+    getUserInvitations(@Param('userId', ParseIntPipe) userId: number) {
+        return this.profileService.getUserInvitations(userId)
     }
 
     @UseGuards(UserOwnershipGuard)
