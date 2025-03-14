@@ -50,13 +50,6 @@ export class InvitationsController {
         return this.invitationsService.deleteInvitationById(invitationId)
     }
 
-    @Post('/:invitationId/accept')
-    @ApiOperation({ summary: 'Accept -> add to group -> notify' })
-    @ApiResponse({ status: 200, type: SuccessDto, description: 'The invitation has been accepted' })
-    async acceptInvitation(@Param('invitationId', ParseIntPipe) invitationId: number) {
-        return this.invitationsService.acceptInvitation(invitationId)
-    }
-
     @Post('/:invitationId/reject')
     @ApiOperation({ summary: 'Reject -> add to group -> notify' })
     @ApiResponse({ status: 200, type: SuccessDto, description: 'The invitation has been rejected' })
