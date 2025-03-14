@@ -9,7 +9,7 @@ import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
 import { GameDto, GameViewDto } from '../../../common/types/game.type'
 import { GameReviewWithGameDataDto } from '../../../common/types/game-review.type'
 import { GameOwnedDto, UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
-import { SuccessDto } from 'src/common/types/auth.type'
+import { SuccessDto } from '../../../common/types/auth.type'
 
 @UseGuards(JwtAuthGuard, VerifiedUserGuard)
 @ApiTags('collection')

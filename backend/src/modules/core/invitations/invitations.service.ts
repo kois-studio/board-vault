@@ -1,9 +1,9 @@
 import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common'
-import { DatabaseService } from '../common/database/database.service'
+import { DatabaseService } from '../../common/database/database.service'
 import { ResultSet } from '@libsql/client/.'
-import { invitationsSchema } from '../../common/schemas'
-import type { CreateInvitationBody, CreateInvitationByUsernameBody, InvitationDto } from '../../common/types/invitation.type'
-import type { AvatarDto, UserGetDto } from '../../common/types/user.type'
+import { invitationsSchema } from '../../../common/schemas'
+import type { CreateInvitationBody, CreateInvitationByUsernameBody, InvitationDto } from '../../../common/types/invitation.type'
+import type { AvatarDto, UserGetDto } from '../../../common/types/user.type'
 
 @Injectable()
 export class InvitationsService {

@@ -2,13 +2,13 @@ import { Injectable, Logger } from '@nestjs/common'
 import { LogFeature } from '../../../common/decorators/logger.decorator'
 import { UsersService } from '../../users/users.service'
 import { NotificationsService } from '../../core/notifications/notifications.service'
+import type { SuccessDto } from '../../../common/types/auth.type'
 import type { UserGetDto } from '../../../common/types/user.type'
 import type { NotificationDto } from '../../../common/types/notification.type'
 import { InvitationWithExtraData } from '../../../common/types/invitation.type'
-import { InvitationsService } from '../../invitations/invitations.service'
+import { InvitationsService } from '../../core/invitations/invitations.service'
 import { GroupsService } from '../../core/groups/groups.service'
-import { SuccessDto } from 'src/common/types/auth.type'
-import { GroupMembershipsService } from 'src/modules/core/group-memberships/group-memberships.service'
+import { GroupMembershipsService } from '../../core/group-memberships/group-memberships.service'
 
 @Injectable()
 export class ProfileService {
