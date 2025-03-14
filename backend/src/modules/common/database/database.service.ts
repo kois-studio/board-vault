@@ -1,15 +1,16 @@
+import { Client, createClient, type InStatement } from '@libsql/client'
 import { BadRequestException, Injectable, Logger, NotFoundException, OnModuleInit } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import { Client, createClient, type InStatement } from '@libsql/client'
 import * as bcrypt from 'bcrypt'
-import type { CreateUserBody, UpdateUserBody } from '../../../common/types/user.type'
-import type { CreateGroupBody, UpdateGroupBody } from '../../../common/types/group.type'
-import type { CreateGroupMembershipBody } from '../../../common/types/group-membership.type'
-import type { CreateGameBody, UpdateGameBody } from '../../../common/types/game.type'
-import type { CreateInvitationBody, CreateInvitationByUsernameBody } from '../../../common/types/invitation.type'
+
 import type { GameOwnedDto, UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
-import type { CreateNotificationBody, UpdateNotificationBody } from '../../../common/types/notification.type'
 import type { CreateGameReviewBody } from '../../../common/types/game-review.type'
+import type { CreateGameBody, UpdateGameBody } from '../../../common/types/game.type'
+import type { CreateGroupMembershipBody } from '../../../common/types/group-membership.type'
+import type { CreateGroupBody, UpdateGroupBody } from '../../../common/types/group.type'
+import type { CreateInvitationBody, CreateInvitationByUsernameBody } from '../../../common/types/invitation.type'
+import type { CreateNotificationBody, UpdateNotificationBody } from '../../../common/types/notification.type'
+import type { CreateUserBody, UpdateUserBody } from '../../../common/types/user.type'
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
@@ -538,8 +539,8 @@ export class DatabaseService implements OnModuleInit {
     updateGameOwned(accountId: number, gameId: number, ownedGameDto: UpdateGameOwnedDto) {
         const fields = []
         const args = []
-    
-        // we allow update to `null` values  
+
+        // we allow update to `null` values
         if (ownedGameDto.purchaseDate !== undefined) {
             fields.push('purchaseDate = ?')
             args.push(ownedGameDto.purchaseDate)
@@ -778,7 +779,7 @@ export class DatabaseService implements OnModuleInit {
             JOIN GroupMembership gm2 ON gm.groupId = gm2.groupId  -- Find groups user is also in
             WHERE gm2.accountId = ?  -- Filter: user must be in the same group
             AND gr.gameId = ?;  -- Filter: only for the specific game`,
-            args: [accountId, gameId]
+            args: [accountId, gameId],
         })
     }
 
@@ -889,40 +890,36 @@ export class DatabaseService implements OnModuleInit {
 
     // #region MeetAccountGame
 
-    getMeetAccountGamesBy(config: {
-        accountId?: number
-        meetId?: number
-        gameId?: number
-    }) {
-        let sql = 'SELECT * FROM MeetAccountGame';
-        const args: number[] = [];
-        const conditions: string[] = [];
-        
+    getMeetAccountGamesBy(config: { accountId?: number; meetId?: number; gameId?: number }) {
+        let sql = 'SELECT * FROM MeetAccountGame'
+        const args: number[] = []
+        const conditions: string[] = []
+
         // Add conditions based on provided parameters
         if (config.accountId !== undefined) {
-            conditions.push('accountId = ?');
-            args.push(config.accountId);
+            conditions.push('accountId = ?')
+            args.push(config.accountId)
         }
-        
+
         if (config.meetId !== undefined) {
-            conditions.push('meetId = ?');
-            args.push(config.meetId);
+            conditions.push('meetId = ?')
+            args.push(config.meetId)
         }
-        
+
         if (config.gameId !== undefined) {
-            conditions.push('gameId = ?');
-            args.push(config.gameId);
+            conditions.push('gameId = ?')
+            args.push(config.gameId)
         }
-        
+
         // Add WHERE clause if any conditions exist
         if (conditions.length > 0) {
-            sql += ' WHERE ' + conditions.join(' AND ');
+            sql += ' WHERE ' + conditions.join(' AND ')
         }
-        
+
         return this._tursoExecute({
             sql,
             args,
-        });
+        })
     }
 
     createMeetAccountGame(accountId: number, meetId: number, gameId: number) {
@@ -964,7 +961,7 @@ export class DatabaseService implements OnModuleInit {
         return this._tursoExecute({
             sql: `SELECT w.gameId FROM WishlistedGame w WHERE w.accountId = ?`,
             args: [accountId],
-        });
+        })
     }
 
     getWishlistById(accountId: number, gameId: number) {

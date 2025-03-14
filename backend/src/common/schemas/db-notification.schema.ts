@@ -1,4 +1,5 @@
 import { z } from 'zod'
+
 import { NotificationTypeEnum } from '../../modules/core/notifications/notifications-enum.type'
 
 export const notificationSchema = z.object({

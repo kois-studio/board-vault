@@ -1,20 +1,20 @@
 import { ResultSet } from '@libsql/client/.'
 import { Injectable, Logger, NotFoundException } from '@nestjs/common'
-import type { CreateGroupBody, GroupDto, UpdateGroupBody } from '../../../common/types/group.type'
-import { DatabaseService } from '../../common/database/database.service'
+
 import { groupsSchema } from '../../../common/schemas'
-import type { InvitationWithAccountsData } from '../../../common/types/invitation.type'
-import type { AvatarDto, UserGetDto } from '../../../common/types/user.type'
-import type { MeetWithAttendeesAndGames } from '../../../common/types/meet.type'
+import { DatabaseService } from '../../common/database/database.service'
+
 import type { GameDto } from '../../../common/types/game.type'
+import type { CreateGroupBody, GroupDto, UpdateGroupBody } from '../../../common/types/group.type'
+import type { InvitationWithAccountsData } from '../../../common/types/invitation.type'
+import type { MeetWithAttendeesAndGames } from '../../../common/types/meet.type'
+import type { AvatarDto, UserGetDto } from '../../../common/types/user.type'
 
 @Injectable()
 export class GroupsService {
     private readonly LOGGER: Logger = new Logger(this.constructor.name)
 
-    constructor(
-        private readonly databaseService: DatabaseService,
-    ) {}
+    constructor(private readonly databaseService: DatabaseService) {}
 
     private _parseResultSet(resultSet: ResultSet): Array<GroupDto> {
         const groups = resultSet.rows.map(row => ({
@@ -110,25 +110,27 @@ export class GroupsService {
         this.LOGGER.log(`Getting all invitations for group ${groupId}`)
         const resultSet = await this.databaseService.getGroupInvitations(groupId)
 
-        return resultSet.rows.map(row => ({
-            id: Number(row[0]),
-            groupId: Number(row[1]),
-            fromAccountId: Number(row[2]),
-            toAccountId: Number(row[3]),
-            sentAt: String(row[4]),
-            fromAccount: JSON.parse(String(row[5])) as UserGetDto,
-            toAccount: JSON.parse(String(row[6])) as UserGetDto,
-        })).map(invitation => ({
-            ...invitation,
-            fromAccount: {
-                ...invitation.fromAccount,
-                avatar: JSON.parse(String(invitation.fromAccount.avatar)) as AvatarDto,
-            },
-            toAccount: {
-                ...invitation.toAccount,
-                avatar: JSON.parse(String(invitation.toAccount.avatar)) as AvatarDto,
-            },
-        }))
+        return resultSet.rows
+            .map(row => ({
+                id: Number(row[0]),
+                groupId: Number(row[1]),
+                fromAccountId: Number(row[2]),
+                toAccountId: Number(row[3]),
+                sentAt: String(row[4]),
+                fromAccount: JSON.parse(String(row[5])) as UserGetDto,
+                toAccount: JSON.parse(String(row[6])) as UserGetDto,
+            }))
+            .map(invitation => ({
+                ...invitation,
+                fromAccount: {
+                    ...invitation.fromAccount,
+                    avatar: JSON.parse(String(invitation.fromAccount.avatar)) as AvatarDto,
+                },
+                toAccount: {
+                    ...invitation.toAccount,
+                    avatar: JSON.parse(String(invitation.toAccount.avatar)) as AvatarDto,
+                },
+            }))
     }
 
     async getGroupMeetings(groupId: number): Promise<Array<MeetWithAttendeesAndGames>> {

@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common'
-import { NotificationsService } from './notifications.service'
-import { NotificationsController } from './notifications.controller'
-// module dependencies
+
 import { DatabaseModule } from '../../common/database/database.module'
+
+import { NotificationsController } from './notifications.controller'
+import { NotificationsService } from './notifications.service'
+// module dependencies
 
 @Module({
     imports: [DatabaseModule],

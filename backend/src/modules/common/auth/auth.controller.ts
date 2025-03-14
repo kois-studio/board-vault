@@ -1,8 +1,10 @@
 import { BadRequestException, Body, Controller, Get, Post, Query, Param, NotFoundException } from '@nestjs/common'
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
-import { AuthService } from './auth.service'
-import { LoginUserDto, RegisterUserDto } from '../../../common/types/user.type'
+
 import { AccessTokenDto, ForgotPasswordDto, ResetPasswordDto, SuccessDto } from '../../../common/types/auth.type'
+import { LoginUserDto, RegisterUserDto } from '../../../common/types/user.type'
+
+import { AuthService } from './auth.service'
 
 @ApiTags('auth')
 @Controller('auth')
@@ -56,6 +58,7 @@ export class AuthController {
     @ApiResponse({ status: 400, description: 'Invalid or expired token' })
     async verifyEmail(@Param('token') token: string) {
         const result = await this.authService.verifyEmail(token)
+
         if (!result) {
             throw new NotFoundException('Invalid or expired token')
         }
@@ -68,19 +71,21 @@ export class AuthController {
     @ApiResponse({ status: 400, description: 'Email is required' })
     async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
         const { email } = forgotPasswordDto
+
         if (!email) {
             throw new BadRequestException('Email is required')
         }
         await this.authService.forgotPassword(email)
         return { message: 'Password reset link sent' }
     }
-    
+
     @Post('/reset-password/:token')
     @ApiOperation({ summary: 'Reset user password' })
     @ApiResponse({ status: 200, description: 'Password reset successfully' })
     @ApiResponse({ status: 400, description: 'Invalid or expired token' })
     async resetPassword(@Param('token') token: string, @Body() resetPasswordDto: ResetPasswordDto) {
         const result = await this.authService.resetPassword(token, resetPasswordDto.password)
+
         if (!result) {
             throw new NotFoundException('Invalid or expired token')
         }

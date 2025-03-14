@@ -1,8 +1,9 @@
 import { ResultSet } from '@libsql/client/.'
 import { Injectable, Logger, NotFoundException } from '@nestjs/common'
-import { DatabaseService } from '../../common/database/database.service'
-import { MeetAttendeeDto } from '../../../common/types/meet-attendee.type'
+
 import { meetAttendeesSchema } from '../../../common/schemas/db-meet-attendee.schema'
+import { MeetAttendeeDto } from '../../../common/types/meet-attendee.type'
+import { DatabaseService } from '../../common/database/database.service'
 
 @Injectable()
 export class MeetAttendeesService {
@@ -15,7 +16,7 @@ export class MeetAttendeesService {
             meetId: Number(row[0]),
             accountId: Number(row[1]),
         }))
-        
+
         return this._validateSchema(meetAttendees)
     }
 

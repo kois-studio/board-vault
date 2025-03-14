@@ -1,16 +1,15 @@
-import { Injectable, Logger } from '@nestjs/common'
-import { DatabaseService } from '../../common/database/database.service'
 import { ResultSet } from '@libsql/client/.'
-import { WishlistedGameDto } from '../../../common/types/wishlisted-game.type'
+import { Injectable, Logger } from '@nestjs/common'
+
 import { wishlistedGamesSchema } from '../../../common/schemas/db-wishlisted-game.schema'
+import { WishlistedGameDto } from '../../../common/types/wishlisted-game.type'
+import { DatabaseService } from '../../common/database/database.service'
 
 @Injectable()
 export class WishlistService {
     private readonly LOGGER: Logger = new Logger(this.constructor.name)
 
-    constructor(
-        private readonly databaseService: DatabaseService,
-    ) {}
+    constructor(private readonly databaseService: DatabaseService) {}
 
     private _parseResultSet(resultSet: ResultSet): Array<WishlistedGameDto> {
         const wishlistedGames = resultSet.rows.map(row => ({
@@ -40,11 +39,13 @@ export class WishlistService {
 
     async isGameWishlisted(accountId: number, gameId: number): Promise<boolean> {
         const resultSet = await this.databaseService.getWishlistById(accountId, gameId)
+
         return resultSet.rows.length > 0
     }
 
     async toggleWishlist(accountId: number, gameId: number): Promise<boolean> {
         const isWishlisted = await this.isGameWishlisted(accountId, gameId)
+
         if (isWishlisted) {
             await this.databaseService.removeGameFromWishlist(accountId, gameId)
         } else {

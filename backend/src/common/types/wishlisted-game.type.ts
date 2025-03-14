@@ -9,7 +9,7 @@ export class WishlistedGameDto {
 
     @ApiProperty({ example: 1 })
     gameId: number
-    
+
     @ApiProperty({ example: '2024-01-01' })
     dateAdded: string
 

@@ -1,9 +1,10 @@
-import { Injectable, Logger } from '@nestjs/common'
-import { DatabaseService } from '../../common/database/database.service'
 import { ResultSet } from '@libsql/client/.'
-import { TagDto } from '../../../common/types/tag.type'
+import { Injectable, Logger } from '@nestjs/common'
+
 import { tagsSchema } from '../../../common/schemas/db-tag.schema'
+import { TagDto } from '../../../common/types/tag.type'
 import { CacheService } from '../../common/cache/cache.service'
+import { DatabaseService } from '../../common/database/database.service'
 
 @Injectable()
 export class TagsService {
@@ -41,6 +42,7 @@ export class TagsService {
 
         // Step 1: Try to get them from cache
         const cachedTags = await this.cacheService.get(`${this.CACHE_KEY}:byGameId:${gameId}`)
+
         if (cachedTags) {
             this.LOGGER.log(`Returning cached tags for game ${gameId}`)
             return this._validateSchema(cachedTags)
