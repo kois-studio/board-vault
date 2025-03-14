@@ -7,6 +7,7 @@ import { UsersModule } from '../../users/users.module'
 import { NotificationsModule } from '../../core/notifications/notifications.module'
 import { GroupsModule } from '../../core/groups/groups.module'
 import { InvitationsModule } from '../../invitations/invitations.module'
+import { GroupMembershipsModule } from '../../core/group-memberships/group-memberships.module'
 
 @Module({
     imports: [
@@ -15,6 +16,7 @@ import { InvitationsModule } from '../../invitations/invitations.module'
         NotificationsModule,
         GroupsModule,
         InvitationsModule,
+        GroupMembershipsModule,
     ],
     providers: [ProfileService],
     exports: [ProfileService],

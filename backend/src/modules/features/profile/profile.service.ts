@@ -7,6 +7,8 @@ import type { NotificationDto } from '../../../common/types/notification.type'
 import { InvitationWithExtraData } from '../../../common/types/invitation.type'
 import { InvitationsService } from '../../invitations/invitations.service'
 import { GroupsService } from '../../core/groups/groups.service'
+import { SuccessDto } from 'src/common/types/auth.type'
+import { GroupMembershipsService } from 'src/modules/core/group-memberships/group-memberships.service'
 
 @Injectable()
 export class ProfileService {
@@ -15,6 +17,7 @@ export class ProfileService {
         private readonly notificationsService: NotificationsService,
         private readonly groupsService: GroupsService,
         private readonly invitationsService: InvitationsService,
+        private readonly groupMembershipsService: GroupMembershipsService,
     ) {}
 
     @LogFeature(new Logger('ProfileService'))
@@ -37,5 +40,32 @@ export class ProfileService {
                 fromAccount: await this.usersService.getUserById(invitation.fromAccountId),
             })),
         )
+    }
+
+    @LogFeature(new Logger('ProfileService'))
+    async acceptInvitation(userId: number, invitationId: number): Promise<SuccessDto> {
+        // Step 1: get invitation data
+        const invitationData = await this.invitationsService.getInvitationById(invitationId)
+
+        // Step 2: get group data (it may have been deleted)
+        const groupData = await this.groupsService.getGroupById(invitationData.groupId)
+
+        // Step 3: create the membership to the group
+        await this.groupMembershipsService.createGroupMembership({ accountId: invitationData.toAccountId, groupId: invitationData.groupId })
+
+        // Step 4: delete the invitation
+        await this.invitationsService.deleteInvitationById(invitationId)
+
+        // Step 5: create the notification for the group owner
+        const invited = await this.usersService.getUserById(invitationData.toAccountId)
+        const owner = await this.usersService.getUserById(groupData.createdBy)
+
+        // await this.notificationsService.createNotification({
+        //     accountId: owner.id,
+        //     type: NotificationTypeEnum.InvitationAccepted,
+        //     message: `${invited.displayName} joined your group ${groupData.name}`,
+        // })
+
+        return { success: true }
     }
 }
