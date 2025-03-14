@@ -6,7 +6,7 @@ import { DatabaseModule } from '../../common/database/database.module'
 import { UsersModule } from '../../users/users.module'
 import { NotificationsModule } from '../../core/notifications/notifications.module'
 import { GroupsModule } from '../../core/groups/groups.module'
-import { InvitationsModule } from '../../invitations/invitations.module'
+import { InvitationsModule } from '../../core/invitations/invitations.module'
 import { GroupMembershipsModule } from '../../core/group-memberships/group-memberships.module'
 
 @Module({

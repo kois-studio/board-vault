@@ -9,7 +9,7 @@ import { UserGetDto } from '../../../common/types/user.type'
 import { NotificationDto } from '../../../common/types/notification.type'
 import { InvitationWithExtraData } from '../../../common/types/invitation.type'
 import { SuccessDto } from '../../../common/types/auth.type'
-import { UserOwnershipGuard } from 'src/common/guards/ownership.guard'
+import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
 
 @UseGuards(JwtAuthGuard, VerifiedUserGuard)
 @ApiTags('profile')
