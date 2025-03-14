@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseIntPipe, UseGuards } from '@nestjs/common'
+import { Controller, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { ProfileService } from './profile.service'
 // Guards
@@ -8,6 +8,8 @@ import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
 import { UserGetDto } from '../../../common/types/user.type'
 import { NotificationDto } from '../../../common/types/notification.type'
 import { InvitationWithExtraData } from '../../../common/types/invitation.type'
+import { SuccessDto } from '../../../common/types/auth.type'
+import { UserOwnershipGuard } from 'src/common/guards/ownership.guard'
 
 @UseGuards(JwtAuthGuard, VerifiedUserGuard)
 @ApiTags('profile')
@@ -33,9 +35,18 @@ export class ProfileController {
     }
 
     @Get('/users/:userId/invitationsReceived')
-    @ApiOperation({ summary: 'Get invitations received' })
+    @ApiOperation({ summary: 'Get invitations received', deprecated: false })
     @ApiResponse({ status: 200, type: [InvitationWithExtraData] })
     getUserInvitationsReceived(@Param('userId', ParseIntPipe) userId: number) {
         return this.profileService.getUserInvitationsReceived(userId)
+    }
+
+    @UseGuards(UserOwnershipGuard)
+    @Post('/users/:userId/invitations/:invitationId/accept')
+    @ApiOperation({ summary: 'Accept invitation', deprecated: false })
+    @ApiResponse({ status: 200, type: SuccessDto, description: 'Invitation accepted' })
+    @ApiResponse({ status: 404, description: 'Invitation not found' })
+    acceptInvitation(@Param('userId', ParseIntPipe) userId: number, @Param('invitationId', ParseIntPipe) invitationId: number) {
+        return this.profileService.acceptInvitation(userId, invitationId)
     }
 }
