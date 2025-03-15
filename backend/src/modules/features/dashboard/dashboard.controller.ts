@@ -48,4 +48,16 @@ export class DashboardController {
     async leaveGroup(@Param('userId', ParseIntPipe) userId: number, @Param('groupId', ParseIntPipe) groupId: number) {
         return this.dashboardService.leaveGroup(userId, groupId)
     }
+
+    @UseGuards(UserOwnershipGuard)
+    @Delete('/users/:userId/groups/:groupId/members/:memberId')
+    @ApiOperation({ summary: 'Removes a member from a group', deprecated: false })
+    @ApiResponse({ status: 204, description: 'Member removed successfully' })
+    async deleteMemberFromGroup(
+        @Param('userId', ParseIntPipe) userId: number,
+        @Param('groupId', ParseIntPipe) groupId: number,
+        @Param('memberId', ParseIntPipe) memberId: number,
+    ) {
+        return this.dashboardService.removeMemberFromGroup(userId, groupId, memberId)
+    }
 }
