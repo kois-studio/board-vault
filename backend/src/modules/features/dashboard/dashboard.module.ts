@@ -10,7 +10,7 @@ import { UsersModule } from '../../users/users.module'
 
 import { DashboardController } from './dashboard.controller'
 import { DashboardService } from './dashboard.service'
-import { MeetsModule } from 'src/modules/meets/meets.module'
+import { MeetsModule } from '../../../modules/meets/meets.module'
 
 
 @Module({
