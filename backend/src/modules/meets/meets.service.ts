@@ -1,21 +1,17 @@
 import { ResultSet } from '@libsql/client/.'
-import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common'
+import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { meetsSchema } from '../../common/schemas/db-meet.schema'
 import { GameDto } from '../../common/types/game.type'
 import { MeetCreatedDto, MeetDto, MeetWithAttendeesAndGames } from '../../common/types/meet.type'
 import { UserGetDto } from '../../common/types/user.type'
 import { DatabaseService } from '../common/database/database.service'
-import { MeetAccountGamesService } from '../core/meet-account-games/meet-account-games.service'
 
 @Injectable()
 export class MeetsService {
     private readonly LOGGER: Logger = new Logger(this.constructor.name)
 
-    constructor(
-        private readonly databaseService: DatabaseService,
-        private readonly meetAccountGamesService: MeetAccountGamesService,
-    ) {}
+    constructor(private readonly databaseService: DatabaseService) {}
 
     private _parseResultSet(resultSet: ResultSet): Array<MeetDto> {
         const meets = resultSet.rows.map(row => ({
