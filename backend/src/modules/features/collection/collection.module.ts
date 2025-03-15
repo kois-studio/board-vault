@@ -8,9 +8,9 @@ import { MeetAccountGamesModule } from '../../core/meet-account-games/meet-accou
 import { MeetAttendeesModule } from '../../core/meet-attendees/meet-attendees.module'
 import { ReviewsModule } from '../../core/reviews/reviews.module'
 import { TagsModule } from '../../core/tags/tags.module'
+import { UsersModule } from '../../core/users/users.module'
 import { WishlistModule } from '../../core/wishlist/wishlist.module'
 import { MeetsModule } from '../../meets/meets.module'
-import { UsersModule } from '../../core/users/users.module'
 
 import { CollectionController } from './collection.controller'
 import { CollectionService } from './collection.service'

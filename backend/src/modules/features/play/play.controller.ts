@@ -1,11 +1,10 @@
 import { Controller, Get, Param, ParseIntPipe, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
-import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
-import { MeetDto } from '../../../common/types/meet.type'
-
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
+import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
 import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
+import { MeetDto } from '../../../common/types/meet.type'
 
 import { PlayService } from './play.service'
 import { HistoryRecordDto } from './play.types'

@@ -16,6 +16,7 @@ import { MeetAccountGamesModule } from './modules/core/meet-account-games/meet-a
 import { MeetAttendeesModule } from './modules/core/meet-attendees/meet-attendees.module'
 import { NotificationsModule } from './modules/core/notifications/notifications.module'
 import { ReviewsModule } from './modules/core/reviews/reviews.module'
+import { UsersModule } from './modules/core/users/users.module'
 import { WishlistModule } from './modules/core/wishlist/wishlist.module'
 // Features
 import { CollectionModule } from './modules/features/collection/collection.module'
@@ -23,7 +24,6 @@ import { DashboardModule } from './modules/features/dashboard/dashboard.module'
 import { PlayModule } from './modules/features/play/play.module'
 import { ProfileModule } from './modules/features/profile/profile.module'
 import { MeetsModule } from './modules/meets/meets.module'
-import { UsersModule } from './modules/core/users/users.module'
 
 @Module({
     imports: [

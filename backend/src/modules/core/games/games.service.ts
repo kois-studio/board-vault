@@ -78,6 +78,7 @@ export class GamesService {
         try {
             return await this.getGameById(id)
         } catch (error) {
+            this.LOGGER.error('Failed to get safe game by id', error)
             return null
         }
     }
