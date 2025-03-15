@@ -35,7 +35,7 @@ export class DashboardController {
 
     @UseGuards(UserOwnershipGuard)
     @Delete('/users/:userId/groups/:groupId')
-    @ApiOperation({ summary: 'Delete a group', deprecated: false })
+    @ApiOperation({ summary: 'Delete a group (owner only)', deprecated: false })
     @ApiResponse({ status: 204, description: 'Group deleted successfully' })
     async deleteGroup(@Param('userId', ParseIntPipe) userId: number, @Param('groupId', ParseIntPipe) groupId: number) {
         return this.dashboardService.deleteGroup(userId, groupId)
