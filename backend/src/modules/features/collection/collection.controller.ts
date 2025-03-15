@@ -1,11 +1,9 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
-// Guards
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
 import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
-// Types
 import { SuccessDto } from '../../../common/types/auth.type'
 import { GameOwnedDto, UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
 import { GameReviewWithGameDataDto } from '../../../common/types/game-review.type'
