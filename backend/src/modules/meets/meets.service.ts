@@ -3,7 +3,7 @@ import { BadRequestException, Injectable, Logger, NotFoundException } from '@nes
 
 import { meetsSchema } from '../../common/schemas/db-meet.schema'
 import { GameDto } from '../../common/types/game.type'
-import { MeetDto, MeetWithAttendeesAndGames } from '../../common/types/meet.type'
+import { MeetCreatedDto, MeetDto, MeetWithAttendeesAndGames } from '../../common/types/meet.type'
 import { UserGetDto } from '../../common/types/user.type'
 import { DatabaseService } from '../common/database/database.service'
 import { MeetAccountGamesService } from '../core/meet-account-games/meet-account-games.service'
@@ -56,6 +56,7 @@ export class MeetsService {
         return meets[0]
     }
 
+    // TODO: sus
     async getMeetDetailsById(id: number): Promise<MeetWithAttendeesAndGames> {
         this.LOGGER.log(`Getting meet details with id ${id}`)
         const resultSet = await this.databaseService.getMeetDetailsById(id)
@@ -69,6 +70,19 @@ export class MeetsService {
             attendees: JSON.parse(String(row[5])) as Array<UserGetDto['id']>,
             playedGames: JSON.parse(String(row[6])) as Array<GameDto['id']>,
         }))[0]
+    }
+
+    async createMeeting(groupId: number, createdBy: number): Promise<MeetCreatedDto> {
+        this.LOGGER.log(`Creating meeting for group ${groupId} created by ${createdBy}`)
+
+        try {
+            const resultSet = await this.databaseService.createMeeting(groupId, createdBy)
+
+            return { meetId: Number(resultSet.lastInsertRowid) }
+        } catch (error) {
+            this.LOGGER.error('Failed to create meeting', error)
+            throw new NotFoundException('Failed to create meeting')
+        }
     }
 
     async confirmMeet(meetId: number): Promise<void> {
