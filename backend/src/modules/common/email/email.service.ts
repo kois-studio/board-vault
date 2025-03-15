@@ -33,6 +33,11 @@ export class EmailService {
                 html: `<p>Please click the following link to verify your email address: <a href="${verificationLink}">${verificationLink}</a></p>`,
             })
 
+            if (error) {
+                this.LOGGER.error(`Failed to send verification email to ${to}`, error)
+                throw error
+            }
+
             this.LOGGER.log(`Verification email sent to ${to}. Message ID: ${data!.id}`)
         } catch (error) {
             this.LOGGER.error(`Failed to send verification email to ${to}`, error)
@@ -51,6 +56,11 @@ export class EmailService {
                 html: `<p>Please click the following link to reset your password: <a href="${resetLink}">${resetLink}</a></p>`,
             })
 
+            if (error) {
+                this.LOGGER.error(`Failed to send password reset email to ${to}`, error)
+                throw error
+            }
+
             this.LOGGER.log(`Password reset email sent to ${to}. Message ID: ${data!.id}`)
         } catch (error) {
             this.LOGGER.error(`Failed to send password reset email to ${to}`, error)
@@ -66,6 +76,11 @@ export class EmailService {
                 subject: 'Important Notification',
                 html: `<p>${message}</p>`,
             })
+
+            if (error) {
+                this.LOGGER.error(`Failed to send notification email to ${to}`, error)
+                throw error
+            }
 
             this.LOGGER.log(`Notification email sent to ${to}. Message ID: ${data!.id}`)
         } catch (error) {
