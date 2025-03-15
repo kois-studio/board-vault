@@ -4,7 +4,6 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
 import { UserOwnershipGuard } from '../../common/guards/ownership.guard'
 import { SuccessDto } from '../../common/types/auth.type'
-import { GameViewDto } from '../../common/types/game.type'
 import { MeetDto } from '../../common/types/meet.type'
 import { CreateUserBody, UpdateUserBody, UserGetDto, UserUpdateGamesBody } from '../../common/types/user.type'
 

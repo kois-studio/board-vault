@@ -8,6 +8,7 @@ import { MeetsService } from '../../meets/meets.service'
 import { UsersService } from '../../users/users.service'
 
 import type { HistoryRecordDto } from './play.types'
+import type { MeetDto } from '../../../common/types/meet.type'
 
 @Injectable()
 export class PlayService {
@@ -37,5 +38,34 @@ export class PlayService {
                 }
             }),
         )
+    }
+
+    @LogFeature(new Logger('PlayService'))
+    async getUserMeets(userId: number): Promise<Array<MeetDto>> {
+        // TODO: Implement this
+        return []
+        // Step 1: Get all groups for user
+        // const getUserGroups = await this.databaseService.getUserGroups(userId)
+        // const groupIds = getUserGroups.rows.map(row => Number(row[0]))
+
+        // Step 2: Get meets for each group
+        // const resultMeets: Array<MeetDto> = []
+
+        // for (const groupId of []) {
+        //     const resultSet = await this.databaseService.getGroupMeets(groupId)
+
+        //     const meets = resultSet.rows.map(row => ({
+        //         id: Number(row[0]),
+        //         groupId: Number(row[1]),
+        //         createdBy: Number(row[2]),
+        //         meetDate: String(row[3]),
+        //         isConfirmed: Boolean(row[4]),
+        //     }))
+
+        //     resultMeets.push(...meets)
+        // }
+        // return resultMeets.sort((a, b) => {
+        //     return new Date(b.meetDate).getTime() - new Date(a.meetDate).getTime()
+        // })
     }
 }
