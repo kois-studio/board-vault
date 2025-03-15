@@ -63,6 +63,7 @@ export class ReviewsService {
         try {
             return await this.getGameReviewsById(accountId, gameId)
         } catch (error) {
+            this.LOGGER.error(`Failed to get review with accountId ${accountId} and gameId ${gameId}`, error)
             return null
         }
     }

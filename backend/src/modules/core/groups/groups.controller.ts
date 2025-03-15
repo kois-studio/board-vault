@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuard
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
-import { CreateGroupBody, GroupDto, GroupWithMembersAndGames, UpdateGroupBody } from '../../../common/types/group.type'
+import { CreateGroupBody, GroupDto, UpdateGroupBody } from '../../../common/types/group.type'
 import { InvitationWithAccountsData } from '../../../common/types/invitation.type'
 import { MeetWithAttendeesAndGames } from '../../../common/types/meet.type'
 

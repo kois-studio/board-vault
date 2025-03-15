@@ -1,7 +1,6 @@
 import { ApiProperty, OmitType } from '@nestjs/swagger'
 
-import { GroupDto, GroupWithMembersAndGames } from './group.type'
-
+import type { GroupDto } from './group.type'
 import type { UserGetDto } from './user.type'
 
 /**
