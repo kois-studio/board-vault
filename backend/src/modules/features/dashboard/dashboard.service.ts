@@ -1,6 +1,7 @@
 import { BadRequestException, ForbiddenException, Injectable, Logger } from '@nestjs/common'
 
 import { LogFeature } from '../../../common/decorators/logger.decorator'
+import { MeetsService } from '../../../modules/meets/meets.service'
 import { GamesService } from '../../core/games/games.service'
 import { GamesOwnedService } from '../../core/games-owned/games-owned.service'
 import { GroupMembershipsService } from '../../core/group-memberships/group-memberships.service'
@@ -8,11 +9,10 @@ import { GroupsService } from '../../core/groups/groups.service'
 import { ReviewsService } from '../../core/reviews/reviews.service'
 import { UsersService } from '../../core/users/users.service'
 
-import type { GroupMemberWithGames, GroupWithMembersAndGames } from '../../../common/types/group.type'
-import type { UserWithGames } from '../../../common/types/user.type'
 import type { SuccessDto } from '../../../common/types/auth.type'
+import type { GroupMemberWithGames, GroupWithMembersAndGames } from '../../../common/types/group.type'
 import type { MeetCreatedDto } from '../../../common/types/meet.type'
-import { MeetsService } from '../../../modules/meets/meets.service'
+import type { UserWithGames } from '../../../common/types/user.type'
 
 @Injectable()
 export class DashboardService {
