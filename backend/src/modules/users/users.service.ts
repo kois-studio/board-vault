@@ -139,26 +139,6 @@ export class UsersService {
         }
     }
 
-    async leaveGroup(userId: number, groupId: number): Promise<{ success: boolean }> {
-        this.LOGGER.log(`User with id ${userId} leaving group with id ${groupId}`)
-
-        // Step 1: Get user data
-        const userData = await this.getUserById(userId)
-
-        // Step 2: Get group data
-        const groupData = await this.groupsService.getGroupById(groupId)
-
-        // Step 3: Check if user is owner
-        if (groupData.createdBy === userData.id) {
-            throw new BadRequestException('Owner cannot leave group')
-        }
-
-        // Step 4: Leave group
-        await this.databaseService.deleteGroupMembershipById(userId, groupId)
-
-        return { success: true }
-    }
-
     async createMeeting(userId: number, groupId: number): Promise<{ success: boolean; meetId: number }> {
         this.LOGGER.log(`User with id ${userId} creating meeting for group with id ${groupId}`)
 

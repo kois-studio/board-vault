@@ -65,15 +65,6 @@ export class UsersController {
     }
 
     @UseGuards(UserOwnershipGuard)
-    @Post('/:userId/group/:groupId/leave')
-    @ApiOperation({ summary: 'Leave a group (you CANNOT be the owner)' })
-    @ApiResponse({ status: 200, type: SuccessDto, description: 'You have left the group.' })
-    @ApiResponse({ status: 404, description: 'User or group not found.' })
-    leaveGroup(@Param('userId', ParseIntPipe) userId: number, @Param('groupId', ParseIntPipe) groupId: number) {
-        return this.usersService.leaveGroup(userId, groupId)
-    }
-
-    @UseGuards(UserOwnershipGuard)
     @Post('/:userId/group/:groupId/newMeeting')
     @ApiOperation({ summary: 'Create a new empty meeting for today' })
     @ApiResponse({ status: 200, type: SuccessDto, description: 'Meeting created.' })
