@@ -1,22 +1,15 @@
 import { ResultSet } from '@libsql/client/.'
-import { BadRequestException, ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common'
+import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { usersSchema } from '../../common/schemas'
-import { MeetDto } from '../../common/types/meet.type'
 import { AvatarDto, CreateUserBody, UpdateUserBody, UserCompleteDto, UserGetDto } from '../../common/types/user.type'
 import { DatabaseService } from '../common/database/database.service'
-import { GroupsService } from '../core/groups/groups.service'
-import { MeetsService } from '../meets/meets.service'
 
 @Injectable()
 export class UsersService {
     private readonly LOGGER: Logger = new Logger(this.constructor.name)
 
-    constructor(
-        private readonly databaseService: DatabaseService,
-        private readonly groupsService: GroupsService,
-        private readonly meetsService: MeetsService,
-    ) {}
+    constructor(private readonly databaseService: DatabaseService) {}
 
     private _parseResultSet(resultSet: ResultSet): Array<UserCompleteDto> {
         const users = resultSet.rows.map(row => ({
@@ -130,6 +123,7 @@ export class UsersService {
     async updateGames(accountId: number, gamesToAdd: number[], gamesToRemove: number[]): Promise<{ success: boolean }> {
         this.LOGGER.log(`Updating games for user with id ${accountId}`)
         try {
+            // TODO: responsability of games-owned.service, delete this query
             await this.databaseService.updateGames(accountId, gamesToAdd, gamesToRemove)
 
             return { success: true }
@@ -137,32 +131,5 @@ export class UsersService {
             this.LOGGER.error('Failed to update games for user', error)
             throw new NotFoundException('Failed to update games for user')
         }
-    }
-
-    async createMeeting(userId: number, groupId: number): Promise<{ success: boolean; meetId: number }> {
-        this.LOGGER.log(`User with id ${userId} creating meeting for group with id ${groupId}`)
-
-        // Step 1: Get user data
-        const userData = await this.getUserById(userId)
-
-        // Step 2: Get group data
-        const groupData = await this.groupsService.getGroupById(groupId)
-
-        // Step 3: Create meeting
-        const createResultSet = await this.databaseService.createMeeting(groupData.id, userData.id)
-
-        // TODO: CRUD operations for meeting + db-meeting.ts + meeting.ts types
-        const meetingData = await this.meetsService.getMeetById(Number(createResultSet.lastInsertRowid))
-
-        // Step 4: Add all members from the group to MeetAttendee table
-        await this.databaseService.addGroupMembersToMeeting(meetingData.id, groupId)
-
-        // Step 5: Add all games from the group to MeetGame table
-        // await this.databaseService.addGroupGamesToMeeting(meetingData.id, groupId)
-
-        // Step 6: Notify all members of the group
-        // TODO:
-        // await this.databaseService.notifyGroupMembers(groupId, 'Meeting created')
-        return { success: true, meetId: meetingData.id }
     }
 }
