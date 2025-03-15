@@ -94,15 +94,29 @@ export class DashboardService {
 
     @LogFeature(new Logger('DashboardService'))
     async leaveGroup(userId: number, groupId: number): Promise<SuccessDto> {
+        // Step 1: Check if user is owner
         const groupData = await this.groupsService.getGroupById(groupId)
 
-        // Step 1: Check if user is owner
         if (groupData.createdBy === userId) {
             throw new BadRequestException('Owner cannot leave group')
         }
 
         // Step 2: Delete the membership
         await this.groupMembershipsService.deleteGroupMembershipById(userId, groupId)
+
+        return { success: true }
+    }
+
+    async removeMemberFromGroup(userId: number, groupId: number, memberId: number): Promise<SuccessDto> {
+        // Step 1: Check if user is owner
+        const groupData = await this.groupsService.getGroupById(groupId)
+
+        if (groupData.createdBy !== userId) {
+            throw new ForbiddenException('You are not the owner of this group')
+        }
+
+        // Step 2: Delete the membership
+        await this.groupMembershipsService.deleteGroupMembershipById(memberId, groupId)
 
         return { success: true }
     }
