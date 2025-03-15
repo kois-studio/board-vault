@@ -12,7 +12,7 @@ import type { GroupMemberWithGames, GroupWithMembersAndGames } from '../../../co
 import type { UserWithGames } from '../../../common/types/user.type'
 import type { SuccessDto } from '../../../common/types/auth.type'
 import type { MeetCreatedDto } from '../../../common/types/meet.type'
-import { MeetsService } from 'src/modules/meets/meets.service'
+import { MeetsService } from '../../../modules/meets/meets.service'
 
 @Injectable()
 export class DashboardService {
