@@ -216,7 +216,7 @@ export class Api {
     }
 
     deleteGroup(userId: number, groupId: number) {
-        return this.http.delete<{ success: true }>(`${this.url}/dashboard/users/${userId}/groups/${groupId}/delete`, {})
+        return this.http.delete<{ success: true }>(`${this.url}/dashboard/users/${userId}/groups/${groupId}`, {})
     }
 
     // --------------------------------------------------------------------------
