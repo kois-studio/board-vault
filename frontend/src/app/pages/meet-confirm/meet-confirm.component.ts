@@ -78,14 +78,15 @@ export class MeetConfirmComponent {
             return
         }
 
-        this.api.confimMeeting(this.meetData?.id).subscribe({
-            next: () => {
-                this.toastService.success('Meeting confirmed!')
-                this.router.navigate(['/meets', this.meetData?.id])
-            },
-            error: (error) => {
-                this.toastService.error('Error confirming meeting')
-            },
-        })
+        // TODO: the concept of "confirm a meeting" will be removed
+        // this.api.confimMeeting(this.meetData?.id).subscribe({
+        //     next: () => {
+        //         this.toastService.success('Meeting confirmed!')
+        //         this.router.navigate(['/meets', this.meetData?.id])
+        //     },
+        //     error: (error) => {
+        //         this.toastService.error('Error confirming meeting')
+        //     },
+        // })
     }
 }

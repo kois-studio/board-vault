@@ -84,42 +84,4 @@ export class MeetsService {
             throw new NotFoundException('Failed to create meeting')
         }
     }
-
-    async confirmMeet(meetId: number): Promise<void> {
-        this.LOGGER.log(`Confirming meet with id ${meetId}`)
-
-        const meetDetails = await this.getMeetDetailsById(meetId)
-
-        if (!meetDetails) {
-            throw new NotFoundException(`Meet with id ${meetId} not found`)
-        }
-
-        // Check if the meet is already confirmed
-        if (meetDetails.isConfirmed) {
-            this.LOGGER.warn(`Meet with id ${meetId} is already confirmed`)
-            throw new BadRequestException('Meet is already confirmed')
-        }
-
-        if (meetDetails.attendees.length === 0) {
-            this.LOGGER.warn(`Meet with id ${meetId} has no attendees`)
-            throw new BadRequestException('Meet has no attendees')
-        }
-
-        if (meetDetails.playedGames.length === 0) {
-            this.LOGGER.warn(`Meet with id ${meetId} has no games`)
-            throw new BadRequestException('Meet has no games')
-        }
-
-        // Mark the meet as confirmed in the database
-        await this.databaseService.updateMeetConfirmation(meetId)
-
-        // Create gameplay sessions for each game and attendee
-        for (const accountId of meetDetails.attendees) {
-            for (const gameId of meetDetails.playedGames) {
-                await this.meetAccountGamesService.createMeetAccountGame(accountId, meetId, gameId)
-            }
-        }
-
-        this.LOGGER.log(`Meet with id ${meetId} confirmed successfully`)
-    }
 }
