@@ -6,9 +6,9 @@ import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
 import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
 import { SuccessDto } from '../../../common/types/auth.type'
 import { GroupWithMembersAndGames } from '../../../common/types/group.type'
+import { MeetCreatedDto } from '../../../common/types/meet.type'
 
 import { DashboardService } from './dashboard.service'
-import { MeetCreatedDto } from '../../../common/types/meet.type'
 
 @UseGuards(JwtAuthGuard, VerifiedUserGuard)
 @ApiTags('dashboard')

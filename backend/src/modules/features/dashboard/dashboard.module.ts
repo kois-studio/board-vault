@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common'
 
 import { ReviewsModule } from '../../../modules/core/reviews/reviews.module'
+import { MeetsModule } from '../../../modules/meets/meets.module'
 import { DatabaseModule } from '../../common/database/database.module'
 import { GamesModule } from '../../core/games/games.module'
 import { GamesOwnedModule } from '../../core/games-owned/games-owned.module'
@@ -10,8 +11,6 @@ import { UsersModule } from '../../core/users/users.module'
 
 import { DashboardController } from './dashboard.controller'
 import { DashboardService } from './dashboard.service'
-import { MeetsModule } from '../../../modules/meets/meets.module'
-
 
 @Module({
     imports: [
