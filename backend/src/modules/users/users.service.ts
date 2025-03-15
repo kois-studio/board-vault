@@ -127,34 +127,6 @@ export class UsersService {
         return { success: true }
     }
 
-    async getUserMeets(userId: number): Promise<Array<MeetDto>> {
-        this.LOGGER.log(`Getting all meets for user ${userId}`)
-        return []
-        // Step 1: Get all groups for user
-        // const getUserGroups = await this.databaseService.getUserGroups(userId)
-        // const groupIds = getUserGroups.rows.map(row => Number(row[0]))
-
-        // Step 2: Get meets for each group
-        const resultMeets: Array<MeetDto> = []
-
-        for (const groupId of []) {
-            const resultSet = await this.databaseService.getGroupMeets(groupId)
-
-            const meets = resultSet.rows.map(row => ({
-                id: Number(row[0]),
-                groupId: Number(row[1]),
-                createdBy: Number(row[2]),
-                meetDate: String(row[3]),
-                isConfirmed: Boolean(row[4]),
-            }))
-
-            resultMeets.push(...meets)
-        }
-        return resultMeets.sort((a, b) => {
-            return new Date(b.meetDate).getTime() - new Date(a.meetDate).getTime()
-        })
-    }
-
     async updateGames(accountId: number, gamesToAdd: number[], gamesToRemove: number[]): Promise<{ success: boolean }> {
         this.LOGGER.log(`Updating games for user with id ${accountId}`)
         try {
