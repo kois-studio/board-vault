@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common'
 
-// module dependencies
 import { DatabaseModule } from '../../common/database/database.module'
 import { GamesModule } from '../../core/games/games.module'
 import { MeetAccountGamesModule } from '../../core/meet-account-games/meet-account-games.module'
