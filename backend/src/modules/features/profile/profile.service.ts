@@ -6,7 +6,7 @@ import { GroupMembershipsService } from '../../core/group-memberships/group-memb
 import { GroupsService } from '../../core/groups/groups.service'
 import { InvitationsService } from '../../core/invitations/invitations.service'
 import { NotificationsService } from '../../core/notifications/notifications.service'
-import { UsersService } from '../../users/users.service'
+import { UsersService } from '../../core/users/users.service'
 
 import type { SuccessDto } from '../../../common/types/auth.type'
 import type { NotificationDto } from '../../../common/types/notification.type'

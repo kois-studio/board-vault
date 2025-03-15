@@ -5,7 +5,7 @@ import { GamesService } from '../../core/games/games.service'
 import { MeetAccountGamesService } from '../../core/meet-account-games/meet-account-games.service'
 import { MeetAttendeesService } from '../../core/meet-attendees/meet-attendees.service'
 import { MeetsService } from '../../meets/meets.service'
-import { UsersService } from '../../users/users.service'
+import { UsersService } from '../../core/users/users.service'
 
 import type { HistoryRecordDto } from './play.types'
 import type { MeetDto } from '../../../common/types/meet.type'

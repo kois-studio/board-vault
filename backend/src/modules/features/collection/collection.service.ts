@@ -11,7 +11,7 @@ import { ReviewsService } from '../../core/reviews/reviews.service'
 import { TagsService } from '../../core/tags/tags.service'
 import { WishlistService } from '../../core/wishlist/wishlist.service'
 import { MeetsService } from '../../meets/meets.service'
-import { UsersService } from '../../users/users.service'
+import { UsersService } from '../../core/users/users.service'
 
 import type { SuccessDto } from '../../../common/types/auth.type'
 import type { GameReviewWithGameDataDto } from '../../../common/types/game-review.type'

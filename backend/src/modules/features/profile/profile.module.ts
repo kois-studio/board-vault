@@ -5,7 +5,7 @@ import { GroupMembershipsModule } from '../../core/group-memberships/group-membe
 import { GroupsModule } from '../../core/groups/groups.module'
 import { InvitationsModule } from '../../core/invitations/invitations.module'
 import { NotificationsModule } from '../../core/notifications/notifications.module'
-import { UsersModule } from '../../users/users.module'
+import { UsersModule } from '../../core/users/users.module'
 
 import { ProfileController } from './profile.controller'
 import { ProfileService } from './profile.service'

@@ -1,9 +1,9 @@
 import { ResultSet } from '@libsql/client/.'
 import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 
-import { usersSchema } from '../../common/schemas'
-import { AvatarDto, CreateUserBody, UpdateUserBody, UserCompleteDto, UserGetDto } from '../../common/types/user.type'
-import { DatabaseService } from '../common/database/database.service'
+import { usersSchema } from '../../../common/schemas'
+import { AvatarDto, CreateUserBody, UpdateUserBody, UserCompleteDto, UserGetDto } from '../../../common/types/user.type'
+import { DatabaseService } from '../../common/database/database.service'
 
 @Injectable()
 export class UsersService {
