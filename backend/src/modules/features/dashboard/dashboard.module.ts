@@ -11,7 +11,6 @@ import { UsersModule } from '../../users/users.module'
 import { DashboardController } from './dashboard.controller'
 import { DashboardService } from './dashboard.service'
 
-// module dependencies
 
 @Module({
     imports: [
