@@ -211,17 +211,6 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
-    getGroupMeets(groupId: number) {
-        return this._tursoExecute({
-            sql: `
-                SELECT m.id, m.groupId, m.createdBy, m.meetDate, m.isConfirmed
-                FROM Meet m
-                WHERE m.groupId = ?
-            `,
-            args: [groupId],
-        })
-    }
-
     async updateGames(accountId: number, gamesToAdd: number[], gamesToRemove: number[]): Promise<void> {
         // Remove games
         for (const gameId of gamesToRemove) {
