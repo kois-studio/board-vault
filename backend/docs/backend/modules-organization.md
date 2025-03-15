@@ -26,11 +26,11 @@ src/
 │   │   └── ... 
 │   │
 │   ├── features/              # Extended logic endpoints across multiple domains
-│   │   ├── user-collections/
-│   │   │   ├── user-games.controller.ts  // Extended endpoints for user-related game logic
-│   │   │   └── user-games.service.ts
-│   │   ├── group-management/
-│   │   ├── game-analytics/
+│   │   ├── dashboard/
+│   │   │   ├── dashboard.controller.ts  // Extended endpoints for user-related game logic
+│   │   │   └── dashboard.service.ts
+│   │   ├── collection/
+│   │   ├── play/
 │   │   └── ...
 │   │
 │   │   # other modules
@@ -89,27 +89,27 @@ export class UsersController {
 
 ### Example: Extended User Games Logic
 
-#### `modules/features/user-collections/user-games.controller.ts`
+#### `modules/features/dashboard/dashboard.controller.ts`
 ```typescript
 import { Controller, Get, Param } from '@nestjs/common';
-import { UserGamesService } from './user-games.service';
+import { DashboardService } from './dashboard.service';
 
-@Controller('users')
-export class UserGamesController {
-  constructor(private readonly userGamesService: UserGamesService) {}
+@Controller('dashboard')
+export class DashboardController {
+  constructor(private readonly dashboardService: DashboardService) {}
 
   @Get(':id/games/:gameId')
   async getUserGame(
     @Param('id') userId: number,
     @Param('gameId') gameId: number
   ) {
-    return this.userGamesService.getUserGame(userId, gameId);
+    return this.dashboardService.getUserGames(userId, gameId);
   }
   // Other extended endpoints such as reviews or invitations
 }
 ```
 
-#### `modules/features/user-collections/user-games.service.ts`
+#### `modules/features/dashboard/dashboard.service.ts`
 ```typescript
 import { Injectable } from '@nestjs/common';
 import { UsersService } from '../../core/users/users.service';
@@ -117,7 +117,7 @@ import { GamesService } from '../../core/games/games.service';
 import { OwnedGamesService } from '../../core/owned-games/owned-games.service';
 
 @Injectable()
-export class UserGamesService {
+export class DashboardService {
   constructor(
     private readonly usersService: UsersService,
     private readonly gamesService: GamesService,
