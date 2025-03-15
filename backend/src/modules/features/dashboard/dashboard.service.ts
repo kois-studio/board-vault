@@ -6,7 +6,7 @@ import { GamesOwnedService } from '../../core/games-owned/games-owned.service'
 import { GroupMembershipsService } from '../../core/group-memberships/group-memberships.service'
 import { GroupsService } from '../../core/groups/groups.service'
 import { ReviewsService } from '../../core/reviews/reviews.service'
-import { UsersService } from '../../users/users.service'
+import { UsersService } from '../../core/users/users.service'
 
 import type { GroupMemberWithGames, GroupWithMembersAndGames } from '../../../common/types/group.type'
 import type { UserWithGames } from '../../../common/types/user.type'
