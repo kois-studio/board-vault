@@ -10,7 +10,7 @@ import { ReviewsModule } from '../../core/reviews/reviews.module'
 import { TagsModule } from '../../core/tags/tags.module'
 import { WishlistModule } from '../../core/wishlist/wishlist.module'
 import { MeetsModule } from '../../meets/meets.module'
-import { UsersModule } from '../../users/users.module'
+import { UsersModule } from '../../core/users/users.module'
 
 import { CollectionController } from './collection.controller'
 import { CollectionService } from './collection.service'

@@ -4,7 +4,7 @@ import { Injectable, Logger, NotFoundException, UnauthorizedException } from '@n
 import { JwtService } from '@nestjs/jwt'
 import * as bcrypt from 'bcrypt'
 
-import { UsersService } from '../../users/users.service'
+import { UsersService } from '../../core/users/users.service'
 import { DatabaseService } from '../database/database.service'
 import { EmailService } from '../email/email.service'
 
