@@ -1,11 +1,11 @@
 import { BadRequestException, ForbiddenException, Injectable, Logger } from '@nestjs/common'
 
 import { LogFeature } from '../../../common/decorators/logger.decorator'
-import { MeetsService } from '../../core/meets/meets.service'
 import { GamesService } from '../../core/games/games.service'
 import { GamesOwnedService } from '../../core/games-owned/games-owned.service'
 import { GroupMembershipsService } from '../../core/group-memberships/group-memberships.service'
 import { GroupsService } from '../../core/groups/groups.service'
+import { MeetsService } from '../../core/meets/meets.service'
 import { ReviewsService } from '../../core/reviews/reviews.service'
 import { UsersService } from '../../core/users/users.service'
 
