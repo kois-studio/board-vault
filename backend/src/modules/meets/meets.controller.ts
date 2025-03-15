@@ -36,12 +36,4 @@ export class MeetsController {
     getMeetDetailsById(@Param('meetId', ParseIntPipe) meetId: number) {
         return this.meetsService.getMeetDetailsById(meetId)
     }
-
-    @Post('/:meetId/confirm')
-    @ApiOperation({ summary: 'Confirm a meet and create gameplay sessions' })
-    @ApiResponse({ status: 200, type: SuccessDto, description: 'Meet confirmed successfully' })
-    @ApiResponse({ status: 404, description: 'Meet not found' })
-    async confirmMeet(@Param('meetId', ParseIntPipe) meetId: number) {
-        return this.meetsService.confirmMeet(meetId)
-    }
 }
