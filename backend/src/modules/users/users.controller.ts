@@ -4,7 +4,6 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
 import { UserOwnershipGuard } from '../../common/guards/ownership.guard'
 import { SuccessDto } from '../../common/types/auth.type'
-import { MeetDto } from '../../common/types/meet.type'
 import { CreateUserBody, UpdateUserBody, UserGetDto, UserUpdateGamesBody } from '../../common/types/user.type'
 
 import { UsersService } from './users.service'
@@ -62,14 +61,5 @@ export class UsersController {
     @ApiResponse({ status: 404, description: 'User not found.' })
     updateUserGames(@Param('userId', ParseIntPipe) userId: number, @Body() userUpdateGamesBody: UserUpdateGamesBody) {
         return this.usersService.updateGames(userId, userUpdateGamesBody.gamesToAdd, userUpdateGamesBody.gamesToRemove)
-    }
-
-    @UseGuards(UserOwnershipGuard)
-    @Post('/:userId/group/:groupId/newMeeting')
-    @ApiOperation({ summary: 'Create a new empty meeting for today' })
-    @ApiResponse({ status: 200, type: SuccessDto, description: 'Meeting created.' })
-    @ApiResponse({ status: 404, description: 'User or group not found.' })
-    createMeeting(@Param('userId', ParseIntPipe) userId: number, @Param('groupId', ParseIntPipe) groupId: number) {
-        return this.usersService.createMeeting(userId, groupId)
     }
 }

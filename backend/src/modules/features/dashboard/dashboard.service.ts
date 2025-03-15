@@ -10,7 +10,9 @@ import { UsersService } from '../../users/users.service'
 
 import type { GroupMemberWithGames, GroupWithMembersAndGames } from '../../../common/types/group.type'
 import type { UserWithGames } from '../../../common/types/user.type'
-import { SuccessDto } from '../../../common/types/auth.type'
+import type { SuccessDto } from '../../../common/types/auth.type'
+import type { MeetCreatedDto } from '../../../common/types/meet.type'
+import { MeetsService } from 'src/modules/meets/meets.service'
 
 @Injectable()
 export class DashboardService {
@@ -21,6 +23,7 @@ export class DashboardService {
         private readonly gamesOwnedService: GamesOwnedService,
         private readonly gamesService: GamesService,
         private readonly reviewsService: ReviewsService,
+        private readonly meetsService: MeetsService,
     ) {}
 
     @LogFeature(new Logger('DashboardService'))
@@ -90,6 +93,20 @@ export class DashboardService {
         await this.groupsService.deleteGroupById(groupId)
 
         return { success: true }
+    }
+
+    @LogFeature(new Logger('DashboardService'))
+    async createMeeting(userId: number, groupId: number): Promise<MeetCreatedDto> {
+        // Step 1: Get group data
+        const groupData = await this.groupsService.getGroupById(groupId)
+
+        // Step 2: Create meeting
+        const meetCreatedDto = await this.meetsService.createMeeting(groupData.id, userId)
+
+        // Step 3: Notify all members of the group
+        // TODO:
+        // await this.databaseService.notifyGroupMembers(groupId, 'Meeting created')
+        return meetCreatedDto
     }
 
     @LogFeature(new Logger('DashboardService'))

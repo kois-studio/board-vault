@@ -8,6 +8,7 @@ import { SuccessDto } from '../../../common/types/auth.type'
 import { GroupWithMembersAndGames } from '../../../common/types/group.type'
 
 import { DashboardService } from './dashboard.service'
+import { MeetCreatedDto } from '../../../common/types/meet.type'
 
 @UseGuards(JwtAuthGuard, VerifiedUserGuard)
 @ApiTags('dashboard')
@@ -37,6 +38,14 @@ export class DashboardController {
     @ApiResponse({ status: 204, description: 'Group deleted successfully' })
     async deleteGroup(@Param('userId', ParseIntPipe) userId: number, @Param('groupId', ParseIntPipe) groupId: number) {
         return this.dashboardService.deleteGroup(userId, groupId)
+    }
+
+    @UseGuards(UserOwnershipGuard)
+    @Post('/users/:userId/groups/:groupId/meetings')
+    @ApiOperation({ summary: 'Create a new meeting', deprecated: false })
+    @ApiResponse({ status: 201, type: MeetCreatedDto, description: 'Meeting created successfully' })
+    async createMeeting(@Param('userId', ParseIntPipe) userId: number, @Param('groupId', ParseIntPipe) groupId: number) {
+        return this.dashboardService.createMeeting(userId, groupId)
     }
 
     @UseGuards(UserOwnershipGuard)
