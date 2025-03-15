@@ -70,10 +70,6 @@ export class Api {
         return this.http.put<{ success: true }>(`${this.url}/users/${userId}`, requesBody)
     }
 
-    getUserMeets(userId: number) {
-        return this.http.get<Array<MeetType>>(`${this.url}/users/${userId}/meets`)
-    }
-
     updateUserGames(userId: number, gamesToAdd: Array<number>, gamesToRemove: Array<number>) {
         return this.http.put<{ success: true }>(`${this.url}/users/${userId}/games`, { gamesToAdd, gamesToRemove })
     }
@@ -228,6 +224,10 @@ export class Api {
     // --------------------------------------------------------------------------
     getUserGamesHistory(userId: number) {
         return this.http.get<Array<HistoryRecordType>>(`${this.url}/play/users/${userId}/history`)
+    }
+
+    getUserMeets(userId: number) {
+        return this.http.get<Array<MeetType>>(`${this.url}/play/users/${userId}/meets`)
     }
 
     // --------------------------------------------------------------------------
