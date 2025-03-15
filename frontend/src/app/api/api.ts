@@ -80,10 +80,6 @@ export class Api {
         return this.http.get<Array<InvitationWithAccountsData>>(`${this.url}/groups/${groupId}/invitations`)
     }
 
-    removeMember(groupId: number, memberId: number) {
-        return this.http.delete<{ success: true }>(`${this.url}/memberships/${memberId}/${groupId}`, {})
-    }
-
     getGroupMeetings(groupId: number) {
         return this.http.get<Array<MeetWithAttendeesAndGamesType>>(`${this.url}/groups/${groupId}/meetings`)
     }
@@ -215,8 +211,12 @@ export class Api {
         return this.http.delete<{ success: true }>(`${this.url}/dashboard/users/${userId}/groups/${groupId}`, {})
     }
 
-    leaveGroup(accountId: number, groupId: number) {
-        return this.http.delete<{ success: true }>(`${this.url}/dashboard/users/${accountId}/groups/${groupId}/members`, {})
+    leaveGroup(userId: number, groupId: number) {
+        return this.http.delete<{ success: true }>(`${this.url}/dashboard/users/${userId}/groups/${groupId}/members`, {})
+    }
+
+    removeMember(userId: number, groupId: number, memberId: number) {
+        return this.http.delete<{ success: true }>(`${this.url}/dashboard/users/${userId}/groups/${groupId}/members/${memberId}`, {})
     }
 
     // --------------------------------------------------------------------------

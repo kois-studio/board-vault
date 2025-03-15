@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common'
 
-// module dependencies
 import { DatabaseModule } from '../../common/database/database.module'
 import { GroupMembershipsModule } from '../../core/group-memberships/group-memberships.module'
 import { GroupsModule } from '../../core/groups/groups.module'

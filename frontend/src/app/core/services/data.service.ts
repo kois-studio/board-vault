@@ -285,8 +285,11 @@ export class DataService {
 
     // #region group-edit
     public removeMemberFromGroup(groupId: number, memberId: number) {
+        const currentUser = this.currentUser()
+        if (!currentUser) return
+
         // 1.
-        this.api.removeMember(groupId, memberId).subscribe({
+        this.api.removeMember(currentUser.id, groupId, memberId).subscribe({
             next: (res) => {
                 // 2.
                 this.userGroups.update((groups) =>
