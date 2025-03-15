@@ -23,7 +23,7 @@ import { CollectionModule } from './modules/features/collection/collection.modul
 import { DashboardModule } from './modules/features/dashboard/dashboard.module'
 import { PlayModule } from './modules/features/play/play.module'
 import { ProfileModule } from './modules/features/profile/profile.module'
-import { MeetsModule } from './modules/meets/meets.module'
+import { MeetsModule } from './modules/core/meets/meets.module'
 
 @Module({
     imports: [
