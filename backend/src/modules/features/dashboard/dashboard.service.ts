@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, Logger } from '@nestjs/common'
+import { BadRequestException, ForbiddenException, Injectable, Logger } from '@nestjs/common'
 
 import { LogFeature } from '../../../common/decorators/logger.decorator'
 import { GamesService } from '../../core/games/games.service'
@@ -10,6 +10,7 @@ import { UsersService } from '../../users/users.service'
 
 import type { GroupMemberWithGames, GroupWithMembersAndGames } from '../../../common/types/group.type'
 import type { UserWithGames } from '../../../common/types/user.type'
+import { SuccessDto } from '../../../common/types/auth.type'
 
 @Injectable()
 export class DashboardService {
@@ -56,7 +57,7 @@ export class DashboardService {
     }
 
     @LogFeature(new Logger('DashboardService'))
-    async createGroup(userId: number, groupName: string): Promise<{ success: boolean }> {
+    async createGroup(userId: number, groupName: string): Promise<SuccessDto> {
         // Step 1: Create group
         await this.groupsService.createGroup({
             name: groupName,
@@ -76,7 +77,7 @@ export class DashboardService {
     }
 
     @LogFeature(new Logger('DashboardService'))
-    async deleteGroup(userId: number, groupId: number): Promise<{ success: boolean }> {
+    async deleteGroup(userId: number, groupId: number): Promise<SuccessDto> {
         // Step 1: Get the group data
         const groupData = await this.groupsService.getGroupById(groupId)
 
@@ -87,6 +88,21 @@ export class DashboardService {
 
         // Step 3: If owner, then delete the group
         await this.groupsService.deleteGroupById(groupId)
+
+        return { success: true }
+    }
+
+    @LogFeature(new Logger('DashboardService'))
+    async leaveGroup(userId: number, groupId: number): Promise<SuccessDto> {
+        const groupData = await this.groupsService.getGroupById(groupId)
+
+        // Step 1: Check if user is owner
+        if (groupData.createdBy === userId) {
+            throw new BadRequestException('Owner cannot leave group')
+        }
+
+        // Step 2: Delete the membership
+        await this.groupMembershipsService.deleteGroupMembershipById(userId, groupId)
 
         return { success: true }
     }
