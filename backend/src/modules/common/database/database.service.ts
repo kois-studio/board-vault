@@ -854,13 +854,6 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
-    updateMeetConfirmation(meetId: number) {
-        return this._tursoExecute({
-            sql: 'UPDATE Meet SET isConfirmed = true WHERE id = ?',
-            args: [meetId],
-        })
-    }
-
     // #region MeetAttendee
 
     createMeetAttendee(meetId: number, accountId: number) {
