@@ -1,11 +1,9 @@
 import { Controller, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
-// Guards
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
 import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
-// Types
 import { SuccessDto } from '../../../common/types/auth.type'
 import { InvitationWithExtraData } from '../../../common/types/invitation.type'
 import { NotificationDto } from '../../../common/types/notification.type'
