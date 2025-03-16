@@ -2,9 +2,10 @@ import { ResultSet } from '@libsql/client/.'
 import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { meetAccountGamesSchema } from '../../../common/schemas/db-meet-account-game.schema'
-import type { MeetAccountGameDto } from '../../../common/types/meet-account-game.type'
 import { DatabaseService } from '../../common/database/database.service'
+
 import type { MeetAccountGameQueryOptions } from './meet-account-games.types'
+import type { MeetAccountGameDto } from '../../../common/types/meet-account-game.type'
 
 @Injectable()
 export class MeetAccountGamesService {
@@ -76,6 +77,7 @@ export class MeetAccountGamesService {
             where: { meetId },
             distinct: true,
         })
+
         return result.singleField
     }
 
@@ -86,6 +88,7 @@ export class MeetAccountGamesService {
             where: { accountId },
             distinct: true,
         })
+
         return result.singleField
     }
 
@@ -96,6 +99,7 @@ export class MeetAccountGamesService {
             where: { meetId },
             distinct: true,
         })
+
         return result.singleField
     }
 
@@ -106,6 +110,7 @@ export class MeetAccountGamesService {
             where: { meetId, gameId },
             distinct: true,
         })
+
         return result.singleField
     }
 
