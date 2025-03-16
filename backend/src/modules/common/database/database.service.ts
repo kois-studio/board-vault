@@ -884,6 +884,27 @@ export class DatabaseService implements OnModuleInit {
         });
     }
 
+    getDistinctMeetIdsByAccountId(accountId: number) {
+        return this._tursoExecute({
+            sql: 'SELECT DISTINCT meetId FROM MeetAccountGame WHERE accountId = ?',
+            args: [accountId],
+        })
+    }
+
+    getDistinctGameIdsByMeetId(meetId: number) {
+        return this._tursoExecute({
+            sql: 'SELECT DISTINCT gameId FROM MeetAccountGame WHERE meetId = ?',
+            args: [meetId],
+        })
+    }
+
+    getDistinctAccountIdsByMeetIdAndGameId(meetId: number, gameId: number) {
+        return this._tursoExecute({
+            sql: 'SELECT DISTINCT accountId FROM MeetAccountGame WHERE meetId = ? AND gameId = ?',
+            args: [meetId, gameId],
+        })
+    }
+
     createMeetAccountGame(accountId: number, meetId: number, gameId: number) {
         return this._tursoExecute({
             sql: 'INSERT INTO MeetAccountGame (accountId, meetId, gameId) VALUES (?, ?, ?)',
