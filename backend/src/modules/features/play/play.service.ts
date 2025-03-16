@@ -24,7 +24,7 @@ export class PlayService {
 
         return Promise.all(
             meetAccountGames.map(async record => {
-                const meetAttendees = await this.meetAccountGamesService.getMeetAccountGamesBy({ meetId: record.meetId })
+                const meetAttendeeIds = await this.meetAccountGamesService.getDistinctAccountIdsByMeetId(record.meetId)
 
                 return {
                     accountId: record.accountId,
@@ -32,7 +32,7 @@ export class PlayService {
                     meetId: record.meetId,
                     gameData: await this.gamesService.getGameById(record.gameId),
                     meetData: await this.meetsService.getMeetById(record.meetId),
-                    playedBy: await Promise.all(meetAttendees.map(async attendee => this.usersService.getUserById(attendee.accountId))),
+                    playedBy: await Promise.all(meetAttendeeIds.map(async attendeeId => this.usersService.getUserById(attendeeId))),
                 }
             }),
         )

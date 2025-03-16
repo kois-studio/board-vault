@@ -41,6 +41,13 @@ export class MeetAccountGamesService {
 
         return this._parseResultSet(resultSet)
     }
+    
+    async getDistinctAccountIdsByMeetId(meetId: number): Promise<number[]> {
+        this.LOGGER.log(`Getting distinct accountIds by meetId ${meetId}`)
+        const resultSet = await this.databaseService.getDistinctAccountIdsByMeetId(meetId)
+
+        return resultSet.rows.map(row => Number(row[0]))
+    }
 
     async createMeetAccountGame(accountId: number, meetId: number, gameId: number): Promise<MeetAccountGameDto> {
         this.LOGGER.log(`Creating meetAccountGame with accountId ${accountId}, meetId ${meetId} and gameId ${gameId}`)
