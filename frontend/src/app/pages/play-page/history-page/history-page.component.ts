@@ -39,19 +39,7 @@ export class HistoryPageComponent {
     // --------------------------------------------------------------------------
     //        Computed
     // --------------------------------------------------------------------------
-    public readonly groupedGamesByDateComputed = computed(() => {
-        return this.userHistory$().reduce(
-            (groups, game) => {
-                // Use ISO format for consistent date handling
-                const date = new Date(game.meetData.meetDate)
-                const dateKey = date.toISOString().split('T')[0] // 'YYYY-MM-DD' format
-                if (!groups[dateKey]) {
-                    groups[dateKey] = []
-                }
-                groups[dateKey].push(game)
-                return groups
-            },
-            {} as Record<string, Array<HistoryRecordType>>,
-        )
+    public readonly sortedUserHistoryComputed = computed(() => {
+        return this.userHistory$().sort((a, b) => new Date(b.meetData.meetDate).getTime() - new Date(a.meetData.meetDate).getTime())
     })
 }
