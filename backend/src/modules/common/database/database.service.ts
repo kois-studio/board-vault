@@ -849,6 +849,7 @@ export class DatabaseService implements OnModuleInit {
     queryMeetAccountGame(options: MeetAccountGameQueryOptions) {
         // Build SELECT clause
         let selectClause = '*'
+
         if (options.select && options.select.length > 0) {
             selectClause = options.select.join(', ')
         }
