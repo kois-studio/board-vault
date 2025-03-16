@@ -21,26 +21,30 @@ export class PlayService {
     @LogFeature(new Logger('PlayService'))
     async getUserGamesHistory(userId: number): Promise<Array<HistoryRecordDto>> {
         const meetsYouParticipatedIn = await this.meetAccountGamesService.getDistinctMeetIdsByAccountId(userId)
-        
-        return Promise.all(meetsYouParticipatedIn.map(async meetId => {
-            const meetData = await this.meetsService.getMeetById(meetId)
-            const gameIds = await this.meetAccountGamesService.getDistinctGameIdsByMeetId(meetId)
-            const gamesPlayed = await Promise.all(gameIds.map(async gameId => {
-                const game = await this.gamesService.getGameById(gameId)
-                const playedByIds = await this.meetAccountGamesService.getDistinctAccountIdsByMeetIdAndGameId(meetId, gameId)
-                const playedByData = await Promise.all(playedByIds.map(async accountId => this.usersService.getUserById(accountId)))
+
+        return Promise.all(
+            meetsYouParticipatedIn.map(async meetId => {
+                const meetData = await this.meetsService.getMeetById(meetId)
+                const gameIds = await this.meetAccountGamesService.getDistinctGameIdsByMeetId(meetId)
+                const gamesPlayed = await Promise.all(
+                    gameIds.map(async gameId => {
+                        const game = await this.gamesService.getGameById(gameId)
+                        const playedByIds = await this.meetAccountGamesService.getDistinctAccountIdsByMeetIdAndGameId(meetId, gameId)
+                        const playedByData = await Promise.all(playedByIds.map(async accountId => this.usersService.getUserById(accountId)))
+
+                        return {
+                            gameData: game,
+                            playedBy: playedByData,
+                        }
+                    }),
+                )
 
                 return {
-                    gameData: game,
-                    playedBy: playedByData,
+                    meetData,
+                    gamesPlayed,
                 }
-            }))
-
-            return {
-                meetData: meetData,
-                gamesPlayed: gamesPlayed,
-            }
-        }))
+            }),
+        )
     }
 
     @LogFeature(new Logger('PlayService'))
