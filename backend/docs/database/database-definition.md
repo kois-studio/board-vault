@@ -169,17 +169,6 @@ CREATE TABLE IF NOT EXISTS Meet (
 );
 
 -- -----------------------------------------------------
--- Table 'MeetAttendee' (Tracks each member in a meet)
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS MeetAttendee (
-    meetId INTEGER NOT NULL,
-    accountId INTEGER NOT NULL,
-    FOREIGN KEY (meetId) REFERENCES Meet(id) ON DELETE CASCADE,
-    FOREIGN KEY (accountId) REFERENCES Account(id) ON DELETE CASCADE,
-    PRIMARY KEY (meetId, accountId)
-);
-
--- -----------------------------------------------------
 -- Table 'MeetAccountGame' (Who played which games at which meet)
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS MeetAccountGame (

@@ -23,6 +23,7 @@ src/
 │   │   │   └── users.service.ts
 │   │   ├── games/
 │   │   ├── groups/
+│   │   ├── meets/
 │   │   └── ... 
 │   │
 │   ├── features/              # Extended logic endpoints across multiple domains
