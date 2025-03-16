@@ -11,6 +11,7 @@ import type { CreateGroupBody, UpdateGroupBody } from '../../../common/types/gro
 import type { CreateInvitationBody, CreateInvitationByUsernameBody } from '../../../common/types/invitation.type'
 import type { CreateNotificationBody, UpdateNotificationBody } from '../../../common/types/notification.type'
 import type { CreateUserBody, UpdateUserBody } from '../../../common/types/user.type'
+import type { MeetAccountGameQueryOptions } from '../../../modules/core/meet-account-games/meet-account-games.types'
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
@@ -845,64 +846,42 @@ export class DatabaseService implements OnModuleInit {
 
     // #region MeetAccountGame
 
-    getMeetAccountGamesBy(config: { accountId?: number; meetId?: number; gameId?: number }) {
-        let sql = 'SELECT * FROM MeetAccountGame'
+    queryMeetAccountGame(options: MeetAccountGameQueryOptions) {
+        // Build SELECT clause
+        let selectClause = '*'
+        if (options.select && options.select.length > 0) {
+            selectClause = options.select.join(', ')
+        }
+
+        if (options.distinct) {
+            selectClause = `DISTINCT ${selectClause}`
+        }
+
+        // Build WHERE clause
+        const whereConditions: string[] = []
         const args: number[] = []
-        const conditions: string[] = []
 
-        // Add conditions based on provided parameters
-        if (config.accountId !== undefined) {
-            conditions.push('accountId = ?')
-            args.push(config.accountId)
+        if (options.where) {
+            if (options.where.meetId !== undefined) {
+                whereConditions.push('meetId = ?')
+                args.push(options.where.meetId)
+            }
+
+            if (options.where.accountId !== undefined) {
+                whereConditions.push('accountId = ?')
+                args.push(options.where.accountId)
+            }
+
+            if (options.where.gameId !== undefined) {
+                whereConditions.push('gameId = ?')
+                args.push(options.where.gameId)
+            }
         }
 
-        if (config.meetId !== undefined) {
-            conditions.push('meetId = ?')
-            args.push(config.meetId)
-        }
+        const whereClause = whereConditions.length > 0 ? ` WHERE ${whereConditions.join(' AND ')}` : ''
+        const sql = `SELECT ${selectClause} FROM MeetAccountGame${whereClause}`
 
-        if (config.gameId !== undefined) {
-            conditions.push('gameId = ?')
-            args.push(config.gameId)
-        }
-
-        // Add WHERE clause if any conditions exist
-        if (conditions.length > 0) {
-            sql += ' WHERE ' + conditions.join(' AND ')
-        }
-
-        return this._tursoExecute({
-            sql,
-            args,
-        })
-    }
-
-    getDistinctAccountIdsByMeetId(meetId: number) {
-        return this._tursoExecute({
-            sql: 'SELECT DISTINCT accountId FROM MeetAccountGame WHERE meetId = ?',
-            args: [meetId],
-        });
-    }
-
-    getDistinctMeetIdsByAccountId(accountId: number) {
-        return this._tursoExecute({
-            sql: 'SELECT DISTINCT meetId FROM MeetAccountGame WHERE accountId = ?',
-            args: [accountId],
-        })
-    }
-
-    getDistinctGameIdsByMeetId(meetId: number) {
-        return this._tursoExecute({
-            sql: 'SELECT DISTINCT gameId FROM MeetAccountGame WHERE meetId = ?',
-            args: [meetId],
-        })
-    }
-
-    getDistinctAccountIdsByMeetIdAndGameId(meetId: number, gameId: number) {
-        return this._tursoExecute({
-            sql: 'SELECT DISTINCT accountId FROM MeetAccountGame WHERE meetId = ? AND gameId = ?',
-            args: [meetId, gameId],
-        })
+        return this._tursoExecute({ sql, args })
     }
 
     createMeetAccountGame(accountId: number, meetId: number, gameId: number) {
