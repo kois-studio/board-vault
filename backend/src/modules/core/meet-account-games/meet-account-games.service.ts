@@ -49,6 +49,27 @@ export class MeetAccountGamesService {
         return resultSet.rows.map(row => Number(row[0]))
     }
 
+    async getDistinctMeetIdsByAccountId(accountId: number): Promise<number[]> {
+        this.LOGGER.log(`Getting distinct meetIds by accountId ${accountId}`)
+        const resultSet = await this.databaseService.getDistinctMeetIdsByAccountId(accountId)
+
+        return resultSet.rows.map(row => Number(row[0]))
+    }
+
+    async getDistinctGameIdsByMeetId(meetId: number): Promise<number[]> {
+        this.LOGGER.log(`Getting distinct gameIds by meetId ${meetId}`)
+        const resultSet = await this.databaseService.getDistinctGameIdsByMeetId(meetId)
+
+        return resultSet.rows.map(row => Number(row[0]))
+    }
+
+    async getDistinctAccountIdsByMeetIdAndGameId(meetId: number, gameId: number): Promise<number[]> {
+        this.LOGGER.log(`Getting distinct accountIds by meetId ${meetId} and gameId ${gameId}`)
+        const resultSet = await this.databaseService.getDistinctAccountIdsByMeetIdAndGameId(meetId, gameId)
+
+        return resultSet.rows.map(row => Number(row[0]))
+    }
+
     async createMeetAccountGame(accountId: number, meetId: number, gameId: number): Promise<MeetAccountGameDto> {
         this.LOGGER.log(`Creating meetAccountGame with accountId ${accountId}, meetId ${meetId} and gameId ${gameId}`)
         const resultSet = await this.databaseService.createMeetAccountGame(accountId, meetId, gameId)

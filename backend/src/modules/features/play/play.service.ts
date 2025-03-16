@@ -20,22 +20,27 @@ export class PlayService {
 
     @LogFeature(new Logger('PlayService'))
     async getUserGamesHistory(userId: number): Promise<Array<HistoryRecordDto>> {
-        const meetAccountGames = await this.meetAccountGamesService.getMeetAccountGamesBy({ accountId: userId })
-
-        return Promise.all(
-            meetAccountGames.map(async record => {
-                const meetAttendeeIds = await this.meetAccountGamesService.getDistinctAccountIdsByMeetId(record.meetId)
+        const meetsYouParticipatedIn = await this.meetAccountGamesService.getDistinctMeetIdsByAccountId(userId)
+        
+        return Promise.all(meetsYouParticipatedIn.map(async meetId => {
+            const meetData = await this.meetsService.getMeetById(meetId)
+            const gameIds = await this.meetAccountGamesService.getDistinctGameIdsByMeetId(meetId)
+            const gamesPlayed = await Promise.all(gameIds.map(async gameId => {
+                const game = await this.gamesService.getGameById(gameId)
+                const playedByIds = await this.meetAccountGamesService.getDistinctAccountIdsByMeetIdAndGameId(meetId, gameId)
+                const playedByData = await Promise.all(playedByIds.map(async accountId => this.usersService.getUserById(accountId)))
 
                 return {
-                    accountId: record.accountId,
-                    gameId: record.gameId,
-                    meetId: record.meetId,
-                    gameData: await this.gamesService.getGameById(record.gameId),
-                    meetData: await this.meetsService.getMeetById(record.meetId),
-                    playedBy: await Promise.all(meetAttendeeIds.map(async attendeeId => this.usersService.getUserById(attendeeId))),
+                    gameData: game,
+                    playedBy: playedByData,
                 }
-            }),
-        )
+            }))
+
+            return {
+                meetData: meetData,
+                gamesPlayed: gamesPlayed,
+            }
+        }))
     }
 
     @LogFeature(new Logger('PlayService'))
