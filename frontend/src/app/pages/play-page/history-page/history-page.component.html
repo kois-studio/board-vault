@@ -19,40 +19,40 @@
             <p>No games played yet</p>
         </div>
     } @else {
-        @for (dateGroup of groupedGamesByDateComputed() | keyvalue; track dateGroup.key) {
+        @for (historyRecord of sortedUserHistoryComputed(); track historyRecord.meetData.id) {
             <div class="app-bg-secondary p-4 mb-8">
                 <h2 class="text-2xl font-semibold mb-4">
-                    {{ dateGroup.key | customDate }}
+                    {{ historyRecord.meetData.meetDate | customDate }}
                 </h2>
 
                 <!-- Games played on this date -->
-                <ul class="grid lg:grid-cols-2 xl:grid-cols-3 gap-4">
-                    @for (item of dateGroup.value; track $index) {
+                <ul class="grid lg:grid-cols-2 gap-4">
+                    @for (gamePlayed of historyRecord.gamesPlayed; track gamePlayed.gameData.id) {
                         <div class="app-bg-tertiary rounded-lg p-4 flex gap-4">
                             <!-- Game image -->
                             <img
-                                [src]="item.gameData.imageUrl"
-                                [alt]="item.gameData.title"
+                                [src]="gamePlayed.gameData.imageUrl"
+                                [alt]="gamePlayed.gameData.title"
                                 loading="lazy"
                                 class="w-24 h-24 object-cover rounded-lg"
                             />
 
                             <!-- Game info -->
                             <div class="flex flex-col justify-between flex-1">
-                                <h3 class="text-xl font-semibold mb-1">{{ item.gameData.title }}</h3>
+                                <h3 class="text-xl font-semibold mb-1">{{ gamePlayed.gameData.title }}</h3>
 
                                 <div class="flex justify-between items-end">
                                     <!-- Meet info -->
                                     <div class="text-secondary text-sm">
-                                        <p>Group #{{ item.meetData.groupId }}</p>
-                                        <p>Meet #{{ item.meetData.id }}</p>
+                                        <p>Group #{{ historyRecord.meetData.groupId }}</p>
+                                        <p>Meet #{{ historyRecord.meetData.id }}</p>
                                     </div>
                                     
                                     <!-- Players -->
                                     <div class="relative h-8 flex items-center">
                                         <!-- Player avatars -->
                                         <div class="flex -space-x-2">
-                                            @for (player of item.playedBy; track player.id) {
+                                            @for (player of gamePlayed.playedBy; track player.id) {
                                                 <app-image-profile
                                                     [title]="player.username"
                                                     class="border-2 rounded-full border-indigo-100 dark:border-zinc-800"
