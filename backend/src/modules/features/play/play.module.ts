@@ -3,7 +3,6 @@ import { Module } from '@nestjs/common'
 import { DatabaseModule } from '../../common/database/database.module'
 import { GamesModule } from '../../core/games/games.module'
 import { MeetAccountGamesModule } from '../../core/meet-account-games/meet-account-games.module'
-import { MeetAttendeesModule } from '../../core/meet-attendees/meet-attendees.module'
 import { MeetsModule } from '../../core/meets/meets.module'
 import { UsersModule } from '../../core/users/users.module'
 
@@ -16,7 +15,6 @@ import { PlayService } from './play.service'
         UsersModule,
         GamesModule,
         MeetsModule,
-        MeetAttendeesModule,
         MeetAccountGamesModule,
     ],
     providers: [PlayService],

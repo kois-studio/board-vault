@@ -3,7 +3,6 @@ import { Injectable, Logger } from '@nestjs/common'
 import { LogFeature } from '../../../common/decorators/logger.decorator'
 import { GamesService } from '../../core/games/games.service'
 import { MeetAccountGamesService } from '../../core/meet-account-games/meet-account-games.service'
-import { MeetAttendeesService } from '../../core/meet-attendees/meet-attendees.service'
 import { MeetsService } from '../../core/meets/meets.service'
 import { UsersService } from '../../core/users/users.service'
 
@@ -16,7 +15,6 @@ export class PlayService {
         private readonly usersService: UsersService,
         private readonly gamesService: GamesService,
         private readonly meetsService: MeetsService,
-        private readonly meetAttendeesService: MeetAttendeesService,
         private readonly meetAccountGamesService: MeetAccountGamesService,
     ) {}
 
@@ -26,7 +24,7 @@ export class PlayService {
 
         return Promise.all(
             meetAccountGames.map(async record => {
-                const meetAttendees = await this.meetAttendeesService.getMeetAttendeesByMeetId(record.meetId)
+                const meetAttendees = await this.meetAccountGamesService.getMeetAccountGamesBy({ meetId: record.meetId })
 
                 return {
                     accountId: record.accountId,
