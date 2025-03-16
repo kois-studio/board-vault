@@ -778,17 +778,6 @@ export class DatabaseService implements OnModuleInit {
         return this._tursoExecute('SELECT * FROM Meet')
     }
 
-    getMeetAttendees() {
-        return this._tursoExecute('SELECT * FROM MeetAttendee')
-    }
-
-    getMeetAttendeesByMeetId(meetId: number) {
-        return this._tursoExecute({
-            sql: 'SELECT * FROM MeetAttendee WHERE meetId = ?',
-            args: [meetId],
-        })
-    }
-
     getMeetById(meetId: number) {
         return this._tursoExecute({
             sql: 'SELECT * FROM Meet WHERE id = ?',
@@ -851,22 +840,6 @@ export class DatabaseService implements OnModuleInit {
             WHERE gm.groupId = ?
             `,
             args: [meetId, groupId],
-        })
-    }
-
-    // #region MeetAttendee
-
-    createMeetAttendee(meetId: number, accountId: number) {
-        return this._tursoExecute({
-            sql: 'INSERT INTO MeetAttendee (meetId, accountId) VALUES (?, ?)',
-            args: [meetId, accountId],
-        })
-    }
-
-    deleteMeetAttendee(meetId: number, accountId: number) {
-        return this._tursoExecute({
-            sql: 'DELETE FROM MeetAttendee WHERE meetId = ? AND accountId = ?',
-            args: [meetId, accountId],
         })
     }
 

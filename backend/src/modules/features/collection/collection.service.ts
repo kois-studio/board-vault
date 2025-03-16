@@ -6,7 +6,6 @@ import { GamesService } from '../../core/games/games.service'
 import { GamesOwnedService } from '../../core/games-owned/games-owned.service'
 import { GroupsService } from '../../core/groups/groups.service'
 import { MeetAccountGamesService } from '../../core/meet-account-games/meet-account-games.service'
-import { MeetAttendeesService } from '../../core/meet-attendees/meet-attendees.service'
 import { MeetsService } from '../../core/meets/meets.service'
 import { ReviewsService } from '../../core/reviews/reviews.service'
 import { TagsService } from '../../core/tags/tags.service'
@@ -28,7 +27,6 @@ export class CollectionService {
         private readonly reviewsService: ReviewsService,
         private readonly wishlistService: WishlistService,
         private readonly gamesOwnedService: GamesOwnedService,
-        private readonly meetAttendeesService: MeetAttendeesService,
         private readonly meetAccountGamesService: MeetAccountGamesService,
     ) {}
 
@@ -68,7 +66,7 @@ export class CollectionService {
             playHistoryRecords.map(async record => {
                 const meetData = await this.meetsService.getMeetById(record.meetId)
                 const groupData = await this.groupsService.getGroupById(meetData.groupId)
-                const meetAttendees = await this.meetAttendeesService.getMeetAttendeesByMeetId(record.meetId)
+                const meetAttendees = await this.meetAccountGamesService.getMeetAccountGamesBy({ meetId: record.meetId })
 
                 return {
                     group: groupData,
