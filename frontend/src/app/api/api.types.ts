@@ -185,7 +185,9 @@ export type GameReviewWithGameData = GameReviewDto & {
 // #region play
 // --------------------------------------------------------------------------
 export type HistoryRecordType = {
-    gameData: GameType
     meetData: MeetType
-    playedBy: Array<UserType>
+    gamesPlayed: Array<{
+        gameData: GameType
+        playedBy: Array<UserType>
+    }>
 }
