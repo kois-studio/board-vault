@@ -45,6 +45,7 @@ export class DataService {
     public readonly userReviews = signal<Array<GameReviewWithGameData>>([])
     public readonly userMeets = signal<Array<MeetType>>([])
     public readonly userHistory = signal<Array<HistoryRecordType>>([])
+    public readonly userWishlist = signal<Array<GameType>>([])
 
     // list of all games available to select
     public readonly gamesList = signal<Array<GameType>>([])
@@ -83,6 +84,7 @@ export class DataService {
                 this._getUserReviews(userType.id)
                 this._getUserMeets(userType.id)
                 this._getUserHistory(userType.id)
+                this._getUserWishlist(userType.id)
             },
             error: (error) => {
                 if (error.status === 401) {
@@ -207,6 +209,20 @@ export class DataService {
                 this.loadingService.finish(LOADING_KEYS.USER_GAMES_HISTORY)
             },
         })
+    }
+
+    private _getUserWishlist(userId: number) {
+        // this.api.getWishlist(userId).subscribe({
+        //     next: (wishlist) => {
+        //         this.userWishlist.set(wishlist)
+        //     },
+        //     error: () => {
+        //         this.toastService.error("Error retrieving user's wishlist")
+        //     },
+        //     complete: () => {
+        //         this.loadingService.finish(LOADING_KEYS.USER_WISHLIST)
+        //     },
+        // })
     }
 
     // #region ## public methods ##
