@@ -153,10 +153,6 @@ export class Api {
 
     // #region wishlist
 
-    getWishlist(accountId: number) {
-        return this.http.get<Array<{ isWishlisted: boolean }>>(`${this.url}/wishlist/${accountId}`)
-    }
-
     toggleWishlist(accountId: number, gameId: number) {
         return this.http.put<{ isWishlisted: boolean }>(`${this.url}/wishlist/${accountId}/${gameId}`, {})
     }
@@ -186,6 +182,10 @@ export class Api {
 
     getUserReviews(userId: number) {
         return this.http.get<Array<GameReviewWithGameData>>(`${this.url}/collection/users/${userId}/reviews`)
+    }
+
+    getUserWishlist(userId: number) {
+        return this.http.get<Array<GameType>>(`${this.url}/collection/users/${userId}/wishlist`)
     }
 
     // --------------------------------------------------------------------------

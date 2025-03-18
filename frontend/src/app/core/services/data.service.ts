@@ -212,17 +212,17 @@ export class DataService {
     }
 
     private _getUserWishlist(userId: number) {
-        // this.api.getWishlist(userId).subscribe({
-        //     next: (wishlist) => {
-        //         this.userWishlist.set(wishlist)
-        //     },
-        //     error: () => {
-        //         this.toastService.error("Error retrieving user's wishlist")
-        //     },
-        //     complete: () => {
-        //         this.loadingService.finish(LOADING_KEYS.USER_WISHLIST)
-        //     },
-        // })
+        this.api.getUserWishlist(userId).subscribe({
+            next: (wishlist) => {
+                this.userWishlist.set(wishlist)
+            },
+            error: () => {
+                this.toastService.error("Error retrieving user's wishlist")
+            },
+            complete: () => {
+                this.loadingService.finish(LOADING_KEYS.USER_WISHLIST)
+            },
+        })
     }
 
     // #region ## public methods ##

@@ -67,4 +67,11 @@ export class CollectionController {
     async getReviewsOfUser(@Param('userId', ParseIntPipe) userId: number) {
         return this.collectionService.getReviewsOfUser(userId)
     }
+
+    @Get('/users/:userId/wishlist')
+    @ApiOperation({ summary: 'Get all wishlist of a user', deprecated: false })
+    @ApiResponse({ status: 200, type: [GameDto], description: 'List of all wishlist of the user' })
+    async getUserWishlist(@Param('userId', ParseIntPipe) userId: number) {
+        return this.collectionService.getUserWishlist(userId)
+    }
 }
