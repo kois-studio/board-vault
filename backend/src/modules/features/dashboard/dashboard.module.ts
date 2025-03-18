@@ -11,6 +11,7 @@ import { UsersModule } from '../../core/users/users.module'
 
 import { DashboardController } from './dashboard.controller'
 import { DashboardService } from './dashboard.service'
+import { MeetAccountGamesModule } from '../../core/meet-account-games/meet-account-games.module'
 
 @Module({
     imports: [
@@ -22,6 +23,7 @@ import { DashboardService } from './dashboard.service'
         GamesModule,
         ReviewsModule,
         MeetsModule,
+        MeetAccountGamesModule,
     ],
     providers: [DashboardService],
     exports: [DashboardService],
