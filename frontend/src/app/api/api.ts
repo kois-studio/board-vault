@@ -80,10 +80,6 @@ export class Api {
         return this.http.get<Array<InvitationWithAccountsData>>(`${this.url}/groups/${groupId}/invitations`)
     }
 
-    getGroupMeetings(groupId: number) {
-        return this.http.get<Array<MeetWithAttendeesAndGamesType>>(`${this.url}/groups/${groupId}/meetings`)
-    }
-
     // #region games
 
     getGames() {
@@ -205,6 +201,14 @@ export class Api {
 
     deleteGroup(userId: number, groupId: number) {
         return this.http.delete<{ success: true }>(`${this.url}/dashboard/users/${userId}/groups/${groupId}`, {})
+    }
+
+    getGroupMeetings(userId: number, groupId: number) {
+        return this.http.get<Array<MeetWithAttendeesAndGamesType>>(`${this.url}/dashboard/users/${userId}/groups/${groupId}/meetings`)
+    }
+
+    createGroupMeeting(userId: number, groupId: number) {
+        return this.http.post<{ success: true }>(`${this.url}/dashboard/users/${userId}/groups/${groupId}/meetings`, {})
     }
 
     leaveGroup(userId: number, groupId: number) {
