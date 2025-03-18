@@ -1,0 +1,31 @@
+<app-page-header titleText="Wishlist" [showActionButton]="true">
+    Keep track of games you want to add to your collection
+
+    <app-button class="action-button" icon="plus-lg" routerLink="/collection/games">Explore Games</app-button>
+</app-page-header>
+
+<container-wrapper>
+    <!-- Loading state -->
+    @if (isLoadingWishlist()) {
+        <!-- TODO: custom skeleton matching actual history structure -->
+        <app-skeleton-card-group />
+    } @else if (userWishlist$().length === 0) {
+        <!-- no data -->
+        <div class="text-center py-8 text-secondary">
+            <p>No games in your wishlist yet</p>
+        </div>
+    } @else {
+        <section class="py-8 flex flex-wrap gap-4">
+            @for (game of userWishlist$(); track $index) {
+                <app-card-game
+                    [routerLink]="['/games', game.id]"
+                    [title]="game.title"
+                    [imageUrl]="game.imageUrl"
+                    [gameAvgDuration]="game.gameAvgDuration"
+                    [minPlayers]="game.minPlayers"
+                    [maxPlayers]="game.maxPlayers"
+                />
+            }
+        </section>
+    }
+</container-wrapper>
