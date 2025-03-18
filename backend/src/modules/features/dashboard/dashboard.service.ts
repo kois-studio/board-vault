@@ -11,11 +11,14 @@ import { UsersService } from '../../core/users/users.service'
 
 import type { SuccessDto } from '../../../common/types/auth.type'
 import type { GroupMemberWithGames, GroupWithMembersAndGames } from '../../../common/types/group.type'
-import type { MeetCreatedDto } from '../../../common/types/meet.type'
+import type { MeetCreatedDto, MeetWithAttendeesAndGames } from '../../../common/types/meet.type'
 import type { UserWithGames } from '../../../common/types/user.type'
+import { MeetAccountGamesService } from 'src/modules/core/meet-account-games/meet-account-games.service'
 
 @Injectable()
 export class DashboardService {
+    private readonly LOGGER: Logger = new Logger(this.constructor.name)
+
     constructor(
         private readonly usersService: UsersService,
         private readonly groupsService: GroupsService,
@@ -24,6 +27,7 @@ export class DashboardService {
         private readonly gamesService: GamesService,
         private readonly reviewsService: ReviewsService,
         private readonly meetsService: MeetsService,
+        private readonly meetAccountGamesService: MeetAccountGamesService,
     ) {}
 
     @LogFeature(new Logger('DashboardService'))
@@ -93,6 +97,24 @@ export class DashboardService {
         await this.groupsService.deleteGroupById(groupId)
 
         return { success: true }
+    }
+
+    async getGroupMeetings(userId: number, groupId: number): Promise<Array<MeetWithAttendeesAndGames>> {
+        this.LOGGER.log(`Validated that user ${userId} is in group ${groupId}`)
+        const meetings = await this.meetsService.getMeetsByGroupId(groupId)
+
+        return await Promise.all(
+            meetings.map(async meeting => {
+                const attendeesIds = await this.meetAccountGamesService.getDistinctAccountIdsByMeetId(meeting.id)
+                const playedGamesIds = await this.meetAccountGamesService.getDistinctGameIdsByMeetId(meeting.id)
+
+                return {
+                    ...meeting,
+                    attendees: attendeesIds,
+                    playedGames: playedGamesIds,
+                }
+            }),
+        )
     }
 
     @LogFeature(new Logger('DashboardService'))

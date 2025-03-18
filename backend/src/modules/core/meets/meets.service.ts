@@ -52,6 +52,13 @@ export class MeetsService {
         return meets[0]
     }
 
+    async getMeetsByGroupId(groupId: number): Promise<Array<MeetDto>> {
+        this.LOGGER.log(`Getting all meets for group ${groupId}`)
+        const resultSet = await this.databaseService.getMeetsByGroupId(groupId)
+
+        return this._parseResultSet(resultSet)
+    }
+
     // TODO: sus
     async getMeetDetailsById(id: number): Promise<MeetWithAttendeesAndGames> {
         this.LOGGER.log(`Getting meet details with id ${id}`)

@@ -6,7 +6,7 @@ import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
 import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
 import { SuccessDto } from '../../../common/types/auth.type'
 import { GroupWithMembersAndGames } from '../../../common/types/group.type'
-import { MeetCreatedDto } from '../../../common/types/meet.type'
+import { MeetCreatedDto, MeetWithAttendeesAndGames } from '../../../common/types/meet.type'
 
 import { DashboardService } from './dashboard.service'
 
@@ -38,6 +38,14 @@ export class DashboardController {
     @ApiResponse({ status: 204, description: 'Group deleted successfully' })
     async deleteGroup(@Param('userId', ParseIntPipe) userId: number, @Param('groupId', ParseIntPipe) groupId: number) {
         return this.dashboardService.deleteGroup(userId, groupId)
+    }
+
+    @UseGuards(UserOwnershipGuard)
+    @Get('/users/:userId/groups/:groupId/meetings')
+    @ApiOperation({ summary: 'Get all meetings of a group', deprecated: false })
+    @ApiResponse({ status: 200, type: [MeetWithAttendeesAndGames], description: 'Meetings retrieved successfully' })
+    async getGroupMeetings(@Param('userId', ParseIntPipe) userId: number, @Param('groupId', ParseIntPipe) groupId: number) {
+        return this.dashboardService.getGroupMeetings(userId, groupId)
     }
 
     @UseGuards(UserOwnershipGuard)
