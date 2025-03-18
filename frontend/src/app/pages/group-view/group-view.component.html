@@ -168,13 +168,13 @@
     <section class="mt-12">
         <div class="flex justify-between items-center mb-4">
             <h2 class="text-xl font-semibold">Meetings history</h2>
-            <button (click)="onClickNewMeet()" class="app-btn-primary m-1"><i class="bi bi-plus-lg mr-2"></i> New meet</button>
+            <app-button (click)="onClickNewMeet()" [icon]="'plus-lg'">New meet</app-button>
         </div>
         <hr />
 
         <div class="grid gap-4 mt-4">
             @for (meet of groupMeetings; track $index) {
-            <div class="bg-zinc-800 rounded-lg p-4">
+            <div class="app-bg-secondary rounded-lg p-4">
                 <!-- Header: Date and details button -->
                 <div class="flex justify-between items-center">
                     <h3 class="text-lg font-semibold flex items-center mb-4">
@@ -191,7 +191,7 @@
                 <!-- Content grid -->
                 <div class="grid md:grid-cols-3 gap-4">
                     <!-- Attendees -->
-                    <div class="bg-zinc-900 rounded-lg p-4">
+                    <div class="app-bg-tertiary rounded-lg p-4">
                         <h4 class="text-gray-400 mb-2"><i class="bi bi-people-fill mr-1"></i> Attendees</h4>
                         <div class="flex">
                             @for (member of parseAttendeeIds(meet.attendees); track $index) {
@@ -207,7 +207,7 @@
                             <!-- If there are more than 5 attendees, show a +X at the end -->
                             @if (meet.attendees.length > 5) {
                             <div class="relative -ml-2 first:ml-0 rounded-full bv-stacked-image" [style.zIndex]="3 + meet.attendees.length">
-                                <div class="rounded-full bg-zinc-900 flex items-center justify-center w-10 h-10">
+                                <div class="rounded-full app-bg-secondary flex items-center justify-center w-10 h-10">
                                     +{{ meet.attendees.length - 4 }}
                                 </div>
                             </div>
@@ -216,11 +216,11 @@
                     </div>
 
                     <!-- Games played -->
-                    <div class="bg-zinc-900 rounded-lg p-4 md:col-span-2">
+                    <div class="app-bg-tertiary rounded-lg p-4 md:col-span-2">
                         <h4 class="text-gray-400 mb-2"><i class="bi bi-controller mr-1"></i> Games played</h4>
                         <div class="grid md:grid-cols-2 gap-4">
                             @for (game of parseGameIds(meet.playedGames); track $index) {
-                            <div class="bg-zinc-800 rounded-lg p-2">
+                            <div class="app-bg-secondary rounded-lg p-2">
                                 <div class="flex items-center gap-2">
                                     <image-background [src]="game?.imageUrl!" class="h-12 w-12 rounded" />
                                     <div class="overflow-hidden">
