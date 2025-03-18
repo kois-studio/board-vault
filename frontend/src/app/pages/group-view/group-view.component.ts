@@ -64,10 +64,11 @@ export class GroupViewComponent {
 
     constructor() {
         effect(() => {
+            const currentUser = this.currentUser$()
             const groupId = Number.parseInt(this.route.snapshot.paramMap.get('groupId') || '')
             const group = this.userGroups$().find((group) => group.id === groupId)
 
-            if (Number.isNaN(groupId) || !this.currentUser$() || !group) {
+            if (Number.isNaN(groupId) || !currentUser || !group) {
                 return
             }
 
@@ -75,7 +76,7 @@ export class GroupViewComponent {
             this.groupData$.set(group)
 
             // get the group meetings
-            this.api.getGroupMeetings(groupId).subscribe({
+            this.api.getGroupMeetings(currentUser.id, groupId).subscribe({
                 next: (groupMeetings) => {
                     this.groupMeetings = groupMeetings.sort((a, b) => {
                         return new Date(b.meetDate).getTime() - new Date(a.meetDate).getTime()
