@@ -11,6 +11,7 @@ import { VerifyEmailComponent } from './pages/auth/verify-email/verify-email.com
 import { CollectionPageComponent } from './pages/collection-page/collection-page.component'
 import { MyGamesPageComponent } from './pages/collection-page/my-games-page/my-games-page.component'
 import { ReviewsPageComponent } from './pages/collection-page/reviews-page/reviews-page.component'
+import { WishlistPageComponent } from './pages/collection-page/wishlist-page/wishlist-page.component'
 import { DashboardPageComponent } from './pages/dashboard-page/dashboard-page.component'
 import { PageNotFoundComponent } from './pages/errors/page-not-found/page-not-found.component'
 import { GameViewPageComponent } from './pages/games/game-view/game-view.component'
@@ -30,7 +31,6 @@ import { SettingsAccountComponent } from './pages/settings/account/settings-acco
 import { SettingsContactComponent } from './pages/settings/contact/settings-contact.component'
 import { SettingsSecurityComponent } from './pages/settings/security/settings-security.component'
 import { SettingsPageComponent } from './pages/settings/settings.component'
-import { WishlistPageComponent } from './pages/collection-page/wishlist-page/wishlist-page.component'
 
 /**
  * Which route uses LayoutBasicComponent and which uses LayoutCompleteComponent?

@@ -1,13 +1,13 @@
 import { Component, computed, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { CardGameComponent } from '../../../components/card-game/card-game.component'
-import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
-import { DataService } from '../../../core/services/data.service'
-import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
-import { ButtonComponent } from '../../../components/ui/button/button.component'
-import { LoadingService } from '../../../core/services/loading.service'
-import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
 import { SkeletonCardGroupComponent } from '../../../components/skeletons/skeleton-card-group/skeleton-card-group.component'
+import { ButtonComponent } from '../../../components/ui/button/button.component'
+import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
+import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
+import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
+import { DataService } from '../../../core/services/data.service'
+import { LoadingService } from '../../../core/services/loading.service'
 
 @Component({
     imports: [CardGameComponent, ContainerWrapperComponent, RouterLink, PageHeaderComponent, ButtonComponent, SkeletonCardGroupComponent],

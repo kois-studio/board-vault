@@ -901,9 +901,9 @@ export class DatabaseService implements OnModuleInit {
 
     // #region Wishlist
 
-    getWishlistedGames(accountId: number) {
+    getWishlistByAccountId(accountId: number) {
         return this._tursoExecute({
-            sql: `SELECT w.gameId FROM WishlistedGame w WHERE w.accountId = ?`,
+            sql: `SELECT * FROM WishlistedGame w WHERE w.accountId = ?`,
             args: [accountId],
         })
     }
