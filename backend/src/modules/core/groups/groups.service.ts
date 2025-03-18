@@ -4,10 +4,8 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { groupsSchema } from '../../../common/schemas'
 import { DatabaseService } from '../../common/database/database.service'
 
-import type { GameDto } from '../../../common/types/game.type'
 import type { CreateGroupBody, GroupDto, UpdateGroupBody } from '../../../common/types/group.type'
 import type { InvitationWithAccountsData } from '../../../common/types/invitation.type'
-import type { MeetWithAttendeesAndGames } from '../../../common/types/meet.type'
 import type { AvatarDto, UserGetDto } from '../../../common/types/user.type'
 
 @Injectable()
@@ -131,20 +129,5 @@ export class GroupsService {
                     avatar: JSON.parse(String(invitation.toAccount.avatar)) as AvatarDto,
                 },
             }))
-    }
-
-    async getGroupMeetings(groupId: number): Promise<Array<MeetWithAttendeesAndGames>> {
-        this.LOGGER.log(`Getting all meetings for group ${groupId}`)
-        const resultSet = await this.databaseService.getGroupMeetings(groupId)
-
-        return resultSet.rows.map(row => ({
-            id: Number(row[0]),
-            groupId: Number(row[1]),
-            createdBy: Number(row[2]),
-            meetDate: String(row[3]),
-            isConfirmed: Boolean(row[4]),
-            attendees: JSON.parse(String(row[5])) as Array<UserGetDto['id']>,
-            playedGames: JSON.parse(String(row[6])) as Array<GameDto['id']>,
-        }))
     }
 }

@@ -4,7 +4,6 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
 import { CreateGroupBody, GroupDto, UpdateGroupBody } from '../../../common/types/group.type'
 import { InvitationWithAccountsData } from '../../../common/types/invitation.type'
-import { MeetWithAttendeesAndGames } from '../../../common/types/meet.type'
 
 import { GroupsService } from './groups.service'
 
@@ -52,17 +51,11 @@ export class GroupsController {
         return this.groupsService.deleteGroupById(groupId)
     }
 
+    // TODO: migrate to dashboard controller
     @Get('/:groupId/invitations')
     @ApiOperation({ summary: 'Get all group invitations' })
     @ApiResponse({ status: 200, type: [InvitationWithAccountsData] })
     getGroupInvitations(@Param('groupId', ParseIntPipe) groupId: number) {
         return this.groupsService.getGroupInvitations(groupId)
-    }
-
-    @Get('/:groupId/meetings')
-    @ApiOperation({ summary: 'Get all group meetings' })
-    @ApiResponse({ status: 200, type: [MeetWithAttendeesAndGames] })
-    getGroupMeetings(@Param('groupId', ParseIntPipe) groupId: number) {
-        return this.groupsService.getGroupMeetings(groupId)
     }
 }
