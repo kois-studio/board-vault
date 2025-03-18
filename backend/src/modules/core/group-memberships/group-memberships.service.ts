@@ -48,6 +48,14 @@ export class GroupMembershipsService {
         return memberships[0]
     }
 
+    async getSafeGroupMembershipById(accountId: number, groupId: number): Promise<null | GroupMembershipDto> {
+        try {
+            return await this.getGroupMembershipById(accountId, groupId)
+        } catch (error) {
+            this.LOGGER.error('Failed to get safe group membership by id', error)
+            return null
+        }
+    }
     async getGroupMembershipsByAccountId(accountId: number): Promise<Array<GroupMembershipDto>> {
         this.LOGGER.log(`Getting memberships for account ${accountId}`)
         const resultSet = await this.databaseService.getGroupMembershipsByAccountId(accountId)

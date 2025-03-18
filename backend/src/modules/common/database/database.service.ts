@@ -786,6 +786,13 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    getMeetsByGroupId(groupId: number) {
+        return this._tursoExecute({
+            sql: 'SELECT * FROM Meet WHERE groupId = ?',
+            args: [groupId],
+        })
+    }
+
     getMeetDetailsById(meetId: number) {
         return this._tursoExecute({
             sql: `
