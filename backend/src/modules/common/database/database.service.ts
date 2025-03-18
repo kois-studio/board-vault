@@ -338,32 +338,6 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
-    getGroupMeetings(groupId: number) {
-        return this._tursoExecute({
-            sql: `
-            SELECT 
-                m.id,
-                m.groupId,
-                m.createdBy,
-                m.meetDate,
-                m.isConfirmed,
-                (
-                    SELECT json_group_array(ma.accountId)
-                    FROM MeetAttendee ma
-                    WHERE ma.meetId = m.id
-                ) AS attendees,
-                (
-                    SELECT json_group_array(mg.gameId)
-                    FROM MeetGame mg
-                    WHERE mg.meetId = m.id
-                ) AS playedGames
-            FROM Meet m
-            WHERE m.groupId = ?
-            `,
-            args: [groupId],
-        })
-    }
-
     // #region Membership
 
     getGroupMemberships() {
