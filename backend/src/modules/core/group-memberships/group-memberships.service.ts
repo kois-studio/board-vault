@@ -56,6 +56,7 @@ export class GroupMembershipsService {
             return null
         }
     }
+
     async getGroupMembershipsByAccountId(accountId: number): Promise<Array<GroupMembershipDto>> {
         this.LOGGER.log(`Getting memberships for account ${accountId}`)
         const resultSet = await this.databaseService.getGroupMembershipsByAccountId(accountId)

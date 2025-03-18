@@ -5,6 +5,7 @@ import { GamesService } from '../../core/games/games.service'
 import { GamesOwnedService } from '../../core/games-owned/games-owned.service'
 import { GroupMembershipsService } from '../../core/group-memberships/group-memberships.service'
 import { GroupsService } from '../../core/groups/groups.service'
+import { MeetAccountGamesService } from '../../core/meet-account-games/meet-account-games.service'
 import { MeetsService } from '../../core/meets/meets.service'
 import { ReviewsService } from '../../core/reviews/reviews.service'
 import { UsersService } from '../../core/users/users.service'
@@ -13,7 +14,6 @@ import type { SuccessDto } from '../../../common/types/auth.type'
 import type { GroupMemberWithGames, GroupWithMembersAndGames } from '../../../common/types/group.type'
 import type { MeetCreatedDto, MeetWithAttendeesAndGames } from '../../../common/types/meet.type'
 import type { UserWithGames } from '../../../common/types/user.type'
-import { MeetAccountGamesService } from 'src/modules/core/meet-account-games/meet-account-games.service'
 
 @Injectable()
 export class DashboardService {
