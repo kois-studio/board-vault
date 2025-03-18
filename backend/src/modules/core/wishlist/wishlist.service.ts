@@ -2,8 +2,10 @@ import { ResultSet } from '@libsql/client/.'
 import { Injectable, Logger } from '@nestjs/common'
 
 import { wishlistedGamesSchema } from '../../../common/schemas/db-wishlisted-game.schema'
-import { WishlistedGameDto } from '../../../common/types/wishlisted-game.type'
 import { DatabaseService } from '../../common/database/database.service'
+
+import type { GameDto } from '../../../common/types/game.type'
+import type { WishlistedGameDto } from '../../../common/types/wishlisted-game.type'
 
 @Injectable()
 export class WishlistService {
@@ -36,6 +38,12 @@ export class WishlistService {
     }
 
     // #region methods
+
+    async getWishlistByAccountId(accountId: number): Promise<Array<GameDto['id']>> {
+        const resultSet = await this.databaseService.getWishlistByAccountId(accountId)
+
+        return this._parseResultSet(resultSet).map(game => game.gameId)
+    }
 
     async isGameWishlisted(accountId: number, gameId: number): Promise<boolean> {
         const resultSet = await this.databaseService.getWishlistById(accountId, gameId)

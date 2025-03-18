@@ -139,4 +139,10 @@ export class CollectionService {
             }),
         )
     }
+
+    async getUserWishlist(userId: number): Promise<Array<GameDto>> {
+        const wishlist = await this.wishlistService.getWishlistByAccountId(userId)
+
+        return Promise.all(wishlist.map(async gameId => this.gamesService.getGameById(gameId)))
+    }
 }
