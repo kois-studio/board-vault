@@ -30,6 +30,7 @@ import { SettingsAccountComponent } from './pages/settings/account/settings-acco
 import { SettingsContactComponent } from './pages/settings/contact/settings-contact.component'
 import { SettingsSecurityComponent } from './pages/settings/security/settings-security.component'
 import { SettingsPageComponent } from './pages/settings/settings.component'
+import { WishlistPageComponent } from './pages/collection-page/wishlist-page/wishlist-page.component'
 
 /**
  * Which route uses LayoutBasicComponent and which uses LayoutCompleteComponent?
@@ -60,6 +61,7 @@ export const routes: Routes = [
             { path: 'groups', component: GroupsPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'collection', component: CollectionPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'collection/games', component: MyGamesPageComponent, canActivate: [AuthOnlyGuard] },
+            { path: 'collection/wishlist', component: WishlistPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'collection/reviews', component: ReviewsPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'games/:gameId', component: GameViewPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'play', component: PlayPageComponent, canActivate: [AuthOnlyGuard] },

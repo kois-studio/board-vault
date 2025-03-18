@@ -20,6 +20,7 @@ export class LoadingService {
         [LOADING_KEYS.USER_GROUPS]: true,
         [LOADING_KEYS.USER_MEETS]: true,
         [LOADING_KEYS.USER_GAMES_HISTORY]: true,
+        [LOADING_KEYS.USER_WISHLIST]: true,
     })
 
     // --------------------------------------------------------------------------
