@@ -8,6 +8,7 @@ import { RegisterComponent } from './pages/auth/register/register.component'
 import { ResetPasswordRequestComponent } from './pages/auth/reset-password-request/reset-password-request.component'
 import { ResetPasswordTokenComponent } from './pages/auth/reset-password-token/reset-password-token.component'
 import { VerifyEmailComponent } from './pages/auth/verify-email/verify-email.component'
+import { BrowsePageComponent } from './pages/collection-page/browse-page/browse-page.component'
 import { CollectionPageComponent } from './pages/collection-page/collection-page.component'
 import { MyGamesPageComponent } from './pages/collection-page/my-games-page/my-games-page.component'
 import { ReviewsPageComponent } from './pages/collection-page/reviews-page/reviews-page.component'
@@ -61,8 +62,9 @@ export const routes: Routes = [
             { path: 'groups', component: GroupsPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'collection', component: CollectionPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'collection/games', component: MyGamesPageComponent, canActivate: [AuthOnlyGuard] },
-            { path: 'collection/wishlist', component: WishlistPageComponent, canActivate: [AuthOnlyGuard] },
+            { path: 'collection/browse', component: BrowsePageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'collection/reviews', component: ReviewsPageComponent, canActivate: [AuthOnlyGuard] },
+            { path: 'collection/wishlist', component: WishlistPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'games/:gameId', component: GameViewPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'play', component: PlayPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'play/history', component: HistoryPageComponent, canActivate: [AuthOnlyGuard] },
