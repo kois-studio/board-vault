@@ -62,7 +62,7 @@ export class CollectionService {
 
         // Get play history
         const playHistoryRecords = await this.meetAccountGamesService.getMeetAccountGamesBy({ accountId: userId, gameId })
-        const playHistory: GameViewDto['playHistory'] = await Promise.all(
+        const playHistoryData: GameViewDto['playHistory'] = await Promise.all(
             playHistoryRecords.map(async record => {
                 const meetData = await this.meetsService.getMeetById(record.meetId)
                 const groupData = await this.groupsService.getGroupById(meetData.groupId)
@@ -99,7 +99,7 @@ export class CollectionService {
                 avgGlobalRating,
             },
             similarGames: similarGamesFiltered,
-            playHistory,
+            playHistory: playHistoryData,
         }
     }
 
