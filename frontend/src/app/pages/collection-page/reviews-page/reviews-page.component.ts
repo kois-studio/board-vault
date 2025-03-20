@@ -1,12 +1,14 @@
 import { CommonModule } from '@angular/common'
 import { Component, effect } from '@angular/core'
+import { RouterLink } from '@angular/router'
 import type { GameType, UserType } from '../../../api/api.types'
+import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
-import { TitleSubtitleComponent } from '../../../components/ui/title-subtitle/title-subtitle.component'
+import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
 import { DataService } from '../../../core/services/data.service'
 
 @Component({
-    imports: [CommonModule, ContainerWrapperComponent, TitleSubtitleComponent],
+    imports: [CommonModule, ContainerWrapperComponent, PageHeaderComponent, ButtonComponent, RouterLink],
     templateUrl: 'reviews-page.component.html',
 })
 export class ReviewsPageComponent {

@@ -1,6 +1,10 @@
-<container-wrapper>
-    <title-subtitle titleText="Game Reviews"> Rate your favorite board games </title-subtitle>
+<app-page-header titleText="Game Reviews" [showActionButton]="true">
+    Your reviews of board games
 
+    <app-button class="action-button" icon="plus-lg" routerLink="/collection/browse">Explore Games</app-button>
+</app-page-header>
+
+<container-wrapper>
     @if(userReviews.length === 0) {
     <div class="text-zinc-500 text-center p-8 bg-zinc-800/50 rounded-lg">
         <i class="bi bi-stars text-4xl mb-2"></i>
