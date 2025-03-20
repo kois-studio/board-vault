@@ -20,4 +20,5 @@ export class CollectionPageComponent {
     public readonly currentUser$ = this.dataService.currentUser
     public readonly userGames$ = this.dataService.userGames
     public readonly userReviews$ = this.dataService.userReviews
+    public readonly userWishlist$ = this.dataService.userWishlist
 }
