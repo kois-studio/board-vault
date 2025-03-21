@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core'
 import { CardSectionComponent } from '../../components/cards/card-section/card-section.component'
-import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
+import { CollectionActivityComponent } from '../../components/collection-activity/collection-activity.component'
 import { BadgeComponent } from '../../components/ui/badge/badge.component'
 import { ButtonComponent } from '../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
@@ -8,7 +8,14 @@ import { PageHeaderComponent } from '../../components/ui/page-header/page-header
 import { DataService } from '../../core/services/data.service'
 
 @Component({
-    imports: [PageHeaderComponent, ButtonComponent, ContainerWrapperComponent, CardSectionComponent, BadgeComponent, ImageProfileComponent],
+    imports: [
+        PageHeaderComponent,
+        ButtonComponent,
+        ContainerWrapperComponent,
+        CardSectionComponent,
+        BadgeComponent,
+        CollectionActivityComponent,
+    ],
     templateUrl: 'collection-page.component.html',
 })
 export class CollectionPageComponent {
@@ -21,4 +28,5 @@ export class CollectionPageComponent {
     public readonly userGames$ = this.dataService.userGames
     public readonly userReviews$ = this.dataService.userReviews
     public readonly userWishlist$ = this.dataService.userWishlist
+    public readonly userCollectionActivity$ = this.dataService.userCollectionActivity
 }
