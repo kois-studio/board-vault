@@ -22,7 +22,7 @@ export class CollectionActivityService {
             accountId: Number(row[1]),
             gameId: Number(row[2]),
             actionType: String(row[3]) as CollectionActivityDto['actionType'],
-            actionDetails: row[4] ? JSON.parse(String(row[4])) : null,
+            actionDetails: JSON.parse(String(row[4])),
             createdAt: String(row[5]),
         }))
 
