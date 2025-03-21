@@ -109,12 +109,6 @@ export class Api {
         })
     }
 
-    // #region game reviews
-
-    saveGameReview(accountId: number, gameId: number, review: number) {
-        return this.http.post<{ success: true }>(`${this.url}/reviews/`, { accountId, gameId, review })
-    }
-
     // #region meetings
 
     createMeeting(accountId: number, groupId: number) {
@@ -181,6 +175,10 @@ export class Api {
 
     getUserReviews(userId: number) {
         return this.http.get<Array<GameReviewWithGameData>>(`${this.url}/collection/users/${userId}/reviews`)
+    }
+
+    saveGameReview(userId: number, gameId: number, review: number) {
+        return this.http.post<{ success: true }>(`${this.url}/collection/users/${userId}/reviews/${gameId}`, { review })
     }
 
     getUserWishlist(userId: number) {
