@@ -15,7 +15,7 @@ import { WishlistService } from '../../core/wishlist/wishlist.service'
 
 import type { SuccessDto } from '../../../common/types/auth.type'
 import type { CollectionActivityDto } from '../../../common/types/collection-activity.type'
-import type { GameReviewWithGameDataDto } from '../../../common/types/game-review.type'
+import type { CreateGameReviewBody, GameReviewWithGameDataDto } from '../../../common/types/game-review.type'
 import type { GameDto, GameViewDto } from '../../../common/types/game.type'
 
 @Injectable()
@@ -144,6 +144,17 @@ export class CollectionService {
                 return { ...review, gameData: game }
             }),
         )
+    }
+
+    @LogFeature(new Logger('CollectionService'))
+    async saveGameReview(userId: number, gameId: number, gameReviewDto: CreateGameReviewBody) {
+        const result = await this.reviewsService.saveGameReview(gameReviewDto)
+
+        if (result.success) {
+            await this.collectionActivityService.logCollectionActivity(userId, gameId, 'rated', { rating: gameReviewDto.review })
+        }
+
+        return result
     }
 
     @LogFeature(new Logger('CollectionService'))

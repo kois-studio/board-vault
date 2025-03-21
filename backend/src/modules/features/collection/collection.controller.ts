@@ -7,7 +7,7 @@ import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
 import { SuccessDto } from '../../../common/types/auth.type'
 import { CollectionActivityDto } from '../../../common/types/collection-activity.type'
 import { GameOwnedDto, UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
-import { GameReviewWithGameDataDto } from '../../../common/types/game-review.type'
+import { CreateGameReviewBody, GameReviewWithGameDataDto } from '../../../common/types/game-review.type'
 import { GameDto, GameViewDto } from '../../../common/types/game.type'
 import { WishlistResponseDto } from '../../../common/types/wishlisted-game.type'
 
@@ -81,6 +81,18 @@ export class CollectionController {
     @ApiResponse({ status: 200, type: [GameReviewWithGameDataDto], description: 'List of all reviews of the user' })
     async getReviewsOfUser(@Param('userId', ParseIntPipe) userId: number) {
         return this.collectionService.getReviewsOfUser(userId)
+    }
+
+    @UseGuards(UserOwnershipGuard)
+    @Post('/users/:userId/reviews/:gameId')
+    @ApiOperation({ summary: 'Save a game review', deprecated: false })
+    @ApiResponse({ status: 200, type: SuccessDto, description: 'The review has been succesfully saved' })
+    async saveGameReview(
+        @Param('userId', ParseIntPipe) userId: number,
+        @Param('gameId', ParseIntPipe) gameId: number,
+        @Body() gameReviewDto: CreateGameReviewBody
+    ) {
+        return this.collectionService.saveGameReview(userId, gameId, gameReviewDto)
     }
 
     @Get('/users/:userId/wishlist')
