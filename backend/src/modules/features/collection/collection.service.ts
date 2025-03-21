@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common'
 
 import { LogFeature } from '../../../common/decorators/logger.decorator'
 import { UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
+import { CollectionActivityService } from '../../../modules/core/collection-activity/collection-activity.service'
 import { GamesService } from '../../core/games/games.service'
 import { GamesOwnedService } from '../../core/games-owned/games-owned.service'
 import { GroupsService } from '../../core/groups/groups.service'
@@ -13,6 +14,7 @@ import { UsersService } from '../../core/users/users.service'
 import { WishlistService } from '../../core/wishlist/wishlist.service'
 
 import type { SuccessDto } from '../../../common/types/auth.type'
+import type { CollectionActivityDto } from '../../../common/types/collection-activity.type'
 import type { GameReviewWithGameDataDto } from '../../../common/types/game-review.type'
 import type { GameDto, GameViewDto } from '../../../common/types/game.type'
 
@@ -28,6 +30,7 @@ export class CollectionService {
         private readonly wishlistService: WishlistService,
         private readonly gamesOwnedService: GamesOwnedService,
         private readonly meetAccountGamesService: MeetAccountGamesService,
+        private readonly collectionActivityService: CollectionActivityService,
     ) {}
 
     @LogFeature(new Logger('CollectionService'))
@@ -103,6 +106,7 @@ export class CollectionService {
         }
     }
 
+    @LogFeature(new Logger('CollectionService'))
     async addGameToUserCollection(userId: number, gameId: number): Promise<SuccessDto> {
         const result = await this.gamesOwnedService.createGamesOwned({
             accountId: userId,
@@ -115,12 +119,14 @@ export class CollectionService {
         return { success: result.success }
     }
 
+    @LogFeature(new Logger('CollectionService'))
     async removeGameFromUserCollection(userId: number, gameId: number): Promise<SuccessDto> {
         const result = await this.gamesOwnedService.deleteGamesOwnedById(userId, gameId)
 
         return { success: result.success }
     }
 
+    @LogFeature(new Logger('CollectionService'))
     async updateGameOwnership(userId: number, gameId: number, body: UpdateGameOwnedDto) {
         const updatedGameOwned = await this.gamesOwnedService.updateGameOwned(userId, gameId, body)
 
@@ -140,9 +146,15 @@ export class CollectionService {
         )
     }
 
+    @LogFeature(new Logger('CollectionService'))
     async getUserWishlist(userId: number): Promise<Array<GameDto>> {
         const wishlist = await this.wishlistService.getWishlistByAccountId(userId)
 
         return Promise.all(wishlist.map(async gameId => this.gamesService.getGameById(gameId)))
+    }
+
+    @LogFeature(new Logger('CollectionService'))
+    async getUserCollectionActivities(userId: number): Promise<Array<CollectionActivityDto>> {
+        return await this.collectionActivityService.getUserCollectionActivities(userId)
     }
 }
