@@ -75,29 +75,29 @@ export class ReviewsService {
         return this._parseResultSet(resultSet)
     }
 
-    async saveGameReview(gameReviewDto: CreateGameReviewBody) {
+    async saveGameReview(accountId: number, gameId: number, review: number) {
         // NOTE: the review may alread exist
-        this.LOGGER.log(`Saving gameReview ${gameReviewDto.accountId} - ${gameReviewDto.gameId}`)
+        this.LOGGER.log(`Saving gameReview ${accountId} - ${gameId}`)
         try {
             // check if the review already exists
-            const existingReview = await this.getSafeGameReviewsById(gameReviewDto.accountId, gameReviewDto.gameId)
+            const existingReview = await this.getSafeGameReviewsById(accountId, gameId)
 
             // its the same, so skip 1 query
-            if (existingReview && existingReview?.review === gameReviewDto.review) {
-                this.LOGGER.log(`Review ${gameReviewDto.accountId} - ${gameReviewDto.gameId} already exists, skipping`)
+            if (existingReview && existingReview?.review === review) {
+                this.LOGGER.log(`Review ${accountId} - ${gameId} already exists, skipping`)
                 return { success: true }
             }
 
             if (existingReview) {
                 // update the review
-                await this.databaseService.deleteGameReviewById(gameReviewDto.accountId, gameReviewDto.gameId)
+                await this.databaseService.deleteGameReviewById(accountId, gameId)
             }
 
             // create the review
-            await this.databaseService.createGameReview(gameReviewDto)
+            await this.databaseService.createGameReview(accountId, gameId, review)
 
             // invalidate the cache
-            await this.cacheService.deleteOne(`${this.CACHE_KEY}:userReviewsWithGameData:${gameReviewDto.accountId}`)
+            await this.cacheService.deleteOne(`${this.CACHE_KEY}:userReviewsWithGameData:${accountId}`)
 
             return { success: true }
         } catch (error) {

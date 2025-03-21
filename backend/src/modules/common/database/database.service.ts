@@ -5,7 +5,6 @@ import * as bcrypt from 'bcrypt'
 
 import type { CollectionActivityDto } from '../../../common/types/collection-activity.type'
 import type { GameOwnedDto, UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
-import type { CreateGameReviewBody } from '../../../common/types/game-review.type'
 import type { CreateGameBody, UpdateGameBody } from '../../../common/types/game.type'
 import type { CreateGroupMembershipBody } from '../../../common/types/group-membership.type'
 import type { CreateGroupBody, UpdateGroupBody } from '../../../common/types/group.type'
@@ -706,10 +705,10 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
-    createGameReview(gameReviewDto: CreateGameReviewBody) {
+    createGameReview(accountId: number, gameId: number, review: number) {
         return this._tursoExecute({
             sql: 'INSERT INTO GameReview (accountId, gameId, review) VALUES (?, ?, ?)',
-            args: [gameReviewDto.accountId, gameReviewDto.gameId, gameReviewDto.review],
+            args: [accountId, gameId, review],
         })
     }
 

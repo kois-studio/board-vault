@@ -90,7 +90,7 @@ export class CollectionController {
     async saveGameReview(
         @Param('userId', ParseIntPipe) userId: number,
         @Param('gameId', ParseIntPipe) gameId: number,
-        @Body() gameReviewDto: CreateGameReviewBody
+        @Body() gameReviewDto: CreateGameReviewBody,
     ) {
         return this.collectionService.saveGameReview(userId, gameId, gameReviewDto)
     }
