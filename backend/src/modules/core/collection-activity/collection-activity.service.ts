@@ -1,5 +1,5 @@
 import { ResultSet } from '@libsql/client/.'
-import { Injectable, Logger } from '@nestjs/common'
+import { BadRequestException, Injectable, Logger } from '@nestjs/common'
 
 import { collectionActivitiesSchema } from '../../../common/schemas/db-collection-activity.schema'
 import { CollectionActivityDto } from '../../../common/types/collection-activity.type'
@@ -60,5 +60,37 @@ export class CollectionActivityService {
         await this.cacheService.set(`${this.CACHE_KEY}:byAccountId:${accountId}`, collectionActivities)
 
         return collectionActivities
+    }
+
+    async logCollectionActivity(
+        accountId: number,
+        gameId: number,
+        actionType: CollectionActivityDto['actionType'],
+        actionDetails: CollectionActivityDto['actionDetails'],
+    ) {
+        this.LOGGER.log(`Logging collection activity for account ${accountId} and game ${gameId}`)
+        try {
+            const collectionActivity: Omit<CollectionActivityDto, 'id'> = {
+                accountId,
+                gameId,
+                actionType,
+                actionDetails,
+                createdAt: new Date().toISOString(),
+            }
+
+            const result = await this.databaseService.createCollectionActivity(collectionActivity)
+
+            if (result.rowsAffected === 0) {
+                throw new BadRequestException('Failed to log collection activity')
+            }
+
+            // Clear cache
+            await this.cacheService.deleteOne(`${this.CACHE_KEY}:byAccountId:${accountId}`)
+
+            return { success: true }
+        } catch (error) {
+            this.LOGGER.error('Failed to log collection activity', error)
+            throw new BadRequestException('Failed to log collection activity')
+        }
     }
 }
