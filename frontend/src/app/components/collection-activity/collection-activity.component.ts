@@ -43,10 +43,11 @@ export class CollectionActivityComponent {
 
     // Helper method to format date as relative time
     formatTimeAgo(dateString: string): string {
-        // Parse the server's UTC date string
-        const date = new Date(dateString)
+        // Handle server date format by explicitly treating it as UTC
+        // The server sends dates without timezone info but they are in UTC
+        const date = new Date(`${dateString.replace(' ', 'T')}Z`)
         const now = new Date()
-        
+
         // Calculate the time difference in seconds
         const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
 
@@ -73,7 +74,7 @@ export class CollectionActivityComponent {
         return date.toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'short',
-            day: 'numeric'
+            day: 'numeric',
         })
     }
 }
