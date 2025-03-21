@@ -200,6 +200,6 @@ export type CollectionActivityType = {
     accountId: number
     gameId: number
     actionType: 'added' | 'rated' | 'wishlisted' | 'unwishlisted' | 'updated' | 'removed'
-    actionDetails: Record<string, any> | null
+    actionDetails: null | { rating: null | number }
     createdAt: string
 }
