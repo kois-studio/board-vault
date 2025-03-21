@@ -18,13 +18,8 @@
             <!-- Badge -->
             <app-badge class="app-card-section-badge" color="blue" [text]="userGames$().length + ' games'" />
 
-            <!-- Content-->
-            <div class="flex -space-x-2">
-                <!-- TODO: show some game images-->
-                <app-image-profile class="border-2 rounded-full border-blue-100 dark:border-zinc-800" [avatar]="currentUser$()?.avatar" />
-                <app-image-profile class="border-2 rounded-full border-blue-100 dark:border-zinc-800" [avatar]="currentUser$()?.avatar" />
-                <app-image-profile class="border-2 rounded-full border-blue-100 dark:border-zinc-800" [avatar]="currentUser$()?.avatar" />
-            </div>
+            <!-- Content -->
+            <div></div>
 
             <!-- View all highlight -->
             <span class="text-blue-600 dark:text-blue-400 group-hover:underline flex items-center text-sm font-medium"> View all > </span>
@@ -40,7 +35,7 @@
             description="Find new games to add to your collection"
             cardLink="/collection/browse"
         >
-            <!-- Content-->
+            <!-- Content -->
             <div></div>
 
             <!-- View all highlight -->
@@ -60,14 +55,8 @@
             <!-- Badge -->
             <app-badge class="app-card-section-badge" color="orange" [text]="userReviews$().length + ' reviews'" />
 
-            <!-- Content-->
-            <div class="grid grid-cols-3 gap-2 w-full">
-                <div class="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-2 text-center">
-                    <span class="block text-xl font-bold text-orange-600 dark:text-orange-400">3</span>
-                    <span class="text-xs text-zinc-500 dark:text-zinc-400">Pending reviews</span>
-                </div>
-                <div></div>
-            </div>
+            <!-- Content -->
+            <div></div>
 
             <!-- View all highlight -->
             <span class="text-orange-600 dark:text-orange-400 group-hover:underline flex items-center text-sm font-medium text-nowrap">
@@ -88,13 +77,8 @@
             <!-- Badge -->
             <app-badge class="app-card-section-badge" color="red" [text]="userWishlist$().length + ' games'" />
 
-            <!-- Content-->
-            <div class="flex -space-x-2">
-                <!-- TODO: show some game images-->
-                <!-- <app-image-profile class="border-2 rounded-full border-red-100 dark:border-zinc-800" [avatar]="currentUser$()?.avatar" />
-                <app-image-profile class="border-2 rounded-full border-red-100 dark:border-zinc-800" [avatar]="currentUser$()?.avatar" />
-                <app-image-profile class="border-2 rounded-full border-red-100 dark:border-zinc-800" [avatar]="currentUser$()?.avatar" /> -->
-            </div>
+            <!-- Content -->
+            <div></div>
 
             <!-- View all highlight -->
             <span class="text-red-600 dark:text-red-400 group-hover:underline flex items-center text-sm font-medium"> View all > </span>
