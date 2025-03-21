@@ -1,0 +1,69 @@
+    <h2 class="text-lg font-medium text-zinc-900 dark:text-white mb-4">Recent Activity</h2>
+    <div class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 overflow-hidden">
+        @if (userCollectionActivity$().length === 0) {
+            <div class="p-8 text-center text-zinc-500 dark:text-zinc-400">
+                <p>No recent activity found.</p>
+            </div>
+        } @else {
+            <ul class="divide-y divide-zinc-200 dark:divide-zinc-700">
+                @for (activity of userCollectionActivitySortedComputed() | slice:0:(showAllActivity ? userCollectionActivitySortedComputed().length : 5); track activity.id) {
+                    <li class="p-4 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition">
+                        <div class="flex items-center">
+                            <!-- Icon based on action type -->
+                            <div class="w-10 h-10 bg-rose-100 dark:bg-rose-900/30 rounded-full flex items-center justify-center mr-4">
+                                <span class="text-rose-600 dark:text-rose-400">
+                                    <!-- TODO: add icon for each type -->
+                                    <i class="bi" [ngClass]="{
+                                        'bi-heart-fill': activity.actionType === 'wishlisted',
+                                        'bi-heartbreak': activity.actionType === 'unwishlisted',
+                                    }"></i>
+                                </span>
+                            </div>
+                            
+                            <div>
+                                <p class="text-sm text-zinc-900 dark:text-white">
+                                    <!-- TODO: review if this works fine -->
+                                    @switch (activity.actionType) {
+                                        @case ('added') {
+                                            You added <span class="font-medium">{{ getGameName(activity.gameId) }}</span> to your collection
+                                        }
+                                        @case ('rated') {
+                                            You rated <span class="font-medium">{{ getGameName(activity.gameId) }}</span> 
+                                            @if (activity.actionDetails && activity.actionDetails['rating'] !== null) {
+                                                with {{ activity.actionDetails['rating'] }} stars
+                                            }
+                                        }
+                                        @case ('removed') {
+                                            You removed <span class="font-medium">{{ getGameName(activity.gameId) }}</span> from your collection
+                                        }
+                                        @case ('wishlisted') {
+                                            You added <span class="font-medium">{{ getGameName(activity.gameId) }}</span> to your wishlist
+                                        }
+                                        @case ('unwishlisted') {
+                                            You removed <span class="font-medium">{{ getGameName(activity.gameId) }}</span> from your wishlist
+                                        }
+                                        @case ('updated') {
+                                            You updated <span class="font-medium">{{ getGameName(activity.gameId) }}</span> in your collection
+                                        }
+                                        @default {
+                                            Activity with <span class="font-medium">{{ getGameName(activity.gameId) }}</span>
+                                        }
+                                    }
+                                </p>
+                                <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">{{ formatTimeAgo(activity.createdAt) }}</p>
+                            </div>
+                        </div>
+                    </li>
+                }
+            </ul>
+            @if (userCollectionActivity$().length > 5) {
+                <div class="bg-zinc-50 dark:bg-zinc-900/50 p-4 text-center">
+                    <button 
+                        (click)="showAllActivity = !showAllActivity" 
+                        class="text-sm text-indigo-600 dark:text-indigo-400 font-medium hover:underline cursor-pointer">
+                        {{ showAllActivity ? 'Show less' : 'View all activity' }}
+                    </button>
+                </div>
+            }
+        }
+    </div>
