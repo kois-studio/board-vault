@@ -3,11 +3,11 @@ import { Module } from '@nestjs/common'
 import { CacheModule } from '../../common/cache/cache.module'
 import { DatabaseModule } from '../../common/database/database.module'
 
-import { TagsService } from './tags.service'
+import { CollectionActivityService } from './collection-activity.service'
 
 @Module({
     imports: [DatabaseModule, CacheModule],
-    providers: [TagsService],
-    exports: [TagsService],
+    providers: [CollectionActivityService],
+    exports: [CollectionActivityService],
 })
-export class TagsModule {}
+export class CollectionActivityModule {}
