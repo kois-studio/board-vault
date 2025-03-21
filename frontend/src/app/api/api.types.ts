@@ -191,3 +191,15 @@ export type HistoryRecordType = {
         playedBy: Array<UserType>
     }>
 }
+
+// --------------------------------------------------------------------------
+// #region collection activity
+// --------------------------------------------------------------------------
+export type CollectionActivityType = {
+    id: number
+    accountId: number
+    gameId: number
+    actionType: 'added' | 'rated' | 'wishlisted' | 'unwishlisted' | 'updated' | 'removed'
+    actionDetails: Record<string, any> | null
+    createdAt: string
+}

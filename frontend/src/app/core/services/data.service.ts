@@ -3,6 +3,7 @@ import { Router } from '@angular/router'
 import { catchError, concatMap, from, of, tap } from 'rxjs'
 import { Api } from '../../api/api'
 import type {
+    CollectionActivityType,
     GameReviewWithGameData,
     GameType,
     GroupWithMembersAndGames,
@@ -46,6 +47,7 @@ export class DataService {
     public readonly userMeets = signal<Array<MeetType>>([])
     public readonly userHistory = signal<Array<HistoryRecordType>>([])
     public readonly userWishlist = signal<Array<GameType>>([])
+    public readonly userCollectionActivity = signal<Array<CollectionActivityType>>([])
 
     // list of all games available to select
     public readonly gamesList = signal<Array<GameType>>([])
@@ -85,6 +87,7 @@ export class DataService {
                 this._getUserMeets(userType.id)
                 this._getUserHistory(userType.id)
                 this._getUserWishlist(userType.id)
+                this._getUserCollectionActivity(userType.id)
             },
             error: (error) => {
                 if (error.status === 401) {
@@ -221,6 +224,20 @@ export class DataService {
             },
             complete: () => {
                 this.loadingService.finish(LOADING_KEYS.USER_WISHLIST)
+            },
+        })
+    }
+
+    private _getUserCollectionActivity(userId: number) {
+        this.api.getUserCollectionActivity(userId).subscribe({
+            next: (collectionActivity) => {
+                this.userCollectionActivity.set(collectionActivity)
+            },
+            error: () => {
+                this.toastService.error("Error retrieving user's collection activity")
+            },
+            complete: () => {
+                this.loadingService.finish(LOADING_KEYS.USER_COLLECTION_ACTIVITY)
             },
         })
     }

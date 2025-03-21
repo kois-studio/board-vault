@@ -8,4 +8,5 @@ export enum LOADING_KEYS {
     USER_MEETS = 'userMeets',
     USER_GAMES_HISTORY = 'userGamesHistory',
     USER_WISHLIST = 'userWishlist',
+    USER_COLLECTION_ACTIVITY = 'userCollectionActivity',
 }
