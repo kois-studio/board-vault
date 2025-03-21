@@ -151,12 +151,6 @@ export class Api {
         return this.http.delete<{ success: true }>(`${this.url}/meetAccountGames/${accountId}/${meetId}/${gameId}`)
     }
 
-    // #region wishlist
-
-    toggleWishlist(accountId: number, gameId: number) {
-        return this.http.put<{ isWishlisted: boolean }>(`${this.url}/wishlist/${accountId}/${gameId}`, {})
-    }
-
     // --------------------------------------------------------------------------
     // #region collection
     // --------------------------------------------------------------------------
@@ -178,6 +172,10 @@ export class Api {
 
     patchGameOwnership(userId: number, gameId: number, ownedGameDto: UpdateGameOwnedType) {
         return this.http.patch<GameOwnedType>(`${this.url}/collection/users/${userId}/games/${gameId}/ownership`, ownedGameDto)
+    }
+
+    toggleWishlist(userId: number, gameId: number) {
+        return this.http.put<{ isWishlisted: boolean }>(`${this.url}/collection/users/${userId}/games/${gameId}/wishlist`, {})
     }
 
     getUserReviews(userId: number) {

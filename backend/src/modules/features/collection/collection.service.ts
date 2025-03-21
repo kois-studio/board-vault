@@ -157,4 +157,11 @@ export class CollectionService {
     async getUserCollectionActivities(userId: number): Promise<Array<CollectionActivityDto>> {
         return await this.collectionActivityService.getUserCollectionActivities(userId)
     }
+
+    @LogFeature(new Logger('CollectionService'))
+    async toggleWishlist(accountId: number, gameId: number): Promise<boolean> {
+        const isWishlisted = await this.wishlistService.toggleWishlist(accountId, gameId)
+
+        return isWishlisted
+    }
 }
