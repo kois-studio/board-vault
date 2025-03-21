@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Put, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
@@ -9,6 +9,7 @@ import { CollectionActivityDto } from '../../../common/types/collection-activity
 import { GameOwnedDto, UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
 import { GameReviewWithGameDataDto } from '../../../common/types/game-review.type'
 import { GameDto, GameViewDto } from '../../../common/types/game.type'
+import { WishlistResponseDto } from '../../../common/types/wishlisted-game.type'
 
 import { CollectionService } from './collection.service'
 
@@ -60,6 +61,19 @@ export class CollectionController {
         @Body() body: UpdateGameOwnedDto,
     ) {
         return this.collectionService.updateGameOwnership(userId, gameId, body)
+    }
+
+    @UseGuards(UserOwnershipGuard)
+    @Put('/users/:userId/games/:gameId/wishlist')
+    @ApiOperation({ summary: 'Toggle the wishlist status of the game', deprecated: false })
+    @ApiResponse({ status: 200, type: WishlistResponseDto })
+    async toggleWishlist(
+        @Param('userId', ParseIntPipe) userId: number,
+        @Param('gameId', ParseIntPipe) gameId: number,
+    ): Promise<WishlistResponseDto> {
+        const isWishlisted = await this.collectionService.toggleWishlist(userId, gameId)
+
+        return { isWishlisted }
     }
 
     @Get('/users/:userId/reviews')

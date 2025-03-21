@@ -59,6 +59,7 @@ export class WishlistService {
         } else {
             await this.databaseService.addGameToWishlist(accountId, gameId)
         }
-        return !isWishlisted
+
+        return this.isGameWishlisted(accountId, gameId)
     }
 }
