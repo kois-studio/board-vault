@@ -17,7 +17,7 @@ export class CollectionActivityDto {
         example: '{"rating": 4.5}',
         description: 'JSON string with additional details about the action',
     })
-    actionDetails: Record<string, any> | null
+    actionDetails: null | { rating: null | number }
 
     @ApiProperty({ example: '2024-09-28 10:02:39' })
     createdAt: string

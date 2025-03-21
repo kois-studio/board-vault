@@ -8,17 +8,10 @@ export const collectionActivitySchema = z.object({
     gameId: z.number().int().nonnegative(),
     actionType: actionTypeEnum,
     actionDetails: z
-        .string()
-        .nullable()
-        .transform(val => {
-            if (!val) return null
-            try {
-                return JSON.parse(val)
-            } catch {
-                return null
-            }
+        .object({
+            rating: z.number().int().nonnegative().nullable(),
         })
-        .pipe(z.record(z.any()).nullable()),
+        .nullable(),
     createdAt: z.string().refine(date => !isNaN(Date.parse(date)), { message: 'Invalid date format' }),
 })
 
