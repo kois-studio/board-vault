@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { environment } from '../../environments/environment'
 import type {
+    CollectionActivityType,
     GameOwnedType,
     GameReviewWithGameData,
     GameType,
@@ -184,6 +185,10 @@ export class Api {
 
     getUserWishlist(userId: number) {
         return this.http.get<Array<GameType>>(`${this.url}/collection/users/${userId}/wishlist`)
+    }
+
+    getUserCollectionActivity(userId: number) {
+        return this.http.get<Array<CollectionActivityType>>(`${this.url}/collection/users/${userId}/recent-activity`)
     }
 
     // --------------------------------------------------------------------------
