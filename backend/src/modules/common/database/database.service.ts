@@ -747,6 +747,15 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    // #region CollectionActivity
+
+    getUserCollectionActivities(accountId: number) {
+        return this._tursoExecute({
+            sql: 'SELECT * FROM CollectionActivity WHERE accountId = ?',
+            args: [accountId],
+        })
+    }
+
     // #region Meetings
 
     getMeets() {

@@ -156,6 +156,20 @@ CREATE TABLE IF NOT EXISTS GameReview (
 );
 
 -- -----------------------------------------------------
+-- Table 'CollectionActivity' (Account-Game n:m)
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS CollectionActivity (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    accountId INTEGER NOT NULL,
+    gameId INTEGER NOT NULL,
+    actionType TEXT NOT NULL, -- 'added', 'rated', 'wishlisted', 'removed'
+    actionDetails TEXT, -- JSON for additional details like rating value
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (accountId) REFERENCES Account(id) ON DELETE CASCADE,
+    FOREIGN KEY (gameId) REFERENCES Game(id) ON DELETE CASCADE
+);
+
+-- -----------------------------------------------------
 -- Table 'Meet'
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS Meet (
