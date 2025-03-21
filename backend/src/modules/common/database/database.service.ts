@@ -3,6 +3,7 @@ import { BadRequestException, Injectable, Logger, NotFoundException, OnModuleIni
 import { ConfigService } from '@nestjs/config'
 import * as bcrypt from 'bcrypt'
 
+import type { CollectionActivityDto } from '../../../common/types/collection-activity.type'
 import type { GameOwnedDto, UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
 import type { CreateGameReviewBody } from '../../../common/types/game-review.type'
 import type { CreateGameBody, UpdateGameBody } from '../../../common/types/game.type'
@@ -753,6 +754,18 @@ export class DatabaseService implements OnModuleInit {
         return this._tursoExecute({
             sql: 'SELECT * FROM CollectionActivity WHERE accountId = ?',
             args: [accountId],
+        })
+    }
+
+    createCollectionActivity(collectionActivityDto: Omit<CollectionActivityDto, 'id'>) {
+        return this._tursoExecute({
+            sql: 'INSERT INTO CollectionActivity (accountId, gameId, actionType, actionDetails) VALUES (?, ?, ?, ?)',
+            args: [
+                collectionActivityDto.accountId,
+                collectionActivityDto.gameId,
+                collectionActivityDto.actionType,
+                collectionActivityDto.actionDetails ? JSON.stringify(collectionActivityDto.actionDetails) : null,
+            ],
         })
     }
 

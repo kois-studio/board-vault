@@ -161,6 +161,9 @@ export class CollectionService {
     @LogFeature(new Logger('CollectionService'))
     async toggleWishlist(accountId: number, gameId: number): Promise<boolean> {
         const isWishlisted = await this.wishlistService.toggleWishlist(accountId, gameId)
+        const actionType = isWishlisted ? 'wishlisted' : 'unwishlisted'
+
+        await this.collectionActivityService.logCollectionActivity(accountId, gameId, actionType, null)
 
         return isWishlisted
     }
