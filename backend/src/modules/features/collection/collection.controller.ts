@@ -5,6 +5,7 @@ import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
 import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
 import { SuccessDto } from '../../../common/types/auth.type'
+import { CollectionActivityDto } from '../../../common/types/collection-activity.type'
 import { GameOwnedDto, UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
 import { GameReviewWithGameDataDto } from '../../../common/types/game-review.type'
 import { GameDto, GameViewDto } from '../../../common/types/game.type'
@@ -73,5 +74,13 @@ export class CollectionController {
     @ApiResponse({ status: 200, type: [GameDto], description: 'List of all wishlist of the user' })
     async getUserWishlist(@Param('userId', ParseIntPipe) userId: number) {
         return this.collectionService.getUserWishlist(userId)
+    }
+
+    @UseGuards(UserOwnershipGuard)
+    @Get('/users/:userId/recent-activity')
+    @ApiOperation({ summary: "Get all recent activity of a user's collection", deprecated: false })
+    @ApiResponse({ status: 200, type: [CollectionActivityDto], description: 'List of all recent activity of the user' })
+    async getUserCollectionActivities(@Param('userId', ParseIntPipe) userId: number) {
+        return this.collectionService.getUserCollectionActivities(userId)
     }
 }
