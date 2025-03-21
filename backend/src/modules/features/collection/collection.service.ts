@@ -148,7 +148,7 @@ export class CollectionService {
 
     @LogFeature(new Logger('CollectionService'))
     async saveGameReview(userId: number, gameId: number, gameReviewDto: CreateGameReviewBody) {
-        const result = await this.reviewsService.saveGameReview(gameReviewDto)
+        const result = await this.reviewsService.saveGameReview(userId, gameId, gameReviewDto.review)
 
         if (result.success) {
             await this.collectionActivityService.logCollectionActivity(userId, gameId, 'rated', { rating: gameReviewDto.review })

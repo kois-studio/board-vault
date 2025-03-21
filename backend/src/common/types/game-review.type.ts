@@ -1,4 +1,4 @@
-import { ApiProperty, OmitType } from '@nestjs/swagger'
+import { ApiProperty, PickType } from '@nestjs/swagger'
 
 import { GameDto } from './game.type'
 
@@ -22,7 +22,7 @@ export class GameReviewDto {
 /**
  * POST requests --> no db generated props
  */
-export class CreateGameReviewBody extends OmitType(GameReviewDto, ['reviewDate']) {}
+export class CreateGameReviewBody extends PickType(GameReviewDto, ['review']) {}
 
 export class GameReviewWithGameDataDto extends GameReviewDto {
     @ApiProperty({ type: GameDto })
