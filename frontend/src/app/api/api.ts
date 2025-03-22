@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { environment } from '../../environments/environment'
 import type {
-    CollectionActivityType,
+    CollectionActivityWithGameDataType,
     GameOwnedType,
     GameReviewWithGameData,
     GameType,
@@ -186,7 +186,7 @@ export class Api {
     }
 
     getUserCollectionActivity(userId: number) {
-        return this.http.get<Array<CollectionActivityType>>(`${this.url}/collection/users/${userId}/recent-activity`)
+        return this.http.get<Array<CollectionActivityWithGameDataType>>(`${this.url}/collection/users/${userId}/recent-activity`)
     }
 
     // --------------------------------------------------------------------------
