@@ -15,15 +15,15 @@
                                 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400': activity.actionType === 'added',
                                 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400': activity.actionType === 'rated',
                                 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400': activity.actionType === 'updated',
-                                'bg-zinc-100 dark:bg-zinc-900/30 text-zinc-600 dark:text-zinc-400': activity.actionType === 'removed',
+                                'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400': activity.actionType === 'removed',
                             }">
                                 <i class="bi" [ngClass]="{
                                     'bi-heart-fill': activity.actionType === 'wishlisted',
                                     'bi-heartbreak': activity.actionType === 'unwishlisted',
-                                    'bi-plus-circle-fill': activity.actionType === 'added',
+                                    'bi-bookmark-fill': activity.actionType === 'added',
                                     'bi-star-fill': activity.actionType === 'rated',
                                     'bi-pencil-fill': activity.actionType === 'updated',
-                                    'bi-trash-fill': activity.actionType === 'removed',
+                                    'bi-x-lg': activity.actionType === 'removed',
                                 }"></i>
                             </div>
                             
