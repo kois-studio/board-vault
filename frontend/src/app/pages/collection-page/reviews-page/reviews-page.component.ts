@@ -1,21 +1,36 @@
 import { CommonModule } from '@angular/common'
-import { Component, effect } from '@angular/core'
+import { Component, computed, effect, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import type { GameType, UserType } from '../../../api/api.types'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
 import { DataService } from '../../../core/services/data.service'
+import { LoadingService } from '../../../core/services/loading.service'
+import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
+import { SkeletonCardGameComponent } from "../../../components/skeletons/skeleton-card-game/skeleton-card-game.component";
+import { CardGameComponent } from "../../../components/card-game/card-game.component";
 
 @Component({
-    imports: [CommonModule, ContainerWrapperComponent, PageHeaderComponent, ButtonComponent, RouterLink],
+    imports: [CommonModule, ContainerWrapperComponent, PageHeaderComponent, ButtonComponent, RouterLink, SkeletonCardGameComponent, CardGameComponent],
     templateUrl: 'reviews-page.component.html',
 })
 export class ReviewsPageComponent {
-    // From dataService
-    public userReviews: ReturnType<typeof this.dataService.userReviews> = []
-    public userGroups: ReturnType<typeof this.dataService.userGroups> = []
-    public userData: UserType | null = null
+    private readonly dataService = inject(DataService)
+    private readonly loadingService = inject(LoadingService)
+    // --------------------------------------------------------------------------
+    //        Services signals
+    // --------------------------------------------------------------------------
+    // dataService
+    public readonly currentUser$ = this.dataService.currentUser
+    public readonly userGroups$ = this.dataService.userGroups
+    public readonly userReviews$ = this.dataService.userReviews
+    public readonly userGroupUniqueGamesComputed = computed(() => {
+        const allGames = this.userGroups$().flatMap((group) => group.members.flatMap((member) => member.games))
+        return new Set(allGames)
+    })
+    // loadingService
+    public readonly isLoadingReviews = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_REVIEWS])
 
     // Component props
     public allGroupGames: Record<
@@ -27,14 +42,10 @@ export class ReviewsPageComponent {
     > = {}
     public hoverRating: Record<GameType['id'], number> = {}
 
-    constructor(private readonly dataService: DataService) {
+    constructor() {
         effect(() => {
-            this.userReviews = this.dataService.userReviews()
-            this.userData = this.dataService.currentUser()
-            this.userGroups = this.dataService.userGroups()
-
             // from each group, get all the games
-            const userGroups = this.userGroups
+            const userGroups = this.userGroups$()
             for (const group of userGroups) {
                 for (const member of group.members) {
                     for (const game of member.games) {
@@ -54,22 +65,8 @@ export class ReviewsPageComponent {
         })
     }
 
-    getOwnerData(ownerId: number): UserType | undefined {
-        const group = this.userGroups.find((group) => group.members.find((member) => member.id === ownerId))
-        const member = group?.members.find((member) => member.id === ownerId)
-        return member // it 100% exists
-    }
-
-    get gamesList() {
-        return Object.values(this.allGroupGames).sort((a, b) => a.data.title.localeCompare(b.data.title))
-    }
-
-    public getReview(gameId: number): number {
-        return this.userReviews.find((review) => review.gameId === gameId)?.review ?? -1
-    }
-
     public setReview(gameId: number, reviewValue: number) {
-        const accountId = this.userData?.id
+        const accountId = this.currentUser$()?.id
         if (accountId) {
             this.dataService.saveGameReview(accountId, gameId, reviewValue)
         }
