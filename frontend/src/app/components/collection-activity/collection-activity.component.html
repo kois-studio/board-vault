@@ -10,14 +10,21 @@
                     <li class="p-4 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition">
                         <div class="flex items-center">
                             <!-- Icon based on action type -->
-                            <div class="w-10 h-10 bg-rose-100 dark:bg-rose-900/30 rounded-full flex items-center justify-center mr-4">
-                                <span class="text-rose-600 dark:text-rose-400">
-                                    <!-- TODO: add icon for each type -->
-                                    <i class="bi" [ngClass]="{
-                                        'bi-heart-fill': activity.actionType === 'wishlisted',
-                                        'bi-heartbreak': activity.actionType === 'unwishlisted',
-                                    }"></i>
-                                </span>
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center mr-4" [ngClass]="{
+                                'bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400': activity.actionType === 'wishlisted' || activity.actionType === 'unwishlisted',
+                                'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400': activity.actionType === 'added',
+                                'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400': activity.actionType === 'rated',
+                                'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400': activity.actionType === 'updated',
+                                'bg-zinc-100 dark:bg-zinc-900/30 text-zinc-600 dark:text-zinc-400': activity.actionType === 'removed',
+                            }">
+                                <i class="bi" [ngClass]="{
+                                    'bi-heart-fill': activity.actionType === 'wishlisted',
+                                    'bi-heartbreak': activity.actionType === 'unwishlisted',
+                                    'bi-plus-circle-fill': activity.actionType === 'added',
+                                    'bi-star-fill': activity.actionType === 'rated',
+                                    'bi-pencil-fill': activity.actionType === 'updated',
+                                    'bi-trash-fill': activity.actionType === 'removed',
+                                }"></i>
                             </div>
                             
                             <div>
@@ -25,28 +32,28 @@
                                     <!-- TODO: review if this works fine -->
                                     @switch (activity.actionType) {
                                         @case ('added') {
-                                            You added <span class="font-medium">{{ getGameName(activity.gameId) }}</span> to your collection
+                                            You added <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline">{{activity.gameData.title}}</a> to your collection
                                         }
                                         @case ('rated') {
-                                            You rated <span class="font-medium">{{ getGameName(activity.gameId) }}</span> 
+                                            You rated <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline">{{activity.gameData.title}}</a> 
                                             @if (activity.actionDetails && activity.actionDetails['rating'] !== null) {
                                                 with {{ activity.actionDetails['rating'] }} stars
                                             }
                                         }
                                         @case ('removed') {
-                                            You removed <span class="font-medium">{{ getGameName(activity.gameId) }}</span> from your collection
+                                            You removed <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline">{{activity.gameData.title}}</a> from your collection
                                         }
                                         @case ('wishlisted') {
-                                            You added <span class="font-medium">{{ getGameName(activity.gameId) }}</span> to your wishlist
+                                            You added <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline">{{activity.gameData.title}}</a> to your wishlist
                                         }
                                         @case ('unwishlisted') {
-                                            You removed <span class="font-medium">{{ getGameName(activity.gameId) }}</span> from your wishlist
+                                            You removed <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline">{{activity.gameData.title}}</a> from your wishlist
                                         }
                                         @case ('updated') {
-                                            You updated <span class="font-medium">{{ getGameName(activity.gameId) }}</span> in your collection
+                                            You updated <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline">{{activity.gameData.title}}</a> in your collection
                                         }
                                         @default {
-                                            Activity with <span class="font-medium">{{ getGameName(activity.gameId) }}</span>
+                                            Activity with <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline">{{activity.gameData.title}}</a>
                                         }
                                     }
                                 </p>
