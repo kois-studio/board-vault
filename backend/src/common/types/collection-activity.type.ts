@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
+import { GameDto } from './game.type'
 
 export class CollectionActivityDto {
     @ApiProperty({ example: 12345 })
@@ -21,4 +22,9 @@ export class CollectionActivityDto {
 
     @ApiProperty({ example: '2024-09-28 10:02:39' })
     createdAt: string
+}
+
+export class CollectionActivityWithGameDataDto extends CollectionActivityDto {
+    @ApiProperty({ type: GameDto })
+    gameData: GameDto
 }
