@@ -23,4 +23,4 @@ Exposes only 2 methods:
 
 When logging a new activity, the cache is cleared.
 
-When logging a new activity, if >32 records are present, the oldest record is deleted.
+When logging a new activity, if >=32 records are present, the oldest record is deleted.

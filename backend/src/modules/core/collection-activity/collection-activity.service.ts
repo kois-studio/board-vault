@@ -69,6 +69,15 @@ export class CollectionActivityService {
         actionDetails: CollectionActivityDto['actionDetails'],
     ) {
         this.LOGGER.log(`Logging collection activity for account ${accountId} and game ${gameId}`)
+
+        const loggedActivities = await this.getUserCollectionActivities(accountId)
+
+        if (loggedActivities.length >= 32) {
+            // The [0] is the oldest because SQLite returns sorted by id ascending
+            const oldestId = loggedActivities[0].id
+            await this.databaseService.deleteCollectionActivityById(oldestId)
+        }
+
         try {
             const collectionActivity: Omit<CollectionActivityDto, 'id'> = {
                 accountId,
