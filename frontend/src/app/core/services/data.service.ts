@@ -158,6 +158,9 @@ export class DataService {
             error: () => {
                 this.toastService.error("Error retrieving user's reviews")
             },
+            complete: () => {
+                this.loadingService.finish(LOADING_KEYS.USER_REVIEWS)
+            },
         })
     }
 
