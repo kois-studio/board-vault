@@ -1,9 +1,9 @@
 import { Injectable, effect, inject, signal } from '@angular/core'
 import { Router } from '@angular/router'
-import { catchError, concatMap, from, of, tap } from 'rxjs'
+import { catchError, concatMap, of } from 'rxjs'
 import { Api } from '../../api/api'
 import type {
-    CollectionActivityType,
+    CollectionActivityWithGameDataType,
     GameReviewWithGameData,
     GameType,
     GroupWithMembersAndGames,
@@ -47,7 +47,7 @@ export class DataService {
     public readonly userMeets = signal<Array<MeetType>>([])
     public readonly userHistory = signal<Array<HistoryRecordType>>([])
     public readonly userWishlist = signal<Array<GameType>>([])
-    public readonly userCollectionActivity = signal<Array<CollectionActivityType>>([])
+    public readonly userCollectionActivity = signal<Array<CollectionActivityWithGameDataType>>([])
 
     // list of all games available to select
     public readonly gamesList = signal<Array<GameType>>([])

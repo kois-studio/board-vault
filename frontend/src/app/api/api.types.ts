@@ -203,3 +203,7 @@ export type CollectionActivityType = {
     actionDetails: null | { rating: null | number }
     createdAt: string
 }
+
+export type CollectionActivityWithGameDataType = CollectionActivityType & {
+    gameData: GameType
+}

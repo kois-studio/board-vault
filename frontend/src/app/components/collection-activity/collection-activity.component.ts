@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common'
 import { Component, OnInit, computed, inject } from '@angular/core'
+import { RouterLink } from '@angular/router'
 import { DataService } from '../../core/services/data.service'
 
 @Component({
-    imports: [CommonModule],
+    imports: [CommonModule, RouterLink],
     selector: 'app-collection-activity',
     templateUrl: 'collection-activity.component.html',
 })
@@ -26,20 +27,6 @@ export class CollectionActivityComponent {
     // --------------------------------------------------------------------------
     // Track whether to show all activities or just 5
     public showAllActivity = false
-
-    // Helper method to get game name from gameId
-    getGameName(gameId: number): string {
-        // Look for the game in userGames first
-        const userGame = this.userGames$().find((game) => game.id === gameId)
-        if (userGame) return userGame.title
-
-        // If not found, check wishlist
-        const wishlistGame = this.userWishlist$().find((game) => game.id === gameId)
-        if (wishlistGame) return wishlistGame.title
-
-        // If game is not found, return a placeholder
-        return 'Unknown Game'
-    }
 
     // Helper method to format date as relative time
     formatTimeAgo(dateString: string): string {
