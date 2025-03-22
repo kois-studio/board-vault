@@ -29,33 +29,27 @@
                             
                             <div>
                                 <p class="text-sm text-zinc-900 dark:text-white">
-                                    <!-- TODO: review if this works fine -->
-                                    @switch (activity.actionType) {
-                                        @case ('added') {
-                                            You added <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline">{{activity.gameData.title}}</a> to your collection
-                                        }
-                                        @case ('rated') {
-                                            You rated <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline">{{activity.gameData.title}}</a> 
-                                            @if (activity.actionDetails && activity.actionDetails['rating'] !== null) {
-                                                with {{ activity.actionDetails['rating'] }} stars
-                                            }
-                                        }
-                                        @case ('removed') {
-                                            You removed <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline">{{activity.gameData.title}}</a> from your collection
-                                        }
-                                        @case ('wishlisted') {
-                                            You added <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline">{{activity.gameData.title}}</a> to your wishlist
-                                        }
-                                        @case ('unwishlisted') {
-                                            You removed <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline">{{activity.gameData.title}}</a> from your wishlist
-                                        }
-                                        @case ('updated') {
-                                            You updated <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline">{{activity.gameData.title}}</a> in your collection
-                                        }
-                                        @default {
-                                            Activity with <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline">{{activity.gameData.title}}</a>
-                                        }
-                                    }
+                                    {{
+                                        {
+                                            added: 'You added',
+                                            rated: 'You rated',
+                                            removed: 'You removed',
+                                            wishlisted: 'You added',
+                                            unwishlisted: 'You removed',
+                                            updated: 'You updated',
+                                        }[activity.actionType]
+                                    }}
+                                    <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline">{{activity.gameData.title}}</a>
+                                    {{
+                                        {
+                                            added: 'to your collection',
+                                            rated: 'with ' + (activity.actionDetails?.rating ?? 0) / 2 + ' stars',
+                                            removed: 'from your collection',
+                                            wishlisted: 'to your wishlist',
+                                            unwishlisted: 'from your wishlist',
+                                            updated: 'in your collection',
+                                        }[activity.actionType]
+                                    }}
                                 </p>
                                 <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">{{ formatTimeAgo(activity.createdAt) }}</p>
                             </div>
