@@ -7,8 +7,11 @@
 <container-wrapper>
     <!-- Loading state -->
     @if (isLoadingWishlist()) {
-        <!-- TODO: custom skeleton matching actual history structure -->
-        <app-skeleton-card-group />
+        <section class="flex flex-wrap gap-4">
+            <app-skeleton-card-game />
+            <app-skeleton-card-game />
+            <app-skeleton-card-game />
+        </section>
     } @else if (userWishlist$().length === 0) {
         <!-- no data -->
         <div class="text-center text-secondary">
