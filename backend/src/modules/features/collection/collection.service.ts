@@ -14,7 +14,7 @@ import { UsersService } from '../../core/users/users.service'
 import { WishlistService } from '../../core/wishlist/wishlist.service'
 
 import type { SuccessDto } from '../../../common/types/auth.type'
-import type { CollectionActivityDto } from '../../../common/types/collection-activity.type'
+import type { CollectionActivityWithGameDataDto } from '../../../common/types/collection-activity.type'
 import type { CreateGameReviewBody, GameReviewWithGameDataDto } from '../../../common/types/game-review.type'
 import type { GameDto, GameViewDto } from '../../../common/types/game.type'
 
@@ -134,6 +134,16 @@ export class CollectionService {
     }
 
     @LogFeature(new Logger('CollectionService'))
+    async toggleWishlist(accountId: number, gameId: number): Promise<boolean> {
+        const isWishlisted = await this.wishlistService.toggleWishlist(accountId, gameId)
+        const actionType = isWishlisted ? 'wishlisted' : 'unwishlisted'
+
+        await this.collectionActivityService.logCollectionActivity(accountId, gameId, actionType, null)
+
+        return isWishlisted
+    }
+
+    @LogFeature(new Logger('CollectionService'))
     async getReviewsOfUser(userId: number): Promise<Array<GameReviewWithGameDataDto>> {
         const reviews = await this.reviewsService.getUserReviews(userId)
 
@@ -147,7 +157,7 @@ export class CollectionService {
     }
 
     @LogFeature(new Logger('CollectionService'))
-    async saveGameReview(userId: number, gameId: number, gameReviewDto: CreateGameReviewBody) {
+    async saveGameReview(userId: number, gameId: number, gameReviewDto: CreateGameReviewBody): Promise<SuccessDto> {
         const result = await this.reviewsService.saveGameReview(userId, gameId, gameReviewDto.review)
 
         if (result.success) {
@@ -165,17 +175,15 @@ export class CollectionService {
     }
 
     @LogFeature(new Logger('CollectionService'))
-    async getUserCollectionActivities(userId: number): Promise<Array<CollectionActivityDto>> {
-        return await this.collectionActivityService.getUserCollectionActivities(userId)
-    }
+    async getUserCollectionActivities(userId: number): Promise<Array<CollectionActivityWithGameDataDto>> {
+        const activities = await this.collectionActivityService.getUserCollectionActivities(userId)
 
-    @LogFeature(new Logger('CollectionService'))
-    async toggleWishlist(accountId: number, gameId: number): Promise<boolean> {
-        const isWishlisted = await this.wishlistService.toggleWishlist(accountId, gameId)
-        const actionType = isWishlisted ? 'wishlisted' : 'unwishlisted'
+        return Promise.all(
+            activities.map(async activity => {
+                const game = await this.gamesService.getGameById(activity.gameId)
 
-        await this.collectionActivityService.logCollectionActivity(accountId, gameId, actionType, null)
-
-        return isWishlisted
+                return { ...activity, gameData: game }
+            }),
+        )
     }
 }
