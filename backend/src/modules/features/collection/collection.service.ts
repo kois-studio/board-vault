@@ -116,6 +116,10 @@ export class CollectionService {
             purchaseNotes: null,
         })
 
+        if (result.success) {
+            await this.collectionActivityService.logCollectionActivity(userId, gameId, 'added', null)
+        }
+
         return { success: result.success }
     }
 
@@ -123,12 +127,18 @@ export class CollectionService {
     async removeGameFromUserCollection(userId: number, gameId: number): Promise<SuccessDto> {
         const result = await this.gamesOwnedService.deleteGamesOwnedById(userId, gameId)
 
+        if (result.success) {
+            await this.collectionActivityService.logCollectionActivity(userId, gameId, 'removed', null)
+        }
+
         return { success: result.success }
     }
 
     @LogFeature(new Logger('CollectionService'))
     async updateGameOwnership(userId: number, gameId: number, body: UpdateGameOwnedDto) {
         const updatedGameOwned = await this.gamesOwnedService.updateGameOwned(userId, gameId, body)
+
+        await this.collectionActivityService.logCollectionActivity(userId, gameId, 'updated', null)
 
         return updatedGameOwned
     }
