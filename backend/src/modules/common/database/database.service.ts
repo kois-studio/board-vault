@@ -756,6 +756,13 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    deleteCollectionActivityById(activityId: number) {
+        return this._tursoExecute({
+            sql: 'DELETE FROM CollectionActivity WHERE id = ?',
+            args: [activityId],
+        })
+    }
+
     createCollectionActivity(collectionActivityDto: Omit<CollectionActivityDto, 'id'>) {
         return this._tursoExecute({
             sql: 'INSERT INTO CollectionActivity (accountId, gameId, actionType, actionDetails) VALUES (?, ?, ?, ?)',
