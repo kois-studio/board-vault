@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common'
 import { Component, computed, effect, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import type { GameType, UserType } from '../../../api/api.types'
-import { CardGameComponent } from '../../../components/card-game/card-game.component'
 import { SkeletonCardGameComponent } from '../../../components/skeletons/skeleton-card-game/skeleton-card-game.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
@@ -34,18 +33,26 @@ export class ReviewsPageComponent {
     public readonly currentUser$ = this.dataService.currentUser
     public readonly userGroups$ = this.dataService.userGroups
     public readonly userReviews$ = this.dataService.userReviews
-    public readonly userGroupUniqueGamesComputed = computed(() => {
+    // loadingService
+    public readonly isLoadingReviews = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_REVIEWS])
+
+    // --------------------------------------------------------------------------
+    //        Computed values
+    // --------------------------------------------------------------------------
+    public readonly userReviewsSortedComputed = computed(() => {
+        return this.userReviews$().sort((a, b) => new Date(b.reviewDate).getTime() - new Date(a.reviewDate).getTime())
+    })
+    private readonly _userGroupUniqueGamesComputed = computed(() => {
         const allGames = this.userGroups$().flatMap((group) => group.members.flatMap((member) => member.games))
         return Array.from(new Set(allGames))
     })
     public readonly pendingReviewsComputed = computed(() => {
-        return this.userGroupUniqueGamesComputed().filter((game) => !this.userReviews$().some((review) => review.gameId === game.id))
+        return this._userGroupUniqueGamesComputed().filter((game) => !this.userReviews$().some((review) => review.gameId === game.id))
     })
 
-    // loadingService
-    public readonly isLoadingReviews = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_REVIEWS])
-
-    // Component props
+    // --------------------------------------------------------------------------
+    //        Component props
+    // --------------------------------------------------------------------------
     public allGroupGames: Record<
         GameType['id'],
         {
