@@ -1,8 +1,8 @@
-import { Component, OnInit, effect, inject } from '@angular/core'
-import { Api } from '../../api/api'
-import type { UserType } from '../../api/api.types'
-import { DataService } from '../../core/services/data.service'
-import { AvatarEditorComponent } from '../avatar-editor/avatar-editor.component'
+import { Component, inject } from '@angular/core'
+import { Api } from '../../../api/api'
+import type { UserType } from '../../../api/api.types'
+import { DataService } from '../../../core/services/data.service'
+import { AvatarEditorComponent } from '../../avatar-editor/avatar-editor.component'
 
 @Component({
     imports: [AvatarEditorComponent],
