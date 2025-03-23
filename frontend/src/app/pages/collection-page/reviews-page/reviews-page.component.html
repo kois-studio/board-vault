@@ -18,17 +18,37 @@
             <p>No reviews available yet. Start rating your games!</p>
         </div>
     } @else {
-        <h2 class="text-2xl font-bold tracking-wide pb-4">Pending Reviews</h2>
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            @for (game of pendingReviewsComputed(); track $index) {
-                <app-review-row [game]="game" [review]="0" />
-            }
-        </div>
+        <!-- Pending reviews -->
+        @if (pendingReviewsComputed().length > 0) {
+            <h2 class="text-2xl font-bold tracking-wide">Pending Reviews</h2>
+            <p class="text-secondary pb-4">Games from your groups that you haven't reviewed yet.</p>
 
-        <h2 class="text-2xl font-bold tracking-wide pb-4 pt-16">Your Reviews</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                @for (game of pendingReviewsComputed(); track $index) {
+                    <app-review-row [game]="game" [review]="0" />
+                }
+            </div>
+
+            <!-- Reviewed games - the title is showed only if there are pending reviews, to differentiate the two sections -->
+            <h2
+                class="text-2xl font-bold tracking-wide pb-4"
+                [ngClass]="{
+                    'pt-16': pendingReviewsComputed().length > 0
+                }"
+            >
+                Reviewed Games
+            </h2>
+        }
+
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            @for (review of userReviews$(); track $index) {
-                <app-review-row [game]="review.gameData" [review]="review.review" />
+            @if (userReviews$().length === 0) {
+                <div class="text-center text-secondary">
+                    <p>No reviews available yet. Start rating your games!</p>
+                </div>
+            } @else {
+                @for (review of userReviews$(); track $index) {
+                    <app-review-row [game]="review.gameData" [review]="review.review" />
+                }
             }
         </div>
     }
