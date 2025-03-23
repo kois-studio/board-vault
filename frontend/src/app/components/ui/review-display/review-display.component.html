@@ -2,7 +2,7 @@
     'flex-col': flexCol,
 }">
     <!-- Number -->
-    <span class="font-medium">{{ review / 2 }}</span>
+    <span class="font-medium">{{ parseReview(review) }}</span>
     <!-- Stars -->
     <div class="flex items-center">
         <ng-container *ngFor="let star of fullStars">
