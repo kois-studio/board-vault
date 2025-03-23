@@ -19,7 +19,6 @@ import { LoadingService } from '../../../core/services/loading.service'
         ButtonComponent,
         RouterLink,
         SkeletonCardGameComponent,
-        CardGameComponent,
     ],
     templateUrl: 'reviews-page.component.html',
 })
@@ -35,8 +34,12 @@ export class ReviewsPageComponent {
     public readonly userReviews$ = this.dataService.userReviews
     public readonly userGroupUniqueGamesComputed = computed(() => {
         const allGames = this.userGroups$().flatMap((group) => group.members.flatMap((member) => member.games))
-        return new Set(allGames)
+        return Array.from(new Set(allGames))
     })
+    public readonly pendingReviewsComputed = computed(() => {
+        return this.userGroupUniqueGamesComputed().filter((game) => !this.userReviews$().some((review) => review.gameId === game.id))
+    })
+
     // loadingService
     public readonly isLoadingReviews = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_REVIEWS])
 
