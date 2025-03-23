@@ -2,7 +2,7 @@
     <!-- Main content wrapper with flex-col on mobile -->
     <div class="flex flex-col sm:flex-row gap-3">
         <!-- First row wrapper -->
-        <div class="flex items-center gap-3 w-full">
+        <a routerLink="/games/{{ game.id }}" class="flex items-center gap-3 w-full">
             <!-- Image and game info (unchanged) -->
             <div
                 class="h-16 w-16 rounded-lg border border-zinc-700 overflow-hidden bg-cover bg-no-repeat bg-center shrink-0"
@@ -22,7 +22,7 @@
                     </span>
                 </div>
             </div>
-        </div>
+        </a>
 
         <!-- Second row wrapper -->
         <div class="flex items-center gap-3 justify-between sm:justify-end w-full">
