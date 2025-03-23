@@ -20,14 +20,27 @@
     } @else {
         <section class="flex flex-wrap gap-4">
             @for (game of userWishlist$(); track $index) {
-                <app-card-game
-                    [routerLink]="['/games', game.id]"
-                    [title]="game.title"
-                    [imageUrl]="game.imageUrl"
-                    [gameAvgDuration]="game.gameAvgDuration"
-                    [minPlayers]="game.minPlayers"
-                    [maxPlayers]="game.maxPlayers"
-                />
+                <div class="relative">
+                    <app-card-game
+                        [routerLink]="['/games', game.id]"
+                        [title]="game.title"
+                        [imageUrl]="game.imageUrl"
+                        [gameAvgDuration]="game.gameAvgDuration"
+                        [minPlayers]="game.minPlayers"
+                        [maxPlayers]="game.maxPlayers"
+                    />
+                    <div class="absolute -top-2 -right-2 flex gap-2">
+                        <!-- Wishlist Button -->
+                        <button
+                            title="Add to wishlist"
+                            (click)="toggleWishlist(game.id)"
+                            class="p-2 rounded-full bg-white/90 shadow-md border border-zinc-200 w-10 h-10 cursor-pointer transition-transform duration-300 ease-linear hover:scale-110 text-rose-500"
+                        >
+                            <i class="bi bi-heart-fill hover:hidden"></i>
+                            <i class="bi bi-heartbreak hidden hover:block"></i>
+                        </button>
+                    </div>
+                </div>
             }
         </section>
     }
