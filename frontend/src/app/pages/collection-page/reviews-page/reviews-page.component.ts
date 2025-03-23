@@ -2,17 +2,25 @@ import { CommonModule } from '@angular/common'
 import { Component, computed, effect, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import type { GameType, UserType } from '../../../api/api.types'
+import { CardGameComponent } from '../../../components/card-game/card-game.component'
+import { SkeletonCardGameComponent } from '../../../components/skeletons/skeleton-card-game/skeleton-card-game.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
+import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
 import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
-import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
-import { SkeletonCardGameComponent } from "../../../components/skeletons/skeleton-card-game/skeleton-card-game.component";
-import { CardGameComponent } from "../../../components/card-game/card-game.component";
 
 @Component({
-    imports: [CommonModule, ContainerWrapperComponent, PageHeaderComponent, ButtonComponent, RouterLink, SkeletonCardGameComponent, CardGameComponent],
+    imports: [
+        CommonModule,
+        ContainerWrapperComponent,
+        PageHeaderComponent,
+        ButtonComponent,
+        RouterLink,
+        SkeletonCardGameComponent,
+        CardGameComponent,
+    ],
     templateUrl: 'reviews-page.component.html',
 })
 export class ReviewsPageComponent {
