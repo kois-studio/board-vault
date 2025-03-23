@@ -23,4 +23,8 @@ export class ReviewDisplayComponent {
     get emptyStars(): number[] {
         return Array(5 - this.fullStars.length - this.halfStars.length).fill(0)
     }
+
+    public parseReview(review: number): string {
+        return (review / 2).toFixed(2)
+    }
 }
