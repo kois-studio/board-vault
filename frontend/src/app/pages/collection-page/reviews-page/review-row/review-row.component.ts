@@ -1,4 +1,4 @@
-import { Component, inject, Input } from '@angular/core'
+import { Component, Input, inject } from '@angular/core'
 import { GameType } from '../../../../api/api.types'
 import { DataService } from '../../../../core/services/data.service'
 
@@ -21,7 +21,7 @@ export class ReviewRowComponent {
     // --------------------------------------------------------------------------
     //        Component props
     // --------------------------------------------------------------------------
-    public hoverRating: number = 0
+    public hoverRating = 0
 
     public setReview(gameId: number, reviewValue: number) {
         const accountId = this.currentUser$()?.id

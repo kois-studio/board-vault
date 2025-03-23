@@ -10,6 +10,7 @@ import { PageHeaderComponent } from '../../../components/ui/page-header/page-hea
 import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
 import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
+import { ReviewRowComponent } from './review-row/review-row.component'
 
 @Component({
     imports: [
@@ -19,6 +20,7 @@ import { LoadingService } from '../../../core/services/loading.service'
         ButtonComponent,
         RouterLink,
         SkeletonCardGameComponent,
+        ReviewRowComponent,
     ],
     templateUrl: 'reviews-page.component.html',
 })
