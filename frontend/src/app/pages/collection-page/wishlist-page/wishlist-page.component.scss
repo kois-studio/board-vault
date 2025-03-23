@@ -1,0 +1,16 @@
+.icon-heartbreak {
+    display: none;
+}
+
+// Nested styles for button hover
+button {
+    &:hover {
+        .icon-heart-fill {
+            display: none;
+        }
+
+        .icon-heartbreak {
+            display: block;
+        }
+    }
+}

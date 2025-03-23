@@ -1,20 +1,29 @@
+import { CommonModule } from '@angular/common'
 import { Component, computed, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
+import { Api } from '../../../api/api'
 import { CardGameComponent } from '../../../components/card-game/card-game.component'
 import { SkeletonCardGameComponent } from '../../../components/skeletons/skeleton-card-game/skeleton-card-game.component'
+import { ToastService } from '../../../components/toast/toast.service'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
 import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
 import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
-import { CommonModule } from '@angular/common'
-import { ToastService } from '../../../components/toast/toast.service'
-import { Api } from '../../../api/api'
 
 @Component({
-    imports: [CommonModule, CardGameComponent, ContainerWrapperComponent, RouterLink, PageHeaderComponent, ButtonComponent, SkeletonCardGameComponent],
+    imports: [
+        CommonModule,
+        CardGameComponent,
+        ContainerWrapperComponent,
+        RouterLink,
+        PageHeaderComponent,
+        ButtonComponent,
+        SkeletonCardGameComponent,
+    ],
     templateUrl: 'wishlist-page.component.html',
+    styleUrls: ['wishlist-page.component.scss'],
 })
 export class WishlistPageComponent {
     private readonly api = inject(Api)
