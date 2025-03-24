@@ -167,6 +167,10 @@ export type MeetWithAttendeesAndGamesType = MeetType & {
     playedGames: Array<GameType['id']>
 }
 
+export type UserStatsType = {
+    totalGamesValue: number
+}
+
 // --------------------------------------------------------------------------
 // #region collection
 // --------------------------------------------------------------------------
