@@ -12,6 +12,7 @@ import type {
     InvitationWithExtraData,
     MeetType,
     NotificationType,
+    UserStatsType,
     UserType,
 } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
@@ -48,6 +49,10 @@ export class DataService {
     public readonly userHistory = signal<Array<HistoryRecordType>>([])
     public readonly userWishlist = signal<Array<GameType>>([])
     public readonly userCollectionActivity = signal<Array<CollectionActivityWithGameDataType>>([])
+    // non arrays
+    public readonly userStats = signal<UserStatsType>({
+        totalGamesValue: 0,
+    })
 
     // list of all games available to select
     public readonly gamesList = signal<Array<GameType>>([])
@@ -88,6 +93,7 @@ export class DataService {
                 this._getUserHistory(userType.id)
                 this._getUserWishlist(userType.id)
                 this._getUserCollectionActivity(userType.id)
+                this._getUserStats(userType.id)
             },
             error: (error) => {
                 if (error.status === 401) {
@@ -245,6 +251,16 @@ export class DataService {
         })
     }
 
+    private _getUserStats(userId: number) {
+        this.api.getUserStats(userId).subscribe({
+            next: (stats) => {
+                this.userStats.set(stats)
+            },
+            error: () => {
+                this.toastService.error("Error retrieving user's stats")
+            },
+        })
+    }
     // #region ## public methods ##
 
     // --------------------------------------------------------------------------
