@@ -17,6 +17,7 @@ import type {
     MeetWithAttendeesAndGamesType,
     NotificationType,
     UpdateGameOwnedType,
+    UserStatsType,
     UserType,
 } from './api.types'
 
@@ -192,6 +193,10 @@ export class Api {
     // --------------------------------------------------------------------------
     // #region dashboard
     // --------------------------------------------------------------------------
+    getUserStats(userId: number) {
+        return this.http.get<UserStatsType>(`${this.url}/dashboard/users/${userId}/stats`)
+    }
+
     getUserGroups(userId: number) {
         return this.http.get<Array<GroupWithMembersAndGames>>(`${this.url}/dashboard/users/${userId}/groups`)
     }
