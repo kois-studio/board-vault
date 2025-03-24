@@ -22,4 +22,6 @@ export class DashboardPageComponent {
     public readonly userGroups$ = this.dataService.userGroups
     public readonly userGames$ = this.dataService.userGames
     public readonly userMeets$ = this.dataService.userMeets
+    public readonly userHistory$ = this.dataService.userHistory
+    public readonly userStats$ = this.dataService.userStats
 }
