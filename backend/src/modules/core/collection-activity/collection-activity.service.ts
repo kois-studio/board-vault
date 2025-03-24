@@ -75,6 +75,7 @@ export class CollectionActivityService {
         if (loggedActivities.length >= 32) {
             // The [0] is the oldest because SQLite returns sorted by id ascending
             const oldestId = loggedActivities[0].id
+
             await this.databaseService.deleteCollectionActivityById(oldestId)
         }
 
