@@ -13,6 +13,7 @@ import { UsersService } from '../../core/users/users.service'
 import type { SuccessDto } from '../../../common/types/auth.type'
 import type { GroupMemberWithGames, GroupWithMembersAndGames } from '../../../common/types/group.type'
 import type { MeetCreatedDto, MeetWithAttendeesAndGames } from '../../../common/types/meet.type'
+import type { UserStatsDto } from '../../../common/types/stats.type'
 import type { UserWithGames } from '../../../common/types/user.type'
 
 @Injectable()
@@ -29,6 +30,16 @@ export class DashboardService {
         private readonly meetsService: MeetsService,
         private readonly meetAccountGamesService: MeetAccountGamesService,
     ) {}
+
+    @LogFeature(new Logger('DashboardService'))
+    async getStatsOfUser(userId: number): Promise<UserStatsDto> {
+        const gamesOwned = await this.gamesOwnedService.getGamesOwnedByAccountId(userId)
+        const totalGamesValue = gamesOwned.reduce((acc, game) => acc + (game.purchasePrice ?? 0), 0)
+
+        return {
+            totalGamesValue,
+        }
+    }
 
     @LogFeature(new Logger('DashboardService'))
     async getGroupsOfUser(userId: number): Promise<Array<GroupWithMembersAndGames>> {
