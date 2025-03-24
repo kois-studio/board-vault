@@ -7,6 +7,7 @@ import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
 import { SuccessDto } from '../../../common/types/auth.type'
 import { GroupWithMembersAndGames } from '../../../common/types/group.type'
 import { MeetCreatedDto, MeetWithAttendeesAndGames } from '../../../common/types/meet.type'
+import { UserStatsDto } from '../../../common/types/stats.type'
 
 import { DashboardService } from './dashboard.service'
 
@@ -16,6 +17,14 @@ import { DashboardService } from './dashboard.service'
 @Controller('dashboard')
 export class DashboardController {
     constructor(private readonly dashboardService: DashboardService) {}
+
+    @UseGuards(UserOwnershipGuard)
+    @Get('/users/:userId/stats')
+    @ApiOperation({ summary: 'Get all stats of a user', deprecated: false })
+    @ApiResponse({ status: 200, type: UserStatsDto, description: 'Stats retrieved successfully' })
+    async getStatsOfUser(@Param('userId', ParseIntPipe) userId: number) {
+        return this.dashboardService.getStatsOfUser(userId)
+    }
 
     @Get('/users/:userId/groups')
     @ApiOperation({ summary: 'Get all groups of a user with members and games', deprecated: false })
