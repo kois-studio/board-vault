@@ -1,13 +1,14 @@
 import { CommonModule } from '@angular/common'
 import { Component, effect } from '@angular/core'
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
-import { ActivatedRoute, Router } from '@angular/router'
+import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { GameType } from '../../../api/api.types'
+import { CardAccountComponent } from '../../../components/card-account/card-account.component'
 import { ImageProfileComponent } from '../../../components/image-profile/image-profile.component'
 import { DataService } from '../../../core/services/data.service'
 
 @Component({
-    imports: [CommonModule, ImageProfileComponent, ReactiveFormsModule],
+    imports: [CommonModule, RouterLink, ImageProfileComponent, ReactiveFormsModule, CardAccountComponent],
     templateUrl: 'group-edit.component.html',
 })
 export class GroupEditComponent {
@@ -92,10 +93,6 @@ export class GroupEditComponent {
         } else {
             this.membersToRemoveFromGroup.push(accountId)
         }
-    }
-
-    onGoBack() {
-        this.router.navigate(['/dashboard'])
     }
 
     onInviteUser() {
