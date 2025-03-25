@@ -210,7 +210,7 @@ export class Api {
     }
 
     getGroupMeetings(userId: number, groupId: number) {
-        return this.http.get<Array<MeetWithAttendeesAndGamesType>>(`${this.url}/dashboard/users/${userId}/groups/${groupId}/meetings`)
+        return this.http.get<Array<HistoryRecordType>>(`${this.url}/dashboard/users/${userId}/groups/${groupId}/meetings`)
     }
 
     createGroupMeeting(userId: number, groupId: number) {

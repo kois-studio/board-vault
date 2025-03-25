@@ -170,75 +170,70 @@
             <h2 class="text-xl font-semibold">Meetings history</h2>
             <app-button (click)="onClickNewMeet()" [icon]="'plus-lg'">New meet</app-button>
         </div>
-        <hr />
+        <hr class="mb-4" />
+        
+        <!-- Loading state -->
+        @if (isLoading) {
+            <!-- TODO: custom skeleton matching actual history structure -->
+            <app-skeleton-card-group />
+        } @else if (groupHistory$().length === 0) {
+            <!-- no data -->
+            <div class="text-center py-8 text-secondary">
+                <p>No games played yet</p>
+            </div>
+        } @else {
+            @for (historyRecord of sortedGroupHistoryComputed(); track historyRecord.meetData.id) {
+                <div class="app-bg-secondary relative p-4 mb-8">
+                    <h2 class="text-xl font-semibold mb-4">
+                        {{ historyRecord.meetData.meetDate | customDate }}
+                    </h2>
 
-        <div class="grid gap-4 mt-4">
-            @for (meet of groupMeetings; track $index) {
-            <div class="app-bg-secondary rounded-lg p-4">
-                <!-- Header: Date and details button -->
-                <div class="flex justify-between items-center">
-                    <h3 class="text-lg font-semibold flex items-center mb-4">
-                        {{ meet.meetDate | customDate }}
-                    </h3>
+                    <!-- Ids -->
+                    <p class="text-secondary text-sm absolute top-4 right-4">
+                        Meet #{{ historyRecord.meetData.id }}
+                    </p>
 
-                    @if (!meet.isConfirmed) {
-                    <button (click)="onClickMeeting(meet.id)" class="font-bold text-blue-400 hover:text-blue-300">
-                        Edit <i class="bi bi-arrow-right ml-1"></i>
-                    </button>
-                    }
-                </div>
+                    <!-- Games played on this date -->
+                    <ul class="grid lg:grid-cols-2 gap-4">
+                        @for (gamePlayed of historyRecord.gamesPlayed; track gamePlayed.gameData.id) {
+                            <div class="app-bg-tertiary rounded-lg p-4 flex gap-4">
+                                <!-- Game image -->
+                                <a [routerLink]="['/games/', gamePlayed.gameData.id]">
+                                    <img
+                                        [src]="gamePlayed.gameData.imageUrl"
+                                        [alt]="gamePlayed.gameData.title"
+                                        loading="lazy"
+                                        class="w-24 h-24 object-cover rounded-lg"
+                                    />
+                                </a>
 
-                <!-- Content grid -->
-                <div class="grid md:grid-cols-3 gap-4">
-                    <!-- Attendees -->
-                    <div class="app-bg-tertiary rounded-lg p-4">
-                        <h4 class="text-gray-400 mb-2"><i class="bi bi-people-fill mr-1"></i> Attendees</h4>
-                        <div class="flex">
-                            @for (member of parseAttendeeIds(meet.attendees); track $index) {
-                            <div
-                                title="{{ member?.username }} - {{ member?.displayName }}"
-                                class="relative -ml-2 first:ml-0 rounded-full bv-stacked-image"
-                                [style.zIndex]="3 + $index"
-                            >
-                                <app-image-profile [avatar]="member?.avatar" />
-                            </div>
-                            }
+                                <!-- Game info -->
+                                <div class="flex flex-col justify-between flex-1">
+                                    <h3 class="text-lg font-semibold mb-1">{{ gamePlayed.gameData.title }}</h3>
 
-                            <!-- If there are more than 5 attendees, show a +X at the end -->
-                            @if (meet.attendees.length > 5) {
-                            <div class="relative -ml-2 first:ml-0 rounded-full bv-stacked-image" [style.zIndex]="3 + meet.attendees.length">
-                                <div class="rounded-full app-bg-secondary flex items-center justify-center w-10 h-10">
-                                    +{{ meet.attendees.length - 4 }}
-                                </div>
-                            </div>
-                            }
-                        </div>
-                    </div>
-
-                    <!-- Games played -->
-                    <div class="app-bg-tertiary rounded-lg p-4 md:col-span-2">
-                        <h4 class="text-gray-400 mb-2"><i class="bi bi-controller mr-1"></i> Games played</h4>
-                        <div class="grid md:grid-cols-2 gap-4">
-                            @for (game of parseGameIds(meet.playedGames); track $index) {
-                            <div class="app-bg-secondary rounded-lg p-2">
-                                <div class="flex items-center gap-2">
-                                    <image-background [src]="game?.imageUrl!" class="h-12 w-12 rounded" />
-                                    <div class="overflow-hidden">
-                                        <p class="font-medium truncate">{{ game.title }}</p>
-                                        <p class="text-sm text-gray-400">
-                                            {{ '45 mins' }}
-                                            <span class="mx-1">•</span>
-                                            {{ '4 players' }}
-                                        </p>
+                                    <div class="flex justify-between items-end">
+                                        
+                                        <!-- Players -->
+                                        <div class="relative h-8 flex items-center">
+                                            <!-- Player avatars -->
+                                            <div class="flex -space-x-2">
+                                                @for (player of gamePlayed.playedBy; track player.id) {
+                                                    <app-image-profile
+                                                        [title]="player.username"
+                                                        class="border-2 rounded-full border-indigo-100 dark:border-zinc-800"
+                                                        [avatar]="player.avatar"
+                                                        [style.zIndex]="$index"
+                                                    />
+                                                }
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            }
-                        </div>
-                    </div>
+                        }
+                    </ul>
                 </div>
-            </div>
             }
-        </div>
+        }
     </section>
 </container-wrapper>
