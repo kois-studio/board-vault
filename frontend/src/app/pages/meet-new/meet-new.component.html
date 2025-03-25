@@ -1,8 +1,8 @@
 <div class="mt-24 lg:mt-48 mb-96 mx-2 max-w-sm md:mx-auto p-2 lg:p-6">
-    <div class="shadow-md rounded-lg p-6 bg-zinc-800 relative">
+    <div class="app-bg-secondary shadow-md rounded-lg p-6 relative">
         <!-- TOP RIGHT BUTTONS -->
         <div class="flex gap-4 absolute -top-16 left-0">    
-            <button (click)="onGoBack()" class="app-btn-danger" title="Cancel editing">
+            <button routerLink="/groups/{{ groupData?.id }}" class="app-btn-danger" title="Cancel editing">
                 <i class="bi bi-arrow-left"></i> Back
             </button>
         </div>

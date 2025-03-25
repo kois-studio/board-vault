@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common'
 import { Component, effect } from '@angular/core'
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
-import { ActivatedRoute, Router } from '@angular/router'
+import { ActivatedRoute, RouterLink } from '@angular/router'
 import { DataService } from '../../core/services/data.service'
 
 @Component({
-    imports: [CommonModule, ReactiveFormsModule],
+    imports: [CommonModule, ReactiveFormsModule, RouterLink],
     templateUrl: 'meet-new.component.html',
 })
 export class MeetNewComponent {
@@ -33,7 +33,6 @@ export class MeetNewComponent {
     ])
 
     constructor(
-        private readonly router: Router,
         private readonly route: ActivatedRoute,
         private readonly dataService: DataService,
     ) {
@@ -64,10 +63,6 @@ export class MeetNewComponent {
         }
 
         return this.isCreatingLoading || this.dateForm.invalid
-    }
-
-    onGoBack() {
-        this.router.navigate(['/group', this.groupData?.id])
     }
 
     onClickCreateMeeting() {
