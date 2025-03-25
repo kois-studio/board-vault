@@ -53,6 +53,7 @@ export class DataService {
     public readonly userStats = signal<UserStatsType>({
         totalGamesValue: 0,
     })
+    public readonly groupHistoryByGroupId = signal<Record<number, Array<HistoryRecordType>>>({})
 
     // list of all games available to select
     public readonly gamesList = signal<Array<GameType>>([])
