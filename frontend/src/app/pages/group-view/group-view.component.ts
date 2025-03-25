@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common'
-import { Component, effect, inject } from '@angular/core'
-import { ActivatedRoute, Router } from '@angular/router'
+import { Component, computed, effect, inject, signal } from '@angular/core'
+import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { Api } from '../../api/api'
-import type { GameType, InvitationWithAccountsData, MeetWithAttendeesAndGamesType, UserType } from '../../api/api.types'
+import type { GameType, HistoryRecordType, InvitationWithAccountsData, UserType } from '../../api/api.types'
 import { CardAccountComponent } from '../../components/card-account/card-account.component'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
+import { SkeletonCardGroupComponent } from '../../components/skeletons/skeleton-card-group/skeleton-card-group.component'
 import { ButtonComponent } from '../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { ImageBackgroundComponent } from '../../components/ui/image-background/image-background.component'
@@ -17,6 +18,7 @@ import { GroupViewService } from './group-view.service'
 
 @Component({
     imports: [
+        RouterLink,
         TitleSubtitleComponent,
         ContainerWrapperComponent,
         CardAccountComponent,
@@ -26,6 +28,7 @@ import { GroupViewService } from './group-view.service'
         ImageBackgroundComponent,
         ReviewDisplayComponent,
         ButtonComponent,
+        SkeletonCardGroupComponent,
     ],
     templateUrl: 'group-view.component.html',
     styleUrls: ['group-view.component.scss'],
@@ -46,6 +49,7 @@ export class GroupViewComponent {
     public readonly userGroups$ = this.dataService.userGroups
     public readonly userMeets$ = this.dataService.userMeets
     public readonly invitationsGroupIndex$ = this.dataService.invitationsGroupIndex
+    public readonly groupHistoryByGroupId$ = this.dataService.groupHistoryByGroupId
 
     // groupViewService
     public readonly groupData$ = this.groupViewService.groupData
@@ -60,7 +64,14 @@ export class GroupViewComponent {
     //        Component props
     // --------------------------------------------------------------------------
     public isLoading = false
-    public groupMeetings: Array<MeetWithAttendeesAndGamesType> = []
+    public readonly groupHistory$ = signal<Array<HistoryRecordType>>([])
+
+    // --------------------------------------------------------------------------
+    //        Computed
+    // --------------------------------------------------------------------------
+    public readonly sortedGroupHistoryComputed = computed(() => {
+        return this.groupHistory$().sort((a, b) => new Date(b.meetData.meetDate).getTime() - new Date(a.meetData.meetDate).getTime())
+    })
 
     constructor() {
         effect(() => {
@@ -75,18 +86,28 @@ export class GroupViewComponent {
             // set the group data
             this.groupData$.set(group)
 
-            // get the group meetings
-            this.api.getGroupMeetings(currentUser.id, groupId).subscribe({
-                next: (groupMeetings) => {
-                    this.groupMeetings = groupMeetings.sort((a, b) => {
-                        return new Date(b.meetDate).getTime() - new Date(a.meetDate).getTime()
-                    })
-                },
-                error: (error) => {
-                    console.error(error)
-                    this.groupMeetings = [] // Clear previous data on error
-                },
-            })
+            // get the group history
+            const groupHistoryByGroupId = this.groupHistoryByGroupId$()
+
+            if (groupHistoryByGroupId[groupId] !== undefined) {
+                this.groupHistory$.set(groupHistoryByGroupId[groupId])
+            } else {
+                // get the group meetings
+                this.api.getGroupMeetings(currentUser.id, groupId).subscribe({
+                    next: (groupMeetings) => {
+                        this.groupHistory$.set(groupMeetings)
+                    },
+                    error: (error) => {
+                        console.error(error)
+                        // Clear previous data on error
+                        this.groupHistory$.set([])
+                        this.dataService.groupHistoryByGroupId.set({
+                            ...this.dataService.groupHistoryByGroupId(),
+                            [groupId]: [],
+                        })
+                    },
+                })
+            }
         })
     }
 
