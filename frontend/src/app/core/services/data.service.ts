@@ -280,6 +280,14 @@ export class DataService {
         this.gamesList.set([])
         this.userInvitations.set([])
         this.invitationsGroupIndex.set({})
+        this.userHistory.set([])
+        this.userMeets.set([])
+        this.userReviews.set([])
+        this.userWishlist.set([])
+        this.userCollectionActivity.set([])
+        this.userStats.set({
+            totalGamesValue: 0,
+        })
     }
 
     // #region form-update-profile
