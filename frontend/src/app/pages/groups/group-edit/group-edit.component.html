@@ -1,8 +1,8 @@
 <div class="mt-24 lg:mt-48 mb-96 mx-2 max-w-5xl md:mx-auto p-6">
-    <div class="shadow-md rounded-lg p-6 bg-zinc-800 relative">
+    <div class="shadow-md rounded-lg p-6 app-bg-secondary relative">
         <!-- TOP RIGHT BUTTONS -->
         <div class="absolute -top-16 left-0">    
-            <button (click)="onGoBack()" class="app-btn-danger" title="Cancel editing">
+            <button routerLink="/groups/{{ groupData?.id }}" class="app-btn-danger" title="Cancel editing">
                 <i class="bi bi-arrow-left"></i> Back
             </button>
         </div>
@@ -34,18 +34,8 @@
             @if (groupData && groupData.members) {
                 @for (member of groupData.members; track $index) {
                     <li class="flex justify-between items-center relative">
-                        <div class="flex items-center p-4">
-                            <app-image-profile [avatar]="member.avatar" />
-                            <div class="ml-3">
-                                <p class="font-semibold text-white">{{ member.displayName }}</p>
-                                <p class="text-gray-400 text-sm">
-                                    <span>{{ member.username }}</span>
-                                    @if (groupData.createdBy === member.id) {
-                                        <span class="text-blue-500 pl-2">owner</span>
-                                    }
-                                </p>
-                            </div>
-                        </div>
+                        <app-card-account [member]="member" [isOwner]="groupData.createdBy === member.id" />
+
                         @if (groupData.createdBy !== member.id) {
                             @if (membersToRemoveFromGroup.includes(member.id)) {
                                 <button (click)="markAsToRemove(member.id)" class="absolute top-0 right-0 left-0 bottom-0 bg-red-800/50 rounded-lg p-2 border-2 border-red-600">
