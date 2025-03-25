@@ -12,9 +12,10 @@ import { UsersService } from '../../core/users/users.service'
 
 import type { SuccessDto } from '../../../common/types/auth.type'
 import type { GroupMemberWithGames, GroupWithMembersAndGames } from '../../../common/types/group.type'
-import type { MeetCreatedDto, MeetWithAttendeesAndGames } from '../../../common/types/meet.type'
+import type { MeetCreatedDto } from '../../../common/types/meet.type'
 import type { UserStatsDto } from '../../../common/types/stats.type'
 import type { UserWithGames } from '../../../common/types/user.type'
+import type { HistoryRecordDto } from '../play/play.types'
 
 @Injectable()
 export class DashboardService {
@@ -110,19 +111,29 @@ export class DashboardService {
         return { success: true }
     }
 
-    async getGroupMeetings(userId: number, groupId: number): Promise<Array<MeetWithAttendeesAndGames>> {
-        this.LOGGER.log(`Validated that user ${userId} is in group ${groupId}`)
-        const meetings = await this.meetsService.getMeetsByGroupId(groupId)
+    @LogFeature(new Logger('DashboardService'))
+    async getGroupMeetings(userId: number, groupId: number): Promise<Array<HistoryRecordDto>> {
+        const groupMeetings = await this.meetsService.getMeetsByGroupId(groupId)
 
         return await Promise.all(
-            meetings.map(async meeting => {
-                const attendeesIds = await this.meetAccountGamesService.getDistinctAccountIdsByMeetId(meeting.id)
-                const playedGamesIds = await this.meetAccountGamesService.getDistinctGameIdsByMeetId(meeting.id)
+            groupMeetings.map(async meetData => {
+                const gameIds = await this.meetAccountGamesService.getDistinctGameIdsByMeetId(meetData.id)
+                const gamesPlayed = await Promise.all(
+                    gameIds.map(async gameId => {
+                        const game = await this.gamesService.getGameById(gameId)
+                        const playedByIds = await this.meetAccountGamesService.getDistinctAccountIdsByMeetIdAndGameId(meetData.id, gameId)
+                        const playedByData = await Promise.all(playedByIds.map(async accountId => this.usersService.getUserById(accountId)))
+
+                        return {
+                            gameData: game,
+                            playedBy: playedByData,
+                        }
+                    }),
+                )
 
                 return {
-                    ...meeting,
-                    attendees: attendeesIds,
-                    playedGames: playedGamesIds,
+                    meetData,
+                    gamesPlayed,
                 }
             }),
         )
