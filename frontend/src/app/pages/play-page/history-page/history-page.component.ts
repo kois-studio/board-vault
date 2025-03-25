@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { Component, computed, inject } from '@angular/core'
-import type { HistoryRecordType } from '../../../api/api.types'
+import { RouterLink } from '@angular/router'
 import { ImageProfileComponent } from '../../../components/image-profile/image-profile.component'
 import { SkeletonCardGroupComponent } from '../../../components/skeletons/skeleton-card-group/skeleton-card-group.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
@@ -14,6 +14,7 @@ import { LoadingService } from '../../../core/services/loading.service'
 @Component({
     imports: [
         CommonModule,
+        RouterLink,
         ContainerWrapperComponent,
         CustomDatePipe,
         SkeletonCardGroupComponent,
