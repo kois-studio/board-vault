@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core'
+import { RouterLink } from '@angular/router'
 import { CardSectionComponent } from '../../components/cards/card-section/card-section.component'
 import { CollectionActivityComponent } from '../../components/collection-activity/collection-activity.component'
 import { BadgeComponent } from '../../components/ui/badge/badge.component'
@@ -9,6 +10,7 @@ import { DataService } from '../../core/services/data.service'
 
 @Component({
     imports: [
+        RouterLink,
         PageHeaderComponent,
         ButtonComponent,
         ContainerWrapperComponent,
