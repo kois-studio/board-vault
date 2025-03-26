@@ -1,77 +1,44 @@
-import { Component, effect } from '@angular/core'
-import { FormControl, ReactiveFormsModule } from '@angular/forms'
+import { Component, computed, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
-import { Api } from '../../../api/api'
 import { CardGameComponent } from '../../../components/card-game/card-game.component'
+import { SkeletonCardGameComponent } from '../../../components/skeletons/skeleton-card-game/skeleton-card-game.component'
+import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
-import { TitleSubtitleComponent } from '../../../components/ui/title-subtitle/title-subtitle.component'
+import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
+import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
 import { DataService } from '../../../core/services/data.service'
+import { LoadingService } from '../../../core/services/loading.service'
 
 @Component({
-    imports: [CardGameComponent, ReactiveFormsModule, ContainerWrapperComponent, TitleSubtitleComponent, RouterLink],
+    imports: [CardGameComponent, ContainerWrapperComponent, RouterLink, PageHeaderComponent, ButtonComponent, SkeletonCardGameComponent],
     templateUrl: 'browse-page.component.html',
 })
 export class BrowsePageComponent {
-    public loaded = false
-    public activeTab: 'collection' | 'browse' = 'collection'
-    public allGames: ReturnType<typeof this.dataService.gamesList> = []
-    //TODO: esto no se usa
-    public allGamesIds: Array<number> = []
+    private readonly dataService = inject(DataService)
+    private readonly loadingService = inject(LoadingService)
 
-    public userGames: ReturnType<typeof this.dataService.userGames> = []
-    public userGamesIds: Array<number> = []
+    // --------------------------------------------------------------------------
+    //        Services signals
+    // --------------------------------------------------------------------------
+    // dataService
+    public readonly currentUser$ = this.dataService.currentUser
+    public readonly userWishlist$ = this.dataService.userWishlist
+    public readonly userGames$ = this.dataService.userGames
+    public readonly gamesList$ = this.dataService.gamesList
+    // loadingService
+    public readonly isLoadingGames$ = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.GAMES_LIST])
 
-    // here we stor the GameType.id of the games that the user wants to toggle
-    public gameIdsToToggle: Array<number> = []
+    // --------------------------------------------------------------------------
+    //        Computed
+    // --------------------------------------------------------------------------
+    public readonly gamesNotOwnedByUserComputed = computed(() => {
+        const userGamesIds = this.userGames$().map((game) => game.id)
+        return this.gamesList$()
+            .filter((game) => !userGamesIds.includes(game.id))
+            .sort((a, b) => a.title.localeCompare(b.title))
+    })
 
-    // the title of the game that the user wants to create
-    public gameTitleForm = new FormControl('')
-
-    constructor(
-        private readonly api: Api,
-        private readonly dataService: DataService,
-    ) {
-        effect(() => {
-            this.allGames = this.dataService.gamesList()
-            this.allGamesIds = this.allGames.map((game) => game.id)
-            this.userGames = this.dataService.userGames()
-            this.userGamesIds = this.userGames.map((game) => game.id)
-
-            if (this.allGames.length === 0) {
-                // TODO: handle in dataService
-                this.api.getGames().subscribe((games) => {
-                    this.dataService.gamesList.set(games)
-                })
-            }
-        })
-    }
-
-    get gameTitle() {
-        return this.gameTitleForm.get('title')
-    }
-
-    get gamesOwnedByUser() {
-        return this.userGames.sort((a, b) => a.title.localeCompare(b.title))
-    }
-
-    get gamesNotOwnedByUser() {
-        return this.allGames.filter((game) => !this.userGamesIds.includes(game.id)).sort((a, b) => a.title.localeCompare(b.title))
-    }
-
-    public onClickGame(gameId: number) {
-        if (this.gameIdsToToggle.includes(gameId)) {
-            this.gameIdsToToggle = this.gameIdsToToggle.filter((id) => id !== gameId)
-        } else {
-            this.gameIdsToToggle.push(gameId)
-        }
-    }
-
-    public saveSelection() {
-        this.dataService.updateUserGames(this.userGamesIds, this.gameIdsToToggle)
-        this.gameIdsToToggle = []
-    }
-
-    public onRequestNewGame() {
-        console.log('Requesting new game')
-    }
+    // --------------------------------------------------------------------------
+    //        Component props
+    // --------------------------------------------------------------------------
 }
