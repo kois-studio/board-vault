@@ -132,6 +132,9 @@ export class DataService {
             error: () => {
                 this.toastService.error('Error retrieving games list')
             },
+            complete: () => {
+                this.loadingService.finish(LOADING_KEYS.GAMES_LIST)
+            },
         })
     }
 
