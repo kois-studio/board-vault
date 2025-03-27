@@ -3,7 +3,6 @@
 
     <app-button class="action-button" icon="plus-lg" routerLink="/collection/browse/request-new-game">Request New Game</app-button>
 </app-page-header>
-
 <container-wrapper>
     <!-- Loading state -->
     @if (isLoadingGames$()) {
@@ -31,4 +30,23 @@
             }
         </section>
     }
+
+    <div class="grid grid-cols-2 w-96 gap-12 mt-24">
+        <app-tooltip text="More info here!" position="top">
+            <button class="bg-red-500 p-2" icon="plus-lg">Tooltip top</button>
+        </app-tooltip>
+        
+        <app-tooltip text="More info here!" position="bottom">
+            <button class="bg-red-500 p-2" icon="plus-lg">Tooltip bottom</button>
+        </app-tooltip>
+        
+        <app-tooltip text="More info here!" position="left">
+            <button class="bg-red-500 p-2" icon="plus-lg">Tooltip left</button>
+        </app-tooltip>
+        
+        <app-tooltip text="More info here!" position="right">
+            <button class="bg-red-500 p-2" icon="plus-lg">Tooltip right</button>
+        </app-tooltip>
+    </div>
+    
 </container-wrapper>
