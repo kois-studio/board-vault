@@ -3,9 +3,11 @@ import { Injectable, Logger } from '@nestjs/common'
 
 import { CacheService } from '../../common/cache/cache.service'
 import { DatabaseService } from '../../common/database/database.service'
-import type { GameTranslationDto } from '../../../common/types/game-translation.type'
+
 import { gameTranslationsSchema } from './game-translation.schema'
+
 import type { SuccessDto } from '../../../common/types/auth.type'
+import type { GameTranslationDto } from '../../../common/types/game-translation.type'
 
 @Injectable()
 export class GameTranslationService {
