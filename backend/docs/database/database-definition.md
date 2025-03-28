@@ -34,6 +34,19 @@ CREATE TABLE IF NOT EXISTS Game (
 );
 
 -- -----------------------------------------------------
+-- Table 'GameTranslation' (Game-Translation 1:n)
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS GameTranslation (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    gameId INTEGER NOT NULL,
+    languageCode TEXT NOT NULL, -- e.g., 'en', 'es', 'de'
+    title TEXT NOT NULL,
+    normalizedTitle TEXT NOT NULL, -- Normalized version of 'title' for searching
+    FOREIGN KEY (gameId) REFERENCES Game(id) ON DELETE CASCADE,
+    UNIQUE (gameId, languageCode) -- Ensure only one translation per language per game
+)
+
+-- -----------------------------------------------------
 -- Table 'OwnedGame' (Account-Game n:m)
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS OwnedGame (
@@ -205,4 +218,11 @@ CREATE TABLE IF NOT EXISTS FeatureFlags (
     description TEXT, -- Optional, for documentation purposes
     lastUpdated DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+-- -----------------------------------------------------
+-- Indexes
+-- -----------------------------------------------------
+-- for faster searching on normalized titles across all languages
+CREATE INDEX idx_gametranslation_normalized_title ON GameTranslation(normalizedTitle);
 ```
+
