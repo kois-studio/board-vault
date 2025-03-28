@@ -756,6 +756,13 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    createGameTranslation(gameId: number, languageCode: string, title: string, normalizedTitle: string) {
+        return this._tursoExecute({
+            sql: 'INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (?, ?, ?, ?)',
+            args: [gameId, languageCode, title, normalizedTitle],
+        })
+    }
+
     // #region CollectionActivity
 
     getUserCollectionActivities(accountId: number) {
