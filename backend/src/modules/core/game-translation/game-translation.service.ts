@@ -63,8 +63,16 @@ export class GameTranslationService {
         return gameTranslations
     }
 
-    async createGameTranslation(gameId: number, languageCode: string, title: string, normalizedTitle: string): Promise<SuccessDto> {
+    async createGameTranslation(gameId: number, languageCode: string, title: string): Promise<SuccessDto> {
         this.LOGGER.log(`Creating translation for game ${gameId}`)
+
+        const normalizedTitle = title
+            .toLowerCase()
+            .normalize('NFD') // decompose accented characters
+            .replace(/[\u0300-\u036f]/g, '') // remove accent marks
+            .replace(/[^\w\s-]/g, '') // remove all non-alphanumeric except spaces and hyphens
+            .trim() // remove leading/trailing spaces
+            .replace(/\s+/g, '-') // replace spaces with hyphens for better readability
 
         await this.databaseService.createGameTranslation(gameId, languageCode, title, normalizedTitle)
 
