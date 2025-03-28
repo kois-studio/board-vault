@@ -747,6 +747,15 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    // #region GameTranslation
+
+    getGameTranslations(gameId: number) {
+        return this._tursoExecute({
+            sql: 'SELECT * FROM GameTranslation WHERE gameId = ?',
+            args: [gameId],
+        })
+    }
+
     // #region CollectionActivity
 
     getUserCollectionActivities(accountId: number) {
