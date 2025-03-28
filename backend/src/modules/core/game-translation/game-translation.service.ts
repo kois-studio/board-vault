@@ -1,12 +1,11 @@
 import { ResultSet } from '@libsql/client/.'
 import { Injectable, Logger } from '@nestjs/common'
 
-import { tagsSchema } from '../../../common/schemas/db-tag.schema'
-import { TagDto } from '../../../common/types/tag.type'
 import { CacheService } from '../../common/cache/cache.service'
 import { DatabaseService } from '../../common/database/database.service'
-import { GameTranslationDto } from 'src/common/types/game-translation.type'
+import type { GameTranslationDto } from '../../../common/types/game-translation.type'
 import { gameTranslationsSchema } from './game-translation.schema'
+import type { SuccessDto } from '../../../common/types/auth.type'
 
 @Injectable()
 export class GameTranslationService {
@@ -60,5 +59,16 @@ export class GameTranslationService {
         await this.cacheService.set(`${this.CACHE_KEY}:byGameId:${gameId}`, gameTranslations)
 
         return gameTranslations
+    }
+
+    async createGameTranslation(gameId: number, languageCode: string, title: string, normalizedTitle: string): Promise<SuccessDto> {
+        this.LOGGER.log(`Creating translation for game ${gameId}`)
+
+        await this.databaseService.createGameTranslation(gameId, languageCode, title, normalizedTitle)
+
+        // Step 4: Invalidate cache
+        await this.cacheService.deleteOne(`${this.CACHE_KEY}:byGameId:${gameId}`)
+
+        return { success: true }
     }
 }
