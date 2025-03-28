@@ -168,6 +168,7 @@ export class DashboardService {
         return { success: true }
     }
 
+    @LogFeature(new Logger('DashboardService'))
     async removeMemberFromGroup(userId: number, groupId: number, memberId: number): Promise<SuccessDto> {
         // Step 1: Check if user is owner
         const groupData = await this.groupsService.getGroupById(groupId)
