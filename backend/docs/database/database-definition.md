@@ -37,14 +37,13 @@ CREATE TABLE IF NOT EXISTS Game (
 -- Table 'GameTranslation' (Game-Translation 1:n)
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS GameTranslation (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
     gameId INTEGER NOT NULL,
     languageCode TEXT NOT NULL, -- e.g., 'en', 'es', 'de'
     title TEXT NOT NULL,
     normalizedTitle TEXT NOT NULL, -- Normalized version of 'title' for searching
     FOREIGN KEY (gameId) REFERENCES Game(id) ON DELETE CASCADE,
-    UNIQUE (gameId, languageCode) -- Ensure only one translation per language per game
-)
+    PRIMARY KEY (gameId, languageCode)
+);
 
 -- -----------------------------------------------------
 -- Table 'OwnedGame' (Account-Game n:m)
