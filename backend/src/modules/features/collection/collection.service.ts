@@ -46,7 +46,7 @@ export class CollectionService {
     async getGameViewByUserId(userId: number, gameId: number): Promise<GameViewDto> {
         // Step 1: Get each part of data needed in the view
         const gameData = await this.gamesService.getGameById(gameId)
-        const gameTranslations = await this.gameTranslationService.getGameTranslations(gameId)
+        const titleTranslations = await this.gameTranslationService.getGameTranslations(gameId)
         const gameTags = await this.tagsService.getGameTags(gameId)
         const ownedGameData = await this.gamesOwnedService.isGameIdOwnedByAccountId(userId, gameId, false)
         const wishlistGameData = await this.wishlistService.isGameWishlisted(userId, gameId)
@@ -86,15 +86,7 @@ export class CollectionService {
         return {
             gameData: {
                 ...gameData,
-                titleTranslations: gameTranslations.reduce(
-                    (acc, translation) => {
-                        acc[translation.languageCode] = translation.title
-                        return acc
-                    },
-                    {
-                        en: '',
-                    },
-                ),
+                titleTranslations,
             },
             ownedGameData: !ownedGameData
                 ? null
