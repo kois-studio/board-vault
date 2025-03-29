@@ -106,10 +106,12 @@ export class GamesService {
                 skip,
                 take: pageSize,
                 excludeGameIds,
+                languageCode: 'en',
             }),
             this.databaseService.countGames({
                 search,
                 excludeGameIds,
+                languageCode: 'en',
             }),
         ])
 
