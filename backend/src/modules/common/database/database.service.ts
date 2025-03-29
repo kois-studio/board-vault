@@ -3,6 +3,8 @@ import { BadRequestException, Injectable, Logger, NotFoundException, OnModuleIni
 import { ConfigService } from '@nestjs/config'
 import * as bcrypt from 'bcrypt'
 
+import { SupportedLanguage } from 'src/common/types/game-translation.type'
+
 import type { CollectionActivityDto } from '../../../common/types/collection-activity.type'
 import type { GameOwnedDto, UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
 import type { CreateGroupMembershipBody } from '../../../common/types/group-membership.type'
@@ -410,22 +412,26 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
-    browseGames(options: { search?: string; skip: number; take: number; excludeGameIds?: number[] }) {
-        const { search, skip, take, excludeGameIds = [] } = options
+    browseGames(options: { search: string; skip: number; take: number; excludeGameIds: number[]; languageCode: SupportedLanguage }) {
+        const { search, skip, take, excludeGameIds, languageCode } = options
 
         // Building the query parts
         const whereConditions = []
         const queryArgs: any[] = []
 
+        // Add language condition (always included)
+        whereConditions.push('languageCode = ?')
+        queryArgs.push(languageCode)
+
         // Add search condition if provided
         if (search && search.trim() !== '') {
-            whereConditions.push('LOWER(title) LIKE ?')
-            queryArgs.push(`%${search.toLowerCase()}%`)
+            whereConditions.push('normalizedTitle LIKE ?')
+            queryArgs.push(`%${search}%`)
         }
 
         // Add exclusion condition if game IDs to exclude are provided
         if (excludeGameIds.length > 0) {
-            whereConditions.push(`id NOT IN (${excludeGameIds.map(() => '?').join(', ')})`)
+            whereConditions.push(`gameId NOT IN (${excludeGameIds.map(() => '?').join(', ')})`)
             queryArgs.push(...excludeGameIds)
         }
 
@@ -434,11 +440,11 @@ export class DatabaseService implements OnModuleInit {
 
         // Main query for fetching games with pagination
         const sql = `
-        SELECT * FROM Game 
-        ${whereClause}
-        ORDER BY title ASC
-        LIMIT ? OFFSET ?
-    `
+            SELECT * FROM GameTranslation 
+            ${whereClause}
+            ORDER BY title ASC
+            LIMIT ? OFFSET ?
+        `
 
         // Add pagination params
         queryArgs.push(take, skip)
@@ -449,22 +455,26 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
-    countGames(options: { search?: string; excludeGameIds?: number[] }) {
-        const { search, excludeGameIds = [] } = options
+    countGames(options: { search: string; excludeGameIds: number[]; languageCode: SupportedLanguage }) {
+        const { search, excludeGameIds, languageCode } = options
 
         // Building the query parts
         const whereConditions = []
         const queryArgs: any[] = []
 
+        // Add language condition (always included)
+        whereConditions.push('languageCode = ?')
+        queryArgs.push(languageCode)
+
         // Add search condition if provided
         if (search && search.trim() !== '') {
-            whereConditions.push('LOWER(title) LIKE ?')
-            queryArgs.push(`%${search.toLowerCase()}%`)
+            whereConditions.push('normalizedTitle LIKE ?')
+            queryArgs.push(`%${search}%`)
         }
 
         // Add exclusion condition if game IDs to exclude are provided
         if (excludeGameIds.length > 0) {
-            whereConditions.push(`id NOT IN (${excludeGameIds.map(() => '?').join(', ')})`)
+            whereConditions.push(`gameId NOT IN (${excludeGameIds.map(() => '?').join(', ')})`)
             queryArgs.push(...excludeGameIds)
         }
 
@@ -472,10 +482,11 @@ export class DatabaseService implements OnModuleInit {
         const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : ''
 
         // Query for counting total games matching criteria
+        // Using COUNT(DISTINCT gameId) to count unique games, not translations
         const sql = `
-        SELECT COUNT(*) as total FROM Game
-        ${whereClause}
-    `
+            SELECT COUNT(DISTINCT gameId) as total FROM GameTranslation
+            ${whereClause}
+        `
 
         return this._tursoExecute({
             sql,
