@@ -394,6 +394,22 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    // #region GameTranslation
+
+    getGameTranslations(gameId: number) {
+        return this._tursoExecute({
+            sql: 'SELECT * FROM GameTranslation WHERE gameId = ?',
+            args: [gameId],
+        })
+    }
+
+    createGameTranslation(gameId: number, languageCode: string, title: string, normalizedTitle: string) {
+        return this._tursoExecute({
+            sql: 'INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (?, ?, ?, ?)',
+            args: [gameId, languageCode, title, normalizedTitle],
+        })
+    }
+
     browseGames(options: { search?: string; skip: number; take: number; excludeGameIds?: number[] }) {
         const { search, skip, take, excludeGameIds = [] } = options
 
@@ -745,22 +761,6 @@ export class DatabaseService implements OnModuleInit {
             WHERE gm2.accountId = ?  -- Filter: user must be in the same group
             AND gr.gameId = ?;  -- Filter: only for the specific game`,
             args: [accountId, gameId],
-        })
-    }
-
-    // #region GameTranslation
-
-    getGameTranslations(gameId: number) {
-        return this._tursoExecute({
-            sql: 'SELECT * FROM GameTranslation WHERE gameId = ?',
-            args: [gameId],
-        })
-    }
-
-    createGameTranslation(gameId: number, languageCode: string, title: string, normalizedTitle: string) {
-        return this._tursoExecute({
-            sql: 'INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (?, ?, ?, ?)',
-            args: [gameId, languageCode, title, normalizedTitle],
         })
     }
 
