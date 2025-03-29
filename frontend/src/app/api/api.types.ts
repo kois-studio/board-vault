@@ -197,7 +197,7 @@ export type GameReviewWithGameData = GameReviewDto & {
 export type HistoryRecordType = {
     meetData: MeetType
     gamesPlayed: Array<{
-        gameData: GameType
+        gameData: GameCompleteType
         playedBy: Array<UserType>
     }>
 }
