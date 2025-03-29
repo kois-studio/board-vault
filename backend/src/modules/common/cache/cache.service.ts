@@ -4,6 +4,8 @@ import { Redis } from '@upstash/redis'
 
 import { PrintKeysDto } from '../../../common/types/cache.type'
 
+import { CACHE_TTL } from './cache.types'
+
 let is_redis_disabled = false
 
 /**
@@ -92,13 +94,17 @@ export class CacheService {
 
     // #region non-endpoints
     /**
-     * default ttl is 1 year
+     * @param ttl - recommended TTLs:
+     * - short: 1 hour - for data that the user may frequently update (wishlist, reviews, etc)
+     * - medium: 6 hours - for more static data (group member data, etc)
+     * - long: 1 day - for data that is not updated frequently (game translations, etc)
+     * @default short
      */
     @Wrapper()
-    async set(key: string, data: any, ttl: number = 60 * 60 * 24 * 30 * 12): Promise<void> {
+    async set(key: string, data: any, ttl: keyof typeof CACHE_TTL = 'short'): Promise<void> {
         this.LOGGER.log(`REDIS: set ${key} -> ${JSON.stringify(data)}`)
 
-        await this.REDIS.set(key, data, { ex: ttl })
+        await this.REDIS.set(key, data, { ex: CACHE_TTL[ttl] })
     }
 
     @Wrapper()
