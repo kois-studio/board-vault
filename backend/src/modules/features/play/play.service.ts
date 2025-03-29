@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common'
 
 import { LogFeature } from '../../../common/decorators/logger.decorator'
+import { GameTranslationService } from '../../core/game-translation/game-translation.service'
 import { GamesService } from '../../core/games/games.service'
 import { MeetAccountGamesService } from '../../core/meet-account-games/meet-account-games.service'
 import { MeetsService } from '../../core/meets/meets.service'
@@ -16,6 +17,7 @@ export class PlayService {
         private readonly gamesService: GamesService,
         private readonly meetsService: MeetsService,
         private readonly meetAccountGamesService: MeetAccountGamesService,
+        private readonly gameTranslationService: GameTranslationService,
     ) {}
 
     @LogFeature(new Logger('PlayService'))
@@ -29,11 +31,15 @@ export class PlayService {
                 const gamesPlayed = await Promise.all(
                     gameIds.map(async gameId => {
                         const game = await this.gamesService.getGameById(gameId)
+                        const gameTranslations = await this.gameTranslationService.getGameTranslations(gameId)
                         const playedByIds = await this.meetAccountGamesService.getDistinctAccountIdsByMeetIdAndGameId(meetId, gameId)
                         const playedByData = await Promise.all(playedByIds.map(async accountId => this.usersService.getUserById(accountId)))
 
                         return {
-                            gameData: game,
+                            gameData: {
+                                ...game,
+                                titleTranslations: gameTranslations,
+                            },
                             playedBy: playedByData,
                         }
                     }),
