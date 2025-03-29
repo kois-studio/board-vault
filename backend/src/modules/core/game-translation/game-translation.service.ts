@@ -8,6 +8,7 @@ import { gameTranslationsSchema } from './game-translation.schema'
 
 import type { SuccessDto } from '../../../common/types/auth.type'
 import type { GameTranslationDto, SupportedLanguage } from '../../../common/types/game-translation.type'
+import type { BrowseGamesPaginationDto } from '../../../common/types/game.type'
 
 @Injectable()
 export class GameTranslationService {
@@ -42,6 +43,16 @@ export class GameTranslationService {
         return result.data
     }
 
+    private _normalizeTitle(title: string): string {
+        return title
+            .toLowerCase()
+            .normalize('NFD') // decompose accented characters
+            .replace(/[\u0300-\u036f]/g, '') // remove accent marks
+            .replace(/[^\w\s-]/g, '') // remove all non-alphanumeric except spaces and hyphens
+            .trim() // remove leading/trailing spaces
+            .replace(/\s+/g, '-') // replace spaces with hyphens for better readability
+    }
+
     private _reduceGameTranslations(gameTranslations: Array<GameTranslationDto>): Record<SupportedLanguage, string> {
         return gameTranslations.reduce(
             (acc, translation) => {
@@ -51,6 +62,10 @@ export class GameTranslationService {
             { en: '' },
         )
     }
+
+    // --------------------------------------------------------------------------
+    //        Methods
+    // --------------------------------------------------------------------------
 
     async getGameTranslations(gameId: number): Promise<Record<SupportedLanguage, string>> {
         this.LOGGER.log(`Getting translations for game ${gameId}`)
@@ -78,13 +93,7 @@ export class GameTranslationService {
     async createGameTranslation(gameId: number, languageCode: string, title: string): Promise<SuccessDto> {
         this.LOGGER.log(`Creating translation for game ${gameId}`)
 
-        const normalizedTitle = title
-            .toLowerCase()
-            .normalize('NFD') // decompose accented characters
-            .replace(/[\u0300-\u036f]/g, '') // remove accent marks
-            .replace(/[^\w\s-]/g, '') // remove all non-alphanumeric except spaces and hyphens
-            .trim() // remove leading/trailing spaces
-            .replace(/\s+/g, '-') // replace spaces with hyphens for better readability
+        const normalizedTitle = this._normalizeTitle(title)
 
         await this.databaseService.createGameTranslation(gameId, languageCode, title, normalizedTitle)
 
@@ -92,5 +101,66 @@ export class GameTranslationService {
         await this.cacheService.deleteOne(`${this.CACHE_KEY}:byGameId:${gameId}`)
 
         return { success: true }
+    }
+
+    async browseGamesByTitle(options: {
+        search?: string
+        page?: number
+        pageSize?: number
+        excludeGameIds?: number[]
+    }): Promise<BrowseGamesPaginationDto & { gameIds: number[] }> {
+        const { search = '', page = 1, pageSize = 20, excludeGameIds = [] } = options
+
+        this.LOGGER.log(`Browsing games with search: "${search}", page: ${page}, pageSize: ${pageSize}`)
+
+        // Calculate skip based on page and pageSize
+        const skip = (page - 1) * pageSize
+
+        // Step 1: Try to get from cache if it's a simple query
+        const cacheKey = `${this.CACHE_KEY}:browse:${search}:${page}:${pageSize}:${excludeGameIds.join(',')}`
+
+        const cachedResult = await this.cacheService.get(cacheKey)
+
+        if (cachedResult) {
+            this.LOGGER.log(`Returning cached browse games result for "${search}"`)
+            return cachedResult
+        }
+
+        // Step 2: Get games and total count from database
+        const [gamesResult, countResult] = await Promise.all([
+            this.databaseService.browseGames({
+                search,
+                skip,
+                take: pageSize,
+                excludeGameIds,
+                languageCode: 'en',
+            }),
+            this.databaseService.countGames({
+                search,
+                excludeGameIds,
+                languageCode: 'en',
+            }),
+        ])
+
+        // Parse and validate the results
+        const gameTranslations = this._parseResultSet(gamesResult)
+        const total = Number(countResult.rows[0].total)
+
+        // Calculate total pages
+        const totalPages = Math.ceil(total / pageSize)
+
+        // Create the result object
+        const result: BrowseGamesPaginationDto & { gameIds: number[] } = {
+            gameIds: gameTranslations.map(gameTranslation => gameTranslation.gameId),
+            currentPage: page,
+            totalPages,
+            totalItems: total,
+            itemsPerPage: pageSize,
+        }
+
+        // Step 3: Save to cache with a reasonable TTL (e.g., 5 minutes)
+        await this.cacheService.set(cacheKey, result, 5 * 60)
+
+        return result
     }
 }
