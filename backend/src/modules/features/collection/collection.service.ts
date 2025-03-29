@@ -17,7 +17,7 @@ import { WishlistService } from '../../core/wishlist/wishlist.service'
 import type { SuccessDto } from '../../../common/types/auth.type'
 import type { CollectionActivityWithGameDataDto } from '../../../common/types/collection-activity.type'
 import type { CreateGameReviewBody, GameReviewWithGameDataDto } from '../../../common/types/game-review.type'
-import type { GameDto, GameViewDto } from '../../../common/types/game.type'
+import type { GameCompleteDto, GameDto, GameViewDto } from '../../../common/types/game.type'
 
 @Injectable()
 export class CollectionService {
@@ -193,10 +193,16 @@ export class CollectionService {
     }
 
     @LogFeature(new Logger('CollectionService'))
-    async getUserWishlist(userId: number): Promise<Array<GameDto>> {
+    async getUserWishlist(userId: number): Promise<Array<GameCompleteDto>> {
         const wishlist = await this.wishlistService.getWishlistByAccountId(userId)
+        const games = await Promise.all(wishlist.map(async gameId => this.gamesService.getGameById(gameId)))
 
-        return Promise.all(wishlist.map(async gameId => this.gamesService.getGameById(gameId)))
+        return Promise.all(
+            games.map(async game => ({
+                ...game,
+                titleTranslations: await this.gameTranslationService.getGameTranslations(game.id),
+            })),
+        )
     }
 
     @LogFeature(new Logger('CollectionService'))
