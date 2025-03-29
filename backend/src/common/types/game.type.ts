@@ -30,6 +30,28 @@ export class GameCompleteDto extends GameDto {
     titleTranslations: Record<SupportedLanguage, string>
 }
 
+export class BrowseGamesPaginationDto {
+    @ApiProperty({ example: 1 })
+    currentPage: number
+
+    @ApiProperty({ example: 10 })
+    totalPages: number
+
+    @ApiProperty({ example: 100 })
+    totalItems: number
+
+    @ApiProperty({ example: 10 })
+    itemsPerPage: number
+}
+
+export class BrowseGamesResultDto {
+    @ApiProperty({ type: [GameCompleteDto] })
+    games: Array<GameCompleteDto>
+
+    @ApiProperty({ type: BrowseGamesPaginationDto })
+    pagination: BrowseGamesPaginationDto
+}
+
 /**
  * GET game view
  * when a user is logged in and access a game view
