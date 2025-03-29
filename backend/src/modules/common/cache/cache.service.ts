@@ -29,7 +29,7 @@ function Wrapper(response_on_error: any = null) {
 
             // Wraps the method, catching any error
             try {
-                return originalMethod.apply(this, args)
+                return await originalMethod.apply(this, args)
             } catch (err) {
                 LOGGER.error(`[${propertyKey}] Error with Redis!`, err)
                 return response_on_error
