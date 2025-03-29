@@ -98,7 +98,7 @@ export type GroupWithMembersAndGames = GroupType & {
     members: Array<
         UserType & {
             joinedAt: string
-            games: Array<GameType>
+            games: Array<GameCompleteType>
             reviews: Array<GameReviewDto>
         }
     >
