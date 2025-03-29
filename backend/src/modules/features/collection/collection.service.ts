@@ -45,7 +45,7 @@ export class CollectionService {
     @LogFeature(new Logger('CollectionService'))
     async getGamesNotOwnedByUser(userId: number, search: string, page: number, limit: number): Promise<BrowseGamesResultDto> {
         const gamesOwned = await this.gamesOwnedService.getGamesOwnedByAccountId(userId)
-        const result = await this.gamesService.browseGames({
+        const result = await this.gameTranslationService.browseGamesByTitle({
             search,
             page,
             pageSize: limit,
@@ -53,9 +53,9 @@ export class CollectionService {
         })
 
         const gamesWithTranslations = await Promise.all(
-            result.games.map(async game => ({
-                ...game,
-                titleTranslations: await this.gameTranslationService.getGameTranslations(game.id),
+            result.gameIds.map(async gameId => ({
+                ...(await this.gamesService.getGameById(gameId)),
+                titleTranslations: await this.gameTranslationService.getGameTranslations(gameId),
             })),
         )
 
