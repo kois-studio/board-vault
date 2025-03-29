@@ -1,6 +1,7 @@
 import { BadRequestException, ForbiddenException, Injectable, Logger } from '@nestjs/common'
 
 import { LogFeature } from '../../../common/decorators/logger.decorator'
+import { GameTranslationService } from '../../core/game-translation/game-translation.service'
 import { GamesService } from '../../core/games/games.service'
 import { GamesOwnedService } from '../../core/games-owned/games-owned.service'
 import { GroupMembershipsService } from '../../core/group-memberships/group-memberships.service'
@@ -29,6 +30,7 @@ export class DashboardService {
         private readonly gamesService: GamesService,
         private readonly reviewsService: ReviewsService,
         private readonly meetsService: MeetsService,
+        private readonly gameTranslationService: GameTranslationService,
         private readonly meetAccountGamesService: MeetAccountGamesService,
     ) {}
 
@@ -56,8 +58,14 @@ export class DashboardService {
                         const user = await this.usersService.getUserById(_membership.accountId)
                         const gamesOwned = await this.gamesOwnedService.getGamesOwnedByAccountId(_membership.accountId)
                         const games = await Promise.all(gamesOwned.map(game => this.gamesService.getGameById(game.gameId)))
+                        const gamesWithTranslations = await Promise.all(
+                            games.map(async game => ({
+                                ...game,
+                                titleTranslations: await this.gameTranslationService.getGameTranslations(game.id),
+                            })),
+                        )
 
-                        const userWithGames: UserWithGames = { ...user, games }
+                        const userWithGames: UserWithGames = { ...user, games: gamesWithTranslations }
                         const userReviews = await this.reviewsService.getGameReviewsByAccountId(_membership.accountId)
 
                         return {
