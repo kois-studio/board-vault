@@ -5,7 +5,6 @@ import * as bcrypt from 'bcrypt'
 
 import type { CollectionActivityDto } from '../../../common/types/collection-activity.type'
 import type { GameOwnedDto, UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
-import type { CreateGameBody, UpdateGameBody } from '../../../common/types/game.type'
 import type { CreateGroupMembershipBody } from '../../../common/types/group-membership.type'
 import type { CreateGroupBody, UpdateGroupBody } from '../../../common/types/group.type'
 import type { CreateInvitationBody, CreateInvitationByUsernameBody } from '../../../common/types/invitation.type'
@@ -388,80 +387,9 @@ export class DatabaseService implements OnModuleInit {
 
     // #region Game
 
-    getGames() {
-        return this._tursoExecute('SELECT * FROM Game')
-    }
-
     getGameById(id: number) {
         return this._tursoExecute({
             sql: 'SELECT * FROM Game WHERE id = ?',
-            args: [id],
-        })
-    }
-
-    async createGame(gameDto: CreateGameBody) {
-        await this._tursoExecute({
-            sql: 'INSERT INTO Game (title, imageUrl, gameAvgDuration, minPlayers, maxPlayers) VALUES (?, ?, ?, ?, ?)',
-            args: [gameDto.title, gameDto.imageUrl, gameDto.gameAvgDuration, gameDto.minPlayers, gameDto.maxPlayers],
-        })
-    }
-
-    async updateGame(id: number, partialGameDto: UpdateGameBody) {
-        // Array to store fields to update
-        const fields = []
-        const args = []
-
-        // Dynamically build the update query based on the provided properties
-        if (partialGameDto.title) {
-            fields.push('title = ?')
-            args.push(partialGameDto.title)
-        }
-
-        if (partialGameDto.imageUrl) {
-            fields.push('imageUrl = ?')
-            args.push(partialGameDto.imageUrl)
-        }
-
-        if (partialGameDto.gameAvgDuration) {
-            fields.push('gameAvgDuration = ?')
-            args.push(partialGameDto.gameAvgDuration)
-        }
-
-        if (partialGameDto.minPlayers) {
-            fields.push('minPlayers = ?')
-            args.push(partialGameDto.minPlayers)
-        }
-
-        if (partialGameDto.maxPlayers) {
-            fields.push('maxPlayers = ?')
-            args.push(partialGameDto.maxPlayers)
-        }
-
-        // Error if no fields are provided
-        if (fields.length === 0) {
-            throw new BadRequestException('No fields to update')
-        }
-
-        // Add user id as the last argument
-        args.push(id)
-
-        // Construct the final query
-        const sql = `
-          UPDATE Game
-          SET ${fields.join(', ')}
-          WHERE id = ?
-        `
-
-        // Execute the query
-        await this._tursoExecute({ sql, args })
-
-        // Return the updated user
-        return this.getGameById(id)
-    }
-
-    deleteGameById(id: number) {
-        return this._tursoExecute({
-            sql: 'DELETE FROM Game WHERE id = ?',
             args: [id],
         })
     }
