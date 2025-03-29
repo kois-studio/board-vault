@@ -212,8 +212,9 @@ export class CollectionService {
         return Promise.all(
             activities.map(async activity => {
                 const game = await this.gamesService.getGameById(activity.gameId)
+                const titleTranslations = await this.gameTranslationService.getGameTranslations(game.id)
 
-                return { ...activity, gameData: game }
+                return { ...activity, gameData: { ...game, titleTranslations } }
             }),
         )
     }
