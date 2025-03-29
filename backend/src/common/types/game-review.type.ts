@@ -1,6 +1,6 @@
 import { ApiProperty, PickType } from '@nestjs/swagger'
 
-import { GameDto } from './game.type'
+import { GameCompleteDto } from './game.type'
 
 /**
  * base GameReview as it comes from db
@@ -25,6 +25,6 @@ export class GameReviewDto {
 export class CreateGameReviewBody extends PickType(GameReviewDto, ['review']) {}
 
 export class GameReviewWithGameDataDto extends GameReviewDto {
-    @ApiProperty({ type: GameDto })
-    gameData: GameDto
+    @ApiProperty({ type: GameCompleteDto })
+    gameData: GameCompleteDto
 }

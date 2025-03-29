@@ -171,8 +171,12 @@ export class CollectionService {
         return Promise.all(
             reviews.map(async review => {
                 const game = await this.gamesService.getGameById(review.gameId)
+                const titleTranslations = await this.gameTranslationService.getGameTranslations(game.id)
 
-                return { ...review, gameData: game }
+                return {
+                    ...review,
+                    gameData: { ...game, titleTranslations },
+                }
             }),
         )
     }

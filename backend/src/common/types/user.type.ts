@@ -1,6 +1,6 @@
 import { ApiProperty, OmitType, PartialType, PickType } from '@nestjs/swagger'
 
-import { GameDto } from './game.type'
+import { GameCompleteDto } from './game.type'
 
 export class AvatarDto {
     @ApiProperty({ example: '#3B82F6' })
@@ -109,8 +109,8 @@ export class LoginUserDto extends PickType(UserCompleteDto, ['email', 'password'
  * User containing the games they have
  */
 export class UserWithGames extends UserGetDto {
-    @ApiProperty({ type: [GameDto], description: 'The games the user has.' })
-    games: Array<GameDto>
+    @ApiProperty({ type: [GameCompleteDto], description: 'The games the user has.' })
+    games: Array<GameCompleteDto>
 }
 
 export class UserUpdateGamesBody {
