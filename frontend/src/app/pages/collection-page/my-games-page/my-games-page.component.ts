@@ -14,7 +14,6 @@ import { DataService } from '../../../core/services/data.service'
 export class MyGamesPageComponent {
     public loaded = false
     public activeTab: 'collection' | 'browse' = 'collection'
-    public allGames: ReturnType<typeof this.dataService.gamesList> = []
     //TODO: esto no se usa
     public allGamesIds: Array<number> = []
 
@@ -24,38 +23,14 @@ export class MyGamesPageComponent {
     // here we stor the GameType.id of the games that the user wants to toggle
     public gameIdsToToggle: Array<number> = []
 
-    // the title of the game that the user wants to create
-    public gameTitleForm = new FormControl('')
-
     constructor(
         private readonly api: Api,
         private readonly dataService: DataService,
     ) {
         effect(() => {
-            this.allGames = this.dataService.gamesList()
-            this.allGamesIds = this.allGames.map((game) => game.id)
             this.userGames = this.dataService.userGames()
             this.userGamesIds = this.userGames.map((game) => game.id)
-
-            if (this.allGames.length === 0) {
-                // TODO: handle in dataService
-                this.api.getGames().subscribe((games) => {
-                    this.dataService.gamesList.set(games)
-                })
-            }
         })
-    }
-
-    get gameTitle() {
-        return this.gameTitleForm.get('title')
-    }
-
-    get gamesOwnedByUser() {
-        return this.userGames.sort((a, b) => a.title.localeCompare(b.title))
-    }
-
-    get gamesNotOwnedByUser() {
-        return this.allGames.filter((game) => !this.userGamesIds.includes(game.id)).sort((a, b) => a.title.localeCompare(b.title))
     }
 
     public onClickGame(gameId: number) {
