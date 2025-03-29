@@ -17,7 +17,7 @@ import { WishlistService } from '../../core/wishlist/wishlist.service'
 import type { SuccessDto } from '../../../common/types/auth.type'
 import type { CollectionActivityWithGameDataDto } from '../../../common/types/collection-activity.type'
 import type { CreateGameReviewBody, GameReviewWithGameDataDto } from '../../../common/types/game-review.type'
-import type { GameCompleteDto, GameDto, GameViewDto } from '../../../common/types/game.type'
+import type { BrowseGamesResultDto, GameCompleteDto, GameDto, GameViewDto } from '../../../common/types/game.type'
 
 @Injectable()
 export class CollectionService {
@@ -40,6 +40,34 @@ export class CollectionService {
         const gamesOwned = await this.gamesOwnedService.getGamesOwnedByAccountId(userId)
 
         return Promise.all(gamesOwned.map(async game => this.gamesService.getGameById(game.gameId)))
+    }
+
+    @LogFeature(new Logger('CollectionService'))
+    async getGamesNotOwnedByUser(userId: number, search: string, page: number, limit: number): Promise<BrowseGamesResultDto> {
+        const gamesOwned = await this.gamesOwnedService.getGamesOwnedByAccountId(userId)
+        const result = await this.gamesService.browseGames({
+            search,
+            page,
+            pageSize: limit,
+            excludeGameIds: gamesOwned.map(game => game.gameId),
+        })
+
+        const gamesWithTranslations = await Promise.all(
+            result.games.map(async game => ({
+                ...game,
+                titleTranslations: await this.gameTranslationService.getGameTranslations(game.id),
+            })),
+        )
+
+        return {
+            games: gamesWithTranslations,
+            pagination: {
+                currentPage: result.currentPage,
+                totalPages: result.totalPages,
+                totalItems: result.totalItems,
+                itemsPerPage: result.itemsPerPage,
+            },
+        }
     }
 
     @LogFeature(new Logger('CollectionService'))

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Put, UseGuards } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Put, Query, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
@@ -8,7 +8,7 @@ import { SuccessDto } from '../../../common/types/auth.type'
 import { CollectionActivityDto } from '../../../common/types/collection-activity.type'
 import { GameOwnedDto, UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
 import { CreateGameReviewBody, GameReviewWithGameDataDto } from '../../../common/types/game-review.type'
-import { GameDto, GameViewDto } from '../../../common/types/game.type'
+import { BrowseGamesResultDto, GameDto, GameViewDto } from '../../../common/types/game.type'
 import { WishlistResponseDto } from '../../../common/types/wishlisted-game.type'
 
 import { CollectionService } from './collection.service'
@@ -25,6 +25,18 @@ export class CollectionController {
     @ApiResponse({ status: 200, type: [GameDto], description: 'List of all games owned by the user' })
     async getGamesOwnedByUser(@Param('userId', ParseIntPipe) userId: number) {
         return this.collectionService.getGamesOwnedByUser(userId)
+    }
+
+    @Get('/users/:userId/games/browse')
+    @ApiOperation({ summary: 'Browse games not owned by a user', deprecated: false })
+    @ApiResponse({ status: 200, type: [BrowseGamesResultDto], description: 'List of all games not owned by the user' })
+    async getGamesNotOwnedByUser(
+        @Param('userId', ParseIntPipe) userId: number,
+        @Query('search') search: string = '',
+        @Query('page', ParseIntPipe) page: number = 1,
+        @Query('limit', ParseIntPipe) limit: number = 20,
+    ) {
+        return this.collectionService.getGamesNotOwnedByUser(userId, search, page, limit)
     }
 
     @UseGuards(UserOwnershipGuard)
