@@ -129,11 +129,15 @@ export class DashboardService {
                 const gamesPlayed = await Promise.all(
                     gameIds.map(async gameId => {
                         const game = await this.gamesService.getGameById(gameId)
+                        const gameTranslations = await this.gameTranslationService.getGameTranslations(gameId)
                         const playedByIds = await this.meetAccountGamesService.getDistinctAccountIdsByMeetIdAndGameId(meetData.id, gameId)
                         const playedByData = await Promise.all(playedByIds.map(async accountId => this.usersService.getUserById(accountId)))
 
                         return {
-                            gameData: game,
+                            gameData: {
+                                ...game,
+                                titleTranslations: gameTranslations,
+                            },
                             playedBy: playedByData,
                         }
                     }),
