@@ -61,8 +61,8 @@ export class GameViewDto {
         avgGlobalRating: null | { review: number; count: number }
     }
 
-    @ApiProperty({ type: [GameDto] })
-    similarGames: Array<GameDto>
+    @ApiProperty({ type: [GameCompleteDto] })
+    similarGames: Array<GameCompleteDto>
 
     playHistory: Array<{
         group: GroupDto
