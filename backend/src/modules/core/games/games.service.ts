@@ -2,7 +2,7 @@ import { ResultSet } from '@libsql/client/.'
 import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { gamesSchema } from '../../../common/schemas'
-import { BrowseGamesPaginationDto, GameDto } from '../../../common/types/game.type'
+import { GameDto } from '../../../common/types/game.type'
 import { CacheService } from '../../common/cache/cache.service'
 import { DatabaseService } from '../../common/database/database.service'
 
@@ -74,66 +74,5 @@ export class GamesService {
             this.LOGGER.error('Failed to get safe game by id', error)
             return null
         }
-    }
-
-    async browseGames(options: {
-        search?: string
-        page?: number
-        pageSize?: number
-        excludeGameIds?: number[]
-    }): Promise<BrowseGamesPaginationDto & { games: Array<GameDto> }> {
-        const { search = '', page = 1, pageSize = 20, excludeGameIds = [] } = options
-
-        this.LOGGER.log(`Browsing games with search: "${search}", page: ${page}, pageSize: ${pageSize}`)
-
-        // Calculate skip based on page and pageSize
-        const skip = (page - 1) * pageSize
-
-        // Step 1: Try to get from cache if it's a simple query
-        const cacheKey = `${this.CACHE_KEY}:browse:${search}:${page}:${pageSize}:${excludeGameIds.join(',')}`
-
-        const cachedResult = await this.cacheService.get(cacheKey)
-
-        if (cachedResult) {
-            this.LOGGER.log(`Returning cached browse games result for "${search}"`)
-            return cachedResult
-        }
-
-        // Step 2: Get games and total count from database
-        const [gamesResult, countResult] = await Promise.all([
-            this.databaseService.browseGames({
-                search,
-                skip,
-                take: pageSize,
-                excludeGameIds,
-                languageCode: 'en',
-            }),
-            this.databaseService.countGames({
-                search,
-                excludeGameIds,
-                languageCode: 'en',
-            }),
-        ])
-
-        // Parse and validate the results
-        const games = this._parseResultSet(gamesResult)
-        const total = Number(countResult.rows[0].total)
-
-        // Calculate total pages
-        const totalPages = Math.ceil(total / pageSize)
-
-        // Create the result object
-        const result: BrowseGamesPaginationDto & { games: Array<GameDto> } = {
-            games,
-            currentPage: page,
-            totalPages,
-            totalItems: total,
-            itemsPerPage: pageSize,
-        }
-
-        // Step 3: Save to cache with a reasonable TTL (e.g., 5 minutes)
-        await this.cacheService.set(cacheKey, result, 5 * 60)
-
-        return result
     }
 }
