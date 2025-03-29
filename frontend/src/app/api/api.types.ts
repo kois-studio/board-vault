@@ -215,5 +215,5 @@ export type CollectionActivityType = {
 }
 
 export type CollectionActivityWithGameDataType = CollectionActivityType & {
-    gameData: GameType
+    gameData: GameCompleteType
 }

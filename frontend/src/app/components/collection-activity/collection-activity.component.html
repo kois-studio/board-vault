@@ -42,7 +42,7 @@
                                             updated: 'You updated',
                                         }[activity.actionType]
                                     }}
-                                    <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline">{{activity.gameData.title}}</a>
+                                    <a [routerLink]="['/games/', activity.gameData.id]" class="font-medium hover:underline">{{activity.gameData.titleTranslations.en}}</a>
                                     {{
                                         {
                                             added: 'to your collection',
