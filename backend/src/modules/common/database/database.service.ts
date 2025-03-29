@@ -394,6 +394,79 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    browseGames(options: { search?: string; skip: number; take: number; excludeGameIds?: number[] }) {
+        const { search, skip, take, excludeGameIds = [] } = options
+
+        // Building the query parts
+        const whereConditions = []
+        const queryArgs: any[] = []
+
+        // Add search condition if provided
+        if (search && search.trim() !== '') {
+            whereConditions.push('LOWER(title) LIKE ?')
+            queryArgs.push(`%${search.toLowerCase()}%`)
+        }
+
+        // Add exclusion condition if game IDs to exclude are provided
+        if (excludeGameIds.length > 0) {
+            whereConditions.push(`id NOT IN (${excludeGameIds.map(() => '?').join(', ')})`)
+            queryArgs.push(...excludeGameIds)
+        }
+
+        // Combine WHERE conditions if any
+        const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : ''
+
+        // Main query for fetching games with pagination
+        const sql = `
+        SELECT * FROM Game 
+        ${whereClause}
+        ORDER BY title ASC
+        LIMIT ? OFFSET ?
+    `
+
+        // Add pagination params
+        queryArgs.push(take, skip)
+
+        return this._tursoExecute({
+            sql,
+            args: queryArgs,
+        })
+    }
+
+    countGames(options: { search?: string; excludeGameIds?: number[] }) {
+        const { search, excludeGameIds = [] } = options
+
+        // Building the query parts
+        const whereConditions = []
+        const queryArgs: any[] = []
+
+        // Add search condition if provided
+        if (search && search.trim() !== '') {
+            whereConditions.push('LOWER(title) LIKE ?')
+            queryArgs.push(`%${search.toLowerCase()}%`)
+        }
+
+        // Add exclusion condition if game IDs to exclude are provided
+        if (excludeGameIds.length > 0) {
+            whereConditions.push(`id NOT IN (${excludeGameIds.map(() => '?').join(', ')})`)
+            queryArgs.push(...excludeGameIds)
+        }
+
+        // Combine WHERE conditions if any
+        const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : ''
+
+        // Query for counting total games matching criteria
+        const sql = `
+        SELECT COUNT(*) as total FROM Game
+        ${whereClause}
+    `
+
+        return this._tursoExecute({
+            sql,
+            args: queryArgs,
+        })
+    }
+
     // #region OwnedGame
 
     getOwnedGames() {
