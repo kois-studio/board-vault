@@ -4,6 +4,7 @@ import { catchError, concatMap, of } from 'rxjs'
 import { Api } from '../../api/api'
 import type {
     CollectionActivityWithGameDataType,
+    GameCompleteType,
     GameReviewWithGameData,
     GameType,
     GroupWithMembersAndGames,
@@ -47,7 +48,7 @@ export class DataService {
     public readonly userReviews = signal<Array<GameReviewWithGameData>>([])
     public readonly userMeets = signal<Array<MeetType>>([])
     public readonly userHistory = signal<Array<HistoryRecordType>>([])
-    public readonly userWishlist = signal<Array<GameType>>([])
+    public readonly userWishlist = signal<Array<GameCompleteType>>([])
     public readonly userCollectionActivity = signal<Array<CollectionActivityWithGameDataType>>([])
     // non arrays
     public readonly userStats = signal<UserStatsType>({
