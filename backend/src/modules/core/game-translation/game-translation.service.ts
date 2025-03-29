@@ -7,7 +7,7 @@ import { DatabaseService } from '../../common/database/database.service'
 import { gameTranslationsSchema } from './game-translation.schema'
 
 import type { SuccessDto } from '../../../common/types/auth.type'
-import type { GameTranslationDto } from '../../../common/types/game-translation.type'
+import type { GameTranslationDto, SupportedLanguage } from '../../../common/types/game-translation.type'
 
 @Injectable()
 export class GameTranslationService {
@@ -22,7 +22,7 @@ export class GameTranslationService {
     private _parseResultSet(resultSet: ResultSet): Array<GameTranslationDto> {
         const gameTranslations = resultSet.rows.map(row => ({
             gameId: Number(row[0]),
-            languageCode: String(row[1]),
+            languageCode: String(row[1]) as SupportedLanguage,
             title: String(row[2]),
             normalizedTitle: String(row[3]),
         }))
