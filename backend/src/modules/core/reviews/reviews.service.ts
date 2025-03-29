@@ -133,9 +133,7 @@ export class ReviewsService {
         const reviews = this._parseResultSet(resultSet)
 
         // Step 3: Save them to cache
-        const cacheDuration = 60 * 60 // 1 hour
-
-        await this.cacheService.set(`${this.CACHE_KEY}:userReviewsWithGameData:${userId}`, reviews, cacheDuration)
+        await this.cacheService.set(`${this.CACHE_KEY}:userReviewsWithGameData:${userId}`, reviews)
 
         return reviews
     }
@@ -161,9 +159,7 @@ export class ReviewsService {
         }
 
         // Step 3: Save them to cache
-        const cacheDuration = 60 * 60 * 24 * 30 // 30 days
-
-        await this.cacheService.set(`${this.CACHE_KEY}:avgGlobalRating:${gameId}`, avgGlobalRating, cacheDuration)
+        await this.cacheService.set(`${this.CACHE_KEY}:avgGlobalRating:${gameId}`, avgGlobalRating, 'long')
 
         return avgGlobalRating
     }
@@ -187,9 +183,7 @@ export class ReviewsService {
         }
 
         // Step 3: Save them to cache
-        const cacheDuration = 60 * 60 * 24 * 30 // 30 days
-
-        await this.cacheService.set(`${this.CACHE_KEY}:avgGroupsRating:${accountId}:${gameId}`, avgGroupsRating, cacheDuration)
+        await this.cacheService.set(`${this.CACHE_KEY}:avgGroupsRating:${accountId}:${gameId}`, avgGroupsRating, 'long')
 
         return avgGroupsRating
     }
