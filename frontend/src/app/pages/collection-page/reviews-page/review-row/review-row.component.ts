@@ -1,6 +1,6 @@
 import { Component, Input, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
-import { GameType } from '../../../../api/api.types'
+import { GameCompleteType } from '../../../../api/api.types'
 import { DataService } from '../../../../core/services/data.service'
 
 @Component({
@@ -9,7 +9,7 @@ import { DataService } from '../../../../core/services/data.service'
     templateUrl: './review-row.component.html',
 })
 export class ReviewRowComponent {
-    @Input({ required: true }) game!: GameType
+    @Input({ required: true }) game!: GameCompleteType
     @Input({ required: true }) review!: number
 
     private readonly dataService = inject(DataService)

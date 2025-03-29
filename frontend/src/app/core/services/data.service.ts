@@ -462,7 +462,8 @@ export class DataService {
                                 const userIndex = group.members.findIndex((member) => member.id === currentUser.id)
                                 if (userIndex === -1) return group
 
-                                group.members[userIndex].games = games
+                                // TODO: fix this
+                                // group.members[userIndex].games = games
                                 return group
                             }),
                         )
