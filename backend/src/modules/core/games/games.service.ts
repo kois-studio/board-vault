@@ -19,7 +19,7 @@ export class GamesService {
     private _parseResultSet(resultSet: ResultSet): Array<GameDto> {
         const games = resultSet.rows.map(row => ({
             id: Number(row[0]),
-            title: String(row[1]),
+            // title: String(row[1]),
             imageUrl: String(row[2]),
             gameAvgDuration: Number(row[3]),
             minPlayers: Number(row[4]),
