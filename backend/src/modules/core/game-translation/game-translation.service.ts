@@ -104,40 +104,41 @@ export class GameTranslationService {
     }
 
     async browseGamesByTitle(options: {
-        search?: string
-        page?: number
-        pageSize?: number
-        excludeGameIds?: number[]
+        search: string
+        page: number
+        pageSize: number
+        excludeGameIds: number[]
     }): Promise<BrowseGamesPaginationDto & { gameIds: number[] }> {
-        const { search = '', page = 1, pageSize = 20, excludeGameIds = [] } = options
-
-        this.LOGGER.log(`Browsing games with search: "${search}", page: ${page}, pageSize: ${pageSize}`)
+        this.LOGGER.log(
+            `Browsing games with search: "${options.search}", page: ${options.page}, pageSize: ${options.pageSize}, excludeGameIds: ${options.excludeGameIds.join(',')}`,
+        )
 
         // Calculate skip based on page and pageSize
-        const skip = (page - 1) * pageSize
+        const skip = (options.page - 1) * options.pageSize
+        const normalizedSearch = this._normalizeTitle(options.search)
 
         // Step 1: Try to get from cache if it's a simple query
-        const cacheKey = `${this.CACHE_KEY}:browse:${search}:${page}:${pageSize}:${excludeGameIds.join(',')}`
+        const cacheKey = `${this.CACHE_KEY}:browse:${normalizedSearch}:${options.page}:${options.pageSize}:${options.excludeGameIds.join(',')}`
 
         const cachedResult = await this.cacheService.get(cacheKey)
 
         if (cachedResult) {
-            this.LOGGER.log(`Returning cached browse games result for "${search}"`)
+            this.LOGGER.log(`Returning cached browse games result for "${normalizedSearch}"`)
             return cachedResult
         }
 
         // Step 2: Get games and total count from database
         const [gamesResult, countResult] = await Promise.all([
             this.databaseService.browseGames({
-                search,
+                search: normalizedSearch,
                 skip,
-                take: pageSize,
-                excludeGameIds,
+                take: options.pageSize,
+                excludeGameIds: options.excludeGameIds,
                 languageCode: 'en',
             }),
             this.databaseService.countGames({
-                search,
-                excludeGameIds,
+                search: normalizedSearch,
+                excludeGameIds: options.excludeGameIds,
                 languageCode: 'en',
             }),
         ])
@@ -147,19 +148,19 @@ export class GameTranslationService {
         const total = Number(countResult.rows[0].total)
 
         // Calculate total pages
-        const totalPages = Math.ceil(total / pageSize)
+        const totalPages = Math.ceil(total / options.pageSize)
 
         // Create the result object
         const result: BrowseGamesPaginationDto & { gameIds: number[] } = {
             gameIds: gameTranslations.map(gameTranslation => gameTranslation.gameId),
-            currentPage: page,
+            currentPage: options.page,
             totalPages,
             totalItems: total,
-            itemsPerPage: pageSize,
+            itemsPerPage: options.pageSize,
         }
 
-        // Step 3: Save to cache with a reasonable TTL (e.g., 5 minutes)
-        await this.cacheService.set(cacheKey, result, 5 * 60)
+        // Step 3: Save to cache
+        await this.cacheService.set(cacheKey, result, 'long')
 
         return result
     }
