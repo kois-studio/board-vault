@@ -13,7 +13,6 @@ export class LoadingService {
      */
     public readonly loadingStatesIndex = signal<Record<string, boolean>>({
         [LOADING_KEYS.USER_DATA]: true,
-        [LOADING_KEYS.GAMES_LIST]: true,
         [LOADING_KEYS.USER_INVITATIONS]: true,
         [LOADING_KEYS.USER_NOTIFICATIONS]: true,
         [LOADING_KEYS.USER_REVIEWS]: true,

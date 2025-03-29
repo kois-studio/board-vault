@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { environment } from '../../environments/environment'
 import type {
+    BrowseGamesResultType,
     CollectionActivityWithGameDataType,
     GameCompleteType,
     GameOwnedType,
@@ -153,6 +154,10 @@ export class Api {
     // --------------------------------------------------------------------------
     getUserGames(userId: number) {
         return this.http.get<Array<GameType>>(`${this.url}/collection/users/${userId}/games`)
+    }
+
+    browseGamesNotOwnedByUser(userId: number, search: string, page: number, limit: number) {
+        return this.http.get<BrowseGamesResultType>(`${this.url}/collection/users/${userId}/games/browse?search=${search}&page=${page}&limit=${limit}`)
     }
 
     getGameView(userId: number, gameId: number) {

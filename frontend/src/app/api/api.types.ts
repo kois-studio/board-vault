@@ -191,6 +191,16 @@ export type GameReviewWithGameData = GameReviewDto & {
     gameData: GameCompleteType
 }
 
+export type BrowseGamesResultType = {
+    games: Array<GameCompleteType>
+    pagination: {
+        currentPage: number
+        totalPages: number
+        totalItems: number
+        itemsPerPage: number
+    }
+}
+
 // --------------------------------------------------------------------------
 // #region play
 // --------------------------------------------------------------------------
