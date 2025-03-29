@@ -37,8 +37,14 @@ export type GameType = {
     maxPlayers: number
 }
 
+type SupportedLanguage = 'en'
+
+export type GameCompleteType = GameType & {
+    titleTranslations: Record<SupportedLanguage, string>
+}
+
 export type GameViewType = {
-    gameData: GameType
+    gameData: GameCompleteType
     ownedGameData: null | {
         purchaseDate: string | null
         purchasePrice: number | null
@@ -57,7 +63,7 @@ export type GameViewType = {
         avgGroupsRating: null | { review: number; count: number }
         avgGlobalRating: null | { review: number; count: number }
     }
-    similarGames: Array<GameType>
+    similarGames: Array<GameCompleteType>
     playHistory: Array<{
         group: GroupType
         meet: MeetType
@@ -182,7 +188,7 @@ export type GameReviewDto = {
 }
 
 export type GameReviewWithGameData = GameReviewDto & {
-    gameData: GameType
+    gameData: GameCompleteType
 }
 
 // --------------------------------------------------------------------------
