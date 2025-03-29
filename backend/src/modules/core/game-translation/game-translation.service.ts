@@ -42,7 +42,14 @@ export class GameTranslationService {
         return result.data
     }
 
-    async getGameTranslations(gameId: number): Promise<Array<GameTranslationDto>> {
+    private _reduceGameTranslations(gameTranslations: Array<GameTranslationDto>): Record<SupportedLanguage, string> {
+        return gameTranslations.reduce((acc, translation) => {
+            acc[translation.languageCode] = translation.title
+            return acc
+        }, { en: '' })
+    }
+
+    async getGameTranslations(gameId: number): Promise<Record<SupportedLanguage, string>> {
         this.LOGGER.log(`Getting translations for game ${gameId}`)
 
         // Step 1: Try to get them from cache
@@ -50,7 +57,8 @@ export class GameTranslationService {
 
         if (cachedGameTranslations) {
             this.LOGGER.log(`Returning cached translations for game ${gameId}`)
-            return this._validateSchema(cachedGameTranslations)
+            const gameTranslations = this._validateSchema(cachedGameTranslations)
+            return this._reduceGameTranslations(gameTranslations)
         }
 
         // Step 2: If no cached, get them from database
@@ -60,7 +68,7 @@ export class GameTranslationService {
         // Step 3: Save them to cache
         await this.cacheService.set(`${this.CACHE_KEY}:byGameId:${gameId}`, gameTranslations)
 
-        return gameTranslations
+        return this._reduceGameTranslations(gameTranslations)
     }
 
     async createGameTranslation(gameId: number, languageCode: string, title: string): Promise<SuccessDto> {
