@@ -43,10 +43,13 @@ export class GameTranslationService {
     }
 
     private _reduceGameTranslations(gameTranslations: Array<GameTranslationDto>): Record<SupportedLanguage, string> {
-        return gameTranslations.reduce((acc, translation) => {
-            acc[translation.languageCode] = translation.title
-            return acc
-        }, { en: '' })
+        return gameTranslations.reduce(
+            (acc, translation) => {
+                acc[translation.languageCode] = translation.title
+                return acc
+            },
+            { en: '' },
+        )
     }
 
     async getGameTranslations(gameId: number): Promise<Record<SupportedLanguage, string>> {
@@ -58,6 +61,7 @@ export class GameTranslationService {
         if (cachedGameTranslations) {
             this.LOGGER.log(`Returning cached translations for game ${gameId}`)
             const gameTranslations = this._validateSchema(cachedGameTranslations)
+
             return this._reduceGameTranslations(gameTranslations)
         }
 

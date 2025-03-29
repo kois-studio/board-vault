@@ -107,7 +107,12 @@ export class CollectionService {
                 avgGroupsRating,
                 avgGlobalRating,
             },
-            similarGames: similarGamesFiltered,
+            similarGames: await Promise.all(
+                similarGamesFiltered.map(async game => ({
+                    ...game,
+                    titleTranslations: await this.gameTranslationService.getGameTranslations(game.id),
+                })),
+            ),
             playHistory: playHistoryData,
         }
     }
