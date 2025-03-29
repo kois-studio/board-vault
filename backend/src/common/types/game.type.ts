@@ -35,6 +35,7 @@ export class GameCompleteDto extends GameDto {
  * when a user is logged in and access a game view
  */
 export class GameViewDto {
+    @ApiProperty({ type: GameCompleteDto })
     gameData: GameCompleteDto
 
     // TODO: add missing @ApiProperty
@@ -60,7 +61,9 @@ export class GameViewDto {
         avgGlobalRating: null | { review: number; count: number }
     }
 
+    @ApiProperty({ type: [GameDto] })
     similarGames: Array<GameDto>
+
     playHistory: Array<{
         group: GroupDto
         meet: MeetDto

@@ -3,6 +3,7 @@ import { Injectable, Logger } from '@nestjs/common'
 import { LogFeature } from '../../../common/decorators/logger.decorator'
 import { UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
 import { CollectionActivityService } from '../../../modules/core/collection-activity/collection-activity.service'
+import { GameTranslationService } from '../../../modules/core/game-translation/game-translation.service'
 import { GamesService } from '../../core/games/games.service'
 import { GamesOwnedService } from '../../core/games-owned/games-owned.service'
 import { GroupsService } from '../../core/groups/groups.service'
@@ -29,6 +30,7 @@ export class CollectionService {
         private readonly reviewsService: ReviewsService,
         private readonly wishlistService: WishlistService,
         private readonly gamesOwnedService: GamesOwnedService,
+        private readonly gameTranslationService: GameTranslationService,
         private readonly meetAccountGamesService: MeetAccountGamesService,
         private readonly collectionActivityService: CollectionActivityService,
     ) {}
@@ -44,6 +46,7 @@ export class CollectionService {
     async getGameViewByUserId(userId: number, gameId: number): Promise<GameViewDto> {
         // Step 1: Get each part of data needed in the view
         const gameData = await this.gamesService.getGameById(gameId)
+        const gameTranslations = await this.gameTranslationService.getGameTranslations(gameId)
         const gameTags = await this.tagsService.getGameTags(gameId)
         const ownedGameData = await this.gamesOwnedService.isGameIdOwnedByAccountId(userId, gameId, false)
         const wishlistGameData = await this.wishlistService.isGameWishlisted(userId, gameId)
@@ -81,7 +84,18 @@ export class CollectionService {
 
         // Step 2: Construct the GameView
         return {
-            gameData,
+            gameData: {
+                ...gameData,
+                titleTranslations: gameTranslations.reduce(
+                    (acc, translation) => {
+                        acc[translation.languageCode] = translation.title
+                        return acc
+                    },
+                    {
+                        en: '',
+                    },
+                ),
+            },
             ownedGameData: !ownedGameData
                 ? null
                 : {

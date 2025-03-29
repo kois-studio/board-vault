@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common'
 
 import { DatabaseModule } from '../../common/database/database.module'
 import { CollectionActivityModule } from '../../core/collection-activity/collection-activity.module'
+import { GameTranslationModule } from '../../core/game-translation/game-translation.module'
 import { GamesModule } from '../../core/games/games.module'
 import { GamesOwnedModule } from '../../core/games-owned/games-owned.module'
 import { GroupsModule } from '../../core/groups/groups.module'
@@ -26,6 +27,7 @@ import { CollectionService } from './collection.service'
         ReviewsModule,
         WishlistModule,
         GamesOwnedModule,
+        GameTranslationModule,
         MeetAccountGamesModule,
         CollectionActivityModule,
     ],
