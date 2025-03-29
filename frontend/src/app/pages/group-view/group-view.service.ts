@@ -1,5 +1,5 @@
 import { Injectable, computed, signal } from '@angular/core'
-import { GameType, GroupWithMembersAndGames, UserType } from '../../api/api.types'
+import { GameCompleteType, GameType, GroupWithMembersAndGames, UserType } from '../../api/api.types'
 
 /**
  * The group view has a lot of logic (signals, computed properties, etc)
@@ -90,12 +90,12 @@ export class GroupViewService {
     // --------------------------------------------------------------------------
     public readonly totalUniqueGamesComputed = computed(
         (): Array<
-            GameType & {
+            GameCompleteType & {
                 quantity: number // number of copies of the game in the group
                 active: boolean // to highlight or not in the UI
             }
         > => {
-            const games: Array<GameType & { quantity: number; active: boolean }> = []
+            const games: Array<GameCompleteType & { quantity: number; active: boolean }> = []
 
             // STEP 1: active/inactive games based on selected members (ownership)
             for (const member of this.groupData()?.members ?? []) {
