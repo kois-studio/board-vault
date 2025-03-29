@@ -125,17 +125,17 @@ export class DataService {
     }
 
     private _getGamesList() {
-        this.api.getGames().subscribe({
-            next: (games) => {
-                this.gamesList.set(games)
-            },
-            error: () => {
-                this.toastService.error('Error retrieving games list')
-            },
-            complete: () => {
-                this.loadingService.finish(LOADING_KEYS.GAMES_LIST)
-            },
-        })
+        // this.api.getGames().subscribe({
+        //     next: (games) => {
+        //         this.gamesList.set(games)
+        //     },
+        //     error: () => {
+        //         this.toastService.error('Error retrieving games list')
+        //     },
+        //     complete: () => {
+        //         this.loadingService.finish(LOADING_KEYS.GAMES_LIST)
+        //     },
+        // })
     }
 
     private _getUserInvitations(userId: number) {
