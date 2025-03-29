@@ -1,8 +1,8 @@
 import { ResultSet } from '@libsql/client/.'
-import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common'
+import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { gamesSchema } from '../../../common/schemas'
-import { CreateGameBody, GameDto, UpdateGameBody } from '../../../common/types/game.type'
+import { GameDto } from '../../../common/types/game.type'
 import { CacheService } from '../../common/cache/cache.service'
 import { DatabaseService } from '../../common/database/database.service'
 
@@ -43,13 +43,6 @@ export class GamesService {
 
     // #region methods
 
-    async getGames(): Promise<Array<GameDto>> {
-        this.LOGGER.log('Getting all games')
-        const resultSet = await this.databaseService.getGames()
-
-        return this._parseResultSet(resultSet)
-    }
-
     async getGameById(id: number): Promise<GameDto> {
         this.LOGGER.log(`Getting game by id ${id}`)
 
@@ -81,39 +74,5 @@ export class GamesService {
             this.LOGGER.error('Failed to get safe game by id', error)
             return null
         }
-    }
-
-    async createGame(gameDto: CreateGameBody) {
-        this.LOGGER.log(`Creating game ${gameDto.title}`)
-        try {
-            await this.databaseService.createGame(gameDto)
-
-            return { success: true }
-        } catch (error) {
-            this.LOGGER.error('Failed to create game', error)
-            throw new ConflictException('Game title already in use')
-        }
-    }
-
-    async deleteGameById(id: number): Promise<{ success: boolean }> {
-        this.LOGGER.log(`Deleting game with id ${id}`)
-        const resultSet = await this.databaseService.deleteGameById(id)
-
-        if (resultSet.rowsAffected === 0) {
-            throw new NotFoundException(`Game with id ${id} not found`)
-        }
-
-        return { success: true }
-    }
-
-    async updateGame(id: number, partialGameDto: UpdateGameBody): Promise<{ success: boolean }> {
-        this.LOGGER.log(`Updating game with id ${id}`)
-        const resultSet = await this.databaseService.updateGame(id, partialGameDto)
-
-        if (resultSet.rows.length === 0) {
-            throw new NotFoundException(`Game with id ${id} not found`)
-        }
-
-        return { success: true }
     }
 }
