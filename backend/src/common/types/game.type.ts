@@ -1,8 +1,9 @@
-import { ApiProperty, OmitType, PartialType, PickType } from '@nestjs/swagger'
+import { ApiProperty } from '@nestjs/swagger'
 
-import { GroupDto } from './group.type'
-import { MeetDto } from './meet.type'
-import { UserGetDto } from './user.type'
+import type { SupportedLanguage } from './game-translation.type'
+import type { GroupDto } from './group.type'
+import type { MeetDto } from './meet.type'
+import type { UserGetDto } from './user.type'
 
 /**
  * base Game as it comes from db
@@ -10,9 +11,6 @@ import { UserGetDto } from './user.type'
 export class GameDto {
     @ApiProperty({ example: 12345 })
     id: number
-
-    @ApiProperty({ example: 'Catan' })
-    title: string
 
     @ApiProperty({ example: 'https://www.example.com/image.jpg' })
     imageUrl: string
@@ -27,22 +25,17 @@ export class GameDto {
     maxPlayers: number
 }
 
-/**
- * POST requests --> no db generated props
- */
-export class CreateGameBody extends OmitType(GameDto, ['id']) {}
-
-/**
- * PUT requests --> editable fields
- */
-export class UpdateGameBody extends PartialType(PickType(GameDto, ['title', 'imageUrl', 'gameAvgDuration', 'minPlayers', 'maxPlayers'])) {}
+export class GameCompleteDto extends GameDto {
+    @ApiProperty({ example: { en: 'Game Title' } })
+    titleTranslations: Record<SupportedLanguage, string>
+}
 
 /**
  * GET game view
  * when a user is logged in and access a game view
  */
 export class GameViewDto {
-    gameData: GameDto
+    gameData: GameCompleteDto
 
     // TODO: add missing @ApiProperty
     ownedGameData: null | {
