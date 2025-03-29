@@ -1,14 +1,15 @@
-import { Component, computed, inject } from '@angular/core'
+import { Component, computed, effect, inject, signal } from '@angular/core'
+import { FormControl, ReactiveFormsModule } from '@angular/forms'
 import { RouterLink } from '@angular/router'
 import { CardGameComponent } from '../../../components/card-game/card-game.component'
 import { SkeletonCardGameComponent } from '../../../components/skeletons/skeleton-card-game/skeleton-card-game.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
-import { TooltipComponent } from '../../../components/ui/tooltip/tooltip.component'
-import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
 import { DataService } from '../../../core/services/data.service'
-import { LoadingService } from '../../../core/services/loading.service'
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
+import { Api } from '../../../api/api'
+import { BrowsePageService } from './browse-page.service'
 
 @Component({
     imports: [
@@ -18,14 +19,14 @@ import { LoadingService } from '../../../core/services/loading.service'
         PageHeaderComponent,
         ButtonComponent,
         SkeletonCardGameComponent,
-        TooltipComponent,
+        ReactiveFormsModule,
     ],
     templateUrl: 'browse-page.component.html',
 })
 export class BrowsePageComponent {
+    private readonly api = inject(Api)
     private readonly dataService = inject(DataService)
-    private readonly loadingService = inject(LoadingService)
-
+    private readonly browsePageService = inject(BrowsePageService)
     // --------------------------------------------------------------------------
     //        Services signals
     // --------------------------------------------------------------------------
@@ -33,21 +34,77 @@ export class BrowsePageComponent {
     public readonly currentUser$ = this.dataService.currentUser
     public readonly userWishlist$ = this.dataService.userWishlist
     public readonly userGames$ = this.dataService.userGames
-    public readonly gamesList$ = this.dataService.gamesList
-    // loadingService
-    public readonly isLoadingGames$ = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.GAMES_LIST])
+    // browsePageService
+    public readonly browseGamesList$ = this.browsePageService.browseGamesList
+    public readonly searchTerm$ = this.browsePageService.searchTerm
+    public readonly isSearching$ = this.browsePageService.isSearching
+    public readonly currentPage$ = this.browsePageService.currentPage
+    public readonly hasMoreGames$ = this.browsePageService.hasMoreGames
+    public readonly searchControl = this.browsePageService.searchControl
+
+    constructor() {
+        // Initialize search with debounce
+        this.searchControl.valueChanges
+            .pipe(
+                debounceTime(800), // Wait 800ms after the user stops typing
+                distinctUntilChanged(), // Only emit if search term changed
+            )
+            .subscribe(value => {
+                this.searchTerm$.set(value || '')
+                this.currentPage$.set(1) // Reset page when search changes
+                this._searchGames()
+            })
+
+        // Setup effect to monitor changes in games list
+        effect(() => {
+            // This runs whenever gamesList$ changes
+            // We can use it to update the hasMoreGames signal
+            const currentGames = this.browseGamesList$().length
+            // Assuming the API returns less than limit when no more games are available
+            this.hasMoreGames$.set(currentGames === 20) // 20 is the limit set in your API
+        })
+    }
 
     // --------------------------------------------------------------------------
-    //        Computed
+    //        Methods
     // --------------------------------------------------------------------------
-    public readonly gamesNotOwnedByUserComputed = computed(() => {
-        const userGamesIds = this.userGames$().map((game) => game.id)
-        return this.gamesList$()
-            .filter((game) => !userGamesIds.includes(game.id))
-            .sort((a, b) => a.title.localeCompare(b.title))
-    })
+    public loadMoreGames() {
+        this.currentPage$.update(page => page + 1)
+        this._searchGames()
+    }
 
-    // --------------------------------------------------------------------------
-    //        Component props
-    // --------------------------------------------------------------------------
+    private _searchGames() {
+        if (this.searchTerm$().length < 2 && this.searchTerm$().length > 0) {
+            return // Don't search with just 1 character
+        }
+
+        const userId = this.currentUser$()?.id
+        if (!userId) {
+            return
+        }
+
+        // set the loading state
+        this.isSearching$.set(true)
+
+        // Fetch games with search term
+        this.api
+            .browseGamesNotOwnedByUser(
+                userId,
+                this.searchTerm$(),
+                this.currentPage$(),
+                20, // limit
+            )
+            .subscribe({
+                next: (result) => {
+                    console.log(result)
+                    this.browseGamesList$.set(result.games)
+                },
+                error: (error) => {
+                    console.error(error)
+                },
+                complete: () => {
+                    this.isSearching$.set(false)
+                },
+            })
+    }
 }

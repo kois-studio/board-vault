@@ -56,9 +56,6 @@ export class DataService {
     })
     public readonly groupHistoryByGroupId = signal<Record<number, Array<HistoryRecordType>>>({})
 
-    // list of all games available to select
-    public readonly gamesList = signal<Array<GameType>>([])
-
     // --------------------------------------------------------------------------
     //         INDEXES (for fast access to data)
     // --------------------------------------------------------------------------
@@ -74,8 +71,6 @@ export class DataService {
             if (token && email) {
                 // 1. Get the user data
                 this._getUserData(email)
-                // 2. Get the games list (commmon for all users)
-                this._getGamesList()
             }
         })
     }
@@ -123,20 +118,6 @@ export class DataService {
                 this.toastService.error('Error retrieving user games')
             },
         })
-    }
-
-    private _getGamesList() {
-        // this.api.getGames().subscribe({
-        //     next: (games) => {
-        //         this.gamesList.set(games)
-        //     },
-        //     error: () => {
-        //         this.toastService.error('Error retrieving games list')
-        //     },
-        //     complete: () => {
-        //         this.loadingService.finish(LOADING_KEYS.GAMES_LIST)
-        //     },
-        // })
     }
 
     private _getUserInvitations(userId: number) {
@@ -282,7 +263,6 @@ export class DataService {
     public clearState() {
         this.currentUser.set(null)
         this.userGroups.set([])
-        this.gamesList.set([])
         this.userInvitations.set([])
         this.invitationsGroupIndex.set({})
         this.userHistory.set([])

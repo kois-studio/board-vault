@@ -17,7 +17,6 @@ export class MeetConfirmComponent {
     // DataService data (filled on init -> effect)
     public userData: ReturnType<typeof this.dataService.currentUser> = null
     private userGroups: ReturnType<typeof this.dataService.userGroups> = []
-    private gamesList: ReturnType<typeof this.dataService.gamesList> = []
     public groupData: Nullable<(typeof this.userGroups)[number]> = null
     public meetData: Nullable<MeetWithAttendeesAndGamesType> = null
 
@@ -36,7 +35,6 @@ export class MeetConfirmComponent {
         effect(async () => {
             this.userData = this.dataService.currentUser()
             this.userGroups = this.dataService.userGroups()
-            this.gamesList = this.dataService.gamesList()
 
             // Get Meet Details
             const meetId = Number.parseInt(this.route.snapshot.paramMap.get('meetId') || '')
@@ -60,12 +58,6 @@ export class MeetConfirmComponent {
 
     get filteredMembers() {
         return this.groupData?.members.filter((member) => this.meetData?.attendees.includes(member.id))
-    }
-
-    get filteredGames() {
-        console.log('🚀 ~ MeetConfirmComponent ~ getfilteredGames ~ this.meetData?.playedGames:', this.meetData?.playedGames)
-        console.log('🚀 ~ MeetConfirmComponent ~ getfilteredGames ~ this.gamesList:', this.gamesList)
-        return this.meetData?.playedGames.map((gameId) => this.gamesList.find((game) => game.id === gameId))
     }
 
     // click buttons

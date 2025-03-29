@@ -21,9 +21,9 @@
                     </ul>
                     <!-- playedGames -->
                     <ul class="col-span-2 flex flex-wrap gap-2 justify-start items-start content-start">
-                        @for (game of filteredGames; track $index) {
+                        <!-- @for (game of filteredGames; track $index) {
                             <img [src]="game?.imageUrl ?? ''" style="width: 60px; height: 60px;" />
-                        }
+                        } -->
                     </ul>
                 </div>
                 <button class="app-btn-primary" title="Invite user" (click)="onClickMeetConfirm()">
