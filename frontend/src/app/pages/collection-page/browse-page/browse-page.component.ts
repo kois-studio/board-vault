@@ -32,6 +32,7 @@ export class BrowsePageComponent {
     // --------------------------------------------------------------------------
     // dataService
     public readonly currentUser$ = this.dataService.currentUser
+    public readonly userGames$ = this.dataService.userGames
     // browsePageService
     public readonly browseGamesList$ = this.browsePageService.browseGamesList
     public readonly searchTerm$ = this.browsePageService.searchTerm
@@ -40,6 +41,14 @@ export class BrowsePageComponent {
     public readonly currentPage$ = this.browsePageService.currentPage
     public readonly hasMoreGames$ = this.browsePageService.hasMoreGames
     public readonly searchControl = this.browsePageService.searchControl
+
+    // --------------------------------------------------------------------------
+    //        Computed
+    // --------------------------------------------------------------------------
+    public readonly gamesListComputed = computed(() => this.browseGamesList$().map(game => ({
+        ...game,
+        isInCollection: this.userGames$().some(userGame => userGame.id === game.id),
+    })))
 
     constructor() {
         // Initialize search with debounce
