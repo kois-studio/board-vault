@@ -36,10 +36,16 @@ export class CollectionService {
     ) {}
 
     @LogFeature(new Logger('CollectionService'))
-    async getGamesOwnedByUser(userId: number): Promise<Array<GameDto>> {
+    async getGamesOwnedByUser(userId: number): Promise<Array<GameCompleteDto>> {
         const gamesOwned = await this.gamesOwnedService.getGamesOwnedByAccountId(userId)
+        const games = await Promise.all(gamesOwned.map(async game => this.gamesService.getGameById(game.gameId)))
 
-        return Promise.all(gamesOwned.map(async game => this.gamesService.getGameById(game.gameId)))
+        return Promise.all(
+            games.map(async game => ({
+                ...game,
+                titleTranslations: await this.gameTranslationService.getGameTranslations(game.id),
+            })),
+        )
     }
 
     @LogFeature(new Logger('CollectionService'))
