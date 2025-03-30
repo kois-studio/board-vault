@@ -157,7 +157,9 @@ export class Api {
     }
 
     browseGamesNotOwnedByUser(userId: number, search: string, page: number, limit: number) {
-        return this.http.get<BrowseGamesResultType>(`${this.url}/collection/users/${userId}/games/browse?search=${search}&page=${page}&limit=${limit}`)
+        return this.http.get<BrowseGamesResultType>(
+            `${this.url}/collection/users/${userId}/games/browse?search=${search}&page=${page}&limit=${limit}`,
+        )
     }
 
     getGameView(userId: number, gameId: number) {
