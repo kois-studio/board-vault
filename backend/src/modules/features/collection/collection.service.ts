@@ -50,12 +50,11 @@ export class CollectionService {
 
     @LogFeature(new Logger('CollectionService'))
     async getGamesNotOwnedByUser(userId: number, search: string, page: number, limit: number): Promise<BrowseGamesResultDto> {
-        const gamesOwned = await this.gamesOwnedService.getGamesOwnedByAccountId(userId)
         const result = await this.gameTranslationService.browseGamesByTitle({
             search,
             page,
             pageSize: limit,
-            excludeGameIds: gamesOwned.map(game => game.gameId),
+            excludeGameIds: [], // this was implemented to only show the games the user doesn't own, but now we show them with an icon
         })
 
         const gamesWithTranslations = await Promise.all(
