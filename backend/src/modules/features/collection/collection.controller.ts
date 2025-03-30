@@ -8,7 +8,7 @@ import { SuccessDto } from '../../../common/types/auth.type'
 import { CollectionActivityDto } from '../../../common/types/collection-activity.type'
 import { GameOwnedDto, UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
 import { CreateGameReviewBody, GameReviewWithGameDataDto } from '../../../common/types/game-review.type'
-import { BrowseGamesResultDto, GameDto, GameViewDto } from '../../../common/types/game.type'
+import { BrowseGamesResultDto, GameCompleteDto, GameDto, GameViewDto } from '../../../common/types/game.type'
 import { WishlistResponseDto } from '../../../common/types/wishlisted-game.type'
 
 import { CollectionService } from './collection.service'
@@ -22,7 +22,7 @@ export class CollectionController {
 
     @Get('/users/:userId/games')
     @ApiOperation({ summary: 'Get all games owned by a user', deprecated: false })
-    @ApiResponse({ status: 200, type: [GameDto], description: 'List of all games owned by the user' })
+    @ApiResponse({ status: 200, type: [GameCompleteDto], description: 'List of all games owned by the user' })
     async getGamesOwnedByUser(@Param('userId', ParseIntPipe) userId: number) {
         return this.collectionService.getGamesOwnedByUser(userId)
     }
