@@ -57,9 +57,10 @@ export class BrowsePageComponent {
         effect(() => {
             // This runs whenever gamesList$ changes
             // We can use it to update the hasMoreGames signal
+            const currentPage = this.currentPage$()
             const currentGames = this.browseGamesList$().length
             // Assuming the API returns less than limit when no more games are available
-            this.hasMoreGames$.set(currentGames === 20) // 20 is the limit set in your API
+            this.hasMoreGames$.set(currentGames === 12 * currentPage) // 12 is the limit set in your API
         })
     }
 
@@ -68,12 +69,12 @@ export class BrowsePageComponent {
     // --------------------------------------------------------------------------
     public loadMoreGames() {
         this.currentPage$.update((page) => page + 1)
-        this._searchGames()
+        this._searchGames(true)
     }
 
-    private _searchGames() {
-        if (this.searchTerm$().length < 3 && this.searchTerm$().length > 0) {
-            return // Don't search with < 3 characters
+    private _searchGames(isNextPage = false) {
+        if (this.searchTerm$().length < 2 && this.searchTerm$().length > 0) {
+            return // Don't search with < 2 characters
         }
 
         const userId = this.currentUser$()?.id
@@ -90,12 +91,15 @@ export class BrowsePageComponent {
                 userId,
                 this.searchTerm$(),
                 this.currentPage$(),
-                20, // limit
+                12, // limit
             )
             .subscribe({
                 next: (result) => {
-                    console.log(result)
-                    this.browseGamesList$.set(result.games)
+                    if (!isNextPage) {
+                        this.browseGamesList$.set(result.games)
+                    } else {
+                        this.browseGamesList$.update((games) => [...games, ...result.games])
+                    }
                 },
                 error: (error) => {
                     console.error(error)
