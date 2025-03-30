@@ -44,7 +44,7 @@ export class BrowsePageComponent {
         // Initialize search with debounce
         this.searchControl.valueChanges
             .pipe(
-                debounceTime(800), // Wait 800ms after the user stops typing
+                debounceTime(500), // Wait 500ms after the user stops typing
                 distinctUntilChanged(), // Only emit if search term changed
             )
             .subscribe((value) => {
@@ -73,7 +73,7 @@ export class BrowsePageComponent {
     }
 
     private _searchGames(isNextPage = false) {
-        if (this.searchTerm$().length < 2 && this.searchTerm$().length > 0) {
+        if (this.searchTerm$().length < 2) {
             return // Don't search with < 2 characters
         }
 
