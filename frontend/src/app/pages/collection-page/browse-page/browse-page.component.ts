@@ -35,6 +35,7 @@ export class BrowsePageComponent {
     // browsePageService
     public readonly browseGamesList$ = this.browsePageService.browseGamesList
     public readonly searchTerm$ = this.browsePageService.searchTerm
+    public readonly searchTermIsValid$ = this.browsePageService.searchTermIsValidComputed
     public readonly isSearching$ = this.browsePageService.isSearching
     public readonly currentPage$ = this.browsePageService.currentPage
     public readonly hasMoreGames$ = this.browsePageService.hasMoreGames
@@ -66,15 +67,15 @@ export class BrowsePageComponent {
 
     // --------------------------------------------------------------------------
     //        Methods
-    // --------------------------------------------------------------------------
+
     public loadMoreGames() {
         this.currentPage$.update((page) => page + 1)
         this._searchGames(true)
     }
 
     private _searchGames(isNextPage = false) {
-        if (this.searchTerm$().length < 2) {
-            return // Don't search with < 2 characters
+        if (!this.searchTermIsValid$()) {
+            return
         }
 
         const userId = this.currentUser$()?.id
@@ -84,6 +85,9 @@ export class BrowsePageComponent {
 
         // set the loading state
         this.isSearching$.set(true)
+        if (!isNextPage) {
+            this.browseGamesList$.set([])
+        }
 
         // Fetch games with search term
         this.api

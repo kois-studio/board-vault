@@ -25,16 +25,10 @@
     </div>
 
     <!-- Loading state -->
-    @if (isSearching$()) {
-        <section class="flex flex-wrap gap-4">
-            <app-skeleton-card-game />
-            <app-skeleton-card-game />
-            <app-skeleton-card-game />
-        </section>
-    } @else if (browseGamesList$().length === 0) {
+    @if (!isSearching$() && browseGamesList$().length === 0) {
         <!-- no data -->
         <div class="text-center text-secondary">
-            @if (searchTerm$()) {
+            @if (searchTermIsValid$()) {
                 <p>No games found matching "{{searchTerm$()}}"</p>
             } @else {
                 <p>Type a game name to search for!</p>
@@ -51,6 +45,11 @@
                     [minPlayers]="game.minPlayers"
                     [maxPlayers]="game.maxPlayers"
                 />
+            }
+            @if (isSearching$()) {
+                <app-skeleton-card-game />
+                <app-skeleton-card-game />
+                <app-skeleton-card-game />
             }
         </section>
         
