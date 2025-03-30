@@ -153,7 +153,7 @@ export class Api {
     // #region collection
     // --------------------------------------------------------------------------
     getUserGames(userId: number) {
-        return this.http.get<Array<GameType>>(`${this.url}/collection/users/${userId}/games`)
+        return this.http.get<Array<GameCompleteType>>(`${this.url}/collection/users/${userId}/games`)
     }
 
     browseGamesNotOwnedByUser(userId: number, search: string, page: number, limit: number) {
