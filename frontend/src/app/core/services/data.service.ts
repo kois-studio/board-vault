@@ -41,7 +41,7 @@ export class DataService {
     //         ARRAYS OF DATA
     // --------------------------------------------------------------------------
     // `userXYZ` to store the data of the current user
-    public readonly userGames = signal<Array<GameType>>([])
+    public readonly userGames = signal<Array<GameCompleteType>>([])
     public readonly userGroups = signal<Array<GroupWithMembersAndGames>>([])
     public readonly userNotifications = signal<Array<NotificationType>>([])
     public readonly userInvitations = signal<Array<InvitationWithExtraData>>([])
@@ -116,6 +116,9 @@ export class DataService {
             },
             error: () => {
                 this.toastService.error('Error retrieving user games')
+            },
+            complete: () => {
+                this.loadingService.finish(LOADING_KEYS.USER_GAMES)
             },
         })
     }

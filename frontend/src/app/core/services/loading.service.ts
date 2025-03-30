@@ -15,6 +15,7 @@ export class LoadingService {
         [LOADING_KEYS.USER_DATA]: true,
         [LOADING_KEYS.USER_INVITATIONS]: true,
         [LOADING_KEYS.USER_NOTIFICATIONS]: true,
+        [LOADING_KEYS.USER_GAMES]: true,
         [LOADING_KEYS.USER_REVIEWS]: true,
         [LOADING_KEYS.USER_GROUPS]: true,
         [LOADING_KEYS.USER_MEETS]: true,
