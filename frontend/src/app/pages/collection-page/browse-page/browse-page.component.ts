@@ -1,14 +1,14 @@
 import { Component, computed, effect, inject, signal } from '@angular/core'
 import { FormControl, ReactiveFormsModule } from '@angular/forms'
 import { RouterLink } from '@angular/router'
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
+import { Api } from '../../../api/api'
 import { CardGameComponent } from '../../../components/card-game/card-game.component'
 import { SkeletonCardGameComponent } from '../../../components/skeletons/skeleton-card-game/skeleton-card-game.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
 import { DataService } from '../../../core/services/data.service'
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
-import { Api } from '../../../api/api'
 import { BrowsePageService } from './browse-page.service'
 
 @Component({
@@ -32,8 +32,6 @@ export class BrowsePageComponent {
     // --------------------------------------------------------------------------
     // dataService
     public readonly currentUser$ = this.dataService.currentUser
-    public readonly userWishlist$ = this.dataService.userWishlist
-    public readonly userGames$ = this.dataService.userGames
     // browsePageService
     public readonly browseGamesList$ = this.browsePageService.browseGamesList
     public readonly searchTerm$ = this.browsePageService.searchTerm
@@ -49,7 +47,7 @@ export class BrowsePageComponent {
                 debounceTime(800), // Wait 800ms after the user stops typing
                 distinctUntilChanged(), // Only emit if search term changed
             )
-            .subscribe(value => {
+            .subscribe((value) => {
                 this.searchTerm$.set(value || '')
                 this.currentPage$.set(1) // Reset page when search changes
                 this._searchGames()
@@ -69,13 +67,13 @@ export class BrowsePageComponent {
     //        Methods
     // --------------------------------------------------------------------------
     public loadMoreGames() {
-        this.currentPage$.update(page => page + 1)
+        this.currentPage$.update((page) => page + 1)
         this._searchGames()
     }
 
     private _searchGames() {
-        if (this.searchTerm$().length < 2 && this.searchTerm$().length > 0) {
-            return // Don't search with just 1 character
+        if (this.searchTerm$().length < 3 && this.searchTerm$().length > 0) {
+            return // Don't search with < 3 characters
         }
 
         const userId = this.currentUser$()?.id
