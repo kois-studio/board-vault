@@ -13,7 +13,7 @@
 <!-- 0 is "no subsections" mode -->
 @if (topBarModeComputed() > 0) {
     <div class="container mx-auto max-w-6xl px-4">
-        <div class="flex items-center justify-center gap-4 animate__animated animate__fadeInDown">
+        <div class="flex items-center justify-center gap-4 animate__animated animate__fadeInDown animate__faster">
             @for (subsection of sections[topBarModeComputed() - 1].subsections; track $index) {
                 <a
                     [routerLink]="subsection.path"
