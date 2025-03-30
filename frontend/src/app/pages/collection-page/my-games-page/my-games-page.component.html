@@ -1,33 +1,32 @@
+<app-page-header titleText="My Games" [showActionButton]="true">
+    Browse and manage your board game collection
+
+    <app-button class="action-button" icon="plus-lg" routerLink="/collection/browse">Explore Games</app-button>
+</app-page-header>
 <container-wrapper>
-    <title-subtitle titleText="My Game Collection"> Manage your board game collection and discover new games to add </title-subtitle>
-
-    <!-- Collection Management Bar -->
-    @if (gameIdsToToggle.length > 0) {
-    <div class="sticky top-0 z-10 bg-zinc-800/90 backdrop-blur-sm py-4 -mx-4 px-4 shadow-lg mb-8">
-        <div class="flex items-center justify-between">
-            <span class="font-semibold">
-                {{ gameIdsToToggle.length }} changes pending
-            </span>
-            <button class="app-btn-primary" (click)="saveSelection()">Save Changes</button>
+    @if (isLoadingUserGames()) {
+        <section class="flex flex-wrap gap-4">
+            <app-skeleton-card-game />
+            <app-skeleton-card-game />
+            <app-skeleton-card-game />
+        </section>
+    } @else if (userGames$().length === 0) {
+        <!-- no data -->
+        <div class="text-center text-secondary">
+            <p>No games found</p>
         </div>
-    </div>
+    } @else {
+        <section class="flex flex-wrap gap-4">
+            @for (game of userGames$(); track game.id) {
+                <app-card-game
+                    [routerLink]="['/games', game.id]"
+                    [title]="game.titleTranslations.en"
+                    [imageUrl]="game.imageUrl"
+                    [gameAvgDuration]="game.gameAvgDuration"
+                    [minPlayers]="game.minPlayers"
+                    [maxPlayers]="game.maxPlayers"
+                />
+            }
+        </section>
     }
-
-    <!-- Tab selector -->
-    <div class="flex gap-4 border-b border-gray-700">
-        <button
-            [class]="activeTab === 'collection' ? 'border-b-2 border-primary text-primary' : 'text-gray-400'"
-            class="pb-4 px-2 font-medium cursor-pointer"
-            (click)="activeTab = 'collection'"
-        >
-            My Collection ({{ userGames.length }})
-        </button>
-        <button
-            [class]="activeTab === 'browse' ? 'border-b-2 border-primary text-primary' : 'text-gray-400'"
-            class="pb-4 px-2 font-medium cursor-pointer"
-            (click)="activeTab = 'browse'"
-        >
-            Browse Games
-        </button>
-    </div>
 </container-wrapper>
