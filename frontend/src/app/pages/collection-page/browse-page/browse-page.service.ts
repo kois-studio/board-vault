@@ -1,6 +1,6 @@
-import { computed, Injectable, signal } from '@angular/core'
-import { GameCompleteType } from '../../../api/api.types'
+import { Injectable, signal } from '@angular/core'
 import { FormControl } from '@angular/forms'
+import { GameCompleteType } from '../../../api/api.types'
 
 /**
  * This service is user to keep the state of the browse page
