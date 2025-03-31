@@ -45,10 +45,12 @@ export class BrowsePageComponent {
     // --------------------------------------------------------------------------
     //        Computed
     // --------------------------------------------------------------------------
-    public readonly gamesListComputed = computed(() => this.browseGamesList$().map(game => ({
-        ...game,
-        isInCollection: this.userGames$().some(userGame => userGame.id === game.id),
-    })))
+    public readonly gamesListComputed = computed(() =>
+        this.browseGamesList$().map((game) => ({
+            ...game,
+            isInCollection: this.userGames$().some((userGame) => userGame.id === game.id),
+        })),
+    )
 
     constructor() {
         // Initialize search with debounce
@@ -76,6 +78,7 @@ export class BrowsePageComponent {
 
     // --------------------------------------------------------------------------
     //        Methods
+    // --------------------------------------------------------------------------
 
     public loadMoreGames() {
         this.currentPage$.update((page) => page + 1)
