@@ -46,13 +46,28 @@ export class GameViewPageComponent implements OnDestroy {
     // --------------------------------------------------------------------------
     // dataService
     public readonly currentUser$ = this.dataService.currentUser
+    private readonly userHistory$ = this.dataService.userHistory
 
     // --------------------------------------------------------------------------
     //        Component singals
     // --------------------------------------------------------------------------
-    public gameView$ = signal<GameViewType | null>(null)
-    public gameUserReviewComputed = computed(() => this.gameView$()?.ratingData?.userRating ?? 0)
-    public isWishlistedComputed = computed(() => !!this.gameView$()?.wishlistedGameData)
+    public readonly gameView$ = signal<GameViewType | null>(null)
+    public readonly gameUserReviewComputed = computed(() => this.gameView$()?.ratingData?.userRating ?? 0)
+    public readonly isWishlistedComputed = computed(() => !!this.gameView$()?.wishlistedGameData)
+    public readonly userHistoryFilteredComputed = computed(() => {
+        const userHistory = this.userHistory$()
+        // take only the meetings where we played the game in view
+        const userHistoryFiltered = userHistory.filter((history) =>
+            history.gamesPlayed.some((game) => game.gameData.id === this.gameView$()?.gameData.id),
+        )
+        // ignore the rest of games -> convert `gamesPlayed` to `gamePlayed`
+        return userHistoryFiltered.map((history) => {
+            return {
+                ...history,
+                gamePlayed: history.gamesPlayed.find((game) => game.gameData.id === this.gameView$()?.gameData.id),
+            }
+        })
+    })
 
     // --------------------------------------------------------------------------
     //        Component props
