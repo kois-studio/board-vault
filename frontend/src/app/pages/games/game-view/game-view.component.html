@@ -172,7 +172,7 @@
 
     <!-- History Section -->
     <section class="mt-12">
-        @if (gameView$()?.playHistory?.length) {
+        @if (userHistoryFilteredComputed().length) {
         <h2 class="text-xl font-bold mb-4">Your Play History</h2>
 
         <div class="border border-gray-200 dark:border-zinc-800 rounded-lg overflow-hidden">
@@ -185,13 +185,14 @@
                     </tr>
                 </thead>
                 <tbody class="app-bg-primary">
-                    @for (session of gameView$()?.playHistory ?? []; track session.meet.id) {
+                    @for (session of userHistoryFilteredComputed(); track session.meetData.id) {
                     <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ session.meet.meetDate | date }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ session.group.name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ session.meetData.meetDate | date }}</td>
+                        <!-- TODO: display group name instead of groupId -->
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ session.meetData.groupId }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             <div class="flex -space-x-2 overflow-hidden">
-                                @for (player of session.playedBy; track player.id) {
+                                @for (player of session.gamePlayed?.playedBy ?? []; track player.id) {
                                 <app-image-profile
                                     [title]="player.username"
                                     class="border-2 rounded-full border-indigo-100 dark:border-zinc-800"
