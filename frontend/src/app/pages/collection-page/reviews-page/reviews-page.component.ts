@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { Component, computed, effect, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import type { GameType, UserType } from '../../../api/api.types'
-import { SkeletonCardGameComponent } from '../../../components/skeletons/skeleton-card-game/skeleton-card-game.component'
+import { SkeletonReviewGameComponent } from '../../../components/skeletons/skeleton-review-game/skeleton-review-game.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
@@ -18,8 +18,8 @@ import { ReviewRowComponent } from './review-row/review-row.component'
         PageHeaderComponent,
         ButtonComponent,
         RouterLink,
-        SkeletonCardGameComponent,
         ReviewRowComponent,
+        SkeletonReviewGameComponent,
     ],
     templateUrl: 'reviews-page.component.html',
 })
