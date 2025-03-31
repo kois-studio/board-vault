@@ -1,5 +1,5 @@
-import { Component, computed, effect, inject, signal } from '@angular/core'
-import { FormControl, ReactiveFormsModule } from '@angular/forms'
+import { Component, computed, effect, inject } from '@angular/core'
+import { ReactiveFormsModule } from '@angular/forms'
 import { RouterLink } from '@angular/router'
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
 import { Api } from '../../../api/api'
