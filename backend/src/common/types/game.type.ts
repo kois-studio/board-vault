@@ -85,10 +85,4 @@ export class GameViewDto {
 
     @ApiProperty({ type: [GameCompleteDto] })
     similarGames: Array<GameCompleteDto>
-
-    playHistory: Array<{
-        group: GroupDto
-        meet: MeetDto
-        playedBy: Array<UserGetDto>
-    }>
 }

@@ -64,11 +64,6 @@ export type GameViewType = {
         avgGlobalRating: null | { review: number; count: number }
     }
     similarGames: Array<GameCompleteType>
-    playHistory: Array<{
-        group: GroupType
-        meet: MeetType
-        playedBy: Array<UserType>
-    }>
 }
 
 // #region GameOwned
