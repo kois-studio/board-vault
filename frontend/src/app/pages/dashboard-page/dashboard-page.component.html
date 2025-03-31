@@ -18,10 +18,9 @@
 
             <!-- Content-->
             <div class="flex -space-x-2">
-                <!-- TODO: show some avatars of some members-->
-                <app-image-profile class="border-2 rounded-full border-indigo-100 dark:border-zinc-800" [avatar]="currentUser$()?.avatar" />
-                <app-image-profile class="border-2 rounded-full border-indigo-100 dark:border-zinc-800" [avatar]="currentUser$()?.avatar" />
-                <app-image-profile class="border-2 rounded-full border-indigo-100 dark:border-zinc-800" [avatar]="currentUser$()?.avatar" />
+                @for (avatar of someProfileImagesComputed(); track avatar) {
+                    <app-image-profile class="border-2 rounded-full border-indigo-100 dark:border-zinc-800" [avatar]="avatar" />
+                }
             </div>
 
             <!-- View all highlight -->
