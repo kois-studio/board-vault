@@ -20,4 +20,5 @@ export class PlayPageComponent {
     // dataService
     public readonly currentUser$ = this.dataService.currentUser
     public readonly userGroups$ = this.dataService.userGroups
+    public readonly userHistory$ = this.dataService.userHistory
 }
