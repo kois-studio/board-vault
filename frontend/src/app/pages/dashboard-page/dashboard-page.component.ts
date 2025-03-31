@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core'
+import { Component, computed, inject } from '@angular/core'
 import { CardSectionComponent } from '../../components/cards/card-section/card-section.component'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
 import { BadgeComponent } from '../../components/ui/badge/badge.component'
@@ -24,4 +24,15 @@ export class DashboardPageComponent {
     public readonly userMeets$ = this.dataService.userMeets
     public readonly userHistory$ = this.dataService.userHistory
     public readonly userStats$ = this.dataService.userStats
+
+    // --------------------------------------------------------------------------
+    //        Computed
+    // --------------------------------------------------------------------------
+    public readonly someProfileImagesComputed = computed(() => {
+        return this.userGroups$()
+            .flatMap((group) => group.members)
+            .filter((member) => member.id !== this.currentUser$()?.id) // Exclude your own avatar
+            .map((member) => member.avatar)
+            .slice(0, 5) // Show only the first 5 images
+    })
 }
