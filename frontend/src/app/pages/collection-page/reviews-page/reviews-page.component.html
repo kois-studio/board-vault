@@ -7,11 +7,10 @@
 <container-wrapper>
     <!-- Loading state -->
     @if (isLoadingReviews()) {
-        <section class="flex flex-wrap gap-4">
-            <!-- TODO: custom skeleton for app-review-row -->
-            <app-skeleton-card-game />
-            <app-skeleton-card-game />
-            <app-skeleton-card-game />
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <app-skeleton-review-game />
+            <app-skeleton-review-game />
+            <app-skeleton-review-game />
         </section>
     } @else if (userReviews$().length === 0) {
         <!-- no data -->
