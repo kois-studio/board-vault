@@ -6,12 +6,8 @@ import { CollectionActivityService } from '../../../modules/core/collection-acti
 import { GameTranslationService } from '../../../modules/core/game-translation/game-translation.service'
 import { GamesService } from '../../core/games/games.service'
 import { GamesOwnedService } from '../../core/games-owned/games-owned.service'
-import { GroupsService } from '../../core/groups/groups.service'
-import { MeetAccountGamesService } from '../../core/meet-account-games/meet-account-games.service'
-import { MeetsService } from '../../core/meets/meets.service'
 import { ReviewsService } from '../../core/reviews/reviews.service'
 import { TagsService } from '../../core/tags/tags.service'
-import { UsersService } from '../../core/users/users.service'
 import { WishlistService } from '../../core/wishlist/wishlist.service'
 
 import type { SuccessDto } from '../../../common/types/auth.type'
@@ -22,16 +18,12 @@ import type { BrowseGamesResultDto, GameCompleteDto, GameDto, GameViewDto } from
 @Injectable()
 export class CollectionService {
     constructor(
-        private readonly usersService: UsersService,
         private readonly gamesService: GamesService,
         private readonly tagsService: TagsService,
-        private readonly meetsService: MeetsService,
-        private readonly groupsService: GroupsService,
         private readonly reviewsService: ReviewsService,
         private readonly wishlistService: WishlistService,
         private readonly gamesOwnedService: GamesOwnedService,
         private readonly gameTranslationService: GameTranslationService,
-        private readonly meetAccountGamesService: MeetAccountGamesService,
         private readonly collectionActivityService: CollectionActivityService,
     ) {}
 
@@ -99,22 +91,6 @@ export class CollectionService {
         ).filter(Boolean)
         const similarGamesFiltered = similarGames.filter(Boolean) as Array<GameDto>
 
-        // Get play history
-        const playHistoryRecords = await this.meetAccountGamesService.getMeetAccountGamesBy({ accountId: userId, gameId })
-        const playHistoryData: GameViewDto['playHistory'] = await Promise.all(
-            playHistoryRecords.map(async record => {
-                const meetData = await this.meetsService.getMeetById(record.meetId)
-                const groupData = await this.groupsService.getGroupById(meetData.groupId)
-                const meetAttendees = await this.meetAccountGamesService.getMeetAccountGamesBy({ meetId: record.meetId })
-
-                return {
-                    group: groupData,
-                    meet: meetData,
-                    playedBy: await Promise.all(meetAttendees.map(async attendee => this.usersService.getUserById(attendee.accountId))),
-                }
-            }),
-        )
-
         // Step 2: Construct the GameView
         return {
             gameData: {
@@ -146,7 +122,6 @@ export class CollectionService {
                     titleTranslations: await this.gameTranslationService.getGameTranslations(game.id),
                 })),
             ),
-            playHistory: playHistoryData,
         }
     }
 
