@@ -9,8 +9,8 @@ import { SkeletonCardGroupComponent } from '../../components/skeletons/skeleton-
 import { ButtonComponent } from '../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { ImageBackgroundComponent } from '../../components/ui/image-background/image-background.component'
+import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'
 import { ReviewDisplayComponent } from '../../components/ui/review-display/review-display.component'
-import { TitleSubtitleComponent } from '../../components/ui/title-subtitle/title-subtitle.component'
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { DataService } from '../../core/services/data.service'
 import { LocalStorageService } from '../../core/services/local-storage.service'
@@ -19,7 +19,6 @@ import { GroupViewService } from './group-view.service'
 @Component({
     imports: [
         RouterLink,
-        TitleSubtitleComponent,
         ContainerWrapperComponent,
         CardAccountComponent,
         CommonModule,
@@ -29,6 +28,7 @@ import { GroupViewService } from './group-view.service'
         ReviewDisplayComponent,
         ButtonComponent,
         SkeletonCardGroupComponent,
+        PageHeaderComponent,
     ],
     templateUrl: 'group-view.component.html',
     styleUrls: ['group-view.component.scss'],
