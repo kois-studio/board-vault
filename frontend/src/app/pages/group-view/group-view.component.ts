@@ -73,6 +73,13 @@ export class GroupViewComponent {
         return this.groupHistory$().sort((a, b) => new Date(b.meetData.meetDate).getTime() - new Date(a.meetData.meetDate).getTime())
     })
 
+    public readonly isGroupOwnerComputed = computed(() => {
+        if (!this.groupData$() || !this.currentUser$()) {
+            return false
+        }
+        return this.groupData$()?.createdBy === this.currentUser$()?.id
+    })
+
     constructor() {
         effect(() => {
             const currentUser = this.currentUser$()

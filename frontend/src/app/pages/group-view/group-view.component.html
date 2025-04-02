@@ -1,7 +1,9 @@
 <app-page-header [titleText]="groupData$()?.name ?? 'Group details'" [showActionButton]="true">
     See who's in the group, the games you share, and all your meetings together. <br />
 
-    <app-button class="action-button" icon="plus-lg" routerLink="/collection/browse">Manage members</app-button>
+    @if (isGroupOwnerComputed()) {
+        <app-button class="action-button" icon="gear-fill" (click)="onClickEditGroup()">Manage members</app-button>
+    }
 </app-page-header>
 
 <container-wrapper>
@@ -72,11 +74,6 @@
                 }
             </ul>
             }
-
-            <!-- edit group button -->
-            <div class="flex justify-end">
-                <app-button class="mt-8" (click)="onClickEditGroup()">Manage members</app-button>
-            </div>
         </section>
 
         <!-- right col -->
