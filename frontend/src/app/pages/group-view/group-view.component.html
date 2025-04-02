@@ -1,9 +1,10 @@
-<container-wrapper>
-    <title-subtitle [titleText]="groupData$()?.name ?? 'Group details'">
-        See who's in the group, the games you share, and all your meetings together. <br />
-        Games are sorted based on everyone's preferences and the last time you played them together.
-    </title-subtitle>
+<app-page-header [titleText]="groupData$()?.name ?? 'Group details'" [showActionButton]="true">
+    See who's in the group, the games you share, and all your meetings together. <br />
 
+    <app-button class="action-button" icon="plus-lg" routerLink="/collection/browse">Manage members</app-button>
+</app-page-header>
+
+<container-wrapper>
     <!-- 2 columns - left: members list; right: games sorted -->
     <div class="grid xl:grid-cols-3 gap-y-12">
         <!-- left col -->
