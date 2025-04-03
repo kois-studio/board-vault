@@ -1,0 +1,74 @@
+<app-page-header titleText="Upcoming Sessions" [showActionButton]="true">
+    View and manage your scheduled game nights
+    <app-button
+        class="action-button"
+        icon="plus-lg"
+        routerLink="/create-group"
+    >Schedule a Session</app-button>
+</app-page-header>
+
+<container-wrapper>
+    <!-- Loading state -->
+    @if (isLoadingHistory()) {
+        <!-- TODO: custom skeleton matching actual history structure -->
+        <app-skeleton-card-group />
+    } @else if (userHistory$().length === 0) {
+        <!-- no data -->
+        <div class="text-center py-8 text-secondary">
+            <p>No games played yet</p>
+        </div>
+    } @else {
+        @for (historyRecord of sortedUserHistoryComputed(); track historyRecord.meetData.id) {
+            <div class="app-bg-secondary relative p-4 mb-8">
+                <h2 class="text-xl font-semibold mb-4">
+                    {{ historyRecord.meetData.meetDate | customDate }}
+                </h2>
+
+                <!-- Ids -->
+                <p class="text-secondary text-sm absolute top-4 right-4">
+                    Meet #{{ historyRecord.meetData.id }} Group #{{ historyRecord.meetData.groupId }}
+                </p>
+
+                <!-- Games played on this date -->
+                <ul class="grid lg:grid-cols-2 gap-4">
+                    @for (gamePlayed of historyRecord.gamesPlayed; track gamePlayed.gameData.id) {
+                        <div class="app-bg-tertiary rounded-lg p-4 flex gap-4">
+                            <!-- Game image -->
+                            <a [routerLink]="['/games/', gamePlayed.gameData.id]">
+                                <img
+                                    [src]="gamePlayed.gameData.imageUrl"
+                                    [alt]="gamePlayed.gameData.titleTranslations.en"
+                                    loading="lazy"
+                                    class="w-24 h-24 object-cover rounded-lg"
+                                />
+                            </a>
+
+                            <!-- Game info -->
+                            <div class="flex flex-col justify-between flex-1">
+                                <h3 class="text-lg font-semibold mb-1">{{ gamePlayed.gameData.titleTranslations.en }}</h3>
+
+                                <div class="flex justify-between items-end">
+                                    
+                                    <!-- Players -->
+                                    <div class="relative h-8 flex items-center">
+                                        <!-- Player avatars -->
+                                        <div class="flex -space-x-2">
+                                            @for (player of gamePlayed.playedBy; track player.id) {
+                                                <app-image-profile
+                                                    [title]="player.username"
+                                                    class="border-2 rounded-full border-indigo-100 dark:border-zinc-800"
+                                                    [avatar]="player.avatar"
+                                                    [style.zIndex]="$index"
+                                                />
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </ul>
+            </div>
+        }
+    }
+</container-wrapper>

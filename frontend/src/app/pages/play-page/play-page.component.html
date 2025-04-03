@@ -12,8 +12,7 @@
             icon="calendar3"
             titleText="Upcoming Sessions"
             description="View and manage your scheduled game nights"
-            cardLink="/play/sessions"
-            [comingSoon]="true"
+            cardLink="/play/upcoming-sessions"
         >
             <!-- TODO: show the actual count -->
             <!-- Badge -->
@@ -45,25 +44,7 @@
                         />
                     </div>
                 </div>
-
-                <div class="mt-4 flex justify-between items-center">
-                    <button class="text-sm text-indigo-600 dark:text-indigo-400 font-medium flex items-center hover:underline">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                            <path
-                                fill-rule="evenodd"
-                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
-                                clip-rule="evenodd"
-                            />
-                        </svg>
-                        Schedule New
-                    </button>
-                </div>
             </div>
-
-            <!-- View all highlight -->
-            <span class="text-indigo-600 dark:text-indigo-400 group-hover:underline flex items-center text-sm font-medium">
-                View all >
-            </span>
         </app-card-section>
 
         <!-- --------------------------
