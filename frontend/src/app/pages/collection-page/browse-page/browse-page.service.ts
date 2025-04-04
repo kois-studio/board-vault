@@ -12,7 +12,7 @@ export class BrowsePageService {
     // --------------------------------------------------------------------------
     public readonly browseGamesList = signal<Array<GameCompleteType>>([])
     public readonly searchTerm = signal('')
-    public readonly searchTermIsValidComputed = computed(() => this.searchTerm().length >= 3)
+    public readonly searchTermIsValidComputed = computed(() => this.searchTerm().trim().length >= 3)
     public readonly isSearching = signal(false)
     public readonly currentPage = signal(1)
     public readonly hasMoreGames = signal(false)
