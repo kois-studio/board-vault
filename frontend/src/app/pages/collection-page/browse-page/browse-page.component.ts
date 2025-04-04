@@ -105,7 +105,7 @@ export class BrowsePageComponent {
         this.api
             .browseGamesNotOwnedByUser(
                 userId,
-                this.searchTerm$(),
+                this.searchTerm$().trim(),
                 this.currentPage$(),
                 12, // limit
             )
