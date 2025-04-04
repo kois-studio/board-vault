@@ -27,7 +27,7 @@
         <!-- no data -->
         <div class="text-center text-secondary">
             @if (searchTermIsValid$()) {
-                <p>No games found matching "{{searchTerm$()}}"</p>
+                <p>No games found matching "{{searchTerm$().trim()}}"</p>
             } @else {
                 <p>Type a game name to search for!</p>
             }
