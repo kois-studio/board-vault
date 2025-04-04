@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common'
-import { Component, computed, inject } from '@angular/core'
+import { Component, computed, inject, signal } from '@angular/core'
 import { RouterLink } from '@angular/router'
+import { FormScheduleSessionComponent } from '../../../components/forms/form-schedule-session/form-schedule-session.component'
 import { ImageProfileComponent } from '../../../components/image-profile/image-profile.component'
 import { SkeletonCardGroupComponent } from '../../../components/skeletons/skeleton-card-group/skeleton-card-group.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
@@ -21,6 +22,7 @@ import { LoadingService } from '../../../core/services/loading.service'
         ImageProfileComponent,
         PageHeaderComponent,
         ButtonComponent,
+        FormScheduleSessionComponent,
     ],
     templateUrl: 'upcoming-sessions-page.component.html',
 })
@@ -43,4 +45,9 @@ export class UpcomingSessionsPageComponent {
     public readonly sortedUserHistoryComputed = computed(() => {
         return this.userHistory$().sort((a, b) => new Date(b.meetData.meetDate).getTime() - new Date(a.meetData.meetDate).getTime())
     })
+
+    // --------------------------------------------------------------------------
+    //        Component props
+    // --------------------------------------------------------------------------
+    public readonly isSchedulingASession = signal(false)
 }
