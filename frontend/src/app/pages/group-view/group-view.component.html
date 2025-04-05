@@ -133,7 +133,9 @@
                 >
                     <div class="flex items-center gap-2">
                         <div class="h-20 w-20 roundd-lg relative">
-                            <image-background [src]="game.imageUrl" class="h-24" />
+                            <a [routerLink]="['/games/', game.id]">
+                                <image-background [src]="game.imageUrl" class="h-24" />
+                            </a>
                             @if (game.quantity > 1) {
                             <div class="absolute -top-2 -left-2 bg-blue-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
                                 x{{game.quantity}}
