@@ -19,11 +19,10 @@ export class GamesService {
     private _parseResultSet(resultSet: ResultSet): Array<GameDto> {
         const games = resultSet.rows.map(row => ({
             id: Number(row[0]),
-            // title: String(row[1]),
-            imageUrl: String(row[2]),
-            gameAvgDuration: Number(row[3]),
-            minPlayers: Number(row[4]),
-            maxPlayers: Number(row[5]),
+            imageUrl: String(row[1]),
+            gameAvgDuration: Number(row[2]),
+            minPlayers: Number(row[3]),
+            maxPlayers: Number(row[4]),
         }))
 
         return this._validateSchema(games)
