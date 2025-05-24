@@ -1,13 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsEmail, IsString } from 'class-validator'
+import { IsBoolean, IsEmail, IsNumber, IsString } from 'class-validator'
 
 export class SuccessDto {
     @ApiProperty({ example: true, description: 'The success status of the operation.' })
+    @IsBoolean()
     success: boolean
 }
 
 export class AccessTokenDto {
     @ApiProperty({ example: 'eyJhbGcifasdjghnsndgi...', description: 'The JWT access token.' })
+    @IsString()
     accessToken: string
 }
 
@@ -21,4 +23,14 @@ export class ResetPasswordDto {
     @ApiProperty({ description: 'The new password for the user' })
     @IsString()
     password: string
+}
+
+export class TokenStatusDto {
+    @ApiProperty({ example: true })
+    @IsBoolean()
+    isValid: boolean
+
+    @ApiProperty({ example: 1 })
+    @IsNumber()
+    userId: number
 }

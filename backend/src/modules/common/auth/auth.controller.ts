@@ -1,19 +1,37 @@
-import { BadRequestException, Body, Controller, Get, Post, Query, Param, NotFoundException } from '@nestjs/common'
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
+// auth.controller.ts
+import { BadRequestException, Body, Controller, Get, Post, Query, Param, NotFoundException, UseGuards, Req } from '@nestjs/common'
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
-import { AccessTokenDto, ForgotPasswordDto, ResetPasswordDto, SuccessDto } from '../../../common/types/auth.type'
+import { AccessTokenDto, ForgotPasswordDto, ResetPasswordDto, SuccessDto, TokenStatusDto } from '../../../common/types/auth.type'
 import { LoginUserDto, RegisterUserDto } from '../../../common/types/user.type'
 
 import { AuthService } from './auth.service'
+import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
     constructor(private readonly authService: AuthService) {}
 
+    @Get('/status')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Validate JWT token and get user status' })
+    @ApiResponse({ status: 200, description: 'Token is valid and user status returned', type: TokenStatusDto })
+    @ApiResponse({ status: 401, description: 'Unauthorized - Token is invalid or expired' })
+    async getTokenStatus(@Req() request: any): Promise<TokenStatusDto> {
+        // If JwtAuthGuard passes, the request.user object will be populated by your JwtStrategy's validate method.
+        // request.user should contain { userId: string, email: string }
+        // The guard itself handles the 401 if the token is bad.
+        return {
+            isValid: true,
+            userId: parseInt(request.user.userId, 10),
+        }
+    }
+
     @Post('/register')
     @ApiOperation({ summary: 'Create a new user' })
-    @ApiResponse({ status: 201, type: SuccessDto, description: 'The user has been succesfully created' })
+    @ApiResponse({ status: 201, type: SuccessDto, description: 'The user has been successfully created' })
     async createUser(@Body() userDto: RegisterUserDto) {
         return this.authService.register(userDto.email, userDto.username, userDto.password)
     }
