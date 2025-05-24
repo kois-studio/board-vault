@@ -59,6 +59,8 @@ body {
     scroll-behavior: smooth;
 }
 
+// for DEBUG: uncomment this to test how a page/component looks with/without transitions
+// ofc this should never reach production uncommented for performance reasons
 // * {
 //     transition: all 0.3s ease;
 // }
