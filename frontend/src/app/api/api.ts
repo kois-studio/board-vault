@@ -31,6 +31,12 @@ export class Api {
 
     // #region auth
 
+    authStatus() {
+        // there is no case where the response is `isValid: false`.
+        // if token not valid, the server returns 401 error, not a valid response.
+        return this.http.get<{ isValid: true; userId: number }>(`${this.url}/auth/status`)
+    }
+
     login(email: string, password: string) {
         return this.http.post<{ access_token: string }>(`${this.url}/auth/login`, { email, password })
     }
