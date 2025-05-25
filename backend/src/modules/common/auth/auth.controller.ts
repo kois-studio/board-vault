@@ -21,11 +21,15 @@ export class AuthController {
     @ApiResponse({ status: 401, description: 'Unauthorized - Token is invalid or expired' })
     async getTokenStatus(@Req() request: any): Promise<TokenStatusDto> {
         // If JwtAuthGuard passes, the request.user object will be populated by your JwtStrategy's validate method.
-        // request.user should contain { userId: string, email: string }
         // The guard itself handles the 401 if the token is bad.
+
+        // Ensure userId is a number if it comes as a string from the token
+        const userId = typeof request.user.userId === 'string' ? parseInt(request.user.userId, 10) : request.user.userId
+
         return {
             isValid: true,
-            userId: parseInt(request.user.userId, 10),
+            userId: userId,
+            isAdmin: request.user.isAdmin || false,
         }
     }
 

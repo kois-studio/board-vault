@@ -33,4 +33,8 @@ export class TokenStatusDto {
     @ApiProperty({ example: 1 })
     @IsNumber()
     userId: number
+
+    @ApiProperty({ example: false })
+    @IsBoolean()
+    isAdmin: boolean
 }
