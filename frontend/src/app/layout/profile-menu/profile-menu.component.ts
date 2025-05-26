@@ -87,7 +87,7 @@ export class ProfileMenuComponent {
 
     public onClickSignOut() {
         this.loginService.logOut()
-        this.dataService.clearState()
+        this.dataService.currentUser.set(null)
         this.router.navigate(['/'])
     }
 
