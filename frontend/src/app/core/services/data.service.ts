@@ -20,16 +20,16 @@ import { ToastService } from '../../components/toast/toast.service'
 import { LOADING_KEYS } from '../enums/loading-keys-enum'
 import { LoadingService } from './loading.service'
 import { LocalStorageService } from './local-storage.service'
+import { LogService } from './log.service'
 import { LoginService } from './login.service'
 
 @Injectable({ providedIn: 'root' })
 export class DataService {
     private readonly api = inject(Api)
     private readonly router = inject(Router)
+    private readonly logger = inject(LogService)
     private readonly toastService = inject(ToastService)
-    private readonly loginService = inject(LoginService)
     private readonly loadingService = inject(LoadingService)
-    private readonly localStorageService = inject(LocalStorageService)
 
     // --------------------------------------------------------------------------
     //        signals definition
@@ -65,48 +65,53 @@ export class DataService {
     // --------------------------------------------------------------------------
     // --------------------------------------------------------------------------
     constructor() {
+        this.logger.log('DataService initialized.')
+
+        // Effect to react to currentUser changes (login/logout)
         effect(() => {
-            const token = this.loginService.token
-            const email = this.loginService.email
-            if (token && email) {
-                // 1. Get the user data
-                this._getUserData(email)
+            const user = this.currentUser()
+            if (user?.id) {
+                this.logger.log(`DataService: currentUser updated (ID: ${user.id}). Fetching derived data.`)
+                this._fetchAllDerivedUserData(user.id)
+            } else {
+                this.logger.log('DataService: currentUser is null (logout or initial state). Clearing derived data.')
+                this._clearAllDerivedUserData()
             }
         })
     }
+    private _fetchAllDerivedUserData(userId: number): void {
+        this._getUserGames(userId)
+        this._getUserGroups(userId)
+        this._getUserNotifications(userId)
+        this._getUserInvitations(userId)
+        this._getUserReviews(userId)
+        this._getUserMeets(userId)
+        this._getUserHistory(userId)
+        this._getUserWishlist(userId)
+        this._getUserCollectionActivity(userId)
+        this._getUserStats(userId)
+        // Add any other derived data fetches here
+    }
 
-    private _getUserData(email: string) {
-        this.api.getUserByEmail(email).subscribe({
-            next: (userType) => {
-                this.currentUser.set(userType)
+    private _clearAllDerivedUserData(): void {
+        this.userGames.set([])
+        this.userGroups.set([])
+        this.userNotifications.set([])
+        this.userInvitations.set([])
+        this.userReviews.set([])
+        this.userMeets.set([])
+        this.userHistory.set([])
+        this.userWishlist.set([])
+        this.userCollectionActivity.set([])
+        this.userStats.set({ totalGamesValue: 0 }) // Reset to default
+        this.groupHistoryByGroupId.set({})
+        this.invitationsGroupIndex.set({})
 
-                // GET derived data
-                this._getUserGames(userType.id)
-                this._getUserGroups(userType.id)
-                this._getUserNotifications(userType.id)
-                this._getUserInvitations(userType.id)
-                this._getUserReviews(userType.id)
-                this._getUserMeets(userType.id)
-                this._getUserHistory(userType.id)
-                this._getUserWishlist(userType.id)
-                this._getUserCollectionActivity(userType.id)
-                this._getUserStats(userType.id)
-            },
-            error: (error) => {
-                if (error.status === 401) {
-                    this.toastService.error('Your session has expired, please log in again')
-                    this.localStorageService.clear()
-                    this.currentUser.set(null)
-                    this.router.navigate(['/'])
-                    return
-                }
-
-                this.toastService.error("Error retrieving user's data, login again")
-            },
-            complete: () => {
-                this.loadingService.finish(LOADING_KEYS.USER_DATA)
-            },
-        })
+        // Note: LoadingService.setAllLoadingTo(true) in LoginService's logout
+        // should handle resetting the loading states for these items if they
+        // are part of the initial set of loading keys.
+        // If not, you might need to manually reset them here or ensure
+        // each _getUserXYZ method sets its loading key to true even if data is empty.
     }
 
     private _getUserGames(userId: number) {
@@ -259,33 +264,9 @@ export class DataService {
     //      3. Give feedback to the user with toasts
     // --------------------------------------------------------------------------
 
-    public init(email: string) {
-        this._getUserData(email)
-    }
-
-    public clearState() {
-        this.currentUser.set(null)
-        this.userGroups.set([])
-        this.userInvitations.set([])
-        this.invitationsGroupIndex.set({})
-        this.userHistory.set([])
-        this.userMeets.set([])
-        this.userReviews.set([])
-        this.userWishlist.set([])
-        this.userCollectionActivity.set([])
-        this.userStats.set({
-            totalGamesValue: 0,
-        })
-    }
-
     // #region form-update-profile
 
-    public updateCurrentUserData(requestBody: {
-        email?: string
-        username?: string
-        displayName?: string
-        avatar?: UserType['avatar']
-    }) {
+    public updateCurrentUserData(requestBody: { email?: string; username?: string; displayName?: string; avatar?: UserType['avatar'] }) {
         const currentUser = this.currentUser()
         if (!currentUser) {
             return
@@ -294,7 +275,7 @@ export class DataService {
         // 1.
         this.api
             .updateUser(currentUser.id, requestBody)
-            .pipe(concatMap((res) => this.api.getUserByEmail(currentUser.email)))
+            .pipe(concatMap((res) => this.api.getUserById(currentUser.id)))
             .subscribe({
                 next: (updatedUser) => {
                     // 2.

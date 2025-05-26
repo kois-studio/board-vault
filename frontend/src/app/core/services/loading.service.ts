@@ -26,6 +26,10 @@ export class LoadingService {
     // --------------------------------------------------------------------------
     //        Methods
     // --------------------------------------------------------------------------
+    public start(key: LOADING_KEYS) {
+        this.loadingStatesIndex.update((prev) => ({ ...prev, [key]: true }))
+    }
+
     public finish(key: LOADING_KEYS) {
         this.loadingStatesIndex.update((prev) => ({ ...prev, [key]: false }))
     }
