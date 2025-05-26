@@ -1,17 +1,17 @@
+import { HttpErrorResponse } from '@angular/common/http'
 // src/app/core/services/login.service.ts
-import { Injectable, signal, inject } from '@angular/core'
+import { Injectable, inject, signal } from '@angular/core'
 import { Router } from '@angular/router'
 import { Observable, of } from 'rxjs'
-import { map, catchError } from 'rxjs/operators'
-import { HttpErrorResponse } from '@angular/common/http'
+import { catchError, map } from 'rxjs/operators'
 
+import { Api } from '../../api/api'
+import { ToastService } from '../../components/toast/toast.service'
+import { LOADING_KEYS } from '../enums/loading-keys-enum'
+import { DataService } from './data.service'
+import { LoadingService } from './loading.service'
 import { LocalStorageService } from './local-storage.service'
 import { LogService } from './log.service'
-import { ToastService } from '../../components/toast/toast.service'
-import { LoadingService } from './loading.service'
-import { LOADING_KEYS } from '../enums/loading-keys-enum'
-import { Api } from '../../api/api'
-import { DataService } from './data.service'
 
 @Injectable({ providedIn: 'root' })
 export class LoginService {
@@ -64,8 +64,8 @@ export class LoginService {
 
         this.logger.log('LoginService: Token found, validating with backend...')
         return this.api.authStatus().pipe(
-            map(response => {
-                if (response && response.isValid && response.userId !== undefined) {
+            map((response) => {
+                if (response?.isValid && response?.userId !== undefined) {
                     this.logger.log('LoginService: Token is valid.', response)
                     this.isAuthenticated.set(true)
                     this.currentUserId.set(response.userId)
@@ -96,12 +96,12 @@ export class LoginService {
         this.loadingService.start(LOADING_KEYS.USER_DATA)
 
         this.api.getUserById(userId).subscribe({
-            next: userData => {
+            next: (userData) => {
                 this.logger.log('LoginService: USER_DATA fetched successfully.')
                 this.dataService.currentUser.set(userData)
                 this.loadingService.finish(LOADING_KEYS.USER_DATA)
             },
-            error: err => {
+            error: (err) => {
                 this.logger.error('LoginService: Failed to fetch USER_DATA.', err)
                 this.loadingService.finish(LOADING_KEYS.USER_DATA) // Still finish to unblock UI
                 this._clearAuthDataAndNavigate()
@@ -113,7 +113,7 @@ export class LoginService {
      * Clears all authentication data, resets signals, and navigates to home/login.
      * @param showToast Whether to show a session expiration toast.
      */
-    private _clearAuthDataAndNavigate(showToast: boolean = true): void {
+    private _clearAuthDataAndNavigate(showToast = true): void {
         this.logger.log('LoginService: Clearing auth data and navigating.')
         if (showToast) {
             this.toastService.info('You have been logged out.')

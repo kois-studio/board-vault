@@ -1,11 +1,11 @@
 // auth-interceptor.ts
-import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http'
+import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http'
 import { inject } from '@angular/core'
 import { Router } from '@angular/router'
 import { throwError } from 'rxjs'
 import { catchError } from 'rxjs/operators'
-import { LoginService } from '../services/login.service'
 import { ToastService } from '../../components/toast/toast.service'
+import { LoginService } from '../services/login.service'
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
     const router = inject(Router)

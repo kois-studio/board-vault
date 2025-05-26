@@ -24,7 +24,7 @@ export const AuthOnlyGuard: CanActivateFn = (): Observable<boolean> => {
     // If not already marked as authenticated, verify the token.
     // This will also handle fetching user data on success.
     return loginService.verifyTokenAndFetchUserData().pipe(
-        map(isAuthenticated => {
+        map((isAuthenticated) => {
             if (isAuthenticated) {
                 return true
             }

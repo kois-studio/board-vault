@@ -34,7 +34,7 @@ export class Api {
     authStatus() {
         // there is no case where the response is `isValid: false`.
         // if token not valid, the server returns 401 error, not a valid response.
-        return this.http.get<{ isValid: true; userId: number }>(`${this.url}/auth/status`)
+        return this.http.get<{ isValid: true; userId: number; isAdmin: boolean }>(`${this.url}/auth/status`)
     }
 
     login(email: string, password: string) {
@@ -253,8 +253,8 @@ export class Api {
     // --------------------------------------------------------------------------
     // #region profile
     // --------------------------------------------------------------------------
-    getUserByEmail(email: string) {
-        return this.http.get<UserType>(`${this.url}/profile/users/byEmail/${email}`)
+    getUserById(id: number) {
+        return this.http.get<UserType>(`${this.url}/profile/users/${id}`)
     }
 
     getUserNotifications(userId: number) {
