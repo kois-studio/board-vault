@@ -23,8 +23,8 @@ export class ProfileService {
     ) {}
 
     @LogFeature(new Logger('ProfileService'))
-    async getUserByEmail(email: string): Promise<UserGetDto> {
-        return this.usersService.getUserByEmail(email)
+    async getUserById(id: number): Promise<UserGetDto> {
+        return this.usersService.getUserById(id)
     }
 
     @LogFeature(new Logger('ProfileService'))
