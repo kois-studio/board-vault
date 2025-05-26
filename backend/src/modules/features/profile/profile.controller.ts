@@ -18,12 +18,12 @@ import { ProfileService } from './profile.service'
 export class ProfileController {
     constructor(private readonly profileService: ProfileService) {}
 
-    @Get('/users/byEmail/:email')
-    @ApiOperation({ summary: 'Get user by email', deprecated: false })
+    @Get('/users/:userId')
+    @ApiOperation({ summary: 'Get user by id', deprecated: false })
     @ApiResponse({ status: 200, type: UserGetDto, description: 'User found' })
     @ApiResponse({ status: 404, description: 'User not found' })
-    async getUserByEmail(@Param('email') email: string) {
-        return this.profileService.getUserByEmail(email)
+    async getUserById(@Param('userId', ParseIntPipe) userId: number) {
+        return this.profileService.getUserById(userId)
     }
 
     @Get('/users/:userId/notifications')
