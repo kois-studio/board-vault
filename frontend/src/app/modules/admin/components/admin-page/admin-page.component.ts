@@ -3,7 +3,7 @@ import { DataService } from '../../../../core/services/data.service'
 
 @Component({
     imports: [],
-    templateUrl: 'admin.component.html',
+    templateUrl: './admin-page.component.html',
 })
 export class AdminPageComponent {
     private readonly dataService = inject(DataService)
