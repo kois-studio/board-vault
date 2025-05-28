@@ -9,13 +9,18 @@
         <!-- DESKTOP MENU -->
         <div>
             <div class="flex items-center justify-between gap-6">
-                @if (!isLogged) {
-                <a class="hidden lg:block" href="#features">Features</a>
-                <a class="hidden lg:block" href="#how-it-works">How it works</a>
-                <a routerLink="/login">Log In</a>
-                <app-button routerLink="/register">Sign Up</app-button>
-                } @if (isLogged) {
-                <app-profile-menu />
+                @if (!isAuthenticated()) {
+                    <a class="hidden lg:block" href="#features">Features</a>
+                    <a class="hidden lg:block" href="#how-it-works">How it works</a>
+                    <a routerLink="/login">Log In</a>
+                    <app-button routerLink="/register">Sign Up</app-button>
+                } @else {
+                    @if (isCurrentUserAdmin()) {
+                        <a routerLink="/admin" class="text-sm font-medium hover:underline text-red-600 dark:text-red-400" aria-label="Admin Panel">
+                            Admin Panel
+                        </a>
+                    }
+                    <app-profile-menu />
                 }
             </div>
         </div>
