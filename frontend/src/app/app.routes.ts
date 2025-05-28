@@ -1,8 +1,10 @@
 import { Routes } from '@angular/router'
+import { AdminGuard } from './core/guards/admin.guard'
 import { GuestOnlyGuard } from './core/guards/auth-redirect.guard'
 import { AuthOnlyGuard } from './core/guards/auth.guard'
 import { LayoutBasicComponent } from './layout/layout-basic/layout-basic.component'
 import { LayoutCompleteComponent } from './layout/layout-complete/layout-complete.component'
+import { AdminPageComponent } from './modules/admin/components/admin-page/admin-page.component'
 import { LoginComponent } from './pages/auth/login/login.component'
 import { RegisterComponent } from './pages/auth/register/register.component'
 import { ResetPasswordRequestComponent } from './pages/auth/reset-password-request/reset-password-request.component'
@@ -59,6 +61,11 @@ export const routes: Routes = [
             { path: 'login', component: LoginComponent, canActivate: [GuestOnlyGuard] },
             { path: 'register', component: RegisterComponent, canActivate: [GuestOnlyGuard] },
             // accessible to authenticated users
+            {
+                path: 'admin',
+                loadChildren: () => import('./modules/admin/admin.routes').then((r) => r.ADMIN_ROUTES),
+                canActivate: [AdminGuard],
+            },
             { path: 'dashboard', component: DashboardPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'groups', component: GroupsPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'collection', component: CollectionPageComponent, canActivate: [AuthOnlyGuard] },
