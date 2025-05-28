@@ -56,9 +56,8 @@ export class LoginService {
 
         if (!currentToken) {
             this.logger.log('LoginService: No token found during verification.')
-            // Ensure state is clean if somehow called without a token
-            // but guard should prevent this for protected routes.
-            this._clearAuthDataAndNavigate(false) // Don't show toast if no token initially
+            this._performLogoutCleanup()
+            this.router.navigate(['/'])
             return of(false)
         }
 
@@ -74,16 +73,41 @@ export class LoginService {
                     return true
                 }
 
+                // NOTE: this should never happen
+                // Token was present, but /auth/status response was not as expected
                 this.logger.warn('LoginService: Token validation response not as expected or invalid.', response)
                 this.toastService.warning('Your session may be invalid. Please log in again.')
-                this._clearAuthDataAndNavigate()
+                this._performLogoutCleanup()
+                this.router.navigate(['/'])
                 return false
             }),
             catchError((error: HttpErrorResponse) => {
-                this.logger.error('LoginService: Token validation failed via API.', error)
-                this.toastService.warning('Your session has expired. Please log in again.')
-                this._clearAuthDataAndNavigate()
-                return of(false)
+                this.logger.error('LoginService: Error validating token via /auth/status API.', error)
+
+                // If the error is NOT a 401 from /auth/status, it means the interceptor
+                // did NOT handle the logout for this specific error.
+                // (Because the interceptor only acts on 401s from non-/auth/login URLs).
+                // So, if it's any other error type (e.g., 500, network error),
+                // or even a 401 that somehow bypassed the interceptor (unlikely),
+                // we need to perform cleanup and show a generic error.
+                if (error.status !== 401 || (error.status === 401 && !error.url?.endsWith('/auth/status'))) {
+                    // This condition means:
+                    // 1. It's not a 401 at all (e.g., 500, 0 for network error)
+                    // OR
+                    // 2. It IS a 401, but NOT from /auth/status (this case is less likely here,
+                    //    as this catchError is specifically for the /auth/status call,
+                    //    but it's a safe check).
+                    //    The primary scenario for this block is non-401 errors from /auth/status.
+
+                    this.toastService.error('Could not verify your session. Please log in again.')
+                    this._performLogoutCleanup()
+                    this.router.navigate(['/'])
+                }
+                // If it WAS a 401 from /auth/status, the AuthInterceptor already handled
+                // the toast, cleanup (via handleAuthErrorAndLogout), and navigation.
+                // So, we don't do it again here to avoid double actions.
+
+                return of(false) // Always return an Observable<boolean>
             }),
         )
     }
@@ -102,50 +126,61 @@ export class LoginService {
                 this.loadingService.finish(LOADING_KEYS.USER_DATA)
             },
             error: (err) => {
-                this.logger.error('LoginService: Failed to fetch USER_DATA.', err)
-                this.loadingService.finish(LOADING_KEYS.USER_DATA) // Still finish to unblock UI
-                this._clearAuthDataAndNavigate()
+                this.logger.error('LoginService: Critical error - Failed to fetch USER_DATA after successful auth. Logging out.', err)
+                this.toastService.error(
+                    // Specific toast for this critical failure
+                    'Failed to load essential user information. Please log in again.',
+                )
+                this._performLogoutCleanup()
+                this.router.navigate(['/'])
+                // Ensure USER_DATA loading is also marked as finished to prevent UI hangs
+                this.loadingService.finish(LOADING_KEYS.USER_DATA)
             },
         })
     }
 
     /**
-     * Clears all authentication data, resets signals, and navigates to home/login.
-     * @param showToast Whether to show a session expiration toast.
+     * Clears all authentication data, resets signals, and navigates.
+     * This is the core cleanup logic. Toasts are handled by calling methods.
      */
-    private _clearAuthDataAndNavigate(showToast = true): void {
-        this.logger.log('LoginService: Clearing auth data and navigating.')
-        if (showToast) {
-            this.toastService.info('You have been logged out.')
-        }
+    private _performLogoutCleanup(): void {
+        this.logger.log('LoginService: Performing logout cleanup.')
 
-        // Clear from localStorage via service properties
-        this.token = null
-
-        // Reset signals
+        this.token = null // Clear from localStorage via service properties
         this.isAuthenticated.set(false)
         this.currentUserId.set(null)
         this.isCurrentUserAdmin.set(false)
-
-        // Clear currentUser in DataService
-        this.dataService.currentUser.set(null)
-
-        // Reset all loading states in LoadingService
-        this.loadingService.setAllLoadingTo(true) // Or a more specific reset
-
-        this.router.navigate(['/']) // Or your designated login/home page
+        this.dataService.currentUser.set(null) // Clear currentUser in DataService
+        this.loadingService.setAllLoadingTo(true) // Reset all loading states
     }
 
     /**
-     * Public method to log out the user.
+     * Public method for when a user explicitly clicks a logout button.
+     * Shows a success toast.
      */
     public logOut(): void {
         this.logger.log('LoginService: User initiated logout.')
         // Potentially call a backend logout endpoint here if you have one
         // this.api.logout().subscribe();
 
-        this._clearAuthDataAndNavigate()
+        this._performLogoutCleanup()
+        this.router.navigate(['/']) // Or your designated login/home page
         this.toastService.success('You have been successfully logged out.')
+    }
+
+    /**
+     * Called by AuthInterceptor when a 401 (not from /auth/login) occurs.
+     * The interceptor already shows the "session expired" toast.
+     * This method just handles cleanup and navigation.
+     */
+    public handleAuthErrorAndLogout(): void {
+        this.logger.log('LoginService: Handling auth error and logging out (from interceptor).')
+        this._performLogoutCleanup()
+        // Navigation is handled by the interceptor in this case,
+        // but can be duplicated here if preferred for consistency,
+        // though the interceptor already does it.
+        // this.router.navigate(['/login'], { queryParams: { reason: 'session_expired' } });
+        // NO toast here, as the interceptor shows "Your session has expired..."
     }
 
     /**

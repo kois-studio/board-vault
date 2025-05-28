@@ -5,13 +5,14 @@ import { Router } from '@angular/router'
 import { throwError } from 'rxjs'
 import { catchError } from 'rxjs/operators'
 import { ToastService } from '../../components/toast/toast.service'
+import { LogService } from '../services/log.service'
 import { LoginService } from '../services/login.service'
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
     const router = inject(Router)
+    const logService = inject(LogService)
     const loginService = inject(LoginService)
     const toastService = inject(ToastService)
-
     const token = loginService.token
 
     // Initialize authReq with the original request
@@ -27,21 +28,32 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     // Pass the cloned or original request to the next handler
     return next(authReq).pipe(
         catchError((error: any) => {
-            // If 401 (unauthorized), we assume the token is expired and log out the user
             if (error instanceof HttpErrorResponse && error.status === 401) {
-                console.error('AuthInterceptor: Received 401 Unauthorized. Logging out.', error)
-                toastService.warning('Your session has expired. Redirecting to login...')
-                loginService.logOut() // Clear the invalid token
-                router.navigate(['/login'], { queryParams: { reason: 'session_expired' } })
-            }
+                // Check if the 401 is from the login endpoint itself
+                // You might need to adjust the URL check if your API base URL is complex
+                if (error.url?.endsWith('/auth/login')) {
+                    logService.warn('AuthInterceptor: Received 401 from /auth/login. Letting component handle.', error)
+                    // For a 401 from /auth/login, do NOT treat it as a session expiry.
+                    // The login component's error handler will display the appropriate message.
+                    // Just re-throw the error.
+                } else {
+                    // For any other 401, assume session expired or token is invalid
+                    logService.error('AuthInterceptor: Received 401 (not from /auth/login). Logging out.', error)
 
-            /**
-             * It's important to either complete the stream or re-throw an error.
-             * Re-throwing the original error is often good practice so that component-level error handlers (if any) can also react.
-             * However, for a 401 leading to logout, you might also consider returning EMPTY or a new error indicating session expiry.
-             * For now, let's re-throw.
-             */
-            // Re-throw the error to propagate it
+                    // Show the "session expired" toast
+                    toastService.warning('Your session has expired. Please log in again.')
+
+                    // Call a more specific logout method in LoginService that doesn't show its own toasts,
+                    // or ensure LoginService.logOut() is modified.
+                    // Let's create a new method in LoginService for this scenario.
+                    loginService.handleAuthErrorAndLogout()
+
+                    router.navigate(['/login'], {
+                        queryParams: { reason: 'session_expired' },
+                    })
+                }
+            }
+            // Re-throw the error to propagate it to component-level handlers
             return throwError(() => error)
         }),
     )
