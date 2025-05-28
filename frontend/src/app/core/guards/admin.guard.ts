@@ -18,12 +18,12 @@ export const AdminGuard: CanActivateFn = (route, state): Observable<boolean> | b
         if (loginService.isCurrentUserAdmin()) {
             logger.log('AdminGuard: Access granted (already authenticated as admin).')
             return true
-        } else {
-            logger.warn('AdminGuard: Access denied (authenticated but not admin).')
-            toastService.error('Access Denied: You do not have permission to view this page.')
-            router.navigate(['/dashboard'])
-            return false
         }
+
+        logger.warn('AdminGuard: Access denied (authenticated but not admin).')
+        toastService.error('Access Denied: You do not have permission to view this page.')
+        router.navigate(['/dashboard'])
+        return false
     }
 
     // 2. If not authenticated in this session, try to verify token from storage
@@ -35,22 +35,22 @@ export const AdminGuard: CanActivateFn = (route, state): Observable<boolean> | b
                 if (loginService.isCurrentUserAdmin()) {
                     logger.log('AdminGuard: Access granted (token verified, user is admin).')
                     return of(true)
-                } else {
-                    logger.warn('AdminGuard: Access denied (token verified, but user is not admin).')
-                    toastService.error('Access Denied: You do not have permission to view this page.')
-                    router.navigate(['/dashboard'])
-                    return of(false)
                 }
-            } else {
-                // verifyTokenAndFetchUserData returned false (e.g., no token, invalid token, API error)
-                // LoginService should have handled navigation to login/root and appropriate toasts
-                // for session expiry or invalid session.
-                // We add a specific toast for the admin access attempt.
-                logger.log('AdminGuard: Token verification failed or user not authenticated. Redirecting to login.')
-                toastService.info('Please log in with admin credentials to access this area.')
-                router.navigate(['/login'], { queryParams: { returnUrl: state.url } })
+
+                logger.warn('AdminGuard: Access denied (token verified, but user is not admin).')
+                toastService.error('Access Denied: You do not have permission to view this page.')
+                router.navigate(['/dashboard'])
                 return of(false)
             }
+
+            // verifyTokenAndFetchUserData returned false (e.g., no token, invalid token, API error)
+            // LoginService should have handled navigation to login/root and appropriate toasts
+            // for session expiry or invalid session.
+            // We add a specific toast for the admin access attempt.
+            logger.log('AdminGuard: Token verification failed or user not authenticated. Redirecting to login.')
+            toastService.info('Please log in with admin credentials to access this area.')
+            router.navigate(['/login'], { queryParams: { returnUrl: state.url } })
+            return of(false)
         }),
         // No catchError needed here usually, as verifyTokenAndFetchUserData
         // should handle its own errors and return Observable<false>
