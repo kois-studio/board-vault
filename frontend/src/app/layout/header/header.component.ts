@@ -13,7 +13,10 @@ import { ProfileMenuComponent } from '../profile-menu/profile-menu.component'
 export class LayoutHeaderComponent {
     private readonly loginService = inject(LoginService)
 
-    get isLogged(): boolean {
-        return !!this.loginService.token
-    }
+    // --------------------------------------------------------------------------
+    //        Services signals
+    // --------------------------------------------------------------------------
+    // loginService
+    public readonly isAuthenticated = this.loginService.isAuthenticated
+    public readonly isCurrentUserAdmin = this.loginService.isCurrentUserAdmin
 }
