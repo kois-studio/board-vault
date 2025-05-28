@@ -1,3 +1,11 @@
-<main>
-    <router-outlet />
-</main>
+<div class="flex h-screen bg-zinc-50 dark:bg-zinc-900">
+    <!-- Full screen height, flex container -->
+
+    <!-- Sidebar -->
+    <app-admin-sidebar></app-admin-sidebar>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 p-6 overflow-y-auto">
+        <router-outlet></router-outlet>
+    </main>
+</div>

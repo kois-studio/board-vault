@@ -1,0 +1,29 @@
+<aside class="w-64 bg-zinc-100 dark:bg-zinc-800 p-4 h-full shadow-md">
+    <h2 class="text-xl font-semibold mb-6 text-zinc-800 dark:text-zinc-100">Admin Zone</h2>
+    <nav>
+        <ul>
+            <li>
+                <a
+                    routerLink="panel"
+                    routerLinkActive="bg-primary-500 text-white dark:bg-primary-600"
+                    [routerLinkActiveOptions]="{ exact: true }"
+                    class="flex items-center p-2 my-1 rounded-md hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors duration-150 ease-in-out text-zinc-700 dark:text-zinc-300"
+                >
+                    <!-- You can add an icon here later -->
+                    <span class="ml-3">Panel</span>
+                </a>
+            </li>
+            <!-- More links will go here later -->
+            <!-- Example for a future link:
+            <li>
+                <a
+                    routerLink="proposals"
+                    routerLinkActive="bg-primary-500 text-white dark:bg-primary-600"
+                    class="flex items-center p-2 my-1 rounded-md hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors duration-150 ease-in-out text-zinc-700 dark:text-zinc-300"
+                >
+                    <span class="ml-3">Game Proposals</span>
+                </a>
+            </li> -->
+        </ul>
+    </nav>
+</aside>

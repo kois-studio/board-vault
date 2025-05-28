@@ -52,6 +52,11 @@ import { SettingsPageComponent } from './pages/settings/settings.component'
  */
 export const routes: Routes = [
     {
+        path: 'admin',
+        loadChildren: () => import('./modules/admin/admin.routes').then((r) => r.ADMIN_ROUTES),
+        canActivate: [AdminGuard],
+    },
+    {
         path: '',
         component: LayoutCompleteComponent,
         children: [
@@ -61,11 +66,6 @@ export const routes: Routes = [
             { path: 'login', component: LoginComponent, canActivate: [GuestOnlyGuard] },
             { path: 'register', component: RegisterComponent, canActivate: [GuestOnlyGuard] },
             // accessible to authenticated users
-            {
-                path: 'admin',
-                loadChildren: () => import('./modules/admin/admin.routes').then((r) => r.ADMIN_ROUTES),
-                canActivate: [AdminGuard],
-            },
             { path: 'dashboard', component: DashboardPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'groups', component: GroupsPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'collection', component: CollectionPageComponent, canActivate: [AuthOnlyGuard] },
