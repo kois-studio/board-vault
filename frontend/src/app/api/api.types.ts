@@ -222,3 +222,20 @@ export type CollectionActivityType = {
 export type CollectionActivityWithGameDataType = CollectionActivityType & {
     gameData: GameCompleteType
 }
+
+// --------------------------------------------------------------------------
+// #region admin
+// --------------------------------------------------------------------------
+export type TagCategoryType = {
+    id: number
+    name: string
+    tags: Array<TagType['id']>
+    gameCount: number
+}
+
+export type TagType = {
+    id: number
+    name: string
+    categoryId: TagCategoryType['id']
+    gameCount: number
+}
