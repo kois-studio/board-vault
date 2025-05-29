@@ -1,46 +1,61 @@
-<aside class="w-64 bg-zinc-100 dark:bg-zinc-800 p-4 h-full shadow-md">
-    <h2 class="text-xl font-semibold mb-6 text-zinc-800 dark:text-zinc-100">Admin Zone</h2>
-    <nav>
-        <ul>
-            <li>
+<!--
+  Width classes:
+  - Default (mobile-first): w-full or specific width if it's an overlay.
+  - For this inline example: w-20 when collapsed, md:w-64 when expanded on medium screens.
+  - The `transition-all` class enables smooth width changes.
+-->
+<aside
+    class="bg-zinc-100 dark:bg-zinc-800 h-full shadow-md flex flex-col transition-all duration-300 ease-in-out"
+    [ngClass]="{
+        'w-16 p-2': collapsed,
+        'w-64 p-4': !collapsed
+    }"
+>
+    <!-- Admin Title / Icon -->
+    <div
+        class="h-[40px] mb-6 flex items-center"
+        [ngClass]="{
+            'justify-center': collapsed,
+            'justify-start': !collapsed
+        }"
+    >
+        <i class="bi bi-shield-lock text-2xl"></i>
+        @if (!collapsed) {
+        <h2 class="text-xl font-semibold text-zinc-800 dark:text-zinc-100 truncate ml-2">Admin</h2>
+        }
+    </div>
+
+    <!-- Menu Items -->
+    <nav class="flex-grow">
+        <ul class="space-y-1">
+            @for (item of menuItems; track item.routerLink) {
+            <li
+                [ngClass]="{
+                    'flex': collapsed,
+                    'block': !collapsed,
+                }"
+            >
                 <a
-                    routerLink="panel"
+                    [routerLink]="item.routerLink"
                     routerLinkActive="bg-primary-500 text-white dark:bg-primary-600"
-                    [routerLinkActiveOptions]="{ exact: true }"
-                    class="flex items-center p-2 my-1 rounded-md hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors duration-150 ease-in-out text-zinc-700 dark:text-zinc-300"
+                    [routerLinkActiveOptions]="{ exact: item.exactMatch }"
+                    class="flex items-center p-1 my-1 rounded-md hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors duration-150 ease-in-out text-zinc-700 dark:text-zinc-300 group block mx-auto"
+                    [title]="item.label"
                 >
-                    <!-- You can add an icon here later -->
-                    <span class="ml-3">Panel</span>
+                    <span
+                        class="block text-nowrap overflow-hidden"
+                        [ngClass]="{
+                            'mx-auto': collapsed,
+                        }"
+                    >
+                        <i class="bi bi-{{ item.icon }} text-xl"></i>
+                        @if (!collapsed) {
+                        <span class="transition-opacity duration-300 ease-in-out ml-2">{{ item.label }}</span>
+                        }
+                    </span>
                 </a>
             </li>
-            <li>
-                <a
-                    routerLink="proposals"
-                    routerLinkActive="bg-primary-500 text-white dark:bg-primary-600"
-                    class="flex items-center p-2 my-1 rounded-md hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors duration-150 ease-in-out text-zinc-700 dark:text-zinc-300"
-                >
-                    <span class="ml-3">Game Proposals</span>
-                </a>
-            </li>
-            <li>
-                <a
-                    routerLink="manage-games"
-                    routerLinkActive="bg-primary-500 text-white dark:bg-primary-600"
-                    class="flex items-center p-2 my-1 rounded-md hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors duration-150 ease-in-out text-zinc-700 dark:text-zinc-300"
-                >
-                    <span class="ml-3">Manage Games</span>
-                </a>
-            </li>
-            <li>
-                <a
-                    routerLink="manage-tags"
-                    routerLinkActive="bg-primary-500 text-white dark:bg-primary-600"
-                    class="flex items-center p-2 my-1 rounded-md hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors duration-150 ease-in-out text-zinc-700 dark:text-zinc-300"
-                >
-                    <span class="ml-3">Manage Tags</span>
-                </a>
-            </li>
-            <!-- More links will go here later -->
+            }
         </ul>
     </nav>
 </aside>
