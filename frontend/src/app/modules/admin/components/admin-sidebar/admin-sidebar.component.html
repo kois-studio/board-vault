@@ -5,10 +5,10 @@
   - The `transition-all` class enables smooth width changes.
 -->
 <aside
-    class="bg-zinc-100 dark:bg-zinc-800 h-full shadow-md flex flex-col transition-all duration-300 ease-in-out"
+    class="bg-zinc-100 dark:bg-zinc-800 h-full shadow-md flex flex-col transition-all duration-300 ease-in-out p-4"
     [ngClass]="{
-        'w-16 p-2': collapsed,
-        'w-64 p-4': !collapsed
+        'w-16': collapsed,
+        'w-64': !collapsed
     }"
 >
     <!-- Admin Title / Icon -->
@@ -27,7 +27,7 @@
 
     <!-- Menu Items -->
     <nav class="flex-grow">
-        <ul class="space-y-1">
+        <ul>
             @for (item of menuItems; track item.routerLink) {
             <li
                 [ngClass]="{
@@ -42,12 +42,7 @@
                     class="flex items-center p-1 my-1 rounded-md hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors duration-150 ease-in-out text-zinc-700 dark:text-zinc-300 group block mx-auto"
                     [title]="item.label"
                 >
-                    <span
-                        class="block text-nowrap overflow-hidden"
-                        [ngClass]="{
-                            'mx-auto': collapsed,
-                        }"
-                    >
+                    <span class="block text-nowrap overflow-hidden">
                         <i class="bi bi-{{ item.icon }} text-xl"></i>
                         @if (!collapsed) {
                         <span class="transition-opacity duration-300 ease-in-out ml-2">{{ item.label }}</span>
@@ -58,4 +53,17 @@
             }
         </ul>
     </nav>
+
+    <!-- Exit Button - go back to app -->
+    @if (!collapsed) {
+    <div class="mt-auto p-2 border-t border-zinc-200 dark:border-zinc-700 text-lg">
+        <button
+            routerLink="/"
+            class="w-full flex items-center justify-center p-2 rounded-md hover:bg-zinc-200 dark:hover:bg-zinc-700 cursor-pointer"
+        >
+            <i class="bi bi-box-arrow-left"></i>
+            <span class="ml-4">Exit</span>
+        </button>
+    </div>
+    }
 </aside>
