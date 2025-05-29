@@ -1,10 +1,128 @@
-<div class="p-4">
-    <h2 class="text-2xl font-semibold text-zinc-800 dark:text-zinc-100 mb-4">Manage Tags</h2>
-    <p class="text-zinc-600 dark:text-zinc-400">
-        This section will allow administrators to create, view, edit, and delete tags and tag categories.
-    </p>
-    <!-- Future: Interface for managing tags and categories -->
-    <div class="mt-6 p-6 border border-dashed border-zinc-300 dark:border-zinc-700 rounded-md">
-        <p class="text-center text-zinc-500 dark:text-zinc-400">Tag management interface will be here. (Placeholder)</p>
-    </div>
+<div class="p-4 md:p-6 space-y-8">
+    <header class="mb-6">
+        <h1 class="text-3xl font-bold text-zinc-800 dark:text-zinc-100">Manage Tags & Categories</h1>
+        <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Oversee the taxonomy used to classify games in BoardVault.</p>
+    </header>
+
+    <!-- Section for Tag Categories -->
+    <section class="bg-white dark:bg-zinc-800 shadow-lg rounded-lg p-6">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold text-zinc-700 dark:text-zinc-200">Tag Categories</h2>
+            <app-button variant="primary" icon="plus-lg"> Add new </app-button>
+        </div>
+
+        @if (isLoadingCategories()) {
+        <p class="text-center text-zinc-500 dark:text-zinc-400 py-4">Loading categories...</p>
+        } @else {
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
+                <thead class="bg-zinc-50 dark:bg-zinc-700/50">
+                    <tr>
+                        <th
+                            scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider"
+                        >
+                            Name
+                        </th>
+                        <th
+                            scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider"
+                        >
+                            Tags in Category
+                        </th>
+                        <th
+                            scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider"
+                        >
+                            Games with Category
+                        </th>
+                        <th scope="col" class="relative px-6 py-3">
+                            <span class="sr-only">Actions</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white dark:bg-zinc-800 divide-y divide-zinc-200 dark:divide-zinc-700">
+                    @for (category of tagCategories(); track category.id) {
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                            {{ category.name }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-300">{{ category.tags.length }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-300">{{ category.gameCount }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <!-- Future: Action buttons -->
+                            <!-- <a href="#" class="text-primary-600 hover:text-primary-900 dark:text-primary-400 dark:hover:text-primary-200 mr-3">Edit</a> -->
+                            <!-- <a href="#" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200">Delete</a> -->
+                        </td>
+                    </tr>
+                    } @empty {
+                    <tr>
+                        <td colspan="4" class="px-6 py-4 text-center text-sm text-zinc-500 dark:text-zinc-400">No tag categories found.</td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        }
+    </section>
+
+    <!-- Section for Tags -->
+    <section class="bg-white dark:bg-zinc-800 shadow-lg rounded-lg p-6">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold text-zinc-700 dark:text-zinc-200">Tags</h2>
+            <app-button variant="primary" icon="plus-lg"> Add new </app-button>
+        </div>
+
+        @if (isLoadingTags()) {
+        <p class="text-center text-zinc-500 dark:text-zinc-400 py-4">Loading tags...</p>
+        } @else {
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
+                <thead class="bg-zinc-50 dark:bg-zinc-700/50">
+                    <tr>
+                        <th
+                            scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider"
+                        >
+                            Name
+                        </th>
+                        <th
+                            scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider"
+                        >
+                            Category
+                        </th>
+                        <th
+                            scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider"
+                        >
+                            Games with Tag
+                        </th>
+                        <th scope="col" class="relative px-6 py-3">
+                            <span class="sr-only">Actions</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white dark:bg-zinc-800 divide-y divide-zinc-200 dark:divide-zinc-700">
+                    @for (tag of tags(); track tag.id) {
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-zinc-900 dark:text-zinc-100">{{ tag.name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-300">{{ tag.categoryId }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-300">{{ tag.gameCount }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <!-- Future: Action buttons -->
+                            <!-- <a href="#" class="text-primary-600 hover:text-primary-900 dark:text-primary-400 dark:hover:text-primary-200 mr-3">Edit</a> -->
+                            <!-- <a href="#" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200">Delete</a> -->
+                        </td>
+                    </tr>
+                    } @empty {
+                    <tr>
+                        <td colspan="4" class="px-6 py-4 text-center text-sm text-zinc-500 dark:text-zinc-400">No tags found.</td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        }
+    </section>
 </div>
