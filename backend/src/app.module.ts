@@ -19,6 +19,7 @@ import { ReviewsModule } from './modules/core/reviews/reviews.module'
 import { UsersModule } from './modules/core/users/users.module'
 import { WishlistModule } from './modules/core/wishlist/wishlist.module'
 // Features
+import { AdminModule } from './modules/features/admin/admin.module'
 import { CollectionModule } from './modules/features/collection/collection.module'
 import { DashboardModule } from './modules/features/dashboard/dashboard.module'
 import { PlayModule } from './modules/features/play/play.module'
@@ -44,6 +45,7 @@ import { ProfileModule } from './modules/features/profile/profile.module'
         UsersModule,
         WishlistModule,
         // Features
+        AdminModule,
         CollectionModule,
         DashboardModule,
         PlayModule,
