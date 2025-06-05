@@ -14,12 +14,14 @@ import type { SuccessDto } from '../../../common/types/auth.type'
 import type { CollectionActivityWithGameDataDto } from '../../../common/types/collection-activity.type'
 import type { CreateGameReviewBody, GameReviewWithGameDataDto } from '../../../common/types/game-review.type'
 import type { BrowseGamesResultDto, GameCompleteDto, GameDto, GameViewDto } from '../../../common/types/game.type'
+import { GameTagsService } from 'src/modules/core/game-tags/game-tags.service'
 
 @Injectable()
 export class CollectionService {
     constructor(
         private readonly gamesService: GamesService,
         private readonly tagsService: TagsService,
+        private readonly gameTagsService: GameTagsService,
         private readonly reviewsService: ReviewsService,
         private readonly wishlistService: WishlistService,
         private readonly gamesOwnedService: GamesOwnedService,
@@ -72,7 +74,7 @@ export class CollectionService {
         // Step 1: Get each part of data needed in the view
         const gameData = await this.gamesService.getGameById(gameId)
         const titleTranslations = await this.gameTranslationService.getGameTranslations(gameId)
-        const gameTags = await this.tagsService.getGameTags(gameId)
+        const gameTags = await this.gameTagsService.getGameTags(gameId)
         const ownedGameData = await this.gamesOwnedService.isGameIdOwnedByAccountId(userId, gameId, false)
         const wishlistGameData = await this.wishlistService.isGameWishlisted(userId, gameId)
         // reviews
@@ -104,7 +106,7 @@ export class CollectionService {
                       purchasePrice: ownedGameData.purchasePrice,
                       purchaseNotes: ownedGameData.purchaseNotes,
                   },
-            tags: gameTags,
+            tags: await Promise.all(gameTags.map(async tag => this.tagsService.getTagById(tag.tagId))),
             wishlistedGameData: wishlistGameData
                 ? {
                       dateAdded: '',

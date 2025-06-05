@@ -1,5 +1,5 @@
 import { ResultSet } from '@libsql/client/.'
-import { Injectable, Logger } from '@nestjs/common'
+import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { tagsSchema } from '../../../common/schemas/db-tag.schema'
 import { TagDto } from '../../../common/types/tag.type'
@@ -37,23 +37,24 @@ export class TagsService {
         return result.data
     }
 
-    async getGameTags(gameId: number): Promise<Array<TagDto>> {
-        this.LOGGER.log(`Getting tags for game ${gameId}`)
+    async getTagById(tagId: number): Promise<TagDto> {
+        this.LOGGER.log(`Getting tag by id ${tagId}`)
 
-        // Step 1: Try to get them from cache
-        const cachedTags = await this.cacheService.get(`${this.CACHE_KEY}:byGameId:${gameId}`)
-
-        if (cachedTags) {
-            this.LOGGER.log(`Returning cached tags for game ${gameId}`)
-            return this._validateSchema(cachedTags)
-        }
-
-        // Step 2: If no cached, get them from database
-        const resultSet = await this.databaseService.getGameTags(gameId)
+        const resultSet = await this.databaseService.getTagById(tagId)
         const tags = this._parseResultSet(resultSet)
 
-        // Step 3: Save them to cache
-        await this.cacheService.set(`${this.CACHE_KEY}:byGameId:${gameId}`, tags)
+        if (tags.length === 0) {
+            throw new NotFoundException(`Tag with id ${tagId} not found`)
+        }
+
+        return tags[0]
+    }
+
+    async getTagsByCategoryId(categoryId: number): Promise<Array<TagDto>> {
+        this.LOGGER.log(`Getting tags for category ${categoryId}`)
+
+        const resultSet = await this.databaseService.getTagsByCategoryId(categoryId)
+        const tags = this._parseResultSet(resultSet)
 
         return tags
     }
