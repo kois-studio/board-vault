@@ -935,6 +935,12 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    // #region TagCategory
+
+    getTagCategories() {
+        return this._tursoExecute('SELECT * FROM TagCategory')
+    }
+
     // #region GameTag
 
     getGameTags(gameId: number) {
