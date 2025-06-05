@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto'
 
 import { Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
-import bcrypt from 'bcryptjs'
+import * as bcrypt from 'bcryptjs'
 
 import { UsersService } from '../../core/users/users.service'
 import { DatabaseService } from '../database/database.service'
