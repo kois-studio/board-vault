@@ -1,7 +1,7 @@
 import { Client, createClient, type InStatement } from '@libsql/client'
 import { BadRequestException, Injectable, Logger, NotFoundException, OnModuleInit } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import * as bcrypt from 'bcrypt'
+import bcrypt from 'bcryptjs'
 
 import type { CollectionActivityDto } from '../../../common/types/collection-activity.type'
 import type { GameOwnedDto, UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
