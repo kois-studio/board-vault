@@ -6,7 +6,7 @@ import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
 import { AdminGuard } from '../../../common/guards/admin.guard'
 
 import { AdminService } from './admin.service'
-import { TagCategoryDto } from '../../../common/types/tag-category.type'
+import { TagCategoryDto, TagCategoryWithTagsDto } from '../../../common/types/tag-category.type'
 
 @UseGuards(JwtAuthGuard, VerifiedUserGuard, AdminGuard)
 @ApiTags('admin')
@@ -17,7 +17,7 @@ export class AdminController {
 
     @Get('/tag-categories')
     @ApiOperation({ summary: 'Get all tag categories', deprecated: false })
-    @ApiResponse({ status: 200, type: [TagCategoryDto], description: 'List of all tag categories' })
+    @ApiResponse({ status: 200, type: [TagCategoryWithTagsDto], description: 'List of all tag categories' })
     async getTagCategories() {
         return this.adminService.getAdminTagCategories()
     }

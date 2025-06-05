@@ -976,6 +976,13 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    getGameCountByTagCategoryId(tagCategoryId: number) {
+        return this._tursoExecute({
+            sql: `SELECT COUNT(*) FROM GameTag WHERE tagId IN (SELECT id FROM Tag WHERE categoryId = ?)`,
+            args: [tagCategoryId],
+        })
+    }
+
     // #region Wishlist
 
     getWishlistByAccountId(accountId: number) {
