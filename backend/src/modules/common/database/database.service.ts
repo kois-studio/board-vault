@@ -937,6 +937,10 @@ export class DatabaseService implements OnModuleInit {
 
     // #region Tag
 
+    getTags() {
+        return this._tursoExecute('SELECT * FROM Tag')
+    }
+
     getTagById(tagId: number) {
         return this._tursoExecute({
             sql: 'SELECT * FROM Tag WHERE id = ?',
