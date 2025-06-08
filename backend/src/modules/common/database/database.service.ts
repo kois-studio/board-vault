@@ -957,14 +957,21 @@ export class DatabaseService implements OnModuleInit {
         return this._tursoExecute('SELECT * FROM TagCategory')
     }
 
+    getTagCategoryById(id: number) {
+        return this._tursoExecute({
+            sql: 'SELECT * FROM TagCategory WHERE id = ?',
+            args: [id],
+        })
+    }
+
     // #region GameTag
 
     getGameTags(gameId: number) {
         return this._tursoExecute({
             sql: `
             SELECT
-                t.name AS tag,
-                tc.name AS category
+                t.id AS tagId,
+                tc.id AS categoryId
             FROM
                 GameTag gt
                 JOIN Tag t ON gt.tagId = t.id
