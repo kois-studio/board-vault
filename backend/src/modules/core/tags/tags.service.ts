@@ -38,6 +38,15 @@ export class TagsService {
         return result.data
     }
 
+    async getTags(): Promise<Array<TagDto>> {
+        this.LOGGER.log(`Getting all tags`)
+
+        const resultSet = await this.databaseService.getTags()
+        const tags = this._parseResultSet(resultSet)
+
+        return tags
+    }
+
     async getTagById(tagId: number): Promise<TagDto> {
         this.LOGGER.log(`Getting tag by id ${tagId}`)
 
