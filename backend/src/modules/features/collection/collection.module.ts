@@ -12,6 +12,7 @@ import { WishlistModule } from '../../core/wishlist/wishlist.module'
 import { CollectionController } from './collection.controller'
 import { CollectionService } from './collection.service'
 import { GameTagsModule } from 'src/modules/core/game-tags/game-tags.module'
+import { TagCategoryModule } from 'src/modules/core/tag-category/tag-category.module'
 
 @Module({
     imports: [
@@ -22,6 +23,7 @@ import { GameTagsModule } from 'src/modules/core/game-tags/game-tags.module'
         WishlistModule,
         GameTagsModule,
         GamesOwnedModule,
+        TagCategoryModule,
         GameTranslationModule,
         CollectionActivityModule,
     ],

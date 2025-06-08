@@ -15,6 +15,7 @@ import type { CollectionActivityWithGameDataDto } from '../../../common/types/co
 import type { CreateGameReviewBody, GameReviewWithGameDataDto } from '../../../common/types/game-review.type'
 import type { BrowseGamesResultDto, GameCompleteDto, GameDto, GameViewDto } from '../../../common/types/game.type'
 import { GameTagsService } from 'src/modules/core/game-tags/game-tags.service'
+import { TagCategoryService } from 'src/modules/core/tag-category/tag-category.service'
 
 @Injectable()
 export class CollectionService {
@@ -25,6 +26,7 @@ export class CollectionService {
         private readonly reviewsService: ReviewsService,
         private readonly wishlistService: WishlistService,
         private readonly gamesOwnedService: GamesOwnedService,
+        private readonly tagCategoriesService: TagCategoryService,
         private readonly gameTranslationService: GameTranslationService,
         private readonly collectionActivityService: CollectionActivityService,
     ) {}
@@ -93,6 +95,15 @@ export class CollectionService {
         ).filter(Boolean)
         const similarGamesFiltered = similarGames.filter(Boolean) as Array<GameDto>
 
+        // Tags
+        const tags = await Promise.all(gameTags.map(async tag => this.tagsService.getTagById(tag.tagId)))
+        const tagsWithCategory = await Promise.all(
+            tags.map(async tag => ({
+                ...tag,
+                category: await this.tagCategoriesService.getTagCategoryById(tag.categoryId),
+            })),
+        )
+
         // Step 2: Construct the GameView
         return {
             gameData: {
@@ -106,7 +117,10 @@ export class CollectionService {
                       purchasePrice: ownedGameData.purchasePrice,
                       purchaseNotes: ownedGameData.purchaseNotes,
                   },
-            tags: await Promise.all(gameTags.map(async tag => this.tagsService.getTagById(tag.tagId))),
+            tags: tagsWithCategory.map(tag => ({
+                tag: tag.name,
+                category: tag.category.name,
+            })),
             wishlistedGameData: wishlistGameData
                 ? {
                       dateAdded: '',

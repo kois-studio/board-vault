@@ -43,4 +43,11 @@ export class TagCategoryService {
 
         return tags
     }
+
+    async getTagCategoryById(id: number): Promise<TagCategoryDto> {
+        const resultSet = await this.databaseService.getTagCategoryById(id)
+        const tags = this._parseResultSet(resultSet)
+
+        return tags[0]
+    }
 }

@@ -1,8 +1,9 @@
 import { z } from 'zod'
 
 export const tagSchema = z.object({
-    tag: z.string(),
-    category: z.string(),
+    id: z.number(),
+    name: z.string(),
+    categoryId: z.number(),
 })
 
 export const tagsSchema = z.array(tagSchema)
