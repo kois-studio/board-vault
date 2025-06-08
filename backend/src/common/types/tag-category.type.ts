@@ -1,14 +1,17 @@
-import { ApiProperty } from '@nestjs/swagger'
+import { ApiProperty, OmitType } from '@nestjs/swagger'
 import { TagDto } from './tag.type'
+import { IsNumber, IsString } from 'class-validator'
 
 /**
  * Tag category
  */
 export class TagCategoryDto {
     @ApiProperty({ example: 1 })
+    @IsNumber()
     id: number
 
     @ApiProperty({ example: 'Action' })
+    @IsString()
     name: string
 }
 
@@ -22,3 +25,5 @@ export class TagCategoryWithTagsDto extends TagCategoryDto {
     @ApiProperty({ example: 10 })
     gameCount: number
 }
+
+export class CreateTagCategoryDto extends OmitType(TagCategoryDto, ['id']) {}

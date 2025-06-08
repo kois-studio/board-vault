@@ -2,7 +2,7 @@ import { ResultSet } from '@libsql/client/.'
 import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { tagsSchema } from '../../../common/schemas/db-tag.schema'
-import { TagDto } from '../../../common/types/tag.type'
+import type { TagDto } from '../../../common/types/tag.type'
 import { CacheService } from '../../common/cache/cache.service'
 import { DatabaseService } from '../../common/database/database.service'
 
@@ -18,8 +18,9 @@ export class TagsService {
 
     private _parseResultSet(resultSet: ResultSet): Array<TagDto> {
         const tags = resultSet.rows.map(row => ({
-            tag: String(row[0]),
-            category: String(row[1]),
+            id: Number(row[0]),
+            name: String(row[1]),
+            categoryId: Number(row[2]),
         }))
 
         return this._validateSchema(tags)
@@ -55,6 +56,10 @@ export class TagsService {
 
         const resultSet = await this.databaseService.getTagsByCategoryId(categoryId)
         const tags = this._parseResultSet(resultSet)
+
+        if (tags.length === 0) {
+            throw new NotFoundException(`No tags found for category ${categoryId}`)
+        }
 
         return tags
     }
