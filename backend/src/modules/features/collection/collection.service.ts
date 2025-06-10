@@ -14,8 +14,8 @@ import type { SuccessDto } from '../../../common/types/auth.type'
 import type { CollectionActivityWithGameDataDto } from '../../../common/types/collection-activity.type'
 import type { CreateGameReviewBody, GameReviewWithGameDataDto } from '../../../common/types/game-review.type'
 import type { BrowseGamesResultDto, GameCompleteDto, GameDto, GameViewDto } from '../../../common/types/game.type'
-import { GameTagsService } from 'src/modules/core/game-tags/game-tags.service'
-import { TagCategoryService } from 'src/modules/core/tag-category/tag-category.service'
+import { GameTagsService } from '../../core/game-tags/game-tags.service'
+import { TagCategoryService } from '../../core/tag-category/tag-category.service'
 
 @Injectable()
 export class CollectionService {

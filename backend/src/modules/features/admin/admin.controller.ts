@@ -7,7 +7,7 @@ import { AdminGuard } from '../../../common/guards/admin.guard'
 
 import { AdminService } from './admin.service'
 import { CreateTagCategoryDto, TagCategoryDto, TagCategoryWithTagsDto } from '../../../common/types/tag-category.type'
-import { CreateTagDto, TagDto } from 'src/common/types/tag.type'
+import { CreateTagDto, TagDto } from '../../../common/types/tag.type'
 
 @UseGuards(JwtAuthGuard, VerifiedUserGuard, AdminGuard)
 @ApiTags('admin')
