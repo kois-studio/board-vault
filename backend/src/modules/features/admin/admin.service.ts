@@ -2,11 +2,11 @@ import { Injectable, Logger } from '@nestjs/common'
 
 import { LogFeature } from '../../../common/decorators/logger.decorator'
 import { TagCategoryService } from '../../../modules/core/tag-category/tag-category.service'
-import type { TagCategoryWithTagsDto } from 'src/common/types/tag-category.type'
-import { TagsService } from 'src/modules/core/tags/tags.service'
-import { GamesService } from 'src/modules/core/games/games.service'
-import { GameTagsService } from 'src/modules/core/game-tags/game-tags.service'
-import { TagDto } from 'src/common/types/tag.type'
+import type { TagCategoryWithTagsDto } from '../../../common/types/tag-category.type'
+import { TagsService } from '../../../modules/core/tags/tags.service'
+import { GamesService } from '../../../modules/core/games/games.service'
+import { GameTagsService } from '../../../modules/core/game-tags/game-tags.service'
+import { TagDto } from '../../../common/types/tag.type'
 
 @Injectable()
 export class AdminService {
