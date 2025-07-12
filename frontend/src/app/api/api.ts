@@ -18,6 +18,8 @@ import type {
     MeetType,
     MeetWithAttendeesAndGamesType,
     NotificationType,
+    TagCategoryType,
+    TagType,
     UpdateGameOwnedType,
     UserStatsType,
     UserType,
@@ -153,6 +155,41 @@ export class Api {
 
     deleteMeetAccountGame(accountId: number, meetId: number, gameId: number) {
         return this.http.delete<{ success: true }>(`${this.url}/meetAccountGames/${accountId}/${meetId}/${gameId}`)
+    }
+
+    // --------------------------------------------------------------------------
+    // #region admin
+    // --------------------------------------------------------------------------
+    getAdminTagCategories() {
+        return this.http.get<Array<TagCategoryType>>(`${this.url}/admin/tag-categories`)
+    }
+
+    createAdminTagCategory(name: string) {
+        return this.http.post<TagCategoryType>(`${this.url}/admin/tag-categories`, { name })
+    }
+
+    updateAdminTagCategory(id: number, name: string) {
+        return this.http.put<TagCategoryType>(`${this.url}/admin/tag-categories/${id}`, { name })
+    }
+
+    deleteAdminTagCategory(id: number) {
+        return this.http.delete<{ success: true }>(`${this.url}/admin/tag-categories/${id}`)
+    }
+
+    getAdminTags() {
+        return this.http.get<Array<TagType>>(`${this.url}/admin/tags`)
+    }
+
+    createAdminTag(payload: { name: string; categoryId: number }) {
+        return this.http.post<TagType>(`${this.url}/admin/tags`, payload)
+    }
+
+    updateAdminTag(id: number, payload: { name: string; categoryId: number }) {
+        return this.http.put<TagType>(`${this.url}/admin/tags/${id}`, payload)
+    }
+
+    deleteAdminTag(id: number) {
+        return this.http.delete<{ success: true }>(`${this.url}/admin/tags/${id}`)
     }
 
     // --------------------------------------------------------------------------

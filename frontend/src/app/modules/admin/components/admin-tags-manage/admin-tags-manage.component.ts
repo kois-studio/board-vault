@@ -1,5 +1,7 @@
+// src/app/pages/admin/tags-manage/admin-tags-manage.component.ts
+
 import { CommonModule } from '@angular/common'
-import { Component, OnInit, inject, signal } from '@angular/core'
+import { Component, OnInit, computed, inject, signal } from '@angular/core'
 import { Api } from '../../../../api/api'
 import type { TagCategoryType, TagType } from '../../../../api/api.types'
 import { ToastService } from '../../../../components/toast/toast.service'
@@ -16,79 +18,90 @@ export class AdminTagsManageComponent implements OnInit {
     private readonly toastService = inject(ToastService)
 
     // --------------------------------------------------------------------------
-    //        Component signals
+    //        Signals
     // --------------------------------------------------------------------------
-    // Data
     public tags = signal<Array<TagType>>([])
     public tagCategories = signal<Array<TagCategoryType>>([])
-    // Loading states
     public isLoadingCategories = signal<boolean>(false)
     public isLoadingTags = signal<boolean>(false)
 
     // --------------------------------------------------------------------------
-    //        Component props
+    //        Computed signals
     // --------------------------------------------------------------------------
+    public tagsWithCategory = computed(() => {
+        return this.tags().map(tag => ({
+            ...tag,
+            categoryName: this.tagCategories().find(category => category.id === tag.categoryId),
+        }))
+    })
 
     ngOnInit(): void {
-        this._fetchTags()
         this._fetchTagCategories()
-
-        // --- Hardcoded Data (to be replaced by API calls) ---
-        this.tagCategories.set([
-            { id: 1, name: 'Mechanics', tags: [101, 102, 103], gameCount: 150 },
-            { id: 2, name: 'Theme', tags: [201, 202], gameCount: 90 },
-            { id: 3, name: 'Player Count', tags: [301], gameCount: 200 },
-            { id: 4, name: 'Complexity', tags: [401, 402], gameCount: 120 },
-        ])
-
-        this.tags.set([
-            { id: 101, name: 'Worker Placement', categoryId: 1, gameCount: 70 },
-            { id: 102, name: 'Deck Building', categoryId: 1, gameCount: 50 },
-            { id: 103, name: 'Cooperative', categoryId: 1, gameCount: 30 },
-            { id: 201, name: 'Sci-Fi', categoryId: 2, gameCount: 60 },
-            { id: 202, name: 'Fantasy', categoryId: 2, gameCount: 30 },
-            { id: 301, name: '2 Players', categoryId: 3, gameCount: 200 },
-            { id: 401, name: 'Light Strategy', categoryId: 4, gameCount: 80 },
-            { id: 402, name: 'Heavy Euro', categoryId: 4, gameCount: 40 },
-        ])
+        this._fetchTags()
     }
 
     private _fetchTagCategories(): void {
-        // this.isLoadingCategories.set(true)
-        // this.api.getAdminTagCategories().subscribe({
-        //     next: categories => {
-        //         this.tagCategories.set(categories)
-        //         this.isLoadingCategories.set(false)
-        //         this.logger.log('Fetched tag categories successfully')
-        //     },
-        //     error: err => {
-        //         this.logger.error('Error fetching tag categories', err)
-        //         this.toastService.error('Could not load tag categories.')
-        //         this.isLoadingCategories.set(false)
-        //     },
-        // })
+        this.isLoadingCategories.set(true)
+        this.api.getAdminTagCategories().subscribe({
+            next: categories => {
+                this.tagCategories.set(categories)
+                this.logger.log('Fetched tag categories successfully')
+            },
+            error: err => {
+                this.logger.error('Error fetching tag categories', err)
+                this.toastService.error('Could not load tag categories.')
+            },
+            complete: () => this.isLoadingCategories.set(false),
+        })
     }
 
     private _fetchTags(): void {
-        // this.isLoadingTags.set(true)
-        // this.api.getAdminTags().subscribe({
-        //     next: tags => {
-        //         this.tags.set(tags)
-        //         this.isLoadingTags.set(false)
-        //         this.logger.log('Fetched tags successfully')
-        //     },
-        //     error: err => {
-        //         this.logger.error('Error fetching tags', err)
-        //         this.toastService.error('Could not load tags.')
-        //         this.isLoadingTags.set(false)
-        //     },
-        // })
+        this.isLoadingTags.set(true)
+        this.api.getAdminTags().subscribe({
+            next: tags => {
+                this.tags.set(tags)
+                this.logger.log('Fetched tags successfully')
+            },
+            error: err => {
+                this.logger.error('Error fetching tags', err)
+                this.toastService.error('Could not load tags.')
+            },
+            complete: () => this.isLoadingTags.set(false),
+        })
     }
 
-    // editTagCategory(category: TagCategory) { /* ... */ }
-    // deleteTagCategory(categoryId: number) { /* ... */ }
+    // --------------------------------------------------------------------------
+    //        Action Handlers (to be implemented with modals/forms)
+    // --------------------------------------------------------------------------
 
-    // addTag() { /* ... */ }
-    // editTag(tag: Tag) { /* ... */ }
-    // deleteTag(tagId: number) { /* ... */ }
+    public onAddCategory(): void {
+        // TODO: Open a modal to get the new category name
+        this.logger.log('Action: Add Category')
+        // Example: this.api.createAdminTagCategory('New Name').subscribe(...)
+    }
+
+    public onEditCategory(category: TagCategoryType): void {
+        // TODO: Open a modal pre-filled with the category name
+        this.logger.log('Action: Edit Category', category)
+    }
+
+    public onDeleteCategory(category: TagCategoryType): void {
+        // TODO: Open a confirmation modal
+        this.logger.warn('Action: Delete Category', category)
+    }
+
+    public onAddTag(): void {
+        // TODO: Open a modal with fields for name and a dropdown for category
+        this.logger.log('Action: Add Tag')
+    }
+
+    public onEditTag(tag: TagType): void {
+        // TODO: Open a modal pre-filled with the tag's data
+        this.logger.log('Action: Edit Tag', tag)
+    }
+
+    public onDeleteTag(tag: TagType): void {
+        // TODO: Open a confirmation modal
+        this.logger.warn('Action: Delete Tag', tag)
+    }
 }
