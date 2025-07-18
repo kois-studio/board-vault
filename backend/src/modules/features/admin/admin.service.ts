@@ -45,7 +45,16 @@ export class AdminService {
     async getAdminTags(): Promise<TagDto[]> {
         const tags = await this.tagService.getTags()
 
-        return tags
+        return Promise.all(
+            tags.map(async tag => {
+                const gameCount = await this.gameTagsService.getGameCountByTagId(tag.id)
+
+                return {
+                    ...tag,
+                    gameCount,
+                }
+            }),
+        )
     }
 
     // #endregion
