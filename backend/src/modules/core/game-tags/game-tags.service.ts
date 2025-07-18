@@ -63,4 +63,11 @@ export class GameTagsService {
         const resultSet = await this.databaseService.getGameCountByTagCategoryId(tagCategoryId)
         return Number(resultSet.rows[0][0])
     }
+
+    async getGameCountByTagId(tagId: number): Promise<number> {
+        this.LOGGER.log(`Getting game count for tag ${tagId}`)
+
+        const resultSet = await this.databaseService.getGameCountByTagId(tagId)
+        return Number(resultSet.rows[0][0])
+    }
 }

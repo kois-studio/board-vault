@@ -16,6 +16,10 @@ export class TagDto {
     @ApiProperty({ example: 1 })
     @IsNumber()
     categoryId: number
+
+    @ApiProperty({ example: 10 })
+    @IsNumber()
+    gameCount?: number
 }
 
 export class CreateTagDto extends OmitType(TagDto, ['id']) {}
