@@ -163,28 +163,43 @@ export class GameProposalService {
     async approveGameProposal(id: number, reviewedBy: number, reviewNotes?: string, createdGameId?: number): Promise<GameProposalDto> {
         this.LOGGER.log(`Approving game proposal ${id}`)
 
-        return this.updateGameProposal(id, {
+        const proposal = await this.updateGameProposal(id, {
             status: 'approved',
             reviewNotes,
             createdGameId,
         }, reviewedBy)
+
+        // Clear user proposal stats cache
+        await this.cacheService.deleteOne(`user-proposal-stats:${proposal.submittedBy}`)
+
+        return proposal
     }
 
     async rejectGameProposal(id: number, reviewedBy: number, reviewNotes: string): Promise<GameProposalDto> {
         this.LOGGER.log(`Rejecting game proposal ${id}`)
 
-        return this.updateGameProposal(id, {
+        const proposal = await this.updateGameProposal(id, {
             status: 'rejected',
             reviewNotes,
         }, reviewedBy)
+
+        // Clear user proposal stats cache
+        await this.cacheService.deleteOne(`user-proposal-stats:${proposal.submittedBy}`)
+
+        return proposal
     }
 
     async markGameProposalAsDuplicate(id: number, reviewedBy: number, reviewNotes?: string): Promise<GameProposalDto> {
         this.LOGGER.log(`Marking game proposal ${id} as duplicate`)
 
-        return this.updateGameProposal(id, {
+        const proposal = await this.updateGameProposal(id, {
             status: 'duplicate',
             reviewNotes,
         }, reviewedBy)
+
+        // Clear user proposal stats cache
+        await this.cacheService.deleteOne(`user-proposal-stats:${proposal.submittedBy}`)
+
+        return proposal
     }
 } 
