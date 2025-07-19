@@ -1,0 +1,82 @@
+<!-- Dialog overlay -->
+@if (isVisible()) {
+<div class="fixed inset-0 bg-zinc-900/60 flex justify-center items-center z-50" (click)="hideDialog()">
+    <!-- Dialog box -->
+    <div class="bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700 w-full max-w-md mx-4 relative" (click)="$event.stopPropagation()">
+        <!-- Header -->
+        <div class="flex items-center justify-between p-6 border-b border-zinc-200 dark:border-zinc-700">
+            <h3 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+                Add New Category
+            </h3>
+            <button 
+                (click)="hideDialog()" 
+                class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors cursor-pointer"
+            >
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        <!-- Content -->
+        <div class="p-6">
+            <form [formGroup]="addCategoryForm" (ngSubmit)="onSubmit()">
+                <div class="space-y-4">
+                    <!-- Category Name Input -->
+                    <div>
+                        <label for="categoryName" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
+                            Category Name
+                        </label>
+                        <input
+                            id="categoryName"
+                            type="text"
+                            formControlName="name"
+                            class="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-zinc-700 dark:text-zinc-100"
+                            [class]="nameClass"
+                            placeholder="Enter category name"
+                            required
+                        />
+                        
+                        <!-- Validation errors -->
+                        @if (nameControl?.invalid && (nameControl?.dirty || nameControl?.touched)) {
+                            <div class="mt-1 text-sm text-red-600 dark:text-red-400">
+                                @if (nameControl?.hasError('required')) {
+                                    <div><i class="bi bi-exclamation-circle-fill"></i> Category name is required.</div>
+                                }
+                                @if (nameControl?.hasError('minlength')) {
+                                    <div><i class="bi bi-exclamation-circle-fill"></i> Category name must be at least 2 characters.</div>
+                                }
+                                @if (nameControl?.hasError('maxlength')) {
+                                    <div><i class="bi bi-exclamation-circle-fill"></i> Category name cannot exceed 50 characters.</div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex justify-end space-x-3 mt-6">
+                    <app-button 
+                        type="button"
+                        variant="secondary" 
+                        (click)="hideDialog()"
+                        [disabled]="isLoading()"
+                    >
+                        Cancel
+                    </app-button>
+                    <app-button 
+                        type="submit"
+                        variant="primary" 
+                        [disabled]="!isFormValid || isLoading()"
+                        [loading]="isLoading()"
+                    >
+                        @if (isLoading()) {
+                            Creating...
+                        } @else {
+                            Create Category
+                        }
+                    </app-button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+} 
