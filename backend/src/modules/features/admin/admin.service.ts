@@ -9,7 +9,7 @@ import { GameTagsService } from '../../../modules/core/game-tags/game-tags.servi
 import { GameTranslationService } from '../../../modules/core/game-translation/game-translation.service'
 import { TagDto, GameTagWithCategoryDto } from '../../../common/types/tag.type'
 import type { GameDto } from '../../../common/types/game.type'
-import { UpdateGameTranslationsDto, UpdateGameTagsDto } from './admin.types'
+import { UpdateGameTranslationsBody, UpdateGameTagsBody } from '../../../common/types/admin.type'
 import { GameWithTagsAndTranslationsDto } from '../../../common/types/game.type'
 
 @Injectable()
@@ -151,7 +151,7 @@ export class AdminService {
         )
     }
 
-    async updateGameTranslations(gameId: number, translations: UpdateGameTranslationsDto): Promise<{ success: boolean }> {
+    async updateGameTranslations(gameId: number, translations: UpdateGameTranslationsBody): Promise<{ success: boolean }> {
         // Update each translation
         for (const [languageCode, title] of Object.entries(translations)) {
             if (title?.trim()) {
@@ -162,7 +162,7 @@ export class AdminService {
         return { success: true }
     }
 
-    async updateGameTags(gameId: number, payload: UpdateGameTagsDto): Promise<{ success: boolean }> {
+    async updateGameTags(gameId: number, payload: UpdateGameTagsBody): Promise<{ success: boolean }> {
         // Get current tags
         const currentTags = await this.gameTagsService.getGameTags(gameId)
         const currentTagIds = currentTags.map(gt => gt.tagId)
