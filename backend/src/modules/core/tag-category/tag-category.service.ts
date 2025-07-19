@@ -50,4 +50,29 @@ export class TagCategoryService {
 
         return tags[0]
     }
+
+    async createTagCategory(name: string): Promise<TagCategoryDto> {
+        this.LOGGER.log(`Creating tag category: ${name}`)
+
+        const resultSet = await this.databaseService.createTagCategory(name)
+        const categoryId = Number(resultSet.lastInsertRowid)
+
+        return this.getTagCategoryById(categoryId)
+    }
+
+    async updateTagCategory(id: number, name: string): Promise<TagCategoryDto> {
+        this.LOGGER.log(`Updating tag category ${id} to: ${name}`)
+
+        await this.databaseService.updateTagCategory(id, name)
+
+        return this.getTagCategoryById(id)
+    }
+
+    async deleteTagCategory(id: number): Promise<{ success: boolean }> {
+        this.LOGGER.log(`Deleting tag category ${id}`)
+
+        await this.databaseService.deleteTagCategory(id)
+
+        return { success: true }
+    }
 }

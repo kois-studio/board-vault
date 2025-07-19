@@ -72,4 +72,35 @@ export class TagsService {
 
         return tags
     }
+
+    async createTag(name: string, categoryId: number): Promise<TagDto> {
+        this.LOGGER.log(`Creating tag: ${name} in category ${categoryId}`)
+
+        const resultSet = await this.databaseService.createTag(name, categoryId)
+        const tagId = Number(resultSet.lastInsertRowid)
+
+        // Clear cache
+        await this.cacheService.deleteOne(`${this.CACHE_KEY}:byCategoryId:${categoryId}`)
+
+        return this.getTagById(tagId)
+    }
+
+    async updateTag(id: number, name: string, categoryId: number): Promise<TagDto> {
+        this.LOGGER.log(`Updating tag ${id} to: ${name} in category ${categoryId}`)
+
+        await this.databaseService.updateTag(id, name, categoryId)
+
+        // Clear cache
+        await this.cacheService.deleteOne(`${this.CACHE_KEY}:byCategoryId:${categoryId}`)
+
+        return this.getTagById(id)
+    }
+
+    async deleteTag(id: number): Promise<{ success: boolean }> {
+        this.LOGGER.log(`Deleting tag ${id}`)
+
+        await this.databaseService.deleteTag(id)
+
+        return { success: true }
+    }
 }
