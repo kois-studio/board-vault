@@ -1,0 +1,99 @@
+<!-- Dialog overlay -->
+@if (isVisible()) {
+<div class="fixed inset-0 bg-zinc-900/60 flex justify-center items-center z-50" (click)="hideDialog()">
+    <!-- Dialog box -->
+    <div class="bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700 w-full max-w-2xl mx-4 relative" (click)="$event.stopPropagation()">
+        <!-- Header -->
+        <div class="flex items-center justify-between p-6 border-b border-zinc-200 dark:border-zinc-700">
+            <h3 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+                Delete Category
+            </h3>
+            <button 
+                (click)="hideDialog()" 
+                class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors cursor-pointer"
+            >
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        <!-- Content -->
+        <div class="p-6">
+            <div class="space-y-4">
+                <!-- Warning Icon -->
+                <div class="flex justify-center">
+                    <div class="w-12 h-12 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center">
+                        <i class="bi bi-exclamation-triangle-fill text-red-600 dark:text-red-400 text-xl"></i>
+                    </div>
+                </div>
+
+                <!-- Warning Message -->
+                <div class="text-center">
+                    <h4 class="text-lg font-medium text-zinc-900 dark:text-zinc-100 mb-2">
+                        Are you sure you want to delete this category?
+                    </h4>
+                    <p class="text-sm text-zinc-600 dark:text-zinc-400">
+                        This will permanently delete the category "<strong>{{ category()?.name }}</strong>" and all its tags.
+                    </p>
+                </div>
+
+                <!-- Category Details -->
+                <div class="bg-zinc-50 dark:bg-zinc-700/50 rounded-lg p-4">
+                    <div class="text-sm text-zinc-600 dark:text-zinc-400">
+                        <div class="flex justify-between">
+                            <span>Category Name:</span>
+                            <span class="font-medium text-zinc-900 dark:text-zinc-100">{{ category()?.name }}</span>
+                        </div>
+                        <div class="flex justify-between mt-1">
+                            <span>Tags in Category:</span>
+                            <span class="font-medium text-zinc-900 dark:text-zinc-100">{{ category()?.tags?.length }}</span>
+                        </div>
+                        <div class="flex justify-between mt-1">
+                            <span>Games with Category:</span>
+                            <span class="font-medium text-zinc-900 dark:text-zinc-100">{{ category()?.gameCount }}</span>
+                        </div>
+                        @if (category() && category()!.tags && category()!.tags.length > 0) {
+                            <div class="mt-2">
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">Tags that will be deleted:</span>
+                                <app-tags [tags]="getTagsForDisplay()"></app-tags>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Warning Note -->
+                <div class="bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 rounded-lg p-3">
+                    <p class="text-sm text-red-700 dark:text-red-300">
+                        <i class="bi bi-exclamation-circle-fill mr-1"></i>
+                        This action cannot be undone. All tags in this category will also be deleted.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex justify-end space-x-3 mt-6">
+                <app-button 
+                    type="button"
+                    variant="secondary" 
+                    (click)="hideDialog()"
+                    [disabled]="isLoading()"
+                >
+                    Cancel
+                </app-button>
+                <app-button 
+                    type="button"
+                    variant="danger" 
+                    (click)="onConfirmDelete()"
+                    [disabled]="isLoading()"
+                    [loading]="isLoading()"
+                >
+                    @if (isLoading()) {
+                        Deleting...
+                    } @else {
+                        Delete Category
+                    }
+                </app-button>
+            </div>
+        </div>
+    </div>
+</div>
+} 
