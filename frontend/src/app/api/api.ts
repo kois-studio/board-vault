@@ -4,6 +4,7 @@ import { environment } from '../../environments/environment'
 import type {
     GameWithTagsAndTranslationsType,
     BrowseGamesResultType,
+    AdminGamesResultType,
     CollectionActivityWithGameDataType,
     GameCompleteType,
     GameOwnedType,
@@ -195,8 +196,13 @@ export class Api {
 
     // #region Admin Games
 
-    getAdminGames() {
-        return this.http.get<Array<GameWithTagsAndTranslationsType>>(`${this.url}/admin/games`)
+    getAdminGames(search: string = '', page: number = 1, limit: number = 10) {
+        const params = new URLSearchParams()
+        if (search) params.append('search', search)
+        params.append('page', page.toString())
+        params.append('limit', limit.toString())
+        
+        return this.http.get<AdminGamesResultType>(`${this.url}/admin/games?${params.toString()}`)
     }
 
     updateAdminGameTranslations(gameId: number, translations: Record<string, string>) {

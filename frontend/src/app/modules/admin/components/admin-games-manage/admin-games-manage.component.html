@@ -4,17 +4,41 @@
         Manage game translations and tags for the BoardVault catalog.
     </p>
 
-    @if (isLoadingGames()) {
-        <div class="flex justify-center items-center py-8">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-zinc-600 dark:border-zinc-400"></div>
+    <!-- Search Bar -->
+    <div class="search-container mb-6">
+        <div class="relative">
+            <input 
+                type="text" 
+                placeholder="Search games..." 
+                class="w-full p-3 pl-10 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-zinc-700 dark:text-zinc-100"
+                [formControl]="searchControl"
+            />
+            <div class="absolute left-3 top-3">
+                <i class="bi bi-search text-zinc-400"></i>
+            </div>
+            @if (isSearching$()) {
+                <div class="absolute right-3 top-3">
+                    <i class="bi bi-arrow-repeat spin text-zinc-400"></i>
+                </div>
+            }
         </div>
-    } @else if (games().length === 0) {
-        <div class="text-center py-8">
-            <p class="text-zinc-500 dark:text-zinc-400">No games found.</p>
+    </div>
+
+    <!-- Loading state -->
+    @if (!isSearching$() && gamesList$().length === 0) {
+        <!-- no data -->
+        <div class="text-center text-zinc-500 dark:text-zinc-400 py-8">
+            @if (searchTerm$() && searchTerm$().trim().length >= 3) {
+                <p>No games found matching "{{searchTerm$().trim()}}"</p>
+            } @else if (searchTerm$() && searchTerm$().trim().length > 0) {
+                <p>Type at least 3 characters to search for games</p>
+            } @else {
+                <p>Type a game name to search for!</p>
+            }
         </div>
     } @else {
         <div class="space-y-4">
-            @for (game of games(); track game.id) {
+            @for (game of gamesList$(); track game.id) {
                 <div class="bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700 p-4">
                     <div class="flex items-start justify-between">
                         <div class="flex-1">
@@ -84,6 +108,19 @@
                 </div>
             }
         </div>
+        
+        <!-- Pagination controls -->
+        @if (hasMoreGames$()) {
+            <div class="flex justify-center mt-6">
+                <app-button (click)="loadMoreGames()" [disabled]="isSearching$()">
+                    @if (isSearching$()) {
+                        Loading...
+                    } @else {
+                        Load More
+                    }
+                </app-button>
+            </div>
+        }
     }
 
     <!-- Modals -->

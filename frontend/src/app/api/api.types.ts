@@ -205,6 +205,16 @@ export type BrowseGamesResultType = {
     }
 }
 
+export type AdminGamesResultType = {
+    games: Array<GameWithTagsAndTranslationsType>
+    pagination: {
+        currentPage: number
+        totalPages: number
+        totalItems: number
+        itemsPerPage: number
+    }
+}
+
 // --------------------------------------------------------------------------
 // #region play
 // --------------------------------------------------------------------------
