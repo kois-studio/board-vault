@@ -400,6 +400,19 @@ export class DatabaseService implements OnModuleInit {
         return this._tursoExecute('SELECT * FROM Game ORDER BY id')
     }
 
+    async createGame(gameData: {
+        title: string
+        imageUrl: string
+        gameAvgDuration: number
+        minPlayers: number
+        maxPlayers: number
+    }) {
+        await this._tursoExecute({
+            sql: 'INSERT INTO Game (imageUrl, gameAvgDuration, minPlayers, maxPlayers) VALUES (?, ?, ?, ?)',
+            args: [gameData.imageUrl, gameData.gameAvgDuration, gameData.minPlayers, gameData.maxPlayers],
+        })
+    }
+
     // #region GameTranslation
 
     getGameTranslations(gameId: number) {

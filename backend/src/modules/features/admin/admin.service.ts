@@ -7,10 +7,20 @@ import { TagsService } from '../../../modules/core/tags/tags.service'
 import { GamesService } from '../../../modules/core/games/games.service'
 import { GameTagsService } from '../../../modules/core/game-tags/game-tags.service'
 import { GameTranslationService } from '../../../modules/core/game-translation/game-translation.service'
+import { GameProposalService } from '../../../modules/core/game-proposal/game-proposal.service'
 import { TagDto, GameTagWithCategoryDto } from '../../../common/types/tag.type'
 import type { GameDto } from '../../../common/types/game.type'
-import { UpdateGameTranslationsBody, UpdateGameTagsBody, AdminGamesResponseDto } from '../../../common/types/admin.type'
+import { 
+    UpdateGameTranslationsBody, 
+    UpdateGameTagsBody, 
+    AdminGamesResponseDto,
+    ApproveGameProposalBody,
+    RejectGameProposalBody,
+    AdminGameProposalsResponseDto
+} from '../../../common/types/admin.type'
 import { GameWithTagsAndTranslationsDto } from '../../../common/types/game.type'
+import { GameProposalDto, GameProposalCompleteDto } from '../../../common/types/game-proposal.type'
+import { SupportedLanguage } from '../../../common/types/game-translation.type'
 
 @Injectable()
 export class AdminService {
@@ -20,6 +30,7 @@ export class AdminService {
         private readonly gameTagsService: GameTagsService,
         private readonly tagCategoryService: TagCategoryService,
         private readonly gameTranslationService: GameTranslationService,
+        private readonly gameProposalService: GameProposalService,
     ) {}
 
     // #region Tag Categories
@@ -194,4 +205,149 @@ export class AdminService {
 
         return { success: true }
     }
+
+    // #region Game Proposals
+
+    @LogFeature(new Logger('AdminService'))
+    async getAdminGameProposals(
+        status?: 'pending' | 'approved' | 'rejected' | 'duplicate',
+        page: number = 1,
+        limit: number = 10
+    ): Promise<AdminGameProposalsResponseDto> {
+        // Get proposals based on status filter
+        const proposals = status 
+            ? await this.gameProposalService.getGameProposalsByStatus(status)
+            : await this.gameProposalService.getGameProposals()
+
+        // Calculate pagination
+        const totalItems = proposals.length
+        const totalPages = Math.ceil(totalItems / limit)
+        const startIndex = (page - 1) * limit
+        const endIndex = startIndex + limit
+        const paginatedProposals = proposals.slice(startIndex, endIndex)
+
+        // Transform to include submitter and reviewer IDs
+        const proposalsWithIds: Array<GameProposalCompleteDto> = paginatedProposals.map(proposal => ({
+            ...proposal,
+            submitterId: proposal.submittedBy,
+            reviewerId: proposal.reviewedBy || undefined,
+        }))
+
+        return {
+            proposals: proposalsWithIds,
+            pagination: {
+                currentPage: page,
+                totalPages,
+                totalItems,
+                itemsPerPage: limit,
+            },
+        }
+    }
+
+    @LogFeature(new Logger('AdminService'))
+    async getAdminGameProposalById(id: number): Promise<GameProposalCompleteDto> {
+        const proposal = await this.gameProposalService.getGameProposalById(id)
+        
+        return {
+            ...proposal,
+            submitterId: proposal.submittedBy,
+            reviewerId: proposal.reviewedBy || undefined,
+        }
+    }
+
+    @LogFeature(new Logger('AdminService'))
+    async approveGameProposal(
+        proposalId: number, 
+        reviewerId: number, 
+        approvalData: ApproveGameProposalBody
+    ): Promise<{ success: boolean; createdGameId?: number }> {
+        const proposal = await this.gameProposalService.getGameProposalById(proposalId)
+
+        // Create the new game
+        const gameData = {
+            title: proposal.title,
+            imageUrl: approvalData.imageUrl || proposal.imageUrl || 'https://via.placeholder.com/300x200?text=No+Image',
+            gameAvgDuration: approvalData.gameAvgDuration || proposal.gameAvgDuration || 60,
+            minPlayers: approvalData.minPlayers || proposal.minPlayers || 2,
+            maxPlayers: approvalData.maxPlayers || proposal.maxPlayers || 4,
+        }
+
+        // Create the game
+        const createdGame = await this.gameService.createGame(gameData)
+        const createdGameId = createdGame.id
+
+        // Add translations if provided
+        if (approvalData.translations) {
+            for (const [languageCode, title] of Object.entries(approvalData.translations)) {
+                if (title?.trim()) {
+                    await this.gameTranslationService.createGameTranslation(
+                        createdGameId, 
+                        languageCode as SupportedLanguage, 
+                        title
+                    )
+                }
+            }
+        } else {
+            // Add default translation in English
+            await this.gameTranslationService.createGameTranslation(
+                createdGameId, 
+                'en' as SupportedLanguage, 
+                proposal.title
+            )
+        }
+
+        // Add tags if provided
+        if (approvalData.tagIds && approvalData.tagIds.length > 0) {
+            for (const tagId of approvalData.tagIds) {
+                await this.gameTagsService.addGameTag(createdGameId, tagId)
+            }
+        }
+
+        // Update the proposal status to approved
+        await this.gameProposalService.approveGameProposal(
+            proposalId, 
+            reviewerId, 
+            approvalData.reviewNotes, 
+            createdGameId
+        )
+
+        return { success: true, createdGameId }
+    }
+
+    @LogFeature(new Logger('AdminService'))
+    async rejectGameProposal(
+        proposalId: number, 
+        reviewerId: number, 
+        rejectionData: RejectGameProposalBody
+    ): Promise<{ success: boolean }> {
+        await this.gameProposalService.rejectGameProposal(
+            proposalId, 
+            reviewerId, 
+            rejectionData.reviewNotes
+        )
+
+        return { success: true }
+    }
+
+    @LogFeature(new Logger('AdminService'))
+    async markGameProposalAsDuplicate(
+        proposalId: number, 
+        reviewerId: number, 
+        reviewNotes?: string
+    ): Promise<{ success: boolean }> {
+        await this.gameProposalService.markGameProposalAsDuplicate(
+            proposalId, 
+            reviewerId, 
+            reviewNotes
+        )
+
+        return { success: true }
+    }
+
+    @LogFeature(new Logger('AdminService'))
+    async deleteGameProposal(proposalId: number): Promise<{ success: boolean }> {
+        return this.gameProposalService.deleteGameProposalById(proposalId)
+    }
+
+    // #endregion
 }
