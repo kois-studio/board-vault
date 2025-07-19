@@ -1,0 +1,69 @@
+import { CommonModule } from '@angular/common'
+import { Component, EventEmitter, inject, Output, signal } from '@angular/core'
+import type { TagType } from '../../../api/api.types'
+import { Api } from '../../../api/api'
+import { ToastService } from '../../toast/toast.service'
+import { ButtonComponent } from '../../ui/button/button.component'
+import { LogService } from '../../../core/services/log.service'
+
+@Component({
+    imports: [CommonModule, ButtonComponent],
+    selector: 'app-modal-delete-tag',
+    templateUrl: './modal-delete-tag.component.html',
+})
+export class ModalDeleteTagComponent {
+    private readonly logger = inject(LogService)
+    private readonly toastService = inject(ToastService)
+    private readonly api = inject(Api)
+
+    // --------------------------------------------------------------------------
+    //        Component props
+    // --------------------------------------------------------------------------
+    public isVisible = signal<boolean>(false)
+    public tag = signal<TagType | null>(null)
+    public categoryName = signal<string>('')
+    public isLoading = signal<boolean>(false)
+
+    // --------------------------------------------------------------------------
+    //        Events
+    // --------------------------------------------------------------------------
+    @Output() tagDeleted = new EventEmitter<number>()
+
+    // --------------------------------------------------------------------------
+    //        Methods
+    // --------------------------------------------------------------------------
+    public showDialog(tag: TagType, categoryName: string): void {
+        this.tag.set(tag)
+        this.categoryName.set(categoryName)
+        this.isVisible.set(true)
+    }
+
+    public hideDialog(): void {
+        this.isVisible.set(false)
+        this.tag.set(null)
+        this.categoryName.set('')
+    }
+
+    public onConfirmDelete(): void {
+        if (!this.tag()) {
+            return
+        }
+
+        this.isLoading.set(true)
+        
+        // Call API to delete tag
+        this.api.deleteAdminTag(this.tag()!.id).subscribe({
+            next: () => {
+                this.isLoading.set(false)
+                this.toastService.success('Tag deleted successfully!')
+                this.tagDeleted.emit(this.tag()!.id)
+                this.hideDialog()
+            },
+            error: (error: any) => {
+                this.isLoading.set(false)
+                this.logger.error('Error deleting tag:', error)
+                this.toastService.error('Failed to delete tag. Please try again.')
+            }
+        })
+    }
+} 

@@ -11,9 +11,11 @@ import { ModalEditCategoryComponent } from '../../../../components/modals/modal-
 import { ModalEditTagComponent } from '../../../../components/modals/modal-edit-tag/modal-edit-tag.component'
 import { ModalAddCategoryComponent } from '../../../../components/modals/modal-add-category/modal-add-category.component'
 import { ModalAddTagComponent } from '../../../../components/modals/modal-add-tag/modal-add-tag.component'
+import { ModalDeleteCategoryComponent } from '../../../../components/modals/modal-delete-category/modal-delete-category.component'
+import { ModalDeleteTagComponent } from '../../../../components/modals/modal-delete-tag/modal-delete-tag.component'
 
 @Component({
-    imports: [CommonModule, ButtonComponent, ModalEditCategoryComponent, ModalEditTagComponent, ModalAddCategoryComponent, ModalAddTagComponent],
+    imports: [CommonModule, ButtonComponent, ModalEditCategoryComponent, ModalEditTagComponent, ModalAddCategoryComponent, ModalAddTagComponent, ModalDeleteCategoryComponent, ModalDeleteTagComponent],
     templateUrl: './admin-tags-manage.component.html',
 })
 export class AdminTagsManageComponent implements OnInit {
@@ -28,6 +30,8 @@ export class AdminTagsManageComponent implements OnInit {
     @ViewChild(ModalEditTagComponent) editTagModal!: ModalEditTagComponent
     @ViewChild(ModalAddCategoryComponent) addCategoryModal!: ModalAddCategoryComponent
     @ViewChild(ModalAddTagComponent) addTagModal!: ModalAddTagComponent
+    @ViewChild(ModalDeleteCategoryComponent) deleteCategoryModal!: ModalDeleteCategoryComponent
+    @ViewChild(ModalDeleteTagComponent) deleteTagModal!: ModalDeleteTagComponent
 
     // --------------------------------------------------------------------------
     //        Signals
@@ -95,8 +99,9 @@ export class AdminTagsManageComponent implements OnInit {
     }
 
     public onDeleteCategory(category: TagCategoryType): void {
-        // TODO: Open a confirmation modal
-        this.logger.warn('Action: Delete Category', category)
+        // Get the tags that belong to this category
+        const categoryTags = this.tags().filter(tag => tag.categoryId === category.id)
+        this.deleteCategoryModal.showDialog(category, categoryTags)
     }
 
     public onAddTag(): void {
@@ -108,8 +113,8 @@ export class AdminTagsManageComponent implements OnInit {
     }
 
     public onDeleteTag(tag: TagType): void {
-        // TODO: Open a confirmation modal
-        this.logger.warn('Action: Delete Tag', tag)
+        const categoryName = this.tagCategories().find(cat => cat.id === tag.categoryId)?.name || 'Unknown'
+        this.deleteTagModal.showDialog(tag, categoryName)
     }
 
     // --------------------------------------------------------------------------
@@ -131,6 +136,18 @@ export class AdminTagsManageComponent implements OnInit {
     }
 
     public onTagCreated(tag: TagType): void {
+        // Refresh both tags and categories since tag count affects categories
+        this._fetchTags()
+        this._fetchTagCategories()
+    }
+
+    public onCategoryDeleted(categoryId: number): void {
+        // Refresh both tags and categories since deleting a category affects both
+        this._fetchTags()
+        this._fetchTagCategories()
+    }
+
+    public onTagDeleted(tagId: number): void {
         // Refresh both tags and categories since tag count affects categories
         this._fetchTags()
         this._fetchTagCategories()
