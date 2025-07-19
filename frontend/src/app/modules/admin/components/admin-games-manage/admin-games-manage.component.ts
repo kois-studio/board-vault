@@ -7,13 +7,14 @@ import type { GameWithTagsAndTranslationsType, TagType, TagCategoryType } from '
 import { ToastService } from '../../../../components/toast/toast.service'
 import { ButtonComponent } from '../../../../components/ui/button/button.component'
 import { TagsComponent } from '../../../../components/tags/tags.component'
+import { SpinnerComponent } from '../../../../components/ui/spinner/spinner.component'
 import { LogService } from '../../../../core/services/log.service'
 import { ModalEditGameTranslationsComponent } from '../../../../components/modals/modal-edit-game-translations/modal-edit-game-translations.component'
 import { ModalEditGameTagsComponent } from '../../../../components/modals/modal-edit-game-tags/modal-edit-game-tags.component'
 import { AdminGamesManageService } from './admin-games-manage.service'
 
 @Component({
-    imports: [CommonModule, ReactiveFormsModule, ButtonComponent, TagsComponent, ModalEditGameTranslationsComponent, ModalEditGameTagsComponent],
+    imports: [CommonModule, ReactiveFormsModule, ButtonComponent, TagsComponent, SpinnerComponent, ModalEditGameTranslationsComponent, ModalEditGameTagsComponent],
     templateUrl: './admin-games-manage.component.html',
 })
 export class AdminGamesManageComponent implements OnInit {
