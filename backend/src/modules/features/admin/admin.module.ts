@@ -9,6 +9,7 @@ import { GamesModule } from '../../core/games/games.module'
 import { TagsModule } from '../../core/tags/tags.module'
 import { GameTagsModule } from '../../core/game-tags/game-tags.module'
 import { GameTranslationModule } from '../../core/game-translation/game-translation.module'
+import { GameProposalModule } from '../../core/game-proposal/game-proposal.module'
 
 @Module({
     imports: [
@@ -18,6 +19,7 @@ import { GameTranslationModule } from '../../core/game-translation/game-translat
         GameTagsModule,
         TagCategoryModule,
         GameTranslationModule,
+        GameProposalModule,
     ],
     providers: [AdminService],
     exports: [AdminService],
