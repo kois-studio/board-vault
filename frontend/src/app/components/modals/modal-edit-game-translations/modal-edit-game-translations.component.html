@@ -1,0 +1,96 @@
+@if (isVisible()) {
+    <div class="fixed inset-0 bg-zinc-900/60 flex items-center justify-center z-50" (click)="hideDialog()">
+        <div class="bg-white dark:bg-zinc-800 rounded-lg shadow-xl max-w-md w-full mx-4" (click)="$event.stopPropagation()">
+            <!-- Header -->
+            <div class="flex items-center justify-between p-6 border-b border-zinc-200 dark:border-zinc-700">
+                <h2 class="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+                    Edit Game Translations
+                </h2>
+                <button
+                    (click)="onCancel()"
+                    class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 cursor-pointer"
+                >
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Content -->
+            <div class="p-6">
+                @if (game()) {
+                    <div class="mb-4">
+                        <h3 class="font-medium text-zinc-900 dark:text-zinc-100 mb-2">
+                            {{ game()!.title }}
+                        </h3>
+                        <p class="text-sm text-zinc-500 dark:text-zinc-400">
+                            Update the game title translations for different languages.
+                        </p>
+                    </div>
+
+                    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
+                        <!-- English Translation -->
+                        <div>
+                            <label for="en" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                                English Title
+                            </label>
+                            <input
+                                id="en"
+                                type="text"
+                                formControlName="en"
+                                class="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:text-zinc-100"
+                                placeholder="Enter English title"
+                            />
+                            @if (form.get('en')?.invalid && form.get('en')?.touched) {
+                                <p class="mt-1 text-sm text-red-600 dark:text-red-400">
+                                    English title is required.
+                                </p>
+                            }
+                        </div>
+
+                        <!-- Spanish Translation -->
+                        <div>
+                            <label for="es" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                                Spanish Title
+                            </label>
+                            <input
+                                id="es"
+                                type="text"
+                                formControlName="es"
+                                class="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:text-zinc-100"
+                                placeholder="Enter Spanish title"
+                            />
+                            @if (form.get('es')?.invalid && form.get('es')?.touched) {
+                                <p class="mt-1 text-sm text-red-600 dark:text-red-400">
+                                    Spanish title is required.
+                                </p>
+                            }
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="flex gap-3 pt-4">
+                            <app-button
+                                type="button"
+                                variant="secondary"
+                                (click)="onCancel()"
+                                [disabled]="isLoading()"
+                                class="flex-1"
+                            >
+                                Cancel
+                            </app-button>
+                            <app-button
+                                type="submit"
+                                variant="primary"
+                                [loading]="isLoading()"
+                                [disabled]="form.invalid || isLoading()"
+                                class="flex-1"
+                            >
+                                Update Translations
+                            </app-button>
+                        </div>
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
+} 
