@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common'
 
 import { ReviewsModule } from '../../../modules/core/reviews/reviews.module'
+import { CacheModule } from '../../common/cache/cache.module'
 import { DatabaseModule } from '../../common/database/database.module'
+import { GameProposalModule } from '../../core/game-proposal/game-proposal.module'
 import { GameTranslationModule } from '../../core/game-translation/game-translation.module'
 import { GamesModule } from '../../core/games/games.module'
 import { GamesOwnedModule } from '../../core/games-owned/games-owned.module'
@@ -17,6 +19,7 @@ import { DashboardService } from './dashboard.service'
 @Module({
     imports: [
         DatabaseModule, // needed for VerifiedUserGuard
+        CacheModule,
         UsersModule,
         GroupsModule,
         GroupMembershipsModule,
@@ -26,6 +29,7 @@ import { DashboardService } from './dashboard.service'
         MeetsModule,
         MeetAccountGamesModule,
         GameTranslationModule,
+        GameProposalModule,
     ],
     providers: [DashboardService],
     exports: [DashboardService],
