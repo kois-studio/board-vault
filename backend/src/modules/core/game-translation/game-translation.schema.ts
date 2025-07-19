@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 export const gameTranslationSchema = z.object({
     gameId: z.number(),
-    languageCode: z.enum(['en']),
+    languageCode: z.enum(['en', 'es']),
     title: z.string(),
     normalizedTitle: z.string(),
 })

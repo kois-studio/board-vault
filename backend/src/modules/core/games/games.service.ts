@@ -74,4 +74,13 @@ export class GamesService {
             return null
         }
     }
+
+    async getGames(): Promise<Array<GameDto>> {
+        this.LOGGER.log('Getting all games')
+
+        const resultSet = await this.databaseService.getGames()
+        const games = this._parseResultSet(resultSet)
+
+        return games
+    }
 }

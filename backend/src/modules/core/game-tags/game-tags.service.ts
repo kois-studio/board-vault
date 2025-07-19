@@ -70,4 +70,26 @@ export class GameTagsService {
         const resultSet = await this.databaseService.getGameCountByTagId(tagId)
         return Number(resultSet.rows[0][0])
     }
+
+    async addGameTag(gameId: number, tagId: number): Promise<{ success: boolean }> {
+        this.LOGGER.log(`Adding tag ${tagId} to game ${gameId}`)
+
+        await this.databaseService.addGameTag(gameId, tagId)
+        
+        // Clear cache
+        await this.cacheService.deleteOne(`${this.CACHE_KEY}:byGameId:${gameId}`)
+
+        return { success: true }
+    }
+
+    async removeGameTag(gameId: number, tagId: number): Promise<{ success: boolean }> {
+        this.LOGGER.log(`Removing tag ${tagId} from game ${gameId}`)
+
+        await this.databaseService.removeGameTag(gameId, tagId)
+        
+        // Clear cache
+        await this.cacheService.deleteOne(`${this.CACHE_KEY}:byGameId:${gameId}`)
+
+        return { success: true }
+    }
 }
