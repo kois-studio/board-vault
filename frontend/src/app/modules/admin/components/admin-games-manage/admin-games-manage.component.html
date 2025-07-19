@@ -72,17 +72,11 @@
                             <!-- Tags -->
                             <div>
                                 <h4 class="text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Tags:</h4>
-                                <div class="flex flex-wrap gap-2">
-                                    @for (tag of game.tags; track $index + '-' + tag.id) {
-                                        <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
-                                            {{ tag.name }}
-                                            <span class="ml-1 text-blue-500 dark:text-blue-400">({{ tag.categoryName }})</span>
-                                        </span>
-                                    }
-                                    @if (game.tags.length === 0) {
-                                        <span class="text-sm text-zinc-500 dark:text-zinc-400">No tags assigned</span>
-                                    }
-                                </div>
+                                @if (game.tags.length > 0) {
+                                    <app-tags [tags]="getTagsForDisplay(game.tags)" />
+                                } @else {
+                                    <span class="text-sm text-zinc-500 dark:text-zinc-400">No tags assigned</span>
+                                }
                             </div>
                         </div>
 
