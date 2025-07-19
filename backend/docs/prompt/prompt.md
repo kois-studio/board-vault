@@ -58,6 +58,18 @@ CREATE TABLE IF NOT EXISTS Game (
 );
 
 -- -----------------------------------------------------
+-- Table 'GameTranslation' (Game-Translation 1:n)
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS GameTranslation (
+    gameId INTEGER NOT NULL,
+    languageCode TEXT NOT NULL, -- e.g., 'en', 'es', 'de'
+    title TEXT NOT NULL,
+    normalizedTitle TEXT NOT NULL, -- Normalized version of 'title' for searching
+    FOREIGN KEY (gameId) REFERENCES Game(id) ON DELETE CASCADE,
+    PRIMARY KEY (gameId, languageCode)
+);
+
+-- -----------------------------------------------------
 -- Table 'OwnedGame' (Account-Game n:m)
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS OwnedGame (
@@ -207,17 +219,6 @@ CREATE TABLE IF NOT EXISTS Meet (
 );
 
 -- -----------------------------------------------------
--- Table 'MeetAttendee' (Tracks each member in a meet)
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS MeetAttendee (
-    meetId INTEGER NOT NULL,
-    accountId INTEGER NOT NULL,
-    FOREIGN KEY (meetId) REFERENCES Meet(id) ON DELETE CASCADE,
-    FOREIGN KEY (accountId) REFERENCES Account(id) ON DELETE CASCADE,
-    PRIMARY KEY (meetId, accountId)
-);
-
--- -----------------------------------------------------
 -- Table 'MeetAccountGame' (Who played which games at which meet)
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS MeetAccountGame (
@@ -240,6 +241,49 @@ CREATE TABLE IF NOT EXISTS FeatureFlags (
     description TEXT, -- Optional, for documentation purposes
     lastUpdated DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+-- -----------------------------------------------------
+-- Table 'GameProposal' (User-submitted game proposals for review)
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS GameProposal (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    submittedBy INTEGER NOT NULL, -- Account that submitted the proposal
+    status TEXT NOT NULL CHECK (status IN ('pending', 'approved', 'rejected', 'duplicate')) DEFAULT 'pending',
+    
+    -- User-submitted data
+    title TEXT NOT NULL,
+    imageUrl TEXT,
+    gameAvgDuration INTEGER,
+    minPlayers INTEGER,
+    maxPlayers INTEGER,
+    -- Storing proposed tags as JSON text is flexible for the review process
+    proposedTags TEXT, 
+    notes TEXT, -- User's description or notes about the game
+    
+    -- Admin review fields
+    reviewedBy INTEGER, -- Admin account that reviewed the proposal
+    reviewedAt DATETIME,
+    reviewNotes TEXT, -- Admin notes (especially for rejections/duplicates)
+    
+    -- Link to the created game if approved
+    createdGameId INTEGER,
+    
+    submittedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (submittedBy) REFERENCES Account(id) ON DELETE CASCADE,
+    FOREIGN KEY (reviewedBy) REFERENCES Account(id) ON DELETE SET NULL,
+    FOREIGN KEY (createdGameId) REFERENCES Game(id) ON DELETE SET NULL
+);
+
+-- -----------------------------------------------------
+-- Indexes
+-- -----------------------------------------------------
+-- for faster searching on normalized titles across all languages
+CREATE INDEX idx_gametranslation_normalized_title ON GameTranslation(normalizedTitle);
+
+-- for game proposal queries
+CREATE INDEX idx_gameproposal_status ON GameProposal(status);
+CREATE INDEX idx_gameproposal_submitted_by ON GameProposal(submittedBy);
 ```
 
 # BoardVault Architecture & Controllers Organization

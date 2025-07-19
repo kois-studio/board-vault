@@ -219,9 +219,46 @@ CREATE TABLE IF NOT EXISTS FeatureFlags (
 );
 
 -- -----------------------------------------------------
+-- Table 'GameProposal' (User-submitted game proposals for review)
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS GameProposal (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    submittedBy INTEGER NOT NULL, -- Account that submitted the proposal
+    status TEXT NOT NULL CHECK (status IN ('pending', 'approved', 'rejected', 'duplicate')) DEFAULT 'pending',
+    
+    -- User-submitted data
+    title TEXT NOT NULL,
+    imageUrl TEXT,
+    gameAvgDuration INTEGER,
+    minPlayers INTEGER,
+    maxPlayers INTEGER,
+    -- Storing proposed tags as JSON text is flexible for the review process
+    proposedTags TEXT, 
+    notes TEXT, -- User's description or notes about the game
+    
+    -- Admin review fields
+    reviewedBy INTEGER, -- Admin account that reviewed the proposal
+    reviewedAt DATETIME,
+    reviewNotes TEXT, -- Admin notes (especially for rejections/duplicates)
+    
+    -- Link to the created game if approved
+    createdGameId INTEGER,
+    
+    submittedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (submittedBy) REFERENCES Account(id) ON DELETE CASCADE,
+    FOREIGN KEY (reviewedBy) REFERENCES Account(id) ON DELETE SET NULL,
+    FOREIGN KEY (createdGameId) REFERENCES Game(id) ON DELETE SET NULL
+);
+
+-- -----------------------------------------------------
 -- Indexes
 -- -----------------------------------------------------
 -- for faster searching on normalized titles across all languages
 CREATE INDEX idx_gametranslation_normalized_title ON GameTranslation(normalizedTitle);
+
+-- for game proposal queries
+CREATE INDEX idx_gameproposal_status ON GameProposal(status);
+CREATE INDEX idx_gameproposal_submitted_by ON GameProposal(submittedBy);
 ```
 
