@@ -6,13 +6,14 @@ import { Api } from '../../../../api/api'
 import type { GameWithTagsAndTranslationsType, TagType, TagCategoryType } from '../../../../api/api.types'
 import { ToastService } from '../../../../components/toast/toast.service'
 import { ButtonComponent } from '../../../../components/ui/button/button.component'
+import { TagsComponent } from '../../../../components/tags/tags.component'
 import { LogService } from '../../../../core/services/log.service'
 import { ModalEditGameTranslationsComponent } from '../../../../components/modals/modal-edit-game-translations/modal-edit-game-translations.component'
 import { ModalEditGameTagsComponent } from '../../../../components/modals/modal-edit-game-tags/modal-edit-game-tags.component'
 import { AdminGamesManageService } from './admin-games-manage.service'
 
 @Component({
-    imports: [CommonModule, ReactiveFormsModule, ButtonComponent, ModalEditGameTranslationsComponent, ModalEditGameTagsComponent],
+    imports: [CommonModule, ReactiveFormsModule, ButtonComponent, TagsComponent, ModalEditGameTranslationsComponent, ModalEditGameTagsComponent],
     templateUrl: './admin-games-manage.component.html',
 })
 export class AdminGamesManageComponent implements OnInit {
@@ -197,5 +198,12 @@ export class AdminGamesManageComponent implements OnInit {
 
     public getTranslationEntries(translations: Record<string, string>): Array<[string, string]> {
         return Object.entries(translations)
+    }
+
+    public getTagsForDisplay(tags: Array<{ id: number; name: string; categoryName: string }>): Array<{ tag: string; category: string }> {
+        return tags.map(tag => ({
+            tag: tag.name,
+            category: tag.categoryName
+        }))
     }
 }
