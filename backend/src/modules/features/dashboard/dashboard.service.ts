@@ -1,6 +1,8 @@
 import { BadRequestException, ForbiddenException, Injectable, Logger } from '@nestjs/common'
 
 import { LogFeature } from '../../../common/decorators/logger.decorator'
+import { CacheService } from '../../common/cache/cache.service'
+import { GameProposalService } from '../../core/game-proposal/game-proposal.service'
 import { GameTranslationService } from '../../core/game-translation/game-translation.service'
 import { GamesService } from '../../core/games/games.service'
 import { GamesOwnedService } from '../../core/games-owned/games-owned.service'
@@ -14,13 +16,14 @@ import { UsersService } from '../../core/users/users.service'
 import type { SuccessDto } from '../../../common/types/auth.type'
 import type { GroupMemberWithGames, GroupWithMembersAndGames } from '../../../common/types/group.type'
 import type { MeetCreatedDto } from '../../../common/types/meet.type'
-import type { UserStatsDto } from '../../../common/types/stats.type'
+import type { UserStatsDto, UserProposalStatsDto } from '../../../common/types/stats.type'
 import type { UserWithGames } from '../../../common/types/user.type'
 import type { HistoryRecordDto } from '../play/play.types'
 
 @Injectable()
 export class DashboardService {
     private readonly LOGGER: Logger = new Logger(this.constructor.name)
+    private readonly CACHE_KEY = 'user-proposal-stats'
 
     constructor(
         private readonly usersService: UsersService,
@@ -32,6 +35,8 @@ export class DashboardService {
         private readonly meetsService: MeetsService,
         private readonly gameTranslationService: GameTranslationService,
         private readonly meetAccountGamesService: MeetAccountGamesService,
+        private readonly gameProposalService: GameProposalService,
+        private readonly cacheService: CacheService,
     ) {}
 
     @LogFeature(new Logger('DashboardService'))
@@ -194,4 +199,60 @@ export class DashboardService {
 
         return { success: true }
     }
+
+    // #region User Proposal Stats
+
+    @LogFeature(new Logger('DashboardService'))
+    async getUserProposalStats(userId: number): Promise<UserProposalStatsDto> {
+        // Step 1: Try to get from cache first
+        const cacheKey = `${this.CACHE_KEY}:${userId}`
+        const cachedStats = await this.cacheService.get(cacheKey)
+
+        if (cachedStats) {
+            this.LOGGER.log(`Returning cached proposal stats for user ${userId}`)
+            return cachedStats
+        }
+
+        // Step 2: Calculate stats from database
+        const allProposals = await this.gameProposalService.getGameProposalsBySubmitter(userId)
+
+        const stats = this._calculateProposalStats(allProposals)
+
+        // Step 3: Cache the results for 1 hour
+        await this.cacheService.set(cacheKey, stats, 'short') // 1 hour cache
+
+        return stats
+    }
+
+    private _calculateProposalStats(proposals: Array<any>): UserProposalStatsDto {
+        const totalProposals = proposals.length
+        const approvedProposals = proposals.filter(p => p.status === 'approved').length
+        const rejectedProposals = proposals.filter(p => p.status === 'rejected').length
+        const duplicateProposals = proposals.filter(p => p.status === 'duplicate').length
+        const pendingProposals = proposals.filter(p => p.status === 'pending').length
+
+        // Calculate approval rate (only for processed proposals)
+        const processedProposals = approvedProposals + rejectedProposals + duplicateProposals
+        const approvalRate = processedProposals > 0 
+            ? Math.round((approvedProposals / processedProposals) * 10000) / 100 // Round to 2 decimal places
+            : 0
+
+        // Calculate reputation score (0-100)
+        // Formula: (approved * 10) + (rejected * -5) + (duplicate * -2) + (pending * 0)
+        // Then normalize to 0-100 range
+        const rawScore = (approvedProposals * 10) + (rejectedProposals * -5) + (duplicateProposals * -2)
+        const reputationScore = Math.max(0, Math.min(100, Math.round(rawScore * 2))) // Scale and clamp to 0-100
+
+        return {
+            totalProposals,
+            approvedProposals,
+            rejectedProposals,
+            duplicateProposals,
+            pendingProposals,
+            approvalRate,
+            reputationScore,
+        }
+    }
+
+    // #endregion
 }
