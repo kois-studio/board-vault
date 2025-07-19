@@ -10,6 +10,7 @@ import { TagsModule } from '../../core/tags/tags.module'
 import { GameTagsModule } from '../../core/game-tags/game-tags.module'
 import { GameTranslationModule } from '../../core/game-translation/game-translation.module'
 import { GameProposalModule } from '../../core/game-proposal/game-proposal.module'
+import { NotificationsModule } from '../../core/notifications/notifications.module'
 
 @Module({
     imports: [
@@ -20,6 +21,7 @@ import { GameProposalModule } from '../../core/game-proposal/game-proposal.modul
         TagCategoryModule,
         GameTranslationModule,
         GameProposalModule,
+        NotificationsModule,
     ],
     providers: [AdminService],
     exports: [AdminService],
