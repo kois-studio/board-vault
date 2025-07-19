@@ -177,4 +177,64 @@ export class GameTranslationService {
 
         return result
     }
+
+    async browseGamesByTitleMultiLanguage(options: {
+        search: string
+        page: number
+        pageSize: number
+        excludeGameIds: number[]
+    }): Promise<BrowseGamesPaginationDto & { gameIds: number[] }> {
+        this.LOGGER.log(
+            `Browsing games with multi-language search: "${options.search}", page: ${options.page}, pageSize: ${options.pageSize}, excludeGameIds: ${options.excludeGameIds.join(',')}`,
+        )
+
+        // Calculate skip based on page and pageSize
+        const skip = (options.page - 1) * options.pageSize
+        const normalizedSearch = this._normalizeTitle(options.search)
+
+        // Step 1: Try to get from cache if it's a simple query
+        const cacheKey = `${this.CACHE_KEY}:browseMultiLang:${normalizedSearch}:${options.page}:${options.pageSize}:${options.excludeGameIds.join(',')}`
+
+        const cachedResult = await this.cacheService.get(cacheKey)
+
+        if (cachedResult) {
+            this.LOGGER.log(`Returning cached multi-language browse games result for "${normalizedSearch}"`)
+            return cachedResult
+        }
+
+        // Step 2: Get games and total count from database
+        const [gamesResult, countResult] = await Promise.all([
+            this.databaseService.browseGamesMultiLanguage({
+                search: normalizedSearch,
+                skip,
+                take: options.pageSize,
+                excludeGameIds: options.excludeGameIds,
+            }),
+            this.databaseService.countGamesMultiLanguage({
+                search: normalizedSearch,
+                excludeGameIds: options.excludeGameIds,
+            }),
+        ])
+
+        // Parse the results - gamesResult now returns gameIds directly
+        const gameIds = gamesResult.rows.map(row => Number(row[0]))
+        const total = Number(countResult.rows[0].total)
+
+        // Calculate total pages
+        const totalPages = Math.ceil(total / options.pageSize)
+
+        // Create the result object
+        const result: BrowseGamesPaginationDto & { gameIds: number[] } = {
+            gameIds,
+            currentPage: options.page,
+            totalPages,
+            totalItems: total,
+            itemsPerPage: options.pageSize,
+        }
+
+        // Step 3: Save to cache
+        await this.cacheService.set(cacheKey, result, 'long')
+
+        return result
+    }
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
@@ -8,7 +8,7 @@ import { AdminGuard } from '../../../common/guards/admin.guard'
 import { AdminService } from './admin.service'
 import { CreateTagCategoryDto, TagCategoryDto, TagCategoryWithTagsDto } from '../../../common/types/tag-category.type'
 import { CreateTagDto, TagDto } from '../../../common/types/tag.type'
-import { UpdateGameTranslationsBody, UpdateGameTagsBody } from '../../../common/types/admin.type'
+import { UpdateGameTranslationsBody, UpdateGameTagsBody, AdminGamesResponseDto } from '../../../common/types/admin.type'
 import { GameWithTagsAndTranslationsDto } from '../../../common/types/game.type'
 import { SuccessDto } from '../../../common/types/auth.type'
 
@@ -86,14 +86,18 @@ export class AdminController {
     // #region Games
 
     @Get('/games')
-    @ApiOperation({ summary: 'Get all games with translations and tags', deprecated: false })
+    @ApiOperation({ summary: 'Get games with translations and tags (paginated and searchable)', deprecated: false })
     @ApiResponse({ 
         status: 200, 
-        description: 'List of all games with translations and tags',
-        type: [GameWithTagsAndTranslationsDto]
+        description: 'Paginated list of games with translations and tags',
+        type: AdminGamesResponseDto
     })
-    async getGames() {
-        return this.adminService.getAdminGames()
+    async getGames(
+        @Query('search') search: string = '',
+        @Query('page', ParseIntPipe) page: number = 1,
+        @Query('limit', ParseIntPipe) limit: number = 10,
+    ) {
+        return this.adminService.getAdminGames(search, page, limit)
     }
 
     @Put('/games/:id/translations')
