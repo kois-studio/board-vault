@@ -83,6 +83,26 @@
             <!-- View all highlight -->
             <span class="text-red-600 dark:text-red-400 group-hover:underline flex items-center text-sm font-medium"> View all > </span>
         </app-card-section>
+
+        <!-- --------------------------
+            5 - My Submissions Card
+        ---------------------------- -->
+        <app-card-section
+            icon="file-earmark-plus"
+            color="purple"
+            titleText="My Submissions"
+            description="Track your game proposals and their review status"
+            cardLink="/collection/submissions"
+        >
+            <!-- Badge -->
+            <app-badge class="app-card-section-badge" color="purple" [text]="userProposals$().length + ' proposals'" />
+
+            <!-- Content -->
+            <div></div>
+
+            <!-- View all highlight -->
+            <span class="text-purple-600 dark:text-purple-400 group-hover:underline flex items-center text-sm font-medium"> View all > </span>
+        </app-card-section>
     </div>
 
     <div class="pt-24">

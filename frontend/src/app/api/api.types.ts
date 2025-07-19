@@ -258,3 +258,43 @@ export type TagType = {
     categoryId: TagCategoryType['id']
     gameCount: number
 }
+
+// #region Game Proposal
+
+export type GameProposalType = {
+    id: number
+    submittedBy: number
+    status: 'pending' | 'approved' | 'rejected' | 'duplicate'
+    title: string
+    imageUrl: string | null
+    gameAvgDuration: number | null
+    minPlayers: number | null
+    maxPlayers: number | null
+    proposedTags: string | null
+    notes: string | null
+    reviewedBy: number | null
+    reviewedAt: string | null
+    reviewNotes: string | null
+    createdGameId: number | null
+    submittedAt: string
+}
+
+export type CreateGameProposalType = {
+    title: string
+    imageUrl?: string
+    gameAvgDuration?: number
+    minPlayers?: number
+    maxPlayers?: number
+    proposedTags?: string
+    notes?: string
+}
+
+export type UserProposalStatsType = {
+    totalProposals: number
+    approvedProposals: number
+    rejectedProposals: number
+    duplicateProposals: number
+    pendingProposals: number
+    approvalRate: number
+    reputationScore: number
+}

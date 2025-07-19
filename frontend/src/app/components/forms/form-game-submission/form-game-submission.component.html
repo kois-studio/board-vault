@@ -1,0 +1,153 @@
+<form [formGroup]="gameSubmissionForm" (ngSubmit)="onSubmit()" class="space-y-6">
+    <!-- Title -->
+    <div>
+        <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
+            Game Title *
+        </label>
+        <input
+            type="text"
+            id="title"
+            formControlName="title"
+            [class]="'w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ' + titleClass"
+            placeholder="Enter the game title"
+        />
+        <div *ngIf="title?.invalid && (title?.dirty || title?.touched)" class="mt-1 text-sm text-red-600">
+            <div *ngIf="title?.errors?.['required']">Game title is required</div>
+            <div *ngIf="title?.errors?.['minlength']">Title must be at least 2 characters</div>
+            <div *ngIf="title?.errors?.['maxlength']">Title must be less than 100 characters</div>
+        </div>
+    </div>
+
+    <!-- Image URL -->
+    <div>
+        <label for="imageUrl" class="block text-sm font-medium text-gray-700 mb-2">
+            Image URL
+        </label>
+        <input
+            type="url"
+            id="imageUrl"
+            formControlName="imageUrl"
+            [class]="'w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ' + imageUrlClass"
+            placeholder="https://example.com/game-image.jpg"
+        />
+        <div *ngIf="imageUrl?.invalid && (imageUrl?.dirty || imageUrl?.touched)" class="mt-1 text-sm text-red-600">
+            <div *ngIf="imageUrl?.errors?.['pattern']">Please enter a valid URL</div>
+        </div>
+    </div>
+
+    <!-- Game Duration -->
+    <div>
+        <label for="gameAvgDuration" class="block text-sm font-medium text-gray-700 mb-2">
+            Average Duration (minutes)
+        </label>
+        <input
+            type="number"
+            id="gameAvgDuration"
+            formControlName="gameAvgDuration"
+            [class]="'w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ' + gameAvgDurationClass"
+            placeholder="120"
+            min="1"
+            max="1440"
+        />
+        <div *ngIf="gameAvgDuration?.invalid && (gameAvgDuration?.dirty || gameAvgDuration?.touched)" class="mt-1 text-sm text-red-600">
+            <div *ngIf="gameAvgDuration?.errors?.['min']">Duration must be at least 1 minute</div>
+            <div *ngIf="gameAvgDuration?.errors?.['max']">Duration must be less than 1440 minutes (24 hours)</div>
+        </div>
+    </div>
+
+    <!-- Player Count -->
+    <div class="grid grid-cols-2 gap-4">
+        <div>
+            <label for="minPlayers" class="block text-sm font-medium text-gray-700 mb-2">
+                Minimum Players
+            </label>
+            <input
+                type="number"
+                id="minPlayers"
+                formControlName="minPlayers"
+                (input)="validatePlayerCount()"
+                [class]="'w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ' + minPlayersClass"
+                placeholder="2"
+                min="1"
+                max="20"
+            />
+            <div *ngIf="minPlayers?.invalid && (minPlayers?.dirty || minPlayers?.touched)" class="mt-1 text-sm text-red-600">
+                <div *ngIf="minPlayers?.errors?.['min']">Minimum players must be at least 1</div>
+                <div *ngIf="minPlayers?.errors?.['max']">Minimum players must be less than 20</div>
+            </div>
+        </div>
+
+        <div>
+            <label for="maxPlayers" class="block text-sm font-medium text-gray-700 mb-2">
+                Maximum Players
+            </label>
+            <input
+                type="number"
+                id="maxPlayers"
+                formControlName="maxPlayers"
+                (input)="validatePlayerCount()"
+                [class]="'w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ' + maxPlayersClass"
+                placeholder="4"
+                min="1"
+                max="20"
+            />
+            <div *ngIf="maxPlayers?.invalid && (maxPlayers?.dirty || maxPlayers?.touched)" class="mt-1 text-sm text-red-600">
+                <div *ngIf="maxPlayers?.errors?.['min']">Maximum players must be at least 1</div>
+                <div *ngIf="maxPlayers?.errors?.['max']">Maximum players must be less than 20</div>
+                <div *ngIf="maxPlayers?.errors?.['invalidRange']">Maximum players must be greater than or equal to minimum players</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Proposed Tags -->
+    <div>
+        <label for="proposedTags" class="block text-sm font-medium text-gray-700 mb-2">
+            Proposed Tags
+        </label>
+        <input
+            type="text"
+            id="proposedTags"
+            formControlName="proposedTags"
+            class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="strategy, family, card-game (comma separated)"
+        />
+        <p class="mt-1 text-sm text-gray-500">Suggest tags that describe this game (comma separated)</p>
+    </div>
+
+    <!-- Notes -->
+    <div>
+        <label for="notes" class="block text-sm font-medium text-gray-700 mb-2">
+            Additional Notes
+        </label>
+        <textarea
+            id="notes"
+            formControlName="notes"
+            rows="4"
+            [class]="'w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ' + notesClass"
+            placeholder="Tell us more about this game, why you think it should be added to our collection..."
+        ></textarea>
+        <div *ngIf="notes?.invalid && (notes?.dirty || notes?.touched)" class="mt-1 text-sm text-red-600">
+            <div *ngIf="notes?.errors?.['maxlength']">Notes must be less than 500 characters</div>
+        </div>
+        <p class="mt-1 text-sm text-gray-500">{{ notes?.value?.length || 0 }}/500 characters</p>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="flex justify-end space-x-4">
+        <button
+            type="button"
+            (click)="resetForm()"
+            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        >
+            Reset
+        </button>
+        <button
+            type="submit"
+            [disabled]="gameSubmissionForm.invalid || isSubmitting"
+            class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+            <span *ngIf="!isSubmitting">Submit Proposal</span>
+            <span *ngIf="isSubmitting">Submitting...</span>
+        </button>
+    </div>
+</form> 
