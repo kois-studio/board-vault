@@ -25,6 +25,9 @@ import type {
     UpdateGameOwnedType,
     UserStatsType,
     UserType,
+    GameProposalType,
+    CreateGameProposalType,
+    UserProposalStatsType,
 } from './api.types'
 
 @Injectable({ providedIn: 'root' })
@@ -328,4 +331,20 @@ export class Api {
     acceptInvitation(userId: number, invitationId: number) {
         return this.http.post<{ success: true }>(`${this.url}/profile/users/${userId}/invitations/${invitationId}/accept`, {})
     }
+
+    // #region Game Proposals
+
+    createGameProposal(userId: number, proposalData: CreateGameProposalType) {
+        return this.http.post<GameProposalType>(`${this.url}/users/${userId}/proposals`, proposalData)
+    }
+
+    getUserProposals(userId: number) {
+        return this.http.get<Array<GameProposalType>>(`${this.url}/users/${userId}/proposals`)
+    }
+
+    getUserProposalStats(userId: number) {
+        return this.http.get<UserProposalStatsType>(`${this.url}/users/${userId}/proposal-stats`)
+    }
+
+    // #endregion
 }
