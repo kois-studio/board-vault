@@ -85,4 +85,13 @@
             }
         </div>
     }
+
+    <!-- Modals -->
+    <app-modal-edit-game-translations
+        (translationsUpdated)="onTranslationsUpdated($event)"
+    ></app-modal-edit-game-translations>
+
+    <app-modal-edit-game-tags
+        (tagsUpdated)="onTagsUpdated($event)"
+    ></app-modal-edit-game-tags>
 </div>
