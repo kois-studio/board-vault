@@ -1,21 +1,29 @@
 // src/app/pages/admin/tags-manage/admin-tags-manage.component.ts
 
 import { CommonModule } from '@angular/common'
-import { Component, OnInit, computed, inject, signal } from '@angular/core'
+import { Component, OnInit, computed, inject, signal, ViewChild } from '@angular/core'
 import { Api } from '../../../../api/api'
 import type { TagCategoryType, TagType } from '../../../../api/api.types'
 import { ToastService } from '../../../../components/toast/toast.service'
 import { ButtonComponent } from '../../../../components/ui/button/button.component'
 import { LogService } from '../../../../core/services/log.service'
+import { ModalEditCategoryComponent } from '../../../../components/modals/modal-edit-category/modal-edit-category.component'
+import { ModalEditTagComponent } from '../../../../components/modals/modal-edit-tag/modal-edit-tag.component'
 
 @Component({
-    imports: [CommonModule, ButtonComponent],
+    imports: [CommonModule, ButtonComponent, ModalEditCategoryComponent, ModalEditTagComponent],
     templateUrl: './admin-tags-manage.component.html',
 })
 export class AdminTagsManageComponent implements OnInit {
     private readonly api = inject(Api)
     private readonly logger = inject(LogService)
     private readonly toastService = inject(ToastService)
+
+    // --------------------------------------------------------------------------
+    //        Modal references
+    // --------------------------------------------------------------------------
+    @ViewChild(ModalEditCategoryComponent) editCategoryModal!: ModalEditCategoryComponent
+    @ViewChild(ModalEditTagComponent) editTagModal!: ModalEditTagComponent
 
     // --------------------------------------------------------------------------
     //        Signals
@@ -81,8 +89,7 @@ export class AdminTagsManageComponent implements OnInit {
     }
 
     public onEditCategory(category: TagCategoryType): void {
-        // TODO: Open a modal pre-filled with the category name
-        this.logger.log('Action: Edit Category', category)
+        this.editCategoryModal.showDialog(category)
     }
 
     public onDeleteCategory(category: TagCategoryType): void {
@@ -96,12 +103,24 @@ export class AdminTagsManageComponent implements OnInit {
     }
 
     public onEditTag(tag: TagType): void {
-        // TODO: Open a modal pre-filled with the tag's data
-        this.logger.log('Action: Edit Tag', tag)
+        this.editTagModal.showDialog(tag, this.tagCategories())
     }
 
     public onDeleteTag(tag: TagType): void {
         // TODO: Open a confirmation modal
         this.logger.warn('Action: Delete Tag', tag)
+    }
+
+    // --------------------------------------------------------------------------
+    //        Event Handlers
+    // --------------------------------------------------------------------------
+    public onCategoryUpdated(update: { id: number; name: string }): void {
+        // Refresh data from server to get the latest state
+        this._fetchTagCategories()
+    }
+
+    public onTagUpdated(update: { id: number; name: string; categoryId: number }): void {
+        // Refresh data from server to get the latest state
+        this._fetchTags()
     }
 }

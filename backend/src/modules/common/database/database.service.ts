@@ -955,6 +955,27 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    createTag(name: string, categoryId: number) {
+        return this._tursoExecute({
+            sql: 'INSERT INTO Tag (name, categoryId) VALUES (?, ?)',
+            args: [name, categoryId],
+        })
+    }
+
+    updateTag(id: number, name: string, categoryId: number) {
+        return this._tursoExecute({
+            sql: 'UPDATE Tag SET name = ?, categoryId = ? WHERE id = ?',
+            args: [name, categoryId, id],
+        })
+    }
+
+    deleteTag(id: number) {
+        return this._tursoExecute({
+            sql: 'DELETE FROM Tag WHERE id = ?',
+            args: [id],
+        })
+    }
+
     // #region TagCategory
 
     getTagCategories() {
@@ -964,6 +985,27 @@ export class DatabaseService implements OnModuleInit {
     getTagCategoryById(id: number) {
         return this._tursoExecute({
             sql: 'SELECT * FROM TagCategory WHERE id = ?',
+            args: [id],
+        })
+    }
+
+    createTagCategory(name: string) {
+        return this._tursoExecute({
+            sql: 'INSERT INTO TagCategory (name) VALUES (?)',
+            args: [name],
+        })
+    }
+
+    updateTagCategory(id: number, name: string) {
+        return this._tursoExecute({
+            sql: 'UPDATE TagCategory SET name = ? WHERE id = ?',
+            args: [name, id],
+        })
+    }
+
+    deleteTagCategory(id: number) {
+        return this._tursoExecute({
+            sql: 'DELETE FROM TagCategory WHERE id = ?',
             args: [id],
         })
     }

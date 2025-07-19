@@ -39,6 +39,34 @@ export class AdminService {
 
     // #endregion
 
+    async createTagCategory(name: string): Promise<TagCategoryWithTagsDto> {
+        const category = await this.tagCategoryService.createTagCategory(name)
+        const tags = await this.tagService.getTagsByCategoryId(category.id)
+        const gameCount = await this.gameTagsService.getGameCountByTagCategoryId(category.id)
+
+        return {
+            ...category,
+            tags,
+            gameCount,
+        }
+    }
+
+    async updateTagCategory(id: number, name: string): Promise<TagCategoryWithTagsDto> {
+        const category = await this.tagCategoryService.updateTagCategory(id, name)
+        const tags = await this.tagService.getTagsByCategoryId(category.id)
+        const gameCount = await this.gameTagsService.getGameCountByTagCategoryId(category.id)
+
+        return {
+            ...category,
+            tags,
+            gameCount,
+        }
+    }
+
+    async deleteTagCategory(id: number): Promise<{ success: boolean }> {
+        return this.tagCategoryService.deleteTagCategory(id)
+    }
+
     // #region Tags
 
     @LogFeature(new Logger('AdminService'))
@@ -58,4 +86,28 @@ export class AdminService {
     }
 
     // #endregion
+
+    async createTag(name: string, categoryId: number): Promise<TagDto> {
+        const tag = await this.tagService.createTag(name, categoryId)
+        const gameCount = await this.gameTagsService.getGameCountByTagId(tag.id)
+
+        return {
+            ...tag,
+            gameCount,
+        }
+    }
+
+    async updateTag(id: number, name: string, categoryId: number): Promise<TagDto> {
+        const tag = await this.tagService.updateTag(id, name, categoryId)
+        const gameCount = await this.gameTagsService.getGameCountByTagId(tag.id)
+
+        return {
+            ...tag,
+            gameCount,
+        }
+    }
+
+    async deleteTag(id: number): Promise<{ success: boolean }> {
+        return this.tagService.deleteTag(id)
+    }
 }
