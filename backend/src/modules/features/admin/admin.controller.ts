@@ -8,9 +8,17 @@ import { AdminGuard } from '../../../common/guards/admin.guard'
 import { AdminService } from './admin.service'
 import { CreateTagCategoryDto, TagCategoryDto, TagCategoryWithTagsDto } from '../../../common/types/tag-category.type'
 import { CreateTagDto, TagDto } from '../../../common/types/tag.type'
-import { UpdateGameTranslationsBody, UpdateGameTagsBody, AdminGamesResponseDto } from '../../../common/types/admin.type'
+import { 
+    UpdateGameTranslationsBody, 
+    UpdateGameTagsBody, 
+    AdminGamesResponseDto,
+    ApproveGameProposalBody,
+    RejectGameProposalBody,
+    AdminGameProposalsResponseDto
+} from '../../../common/types/admin.type'
 import { GameWithTagsAndTranslationsDto } from '../../../common/types/game.type'
 import { SuccessDto } from '../../../common/types/auth.type'
+import { GameProposalCompleteDto } from '../../../common/types/game-proposal.type'
 
 @UseGuards(JwtAuthGuard, VerifiedUserGuard, AdminGuard)
 @ApiTags('admin')
@@ -112,6 +120,101 @@ export class AdminController {
     @ApiResponse({ status: 200, type: SuccessDto, description: 'Game tags updated' })
     async updateGameTags(@Param('id') id: string, @Body() payload: UpdateGameTagsBody) {
         return this.adminService.updateGameTags(Number(id), payload)
+    }
+
+    // #endregion
+
+    // #region Game Proposals
+
+    @Get('/proposals')
+    @ApiOperation({ summary: 'Get game proposals (paginated and filterable by status)', deprecated: false })
+    @ApiResponse({ 
+        status: 200, 
+        description: 'Paginated list of game proposals',
+        type: AdminGameProposalsResponseDto
+    })
+    async getGameProposals(
+        @Query('status') status?: 'pending' | 'approved' | 'rejected' | 'duplicate',
+        @Query('page', ParseIntPipe) page: number = 1,
+        @Query('limit', ParseIntPipe) limit: number = 10,
+    ) {
+        return this.adminService.getAdminGameProposals(status, page, limit)
+    }
+
+    @Get('/proposals/:id')
+    @ApiOperation({ summary: 'Get a specific game proposal', deprecated: false })
+    @ApiResponse({ 
+        status: 200, 
+        description: 'Game proposal details',
+        type: GameProposalCompleteDto
+    })
+    async getGameProposal(@Param('id') id: string) {
+        return this.adminService.getAdminGameProposalById(Number(id))
+    }
+
+    @Post('/proposals/:id/approve')
+    @ApiOperation({ summary: 'Approve a game proposal and create the game', deprecated: false })
+    @ApiResponse({ 
+        status: 200, 
+        description: 'Game proposal approved and game created',
+        schema: {
+            type: 'object',
+            properties: {
+                success: { type: 'boolean' },
+                createdGameId: { type: 'number' }
+            }
+        }
+    })
+    async approveGameProposal(
+        @Param('id') id: string,
+        @Body() approvalData: ApproveGameProposalBody,
+        // TODO: Get reviewerId from JWT token
+        @Query('reviewerId', ParseIntPipe) reviewerId: number
+    ) {
+        return this.adminService.approveGameProposal(Number(id), reviewerId, approvalData)
+    }
+
+    @Post('/proposals/:id/reject')
+    @ApiOperation({ summary: 'Reject a game proposal', deprecated: false })
+    @ApiResponse({ 
+        status: 200, 
+        description: 'Game proposal rejected',
+        type: SuccessDto
+    })
+    async rejectGameProposal(
+        @Param('id') id: string,
+        @Body() rejectionData: RejectGameProposalBody,
+        // TODO: Get reviewerId from JWT token
+        @Query('reviewerId', ParseIntPipe) reviewerId: number
+    ) {
+        return this.adminService.rejectGameProposal(Number(id), reviewerId, rejectionData)
+    }
+
+    @Post('/proposals/:id/duplicate')
+    @ApiOperation({ summary: 'Mark a game proposal as duplicate', deprecated: false })
+    @ApiResponse({ 
+        status: 200, 
+        description: 'Game proposal marked as duplicate',
+        type: SuccessDto
+    })
+    async markGameProposalAsDuplicate(
+        @Param('id') id: string,
+        // TODO: Get reviewerId from JWT token
+        @Query('reviewerId', ParseIntPipe) reviewerId: number,
+        @Query('reviewNotes') reviewNotes?: string
+    ) {
+        return this.adminService.markGameProposalAsDuplicate(Number(id), reviewerId, reviewNotes)
+    }
+
+    @Delete('/proposals/:id')
+    @ApiOperation({ summary: 'Delete a game proposal', deprecated: false })
+    @ApiResponse({ 
+        status: 200, 
+        description: 'Game proposal deleted',
+        type: SuccessDto
+    })
+    async deleteGameProposal(@Param('id') id: string) {
+        return this.adminService.deleteGameProposal(Number(id))
     }
 
     // #endregion

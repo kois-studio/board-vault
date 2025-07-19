@@ -83,4 +83,28 @@ export class GamesService {
 
         return games
     }
+
+    async createGame(gameData: {
+        title: string
+        imageUrl: string
+        gameAvgDuration: number
+        minPlayers: number
+        maxPlayers: number
+    }): Promise<GameDto> {
+        this.LOGGER.log(`Creating game: ${gameData.title}`)
+
+        await this.databaseService.createGame(gameData)
+
+        // Get the created game to return it
+        const resultSet = await this.databaseService.getGames()
+        const games = this._parseResultSet(resultSet)
+        
+        // Return the most recent one (should be the one we just created)
+        const createdGame = games[games.length - 1]
+        
+        // Clear cache
+        await this.cacheService.deleteOne(`${this.CACHE_KEY}:all`)
+
+        return createdGame
+    }
 }
