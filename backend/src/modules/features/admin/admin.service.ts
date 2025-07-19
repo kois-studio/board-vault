@@ -9,7 +9,7 @@ import { GameTagsService } from '../../../modules/core/game-tags/game-tags.servi
 import { GameTranslationService } from '../../../modules/core/game-translation/game-translation.service'
 import { TagDto, GameTagWithCategoryDto } from '../../../common/types/tag.type'
 import type { GameDto } from '../../../common/types/game.type'
-import { UpdateGameTranslationsBody, UpdateGameTagsBody } from '../../../common/types/admin.type'
+import { UpdateGameTranslationsBody, UpdateGameTagsBody, AdminGamesResponseDto } from '../../../common/types/admin.type'
 import { GameWithTagsAndTranslationsDto } from '../../../common/types/game.type'
 
 @Injectable()
@@ -121,13 +121,21 @@ export class AdminService {
     // #region Games
 
     @LogFeature(new Logger('AdminService'))
-    async getAdminGames(): Promise<Array<GameWithTagsAndTranslationsDto>> {
-        const games = await this.gameService.getGames()
+    async getAdminGames(search: string = '', page: number = 1, limit: number = 10): Promise<AdminGamesResponseDto> {
+        // Use multi-language search for admin
+        const result = await this.gameTranslationService.browseGamesByTitleMultiLanguage({
+            search,
+            page,
+            pageSize: limit,
+            excludeGameIds: [], // No exclusions for admin
+        })
 
-        return Promise.all(
-            games.map(async (game: GameDto) => {
-                const translations = await this.gameTranslationService.getGameTranslations(game.id)
-                const gameTags = await this.gameTagsService.getGameTags(game.id)
+        // Get full game data with translations and tags for the found games
+        const gamesWithDetails = await Promise.all(
+            result.gameIds.map(async gameId => {
+                const game = await this.gameService.getGameById(gameId)
+                const translations = await this.gameTranslationService.getGameTranslations(gameId)
+                const gameTags = await this.gameTagsService.getGameTags(gameId)
                 
                 // Get tag details for each game tag
                 const tags: Array<GameTagWithCategoryDto> = await Promise.all(
@@ -147,8 +155,18 @@ export class AdminService {
                     translations,
                     tags,
                 }
-            }),
+            })
         )
+
+        return {
+            games: gamesWithDetails,
+            pagination: {
+                currentPage: result.currentPage,
+                totalPages: result.totalPages,
+                totalItems: result.totalItems,
+                itemsPerPage: result.itemsPerPage,
+            },
+        }
     }
 
     async updateGameTranslations(gameId: number, translations: UpdateGameTranslationsBody): Promise<{ success: boolean }> {

@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { SupportedLanguage } from './game-translation.type'
+import { GameWithTagsAndTranslationsDto, BrowseGamesPaginationDto } from './game.type'
 
 export class UpdateGameTranslationsBody {
     @ApiProperty({ 
@@ -24,4 +25,18 @@ export class UpdateGameTagsBody {
         type: [Number]
     })
     tagIds: number[]
+}
+
+export class AdminGamesResponseDto {
+    @ApiProperty({ 
+        description: 'Array of games with their translations and tags',
+        type: [GameWithTagsAndTranslationsDto]
+    })
+    games: Array<GameWithTagsAndTranslationsDto>
+
+    @ApiProperty({ 
+        description: 'Pagination information',
+        type: BrowseGamesPaginationDto
+    })
+    pagination: BrowseGamesPaginationDto
 } 

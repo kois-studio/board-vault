@@ -504,6 +504,81 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    browseGamesMultiLanguage(options: { search: string; skip: number; take: number; excludeGameIds: number[] }) {
+        const { search, skip, take, excludeGameIds } = options
+
+        // Building the query parts
+        const whereConditions = []
+        const queryArgs: any[] = []
+
+        // Add search condition if provided
+        if (search && search.trim() !== '') {
+            whereConditions.push('normalizedTitle LIKE ?')
+            queryArgs.push(`%${search}%`)
+        }
+
+        // Add exclusion condition if game IDs to exclude are provided
+        if (excludeGameIds.length > 0) {
+            whereConditions.push(`gameId NOT IN (${excludeGameIds.map(() => '?').join(', ')})`)
+            queryArgs.push(...excludeGameIds)
+        }
+
+        // Combine WHERE conditions if any
+        const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : ''
+
+        // Main query for fetching games with pagination
+        // Using DISTINCT to avoid duplicates when a game has translations in multiple languages
+        const sql = `
+            SELECT DISTINCT gameId FROM GameTranslation 
+            ${whereClause}
+            ORDER BY gameId ASC
+            LIMIT ? OFFSET ?
+        `
+
+        // Add pagination params
+        queryArgs.push(take, skip)
+
+        return this._tursoExecute({
+            sql,
+            args: queryArgs,
+        })
+    }
+
+    countGamesMultiLanguage(options: { search: string; excludeGameIds: number[] }) {
+        const { search, excludeGameIds } = options
+
+        // Building the query parts
+        const whereConditions = []
+        const queryArgs: any[] = []
+
+        // Add search condition if provided
+        if (search && search.trim() !== '') {
+            whereConditions.push('normalizedTitle LIKE ?')
+            queryArgs.push(`%${search}%`)
+        }
+
+        // Add exclusion condition if game IDs to exclude are provided
+        if (excludeGameIds.length > 0) {
+            whereConditions.push(`gameId NOT IN (${excludeGameIds.map(() => '?').join(', ')})`)
+            queryArgs.push(...excludeGameIds)
+        }
+
+        // Combine WHERE conditions if any
+        const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : ''
+
+        // Query for counting total games matching criteria
+        // Using COUNT(DISTINCT gameId) to count unique games, not translations
+        const sql = `
+            SELECT COUNT(DISTINCT gameId) as total FROM GameTranslation
+            ${whereClause}
+        `
+
+        return this._tursoExecute({
+            sql,
+            args: queryArgs,
+        })
+    }
+
     // #region OwnedGame
 
     getOwnedGames() {
