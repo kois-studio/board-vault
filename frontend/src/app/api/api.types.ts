@@ -37,10 +37,19 @@ export type GameType = {
     maxPlayers: number
 }
 
-type SupportedLanguage = 'en'
+type SupportedLanguage = 'en' | 'es'
 
 export type GameCompleteType = GameType & {
     titleTranslations: Record<SupportedLanguage, string>
+}
+
+export type GameWithTagsAndTranslationsType = GameType & {
+    translations: Record<SupportedLanguage, string>
+    tags: Array<{
+        id: number
+        name: string
+        categoryName: string
+    }>
 }
 
 export type GameViewType = {

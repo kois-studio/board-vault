@@ -1,10 +1,88 @@
 <div class="p-4">
     <h2 class="text-2xl font-semibold text-zinc-800 dark:text-zinc-100 mb-4">Manage Games</h2>
-    <p class="text-zinc-600 dark:text-zinc-400">
-        This section will allow administrators to view, edit, and manage existing games in the BoardVault catalog.
+    <p class="text-zinc-600 dark:text-zinc-400 mb-6">
+        Manage game translations and tags for the BoardVault catalog.
     </p>
-    <!-- Future: Table or list of games with edit/delete actions -->
-    <div class="mt-6 p-6 border border-dashed border-zinc-300 dark:border-zinc-700 rounded-md">
-        <p class="text-center text-zinc-500 dark:text-zinc-400">Game management interface will be here. (Placeholder)</p>
-    </div>
+
+    @if (isLoadingGames()) {
+        <div class="flex justify-center items-center py-8">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-zinc-600 dark:border-zinc-400"></div>
+        </div>
+    } @else if (games().length === 0) {
+        <div class="text-center py-8">
+            <p class="text-zinc-500 dark:text-zinc-400">No games found.</p>
+        </div>
+    } @else {
+        <div class="space-y-4">
+            @for (game of games(); track game.id) {
+                <div class="bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700 p-4">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-2">
+                                <img 
+                                    [src]="game.imageUrl" 
+                                    [alt]="game.title"
+                                    class="w-12 h-12 rounded-md object-cover"
+                                />
+                                <div>
+                                    <h3 class="font-medium text-zinc-900 dark:text-zinc-100">{{ game.title }}</h3>
+                                    <p class="text-sm text-zinc-500 dark:text-zinc-400">
+                                        {{ game.minPlayers }}-{{ game.maxPlayers }} players • {{ game.gameAvgDuration }} min
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Translations -->
+                            <div class="mb-3">
+                                <h4 class="text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Translations:</h4>
+                                <div class="flex flex-wrap gap-2">
+                                    @for (translation of getTranslationEntries(game.translations); track translation[0]) {
+                                        <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-zinc-100 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300">
+                                            <span class="font-medium mr-1">{{ translation[0] }}:</span>
+                                            {{ translation[1] }}
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- Tags -->
+                            <div>
+                                <h4 class="text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Tags:</h4>
+                                <div class="flex flex-wrap gap-2">
+                                    @for (tag of game.tags; track tag.id) {
+                                        <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
+                                            {{ tag.name }}
+                                            <span class="ml-1 text-blue-500 dark:text-blue-400">({{ tag.categoryName }})</span>
+                                        </span>
+                                    }
+                                    @if (game.tags.length === 0) {
+                                        <span class="text-sm text-zinc-500 dark:text-zinc-400">No tags assigned</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-2 ml-4">
+                            <app-button 
+                                variant="secondary" 
+                                size="small"
+                                (click)="onEditTranslations(game)"
+                                class="cursor-pointer"
+                            >
+                                Edit Translations
+                            </app-button>
+                            <app-button 
+                                variant="secondary" 
+                                size="small"
+                                (click)="onEditTags(game)"
+                                class="cursor-pointer"
+                            >
+                                Edit Tags
+                            </app-button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
 </div>
