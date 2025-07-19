@@ -1,9 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'
 
 import type { SupportedLanguage } from './game-translation.type'
-import type { GroupDto } from './group.type'
-import type { MeetDto } from './meet.type'
-import type { UserGetDto } from './user.type'
+import { GameTagWithCategoryDto } from './tag.type'
 
 /**
  * base Game as it comes from db
@@ -28,6 +26,20 @@ export class GameDto {
 export class GameCompleteDto extends GameDto {
     @ApiProperty({ example: { en: 'Game Title' } })
     titleTranslations: Record<SupportedLanguage, string>
+}
+
+export class GameWithTagsAndTranslationsDto extends GameDto {
+    @ApiProperty({ 
+        example: { en: 'Catan', es: 'Catan' },
+        description: 'Game title translations for supported languages'
+    })
+    translations: Record<SupportedLanguage, string>
+
+    @ApiProperty({ 
+        type: [GameTagWithCategoryDto],
+        description: 'Tags assigned to this game with their categories'
+    })
+    tags: Array<GameTagWithCategoryDto>
 }
 
 export class BrowseGamesPaginationDto {

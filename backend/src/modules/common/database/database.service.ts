@@ -395,6 +395,10 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    getGames() {
+        return this._tursoExecute('SELECT * FROM Game ORDER BY id')
+    }
+
     // #region GameTranslation
 
     getGameTranslations(gameId: number) {
@@ -1040,6 +1044,20 @@ export class DatabaseService implements OnModuleInit {
         return this._tursoExecute({
             sql: `SELECT COUNT(*) FROM GameTag WHERE tagId = ?`,
             args: [tagId],
+        })
+    }
+
+    addGameTag(gameId: number, tagId: number) {
+        return this._tursoExecute({
+            sql: 'INSERT INTO GameTag (gameId, tagId) VALUES (?, ?)',
+            args: [gameId, tagId],
+        })
+    }
+
+    removeGameTag(gameId: number, tagId: number) {
+        return this._tursoExecute({
+            sql: 'DELETE FROM GameTag WHERE gameId = ? AND tagId = ?',
+            args: [gameId, tagId],
         })
     }
 

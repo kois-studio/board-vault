@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 
-export type SupportedLanguage = 'en'
+export type SupportedLanguage = 'en' | 'es'
 
 export class GameTranslationDto {
     @ApiProperty({ example: 1 })
