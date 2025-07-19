@@ -103,6 +103,19 @@ export class GameTranslationService {
         return { success: true }
     }
 
+    async upsertGameTranslation(gameId: number, languageCode: string, title: string): Promise<SuccessDto> {
+        this.LOGGER.log(`Upserting translation for game ${gameId}`)
+
+        const normalizedTitle = this._normalizeTitle(title)
+
+        await this.databaseService.upsertGameTranslation(gameId, languageCode, title, normalizedTitle)
+
+        // Step 4: Invalidate cache
+        await this.cacheService.deleteOne(`${this.CACHE_KEY}:byGameId:${gameId}`)
+
+        return { success: true }
+    }
+
     async browseGamesByTitle(options: {
         search: string
         page: number
