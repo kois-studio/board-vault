@@ -12,6 +12,7 @@ import { LogService } from '../../../../core/services/log.service'
 import { ModalEditGameTranslationsComponent } from '../../../../components/modals/modal-edit-game-translations/modal-edit-game-translations.component'
 import { ModalEditGameTagsComponent } from '../../../../components/modals/modal-edit-game-tags/modal-edit-game-tags.component'
 import { AdminGamesManageService } from './admin-games-manage.service'
+import { AdminTagsManageService } from '../admin-tags-manage/admin-tags-manage.service'
 
 @Component({
     imports: [CommonModule, ReactiveFormsModule, ButtonComponent, TagsComponent, SpinnerComponent, ModalEditGameTranslationsComponent, ModalEditGameTagsComponent],
@@ -22,6 +23,7 @@ export class AdminGamesManageComponent implements OnInit {
     private readonly logger = inject(LogService)
     private readonly toastService = inject(ToastService)
     private readonly adminGamesManageService = inject(AdminGamesManageService)
+    private readonly adminTagsManageService = inject(AdminTagsManageService)
 
     constructor() {
         // No longer need effect since we don't load games by default
@@ -43,16 +45,19 @@ export class AdminGamesManageComponent implements OnInit {
     public readonly searchControl = this.adminGamesManageService.searchControl
 
     // --------------------------------------------------------------------------
-    //        Signals
+    //        Service signals
     // --------------------------------------------------------------------------
-    public tags = signal<Array<TagType>>([])
-    public categories = signal<Array<TagCategoryType>>([])
-    public isLoadingTags = signal<boolean>(false)
-    public isLoadingCategories = signal<boolean>(false)
+    public readonly tags = this.adminTagsManageService.tags
+    public readonly categories = this.adminTagsManageService.tagCategories
+    public readonly isLoadingTags = this.adminTagsManageService.isLoadingTags
+    public readonly isLoadingCategories = this.adminTagsManageService.isLoadingCategories
 
-    ngOnInit(): void {
-        this._fetchTags()
-        this._fetchCategories()
+    async ngOnInit(): Promise<void> {
+        try {
+            await this.adminTagsManageService.initialize()
+        } catch (error) {
+            this.toastService.error('Could not load tags and categories.')
+        }
         this._initializeSearch()
     }
 
@@ -71,35 +76,7 @@ export class AdminGamesManageComponent implements OnInit {
         // Don't load initial games - wait for user to search
     }
 
-    private _fetchTags(): void {
-        this.isLoadingTags.set(true)
-        this.api.getAdminTags().subscribe({
-            next: tags => {
-                this.tags.set(tags)
-                this.logger.log('Fetched tags successfully')
-            },
-            error: err => {
-                this.logger.error('Error fetching tags', err)
-                this.toastService.error('Could not load tags.')
-            },
-            complete: () => this.isLoadingTags.set(false),
-        })
-    }
 
-    private _fetchCategories(): void {
-        this.isLoadingCategories.set(true)
-        this.api.getAdminTagCategories().subscribe({
-            next: categories => {
-                this.categories.set(categories)
-                this.logger.log('Fetched categories successfully')
-            },
-            error: err => {
-                this.logger.error('Error fetching categories', err)
-                this.toastService.error('Could not load categories.')
-            },
-            complete: () => this.isLoadingCategories.set(false),
-        })
-    }
 
     // --------------------------------------------------------------------------
     //        Search Methods
