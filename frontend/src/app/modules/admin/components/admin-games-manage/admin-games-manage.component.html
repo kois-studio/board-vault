@@ -25,7 +25,11 @@
     </div>
 
     <!-- Loading state -->
-    @if (!isSearching$() && gamesList$().length === 0) {
+    @if (isSearching$()) {
+        <div class="flex justify-center py-8">
+            <app-spinner size="large" />
+        </div>
+    } @else if (gamesList$().length === 0) {
         <!-- no data -->
         <div class="text-center text-zinc-500 dark:text-zinc-400 py-8">
             @if (searchTerm$() && searchTerm$().trim().length >= 3) {

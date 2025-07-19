@@ -6,6 +6,7 @@ import { Api } from '../../../../api/api'
 import type { TagCategoryType, TagType } from '../../../../api/api.types'
 import { ToastService } from '../../../../components/toast/toast.service'
 import { ButtonComponent } from '../../../../components/ui/button/button.component'
+import { SpinnerComponent } from '../../../../components/ui/spinner/spinner.component'
 import { LogService } from '../../../../core/services/log.service'
 import { ModalEditCategoryComponent } from '../../../../components/modals/modal-edit-category/modal-edit-category.component'
 import { ModalEditTagComponent } from '../../../../components/modals/modal-edit-tag/modal-edit-tag.component'
@@ -15,7 +16,7 @@ import { ModalDeleteCategoryComponent } from '../../../../components/modals/moda
 import { ModalDeleteTagComponent } from '../../../../components/modals/modal-delete-tag/modal-delete-tag.component'
 
 @Component({
-    imports: [CommonModule, ButtonComponent, ModalEditCategoryComponent, ModalEditTagComponent, ModalAddCategoryComponent, ModalAddTagComponent, ModalDeleteCategoryComponent, ModalDeleteTagComponent],
+    imports: [CommonModule, ButtonComponent, SpinnerComponent, ModalEditCategoryComponent, ModalEditTagComponent, ModalAddCategoryComponent, ModalAddTagComponent, ModalDeleteCategoryComponent, ModalDeleteTagComponent],
     templateUrl: './admin-tags-manage.component.html',
 })
 export class AdminTagsManageComponent implements OnInit {
