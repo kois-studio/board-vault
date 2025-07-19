@@ -59,7 +59,7 @@ export class GameTranslationService {
                 acc[translation.languageCode] = translation.title
                 return acc
             },
-            { en: '' },
+            { en: '', es: '' } as Record<SupportedLanguage, string>,
         )
     }
 

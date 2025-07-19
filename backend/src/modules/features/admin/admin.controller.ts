@@ -8,6 +8,9 @@ import { AdminGuard } from '../../../common/guards/admin.guard'
 import { AdminService } from './admin.service'
 import { CreateTagCategoryDto, TagCategoryDto, TagCategoryWithTagsDto } from '../../../common/types/tag-category.type'
 import { CreateTagDto, TagDto } from '../../../common/types/tag.type'
+import { UpdateGameTranslationsDto, UpdateGameTagsDto } from './admin.types'
+import { GameWithTagsAndTranslationsDto } from '../../../common/types/game.type'
+import { SuccessDto } from 'src/common/types/auth.type'
 
 @UseGuards(JwtAuthGuard, VerifiedUserGuard, AdminGuard)
 @ApiTags('admin')
@@ -76,6 +79,35 @@ export class AdminController {
     @ApiResponse({ status: 200, description: 'Tag deleted' })
     async deleteTag(@Param('id') id: string) {
         return this.adminService.deleteTag(Number(id))
+    }
+
+    // #endregion
+
+    // #region Games
+
+    @Get('/games')
+    @ApiOperation({ summary: 'Get all games with translations and tags', deprecated: false })
+    @ApiResponse({ 
+        status: 200, 
+        description: 'List of all games with translations and tags',
+        type: [GameWithTagsAndTranslationsDto]
+    })
+    async getGames() {
+        return this.adminService.getAdminGames()
+    }
+
+    @Put('/games/:id/translations')
+    @ApiOperation({ summary: 'Update game translations', deprecated: false })
+    @ApiResponse({ status: 200, type: SuccessDto, description: 'Game translations updated' })
+    async updateGameTranslations(@Param('id') id: string, @Body() translations: UpdateGameTranslationsDto) {
+        return this.adminService.updateGameTranslations(Number(id), translations)
+    }
+
+    @Put('/games/:id/tags')
+    @ApiOperation({ summary: 'Update game tags', deprecated: false })
+    @ApiResponse({ status: 200, type: SuccessDto, description: 'Game tags updated' })
+    async updateGameTags(@Param('id') id: string, @Body() payload: UpdateGameTagsDto) {
+        return this.adminService.updateGameTags(Number(id), payload)
     }
 
     // #endregion

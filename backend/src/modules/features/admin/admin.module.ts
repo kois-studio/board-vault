@@ -8,6 +8,7 @@ import { AdminService } from './admin.service'
 import { GamesModule } from '../../core/games/games.module'
 import { TagsModule } from '../../core/tags/tags.module'
 import { GameTagsModule } from '../../core/game-tags/game-tags.module'
+import { GameTranslationModule } from '../../core/game-translation/game-translation.module'
 
 @Module({
     imports: [
@@ -16,6 +17,7 @@ import { GameTagsModule } from '../../core/game-tags/game-tags.module'
         TagsModule,
         GameTagsModule,
         TagCategoryModule,
+        GameTranslationModule,
     ],
     providers: [AdminService],
     exports: [AdminService],
