@@ -9,9 +9,11 @@ import { ButtonComponent } from '../../../../components/ui/button/button.compone
 import { LogService } from '../../../../core/services/log.service'
 import { ModalEditCategoryComponent } from '../../../../components/modals/modal-edit-category/modal-edit-category.component'
 import { ModalEditTagComponent } from '../../../../components/modals/modal-edit-tag/modal-edit-tag.component'
+import { ModalAddCategoryComponent } from '../../../../components/modals/modal-add-category/modal-add-category.component'
+import { ModalAddTagComponent } from '../../../../components/modals/modal-add-tag/modal-add-tag.component'
 
 @Component({
-    imports: [CommonModule, ButtonComponent, ModalEditCategoryComponent, ModalEditTagComponent],
+    imports: [CommonModule, ButtonComponent, ModalEditCategoryComponent, ModalEditTagComponent, ModalAddCategoryComponent, ModalAddTagComponent],
     templateUrl: './admin-tags-manage.component.html',
 })
 export class AdminTagsManageComponent implements OnInit {
@@ -24,6 +26,8 @@ export class AdminTagsManageComponent implements OnInit {
     // --------------------------------------------------------------------------
     @ViewChild(ModalEditCategoryComponent) editCategoryModal!: ModalEditCategoryComponent
     @ViewChild(ModalEditTagComponent) editTagModal!: ModalEditTagComponent
+    @ViewChild(ModalAddCategoryComponent) addCategoryModal!: ModalAddCategoryComponent
+    @ViewChild(ModalAddTagComponent) addTagModal!: ModalAddTagComponent
 
     // --------------------------------------------------------------------------
     //        Signals
@@ -83,9 +87,7 @@ export class AdminTagsManageComponent implements OnInit {
     // --------------------------------------------------------------------------
 
     public onAddCategory(): void {
-        // TODO: Open a modal to get the new category name
-        this.logger.log('Action: Add Category')
-        // Example: this.api.createAdminTagCategory('New Name').subscribe(...)
+        this.addCategoryModal.showDialog()
     }
 
     public onEditCategory(category: TagCategoryType): void {
@@ -98,8 +100,7 @@ export class AdminTagsManageComponent implements OnInit {
     }
 
     public onAddTag(): void {
-        // TODO: Open a modal with fields for name and a dropdown for category
-        this.logger.log('Action: Add Tag')
+        this.addTagModal.showDialog(this.tagCategories())
     }
 
     public onEditTag(tag: TagType): void {
@@ -122,5 +123,16 @@ export class AdminTagsManageComponent implements OnInit {
     public onTagUpdated(update: { id: number; name: string; categoryId: number }): void {
         // Refresh data from server to get the latest state
         this._fetchTags()
+    }
+
+    public onCategoryCreated(category: TagCategoryType): void {
+        // Refresh data from server to get the latest state
+        this._fetchTagCategories()
+    }
+
+    public onTagCreated(tag: TagType): void {
+        // Refresh both tags and categories since tag count affects categories
+        this._fetchTags()
+        this._fetchTagCategories()
     }
 }

@@ -66,10 +66,6 @@ export class TagsService {
         const resultSet = await this.databaseService.getTagsByCategoryId(categoryId)
         const tags = this._parseResultSet(resultSet)
 
-        if (tags.length === 0) {
-            throw new NotFoundException(`No tags found for category ${categoryId}`)
-        }
-
         return tags
     }
 
