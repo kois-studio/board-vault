@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { environment } from '../../environments/environment'
 import type {
+    GameWithTagsAndTranslationsType,
     BrowseGamesResultType,
     CollectionActivityWithGameDataType,
     GameCompleteType,
@@ -191,6 +192,22 @@ export class Api {
     deleteAdminTag(id: number) {
         return this.http.delete<{ success: true }>(`${this.url}/admin/tags/${id}`)
     }
+
+    // #region Admin Games
+
+    getAdminGames() {
+        return this.http.get<Array<GameWithTagsAndTranslationsType>>(`${this.url}/admin/games`)
+    }
+
+    updateAdminGameTranslations(gameId: number, translations: Record<string, string>) {
+        return this.http.put<{ success: true }>(`${this.url}/admin/games/${gameId}/translations`, translations)
+    }
+
+    updateAdminGameTags(gameId: number, tagIds: number[]) {
+        return this.http.put<{ success: true }>(`${this.url}/admin/games/${gameId}/tags`, { tagIds })
+    }
+
+    // #endregion
 
     // --------------------------------------------------------------------------
     // #region collection
