@@ -8,7 +8,12 @@ import { CacheModule } from './modules/common/cache/cache.module'
 import { DatabaseModule } from './modules/common/database/database.module'
 import { EmailModule } from './modules/common/email/email.module'
 // Core
+import { CollectionActivityModule } from './modules/core/collection-activity/collection-activity.module'
+import { GameProposalModule } from './modules/core/game-proposal/game-proposal.module'
+import { GameTagsModule } from './modules/core/game-tags/game-tags.module'
+import { GameTranslationModule } from './modules/core/game-translation/game-translation.module'
 import { GamesModule } from './modules/core/games/games.module'
+import { GamesOwnedModule } from './modules/core/games-owned/games-owned.module'
 import { GroupMembershipsModule } from './modules/core/group-memberships/group-memberships.module'
 import { GroupsModule } from './modules/core/groups/groups.module'
 import { InvitationsModule } from './modules/core/invitations/invitations.module'
@@ -16,6 +21,8 @@ import { MeetAccountGamesModule } from './modules/core/meet-account-games/meet-a
 import { MeetsModule } from './modules/core/meets/meets.module'
 import { NotificationsModule } from './modules/core/notifications/notifications.module'
 import { ReviewsModule } from './modules/core/reviews/reviews.module'
+import { TagCategoryModule } from './modules/core/tag-category/tag-category.module'
+import { TagsModule } from './modules/core/tags/tags.module'
 import { UsersModule } from './modules/core/users/users.module'
 import { WishlistModule } from './modules/core/wishlist/wishlist.module'
 // Features
@@ -34,7 +41,12 @@ import { ProfileModule } from './modules/features/profile/profile.module'
         DatabaseModule,
         EmailModule,
         // Core
+        CollectionActivityModule,
+        GameProposalModule,
+        GameTagsModule,
+        GameTranslationModule,
         GamesModule,
+        GamesOwnedModule,
         GroupMembershipsModule,
         GroupsModule,
         InvitationsModule,
@@ -42,6 +54,8 @@ import { ProfileModule } from './modules/features/profile/profile.module'
         MeetsModule,
         NotificationsModule,
         ReviewsModule,
+        TagCategoryModule,
+        TagsModule,
         UsersModule,
         WishlistModule,
         // Features

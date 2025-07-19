@@ -5,6 +5,7 @@ import * as bcrypt from 'bcryptjs'
 
 import type { CollectionActivityDto } from '../../../common/types/collection-activity.type'
 import type { GameOwnedDto, UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
+import type { CreateGameProposalBody } from '../../../common/types/game-proposal.type'
 import type { SupportedLanguage } from '../../../common/types/game-translation.type'
 import type { CreateGroupMembershipBody } from '../../../common/types/group-membership.type'
 import type { CreateGroupBody, UpdateGroupBody } from '../../../common/types/group.type'
@@ -1168,6 +1169,134 @@ export class DatabaseService implements OnModuleInit {
         return this._tursoExecute({
             sql: 'DELETE FROM WishlistedGame WHERE accountId = ? AND gameId = ?',
             args: [accountId, gameId],
+        })
+    }
+
+    // #region GameProposal
+
+    getGameProposals() {
+        return this._tursoExecute('SELECT * FROM GameProposal ORDER BY submittedAt DESC')
+    }
+
+    getGameProposalById(id: number) {
+        return this._tursoExecute({
+            sql: 'SELECT * FROM GameProposal WHERE id = ?',
+            args: [id],
+        })
+    }
+
+    getGameProposalsByStatus(status: 'pending' | 'approved' | 'rejected' | 'duplicate') {
+        return this._tursoExecute({
+            sql: 'SELECT * FROM GameProposal WHERE status = ? ORDER BY submittedAt DESC',
+            args: [status],
+        })
+    }
+
+    getGameProposalsBySubmitter(submittedBy: number) {
+        return this._tursoExecute({
+            sql: 'SELECT * FROM GameProposal WHERE submittedBy = ? ORDER BY submittedAt DESC',
+            args: [submittedBy],
+        })
+    }
+
+    async createGameProposal(proposalData: {
+        submittedBy: number
+        title: string
+        imageUrl?: string
+        gameAvgDuration?: number
+        minPlayers?: number
+        maxPlayers?: number
+        proposedTags?: string
+        notes?: string
+    }) {
+        const {
+            submittedBy,
+            title,
+            imageUrl,
+            gameAvgDuration,
+            minPlayers,
+            maxPlayers,
+            proposedTags,
+            notes,
+        } = proposalData
+
+        await this._tursoExecute({
+            sql: `
+                INSERT INTO GameProposal (
+                    submittedBy, title, imageUrl, gameAvgDuration, 
+                    minPlayers, maxPlayers, proposedTags, notes
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            `,
+            args: [
+                submittedBy,
+                title,
+                imageUrl || null,
+                gameAvgDuration || null,
+                minPlayers || null,
+                maxPlayers || null,
+                proposedTags || null,
+                notes || null,
+            ],
+        })
+    }
+
+    async updateGameProposal(id: number, updateData: {
+        status?: 'pending' | 'approved' | 'rejected' | 'duplicate'
+        reviewedBy?: number
+        reviewNotes?: string
+        createdGameId?: number
+    }) {
+        const { status, reviewedBy, reviewNotes, createdGameId } = updateData
+
+        const fields = []
+        const args = []
+
+        if (status !== undefined) {
+            fields.push('status = ?')
+            args.push(status)
+        }
+
+        if (reviewedBy !== undefined) {
+            fields.push('reviewedBy = ?')
+            args.push(reviewedBy)
+        }
+
+        if (reviewNotes !== undefined) {
+            fields.push('reviewNotes = ?')
+            args.push(reviewNotes)
+        }
+
+        if (createdGameId !== undefined) {
+            fields.push('createdGameId = ?')
+            args.push(createdGameId)
+        }
+
+        // If any review fields are being set, also set reviewedAt
+        if (reviewedBy !== undefined || reviewNotes !== undefined || status !== undefined) {
+            fields.push('reviewedAt = CURRENT_TIMESTAMP')
+        }
+
+        if (fields.length === 0) {
+            throw new BadRequestException('No fields to update')
+        }
+
+        args.push(id)
+
+        const sql = `
+            UPDATE GameProposal
+            SET ${fields.join(', ')}
+            WHERE id = ?
+        `
+
+        await this._tursoExecute({ sql, args })
+
+        return this.getGameProposalById(id)
+    }
+
+    deleteGameProposalById(id: number) {
+        return this._tursoExecute({
+            sql: 'DELETE FROM GameProposal WHERE id = ?',
+            args: [id],
         })
     }
 }
