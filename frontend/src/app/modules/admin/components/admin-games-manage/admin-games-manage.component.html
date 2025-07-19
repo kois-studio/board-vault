@@ -33,12 +33,12 @@
             } @else if (searchTerm$() && searchTerm$().trim().length > 0) {
                 <p>Type at least 3 characters to search for games</p>
             } @else {
-                <p>Type a game name to search for!</p>
+                <p>Search for games to manage their translations and tags</p>
             }
         </div>
     } @else {
         <div class="space-y-4">
-            @for (game of gamesList$(); track game.id) {
+            @for (game of gamesList$(); track $index + '-' + game.id) {
                 <div class="bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700 p-4">
                     <div class="flex items-start justify-between">
                         <div class="flex-1">
@@ -60,7 +60,7 @@
                             <div class="mb-3">
                                 <h4 class="text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Translations:</h4>
                                 <div class="flex flex-wrap gap-2">
-                                    @for (translation of getTranslationEntries(game.translations); track translation[0]) {
+                                    @for (translation of getTranslationEntries(game.translations); track $index + '-' + translation[0]) {
                                         <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-zinc-100 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300">
                                             <span class="font-medium mr-1">{{ translation[0] }}:</span>
                                             {{ translation[1] }}
@@ -73,7 +73,7 @@
                             <div>
                                 <h4 class="text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Tags:</h4>
                                 <div class="flex flex-wrap gap-2">
-                                    @for (tag of game.tags; track tag.id) {
+                                    @for (tag of game.tags; track $index + '-' + tag.id) {
                                         <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
                                             {{ tag.name }}
                                             <span class="ml-1 text-blue-500 dark:text-blue-400">({{ tag.categoryName }})</span>
@@ -108,27 +108,16 @@
                 </div>
             }
         </div>
-        
-        <!-- Pagination controls -->
-        @if (hasMoreGames$()) {
-            <div class="flex justify-center mt-6">
-                <app-button (click)="loadMoreGames()" [disabled]="isSearching$()">
-                    @if (isSearching$()) {
-                        Loading...
-                    } @else {
-                        Load More
-                    }
-                </app-button>
-            </div>
-        }
     }
 
     <!-- Modals -->
     <app-modal-edit-game-translations
+        #editTranslationsModal
         (translationsUpdated)="onTranslationsUpdated($event)"
     ></app-modal-edit-game-translations>
 
     <app-modal-edit-game-tags
+        #editTagsModal
         (tagsUpdated)="onTagsUpdated($event)"
     ></app-modal-edit-game-tags>
 </div>

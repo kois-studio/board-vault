@@ -14,9 +14,5 @@ export class AdminGamesManageService {
     public readonly searchTerm = signal('')
     public readonly searchTermIsValidComputed = computed(() => this.searchTerm().trim().length >= 3 || this.searchTerm().trim().length === 0)
     public readonly isSearching = signal(false)
-    public readonly currentPage = signal(1)
-    public readonly hasMoreGames = signal(false)
-    public readonly totalPages = signal(1)
-    public readonly totalItems = signal(0)
     public readonly searchControl = new FormControl('')
 } 
