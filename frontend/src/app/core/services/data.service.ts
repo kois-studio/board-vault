@@ -15,6 +15,8 @@ import type {
     NotificationType,
     UserStatsType,
     UserType,
+    GameProposalType,
+    UserProposalStatsType,
 } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
 import { LOADING_KEYS } from '../enums/loading-keys-enum'
@@ -50,6 +52,16 @@ export class DataService {
     public readonly userHistory = signal<Array<HistoryRecordType>>([])
     public readonly userWishlist = signal<Array<GameCompleteType>>([])
     public readonly userCollectionActivity = signal<Array<CollectionActivityWithGameDataType>>([])
+    public readonly userProposals = signal<Array<GameProposalType>>([])
+    public readonly userProposalStats = signal<UserProposalStatsType>({
+        totalProposals: 0,
+        approvedProposals: 0,
+        rejectedProposals: 0,
+        duplicateProposals: 0,
+        pendingProposals: 0,
+        approvalRate: 0,
+        reputationScore: 0,
+    })
     // non arrays
     public readonly userStats = signal<UserStatsType>({
         totalGamesValue: 0,
@@ -89,6 +101,8 @@ export class DataService {
         this._getUserHistory(userId)
         this._getUserWishlist(userId)
         this._getUserCollectionActivity(userId)
+        this._getUserProposals(userId)
+        this._getUserProposalStats(userId)
         this._getUserStats(userId)
         // Add any other derived data fetches here
     }
@@ -103,6 +117,16 @@ export class DataService {
         this.userHistory.set([])
         this.userWishlist.set([])
         this.userCollectionActivity.set([])
+        this.userProposals.set([])
+        this.userProposalStats.set({
+            totalProposals: 0,
+            approvedProposals: 0,
+            rejectedProposals: 0,
+            duplicateProposals: 0,
+            pendingProposals: 0,
+            approvalRate: 0,
+            reputationScore: 0,
+        })
         this.userStats.set({ totalGamesValue: 0 }) // Reset to default
         this.groupHistoryByGroupId.set({})
         this.invitationsGroupIndex.set({})
@@ -674,6 +698,28 @@ export class DataService {
                     return this.toastService.error('MeetGame not found')
                 }
                 this.toastService.error('Error updating meetGames')
+            },
+        })
+    }
+
+    private _getUserProposals(userId: number) {
+        this.api.getUserProposals(userId).subscribe({
+            next: (proposals) => {
+                this.userProposals.set(proposals)
+            },
+            error: () => {
+                this.toastService.error("Error retrieving user's proposals")
+            },
+        })
+    }
+
+    private _getUserProposalStats(userId: number) {
+        this.api.getUserProposalStats(userId).subscribe({
+            next: (stats) => {
+                this.userProposalStats.set(stats)
+            },
+            error: () => {
+                this.toastService.error("Error retrieving user's proposal stats")
             },
         })
     }
