@@ -415,6 +415,13 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    upsertGameTranslation(gameId: number, languageCode: string, title: string, normalizedTitle: string) {
+        return this._tursoExecute({
+            sql: 'INSERT OR REPLACE INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (?, ?, ?, ?)',
+            args: [gameId, languageCode, title, normalizedTitle],
+        })
+    }
+
     browseGames(options: { search: string; skip: number; take: number; excludeGameIds: number[]; languageCode: SupportedLanguage }) {
         const { search, skip, take, excludeGameIds, languageCode } = options
 

@@ -155,7 +155,7 @@ export class AdminService {
         // Update each translation
         for (const [languageCode, title] of Object.entries(translations)) {
             if (title?.trim()) {
-                await this.gameTranslationService.createGameTranslation(gameId, languageCode, title)
+                await this.gameTranslationService.upsertGameTranslation(gameId, languageCode, title)
             }
         }
 
