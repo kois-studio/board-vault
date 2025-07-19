@@ -1,5 +1,7 @@
 import { CommonModule } from '@angular/common'
-import { Component, OnInit, inject, signal, ViewChild } from '@angular/core'
+import { Component, OnInit, inject, signal, ViewChild, effect } from '@angular/core'
+import { ReactiveFormsModule } from '@angular/forms'
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
 import { Api } from '../../../../api/api'
 import type { GameWithTagsAndTranslationsType, TagType, TagCategoryType } from '../../../../api/api.types'
 import { ToastService } from '../../../../components/toast/toast.service'
@@ -7,15 +9,17 @@ import { ButtonComponent } from '../../../../components/ui/button/button.compone
 import { LogService } from '../../../../core/services/log.service'
 import { ModalEditGameTranslationsComponent } from '../../../../components/modals/modal-edit-game-translations/modal-edit-game-translations.component'
 import { ModalEditGameTagsComponent } from '../../../../components/modals/modal-edit-game-tags/modal-edit-game-tags.component'
+import { AdminGamesManageService } from './admin-games-manage.service'
 
 @Component({
-    imports: [CommonModule, ButtonComponent, ModalEditGameTranslationsComponent, ModalEditGameTagsComponent],
+    imports: [CommonModule, ReactiveFormsModule, ButtonComponent, ModalEditGameTranslationsComponent, ModalEditGameTagsComponent],
     templateUrl: './admin-games-manage.component.html',
 })
 export class AdminGamesManageComponent implements OnInit {
     private readonly api = inject(Api)
     private readonly logger = inject(LogService)
     private readonly toastService = inject(ToastService)
+    private readonly adminGamesManageService = inject(AdminGamesManageService)
 
     // --------------------------------------------------------------------------
     //        Modal references
@@ -24,34 +28,56 @@ export class AdminGamesManageComponent implements OnInit {
     @ViewChild(ModalEditGameTagsComponent) editTagsModal!: ModalEditGameTagsComponent
 
     // --------------------------------------------------------------------------
+    //        Service signals
+    // --------------------------------------------------------------------------
+    public readonly gamesList$ = this.adminGamesManageService.gamesList
+    public readonly searchTerm$ = this.adminGamesManageService.searchTerm
+    public readonly searchTermIsValid$ = this.adminGamesManageService.searchTermIsValidComputed
+    public readonly isSearching$ = this.adminGamesManageService.isSearching
+    public readonly currentPage$ = this.adminGamesManageService.currentPage
+    public readonly hasMoreGames$ = this.adminGamesManageService.hasMoreGames
+    public readonly totalPages$ = this.adminGamesManageService.totalPages
+    public readonly totalItems$ = this.adminGamesManageService.totalItems
+    public readonly searchControl = this.adminGamesManageService.searchControl
+
+    // --------------------------------------------------------------------------
     //        Signals
     // --------------------------------------------------------------------------
-    public games = signal<Array<GameWithTagsAndTranslationsType>>([])
     public tags = signal<Array<TagType>>([])
     public categories = signal<Array<TagCategoryType>>([])
-    public isLoadingGames = signal<boolean>(false)
     public isLoadingTags = signal<boolean>(false)
     public isLoadingCategories = signal<boolean>(false)
 
     ngOnInit(): void {
-        this._fetchGames()
         this._fetchTags()
         this._fetchCategories()
+        this._initializeSearch()
     }
 
-    private _fetchGames(): void {
-        this.isLoadingGames.set(true)
-        this.api.getAdminGames().subscribe({
-            next: games => {
-                this.games.set(games)
-                this.logger.log('Fetched games successfully')
-            },
-            error: err => {
-                this.logger.error('Error fetching games', err)
-                this.toastService.error('Could not load games.')
-            },
-            complete: () => this.isLoadingGames.set(false),
+    private _initializeSearch(): void {
+        // Initialize search with debounce
+        this.searchControl.valueChanges
+            .pipe(
+                debounceTime(500), // Wait 500ms after the user stops typing
+                distinctUntilChanged(), // Only emit if search term changed
+            )
+            .subscribe((value) => {
+                this.searchTerm$.set(value || '')
+                this.currentPage$.set(1) // Reset page when search changes
+                this._searchGames()
+            })
+
+        // Setup effect to monitor changes in games list
+        effect(() => {
+            // This runs whenever gamesList$ changes
+            const currentPage = this.currentPage$()
+            const currentGames = this.gamesList$().length
+            // Assuming the API returns less than limit when no more games are available
+            this.hasMoreGames$.set(currentGames === 10 * currentPage) // 10 is the limit set in our API
         })
+
+        // Load initial games
+        this._searchGames()
     }
 
     private _fetchTags(): void {
@@ -85,6 +111,55 @@ export class AdminGamesManageComponent implements OnInit {
     }
 
     // --------------------------------------------------------------------------
+    //        Search Methods
+    // --------------------------------------------------------------------------
+
+    public loadMoreGames() {
+        this.currentPage$.update((page) => page + 1)
+        this._searchGames(true)
+    }
+
+    private _searchGames(isNextPage = false) {
+        if (!this.searchTermIsValid$()) {
+            return
+        }
+
+        // set the loading state
+        this.isSearching$.set(true)
+        if (!isNextPage) {
+            this.gamesList$.set([])
+        }
+
+        // Fetch games with search term
+        this.api
+            .getAdminGames(
+                this.searchTerm$().trim(),
+                this.currentPage$(),
+                10, // limit
+            )
+            .subscribe({
+                next: (result) => {
+                    if (!isNextPage) {
+                        this.gamesList$.set(result.games)
+                    } else {
+                        this.gamesList$.update((games) => [...games, ...result.games])
+                    }
+                    
+                    // Update pagination info
+                    this.totalPages$.set(result.pagination.totalPages)
+                    this.totalItems$.set(result.pagination.totalItems)
+                },
+                error: (error) => {
+                    this.logger.error('Error searching games', error)
+                    this.toastService.error('Could not search games.')
+                },
+                complete: () => {
+                    this.isSearching$.set(false)
+                },
+            })
+    }
+
+    // --------------------------------------------------------------------------
     //        Action Handlers
     // --------------------------------------------------------------------------
 
@@ -100,42 +175,13 @@ export class AdminGamesManageComponent implements OnInit {
     //        Event Handlers
     // --------------------------------------------------------------------------
     public onTranslationsUpdated(update: any): void {
-        // Update the game in the local state
-        const games = this.games()
-        const gameIndex = games.findIndex(g => g.id === update.id)
-        if (gameIndex !== -1) {
-            const updatedGames = [...games]
-            updatedGames[gameIndex] = {
-                ...updatedGames[gameIndex],
-                translations: update.translations,
-            }
-            this.games.set(updatedGames)
-        }
+        // Refresh the games list to ensure we have the most up-to-date data
+        this._searchGames()
     }
 
     public onTagsUpdated(update: any): void {
-        // Update the game in the local state
-        const games = this.games()
-        const gameIndex = games.findIndex(g => g.id === update.id)
-        if (gameIndex !== -1) {
-            const updatedGames = [...games]
-            const selectedTags = this.tags()
-                .filter(tag => update.tagIds.includes(tag.id))
-                .map(tag => {
-                    const category = this.categories().find(c => c.id === tag.categoryId)
-                    return {
-                        id: tag.id,
-                        name: tag.name,
-                        categoryName: category ? category.name : 'Unknown Category',
-                    }
-                })
-            
-            updatedGames[gameIndex] = {
-                ...updatedGames[gameIndex],
-                tags: selectedTags,
-            }
-            this.games.set(updatedGames)
-        }
+        // Refresh the games list to ensure we have the most up-to-date data
+        this._searchGames()
     }
 
     // --------------------------------------------------------------------------
