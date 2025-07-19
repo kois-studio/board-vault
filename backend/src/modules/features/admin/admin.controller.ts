@@ -29,16 +29,21 @@ export class AdminController {
     @ApiOperation({ summary: 'Create a new tag category', deprecated: false })
     @ApiResponse({ status: 200, type: CreateTagCategoryDto, description: 'New tag category created' })
     async createTagCategory(@Body() tagCategoryDto: CreateTagCategoryDto) {
-        // TODO: Implement this
-        // return this.adminService.createTagCategory(tagCategoryDto)
+        return this.adminService.createTagCategory(tagCategoryDto.name)
     }
 
     @Put('/tag-categories/:id')
     @ApiOperation({ summary: 'Update a tag category', deprecated: false })
     @ApiResponse({ status: 200, type: CreateTagCategoryDto, description: 'Tag category updated' })
     async updateTagCategory(@Param('id') id: string, @Body() tagCategoryDto: CreateTagCategoryDto) {
-        // TODO: Implement this
-        // return this.adminService.updateTagCategory(id, tagCategoryDto)
+        return this.adminService.updateTagCategory(Number(id), tagCategoryDto.name)
+    }
+
+    @Delete('/tag-categories/:id')
+    @ApiOperation({ summary: 'Delete a tag category', deprecated: false })
+    @ApiResponse({ status: 200, description: 'Tag category deleted' })
+    async deleteTagCategory(@Param('id') id: string) {
+        return this.adminService.deleteTagCategory(Number(id))
     }
 
     // #endregion
@@ -56,16 +61,21 @@ export class AdminController {
     @ApiOperation({ summary: 'Create a new tag', deprecated: false })
     @ApiResponse({ status: 200, type: CreateTagDto, description: 'New tag created' })
     async createTag(@Body() tagDto: CreateTagDto) {
-        // TODO: Implement this
-        // return this.adminService.createTag(tagDto)
+        return this.adminService.createTag(tagDto.name, tagDto.categoryId)
     }
 
     @Put('/tags/:id')
     @ApiOperation({ summary: 'Update a tag', deprecated: false })
     @ApiResponse({ status: 200, type: CreateTagDto, description: 'Tag updated' })
     async updateTag(@Param('id') id: string, @Body() tagDto: CreateTagDto) {
-        // TODO: Implement this
-        // return this.adminService.updateTag(id, tagDto)
+        return this.adminService.updateTag(Number(id), tagDto.name, tagDto.categoryId)
+    }
+
+    @Delete('/tags/:id')
+    @ApiOperation({ summary: 'Delete a tag', deprecated: false })
+    @ApiResponse({ status: 200, description: 'Tag deleted' })
+    async deleteTag(@Param('id') id: string) {
+        return this.adminService.deleteTag(Number(id))
     }
 
     // #endregion
