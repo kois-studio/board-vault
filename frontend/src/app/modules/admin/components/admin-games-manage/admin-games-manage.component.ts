@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, OnInit, inject, signal, ViewChild, effect } from '@angular/core'
+import { Component, OnInit, inject, signal, ViewChild } from '@angular/core'
 import { ReactiveFormsModule } from '@angular/forms'
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
 import { Api } from '../../../../api/api'
@@ -21,6 +21,10 @@ export class AdminGamesManageComponent implements OnInit {
     private readonly toastService = inject(ToastService)
     private readonly adminGamesManageService = inject(AdminGamesManageService)
 
+    constructor() {
+        // No longer need effect since we don't load games by default
+    }
+
     // --------------------------------------------------------------------------
     //        Modal references
     // --------------------------------------------------------------------------
@@ -34,10 +38,6 @@ export class AdminGamesManageComponent implements OnInit {
     public readonly searchTerm$ = this.adminGamesManageService.searchTerm
     public readonly searchTermIsValid$ = this.adminGamesManageService.searchTermIsValidComputed
     public readonly isSearching$ = this.adminGamesManageService.isSearching
-    public readonly currentPage$ = this.adminGamesManageService.currentPage
-    public readonly hasMoreGames$ = this.adminGamesManageService.hasMoreGames
-    public readonly totalPages$ = this.adminGamesManageService.totalPages
-    public readonly totalItems$ = this.adminGamesManageService.totalItems
     public readonly searchControl = this.adminGamesManageService.searchControl
 
     // --------------------------------------------------------------------------
@@ -63,21 +63,10 @@ export class AdminGamesManageComponent implements OnInit {
             )
             .subscribe((value) => {
                 this.searchTerm$.set(value || '')
-                this.currentPage$.set(1) // Reset page when search changes
                 this._searchGames()
             })
 
-        // Setup effect to monitor changes in games list
-        effect(() => {
-            // This runs whenever gamesList$ changes
-            const currentPage = this.currentPage$()
-            const currentGames = this.gamesList$().length
-            // Assuming the API returns less than limit when no more games are available
-            this.hasMoreGames$.set(currentGames === 10 * currentPage) // 10 is the limit set in our API
-        })
-
-        // Load initial games
-        this._searchGames()
+        // Don't load initial games - wait for user to search
     }
 
     private _fetchTags(): void {
@@ -114,44 +103,60 @@ export class AdminGamesManageComponent implements OnInit {
     //        Search Methods
     // --------------------------------------------------------------------------
 
-    public loadMoreGames() {
-        this.currentPage$.update((page) => page + 1)
-        this._searchGames(true)
-    }
-
-    private _searchGames(isNextPage = false) {
+    private _searchGames() {
         if (!this.searchTermIsValid$()) {
             return
         }
 
         // set the loading state
         this.isSearching$.set(true)
-        if (!isNextPage) {
-            this.gamesList$.set([])
-        }
+        this.gamesList$.set([])
 
         // Fetch games with search term
         this.api
             .getAdminGames(
                 this.searchTerm$().trim(),
-                this.currentPage$(),
+                1, // Always start from page 1
                 10, // limit
             )
             .subscribe({
                 next: (result) => {
-                    if (!isNextPage) {
-                        this.gamesList$.set(result.games)
-                    } else {
-                        this.gamesList$.update((games) => [...games, ...result.games])
-                    }
-                    
-                    // Update pagination info
-                    this.totalPages$.set(result.pagination.totalPages)
-                    this.totalItems$.set(result.pagination.totalItems)
+                    this.logger.log('Search games result:', result.games.length, 'games')
+                    this.logger.log('Search game IDs:', result.games.map(g => g.id))
+                    this.gamesList$.set(result.games)
                 },
                 error: (error) => {
                     this.logger.error('Error searching games', error)
                     this.toastService.error('Could not search games.')
+                },
+                complete: () => {
+                    this.isSearching$.set(false)
+                },
+            })
+    }
+
+    private _refreshGamesList() {
+        this.logger.log('_refreshGamesList called with search term:', this.searchTerm$())
+        // Force refresh the games list regardless of search term validation
+        // This is used when translations or tags are updated
+        this.isSearching$.set(true)
+        
+        // Fetch games with current search term (even if it's 1-2 characters)
+        this.api
+            .getAdminGames(
+                this.searchTerm$().trim(),
+                1, // Always start from page 1
+                10, // limit
+            )
+            .subscribe({
+                next: (result) => {
+                    this.logger.log('Games list refreshed, received:', result.games.length, 'games')
+                    this.logger.log('Game IDs:', result.games.map(g => g.id))
+                    this.gamesList$.set(result.games)
+                },
+                error: (error) => {
+                    this.logger.error('Error refreshing games list', error)
+                    this.toastService.error('Could not refresh games list.')
                 },
                 complete: () => {
                     this.isSearching$.set(false)
@@ -175,13 +180,15 @@ export class AdminGamesManageComponent implements OnInit {
     //        Event Handlers
     // --------------------------------------------------------------------------
     public onTranslationsUpdated(update: any): void {
+        this.logger.log('Translations updated, refreshing games list:', update)
         // Refresh the games list to ensure we have the most up-to-date data
-        this._searchGames()
+        this._refreshGamesList()
     }
 
     public onTagsUpdated(update: any): void {
+        this.logger.log('Tags updated, refreshing games list:', update)
         // Refresh the games list to ensure we have the most up-to-date data
-        this._searchGames()
+        this._refreshGamesList()
     }
 
     // --------------------------------------------------------------------------

@@ -1102,12 +1102,10 @@ export class DatabaseService implements OnModuleInit {
         return this._tursoExecute({
             sql: `
             SELECT
-                t.id AS tagId,
-                tc.id AS categoryId
+                gt.gameId,
+                gt.tagId
             FROM
                 GameTag gt
-                JOIN Tag t ON gt.tagId = t.id
-                JOIN TagCategory tc ON t.categoryId = tc.id
             WHERE
                 gt.gameId = ?;
             `,

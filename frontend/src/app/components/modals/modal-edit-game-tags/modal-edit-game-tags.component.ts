@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common'
-import { Component, EventEmitter, inject, signal } from '@angular/core'
+import { Component, EventEmitter, inject, signal, Output } from '@angular/core'
+import { firstValueFrom } from 'rxjs'
 import { Api } from '../../../api/api'
 import type { GameWithTagsAndTranslationsType, TagType, TagCategoryType } from '../../../api/api.types'
 import { ToastService } from '../../toast/toast.service'
@@ -29,7 +30,7 @@ export class ModalEditGameTagsComponent {
     // --------------------------------------------------------------------------
     //        Events
     // --------------------------------------------------------------------------
-    public tagsUpdated = new EventEmitter<{ id: number; tagIds: number[] }>()
+    @Output() public tagsUpdated = new EventEmitter<{ id: number; tagIds: number[] }>()
 
     // --------------------------------------------------------------------------
     //        Methods
@@ -81,7 +82,7 @@ export class ModalEditGameTagsComponent {
 
         try {
             const tagIds = Array.from(this.selectedTagIds())
-            await this.api.updateAdminGameTags(this.game()!.id, tagIds).toPromise()
+            await firstValueFrom(this.api.updateAdminGameTags(this.game()!.id, tagIds))
 
             this.toastService.success('Game tags updated successfully.')
             this.tagsUpdated.emit({

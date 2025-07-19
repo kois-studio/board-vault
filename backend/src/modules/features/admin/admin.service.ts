@@ -181,21 +181,14 @@ export class AdminService {
     }
 
     async updateGameTags(gameId: number, payload: UpdateGameTagsBody): Promise<{ success: boolean }> {
-        // Get current tags
+        // Clear all existing tags for this game first
         const currentTags = await this.gameTagsService.getGameTags(gameId)
-        const currentTagIds = currentTags.map(gt => gt.tagId)
-
-        // Find tags to add and remove
-        const tagsToAdd = payload.tagIds.filter(id => !currentTagIds.includes(id))
-        const tagsToRemove = currentTagIds.filter(id => !payload.tagIds.includes(id))
-
-        // Remove tags
-        for (const tagId of tagsToRemove) {
-            await this.gameTagsService.removeGameTag(gameId, tagId)
+        for (const gameTag of currentTags) {
+            await this.gameTagsService.removeGameTag(gameId, gameTag.tagId)
         }
 
-        // Add tags
-        for (const tagId of tagsToAdd) {
+        // Add the new tags
+        for (const tagId of payload.tagIds) {
             await this.gameTagsService.addGameTag(gameId, tagId)
         }
 
