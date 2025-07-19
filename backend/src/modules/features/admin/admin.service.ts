@@ -8,6 +8,7 @@ import { GamesService } from '../../../modules/core/games/games.service'
 import { GameTagsService } from '../../../modules/core/game-tags/game-tags.service'
 import { GameTranslationService } from '../../../modules/core/game-translation/game-translation.service'
 import { GameProposalService } from '../../../modules/core/game-proposal/game-proposal.service'
+import { NotificationsService } from '../../../modules/core/notifications/notifications.service'
 import { TagDto, GameTagWithCategoryDto } from '../../../common/types/tag.type'
 import type { GameDto } from '../../../common/types/game.type'
 import { 
@@ -21,6 +22,7 @@ import {
 import { GameWithTagsAndTranslationsDto } from '../../../common/types/game.type'
 import { GameProposalDto, GameProposalCompleteDto } from '../../../common/types/game-proposal.type'
 import { SupportedLanguage } from '../../../common/types/game-translation.type'
+import { NotificationTypeEnum } from '../../../modules/core/notifications/notifications-enum.type'
 
 @Injectable()
 export class AdminService {
@@ -31,6 +33,7 @@ export class AdminService {
         private readonly tagCategoryService: TagCategoryService,
         private readonly gameTranslationService: GameTranslationService,
         private readonly gameProposalService: GameProposalService,
+        private readonly notificationsService: NotificationsService,
     ) {}
 
     // #region Tag Categories
@@ -311,6 +314,18 @@ export class AdminService {
             createdGameId
         )
 
+        // Send notification to the user
+        await this.notificationsService.createNotification({
+            accountId: proposal.submittedBy,
+            type: NotificationTypeEnum.GAME_PROPOSAL_APPROVED,
+            message: `Your game proposal "${proposal.title}" was approved!`,
+            data: {
+                gameTitle: proposal.title,
+                proposalId: proposal.id,
+                createdGameId,
+            },
+        })
+
         return { success: true, createdGameId }
     }
 
@@ -320,11 +335,25 @@ export class AdminService {
         reviewerId: number, 
         rejectionData: RejectGameProposalBody
     ): Promise<{ success: boolean }> {
+        const proposal = await this.gameProposalService.getGameProposalById(proposalId)
+        
         await this.gameProposalService.rejectGameProposal(
             proposalId, 
             reviewerId, 
             rejectionData.reviewNotes
         )
+
+        // Send notification to the user
+        await this.notificationsService.createNotification({
+            accountId: proposal.submittedBy,
+            type: NotificationTypeEnum.GAME_PROPOSAL_REJECTED,
+            message: `Your game proposal "${proposal.title}" was rejected: ${rejectionData.reviewNotes}`,
+            data: {
+                gameTitle: proposal.title,
+                proposalId: proposal.id,
+                reviewNotes: rejectionData.reviewNotes,
+            },
+        })
 
         return { success: true }
     }
