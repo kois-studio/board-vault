@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common'
-import { Component, EventEmitter, inject, Output, signal } from '@angular/core'
+import { Component, EventEmitter, Output, inject, signal } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
-import type { TagCategoryType, TagType } from '../../../api/api.types'
 import { Api } from '../../../api/api'
+import type { TagCategoryType, TagType } from '../../../api/api.types'
+import { LogService } from '../../../core/services/log.service'
 import { ToastService } from '../../toast/toast.service'
 import { ButtonComponent } from '../../ui/button/button.component'
-import { LogService } from '../../../core/services/log.service'
 
 @Component({
     imports: [CommonModule, ReactiveFormsModule, ButtonComponent],
@@ -33,14 +33,8 @@ export class ModalAddTagComponent {
     //        Form
     // --------------------------------------------------------------------------
     public addTagForm = new FormGroup({
-        name: new FormControl('', [
-            Validators.required,
-            Validators.minLength(2),
-            Validators.maxLength(50),
-        ]),
-        categoryId: new FormControl<number | null>(null, [
-            Validators.required,
-        ]),
+        name: new FormControl('', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
+        categoryId: new FormControl<number | null>(null, [Validators.required]),
     })
 
     // --------------------------------------------------------------------------
@@ -67,24 +61,26 @@ export class ModalAddTagComponent {
         if (!formValue.name || !formValue.categoryId) return
 
         this.isLoading.set(true)
-        
+
         // Call API to create tag
-        this.api.createAdminTag({
-            name: formValue.name,
-            categoryId: formValue.categoryId,
-        }).subscribe({
-            next: (newTag: TagType) => {
-                this.isLoading.set(false)
-                this.toastService.success('Tag created successfully!')
-                this.tagCreated.emit(newTag)
-                this.hideDialog()
-            },
-            error: (error: any) => {
-                this.isLoading.set(false)
-                this.logger.error('Error creating tag:', error)
-                this.toastService.error('Failed to create tag. Please try again.')
-            }
-        })
+        this.api
+            .createAdminTag({
+                name: formValue.name,
+                categoryId: formValue.categoryId,
+            })
+            .subscribe({
+                next: (newTag: TagType) => {
+                    this.isLoading.set(false)
+                    this.toastService.success('Tag created successfully!')
+                    this.tagCreated.emit(newTag)
+                    this.hideDialog()
+                },
+                error: (error: any) => {
+                    this.isLoading.set(false)
+                    this.logger.error('Error creating tag:', error)
+                    this.toastService.error('Failed to create tag. Please try again.')
+                },
+            })
     }
 
     // --------------------------------------------------------------------------
@@ -111,4 +107,4 @@ export class ModalAddTagComponent {
     get isFormValid() {
         return this.addTagForm.valid && this.addTagForm.dirty
     }
-} 
+}

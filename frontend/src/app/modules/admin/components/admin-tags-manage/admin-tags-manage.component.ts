@@ -1,21 +1,31 @@
 // src/app/pages/admin/tags-manage/admin-tags-manage.component.ts
 
 import { CommonModule } from '@angular/common'
-import { Component, OnInit, inject, ViewChild } from '@angular/core'
+import { Component, OnInit, ViewChild, inject } from '@angular/core'
 import type { TagCategoryType, TagType } from '../../../../api/api.types'
-import { ToastService } from '../../../../components/toast/toast.service'
-import { ButtonComponent } from '../../../../components/ui/button/button.component'
-import { SpinnerComponent } from '../../../../components/ui/spinner/spinner.component'
-import { ModalEditCategoryComponent } from '../../../../components/modals/modal-edit-category/modal-edit-category.component'
-import { ModalEditTagComponent } from '../../../../components/modals/modal-edit-tag/modal-edit-tag.component'
 import { ModalAddCategoryComponent } from '../../../../components/modals/modal-add-category/modal-add-category.component'
 import { ModalAddTagComponent } from '../../../../components/modals/modal-add-tag/modal-add-tag.component'
 import { ModalDeleteCategoryComponent } from '../../../../components/modals/modal-delete-category/modal-delete-category.component'
 import { ModalDeleteTagComponent } from '../../../../components/modals/modal-delete-tag/modal-delete-tag.component'
+import { ModalEditCategoryComponent } from '../../../../components/modals/modal-edit-category/modal-edit-category.component'
+import { ModalEditTagComponent } from '../../../../components/modals/modal-edit-tag/modal-edit-tag.component'
+import { ToastService } from '../../../../components/toast/toast.service'
+import { ButtonComponent } from '../../../../components/ui/button/button.component'
+import { SpinnerComponent } from '../../../../components/ui/spinner/spinner.component'
 import { AdminTagsManageService } from './admin-tags-manage.service'
 
 @Component({
-    imports: [CommonModule, ButtonComponent, SpinnerComponent, ModalEditCategoryComponent, ModalEditTagComponent, ModalAddCategoryComponent, ModalAddTagComponent, ModalDeleteCategoryComponent, ModalDeleteTagComponent],
+    imports: [
+        CommonModule,
+        ButtonComponent,
+        SpinnerComponent,
+        ModalEditCategoryComponent,
+        ModalEditTagComponent,
+        ModalAddCategoryComponent,
+        ModalAddTagComponent,
+        ModalDeleteCategoryComponent,
+        ModalDeleteTagComponent,
+    ],
     templateUrl: './admin-tags-manage.component.html',
 })
 export class AdminTagsManageComponent implements OnInit {
@@ -63,7 +73,7 @@ export class AdminTagsManageComponent implements OnInit {
 
     public onDeleteCategory(category: TagCategoryType): void {
         // Get the tags that belong to this category
-        const categoryTags = this.tags().filter(tag => tag.categoryId === category.id)
+        const categoryTags = this.tags().filter((tag) => tag.categoryId === category.id)
         this.deleteCategoryModal.showDialog(category, categoryTags)
     }
 
@@ -76,7 +86,7 @@ export class AdminTagsManageComponent implements OnInit {
     }
 
     public onDeleteTag(tag: TagType): void {
-        const categoryName = this.tagCategories().find(cat => cat.id === tag.categoryId)?.name || 'Unknown'
+        const categoryName = this.tagCategories().find((cat) => cat.id === tag.categoryId)?.name || 'Unknown'
         this.deleteTagModal.showDialog(tag, categoryName)
     }
 

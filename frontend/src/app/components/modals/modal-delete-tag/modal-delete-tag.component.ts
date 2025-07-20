@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common'
-import { Component, EventEmitter, inject, Output, signal } from '@angular/core'
-import type { TagType } from '../../../api/api.types'
+import { Component, EventEmitter, Output, inject, signal } from '@angular/core'
 import { Api } from '../../../api/api'
+import type { TagType } from '../../../api/api.types'
+import { LogService } from '../../../core/services/log.service'
 import { ToastService } from '../../toast/toast.service'
 import { ButtonComponent } from '../../ui/button/button.component'
-import { LogService } from '../../../core/services/log.service'
 
 @Component({
     imports: [CommonModule, ButtonComponent],
@@ -50,20 +50,20 @@ export class ModalDeleteTagComponent {
         }
 
         this.isLoading.set(true)
-        
+
         // Call API to delete tag
-        this.api.deleteAdminTag(this.tag()!.id).subscribe({
+        this.api.deleteAdminTag(this.tag()?.id).subscribe({
             next: () => {
                 this.isLoading.set(false)
                 this.toastService.success('Tag deleted successfully!')
-                this.tagDeleted.emit(this.tag()!.id)
+                this.tagDeleted.emit(this.tag()?.id)
                 this.hideDialog()
             },
             error: (error: any) => {
                 this.isLoading.set(false)
                 this.logger.error('Error deleting tag:', error)
                 this.toastService.error('Failed to delete tag. Please try again.')
-            }
+            },
         })
     }
-} 
+}

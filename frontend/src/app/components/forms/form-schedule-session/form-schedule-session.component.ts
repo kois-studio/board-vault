@@ -6,9 +6,7 @@ import { LoadingService } from '../../../core/services/loading.service'
 
 @Component({
     selector: 'app-form-schedule-session',
-    imports: [
-        CommonModule,
-    ],
+    imports: [CommonModule],
     templateUrl: 'form-schedule-session.component.html',
 })
 export class FormScheduleSessionComponent {
