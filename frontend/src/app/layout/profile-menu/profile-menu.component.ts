@@ -1,4 +1,4 @@
-import { Component, ElementRef, Renderer2, ViewChild, effect, inject } from '@angular/core'
+import { Component, ElementRef, Renderer2, ViewChild, computed, inject } from '@angular/core'
 import { Router, RouterLink } from '@angular/router'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
 import { DataService } from '../../core/services/data.service'
@@ -12,42 +12,39 @@ import { ModalProfileNotificationsComponent } from './modals/modal-profile-notif
     templateUrl: 'profile-menu.component.html',
 })
 export class ProfileMenuComponent {
+    // --------------------------------------------------------------------------
+    //        Services
+    // --------------------------------------------------------------------------
     private readonly loginService = inject(LoginService)
+    private readonly router = inject(Router)
+    private readonly dataService = inject(DataService)
+    private readonly renderer = inject(Renderer2)
+    private readonly elementRef = inject(ElementRef)
 
+    // --------------------------------------------------------------------------
+    //        Services signals
+    // --------------------------------------------------------------------------
+    public readonly currentUser$ = this.dataService.currentUser
+    public readonly userInvitations$ = this.dataService.userInvitations
+    public readonly userNotifications$ = this.dataService.userNotifications
+    public readonly userProposalStats$ = this.dataService.userProposalStats
+
+    // --------------------------------------------------------------------------
+    //        Component computed signals
+    // --------------------------------------------------------------------------
+    public readonly userUnreadNotificationsComputed = computed(() => 
+        this.userNotifications$().filter((notifications) => !notifications.isRead)
+    )
+
+    // --------------------------------------------------------------------------
+    //        Component props
+    // --------------------------------------------------------------------------
     public isDropdownVisible = false
-    public userData: ReturnType<typeof this.dataService.currentUser> = null
-    public userInvitations: ReturnType<typeof this.dataService.userInvitations> = []
-    public userUnreadNotifications: ReturnType<typeof this.dataService.userNotifications> = []
-    public userProposalStats: ReturnType<typeof this.dataService.userProposalStats> = {
-        totalProposals: 0,
-        approvedProposals: 0,
-        rejectedProposals: 0,
-        duplicateProposals: 0,
-        pendingProposals: 0,
-        approvalRate: 0,
-        reputationScore: 0,
-    }
+    private clickListener!: (() => void) | null
 
     // Get the child component to be able to call its methods
     @ViewChild(ModalProfileInvitationsComponent) modalProfileInvitationsComponent!: ModalProfileInvitationsComponent
     @ViewChild(ModalProfileNotificationsComponent) modalProfileNotificationsComponent!: ModalProfileNotificationsComponent
-
-    private clickListener!: (() => void) | null
-
-    constructor(
-        private readonly router: Router,
-        private readonly dataService: DataService,
-        // these 2 are used to being able to close the dropdown when clicking outside of it
-        private readonly renderer: Renderer2,
-        private readonly elementRef: ElementRef,
-    ) {
-        effect(() => {
-            this.userData = this.dataService.currentUser()
-            this.userInvitations = this.dataService.userInvitations()
-            this.userUnreadNotifications = this.dataService.userNotifications().filter((notifications) => !notifications.isRead)
-            this.userProposalStats = this.dataService.userProposalStats()
-        })
-    }
 
     // Method to toggle the dropdown
     toggleDropdown() {
