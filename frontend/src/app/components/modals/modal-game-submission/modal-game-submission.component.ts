@@ -33,4 +33,4 @@ export class ModalGameSubmissionComponent {
         this.proposalSubmitted.emit()
         this.hideDialog()
     }
-} 
+}

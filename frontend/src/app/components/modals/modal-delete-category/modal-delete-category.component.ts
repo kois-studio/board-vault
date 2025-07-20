@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common'
-import { Component, EventEmitter, inject, Output, signal } from '@angular/core'
-import type { TagCategoryType, TagType } from '../../../api/api.types'
+import { Component, EventEmitter, Output, inject, signal } from '@angular/core'
 import { Api } from '../../../api/api'
+import type { TagCategoryType, TagType } from '../../../api/api.types'
+import { LogService } from '../../../core/services/log.service'
+import { TagsComponent } from '../../tags/tags.component'
 import { ToastService } from '../../toast/toast.service'
 import { ButtonComponent } from '../../ui/button/button.component'
-import { TagsComponent } from '../../tags/tags.component'
-import { LogService } from '../../../core/services/log.service'
 
 @Component({
     imports: [CommonModule, ButtonComponent, TagsComponent],
@@ -46,9 +46,9 @@ export class ModalDeleteCategoryComponent {
     }
 
     public getTagsForDisplay(): Array<{ tag: string; category: string }> {
-        return this.tags().map(tag => ({
+        return this.tags().map((tag) => ({
             tag: tag.name,
-            category: 'Will be deleted'
+            category: 'Will be deleted',
         }))
     }
 
@@ -58,20 +58,20 @@ export class ModalDeleteCategoryComponent {
         }
 
         this.isLoading.set(true)
-        
+
         // Call API to delete category
-        this.api.deleteAdminTagCategory(this.category()!.id).subscribe({
+        this.api.deleteAdminTagCategory(this.category()?.id).subscribe({
             next: () => {
                 this.isLoading.set(false)
                 this.toastService.success('Category deleted successfully!')
-                this.categoryDeleted.emit(this.category()!.id)
+                this.categoryDeleted.emit(this.category()?.id)
                 this.hideDialog()
             },
             error: (error: any) => {
                 this.isLoading.set(false)
                 this.logger.error('Error deleting category:', error)
                 this.toastService.error('Failed to delete category. Please try again.')
-            }
+            },
         })
     }
-} 
+}

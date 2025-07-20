@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common'
-import { Component, EventEmitter, inject, Output } from '@angular/core'
+import { Component, EventEmitter, Output, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Api } from '../../../api/api'
+import type { CreateGameProposalType } from '../../../api/api.types'
 import { DataService } from '../../../core/services/data.service'
 import { ToastService } from '../../toast/toast.service'
 import { ButtonComponent } from '../../ui/button/button.component'
-import type { CreateGameProposalType } from '../../../api/api.types'
 
 @Component({
     imports: [ReactiveFormsModule, CommonModule],
@@ -151,4 +151,4 @@ export class FormGameSubmissionComponent {
             this.maxPlayers?.setErrors(null)
         }
     }
-} 
+}

@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common'
-import { Component, EventEmitter, inject, signal, Output } from '@angular/core'
+import { Component, EventEmitter, Output, inject, signal } from '@angular/core'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../../api/api'
-import type { GameWithTagsAndTranslationsType, TagType, TagCategoryType } from '../../../api/api.types'
+import type { GameWithTagsAndTranslationsType, TagCategoryType, TagType } from '../../../api/api.types'
+import { LogService } from '../../../core/services/log.service'
 import { ToastService } from '../../toast/toast.service'
 import { ButtonComponent } from '../../ui/button/button.component'
-import { LogService } from '../../../core/services/log.service'
 
 @Component({
     selector: 'app-modal-edit-game-tags',
@@ -40,11 +40,11 @@ export class ModalEditGameTagsComponent {
         this.game.set(game)
         this.tags.set(allTags)
         this.categories.set(allCategories)
-        
+
         // Set currently selected tags
-        const currentTagIds = new Set(game.tags.map(tag => tag.id))
+        const currentTagIds = new Set(game.tags.map((tag) => tag.id))
         this.selectedTagIds.set(currentTagIds)
-        
+
         this.isVisible.set(true)
     }
 
@@ -59,13 +59,13 @@ export class ModalEditGameTagsComponent {
     public toggleTag(tagId: number): void {
         const current = this.selectedTagIds()
         const newSet = new Set(current)
-        
+
         if (newSet.has(tagId)) {
             newSet.delete(tagId)
         } else {
             newSet.add(tagId)
         }
-        
+
         this.selectedTagIds.set(newSet)
     }
 
@@ -82,11 +82,11 @@ export class ModalEditGameTagsComponent {
 
         try {
             const tagIds = Array.from(this.selectedTagIds())
-            await firstValueFrom(this.api.updateAdminGameTags(this.game()!.id, tagIds))
+            await firstValueFrom(this.api.updateAdminGameTags(this.game()?.id, tagIds))
 
             this.toastService.success('Game tags updated successfully.')
             this.tagsUpdated.emit({
-                id: this.game()!.id,
+                id: this.game()?.id,
                 tagIds,
             })
             this.hideDialog()
@@ -107,24 +107,24 @@ export class ModalEditGameTagsComponent {
     // --------------------------------------------------------------------------
 
     public getTagsByCategory(categoryId: number): Array<TagType> {
-        return this.tags().filter(tag => tag.categoryId === categoryId)
+        return this.tags().filter((tag) => tag.categoryId === categoryId)
     }
 
     public getCategoryName(categoryId: number): string {
-        const category = this.categories().find(c => c.id === categoryId)
+        const category = this.categories().find((c) => c.id === categoryId)
         return category ? category.name : 'Unknown Category'
     }
 
     public getUniqueCategoryIds(): number[] {
-        const categoryIds = this.tags().map(tag => tag.categoryId)
+        const categoryIds = this.tags().map((tag) => tag.categoryId)
         return [...new Set(categoryIds)].sort()
     }
 
     public getTagById(tagId: number): TagType | undefined {
-        return this.tags().find(t => t.id === tagId)
+        return this.tags().find((t) => t.id === tagId)
     }
 
     public getSelectedTagIdsArray(): number[] {
         return Array.from(this.selectedTagIds())
     }
-} 
+}

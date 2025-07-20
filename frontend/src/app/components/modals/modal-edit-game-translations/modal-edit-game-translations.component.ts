@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common'
-import { Component, EventEmitter, inject, signal, Output } from '@angular/core'
+import { Component, EventEmitter, Output, inject, signal } from '@angular/core'
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../../api/api'
 import type { GameWithTagsAndTranslationsType } from '../../../api/api.types'
+import { LogService } from '../../../core/services/log.service'
 import { ToastService } from '../../toast/toast.service'
 import { ButtonComponent } from '../../ui/button/button.component'
-import { LogService } from '../../../core/services/log.service'
 
 type SupportedLanguage = 'en' | 'es'
 
@@ -62,7 +62,7 @@ export class ModalEditGameTranslationsComponent {
 
     public async onSubmit(): Promise<void> {
         this.logger.log('Modal onSubmit called')
-        
+
         if (this.form.invalid || !this.game()) {
             this.logger.log('Form invalid or no game:', this.form.invalid, !this.game())
             return
@@ -76,21 +76,21 @@ export class ModalEditGameTranslationsComponent {
                 es: this.form.get('es')?.value?.trim() || '',
             }
 
-            this.logger.log('Updating translations for game:', this.game()!.id, translations)
+            this.logger.log('Updating translations for game:', this.game()?.id, translations)
 
-            await firstValueFrom(this.api.updateAdminGameTranslations(this.game()!.id, translations))
+            await firstValueFrom(this.api.updateAdminGameTranslations(this.game()?.id, translations))
 
             this.logger.log('Translation update successful, emitting event')
             this.toastService.success('Game translations updated successfully.')
-            
+
             const eventData = {
-                id: this.game()!.id,
+                id: this.game()?.id,
                 translations,
             }
             this.logger.log('Emitting event with data:', eventData)
             this.translationsUpdated.emit(eventData)
             this.logger.log('Event emitted successfully')
-            
+
             this.hideDialog()
         } catch (error) {
             this.logger.error('Error updating game translations', error)
@@ -103,4 +103,4 @@ export class ModalEditGameTranslationsComponent {
     public onCancel(): void {
         this.hideDialog()
     }
-} 
+}

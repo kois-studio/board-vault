@@ -1,19 +1,14 @@
-import { Component, inject, ViewChild } from '@angular/core'
+import { Component, ViewChild, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
-import { DataService } from '../../../core/services/data.service'
+import type { GameProposalType } from '../../../api/api.types'
+import { ModalGameSubmissionComponent } from '../../../components/modals/modal-game-submission/modal-game-submission.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
-import { ModalGameSubmissionComponent } from '../../../components/modals/modal-game-submission/modal-game-submission.component'
-import type { GameProposalType } from '../../../api/api.types'
+import { DataService } from '../../../core/services/data.service'
 
 @Component({
-    imports: [
-        PageHeaderComponent,
-        ButtonComponent,
-        ContainerWrapperComponent,
-        ModalGameSubmissionComponent,
-    ],
+    imports: [PageHeaderComponent, ButtonComponent, ContainerWrapperComponent, ModalGameSubmissionComponent],
     templateUrl: 'submissions-page.component.html',
 })
 export class SubmissionsPageComponent {
@@ -84,4 +79,4 @@ export class SubmissionsPageComponent {
             day: 'numeric',
         })
     }
-} 
+}

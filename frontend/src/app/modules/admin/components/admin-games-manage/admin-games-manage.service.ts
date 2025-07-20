@@ -12,7 +12,9 @@ export class AdminGamesManageService {
     // --------------------------------------------------------------------------
     public readonly gamesList = signal<Array<GameWithTagsAndTranslationsType>>([])
     public readonly searchTerm = signal('')
-    public readonly searchTermIsValidComputed = computed(() => this.searchTerm().trim().length >= 3 || this.searchTerm().trim().length === 0)
+    public readonly searchTermIsValidComputed = computed(
+        () => this.searchTerm().trim().length >= 3 || this.searchTerm().trim().length === 0,
+    )
     public readonly isSearching = signal(false)
     public readonly searchControl = new FormControl('')
-} 
+}

@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common'
-import { Component, EventEmitter, inject, Output, signal } from '@angular/core'
+import { Component, EventEmitter, Output, inject, signal } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
-import type { TagCategoryType, TagType } from '../../../api/api.types'
 import { Api } from '../../../api/api'
+import type { TagCategoryType, TagType } from '../../../api/api.types'
+import { LogService } from '../../../core/services/log.service'
 import { ToastService } from '../../toast/toast.service'
 import { ButtonComponent } from '../../ui/button/button.component'
-import { LogService } from '../../../core/services/log.service'
 
 @Component({
     imports: [CommonModule, ReactiveFormsModule, ButtonComponent],
@@ -34,14 +34,8 @@ export class ModalEditTagComponent {
     //        Form
     // --------------------------------------------------------------------------
     public editTagForm = new FormGroup({
-        name: new FormControl('', [
-            Validators.required,
-            Validators.minLength(2),
-            Validators.maxLength(50),
-        ]),
-        categoryId: new FormControl<number | null>(null, [
-            Validators.required,
-        ]),
+        name: new FormControl('', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
+        categoryId: new FormControl<number | null>(null, [Validators.required]),
     })
 
     // --------------------------------------------------------------------------
@@ -73,28 +67,30 @@ export class ModalEditTagComponent {
         if (!formValue.name || !formValue.categoryId) return
 
         this.isLoading.set(true)
-        
+
         // Call API to update tag
-        this.api.updateAdminTag(this.tag()!.id, {
-            name: formValue.name!,
-            categoryId: formValue.categoryId!,
-        }).subscribe({
-            next: (updatedTag: TagType) => {
-                this.isLoading.set(false)
-                this.toastService.success('Tag updated successfully!')
-                this.tagUpdated.emit({
-                    id: updatedTag.id,
-                    name: updatedTag.name,
-                    categoryId: updatedTag.categoryId,
-                })
-                this.hideDialog()
-            },
-            error: (error: any) => {
-                this.isLoading.set(false)
-                this.logger.error('Error updating tag:', error)
-                this.toastService.error('Failed to update tag. Please try again.')
-            }
-        })
+        this.api
+            .updateAdminTag(this.tag()!.id, {
+                name: formValue.name!,
+                categoryId: formValue.categoryId!,
+            })
+            .subscribe({
+                next: (updatedTag: TagType) => {
+                    this.isLoading.set(false)
+                    this.toastService.success('Tag updated successfully!')
+                    this.tagUpdated.emit({
+                        id: updatedTag.id,
+                        name: updatedTag.name,
+                        categoryId: updatedTag.categoryId,
+                    })
+                    this.hideDialog()
+                },
+                error: (error: any) => {
+                    this.isLoading.set(false)
+                    this.logger.error('Error updating tag:', error)
+                    this.toastService.error('Failed to update tag. Please try again.')
+                },
+            })
     }
 
     // --------------------------------------------------------------------------
@@ -121,4 +117,4 @@ export class ModalEditTagComponent {
     get isFormValid() {
         return this.editTagForm.valid && this.editTagForm.dirty
     }
-} 
+}
