@@ -1,10 +1,12 @@
 <!-- Profile Picture and Dropdown Trigger -->
 <div class="relative">
     <button (click)="toggleDropdown()" class="relative cursor-pointer">
-        <app-image-profile [avatar]="userData?.avatar" />
-        @if (userInvitations.length + userUnreadNotifications.length) {
+        @if (currentUser$()) {
+            <app-image-profile [avatar]="currentUser$()!.avatar" />
+        }
+        @if (userInvitations$().length + userUnreadNotificationsComputed().length) {
             <div class="absolute -bottom-1 -right-1 bg-blue-600 rounded-full h-5 w-5 flex items-center justify-center text-white">
-                <span class="text-sm">{{ userInvitations.length + userUnreadNotifications.length }}</span>
+                <span class="text-sm">{{ userInvitations$().length + userUnreadNotificationsComputed().length }}</span>
             </div>
         }
     </button>
@@ -12,38 +14,40 @@
     <!-- Dropdown Menu -->
     @if (isDropdownVisible) {
     <div class="absolute right-0 mt-2 w-56 bg-zinc-900 border border-zinc-700 rounded-lg shadow-xl">
-        <div class="flex items-center p-4">
-            <app-image-profile [avatar]="userData?.avatar" />
-            <div class="ml-3">
-                <p class="font-semibold text-white">{{ userData?.displayName }}</p>
-                <p class="text-gray-400 text-sm">{{ userData?.username }}</p>
+        @if (currentUser$()) {
+            <div class="flex items-center p-4">
+                <app-image-profile [avatar]="currentUser$()!.avatar" />
+                <div class="ml-3">
+                    <p class="font-semibold text-white">{{ currentUser$()!.displayName }}</p>
+                    <p class="text-gray-400 text-sm">{{ currentUser$()!.username }}</p>
+                </div>
             </div>
-        </div>
+        }
         <div class="border-t border-zinc-700">
             <button routerLink="/settings" (click)="onClickProfileSettings()" class="flex items-center gap-2 w-full px-4 py-2 text-left text-white hover:bg-zinc-800 border-b border-zinc-700 cursor-pointer">
                 <i class="bi bi-gear"></i> Manage account
             </button>
             <button (click)="onClickInvitations()" class="flex items-center gap-2 w-full px-4 py-2 text-left text-white hover:bg-zinc-800 border-b border-zinc-700 cursor-pointer">
                 <i class="bi bi-envelope"></i> Group Invitations
-                @if (userInvitations.length) {
+                @if (userInvitations$().length) {
                     <div class="bg-blue-600 rounded-full h-5 w-5 flex items-center justify-center">
-                        <span class="text-sm">{{ userInvitations.length }}</span>
+                        <span class="text-sm">{{ userInvitations$().length }}</span>
                     </div>
                 }
             </button>
             <button (click)="onClickNotifications()" class="flex items-center gap-2 w-full px-4 py-2 text-left text-white hover:bg-zinc-800 border-b border-zinc-700 cursor-pointer">
                 <i class="bi bi-bell"></i> Notifications
-                @if (userUnreadNotifications.length > 0) {
+                @if (userUnreadNotificationsComputed().length > 0) {
                     <div class="bg-blue-600 rounded-full h-5 w-5 flex items-center justify-center">
-                        <span class="text-sm">{{ userUnreadNotifications.length }}</span>
+                        <span class="text-sm">{{ userUnreadNotificationsComputed().length }}</span>
                     </div>
                 }
             </button>
             <button routerLink="/submissions" (click)="onClickSubmissions()" class="flex items-center gap-2 w-full px-4 py-2 text-left text-white hover:bg-zinc-800 border-b border-zinc-700 cursor-pointer">
                 <i class="bi bi-file-earmark-text"></i> My Submissions
-                @if (userProposalStats.totalProposals > 0) {
+                @if (userProposalStats$().totalProposals > 0) {
                     <div class="bg-purple-600 rounded-full h-5 w-5 flex items-center justify-center">
-                        <span class="text-sm">{{ userProposalStats.totalProposals }}</span>
+                        <span class="text-sm">{{ userProposalStats$().totalProposals }}</span>
                     </div>
                 }
             </button>
