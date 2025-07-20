@@ -53,14 +53,15 @@ export class ModalDeleteCategoryComponent {
     }
 
     public onConfirmDelete(): void {
-        if (!this.category()) {
+        const category = this.category()
+        if (!category) {
             return
         }
 
         this.isLoading.set(true)
 
         // Call API to delete category
-        this.api.deleteAdminTagCategory(this.category()?.id).subscribe({
+        this.api.deleteAdminTagCategory(category.id).subscribe({
             next: () => {
                 this.isLoading.set(false)
                 this.toastService.success('Category deleted successfully!')
