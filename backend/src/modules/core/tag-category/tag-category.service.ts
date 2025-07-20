@@ -3,16 +3,13 @@ import { Injectable, Logger } from '@nestjs/common'
 
 import { tagCategoriesSchema } from '../../../common/schemas/db-tag-category.schema'
 import { TagCategoryDto } from '../../../common/types/tag-category.type'
-import { CacheService } from '../../common/cache/cache.service'
 import { DatabaseService } from '../../common/database/database.service'
 
 @Injectable()
 export class TagCategoryService {
     private readonly LOGGER: Logger = new Logger(this.constructor.name)
 
-    constructor(
-        private readonly databaseService: DatabaseService,
-    ) {}
+    constructor(private readonly databaseService: DatabaseService) {}
 
     private _parseResultSet(resultSet: ResultSet): Array<TagCategoryDto> {
         const tags = resultSet.rows.map(row => ({

@@ -12,16 +12,13 @@ export const gameProposalSchema = z.object({
     proposedTags: z.string().nullable(), // JSON text
     notes: z.string().nullable(),
     reviewedBy: z.number().int().nonnegative().nullable(),
-    reviewedAt: z.string().nullable().refine(
-        (date) => !date || !isNaN(Date.parse(date)), 
-        { message: 'Invalid date format' }
-    ),
+    reviewedAt: z
+        .string()
+        .nullable()
+        .refine(date => !date || !isNaN(Date.parse(date)), { message: 'Invalid date format' }),
     reviewNotes: z.string().nullable(),
     createdGameId: z.number().int().nonnegative().nullable(),
-    submittedAt: z.string().refine(
-        (date) => !isNaN(Date.parse(date)), 
-        { message: 'Invalid date format' }
-    ),
+    submittedAt: z.string().refine(date => !isNaN(Date.parse(date)), { message: 'Invalid date format' }),
 })
 
-export const gameProposalsSchema = z.array(gameProposalSchema) 
+export const gameProposalsSchema = z.array(gameProposalSchema)

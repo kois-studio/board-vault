@@ -12,89 +12,89 @@ export class GameProposalDto {
     @ApiProperty({ example: 1, description: 'Account ID that submitted the proposal' })
     submittedBy: number
 
-    @ApiProperty({ 
-        example: 'pending', 
+    @ApiProperty({
+        example: 'pending',
         enum: ['pending', 'approved', 'rejected', 'duplicate'],
-        description: 'Current status of the proposal'
+        description: 'Current status of the proposal',
     })
     status: 'pending' | 'approved' | 'rejected' | 'duplicate'
 
     @ApiProperty({ example: 'Catan', description: 'Game title' })
     title: string
 
-    @ApiProperty({ 
-        example: 'https://www.example.com/image.jpg', 
+    @ApiProperty({
+        example: 'https://www.example.com/image.jpg',
         nullable: true,
-        description: 'Game image URL'
+        description: 'Game image URL',
     })
     imageUrl: string | null
 
-    @ApiProperty({ 
-        example: 120, 
+    @ApiProperty({
+        example: 120,
         nullable: true,
-        description: 'Average duration of the game in minutes'
+        description: 'Average duration of the game in minutes',
     })
     gameAvgDuration: number | null
 
-    @ApiProperty({ 
-        example: 3, 
+    @ApiProperty({
+        example: 3,
         nullable: true,
-        description: 'Minimum number of players required'
+        description: 'Minimum number of players required',
     })
     minPlayers: number | null
 
-    @ApiProperty({ 
-        example: 4, 
+    @ApiProperty({
+        example: 4,
         nullable: true,
-        description: 'Maximum number of players allowed'
+        description: 'Maximum number of players allowed',
     })
     maxPlayers: number | null
 
-    @ApiProperty({ 
-        example: '["strategy", "family"]', 
+    @ApiProperty({
+        example: '["strategy", "family"]',
         nullable: true,
-        description: 'Proposed tags as JSON string'
+        description: 'Proposed tags as JSON string',
     })
     proposedTags: string | null
 
-    @ApiProperty({ 
-        example: 'A great family strategy game', 
+    @ApiProperty({
+        example: 'A great family strategy game',
         nullable: true,
-        description: 'User notes about the game'
+        description: 'User notes about the game',
     })
     notes: string | null
 
-    @ApiProperty({ 
-        example: 2, 
+    @ApiProperty({
+        example: 2,
         nullable: true,
-        description: 'Admin account ID that reviewed the proposal'
+        description: 'Admin account ID that reviewed the proposal',
     })
     reviewedBy: number | null
 
-    @ApiProperty({ 
-        example: '2024-01-15T10:30:00Z', 
+    @ApiProperty({
+        example: '2024-01-15T10:30:00Z',
         nullable: true,
-        description: 'When the proposal was reviewed'
+        description: 'When the proposal was reviewed',
     })
     reviewedAt: string | null
 
-    @ApiProperty({ 
-        example: 'Approved - great game for our collection', 
+    @ApiProperty({
+        example: 'Approved - great game for our collection',
         nullable: true,
-        description: 'Admin review notes'
+        description: 'Admin review notes',
     })
     reviewNotes: string | null
 
-    @ApiProperty({ 
-        example: 123, 
+    @ApiProperty({
+        example: 123,
         nullable: true,
-        description: 'ID of the created game if approved'
+        description: 'ID of the created game if approved',
     })
     createdGameId: number | null
 
-    @ApiProperty({ 
+    @ApiProperty({
         example: '2024-01-10T15:45:00Z',
-        description: 'When the proposal was submitted'
+        description: 'When the proposal was submitted',
     })
     submittedAt: string
 }
@@ -106,45 +106,45 @@ export class CreateGameProposalBody {
     @ApiProperty({ example: 'Catan', description: 'Game title' })
     title: string
 
-    @ApiProperty({ 
-        example: 'https://www.example.com/image.jpg', 
+    @ApiProperty({
+        example: 'https://www.example.com/image.jpg',
         required: false,
-        description: 'Game image URL'
+        description: 'Game image URL',
     })
     imageUrl?: string
 
-    @ApiProperty({ 
-        example: 120, 
+    @ApiProperty({
+        example: 120,
         required: false,
-        description: 'Average duration of the game in minutes'
+        description: 'Average duration of the game in minutes',
     })
     gameAvgDuration?: number
 
-    @ApiProperty({ 
-        example: 3, 
+    @ApiProperty({
+        example: 3,
         required: false,
-        description: 'Minimum number of players required'
+        description: 'Minimum number of players required',
     })
     minPlayers?: number
 
-    @ApiProperty({ 
-        example: 4, 
+    @ApiProperty({
+        example: 4,
         required: false,
-        description: 'Maximum number of players allowed'
+        description: 'Maximum number of players allowed',
     })
     maxPlayers?: number
 
-    @ApiProperty({ 
-        example: '["strategy", "family"]', 
+    @ApiProperty({
+        example: '["strategy", "family"]',
         required: false,
-        description: 'Proposed tags as JSON string'
+        description: 'Proposed tags as JSON string',
     })
     proposedTags?: string
 
-    @ApiProperty({ 
-        example: 'A great family strategy game', 
+    @ApiProperty({
+        example: 'A great family strategy game',
         required: false,
-        description: 'User notes about the game'
+        description: 'User notes about the game',
     })
     notes?: string
 }
@@ -153,25 +153,25 @@ export class CreateGameProposalBody {
  * Request body for updating a game proposal (admin review)
  */
 export class UpdateGameProposalBody {
-    @ApiProperty({ 
-        example: 'approved', 
+    @ApiProperty({
+        example: 'approved',
         enum: ['pending', 'approved', 'rejected', 'duplicate'],
         required: false,
-        description: 'New status for the proposal'
+        description: 'New status for the proposal',
     })
     status?: 'pending' | 'approved' | 'rejected' | 'duplicate'
 
-    @ApiProperty({ 
-        example: 'Approved - great game for our collection', 
+    @ApiProperty({
+        example: 'Approved - great game for our collection',
         required: false,
-        description: 'Admin review notes'
+        description: 'Admin review notes',
     })
     reviewNotes?: string
 
-    @ApiProperty({ 
-        example: 123, 
+    @ApiProperty({
+        example: 123,
         required: false,
-        description: 'ID of the created game if approved'
+        description: 'ID of the created game if approved',
     })
     createdGameId?: number
 }
@@ -180,9 +180,9 @@ export class UpdateGameProposalBody {
  * Game proposal with submitter ID only
  */
 export class GameProposalWithSubmitterDto extends GameProposalDto {
-    @ApiProperty({ 
+    @ApiProperty({
         example: 1,
-        description: 'ID of the user who submitted the proposal'
+        description: 'ID of the user who submitted the proposal',
     })
     submitterId: number
 }
@@ -191,10 +191,10 @@ export class GameProposalWithSubmitterDto extends GameProposalDto {
  * Game proposal with reviewer ID only
  */
 export class GameProposalWithReviewerDto extends GameProposalDto {
-    @ApiProperty({ 
+    @ApiProperty({
         example: 2,
         nullable: true,
-        description: 'ID of the admin who reviewed the proposal'
+        description: 'ID of the admin who reviewed the proposal',
     })
     reviewerId?: number
 }
@@ -203,16 +203,16 @@ export class GameProposalWithReviewerDto extends GameProposalDto {
  * Complete game proposal with both submitter and reviewer IDs
  */
 export class GameProposalCompleteDto extends GameProposalDto {
-    @ApiProperty({ 
+    @ApiProperty({
         example: 1,
-        description: 'ID of the user who submitted the proposal'
+        description: 'ID of the user who submitted the proposal',
     })
     submitterId: number
 
-    @ApiProperty({ 
+    @ApiProperty({
         example: 2,
         nullable: true,
-        description: 'ID of the admin who reviewed the proposal'
+        description: 'ID of the admin who reviewed the proposal',
     })
     reviewerId?: number
 }
@@ -221,9 +221,9 @@ export class GameProposalCompleteDto extends GameProposalDto {
  * Game proposal with full submitter information (when needed)
  */
 export class GameProposalWithSubmitterDetailsDto extends GameProposalDto {
-    @ApiProperty({ 
+    @ApiProperty({
         type: UserGetDto,
-        description: 'Full information about the user who submitted the proposal'
+        description: 'Full information about the user who submitted the proposal',
     })
     submitter: UserGetDto
 }
@@ -232,10 +232,10 @@ export class GameProposalWithSubmitterDetailsDto extends GameProposalDto {
  * Game proposal with full reviewer information (when needed)
  */
 export class GameProposalWithReviewerDetailsDto extends GameProposalDto {
-    @ApiProperty({ 
+    @ApiProperty({
         type: UserGetDto,
         nullable: true,
-        description: 'Full information about the admin who reviewed the proposal'
+        description: 'Full information about the admin who reviewed the proposal',
     })
     reviewer?: UserGetDto
-} 
+}

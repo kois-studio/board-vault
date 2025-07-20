@@ -10,10 +10,10 @@ import { NotificationsService } from '../../core/notifications/notifications.ser
 import { UsersService } from '../../core/users/users.service'
 
 import type { SuccessDto } from '../../../common/types/auth.type'
-import type { NotificationDto } from '../../../common/types/notification.type'
-import type { UserGetDto } from '../../../common/types/user.type'
 import type { CreateGameProposalBody, GameProposalDto } from '../../../common/types/game-proposal.type'
+import type { NotificationDto } from '../../../common/types/notification.type'
 import type { UserProposalStatsDto } from '../../../common/types/stats.type'
+import type { UserGetDto } from '../../../common/types/user.type'
 
 @Injectable()
 export class ProfileService {

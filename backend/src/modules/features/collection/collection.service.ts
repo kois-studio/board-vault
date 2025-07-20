@@ -4,9 +4,11 @@ import { LogFeature } from '../../../common/decorators/logger.decorator'
 import { UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
 import { CollectionActivityService } from '../../../modules/core/collection-activity/collection-activity.service'
 import { GameTranslationService } from '../../../modules/core/game-translation/game-translation.service'
+import { GameTagsService } from '../../core/game-tags/game-tags.service'
 import { GamesService } from '../../core/games/games.service'
 import { GamesOwnedService } from '../../core/games-owned/games-owned.service'
 import { ReviewsService } from '../../core/reviews/reviews.service'
+import { TagCategoryService } from '../../core/tag-category/tag-category.service'
 import { TagsService } from '../../core/tags/tags.service'
 import { WishlistService } from '../../core/wishlist/wishlist.service'
 
@@ -14,8 +16,6 @@ import type { SuccessDto } from '../../../common/types/auth.type'
 import type { CollectionActivityWithGameDataDto } from '../../../common/types/collection-activity.type'
 import type { CreateGameReviewBody, GameReviewWithGameDataDto } from '../../../common/types/game-review.type'
 import type { BrowseGamesResultDto, GameCompleteDto, GameDto, GameViewDto } from '../../../common/types/game.type'
-import { GameTagsService } from '../../core/game-tags/game-tags.service'
-import { TagCategoryService } from '../../core/tag-category/tag-category.service'
 
 @Injectable()
 export class CollectionService {

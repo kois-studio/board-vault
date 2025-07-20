@@ -10,4 +10,4 @@ import { GameProposalService } from './game-proposal.service'
     providers: [GameProposalService],
     exports: [GameProposalService],
 })
-export class GameProposalModule {} 
+export class GameProposalModule {}
