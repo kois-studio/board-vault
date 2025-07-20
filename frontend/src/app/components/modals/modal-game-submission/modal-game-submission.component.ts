@@ -3,7 +3,7 @@ import { Component, EventEmitter, Output, signal } from '@angular/core'
 import { FormGameSubmissionComponent } from '../../forms/form-game-submission/form-game-submission.component'
 
 @Component({
-    imports: [CommonModule, FormGameSubmissionComponent],
+    imports: [FormGameSubmissionComponent],
     selector: 'app-modal-game-submission',
     templateUrl: './modal-game-submission.component.html',
 })
