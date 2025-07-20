@@ -18,6 +18,15 @@ export class ProfileMenuComponent {
     public userData: ReturnType<typeof this.dataService.currentUser> = null
     public userInvitations: ReturnType<typeof this.dataService.userInvitations> = []
     public userUnreadNotifications: ReturnType<typeof this.dataService.userNotifications> = []
+    public userProposalStats: ReturnType<typeof this.dataService.userProposalStats> = {
+        totalProposals: 0,
+        approvedProposals: 0,
+        rejectedProposals: 0,
+        duplicateProposals: 0,
+        pendingProposals: 0,
+        approvalRate: 0,
+        reputationScore: 0,
+    }
 
     // Get the child component to be able to call its methods
     @ViewChild(ModalProfileInvitationsComponent) modalProfileInvitationsComponent!: ModalProfileInvitationsComponent
@@ -36,6 +45,7 @@ export class ProfileMenuComponent {
             this.userData = this.dataService.currentUser()
             this.userInvitations = this.dataService.userInvitations()
             this.userUnreadNotifications = this.dataService.userNotifications().filter((notifications) => !notifications.isRead)
+            this.userProposalStats = this.dataService.userProposalStats()
         })
     }
 
@@ -82,6 +92,10 @@ export class ProfileMenuComponent {
 
     public onClickNotifications() {
         this.modalProfileNotificationsComponent.showDialog()
+        this.isDropdownVisible = false
+    }
+
+    public onClickSubmissions() {
         this.isDropdownVisible = false
     }
 

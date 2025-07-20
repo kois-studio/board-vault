@@ -335,15 +335,15 @@ export class Api {
     // #region Game Proposals
 
     createGameProposal(userId: number, proposalData: CreateGameProposalType) {
-        return this.http.post<GameProposalType>(`${this.url}/users/${userId}/proposals`, proposalData)
+        return this.http.post<GameProposalType>(`${this.url}/profile/users/${userId}/proposals`, proposalData)
     }
 
     getUserProposals(userId: number) {
-        return this.http.get<Array<GameProposalType>>(`${this.url}/users/${userId}/proposals`)
+        return this.http.get<Array<GameProposalType>>(`${this.url}/profile/users/${userId}/proposals`)
     }
 
     getUserProposalStats(userId: number) {
-        return this.http.get<UserProposalStatsType>(`${this.url}/users/${userId}/proposal-stats`)
+        return this.http.get<UserProposalStatsType>(`${this.url}/profile/users/${userId}/proposal-stats`)
     }
 
     // #endregion
