@@ -63,8 +63,10 @@ export class ModalEditGameTranslationsComponent {
     public async onSubmit(): Promise<void> {
         this.logger.log('Modal onSubmit called')
 
-        if (this.form.invalid || !this.game()) {
-            this.logger.log('Form invalid or no game:', this.form.invalid, !this.game())
+        const game = this.game()
+
+        if (this.form.invalid || !game) {
+            this.logger.log('Form invalid or no game:', this.form.invalid, !game)
             return
         }
 
@@ -76,15 +78,15 @@ export class ModalEditGameTranslationsComponent {
                 es: this.form.get('es')?.value?.trim() || '',
             }
 
-            this.logger.log('Updating translations for game:', this.game()?.id, translations)
+            this.logger.log('Updating translations for game:', game.id, translations)
 
-            await firstValueFrom(this.api.updateAdminGameTranslations(this.game()?.id, translations))
+            await firstValueFrom(this.api.updateAdminGameTranslations(game.id, translations))
 
             this.logger.log('Translation update successful, emitting event')
             this.toastService.success('Game translations updated successfully.')
 
             const eventData = {
-                id: this.game()?.id,
+                id: game.id,
                 translations,
             }
             this.logger.log('Emitting event with data:', eventData)

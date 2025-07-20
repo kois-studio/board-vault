@@ -54,18 +54,13 @@ export class ModalEditCategoryComponent {
     }
 
     public onSubmit(): void {
-        if (this.editCategoryForm.invalid || !this.category()) {
+        const category = this.category()
+        if (this.editCategoryForm.invalid || !category) {
             return
         }
 
         const formValue = this.editCategoryForm.value
         if (!formValue.name) return
-
-        const category = this.category()
-        if (!category) {
-            this.toastService.error('Category not found')
-            return
-        }
 
         this.isLoading.set(true)
 
