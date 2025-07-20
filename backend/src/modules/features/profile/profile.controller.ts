@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common'
+import { Body, Controller, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
@@ -8,6 +8,8 @@ import { SuccessDto } from '../../../common/types/auth.type'
 import { InvitationWithExtraData } from '../../../common/types/invitation.type'
 import { NotificationDto } from '../../../common/types/notification.type'
 import { UserGetDto } from '../../../common/types/user.type'
+import { CreateGameProposalBody, GameProposalDto } from '../../../common/types/game-proposal.type'
+import { UserProposalStatsDto } from '../../../common/types/stats.type'
 
 import { ProfileService } from './profile.service'
 
@@ -48,5 +50,35 @@ export class ProfileController {
     @ApiResponse({ status: 404, description: 'Invitation not found' })
     acceptInvitation(@Param('userId', ParseIntPipe) userId: number, @Param('invitationId', ParseIntPipe) invitationId: number) {
         return this.profileService.acceptInvitation(userId, invitationId)
+    }
+
+    @UseGuards(UserOwnershipGuard)
+    @Get('/users/:userId/proposals')
+    @ApiOperation({ summary: 'Get user proposals', deprecated: false })
+    @ApiResponse({ status: 200, type: [GameProposalDto], description: 'User proposals found' })
+    @ApiResponse({ status: 404, description: 'User not found' })
+    async getUserProposals(@Param('userId', ParseIntPipe) userId: number) {
+        return this.profileService.getUserProposals(userId)
+    }
+
+    @UseGuards(UserOwnershipGuard)
+    @Get('/users/:userId/proposal-stats')
+    @ApiOperation({ summary: 'Get user proposal statistics', deprecated: false })
+    @ApiResponse({ status: 200, type: UserProposalStatsDto, description: 'User proposal stats found' })
+    @ApiResponse({ status: 404, description: 'User not found' })
+    async getUserProposalStats(@Param('userId', ParseIntPipe) userId: number) {
+        return this.profileService.getUserProposalStats(userId)
+    }
+
+    @UseGuards(UserOwnershipGuard)
+    @Post('/users/:userId/proposals')
+    @ApiOperation({ summary: 'Create a new game proposal', deprecated: false })
+    @ApiResponse({ status: 201, type: GameProposalDto, description: 'Game proposal created' })
+    @ApiResponse({ status: 400, description: 'Invalid proposal data' })
+    async createGameProposal(
+        @Param('userId', ParseIntPipe) userId: number,
+        @Body() proposalData: CreateGameProposalBody
+    ) {
+        return this.profileService.createGameProposal(userId, proposalData)
     }
 }

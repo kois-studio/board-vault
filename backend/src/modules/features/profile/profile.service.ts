@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common'
 
 import { LogFeature } from '../../../common/decorators/logger.decorator'
 import { InvitationWithExtraData } from '../../../common/types/invitation.type'
+import { GameProposalService } from '../../core/game-proposal/game-proposal.service'
 import { GroupMembershipsService } from '../../core/group-memberships/group-memberships.service'
 import { GroupsService } from '../../core/groups/groups.service'
 import { InvitationsService } from '../../core/invitations/invitations.service'
@@ -11,6 +12,8 @@ import { UsersService } from '../../core/users/users.service'
 import type { SuccessDto } from '../../../common/types/auth.type'
 import type { NotificationDto } from '../../../common/types/notification.type'
 import type { UserGetDto } from '../../../common/types/user.type'
+import type { CreateGameProposalBody, GameProposalDto } from '../../../common/types/game-proposal.type'
+import type { UserProposalStatsDto } from '../../../common/types/stats.type'
 
 @Injectable()
 export class ProfileService {
@@ -20,6 +23,7 @@ export class ProfileService {
         private readonly groupsService: GroupsService,
         private readonly invitationsService: InvitationsService,
         private readonly groupMembershipsService: GroupMembershipsService,
+        private readonly gameProposalService: GameProposalService,
     ) {}
 
     @LogFeature(new Logger('ProfileService'))
@@ -70,5 +74,20 @@ export class ProfileService {
         // })
 
         return { success: true }
+    }
+
+    @LogFeature(new Logger('ProfileService'))
+    async getUserProposals(userId: number): Promise<Array<GameProposalDto>> {
+        return this.gameProposalService.getGameProposalsBySubmitter(userId)
+    }
+
+    @LogFeature(new Logger('ProfileService'))
+    async getUserProposalStats(userId: number): Promise<UserProposalStatsDto> {
+        return this.gameProposalService.getUserProposalStats(userId)
+    }
+
+    @LogFeature(new Logger('ProfileService'))
+    async createGameProposal(userId: number, proposalData: CreateGameProposalBody): Promise<GameProposalDto> {
+        return this.gameProposalService.createGameProposal(userId, proposalData)
     }
 }

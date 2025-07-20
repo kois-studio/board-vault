@@ -3,6 +3,7 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { gameProposalSchema, gameProposalsSchema } from '../../../common/schemas/db-game-proposal.schema'
 import type { GameProposalDto, CreateGameProposalBody, UpdateGameProposalBody } from '../../../common/types/game-proposal.type'
+import type { UserProposalStatsDto } from '../../../common/types/stats.type'
 import { CacheService } from '../../common/cache/cache.service'
 import { DatabaseService } from '../../common/database/database.service'
 
@@ -201,5 +202,48 @@ export class GameProposalService {
         await this.cacheService.deleteOne(`user-proposal-stats:${proposal.submittedBy}`)
 
         return proposal
+    }
+
+    async getUserProposalStats(userId: number): Promise<UserProposalStatsDto> {
+        this.LOGGER.log(`Getting user proposal stats for user ${userId}`)
+
+        // Try to get from cache first
+        const cachedStats = await this.cacheService.get(`user-proposal-stats:${userId}`)
+        if (cachedStats) {
+            return cachedStats as UserProposalStatsDto
+        }
+
+        // Get all proposals for the user
+        const proposals = await this.getGameProposalsBySubmitter(userId)
+        
+        // Calculate stats
+        const totalProposals = proposals.length
+        const approvedProposals = proposals.filter(p => p.status === 'approved').length
+        const rejectedProposals = proposals.filter(p => p.status === 'rejected').length
+        const duplicateProposals = proposals.filter(p => p.status === 'duplicate').length
+        const pendingProposals = proposals.filter(p => p.status === 'pending').length
+        
+        const approvalRate = totalProposals > 0 ? (approvedProposals / totalProposals) * 100 : 0
+        
+        // Calculate reputation score (0-100)
+        // Formula: (approved * 10) + (rejected * -5) + (duplicate * -2) + (pending * 0)
+        const reputationScore = Math.max(0, Math.min(100, 
+            (approvedProposals * 10) + (rejectedProposals * -5) + (duplicateProposals * -2)
+        ))
+
+        const stats: UserProposalStatsDto = {
+            totalProposals,
+            approvedProposals,
+            rejectedProposals,
+            duplicateProposals,
+            pendingProposals,
+            approvalRate: Math.round(approvalRate * 100) / 100, // Round to 2 decimal places
+            reputationScore: Math.round(reputationScore),
+        }
+
+        // Cache the stats for 5 minutes
+        await this.cacheService.set(`user-proposal-stats:${userId}`, stats, 'short')
+
+        return stats
     }
 } 
