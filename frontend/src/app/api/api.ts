@@ -2,15 +2,17 @@ import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { environment } from '../../environments/environment'
 import type {
-    GameWithTagsAndTranslationsType,
-    BrowseGamesResultType,
     AdminGamesResultType,
+    BrowseGamesResultType,
     CollectionActivityWithGameDataType,
+    CreateGameProposalType,
     GameCompleteType,
     GameOwnedType,
+    GameProposalType,
     GameReviewWithGameData,
     GameType,
     GameViewType,
+    GameWithTagsAndTranslationsType,
     GroupWithMembersAndGames,
     HistoryRecordType,
     InvitationWithAccountsData,
@@ -23,11 +25,9 @@ import type {
     TagCategoryType,
     TagType,
     UpdateGameOwnedType,
+    UserProposalStatsType,
     UserStatsType,
     UserType,
-    GameProposalType,
-    CreateGameProposalType,
-    UserProposalStatsType,
 } from './api.types'
 
 @Injectable({ providedIn: 'root' })
@@ -199,12 +199,12 @@ export class Api {
 
     // #region Admin Games
 
-    getAdminGames(search: string = '', page: number = 1, limit: number = 10) {
+    getAdminGames(search = '', page = 1, limit = 10) {
         const params = new URLSearchParams()
         if (search) params.append('search', search)
         params.append('page', page.toString())
         params.append('limit', limit.toString())
-        
+
         return this.http.get<AdminGamesResultType>(`${this.url}/admin/games?${params.toString()}`)
     }
 

@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common'
-import { Component, EventEmitter, inject, Output, signal } from '@angular/core'
+import { Component, EventEmitter, Output, inject, signal } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
-import type { TagCategoryType } from '../../../api/api.types'
 import { Api } from '../../../api/api'
+import type { TagCategoryType } from '../../../api/api.types'
+import { LogService } from '../../../core/services/log.service'
 import { ToastService } from '../../toast/toast.service'
 import { ButtonComponent } from '../../ui/button/button.component'
-import { LogService } from '../../../core/services/log.service'
 
 @Component({
     imports: [CommonModule, ReactiveFormsModule, ButtonComponent],
@@ -32,11 +32,7 @@ export class ModalAddCategoryComponent {
     //        Form
     // --------------------------------------------------------------------------
     public addCategoryForm = new FormGroup({
-        name: new FormControl('', [
-            Validators.required,
-            Validators.minLength(2),
-            Validators.maxLength(50),
-        ]),
+        name: new FormControl('', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
     })
 
     // --------------------------------------------------------------------------
@@ -61,7 +57,7 @@ export class ModalAddCategoryComponent {
         if (!formValue.name) return
 
         this.isLoading.set(true)
-        
+
         // Call API to create category
         this.api.createAdminTagCategory(formValue.name).subscribe({
             next: (newCategory: TagCategoryType) => {
@@ -74,7 +70,7 @@ export class ModalAddCategoryComponent {
                 this.isLoading.set(false)
                 this.logger.error('Error creating category:', error)
                 this.toastService.error('Failed to create category. Please try again.')
-            }
+            },
         })
     }
 
@@ -93,4 +89,4 @@ export class ModalAddCategoryComponent {
     get isFormValid() {
         return this.addCategoryForm.valid && this.addCategoryForm.dirty
     }
-} 
+}

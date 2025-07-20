@@ -31,5 +31,4 @@ export class CollectionPageComponent {
     public readonly userReviews$ = this.dataService.userReviews
     public readonly userWishlist$ = this.dataService.userWishlist
     public readonly userCollectionActivity$ = this.dataService.userCollectionActivity
-
 }

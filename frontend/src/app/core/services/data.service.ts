@@ -5,6 +5,7 @@ import { Api } from '../../api/api'
 import type {
     CollectionActivityWithGameDataType,
     GameCompleteType,
+    GameProposalType,
     GameReviewWithGameData,
     GameType,
     GroupWithMembersAndGames,
@@ -13,10 +14,9 @@ import type {
     InvitationWithExtraData,
     MeetType,
     NotificationType,
+    UserProposalStatsType,
     UserStatsType,
     UserType,
-    GameProposalType,
-    UserProposalStatsType,
 } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
 import { LOADING_KEYS } from '../enums/loading-keys-enum'

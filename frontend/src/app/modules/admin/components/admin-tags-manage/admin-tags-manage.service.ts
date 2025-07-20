@@ -1,4 +1,4 @@
-import { Injectable, computed, signal, inject } from '@angular/core'
+import { Injectable, computed, inject, signal } from '@angular/core'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../../../api/api'
 import type { TagCategoryType, TagType } from '../../../../api/api.types'
@@ -25,9 +25,9 @@ export class AdminTagsManageService {
     //        Computed signals
     // --------------------------------------------------------------------------
     public readonly tagsWithCategory = computed(() => {
-        return this.tags().map(tag => ({
+        return this.tags().map((tag) => ({
             ...tag,
-            categoryName: this.tagCategories().find(category => category.id === tag.categoryId),
+            categoryName: this.tagCategories().find((category) => category.id === tag.categoryId),
         }))
     })
 
@@ -42,24 +42,18 @@ export class AdminTagsManageService {
         }
 
         this.logger.log('Initializing admin tags manage service')
-        await Promise.all([
-            this._fetchTagCategories(),
-            this._fetchTags()
-        ])
+        await Promise.all([this._fetchTagCategories(), this._fetchTags()])
         this.isInitialized.set(true)
     }
 
     public async refreshData(): Promise<void> {
         this.logger.log('Refreshing admin tags manage data')
-        await Promise.all([
-            this._fetchTagCategories(),
-            this._fetchTags()
-        ])
+        await Promise.all([this._fetchTagCategories(), this._fetchTags()])
     }
 
     private async _fetchTagCategories(): Promise<void> {
         this.isLoadingCategories.set(true)
-        
+
         try {
             const categories = await firstValueFrom(this.api.getAdminTagCategories())
             this.tagCategories.set(categories || [])
@@ -74,7 +68,7 @@ export class AdminTagsManageService {
 
     private async _fetchTags(): Promise<void> {
         this.isLoadingTags.set(true)
-        
+
         try {
             const tags = await firstValueFrom(this.api.getAdminTags())
             this.tags.set(tags || [])
@@ -86,4 +80,4 @@ export class AdminTagsManageService {
             this.isLoadingTags.set(false)
         }
     }
-} 
+}

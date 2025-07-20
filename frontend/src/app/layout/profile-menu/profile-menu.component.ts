@@ -32,8 +32,8 @@ export class ProfileMenuComponent {
     // --------------------------------------------------------------------------
     //        Component computed signals
     // --------------------------------------------------------------------------
-    public readonly userUnreadNotificationsComputed = computed(() => 
-        this.userNotifications$().filter((notifications) => !notifications.isRead)
+    public readonly userUnreadNotificationsComputed = computed(() =>
+        this.userNotifications$().filter((notifications) => !notifications.isRead),
     )
 
     // --------------------------------------------------------------------------
