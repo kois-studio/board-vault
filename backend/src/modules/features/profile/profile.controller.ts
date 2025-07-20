@@ -5,11 +5,11 @@ import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
 import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
 import { SuccessDto } from '../../../common/types/auth.type'
+import { CreateGameProposalBody, GameProposalDto } from '../../../common/types/game-proposal.type'
 import { InvitationWithExtraData } from '../../../common/types/invitation.type'
 import { NotificationDto } from '../../../common/types/notification.type'
-import { UserGetDto } from '../../../common/types/user.type'
-import { CreateGameProposalBody, GameProposalDto } from '../../../common/types/game-proposal.type'
 import { UserProposalStatsDto } from '../../../common/types/stats.type'
+import { UserGetDto } from '../../../common/types/user.type'
 
 import { ProfileService } from './profile.service'
 
@@ -75,10 +75,7 @@ export class ProfileController {
     @ApiOperation({ summary: 'Create a new game proposal', deprecated: false })
     @ApiResponse({ status: 201, type: GameProposalDto, description: 'Game proposal created' })
     @ApiResponse({ status: 400, description: 'Invalid proposal data' })
-    async createGameProposal(
-        @Param('userId', ParseIntPipe) userId: number,
-        @Body() proposalData: CreateGameProposalBody
-    ) {
+    async createGameProposal(@Param('userId', ParseIntPipe) userId: number, @Body() proposalData: CreateGameProposalBody) {
         return this.profileService.createGameProposal(userId, proposalData)
     }
 }

@@ -2,7 +2,7 @@ import { ResultSet } from '@libsql/client/.'
 import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { gameReviewsSchema } from '../../../common/schemas/db-game-review.schema'
-import { CreateGameReviewBody, GameReviewDto } from '../../../common/types/game-review.type'
+import { GameReviewDto } from '../../../common/types/game-review.type'
 import { CacheService } from '../../common/cache/cache.service'
 import { DatabaseService } from '../../common/database/database.service'
 

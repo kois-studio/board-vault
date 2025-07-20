@@ -5,7 +5,6 @@ import * as bcrypt from 'bcryptjs'
 
 import type { CollectionActivityDto } from '../../../common/types/collection-activity.type'
 import type { GameOwnedDto, UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
-import type { CreateGameProposalBody } from '../../../common/types/game-proposal.type'
 import type { SupportedLanguage } from '../../../common/types/game-translation.type'
 import type { CreateGroupMembershipBody } from '../../../common/types/group-membership.type'
 import type { CreateGroupBody, UpdateGroupBody } from '../../../common/types/group.type'
@@ -400,13 +399,7 @@ export class DatabaseService implements OnModuleInit {
         return this._tursoExecute('SELECT * FROM Game ORDER BY id')
     }
 
-    async createGame(gameData: {
-        title: string
-        imageUrl: string
-        gameAvgDuration: number
-        minPlayers: number
-        maxPlayers: number
-    }) {
+    async createGame(gameData: { title: string; imageUrl: string; gameAvgDuration: number; minPlayers: number; maxPlayers: number }) {
         await this._tursoExecute({
             sql: 'INSERT INTO Game (imageUrl, gameAvgDuration, minPlayers, maxPlayers) VALUES (?, ?, ?, ?)',
             args: [gameData.imageUrl, gameData.gameAvgDuration, gameData.minPlayers, gameData.maxPlayers],
@@ -1222,16 +1215,7 @@ export class DatabaseService implements OnModuleInit {
         proposedTags?: string
         notes?: string
     }) {
-        const {
-            submittedBy,
-            title,
-            imageUrl,
-            gameAvgDuration,
-            minPlayers,
-            maxPlayers,
-            proposedTags,
-            notes,
-        } = proposalData
+        const { submittedBy, title, imageUrl, gameAvgDuration, minPlayers, maxPlayers, proposedTags, notes } = proposalData
 
         await this._tursoExecute({
             sql: `
@@ -1253,12 +1237,15 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
-    async updateGameProposal(id: number, updateData: {
-        status?: 'pending' | 'approved' | 'rejected' | 'duplicate'
-        reviewedBy?: number
-        reviewNotes?: string
-        createdGameId?: number
-    }) {
+    async updateGameProposal(
+        id: number,
+        updateData: {
+            status?: 'pending' | 'approved' | 'rejected' | 'duplicate'
+            reviewedBy?: number
+            reviewNotes?: string
+            createdGameId?: number
+        },
+    ) {
         const { status, reviewedBy, reviewNotes, createdGameId } = updateData
 
         const fields = []

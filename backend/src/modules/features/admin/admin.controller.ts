@@ -1,24 +1,23 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
+import { AdminGuard } from '../../../common/guards/admin.guard'
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
 import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
-import { AdminGuard } from '../../../common/guards/admin.guard'
-
-import { AdminService } from './admin.service'
-import { CreateTagCategoryDto, TagCategoryDto, TagCategoryWithTagsDto } from '../../../common/types/tag-category.type'
-import { CreateTagDto, TagDto } from '../../../common/types/tag.type'
-import { 
-    UpdateGameTranslationsBody, 
-    UpdateGameTagsBody, 
+import {
+    UpdateGameTranslationsBody,
+    UpdateGameTagsBody,
     AdminGamesResponseDto,
     ApproveGameProposalBody,
     RejectGameProposalBody,
-    AdminGameProposalsResponseDto
+    AdminGameProposalsResponseDto,
 } from '../../../common/types/admin.type'
-import { GameWithTagsAndTranslationsDto } from '../../../common/types/game.type'
 import { SuccessDto } from '../../../common/types/auth.type'
 import { GameProposalCompleteDto } from '../../../common/types/game-proposal.type'
+import { CreateTagCategoryDto, TagCategoryWithTagsDto } from '../../../common/types/tag-category.type'
+import { CreateTagDto, TagDto } from '../../../common/types/tag.type'
+
+import { AdminService } from './admin.service'
 
 @UseGuards(JwtAuthGuard, VerifiedUserGuard, AdminGuard)
 @ApiTags('admin')
@@ -95,10 +94,10 @@ export class AdminController {
 
     @Get('/games')
     @ApiOperation({ summary: 'Get games with translations and tags (paginated and searchable)', deprecated: false })
-    @ApiResponse({ 
-        status: 200, 
+    @ApiResponse({
+        status: 200,
         description: 'Paginated list of games with translations and tags',
-        type: AdminGamesResponseDto
+        type: AdminGamesResponseDto,
     })
     async getGames(
         @Query('search') search: string = '',
@@ -128,10 +127,10 @@ export class AdminController {
 
     @Get('/proposals')
     @ApiOperation({ summary: 'Get game proposals (paginated and filterable by status)', deprecated: false })
-    @ApiResponse({ 
-        status: 200, 
+    @ApiResponse({
+        status: 200,
         description: 'Paginated list of game proposals',
-        type: AdminGameProposalsResponseDto
+        type: AdminGameProposalsResponseDto,
     })
     async getGameProposals(
         @Query('status') status?: 'pending' | 'approved' | 'rejected' | 'duplicate',
@@ -143,10 +142,10 @@ export class AdminController {
 
     @Get('/proposals/:id')
     @ApiOperation({ summary: 'Get a specific game proposal', deprecated: false })
-    @ApiResponse({ 
-        status: 200, 
+    @ApiResponse({
+        status: 200,
         description: 'Game proposal details',
-        type: GameProposalCompleteDto
+        type: GameProposalCompleteDto,
     })
     async getGameProposal(@Param('id') id: string) {
         return this.adminService.getAdminGameProposalById(Number(id))
@@ -154,64 +153,64 @@ export class AdminController {
 
     @Post('/proposals/:id/approve')
     @ApiOperation({ summary: 'Approve a game proposal and create the game', deprecated: false })
-    @ApiResponse({ 
-        status: 200, 
+    @ApiResponse({
+        status: 200,
         description: 'Game proposal approved and game created',
         schema: {
             type: 'object',
             properties: {
                 success: { type: 'boolean' },
-                createdGameId: { type: 'number' }
-            }
-        }
+                createdGameId: { type: 'number' },
+            },
+        },
     })
     async approveGameProposal(
         @Param('id') id: string,
         @Body() approvalData: ApproveGameProposalBody,
         // TODO: Get reviewerId from JWT token
-        @Query('reviewerId', ParseIntPipe) reviewerId: number
+        @Query('reviewerId', ParseIntPipe) reviewerId: number,
     ) {
         return this.adminService.approveGameProposal(Number(id), reviewerId, approvalData)
     }
 
     @Post('/proposals/:id/reject')
     @ApiOperation({ summary: 'Reject a game proposal', deprecated: false })
-    @ApiResponse({ 
-        status: 200, 
+    @ApiResponse({
+        status: 200,
         description: 'Game proposal rejected',
-        type: SuccessDto
+        type: SuccessDto,
     })
     async rejectGameProposal(
         @Param('id') id: string,
         @Body() rejectionData: RejectGameProposalBody,
         // TODO: Get reviewerId from JWT token
-        @Query('reviewerId', ParseIntPipe) reviewerId: number
+        @Query('reviewerId', ParseIntPipe) reviewerId: number,
     ) {
         return this.adminService.rejectGameProposal(Number(id), reviewerId, rejectionData)
     }
 
     @Post('/proposals/:id/duplicate')
     @ApiOperation({ summary: 'Mark a game proposal as duplicate', deprecated: false })
-    @ApiResponse({ 
-        status: 200, 
+    @ApiResponse({
+        status: 200,
         description: 'Game proposal marked as duplicate',
-        type: SuccessDto
+        type: SuccessDto,
     })
     async markGameProposalAsDuplicate(
         @Param('id') id: string,
         // TODO: Get reviewerId from JWT token
         @Query('reviewerId', ParseIntPipe) reviewerId: number,
-        @Query('reviewNotes') reviewNotes?: string
+        @Query('reviewNotes') reviewNotes?: string,
     ) {
         return this.adminService.markGameProposalAsDuplicate(Number(id), reviewerId, reviewNotes)
     }
 
     @Delete('/proposals/:id')
     @ApiOperation({ summary: 'Delete a game proposal', deprecated: false })
-    @ApiResponse({ 
-        status: 200, 
+    @ApiResponse({
+        status: 200,
         description: 'Game proposal deleted',
-        type: SuccessDto
+        type: SuccessDto,
     })
     async deleteGameProposal(@Param('id') id: string) {
         return this.adminService.deleteGameProposal(Number(id))

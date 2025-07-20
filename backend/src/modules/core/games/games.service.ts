@@ -98,10 +98,10 @@ export class GamesService {
         // Get the created game to return it
         const resultSet = await this.databaseService.getGames()
         const games = this._parseResultSet(resultSet)
-        
+
         // Return the most recent one (should be the one we just created)
         const createdGame = games[games.length - 1]
-        
+
         // Clear cache
         await this.cacheService.deleteOne(`${this.CACHE_KEY}:all`)
 

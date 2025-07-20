@@ -1,6 +1,7 @@
 import { ApiProperty, OmitType } from '@nestjs/swagger'
-import { TagDto } from './tag.type'
 import { IsNumber, IsString } from 'class-validator'
+
+import { TagDto } from './tag.type'
 
 /**
  * Tag category
