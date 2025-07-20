@@ -1,28 +1,27 @@
 import { Injectable, Logger } from '@nestjs/common'
 
 import { LogFeature } from '../../../common/decorators/logger.decorator'
-import { TagCategoryService } from '../../../modules/core/tag-category/tag-category.service'
-import type { TagCategoryWithTagsDto } from '../../../common/types/tag-category.type'
-import { TagsService } from '../../../modules/core/tags/tags.service'
-import { GamesService } from '../../../modules/core/games/games.service'
-import { GameTagsService } from '../../../modules/core/game-tags/game-tags.service'
-import { GameTranslationService } from '../../../modules/core/game-translation/game-translation.service'
-import { GameProposalService } from '../../../modules/core/game-proposal/game-proposal.service'
-import { NotificationsService } from '../../../modules/core/notifications/notifications.service'
-import { TagDto, GameTagWithCategoryDto } from '../../../common/types/tag.type'
-import type { GameDto } from '../../../common/types/game.type'
-import { 
-    UpdateGameTranslationsBody, 
-    UpdateGameTagsBody, 
+import {
+    UpdateGameTranslationsBody,
+    UpdateGameTagsBody,
     AdminGamesResponseDto,
     ApproveGameProposalBody,
     RejectGameProposalBody,
-    AdminGameProposalsResponseDto
+    AdminGameProposalsResponseDto,
 } from '../../../common/types/admin.type'
-import { GameWithTagsAndTranslationsDto } from '../../../common/types/game.type'
-import { GameProposalDto, GameProposalCompleteDto } from '../../../common/types/game-proposal.type'
+import { GameProposalCompleteDto } from '../../../common/types/game-proposal.type'
 import { SupportedLanguage } from '../../../common/types/game-translation.type'
+import { TagDto, GameTagWithCategoryDto } from '../../../common/types/tag.type'
+import { GameProposalService } from '../../../modules/core/game-proposal/game-proposal.service'
+import { GameTagsService } from '../../../modules/core/game-tags/game-tags.service'
+import { GameTranslationService } from '../../../modules/core/game-translation/game-translation.service'
+import { GamesService } from '../../../modules/core/games/games.service'
 import { NotificationTypeEnum } from '../../../modules/core/notifications/notifications-enum.type'
+import { NotificationsService } from '../../../modules/core/notifications/notifications.service'
+import { TagCategoryService } from '../../../modules/core/tag-category/tag-category.service'
+import { TagsService } from '../../../modules/core/tags/tags.service'
+
+import type { TagCategoryWithTagsDto } from '../../../common/types/tag-category.type'
 
 @Injectable()
 export class AdminService {
@@ -150,18 +149,19 @@ export class AdminService {
                 const game = await this.gameService.getGameById(gameId)
                 const translations = await this.gameTranslationService.getGameTranslations(gameId)
                 const gameTags = await this.gameTagsService.getGameTags(gameId)
-                
+
                 // Get tag details for each game tag
                 const tags: Array<GameTagWithCategoryDto> = await Promise.all(
                     gameTags.map(async gameTag => {
                         const tag = await this.tagService.getTagById(gameTag.tagId)
                         const category = await this.tagCategoryService.getTagCategoryById(tag.categoryId)
+
                         return {
                             id: tag.id,
                             name: tag.name,
                             categoryName: category.name,
                         }
-                    })
+                    }),
                 )
 
                 return {
@@ -169,7 +169,7 @@ export class AdminService {
                     translations,
                     tags,
                 }
-            })
+            }),
         )
 
         return {
@@ -197,6 +197,7 @@ export class AdminService {
     async updateGameTags(gameId: number, payload: UpdateGameTagsBody): Promise<{ success: boolean }> {
         // Clear all existing tags for this game first
         const currentTags = await this.gameTagsService.getGameTags(gameId)
+
         for (const gameTag of currentTags) {
             await this.gameTagsService.removeGameTag(gameId, gameTag.tagId)
         }
@@ -215,10 +216,10 @@ export class AdminService {
     async getAdminGameProposals(
         status?: 'pending' | 'approved' | 'rejected' | 'duplicate',
         page: number = 1,
-        limit: number = 10
+        limit: number = 10,
     ): Promise<AdminGameProposalsResponseDto> {
         // Get proposals based on status filter
-        const proposals = status 
+        const proposals = status
             ? await this.gameProposalService.getGameProposalsByStatus(status)
             : await this.gameProposalService.getGameProposals()
 
@@ -250,7 +251,7 @@ export class AdminService {
     @LogFeature(new Logger('AdminService'))
     async getAdminGameProposalById(id: number): Promise<GameProposalCompleteDto> {
         const proposal = await this.gameProposalService.getGameProposalById(id)
-        
+
         return {
             ...proposal,
             submitterId: proposal.submittedBy,
@@ -260,9 +261,9 @@ export class AdminService {
 
     @LogFeature(new Logger('AdminService'))
     async approveGameProposal(
-        proposalId: number, 
-        reviewerId: number, 
-        approvalData: ApproveGameProposalBody
+        proposalId: number,
+        reviewerId: number,
+        approvalData: ApproveGameProposalBody,
     ): Promise<{ success: boolean; createdGameId?: number }> {
         const proposal = await this.gameProposalService.getGameProposalById(proposalId)
 
@@ -283,20 +284,12 @@ export class AdminService {
         if (approvalData.translations) {
             for (const [languageCode, title] of Object.entries(approvalData.translations)) {
                 if (title?.trim()) {
-                    await this.gameTranslationService.createGameTranslation(
-                        createdGameId, 
-                        languageCode as SupportedLanguage, 
-                        title
-                    )
+                    await this.gameTranslationService.createGameTranslation(createdGameId, languageCode as SupportedLanguage, title)
                 }
             }
         } else {
             // Add default translation in English
-            await this.gameTranslationService.createGameTranslation(
-                createdGameId, 
-                'en' as SupportedLanguage, 
-                proposal.title
-            )
+            await this.gameTranslationService.createGameTranslation(createdGameId, 'en' as SupportedLanguage, proposal.title)
         }
 
         // Add tags if provided
@@ -307,12 +300,7 @@ export class AdminService {
         }
 
         // Update the proposal status to approved
-        await this.gameProposalService.approveGameProposal(
-            proposalId, 
-            reviewerId, 
-            approvalData.reviewNotes, 
-            createdGameId
-        )
+        await this.gameProposalService.approveGameProposal(proposalId, reviewerId, approvalData.reviewNotes, createdGameId)
 
         // Send notification to the user
         await this.notificationsService.createNotification({
@@ -330,18 +318,10 @@ export class AdminService {
     }
 
     @LogFeature(new Logger('AdminService'))
-    async rejectGameProposal(
-        proposalId: number, 
-        reviewerId: number, 
-        rejectionData: RejectGameProposalBody
-    ): Promise<{ success: boolean }> {
+    async rejectGameProposal(proposalId: number, reviewerId: number, rejectionData: RejectGameProposalBody): Promise<{ success: boolean }> {
         const proposal = await this.gameProposalService.getGameProposalById(proposalId)
-        
-        await this.gameProposalService.rejectGameProposal(
-            proposalId, 
-            reviewerId, 
-            rejectionData.reviewNotes
-        )
+
+        await this.gameProposalService.rejectGameProposal(proposalId, reviewerId, rejectionData.reviewNotes)
 
         // Send notification to the user
         await this.notificationsService.createNotification({
@@ -359,16 +339,8 @@ export class AdminService {
     }
 
     @LogFeature(new Logger('AdminService'))
-    async markGameProposalAsDuplicate(
-        proposalId: number, 
-        reviewerId: number, 
-        reviewNotes?: string
-    ): Promise<{ success: boolean }> {
-        await this.gameProposalService.markGameProposalAsDuplicate(
-            proposalId, 
-            reviewerId, 
-            reviewNotes
-        )
+    async markGameProposalAsDuplicate(proposalId: number, reviewerId: number, reviewNotes?: string): Promise<{ success: boolean }> {
+        await this.gameProposalService.markGameProposalAsDuplicate(proposalId, reviewerId, reviewNotes)
 
         return { success: true }
     }

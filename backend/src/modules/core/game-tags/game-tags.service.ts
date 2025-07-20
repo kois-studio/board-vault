@@ -1,9 +1,9 @@
 import { ResultSet } from '@libsql/client/.'
 import { Injectable, Logger } from '@nestjs/common'
 
+import { gameTagsSchema, GameTagType } from '../../../common/schemas/db-game-tag.schema'
 import { CacheService } from '../../common/cache/cache.service'
 import { DatabaseService } from '../../common/database/database.service'
-import { gameTagsSchema, GameTagType } from '../../../common/schemas/db-game-tag.schema'
 
 @Injectable()
 export class GameTagsService {
@@ -61,6 +61,7 @@ export class GameTagsService {
         this.LOGGER.log(`Getting game count for tag category ${tagCategoryId}`)
 
         const resultSet = await this.databaseService.getGameCountByTagCategoryId(tagCategoryId)
+
         return Number(resultSet.rows[0][0])
     }
 
@@ -68,6 +69,7 @@ export class GameTagsService {
         this.LOGGER.log(`Getting game count for tag ${tagId}`)
 
         const resultSet = await this.databaseService.getGameCountByTagId(tagId)
+
         return Number(resultSet.rows[0][0])
     }
 
@@ -75,7 +77,7 @@ export class GameTagsService {
         this.LOGGER.log(`Adding tag ${tagId} to game ${gameId}`)
 
         await this.databaseService.addGameTag(gameId, tagId)
-        
+
         // Clear cache
         await this.cacheService.deleteOne(`${this.CACHE_KEY}:byGameId:${gameId}`)
 
@@ -86,7 +88,7 @@ export class GameTagsService {
         this.LOGGER.log(`Removing tag ${tagId} from game ${gameId}`)
 
         await this.databaseService.removeGameTag(gameId, tagId)
-        
+
         // Clear cache
         await this.cacheService.deleteOne(`${this.CACHE_KEY}:byGameId:${gameId}`)
 

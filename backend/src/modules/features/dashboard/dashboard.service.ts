@@ -233,14 +233,15 @@ export class DashboardService {
 
         // Calculate approval rate (only for processed proposals)
         const processedProposals = approvedProposals + rejectedProposals + duplicateProposals
-        const approvalRate = processedProposals > 0 
-            ? Math.round((approvedProposals / processedProposals) * 10000) / 100 // Round to 2 decimal places
-            : 0
+        const approvalRate =
+            processedProposals > 0
+                ? Math.round((approvedProposals / processedProposals) * 10000) / 100 // Round to 2 decimal places
+                : 0
 
         // Calculate reputation score (0-100)
         // Formula: (approved * 10) + (rejected * -5) + (duplicate * -2) + (pending * 0)
         // Then normalize to 0-100 range
-        const rawScore = (approvedProposals * 10) + (rejectedProposals * -5) + (duplicateProposals * -2)
+        const rawScore = approvedProposals * 10 + rejectedProposals * -5 + duplicateProposals * -2
         const reputationScore = Math.max(0, Math.min(100, Math.round(rawScore * 2))) // Scale and clamp to 0-100
 
         return {

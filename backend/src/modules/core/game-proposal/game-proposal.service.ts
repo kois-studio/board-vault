@@ -2,10 +2,11 @@ import { ResultSet } from '@libsql/client/.'
 import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { gameProposalSchema, gameProposalsSchema } from '../../../common/schemas/db-game-proposal.schema'
-import type { GameProposalDto, CreateGameProposalBody, UpdateGameProposalBody } from '../../../common/types/game-proposal.type'
-import type { UserProposalStatsDto } from '../../../common/types/stats.type'
 import { CacheService } from '../../common/cache/cache.service'
 import { DatabaseService } from '../../common/database/database.service'
+
+import type { GameProposalDto, CreateGameProposalBody, UpdateGameProposalBody } from '../../../common/types/game-proposal.type'
+import type { UserProposalStatsDto } from '../../../common/types/stats.type'
 
 @Injectable()
 export class GameProposalService {
@@ -120,10 +121,10 @@ export class GameProposalService {
         // Get the created proposal to return it
         const resultSet = await this.databaseService.getGameProposalsBySubmitter(submittedBy)
         const proposals = this._parseResultSet(resultSet)
-        
+
         // Return the most recent one (should be the one we just created)
         const createdProposal = proposals[0]
-        
+
         // Clear cache
         await this.cacheService.deleteOne(`${this.CACHE_KEY}:bySubmitter:${submittedBy}`)
         await this.cacheService.deleteOne(`${this.CACHE_KEY}:byStatus:pending`)
@@ -135,6 +136,7 @@ export class GameProposalService {
         this.LOGGER.log(`Updating game proposal ${id}`)
 
         const updatePayload: any = { ...updateData }
+
         if (reviewedBy !== undefined) {
             updatePayload.reviewedBy = reviewedBy
         }
@@ -164,11 +166,15 @@ export class GameProposalService {
     async approveGameProposal(id: number, reviewedBy: number, reviewNotes?: string, createdGameId?: number): Promise<GameProposalDto> {
         this.LOGGER.log(`Approving game proposal ${id}`)
 
-        const proposal = await this.updateGameProposal(id, {
-            status: 'approved',
-            reviewNotes,
-            createdGameId,
-        }, reviewedBy)
+        const proposal = await this.updateGameProposal(
+            id,
+            {
+                status: 'approved',
+                reviewNotes,
+                createdGameId,
+            },
+            reviewedBy,
+        )
 
         // Clear user proposal stats cache
         await this.cacheService.deleteOne(`user-proposal-stats:${proposal.submittedBy}`)
@@ -179,10 +185,14 @@ export class GameProposalService {
     async rejectGameProposal(id: number, reviewedBy: number, reviewNotes: string): Promise<GameProposalDto> {
         this.LOGGER.log(`Rejecting game proposal ${id}`)
 
-        const proposal = await this.updateGameProposal(id, {
-            status: 'rejected',
-            reviewNotes,
-        }, reviewedBy)
+        const proposal = await this.updateGameProposal(
+            id,
+            {
+                status: 'rejected',
+                reviewNotes,
+            },
+            reviewedBy,
+        )
 
         // Clear user proposal stats cache
         await this.cacheService.deleteOne(`user-proposal-stats:${proposal.submittedBy}`)
@@ -193,10 +203,14 @@ export class GameProposalService {
     async markGameProposalAsDuplicate(id: number, reviewedBy: number, reviewNotes?: string): Promise<GameProposalDto> {
         this.LOGGER.log(`Marking game proposal ${id} as duplicate`)
 
-        const proposal = await this.updateGameProposal(id, {
-            status: 'duplicate',
-            reviewNotes,
-        }, reviewedBy)
+        const proposal = await this.updateGameProposal(
+            id,
+            {
+                status: 'duplicate',
+                reviewNotes,
+            },
+            reviewedBy,
+        )
 
         // Clear user proposal stats cache
         await this.cacheService.deleteOne(`user-proposal-stats:${proposal.submittedBy}`)
@@ -209,27 +223,26 @@ export class GameProposalService {
 
         // Try to get from cache first
         const cachedStats = await this.cacheService.get(`user-proposal-stats:${userId}`)
+
         if (cachedStats) {
             return cachedStats as UserProposalStatsDto
         }
 
         // Get all proposals for the user
         const proposals = await this.getGameProposalsBySubmitter(userId)
-        
+
         // Calculate stats
         const totalProposals = proposals.length
         const approvedProposals = proposals.filter(p => p.status === 'approved').length
         const rejectedProposals = proposals.filter(p => p.status === 'rejected').length
         const duplicateProposals = proposals.filter(p => p.status === 'duplicate').length
         const pendingProposals = proposals.filter(p => p.status === 'pending').length
-        
+
         const approvalRate = totalProposals > 0 ? (approvedProposals / totalProposals) * 100 : 0
-        
+
         // Calculate reputation score (0-100)
         // Formula: (approved * 10) + (rejected * -5) + (duplicate * -2) + (pending * 0)
-        const reputationScore = Math.max(0, Math.min(100, 
-            (approvedProposals * 10) + (rejectedProposals * -5) + (duplicateProposals * -2)
-        ))
+        const reputationScore = Math.max(0, Math.min(100, approvedProposals * 10 + rejectedProposals * -5 + duplicateProposals * -2))
 
         const stats: UserProposalStatsDto = {
             totalProposals,
@@ -246,4 +259,4 @@ export class GameProposalService {
 
         return stats
     }
-} 
+}
