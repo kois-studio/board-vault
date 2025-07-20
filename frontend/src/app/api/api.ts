@@ -347,4 +347,72 @@ export class Api {
     }
 
     // #endregion
+
+    // #region Admin - Game Proposals
+
+    getAdminGameProposals(status?: 'pending' | 'approved' | 'rejected' | 'duplicate', page = 1, limit = 10) {
+        const params = new URLSearchParams()
+        if (status) params.append('status', status)
+        params.append('page', page.toString())
+        params.append('limit', limit.toString())
+        
+        return this.http.get<{
+            proposals: Array<GameProposalType & { submitterId: number; reviewerId?: number }>
+            pagination: {
+                currentPage: number
+                totalPages: number
+                totalItems: number
+                itemsPerPage: number
+            }
+        }>(`${this.url}/admin/proposals?${params.toString()}`)
+    }
+
+    getAdminGameProposal(id: number) {
+        return this.http.get<GameProposalType & { submitterId: number; reviewerId?: number }>(`${this.url}/admin/proposals/${id}`)
+    }
+
+    approveGameProposal(id: number, reviewerId: number, approvalData: {
+        reviewNotes?: string
+        imageUrl?: string
+        gameAvgDuration?: number
+        minPlayers?: number
+        maxPlayers?: number
+        translations?: Record<string, string>
+        tagIds?: number[]
+    }) {
+        const params = new URLSearchParams()
+        params.append('reviewerId', reviewerId.toString())
+        
+        return this.http.post<{ success: boolean; createdGameId?: number }>(
+            `${this.url}/admin/proposals/${id}/approve?${params.toString()}`,
+            approvalData
+        )
+    }
+
+    rejectGameProposal(id: number, reviewerId: number, rejectionData: { reviewNotes: string }) {
+        const params = new URLSearchParams()
+        params.append('reviewerId', reviewerId.toString())
+        
+        return this.http.post<{ success: boolean }>(
+            `${this.url}/admin/proposals/${id}/reject?${params.toString()}`,
+            rejectionData
+        )
+    }
+
+    markGameProposalAsDuplicate(id: number, reviewerId: number, reviewNotes?: string) {
+        const params = new URLSearchParams()
+        params.append('reviewerId', reviewerId.toString())
+        if (reviewNotes) params.append('reviewNotes', reviewNotes)
+        
+        return this.http.post<{ success: boolean }>(
+            `${this.url}/admin/proposals/${id}/duplicate?${params.toString()}`,
+            {}
+        )
+    }
+
+    deleteGameProposal(id: number) {
+        return this.http.delete<{ success: boolean }>(`${this.url}/admin/proposals/${id}`)
+    }
+
+    // #endregion
 }
