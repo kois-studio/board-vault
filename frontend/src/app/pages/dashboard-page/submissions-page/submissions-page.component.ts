@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core'
+import { Component, inject, ViewChild } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { DataService } from '../../../core/services/data.service'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
@@ -9,7 +9,6 @@ import type { GameProposalType } from '../../../api/api.types'
 
 @Component({
     imports: [
-        RouterLink,
         PageHeaderComponent,
         ButtonComponent,
         ContainerWrapperComponent,
@@ -30,7 +29,7 @@ export class SubmissionsPageComponent {
     // --------------------------------------------------------------------------
     //        Component props
     // --------------------------------------------------------------------------
-    public readonly modalGameSubmission = inject(ModalGameSubmissionComponent)
+    @ViewChild(ModalGameSubmissionComponent) modalGameSubmission!: ModalGameSubmissionComponent
 
     // --------------------------------------------------------------------------
     //        Methods

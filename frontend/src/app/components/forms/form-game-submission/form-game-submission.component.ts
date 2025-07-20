@@ -8,7 +8,7 @@ import { ButtonComponent } from '../../ui/button/button.component'
 import type { CreateGameProposalType } from '../../../api/api.types'
 
 @Component({
-    imports: [ReactiveFormsModule, CommonModule, ButtonComponent],
+    imports: [ReactiveFormsModule, CommonModule],
     selector: 'form-game-submission',
     templateUrl: 'form-game-submission.component.html',
 })

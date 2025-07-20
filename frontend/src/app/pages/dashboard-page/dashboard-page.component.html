@@ -1,6 +1,4 @@
-<app-page-header titleText="Dashboard" [showActionButton]="true">
-    Welcome to your dashboard!
-</app-page-header>
+<app-page-header titleText="Dashboard" [showActionButton]="true"> Welcome to your dashboard! </app-page-header>
 
 <container-wrapper>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -19,7 +17,7 @@
             <!-- Content-->
             <div class="flex -space-x-2">
                 @for (avatar of someProfileImagesComputed(); track avatar) {
-                    <app-image-profile class="border-2 rounded-full border-indigo-100 dark:border-zinc-800" [avatar]="avatar" />
+                <app-image-profile class="border-2 rounded-full border-indigo-100 dark:border-zinc-800" [avatar]="avatar" />
                 }
             </div>
 
@@ -55,6 +53,8 @@
                 </div>
             </div>
         </app-card-section>
+
+
     </div>
 
     <!-- Recent Social Activity -->

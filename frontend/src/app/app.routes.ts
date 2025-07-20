@@ -14,6 +14,7 @@ import { BrowsePageComponent } from './pages/collection-page/browse-page/browse-
 import { CollectionPageComponent } from './pages/collection-page/collection-page.component'
 import { MyGamesPageComponent } from './pages/collection-page/my-games-page/my-games-page.component'
 import { ReviewsPageComponent } from './pages/collection-page/reviews-page/reviews-page.component'
+import { SubmissionsPageComponent } from './pages/dashboard-page/submissions-page/submissions-page.component'
 import { WishlistPageComponent } from './pages/collection-page/wishlist-page/wishlist-page.component'
 import { DashboardPageComponent } from './pages/dashboard-page/dashboard-page.component'
 import { PageNotFoundComponent } from './pages/errors/page-not-found/page-not-found.component'
@@ -68,6 +69,7 @@ export const routes: Routes = [
             // accessible to authenticated users
             { path: 'dashboard', component: DashboardPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'groups', component: GroupsPageComponent, canActivate: [AuthOnlyGuard] },
+            { path: 'submissions', component: SubmissionsPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'collection', component: CollectionPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'collection/games', component: MyGamesPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'collection/browse', component: BrowsePageComponent, canActivate: [AuthOnlyGuard] },

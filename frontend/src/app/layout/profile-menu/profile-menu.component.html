@@ -39,6 +39,14 @@
                     </div>
                 }
             </button>
+            <button routerLink="/submissions" (click)="onClickSubmissions()" class="flex items-center gap-2 w-full px-4 py-2 text-left text-white hover:bg-zinc-800 border-b border-zinc-700 cursor-pointer">
+                <i class="bi bi-file-earmark-text"></i> My Submissions
+                @if (userProposalStats.totalProposals > 0) {
+                    <div class="bg-purple-600 rounded-full h-5 w-5 flex items-center justify-center">
+                        <span class="text-sm">{{ userProposalStats.totalProposals }}</span>
+                    </div>
+                }
+            </button>
             <button (click)="onClickSignOut()" class="flex items-center gap-2 w-full px-4 py-2 text-left text-white hover:bg-zinc-800 cursor-pointer">
                 <i class="bi bi-box-arrow-right"></i> Sign out
             </button>
