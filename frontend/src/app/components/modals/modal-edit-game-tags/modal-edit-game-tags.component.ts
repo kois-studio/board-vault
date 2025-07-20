@@ -74,7 +74,8 @@ export class ModalEditGameTagsComponent {
     }
 
     public async onSubmit(): Promise<void> {
-        if (!this.game()) {
+        const game = this.game()
+        if (!game) {
             return
         }
 
@@ -82,11 +83,11 @@ export class ModalEditGameTagsComponent {
 
         try {
             const tagIds = Array.from(this.selectedTagIds())
-            await firstValueFrom(this.api.updateAdminGameTags(this.game()?.id, tagIds))
+            await firstValueFrom(this.api.updateAdminGameTags(game.id, tagIds))
 
             this.toastService.success('Game tags updated successfully.')
             this.tagsUpdated.emit({
-                id: this.game()?.id,
+                id: game.id,
                 tagIds,
             })
             this.hideDialog()

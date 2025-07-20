@@ -45,14 +45,15 @@ export class ModalDeleteTagComponent {
     }
 
     public onConfirmDelete(): void {
-        if (!this.tag()) {
+        const tag = this.tag()
+        if (!tag) {
             return
         }
 
         this.isLoading.set(true)
 
         // Call API to delete tag
-        this.api.deleteAdminTag(this.tag()?.id).subscribe({
+        this.api.deleteAdminTag(tag.id).subscribe({
             next: () => {
                 this.isLoading.set(false)
                 this.toastService.success('Tag deleted successfully!')
