@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common'
 
 import { DatabaseModule } from '../../common/database/database.module'
+import { GameProposalModule } from '../../core/game-proposal/game-proposal.module'
 import { GroupMembershipsModule } from '../../core/group-memberships/group-memberships.module'
 import { GroupsModule } from '../../core/groups/groups.module'
 import { InvitationsModule } from '../../core/invitations/invitations.module'
@@ -18,6 +19,7 @@ import { ProfileService } from './profile.service'
         GroupsModule,
         InvitationsModule,
         GroupMembershipsModule,
+        GameProposalModule,
     ],
     providers: [ProfileService],
     exports: [ProfileService],
