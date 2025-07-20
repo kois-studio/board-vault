@@ -112,8 +112,13 @@ export class FormGameSubmissionComponent {
 
         try {
             const formData = this.gameSubmissionForm.value
+            if (!formData.title) {
+                this.toastService.error('Title is required')
+                return
+            }
+
             const proposalData: CreateGameProposalType = {
-                title: formData.title!,
+                title: formData.title,
                 imageUrl: formData.imageUrl || undefined,
                 gameAvgDuration: formData.gameAvgDuration || undefined,
                 minPlayers: formData.minPlayers || undefined,

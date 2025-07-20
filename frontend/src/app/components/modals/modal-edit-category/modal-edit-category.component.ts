@@ -61,10 +61,16 @@ export class ModalEditCategoryComponent {
         const formValue = this.editCategoryForm.value
         if (!formValue.name) return
 
+        const category = this.category()
+        if (!category) {
+            this.toastService.error('Category not found')
+            return
+        }
+
         this.isLoading.set(true)
 
         // Call API to update category
-        this.api.updateAdminTagCategory(this.category()?.id, formValue.name!).subscribe({
+        this.api.updateAdminTagCategory(category.id, formValue.name).subscribe({
             next: (updatedCategory: TagCategoryType) => {
                 this.isLoading.set(false)
                 this.toastService.success('Category updated successfully!')

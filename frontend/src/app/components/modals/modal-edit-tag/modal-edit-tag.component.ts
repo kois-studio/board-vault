@@ -66,13 +66,19 @@ export class ModalEditTagComponent {
         const formValue = this.editTagForm.value
         if (!formValue.name || !formValue.categoryId) return
 
+        const tag = this.tag()
+        if (!tag) {
+            this.toastService.error('Tag not found')
+            return
+        }
+
         this.isLoading.set(true)
 
         // Call API to update tag
         this.api
-            .updateAdminTag(this.tag()!.id, {
-                name: formValue.name!,
-                categoryId: formValue.categoryId!,
+            .updateAdminTag(tag.id, {
+                name: formValue.name,
+                categoryId: formValue.categoryId,
             })
             .subscribe({
                 next: (updatedTag: TagType) => {
