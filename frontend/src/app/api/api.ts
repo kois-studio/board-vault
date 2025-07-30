@@ -227,7 +227,7 @@ export class Api {
 
     browseGamesNotOwnedByUser(userId: number, search: string, page: number, limit: number) {
         return this.http.get<BrowseGamesResultType>(
-            `${this.url}/collection/users/${userId}/games/browse?search=${search}&page=${page}&limit=${limit}`,
+            `${this.url}/collection/users/${userId}/browse/games?search=${search}&page=${page}&limit=${limit}`,
         )
     }
 
