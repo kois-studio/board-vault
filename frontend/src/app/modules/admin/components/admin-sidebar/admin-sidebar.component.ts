@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common'
 import { Component, Input } from '@angular/core'
 import { RouterModule } from '@angular/router'
+import { DarkModeToggleComponent } from '../../../../components/ui/dark-mode-toggle/dark-mode-toggle.component'
 
 @Component({
     selector: 'app-admin-sidebar',
-    imports: [CommonModule, RouterModule],
+    imports: [CommonModule, RouterModule, DarkModeToggleComponent],
     templateUrl: './admin-sidebar.component.html',
 })
 export class AdminSidebarComponent {
