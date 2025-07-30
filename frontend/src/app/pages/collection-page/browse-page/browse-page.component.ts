@@ -45,12 +45,15 @@ export class BrowsePageComponent {
     // --------------------------------------------------------------------------
     //        Computed
     // --------------------------------------------------------------------------
-    public readonly gamesListComputed = computed(() =>
-        this.browseGamesList$().map((game) => ({
+    public readonly gamesListComputed = computed(() => {
+        const browseGames = this.browseGamesList$()
+        const userGames = this.userGames$()
+        
+        return browseGames.map((game) => ({
             ...game,
-            isInCollection: this.userGames$().some((userGame) => userGame.id === game.id),
-        })),
-    )
+            isInCollection: userGames.some((userGame) => userGame.id === game.id),
+        }))
+    })
 
     constructor() {
         // Initialize search with debounce
@@ -60,19 +63,33 @@ export class BrowsePageComponent {
                 distinctUntilChanged(), // Only emit if search term changed
             )
             .subscribe((value) => {
-                this.searchTerm$.set(value || '')
+                const trimmedValue = value?.trim() || ''
+                this.searchTerm$.set(trimmedValue)
                 this.currentPage$.set(1) // Reset page when search changes
-                this._searchGames()
+                
+                // Only search if the term is valid
+                if (trimmedValue.length >= 3) {
+                    this._searchGames()
+                } else {
+                    // Clear results if search term is too short
+                    this.browseGamesList$.set([])
+                    this.hasMoreGames$.set(false)
+                }
             })
 
-        // Setup effect to monitor changes in games list
+        // Setup effect to monitor changes in games list and update hasMoreGames
         effect(() => {
-            // This runs whenever gamesList$ changes
-            // We can use it to update the hasMoreGames signal
             const currentPage = this.currentPage$()
             const currentGames = this.browseGamesList$().length
-            // Assuming the API returns less than limit when no more games are available
-            this.hasMoreGames$.set(currentGames === 12 * currentPage) // 12 is the limit set in your API
+            const searchTermValid = this.searchTermIsValid$()
+            
+            // Only update hasMoreGames if we have games and the search is valid
+            if (currentGames > 0 && searchTermValid) {
+                const hasMore = currentGames === 12 * currentPage // 12 is the limit set in your API
+                this.hasMoreGames$.set(hasMore)
+            } else {
+                this.hasMoreGames$.set(false)
+            }
         })
     }
 
@@ -81,6 +98,11 @@ export class BrowsePageComponent {
     // --------------------------------------------------------------------------
 
     public loadMoreGames() {
+        // Prevent loading more if already searching or no more games
+        if (this.isSearching$() || !this.hasMoreGames$()) {
+            return
+        }
+        
         this.currentPage$.update((page) => page + 1)
         this._searchGames(true)
     }
@@ -92,6 +114,11 @@ export class BrowsePageComponent {
 
         const userId = this.currentUser$()?.id
         if (!userId) {
+            return
+        }
+
+        // Prevent multiple simultaneous searches
+        if (this.isSearching$()) {
             return
         }
 
@@ -119,6 +146,7 @@ export class BrowsePageComponent {
                 },
                 error: (error) => {
                     console.error(error)
+                    this.isSearching$.set(false)
                 },
                 complete: () => {
                     this.isSearching$.set(false)
