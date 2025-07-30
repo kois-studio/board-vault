@@ -141,6 +141,9 @@
                             step="0.01"
                         />
                     </div>
+                    @if (ownershipFormGroup.get('purchasePrice')?.errors?.['positiveNumber']) {
+                    <p class="text-red-500 text-sm mt-1">Please enter a valid positive number</p>
+                    }
                 </div>
 
                 <!-- Notes and Buttons -->
