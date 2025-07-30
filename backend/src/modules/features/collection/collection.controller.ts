@@ -1,4 +1,5 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Put, Query, UseGuards } from '@nestjs/common'
+import { LimitPipe } from '../../../common/pipes'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
@@ -76,14 +77,14 @@ export class CollectionController {
         return { isWishlisted }
     }
 
-    @Get('/users/:userId/games/browse')
+    @Get('/users/:userId/browse/games')
     @ApiOperation({ summary: 'Browse games not owned by a user', deprecated: false })
     @ApiResponse({ status: 200, type: [BrowseGamesResultDto], description: 'List of all games not owned by the user' })
     async getGamesNotOwnedByUser(
         @Param('userId', ParseIntPipe) userId: number,
         @Query('search') search: string = '',
         @Query('page', ParseIntPipe) page: number = 1,
-        @Query('limit', ParseIntPipe) limit: number = 20,
+        @Query('limit', LimitPipe) limit: number = 20,
     ) {
         return this.collectionService.getGamesNotOwnedByUser(userId, search, page, limit)
     }
