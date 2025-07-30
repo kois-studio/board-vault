@@ -27,18 +27,6 @@ export class CollectionController {
         return this.collectionService.getGamesOwnedByUser(userId)
     }
 
-    @Get('/users/:userId/games/browse')
-    @ApiOperation({ summary: 'Browse games not owned by a user', deprecated: false })
-    @ApiResponse({ status: 200, type: [BrowseGamesResultDto], description: 'List of all games not owned by the user' })
-    async getGamesNotOwnedByUser(
-        @Param('userId', ParseIntPipe) userId: number,
-        @Query('search') search: string = '',
-        @Query('page', ParseIntPipe) page: number = 1,
-        @Query('limit', ParseIntPipe) limit: number = 20,
-    ) {
-        return this.collectionService.getGamesNotOwnedByUser(userId, search, page, limit)
-    }
-
     @UseGuards(UserOwnershipGuard)
     @Get('/users/:userId/games/:gameId')
     @ApiOperation({ summary: 'Game view for a user (not owned necessarily)', deprecated: false })
@@ -86,6 +74,18 @@ export class CollectionController {
         const isWishlisted = await this.collectionService.toggleWishlist(userId, gameId)
 
         return { isWishlisted }
+    }
+
+    @Get('/users/:userId/games/browse')
+    @ApiOperation({ summary: 'Browse games not owned by a user', deprecated: false })
+    @ApiResponse({ status: 200, type: [BrowseGamesResultDto], description: 'List of all games not owned by the user' })
+    async getGamesNotOwnedByUser(
+        @Param('userId', ParseIntPipe) userId: number,
+        @Query('search') search: string = '',
+        @Query('page', ParseIntPipe) page: number = 1,
+        @Query('limit', ParseIntPipe) limit: number = 20,
+    ) {
+        return this.collectionService.getGamesNotOwnedByUser(userId, search, page, limit)
     }
 
     @Get('/users/:userId/reviews')
