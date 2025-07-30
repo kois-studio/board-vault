@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { Component, OnDestroy, computed, effect, inject, signal } from '@angular/core'
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
+import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { Subscription } from 'rxjs'
 import { Api } from '../../../api/api'
@@ -41,6 +41,21 @@ export class GameViewPageComponent implements OnDestroy {
     private readonly dataService = inject(DataService)
     private readonly toastService = inject(ToastService)
 
+    // Custom validator for positive number (including 0)
+    private positiveNumberValidator(control: AbstractControl): ValidationErrors | null {
+        const value = control.value
+        if (value === null || value === '') {
+            return null // Allow null/empty values
+        }
+        
+        const numValue = Number(value)
+        if (isNaN(numValue) || numValue < 0) {
+            return { positiveNumber: true }
+        }
+        
+        return null
+    }
+
     // --------------------------------------------------------------------------
     //        Services signals
     // --------------------------------------------------------------------------
@@ -79,7 +94,7 @@ export class GameViewPageComponent implements OnDestroy {
     // ownership form
     public ownershipFormGroup = new FormGroup({
         purchaseDate: new FormControl<string | null>(null, []),
-        purchasePrice: new FormControl<number | null>(null, [Validators.min(0)]),
+        purchasePrice: new FormControl<number | null>(null, [this.positiveNumberValidator.bind(this)]),
         purchaseNotes: new FormControl<string | null>(null, [Validators.maxLength(255)]),
     })
 
@@ -309,7 +324,7 @@ export class GameViewPageComponent implements OnDestroy {
         const formValue = this.ownershipFormGroup.value
         const updatedOwnedGameData: GameViewType['ownedGameData'] = {
             purchaseDate: formValue.purchaseDate || null,
-            purchasePrice: formValue.purchasePrice || null,
+            purchasePrice: formValue.purchasePrice ? Number(formValue.purchasePrice) : null,
             purchaseNotes: formValue.purchaseNotes || null,
         }
 
