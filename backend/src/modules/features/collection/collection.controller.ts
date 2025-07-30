@@ -21,36 +21,11 @@ import { CollectionService } from './collection.service'
 export class CollectionController {
     constructor(private readonly collectionService: CollectionService) {}
 
-    @UseGuards(UserOwnershipGuard)
-    @Patch('/users/:userId/games/:gameId/ownership')
-    @ApiOperation({ summary: 'Update ownership details of a game', deprecated: false })
-    @ApiResponse({ status: 200, type: GameOwnedDto, description: 'Updated game ownership details' })
-    async updateGameOwnership(
-        @Param('userId', ParseIntPipe) userId: number,
-        @Param('gameId', ParseIntPipe) gameId: number,
-        @Body() body: UpdateGameOwnedDto,
-    ) {
-        return this.collectionService.updateGameOwnership(userId, gameId, body)
-    }
-
     @Get('/users/:userId/games')
     @ApiOperation({ summary: 'Get all games owned by a user', deprecated: false })
     @ApiResponse({ status: 200, type: [GameCompleteDto], description: 'List of all games owned by the user' })
     async getGamesOwnedByUser(@Param('userId', ParseIntPipe) userId: number) {
         return this.collectionService.getGamesOwnedByUser(userId)
-    }
-
-    @UseGuards(UserOwnershipGuard)
-    @Put('/users/:userId/games/:gameId/wishlist')
-    @ApiOperation({ summary: 'Toggle the wishlist status of the game', deprecated: false })
-    @ApiResponse({ status: 200, type: WishlistResponseDto })
-    async toggleWishlist(
-        @Param('userId', ParseIntPipe) userId: number,
-        @Param('gameId', ParseIntPipe) gameId: number,
-    ): Promise<WishlistResponseDto> {
-        const isWishlisted = await this.collectionService.toggleWishlist(userId, gameId)
-
-        return { isWishlisted }
     }
 
     @UseGuards(UserOwnershipGuard)
@@ -75,6 +50,31 @@ export class CollectionController {
     @ApiResponse({ status: 200, type: SuccessDto, description: "Game removed from the user's collection" })
     async removeGameFromUserCollection(@Param('userId', ParseIntPipe) userId: number, @Param('gameId', ParseIntPipe) gameId: number) {
         return this.collectionService.removeGameFromUserCollection(userId, gameId)
+    }
+
+    @UseGuards(UserOwnershipGuard)
+    @Patch('/users/:userId/games/:gameId/ownership')
+    @ApiOperation({ summary: 'Update ownership details of a game', deprecated: false })
+    @ApiResponse({ status: 200, type: GameOwnedDto, description: 'Updated game ownership details' })
+    async updateGameOwnership(
+        @Param('userId', ParseIntPipe) userId: number,
+        @Param('gameId', ParseIntPipe) gameId: number,
+        @Body() body: UpdateGameOwnedDto,
+    ) {
+        return this.collectionService.updateGameOwnership(userId, gameId, body)
+    }
+
+    @UseGuards(UserOwnershipGuard)
+    @Put('/users/:userId/games/:gameId/wishlist')
+    @ApiOperation({ summary: 'Toggle the wishlist status of the game', deprecated: false })
+    @ApiResponse({ status: 200, type: WishlistResponseDto })
+    async toggleWishlist(
+        @Param('userId', ParseIntPipe) userId: number,
+        @Param('gameId', ParseIntPipe) gameId: number,
+    ): Promise<WishlistResponseDto> {
+        const isWishlisted = await this.collectionService.toggleWishlist(userId, gameId)
+
+        return { isWishlisted }
     }
 
     @Get('/users/:userId/browse/games')
