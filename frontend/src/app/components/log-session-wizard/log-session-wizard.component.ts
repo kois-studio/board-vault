@@ -113,7 +113,7 @@ export class LogSessionWizardComponent {
                     }))
                 )
 
-                // Initialize games from all group members' games
+                // Initialize games from all group members' games (will be filtered later based on selected attendees)
                 const allGames = new Map<number, GameCompleteType>()
                 group.members.forEach(member => {
                     member.games.forEach(game => {
@@ -129,6 +129,32 @@ export class LogSessionWizardComponent {
                         selected: false
                     }))
                 )
+            }
+        })
+
+        effect(() => {
+            const selectedAttendees = this.attendees().filter(a => a.selected)
+            
+            // Filter games based on selected attendees
+            if (selectedAttendees.length > 0) {
+                const availableGames = new Map<number, GameCompleteType>()
+                selectedAttendees.forEach(attendee => {
+                    attendee.user.games.forEach(game => {
+                        if (!availableGames.has(game.id)) {
+                            availableGames.set(game.id, game)
+                        }
+                    })
+                })
+
+                this.games.set(
+                    Array.from(availableGames.values()).map(game => ({
+                        game,
+                        selected: false
+                    }))
+                )
+            } else {
+                // If no attendees selected, clear games
+                this.games.set([])
             }
         })
 
