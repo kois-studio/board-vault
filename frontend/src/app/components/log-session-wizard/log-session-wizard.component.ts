@@ -1,16 +1,16 @@
 import { CommonModule } from '@angular/common'
-import { Component, effect, inject, signal, computed } from '@angular/core'
+import { Component, computed, effect, inject, signal } from '@angular/core'
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router } from '@angular/router'
+import type { GameCompleteType, GameReviewDto, GroupWithMembersAndGames, UserType } from '../../api/api.types'
+import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
+import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'
+import { SpinnerComponent } from '../../components/ui/spinner/spinner.component'
+import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
 import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
-import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
-import { SpinnerComponent } from '../../components/ui/spinner/spinner.component'
-import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'
-import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { CardAccountComponent } from '../card-account/card-account.component'
 import { ImageBackgroundComponent } from '../ui/image-background/image-background.component'
-import type { GroupWithMembersAndGames, GameCompleteType, UserType, GameReviewDto } from '../../api/api.types'
 
 type SessionStep = 'group' | 'date' | 'attendees' | 'games' | 'matrix'
 
@@ -112,53 +112,53 @@ export class LogSessionWizardComponent {
             if (group) {
                 // Auto-advance to step 2 when group is selected
                 this.currentStep.set('date')
-                
+
                 // Initialize attendees from group members
                 this.attendees.set(
-                    group.members.map(member => ({
+                    group.members.map((member) => ({
                         user: member,
-                        selected: false
-                    }))
+                        selected: false,
+                    })),
                 )
 
                 // Initialize games from all group members' games (will be filtered later based on selected attendees)
                 const allGames = new Map<number, GameCompleteType>()
-                group.members.forEach(member => {
-                    member.games.forEach(game => {
+                for (const member of group.members) {
+                    for (const game of member.games) {
                         if (!allGames.has(game.id)) {
                             allGames.set(game.id, game)
                         }
-                    })
-                })
+                    }
+                }
 
                 this.games.set(
-                    Array.from(allGames.values()).map(game => ({
+                    Array.from(allGames.values()).map((game) => ({
                         game,
-                        selected: false
-                    }))
+                        selected: false,
+                    })),
                 )
             }
         })
 
         effect(() => {
-            const selectedAttendees = this.attendees().filter(a => a.selected)
-            
+            const selectedAttendees = this.attendees().filter((a) => a.selected)
+
             // Filter games based on selected attendees
             if (selectedAttendees.length > 0) {
                 const availableGames = new Map<number, GameCompleteType>()
-                selectedAttendees.forEach(attendee => {
-                    attendee.user.games.forEach(game => {
+                for (const attendee of selectedAttendees) {
+                    for (const game of attendee.user.games) {
                         if (!availableGames.has(game.id)) {
                             availableGames.set(game.id, game)
                         }
-                    })
-                })
+                    }
+                }
 
                 this.games.set(
-                    Array.from(availableGames.values()).map(game => ({
+                    Array.from(availableGames.values()).map((game) => ({
                         game,
-                        selected: false
-                    }))
+                        selected: false,
+                    })),
                 )
             } else {
                 // If no attendees selected, clear games
@@ -167,20 +167,20 @@ export class LogSessionWizardComponent {
         })
 
         effect(() => {
-            const selectedAttendees = this.attendees().filter(a => a.selected)
-            const selectedGames = this.games().filter(g => g.selected)
+            const selectedAttendees = this.attendees().filter((a) => a.selected)
+            const selectedGames = this.games().filter((g) => g.selected)
 
             // Rebuild matrix when selections change
             const newMatrix: MatrixCell[] = []
-            selectedAttendees.forEach(attendee => {
-                selectedGames.forEach(game => {
+            for (const attendee of selectedAttendees) {
+                for (const game of selectedGames) {
                     newMatrix.push({
                         attendeeId: attendee.user.id,
                         gameId: game.game.id,
-                        selected: false
+                        selected: false,
                     })
-                })
-            })
+                }
+            }
             this.matrix.set(newMatrix)
         })
     }
@@ -195,11 +195,11 @@ export class LogSessionWizardComponent {
             case 'date':
                 return this.sessionDate.valid && this.sessionDate.value !== null
             case 'attendees':
-                return this.attendees().some(a => a.selected)
+                return this.attendees().some((a) => a.selected)
             case 'games':
-                return this.games().some(g => g.selected)
+                return this.games().some((g) => g.selected)
             case 'matrix':
-                return this.matrix().some(cell => cell.selected)
+                return this.matrix().some((cell) => cell.selected)
             default:
                 return false
         }
@@ -253,26 +253,24 @@ export class LogSessionWizardComponent {
     //        ATTENDEE SELECTION
     // --------------------------------------------------------------------------
     public toggleAttendee(attendeeId: number): void {
-        const updatedAttendees = this.attendees().map(attendee =>
-            attendee.user.id === attendeeId
-                ? { ...attendee, selected: !attendee.selected }
-                : attendee
+        const updatedAttendees = this.attendees().map((attendee) =>
+            attendee.user.id === attendeeId ? { ...attendee, selected: !attendee.selected } : attendee,
         )
         this.attendees.set(updatedAttendees)
     }
 
     public selectAllAttendees(): void {
-        const updatedAttendees = this.attendees().map(attendee => ({
+        const updatedAttendees = this.attendees().map((attendee) => ({
             ...attendee,
-            selected: true
+            selected: true,
         }))
         this.attendees.set(updatedAttendees)
     }
 
     public deselectAllAttendees(): void {
-        const updatedAttendees = this.attendees().map(attendee => ({
+        const updatedAttendees = this.attendees().map((attendee) => ({
             ...attendee,
-            selected: false
+            selected: false,
         }))
         this.attendees.set(updatedAttendees)
     }
@@ -281,26 +279,22 @@ export class LogSessionWizardComponent {
     //        GAME SELECTION
     // --------------------------------------------------------------------------
     public toggleGame(gameId: number): void {
-        const updatedGames = this.games().map(game =>
-            game.game.id === gameId
-                ? { ...game, selected: !game.selected }
-                : game
-        )
+        const updatedGames = this.games().map((game) => (game.game.id === gameId ? { ...game, selected: !game.selected } : game))
         this.games.set(updatedGames)
     }
 
     public selectAllGames(): void {
-        const updatedGames = this.games().map(game => ({
+        const updatedGames = this.games().map((game) => ({
             ...game,
-            selected: true
+            selected: true,
         }))
         this.games.set(updatedGames)
     }
 
     public deselectAllGames(): void {
-        const updatedGames = this.games().map(game => ({
+        const updatedGames = this.games().map((game) => ({
             ...game,
-            selected: false
+            selected: false,
         }))
         this.games.set(updatedGames)
     }
@@ -309,36 +303,24 @@ export class LogSessionWizardComponent {
     //        MATRIX OPERATIONS
     // --------------------------------------------------------------------------
     public toggleMatrixCell(attendeeId: number, gameId: number): void {
-        const updatedMatrix = this.matrix().map(cell =>
-            cell.attendeeId === attendeeId && cell.gameId === gameId
-                ? { ...cell, selected: !cell.selected }
-                : cell
+        const updatedMatrix = this.matrix().map((cell) =>
+            cell.attendeeId === attendeeId && cell.gameId === gameId ? { ...cell, selected: !cell.selected } : cell,
         )
         this.matrix.set(updatedMatrix)
     }
 
     public selectAllForAttendee(attendeeId: number): void {
-        const updatedMatrix = this.matrix().map(cell =>
-            cell.attendeeId === attendeeId
-                ? { ...cell, selected: true }
-                : cell
-        )
+        const updatedMatrix = this.matrix().map((cell) => (cell.attendeeId === attendeeId ? { ...cell, selected: true } : cell))
         this.matrix.set(updatedMatrix)
     }
 
     public selectAllForGame(gameId: number): void {
-        const updatedMatrix = this.matrix().map(cell =>
-            cell.gameId === gameId
-                ? { ...cell, selected: true }
-                : cell
-        )
+        const updatedMatrix = this.matrix().map((cell) => (cell.gameId === gameId ? { ...cell, selected: true } : cell))
         this.matrix.set(updatedMatrix)
     }
 
     public isMatrixCellSelected(attendeeId: number, gameId: number): boolean {
-        return this.matrix().some(cell =>
-            cell.attendeeId === attendeeId && cell.gameId === gameId && cell.selected
-        )
+        return this.matrix().some((cell) => cell.attendeeId === attendeeId && cell.gameId === gameId && cell.selected)
     }
 
     // --------------------------------------------------------------------------
@@ -403,10 +385,10 @@ export class LogSessionWizardComponent {
     }
 
     public getSelectedAttendees(): AttendeeSelection[] {
-        return this.attendees().filter(a => a.selected)
+        return this.attendees().filter((a) => a.selected)
     }
 
     public getSelectedGames(): GameSelection[] {
-        return this.games().filter(g => g.selected)
+        return this.games().filter((g) => g.selected)
     }
-} 
+}

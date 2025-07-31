@@ -126,12 +126,12 @@ export class AdminGamesManageComponent implements OnInit {
 
     private _refreshGamesList() {
         this.logger.log('_refreshGamesList called with search term:', this.searchTerm$())
-        
+
         // Prevent multiple simultaneous searches
         if (this.isSearching$()) {
             return
         }
-        
+
         // Force refresh the games list regardless of search term validation
         // This is used when translations or tags are updated
         this.isSearching$.set(true)

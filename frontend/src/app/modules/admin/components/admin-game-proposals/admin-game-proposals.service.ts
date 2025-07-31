@@ -1,9 +1,9 @@
 import { Injectable, inject, signal } from '@angular/core'
 import { Api } from '../../../../api/api'
 import type { GameProposalType } from '../../../../api/api.types'
+import { ToastService } from '../../../../components/toast/toast.service'
 import { LogService } from '../../../../core/services/log.service'
 import { LoginService } from '../../../../core/services/login.service'
-import { ToastService } from '../../../../components/toast/toast.service'
 
 export type GameProposalWithIdsType = GameProposalType & { submitterId: number; reviewerId?: number }
 
@@ -37,11 +37,7 @@ export class AdminGameProposalsService {
     // --------------------------------------------------------------------------
     //        Methods
     // --------------------------------------------------------------------------
-    public async loadProposals(
-        status?: 'pending' | 'approved' | 'rejected' | 'duplicate',
-        page: number = 1,
-        limit: number = 10
-    ): Promise<void> {
+    public async loadProposals(status?: 'pending' | 'approved' | 'rejected' | 'duplicate', page = 1, limit = 10): Promise<void> {
         this.isLoading.set(true)
         this.currentStatus.set(status || null)
         this.currentPage.set(page)
@@ -70,7 +66,7 @@ export class AdminGameProposalsService {
             maxPlayers?: number
             translations?: Record<string, string>
             tagIds?: number[]
-        }
+        },
     ): Promise<boolean> {
         const currentUserId = this.loginService.currentUserId()
         if (!currentUserId) {
@@ -195,4 +191,4 @@ export class AdminGameProposalsService {
             minute: '2-digit',
         })
     }
-} 
+}

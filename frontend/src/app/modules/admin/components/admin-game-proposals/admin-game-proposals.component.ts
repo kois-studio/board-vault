@@ -40,11 +40,7 @@ export class AdminGameProposalsComponent implements OnInit {
     }
 
     public async onPageChange(page: number): Promise<void> {
-        await this.adminGameProposalsService.loadProposals(
-            this.currentStatus() || undefined,
-            page,
-            10
-        )
+        await this.adminGameProposalsService.loadProposals(this.currentStatus() || undefined, page, 10)
     }
 
     public async onStatusFilterChange(status: 'pending' | 'approved' | 'rejected' | 'duplicate' | null): Promise<void> {
@@ -55,7 +51,7 @@ export class AdminGameProposalsComponent implements OnInit {
         // For now, we'll use minimal approval data
         // In the future, this could open a modal for more detailed approval
         await this.adminGameProposalsService.approveProposal(proposalId, {
-            reviewNotes: 'Approved by admin'
+            reviewNotes: 'Approved by admin',
         })
     }
 
@@ -90,8 +86,8 @@ export class AdminGameProposalsComponent implements OnInit {
         return this.adminGameProposalsService.formatDate(dateString)
     }
 
-    public truncateText(text: string, maxLength: number = 50): string {
+    public truncateText(text: string, maxLength = 50): string {
         if (!text) return ''
-        return text.length > maxLength ? text.substring(0, maxLength) + '...' : text
+        return text.length > maxLength ? `${text.substring(0, maxLength)}...` : text
     }
 }
