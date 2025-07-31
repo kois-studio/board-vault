@@ -1,8 +1,10 @@
 import { CommonModule } from '@angular/common'
-import { Component, effect, inject, signal } from '@angular/core'
+import { Component, effect, inject, signal, computed } from '@angular/core'
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router } from '@angular/router'
 import { DataService } from '../../core/services/data.service'
+import { LoadingService } from '../../core/services/loading.service'
+import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
 import { SpinnerComponent } from '../../components/ui/spinner/spinner.component'
 import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
@@ -50,10 +52,16 @@ export class LogSessionWizardComponent {
     //        DATA from services
     // --------------------------------------------------------------------------
     private readonly dataService = inject(DataService)
+    private readonly loadingService = inject(LoadingService)
     private readonly router = inject(Router)
 
     public currentUser = this.dataService.currentUser
     public userGroups = this.dataService.userGroups
+
+    // --------------------------------------------------------------------------
+    //        LOADING STATES
+    // --------------------------------------------------------------------------
+    public isLoadingGroups = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_GROUPS])
 
     // --------------------------------------------------------------------------
     //        WIZARD STATE

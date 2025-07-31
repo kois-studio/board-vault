@@ -13,7 +13,7 @@
                                 ? 'bg-blue-600 text-white'
                                 : currentStep() === 'date' || currentStep() === 'attendees' || currentStep() === 'games' || currentStep() === 'matrix'
                                 ? 'bg-green-600 text-white'
-                                : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                                : 'bg-gray-200 dark:bg-zinc-700 text-gray-600 dark:text-gray-400'
                         "
                     >
                         1
@@ -31,7 +31,7 @@
                         Group
                     </div>
                 </div>
-                <div class="w-8 h-1 bg-gray-200 dark:bg-gray-700"></div>
+                <div class="w-8 h-1 bg-gray-200 dark:bg-zinc-700"></div>
                 <div class="flex items-center">
                     <div
                         class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
@@ -40,7 +40,7 @@
                                 ? 'bg-blue-600 text-white'
                                 : currentStep() === 'attendees' || currentStep() === 'games' || currentStep() === 'matrix'
                                 ? 'bg-green-600 text-white'
-                                : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                                : 'bg-gray-200 dark:bg-zinc-700 text-gray-600 dark:text-gray-400'
                         "
                     >
                         2
@@ -58,7 +58,7 @@
                         Date
                     </div>
                 </div>
-                <div class="w-8 h-1 bg-gray-200 dark:bg-gray-700"></div>
+                <div class="w-8 h-1 bg-gray-200 dark:bg-zinc-700"></div>
                 <div class="flex items-center">
                     <div
                         class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
@@ -67,7 +67,7 @@
                                 ? 'bg-blue-600 text-white'
                                 : currentStep() === 'games' || currentStep() === 'matrix'
                                 ? 'bg-green-600 text-white'
-                                : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                                : 'bg-gray-200 dark:bg-zinc-700 text-gray-600 dark:text-gray-400'
                         "
                     >
                         3
@@ -85,7 +85,7 @@
                         Attendees
                     </div>
                 </div>
-                <div class="w-8 h-1 bg-gray-200 dark:bg-gray-700"></div>
+                <div class="w-8 h-1 bg-gray-200 dark:bg-zinc-700"></div>
                 <div class="flex items-center">
                     <div
                         class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
@@ -94,7 +94,7 @@
                                 ? 'bg-blue-600 text-white'
                                 : currentStep() === 'matrix'
                                 ? 'bg-green-600 text-white'
-                                : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                                : 'bg-gray-200 dark:bg-zinc-700 text-gray-600 dark:text-gray-400'
                         "
                     >
                         4
@@ -112,14 +112,14 @@
                         Games
                     </div>
                 </div>
-                <div class="w-8 h-1 bg-gray-200 dark:bg-gray-700"></div>
+                <div class="w-8 h-1 bg-gray-200 dark:bg-zinc-700"></div>
                 <div class="flex items-center">
                     <div
                         class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
                         [class]="
                             currentStep() === 'matrix'
                                 ? 'bg-blue-600 text-white'
-                                : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                                : 'bg-gray-200 dark:bg-zinc-700 text-gray-600 dark:text-gray-400'
                         "
                     >
                         5
@@ -136,7 +136,7 @@
     </div>
 
     <!-- Step Content -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+    <div class="bg-white dark:bg-zinc-800 rounded-lg shadow-sm border border-gray-200 dark:border-zinc-700 p-6">
         <!-- Step Header -->
         <div class="mb-6">
             <h2 class="text-xl font-semibold text-gray-900 dark:text-white">{{ getStepTitle() }}</h2>
@@ -145,14 +145,20 @@
 
         <!-- Step 1: Group Selection -->
         <div *ngIf="currentStep() === 'group'" class="space-y-4">
+            @if (isLoadingGroups()) {
+            <div class="flex flex-col items-center justify-center py-12">
+                <app-spinner size="large" />
+                <p class="text-gray-500 dark:text-gray-400 mt-4">Loading groups...</p>
+            </div>
+            } @else {
             <div class="grid gap-4">
                 <div
                     *ngFor="let group of userGroups()"
-                    class="p-4 border rounded-lg cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-gray-700"
+                    class="p-4 border rounded-lg cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-zinc-700"
                     [class]="
                         selectedGroup()?.id === group.id
                             ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                            : 'border-gray-200 dark:border-gray-600'
+                            : 'border-gray-200 dark:border-zinc-600'
                     "
                     (click)="selectGroup(group)"
                 >
@@ -173,6 +179,7 @@
                     </div>
                 </div>
             </div>
+            }
         </div>
 
         <!-- Step 2: Date Selection -->
@@ -182,7 +189,7 @@
                 <input
                     type="date"
                     [formControl]="sessionDate"
-                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                    class="w-full px-3 py-2 border border-gray-300 dark:border-zinc-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:text-white"
                     [class]="sessionDate.invalid && (sessionDate.dirty || sessionDate.touched) ? 'border-red-500' : ''"
                 />
                 <div *ngIf="sessionDate.invalid && (sessionDate.dirty || sessionDate.touched)" class="mt-1 text-sm text-red-600">
@@ -214,26 +221,38 @@
                 </div>
             </div>
             <div class="grid lg:grid-cols-2 gap-4">
-                <div
+                <button
                     *ngFor="let attendee of attendees()"
-                    class="border rounded-lg cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-gray-700"
-                    [class]="attendee.selected ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-200 dark:border-gray-600'"
                     (click)="toggleAttendee(attendee.user.id)"
+                    class="rounded-lg cursor-pointer flex items-center justify-start border"
+                    [ngClass]="{
+                        'bg-zinc-200 dark:bg-zinc-800/30 border-zinc-300 dark:border-zinc-800': !attendee.selected,
+                        'bg-white dark:bg-zinc-800 border-green-400': attendee.selected,
+                    }"
                 >
-                    <div class="relative">
-                        <input
-                            type="checkbox"
-                            [checked]="attendee.selected"
-                            class="absolute top-2 right-2 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 z-10"
-                            (click)="$event.stopPropagation()"
-                            (change)="toggleAttendee(attendee.user.id)"
-                        />
+                    <!-- indicator -->
+                    <div class="pl-4 grid">
+                        <span
+                            class="h-4 w-4 rounded-full"
+                            [ngClass]="{
+                                'bg-gray-400': !attendee.selected,
+                                'bg-green-400': attendee.selected,
+                            }"
+                        ></span>
+                    </div>
+                    <div class="flex items-center justify-between w-full">
                         <app-card-account
                             [member]="attendee.user"
                             [isOwner]="selectedGroup()?.createdBy === attendee.user.id"
+                            [ngClass]="{
+                                'opacity-30': !attendee.selected,
+                            }"
                         />
+                        <div class="text-gray-400 text-sm mr-4">
+                            {{ attendee.user.games.length }} {{ attendee.user.games.length === 1 ? 'game' : 'games' }}
+                        </div>
                     </div>
-                </div>
+                </button>
             </div>
         </div>
 
@@ -259,45 +278,51 @@
                 </div>
             </div>
             <div class="grid lg:grid-cols-2 gap-4">
-                <div
+                <button
                     *ngFor="let game of games()"
-                    class="rounded bg-zinc-200 dark:bg-zinc-800 p-2 flex justify-between items-center cursor-pointer transition-all"
-                    [class]="game.selected ? 'ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'hover:bg-zinc-300 dark:hover:bg-zinc-700'"
                     (click)="toggleGame(game.game.id)"
+                    class="rounded-lg cursor-pointer flex items-center justify-start border"
+                    [ngClass]="{
+                        'bg-zinc-200 dark:bg-zinc-800/30 border-zinc-300 dark:border-zinc-800': !game.selected,
+                        'bg-white dark:bg-zinc-800 border-green-400': game.selected,
+                    }"
                 >
-                    <div class="flex items-center gap-2">
-                        <div class="h-20 w-20 rounded-lg relative">
-                            <image-background [src]="game.game.imageUrl" class="h-24" />
-                        </div>
-                        <div class="ml-3 text-nowrap overflow-hidden text-ellipsis whitespace-nowrap">
-                            <p class="font-semibold">{{ game.game.titleTranslations?.en || game.game.title }}</p>
-                            <p class="text-secondary text-sm text-start w-full">
-                                <i class="bi bi-clock-fill"></i> {{ game.game.gameAvgDuration }} mins
-                            </p>
-                            <p class="text-secondary text-sm text-start">
-                                <i class="bi bi-people-fill"></i> {{ game.game.minPlayers }} - {{ game.game.maxPlayers }}
-                            </p>
+                    <!-- indicator -->
+                    <div class="pl-4 grid">
+                        <span
+                            class="h-4 w-4 rounded-full"
+                            [ngClass]="{
+                                'bg-gray-400': !game.selected,
+                                'bg-green-400': game.selected,
+                            }"
+                        ></span>
+                    </div>
+                    <div class="flex items-center justify-between w-full">
+                        <div class="flex items-center gap-2 ml-2">
+                            <div class="h-20 w-20 rounded-lg relative">
+                                <image-background [src]="game.game.imageUrl" class="h-24" />
+                            </div>
+                            <div class="ml-3 text-nowrap overflow-hidden text-ellipsis whitespace-nowrap">
+                                <p class="font-semibold">{{ game.game.titleTranslations?.en || game.game.title }}</p>
+                                <p class="text-secondary text-sm text-start w-full">
+                                    <i class="bi bi-clock-fill"></i> {{ game.game.gameAvgDuration }} mins
+                                </p>
+                                <p class="text-secondary text-sm text-start">
+                                    <i class="bi bi-people-fill"></i> {{ game.game.minPlayers }} - {{ game.game.maxPlayers }}
+                                </p>
+                            </div>
                         </div>
                     </div>
-                    <div class="flex items-center">
-                        <input
-                            type="checkbox"
-                            [checked]="game.selected"
-                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                            (click)="$event.stopPropagation()"
-                            (change)="toggleGame(game.game.id)"
-                        />
-                    </div>
-                </div>
+                </button>
             </div>
         </div>
 
         <!-- Step 5: Matrix -->
         <div *ngIf="currentStep() === 'matrix'" class="space-y-4">
             <div class="overflow-x-auto">
-                <table class="min-w-full border border-gray-200 dark:border-gray-600 rounded-lg">
+                <table class="min-w-full border border-gray-200 dark:border-zinc-600 rounded-lg">
                     <thead>
-                        <tr class="bg-gray-50 dark:bg-gray-700">
+                        <tr class="bg-gray-50 dark:bg-zinc-700">
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 Player / Game
                             </th>
@@ -306,6 +331,9 @@
                                 class="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                             >
                                 <div class="flex flex-col items-center">
+                                    <div class="w-8 h-8 rounded-lg mb-1">
+                                        <image-background [src]="game.game.imageUrl" class="h-8 w-8" />
+                                    </div>
                                     <span class="text-xs"
                                         >{{ game.game.titleTranslations?.en || game.game.title | slice : 0 : 10 }}{{ (game.game.titleTranslations?.en || game.game.title).length > 10 ? '...' : '' }}</span
                                     >
@@ -320,12 +348,12 @@
                             </th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-600">
+                    <tbody class="bg-white dark:bg-zinc-800 divide-y divide-gray-200 dark:divide-zinc-600">
                         <tr *ngFor="let attendee of getSelectedAttendees()">
                             <td class="px-4 py-3 whitespace-nowrap">
                                 <div class="flex items-center">
                                     <div
-                                        class="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-sm font-medium text-gray-700 dark:text-gray-300 mr-3"
+                                        class="w-8 h-8 rounded-full bg-gray-300 dark:bg-zinc-600 flex items-center justify-center text-sm font-medium text-gray-700 dark:text-gray-300 mr-3"
                                     >
                                         {{ attendee.user.displayName || attendee.user.username | slice : 0 : 2 | uppercase }}
                                     </div>
@@ -341,7 +369,7 @@
                                     type="checkbox"
                                     [checked]="isMatrixCellSelected(attendee.user.id, game.game.id)"
                                     (change)="toggleMatrixCell(attendee.user.id, game.game.id)"
-                                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-zinc-800 focus:ring-2 dark:bg-zinc-700 dark:border-zinc-600"
                                 />
                             </td>
                         </tr>
@@ -351,11 +379,11 @@
         </div>
 
         <!-- Navigation Buttons -->
-        <div *ngIf="currentStep() !== 'group'" class="flex justify-between items-center mt-8 pt-6 border-t border-gray-200 dark:border-gray-600">
+        <div *ngIf="currentStep() !== 'group'" class="flex justify-between items-center mt-8 pt-6 border-t border-gray-200 dark:border-zinc-600">
             <button
                 type="button"
                 (click)="previousStep()"
-                class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-zinc-700 border border-gray-300 dark:border-zinc-600 rounded-md hover:bg-gray-50 dark:hover:bg-zinc-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
                 Previous
             </button>
