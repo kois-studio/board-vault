@@ -634,6 +634,14 @@ export class DataService {
         this._getUserReviews(currentUser.id)
     }
 
+    public refreshUserWishlist() {
+        const currentUser = this.currentUser()
+        if (!currentUser) return
+
+        this.userWishlist.set([])
+        this._getUserWishlist(currentUser.id)
+    }
+
     // #region Meetings
 
     public createMeeting(accountId: number, groupId: number) {

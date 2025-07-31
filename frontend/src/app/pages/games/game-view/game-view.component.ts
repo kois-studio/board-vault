@@ -188,6 +188,9 @@ export class GameViewPageComponent implements OnDestroy {
                 } else {
                     this.toastService.success('Game removed from wishlist')
                 }
+                
+                // Refresh the global wishlist state to keep it in sync
+                this.dataService.refreshUserWishlist()
             },
             error: (error) => {
                 this.toastService.error('Error saving wishlist')
@@ -255,6 +258,10 @@ export class GameViewPageComponent implements OnDestroy {
         this.api.addGameToUserCollection(currentUser.id, gameId).subscribe({
             next: (res) => {
                 this.toastService.success('Game added to collection')
+                
+                // Check if the game was in the wishlist before adding to collection
+                const wasInWishlist = this.isWishlistedComputed()
+                
                 this.gameView$.update((game) => {
                     if (!game) {
                         return null
@@ -267,8 +274,18 @@ export class GameViewPageComponent implements OnDestroy {
                             purchasePrice: null,
                             purchaseNotes: null,
                         },
+                        // Automatically remove from wishlist when added to collection
+                        wishlistedGameData: null,
                     }
                 })
+                
+                // Show notification if the game was automatically removed from wishlist
+                if (wasInWishlist) {
+                    this.toastService.info('Game automatically removed from wishlist')
+                }
+                
+                // Refresh the wishlist to ensure consistency with server state
+                this.dataService.refreshUserWishlist()
             },
             error: (error) => {
                 this.toastService.error('Error adding game to collection')
