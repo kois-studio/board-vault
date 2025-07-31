@@ -1,278 +1,186 @@
-# Development Patterns & Conventions
+# Cross-Cutting Development Patterns & Conventions
 
-This document captures important patterns, conventions, and learnings from implementing admin features in BoardVault.
+This document captures important cross-cutting patterns, conventions, and learnings that apply across the entire BoardVault project.
 
-## Type Organization & Naming Conventions
+## Project-Wide Standards
 
-### Request vs Response Type Naming
+### Code Organization Principles
 
-**Request Body Types**: Use `-Body` suffix
+1. **Separation of Concerns**: Each module/component should have a single responsibility
+2. **Consistent Naming**: Follow established naming conventions across all layers
+3. **Type Safety**: Use proper types instead of generics or any
+4. **Documentation**: Self-documenting code with clear naming and structure
+
+### Version Control & Git Practices
+
+**Commit Message Convention:**
+```
+type(scope): description
+
+feat(backend): add game translation management
+fix(frontend): resolve navigation issue in collection view
+docs(general): update API documentation
+refactor(database): optimize game search queries
+```
+
+**Branch Naming:**
+```
+feature/game-translations
+bugfix/navigation-issue
+hotfix/critical-api-error
+```
+
+### Environment Configuration
+
+**Environment Variables:**
+- Use `.env` files for local development
+- Never commit sensitive data to version control
+- Use environment-specific configuration files
+- Validate required environment variables at startup
+
+### Testing Standards
+
+**Test Coverage Requirements:**
+- Backend: Minimum 80% coverage for business logic
+- Frontend: Minimum 70% coverage for components and services
+- Database: Integration tests for all critical queries
+
+**Testing Patterns:**
+- Unit tests for individual functions/methods
+- Integration tests for API endpoints
+- E2E tests for critical user flows
+- Mock external dependencies
+
+## Cross-Platform Type Consistency
+
+### Shared Type Definitions
+
+**Common Types:**
 ```typescript
-// ✅ Correct - Request body types
-export class UpdateGameTranslationsBody { ... }
-export class UpdateGameTagsBody { ... }
-export class CreateNotificationBody { ... }
-export class UpdateNotificationBody { ... }
+// Shared across frontend and backend
+export type SupportedLanguage = 'en' | 'es' | 'de' | 'fr'
+export type GameStatus = 'active' | 'inactive' | 'pending'
+export type UserRole = 'user' | 'admin' | 'moderator'
 ```
 
-**Response Types**: Use `-Dto` suffix
+**Type Synchronization:**
+- Keep frontend types consistent with backend DTOs
+- Use shared type definitions when possible
+- Validate type compatibility during build process
+
+## Error Handling Standards
+
+### Global Error Handling
+
+**Backend Error Responses:**
 ```typescript
-// ✅ Correct - Response DTOs
-export class GameWithTagsAndTranslationsDto { ... }
-export class GameCompleteDto { ... }
-export class TagCategoryWithTagsDto { ... }
-```
-
-**Base Types**: No suffix
-```typescript
-// ✅ Correct - Base entity types
-export class GameDto { ... }
-export class TagDto { ... }
-export class UserDto { ... }
-```
-
-### Type File Organization
-
-**Location**: All types should be in `backend/src/common/types/`
-```
-backend/src/common/types/
-├── admin.type.ts          ← Admin-specific request bodies
-├── game.type.ts           ← Game-related DTOs
-├── tag.type.ts            ← Tag-related DTOs
-├── auth.type.ts           ← Authentication types
-└── ...
-```
-
-**Rule**: Never place DTOs in module directories (e.g., `admin.types.ts` in admin module)
-
-### Type Placement Logic
-
-- **Entity-specific DTOs**: Place in corresponding entity type file
-  - `GameTagWithCategoryDto` → `tag.type.ts` (tag-related)
-  - `GameWithTagsAndTranslationsDto` → `game.type.ts` (game-related)
-
-- **Cross-cutting DTOs**: Place in appropriate domain file
-  - Admin request bodies → `admin.type.ts`
-  - Authentication types → `auth.type.ts`
-
-## Swagger Documentation Patterns
-
-### Self-Documenting DTOs
-
-Use `@ApiProperty()` decorators for automatic Swagger generation:
-
-```typescript
-export class UpdateGameTranslationsBody {
-    @ApiProperty({ 
-        description: 'English translation of the game title',
-        example: 'Catan',
-        required: false
-    })
-    en?: string
-
-    @ApiProperty({ 
-        description: 'Spanish translation of the game title',
-        example: 'Catan',
-        required: false
-    })
-    es?: string
+{
+  error: {
+    code: 'VALIDATION_ERROR',
+    message: 'Invalid input data',
+    details: { field: 'email', issue: 'Invalid format' }
+  }
 }
 ```
 
-**Benefits**:
-- Automatic Swagger schema generation
-- Self-documenting code
-- Type safety with examples
-- No manual schema declarations needed
+**Frontend Error Handling:**
+- Global error interceptor for HTTP errors
+- User-friendly error messages
+- Proper error logging for debugging
+- Graceful degradation when possible
 
-### Controller Response Documentation
+### Logging Standards
 
-```typescript
-@ApiResponse({ 
-    status: 200, 
-    description: 'List of all games with translations and tags',
-    type: [GameWithTagsAndTranslationsDto]  // Use DTO type, not manual schema
-})
+**Log Levels:**
+- ERROR: System errors that need immediate attention
+- WARN: Potential issues that should be monitored
+- INFO: General application flow information
+- DEBUG: Detailed debugging information
+
+**Log Format:**
+```
+[timestamp] [level] [service] [traceId] message
+[2024-01-15T10:30:00Z] [INFO] [GameService] [abc123] Game created successfully
 ```
 
-## Type Safety Patterns
+## Performance Standards
 
-### Supported Language Type Safety
+### Response Time Targets
 
-Use `SupportedLanguage` type instead of generic `Record<string, string>`:
+- API endpoints: < 200ms for simple operations
+- Database queries: < 100ms for standard operations
+- Frontend rendering: < 100ms for initial load
+- User interactions: < 50ms for immediate feedback
 
-```typescript
-// ❌ Generic and unsafe
-translations: Record<string, string>
+### Caching Strategy
 
-// ✅ Type-safe with specific languages
-translations: Record<SupportedLanguage, string>
-```
+**Cache Levels:**
+1. **Application Cache**: In-memory cache for frequently accessed data
+2. **Database Cache**: Query result caching
+3. **CDN Cache**: Static assets and API responses
+4. **Browser Cache**: Client-side caching for static resources
 
-**Benefits**:
-- Compile-time checking for valid language codes
-- IntelliSense support
-- Easy to extend for new languages
-- Consistent across frontend and backend
+## Security Standards
 
-### Proper Type Imports
+### Authentication & Authorization
 
-Import types from their proper locations:
+- JWT tokens for API authentication
+- Role-based access control (RBAC)
+- Secure password hashing (bcrypt)
+- Session management with proper expiration
 
-```typescript
-// ✅ Correct imports
-import { GameTagWithCategoryDto } from '../../../common/types/tag.type'
-import { GameWithTagsAndTranslationsDto } from '../../../common/types/game.type'
-import { UpdateGameTranslationsBody } from '../../../common/types/admin.type'
+### Data Validation
 
-// ❌ Avoid inline type definitions in services
-type AdminGameWithDetails = GameDto & { ... }  // Don't do this
-```
+- Input validation on all endpoints
+- SQL injection prevention
+- XSS protection
+- CSRF protection for state-changing operations
 
-## Backend Architecture Patterns
+## Monitoring & Observability
 
-### Admin Module Structure
+### Health Checks
 
-**Controller**: Handle HTTP requests and responses
-```typescript
-@Controller('admin')
-export class AdminController {
-    @Get('/games')
-    async getGames() {
-        return this.adminService.getAdminGames()
-    }
-}
-```
+**Backend Health Endpoints:**
+- `/health`: Basic application health
+- `/health/detailed`: Detailed system status
+- `/metrics`: Application metrics
 
-**Service**: Orchestrate core services
-```typescript
-@Injectable()
-export class AdminService {
-    constructor(
-        private readonly gameService: GamesService,
-        private readonly gameTranslationService: GameTranslationService,
-        private readonly gameTagsService: GameTagsService,
-        // Inject core services, never access database directly
-    ) {}
+**Frontend Monitoring:**
+- Error tracking (Sentry)
+- Performance monitoring
+- User analytics (privacy-compliant)
 
-    async getAdminGames(): Promise<Array<GameWithTagsAndTranslationsDto>> {
-        // Orchestrate calls to multiple core services
-        const games = await this.gameService.getGames()
-        // Transform and combine data
-        return Promise.all(games.map(async game => { ... }))
-    }
-}
-```
+## Documentation Standards
 
-**Rule**: Admin services should orchestrate core services, never access database directly.
+### API Documentation
 
-### Database Service Patterns
+- OpenAPI/Swagger specification
+- Clear endpoint descriptions
+- Request/response examples
+- Error code documentation
 
-Add missing methods to `DatabaseService` when needed:
+### Code Documentation
 
-```typescript
-// Add to DatabaseService when core services need them
-getGames() {
-    return this._tursoExecute('SELECT * FROM Game ORDER BY id')
-}
+- JSDoc for functions and classes
+- README files for each module
+- Architecture decision records (ADRs)
+- Setup and deployment guides
 
-addGameTag(gameId: number, tagId: number) {
-    return this._tursoExecute({
-        sql: 'INSERT INTO GameTag (gameId, tagId) VALUES (?, ?)',
-        args: [gameId, tagId],
-    })
-}
-```
+## Key Principles
 
-## Frontend Patterns
-
-### API Type Consistency
-
-Keep frontend types consistent with backend DTOs:
-
-```typescript
-// Frontend type matching backend DTO
-export type GameWithTagsAndTranslationsType = GameType & {
-    translations: Record<SupportedLanguage, string>
-    tags: Array<{
-        id: number
-        name: string
-        categoryName: string
-    }>
-}
-```
-
-### Component Signal Patterns
-
-Use Angular signals for reactive state management:
-
-```typescript
-export class AdminGamesManageComponent {
-    public games = signal<Array<GameWithTagsAndTranslationsType>>([])
-    public isLoadingGames = signal<boolean>(false)
-
-    private _fetchGames(): void {
-        this.isLoadingGames.set(true)
-        this.api.getAdminGames().subscribe({
-            next: games => this.games.set(games),
-            complete: () => this.isLoadingGames.set(false),
-        })
-    }
-}
-```
-
-## Error Handling Patterns
-
-### Service Error Handling
-
-```typescript
-async updateGameTranslations(gameId: number, translations: UpdateGameTranslationsBody): Promise<{ success: boolean }> {
-    try {
-        // Update each translation
-        for (const [languageCode, title] of Object.entries(translations)) {
-            if (title?.trim()) {  // Null-safe check
-                await this.gameTranslationService.createGameTranslation(gameId, languageCode, title)
-            }
-        }
-        return { success: true }
-    } catch (error) {
-        this.LOGGER.error('Failed to update game translations', error)
-        throw error  // Let controller handle HTTP response
-    }
-}
-```
-
-## Cache Invalidation Patterns
-
-### Service Cache Management
-
-```typescript
-async addGameTag(gameId: number, tagId: number): Promise<{ success: boolean }> {
-    await this.databaseService.addGameTag(gameId, tagId)
-    
-    // Clear cache after modification
-    await this.cacheService.deleteOne(`${this.CACHE_KEY}:byGameId:${gameId}`)
-    
-    return { success: true }
-}
-```
-
-## Key Learnings
-
-1. **Type Safety First**: Always use proper types instead of generics
-2. **Consistent Naming**: Follow established conventions (-Body for requests, -Dto for responses)
-3. **Proper Organization**: Keep types in `common/types/` directory
-4. **Self-Documentation**: Use `@ApiProperty()` for automatic Swagger generation
-5. **Service Orchestration**: Admin services should coordinate core services
-6. **Cache Management**: Always invalidate cache after data modifications
-7. **Error Handling**: Use proper logging and error propagation
-8. **Frontend-Backend Consistency**: Keep types synchronized across the stack
+1. **Consistency**: Follow established patterns across the entire project
+2. **Maintainability**: Write code that's easy to understand and modify
+3. **Scalability**: Design for future growth and changes
+4. **Security**: Security-first approach in all implementations
+5. **Performance**: Optimize for user experience and system efficiency
+6. **Testing**: Comprehensive testing for reliability
+7. **Documentation**: Clear documentation for all components
 
 ## Anti-Patterns to Avoid
 
-1. ❌ **Inline type definitions** in services
-2. ❌ **Manual Swagger schemas** when DTOs exist
-3. ❌ **Generic Record types** when specific types are available
-4. ❌ **Direct database access** from admin services
-5. ❌ **Inconsistent naming conventions**
-6. ❌ **Types scattered across module directories** 
+1. ❌ **Inconsistent naming conventions** across different parts of the system
+2. ❌ **Hardcoded values** instead of configuration
+3. ❌ **Poor error handling** that doesn't provide useful feedback
+4. ❌ **Inadequate logging** that makes debugging difficult
+5. ❌ **Security vulnerabilities** from improper validation
+6. ❌ **Performance issues** from inefficient implementations 
