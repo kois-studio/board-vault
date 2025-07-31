@@ -1,0 +1,386 @@
+<app-page-header titleText="Log a Play Session" [showActionButton]="false"> Track your game sessions and who played what </app-page-header>
+
+<container-wrapper>
+    <!-- Progress Indicator -->
+    <div class="mb-8">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <div class="flex items-center">
+                    <div
+                        class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
+                        [class]="
+                            currentStep() === 'group'
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                        "
+                    >
+                        1
+                    </div>
+                    <div
+                        class="ml-2 text-sm font-medium"
+                        [class]="currentStep() === 'group' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'"
+                    >
+                        Group
+                    </div>
+                </div>
+                <div class="w-8 h-1 bg-gray-200 dark:bg-gray-700"></div>
+                <div class="flex items-center">
+                    <div
+                        class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
+                        [class]="
+                            currentStep() === 'date'
+                                ? 'bg-blue-600 text-white'
+                                : currentStep() === 'attendees' || currentStep() === 'games' || currentStep() === 'matrix'
+                                ? 'bg-green-600 text-white'
+                                : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                        "
+                    >
+                        2
+                    </div>
+                    <div
+                        class="ml-2 text-sm font-medium"
+                        [class]="
+                            currentStep() === 'date'
+                                ? 'text-blue-600 dark:text-blue-400'
+                                : currentStep() === 'attendees' || currentStep() === 'games' || currentStep() === 'matrix'
+                                ? 'text-green-600 dark:text-green-400'
+                                : 'text-gray-500 dark:text-gray-400'
+                        "
+                    >
+                        Date
+                    </div>
+                </div>
+                <div class="w-8 h-1 bg-gray-200 dark:bg-gray-700"></div>
+                <div class="flex items-center">
+                    <div
+                        class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
+                        [class]="
+                            currentStep() === 'attendees'
+                                ? 'bg-blue-600 text-white'
+                                : currentStep() === 'games' || currentStep() === 'matrix'
+                                ? 'bg-green-600 text-white'
+                                : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                        "
+                    >
+                        3
+                    </div>
+                    <div
+                        class="ml-2 text-sm font-medium"
+                        [class]="
+                            currentStep() === 'attendees'
+                                ? 'text-blue-600 dark:text-blue-400'
+                                : currentStep() === 'games' || currentStep() === 'matrix'
+                                ? 'text-green-600 dark:text-green-400'
+                                : 'text-gray-500 dark:text-gray-400'
+                        "
+                    >
+                        Attendees
+                    </div>
+                </div>
+                <div class="w-8 h-1 bg-gray-200 dark:bg-gray-700"></div>
+                <div class="flex items-center">
+                    <div
+                        class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
+                        [class]="
+                            currentStep() === 'games'
+                                ? 'bg-blue-600 text-white'
+                                : currentStep() === 'matrix'
+                                ? 'bg-green-600 text-white'
+                                : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                        "
+                    >
+                        4
+                    </div>
+                    <div
+                        class="ml-2 text-sm font-medium"
+                        [class]="
+                            currentStep() === 'games'
+                                ? 'text-blue-600 dark:text-blue-400'
+                                : currentStep() === 'matrix'
+                                ? 'text-green-600 dark:text-green-400'
+                                : 'text-gray-500 dark:text-gray-400'
+                        "
+                    >
+                        Games
+                    </div>
+                </div>
+                <div class="w-8 h-1 bg-gray-200 dark:bg-gray-700"></div>
+                <div class="flex items-center">
+                    <div
+                        class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
+                        [class]="
+                            currentStep() === 'matrix'
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                        "
+                    >
+                        5
+                    </div>
+                    <div
+                        class="ml-2 text-sm font-medium"
+                        [class]="currentStep() === 'matrix' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'"
+                    >
+                        Matrix
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step Content -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <!-- Step Header -->
+        <div class="mb-6">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">{{ getStepTitle() }}</h2>
+            <p class="text-gray-600 dark:text-gray-400 mt-1">{{ getStepDescription() }}</p>
+        </div>
+
+        <!-- Step 1: Group Selection -->
+        <div *ngIf="currentStep() === 'group'" class="space-y-4">
+            <div class="grid gap-4">
+                <div
+                    *ngFor="let group of userGroups()"
+                    class="p-4 border rounded-lg cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-gray-700"
+                    [class]="
+                        selectedGroup()?.id === group.id
+                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                            : 'border-gray-200 dark:border-gray-600'
+                    "
+                    (click)="selectGroup(group)"
+                >
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-medium text-gray-900 dark:text-white">{{ group.name }}</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ group.members.length }} members</p>
+                        </div>
+                        <div *ngIf="selectedGroup()?.id === group.id" class="text-blue-600">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                    clip-rule="evenodd"
+                                ></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Date Selection -->
+        <div *ngIf="currentStep() === 'date'" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"> Session Date </label>
+                <input
+                    type="date"
+                    [formControl]="sessionDate"
+                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                    [class]="sessionDate.invalid && (sessionDate.dirty || sessionDate.touched) ? 'border-red-500' : ''"
+                />
+                <div *ngIf="sessionDate.invalid && (sessionDate.dirty || sessionDate.touched)" class="mt-1 text-sm text-red-600">
+                    <div *ngIf="sessionDate.hasError('required')">Date is required</div>
+                    <div *ngIf="sessionDate.hasError('futureDate')">Date cannot be in the future</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Attendee Selection -->
+        <div *ngIf="currentStep() === 'attendees'" class="space-y-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Select Attendees</h3>
+                <div class="flex space-x-2">
+                    <button
+                        type="button"
+                        (click)="selectAllAttendees()"
+                        class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                    >
+                        Select All
+                    </button>
+                    <button
+                        type="button"
+                        (click)="deselectAllAttendees()"
+                        class="px-3 py-1 text-sm bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors"
+                    >
+                        Deselect All
+                    </button>
+                </div>
+            </div>
+            <div class="grid gap-3">
+                <div
+                    *ngFor="let attendee of attendees()"
+                    class="flex items-center p-3 border rounded-lg cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-gray-700"
+                    [class]="attendee.selected ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-200 dark:border-gray-600'"
+                    (click)="toggleAttendee(attendee.user.id)"
+                >
+                    <input
+                        type="checkbox"
+                        [checked]="attendee.selected"
+                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                        (click)="$event.stopPropagation()"
+                        (change)="toggleAttendee(attendee.user.id)"
+                    />
+                    <div class="ml-3 flex items-center">
+                        <div
+                            class="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-sm font-medium text-gray-700 dark:text-gray-300 mr-3"
+                        >
+                            {{ attendee.user.displayName || attendee.user.username | slice : 0 : 2 | uppercase }}
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-900 dark:text-white">
+                                {{ attendee.user.displayName || attendee.user.username }}
+                            </p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ attendee.user.games.length }} games owned</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 4: Game Selection -->
+        <div *ngIf="currentStep() === 'games'" class="space-y-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Select Games</h3>
+                <div class="flex space-x-2">
+                    <button
+                        type="button"
+                        (click)="selectAllGames()"
+                        class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                    >
+                        Select All
+                    </button>
+                    <button
+                        type="button"
+                        (click)="deselectAllGames()"
+                        class="px-3 py-1 text-sm bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors"
+                    >
+                        Deselect All
+                    </button>
+                </div>
+            </div>
+            <div class="grid gap-3">
+                <div
+                    *ngFor="let game of games()"
+                    class="flex items-center p-3 border rounded-lg cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-gray-700"
+                    [class]="game.selected ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-200 dark:border-gray-600'"
+                    (click)="toggleGame(game.game.id)"
+                >
+                    <input
+                        type="checkbox"
+                        [checked]="game.selected"
+                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                        (click)="$event.stopPropagation()"
+                        (change)="toggleGame(game.game.id)"
+                    />
+                    <div class="ml-3 flex items-center">
+                        <img
+                            [src]="game.game.imageUrl"
+                            [alt]="game.game.title"
+                            class="w-12 h-12 rounded object-cover mr-3"
+                            onerror="this.src='assets/images/test.png'"
+                        />
+                        <div>
+                            <p class="text-sm font-medium text-gray-900 dark:text-white">
+                                {{ game.game.title }}
+                            </p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">
+                                {{ game.game.minPlayers }}-{{ game.game.maxPlayers }} players • {{ game.game.gameAvgDuration }} min
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 5: Matrix -->
+        <div *ngIf="currentStep() === 'matrix'" class="space-y-4">
+            <div class="overflow-x-auto">
+                <table class="min-w-full border border-gray-200 dark:border-gray-600 rounded-lg">
+                    <thead>
+                        <tr class="bg-gray-50 dark:bg-gray-700">
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                Player / Game
+                            </th>
+                            <th
+                                *ngFor="let game of getSelectedGames()"
+                                class="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                            >
+                                <div class="flex flex-col items-center">
+                                    <img
+                                        [src]="game.game.imageUrl"
+                                        [alt]="game.game.title"
+                                        class="w-8 h-8 rounded object-cover mb-1"
+                                        onerror="this.src='assets/images/test.png'"
+                                    />
+                                    <span class="text-xs"
+                                        >{{ game.game.title | slice : 0 : 10 }}{{ game.game.title.length > 10 ? '...' : '' }}</span
+                                    >
+                                    <button
+                                        type="button"
+                                        (click)="selectAllForGame(game.game.id)"
+                                        class="mt-1 text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                                    >
+                                        All
+                                    </button>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-600">
+                        <tr *ngFor="let attendee of getSelectedAttendees()">
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-sm font-medium text-gray-700 dark:text-gray-300 mr-3"
+                                    >
+                                        {{ attendee.user.displayName || attendee.user.username | slice : 0 : 2 | uppercase }}
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900 dark:text-white">
+                                            {{ attendee.user.displayName || attendee.user.username }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td *ngFor="let game of getSelectedGames()" class="px-4 py-3 text-center">
+                                <input
+                                    type="checkbox"
+                                    [checked]="isMatrixCellSelected(attendee.user.id, game.game.id)"
+                                    (change)="toggleMatrixCell(attendee.user.id, game.game.id)"
+                                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="flex justify-between items-center mt-8 pt-6 border-t border-gray-200 dark:border-gray-600">
+            <button
+                *ngIf="currentStep() !== 'group'"
+                type="button"
+                (click)="previousStep()"
+                class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+                Previous
+            </button>
+            <div *ngIf="currentStep() === 'group'"></div>
+
+            <button
+                type="button"
+                (click)="nextStep()"
+                [disabled]="!canProceedToNextStep() || isLoading()"
+                class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+                <span *ngIf="isLoading()" class="flex items-center">
+                    <app-spinner size="small" class="mr-2"></app-spinner>
+                    Processing...
+                </span>
+                <span *ngIf="!isLoading()">
+                    {{ currentStep() === 'matrix' ? 'Submit Session' : 'Next' }}
+                </span>
+            </button>
+        </div>
+    </div>
+</container-wrapper>
