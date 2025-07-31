@@ -6,6 +6,8 @@ import { DataService } from '../../core/services/data.service'
 import { SpinnerComponent } from '../../components/ui/spinner/spinner.component'
 import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
+import { CardAccountComponent } from '../card-account/card-account.component'
+import { ImageBackgroundComponent } from '../ui/image-background/image-background.component'
 import type { GroupWithMembersAndGames, GameCompleteType, UserType, GameReviewDto } from '../../api/api.types'
 
 type SessionStep = 'group' | 'date' | 'attendees' | 'games' | 'matrix'
@@ -39,6 +41,8 @@ interface MatrixCell {
         SpinnerComponent,
         PageHeaderComponent,
         ContainerWrapperComponent,
+        CardAccountComponent,
+        ImageBackgroundComponent,
     ],
 })
 export class LogSessionWizardComponent {
@@ -91,9 +95,16 @@ export class LogSessionWizardComponent {
     public matrix = signal<MatrixCell[]>([])
 
     constructor() {
+        // Set today as default date
+        const today = new Date().toISOString().split('T')[0]
+        this.sessionDate.setValue(today)
+
         effect(() => {
             const group = this.selectedGroup()
             if (group) {
+                // Auto-advance to step 2 when group is selected
+                this.currentStep.set('date')
+                
                 // Initialize attendees from group members
                 this.attendees.set(
                     group.members.map(member => ({
