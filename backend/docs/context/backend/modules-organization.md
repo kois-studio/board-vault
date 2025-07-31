@@ -157,7 +157,7 @@ We want a endpoint to get all groups of a user. This should return also, for eac
 
 This, previously, was done in `users.service.ts`, that needed to import multiple other services and forcing a couple circular dependencies.
 
-![back modules](../images/back-modules.png)
+![back modules](./back-modules.png)
 
 Now, we can do this in `features/dashboard.service.ts` by injecting the required `/core` services through the NestJS dependency injection system.
 
