@@ -9,7 +9,15 @@ import { PageHeaderComponent } from '../../components/ui/page-header/page-header
 import { DataService } from '../../core/services/data.service'
 
 @Component({
-    imports: [PageHeaderComponent, ButtonComponent, ContainerWrapperComponent, CardSectionComponent, BadgeComponent, ImageProfileComponent, RouterLink],
+    imports: [
+        PageHeaderComponent,
+        ButtonComponent,
+        ContainerWrapperComponent,
+        CardSectionComponent,
+        BadgeComponent,
+        ImageProfileComponent,
+        RouterLink,
+    ],
     templateUrl: 'play-page.component.html',
 })
 export class PlayPageComponent {

@@ -48,7 +48,7 @@ export class BrowsePageComponent {
     public readonly gamesListComputed = computed(() => {
         const browseGames = this.browseGamesList$()
         const userGames = this.userGames$()
-        
+
         return browseGames.map((game) => ({
             ...game,
             isInCollection: userGames.some((userGame) => userGame.id === game.id),
@@ -66,7 +66,7 @@ export class BrowsePageComponent {
                 const trimmedValue = value?.trim() || ''
                 this.searchTerm$.set(trimmedValue)
                 this.currentPage$.set(1) // Reset page when search changes
-                
+
                 // Only search if the term is valid
                 if (trimmedValue.length >= 3) {
                     this._searchGames()
@@ -82,7 +82,7 @@ export class BrowsePageComponent {
             const currentPage = this.currentPage$()
             const currentGames = this.browseGamesList$().length
             const searchTermValid = this.searchTermIsValid$()
-            
+
             // Only update hasMoreGames if we have games and the search is valid
             if (currentGames > 0 && searchTermValid) {
                 const hasMore = currentGames === 12 * currentPage // 12 is the limit set in your API
@@ -102,7 +102,7 @@ export class BrowsePageComponent {
         if (this.isSearching$() || !this.hasMoreGames$()) {
             return
         }
-        
+
         this.currentPage$.update((page) => page + 1)
         this._searchGames(true)
     }

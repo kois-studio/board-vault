@@ -7,7 +7,8 @@
         "build": "ng build",
         "watch": "ng build --watch --configuration development",
         "test": "ng test",
-        "format": "biome check --write"
+        "format": "biome check --write",
+        "format-fix-unsafe": "biome check --fix --unsafe"
     },
     "private": true,
     "dependencies": {
