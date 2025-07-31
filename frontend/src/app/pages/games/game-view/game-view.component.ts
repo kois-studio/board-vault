@@ -47,12 +47,12 @@ export class GameViewPageComponent implements OnDestroy {
         if (value === null || value === '') {
             return null // Allow null/empty values
         }
-        
+
         const numValue = Number(value)
-        if (isNaN(numValue) || numValue < 0) {
+        if (Number.isNaN(numValue) || numValue < 0) {
             return { positiveNumber: true }
         }
-        
+
         return null
     }
 
@@ -188,7 +188,7 @@ export class GameViewPageComponent implements OnDestroy {
                 } else {
                     this.toastService.success('Game removed from wishlist')
                 }
-                
+
                 // Refresh the global wishlist state to keep it in sync
                 this.dataService.refreshUserWishlist()
             },
@@ -258,10 +258,10 @@ export class GameViewPageComponent implements OnDestroy {
         this.api.addGameToUserCollection(currentUser.id, gameId).subscribe({
             next: (res) => {
                 this.toastService.success('Game added to collection')
-                
+
                 // Check if the game was in the wishlist before adding to collection
                 const wasInWishlist = this.isWishlistedComputed()
-                
+
                 this.gameView$.update((game) => {
                     if (!game) {
                         return null
@@ -278,12 +278,12 @@ export class GameViewPageComponent implements OnDestroy {
                         wishlistedGameData: null,
                     }
                 })
-                
+
                 // Show notification if the game was automatically removed from wishlist
                 if (wasInWishlist) {
                     this.toastService.info('Game automatically removed from wishlist')
                 }
-                
+
                 // Refresh the wishlist to ensure consistency with server state
                 this.dataService.refreshUserWishlist()
             },
