@@ -144,7 +144,8 @@
         </div>
 
         <!-- Step 1: Group Selection -->
-        <div *ngIf="currentStep() === 'group'" class="space-y-4">
+        @if (currentStep() === 'group') {
+        <div class="space-y-4">
             @if (isLoadingGroups()) {
             <div class="flex flex-col items-center justify-center py-12">
                 <app-spinner size="large" />
@@ -152,8 +153,8 @@
             </div>
             } @else {
             <div class="grid gap-4">
+                @for (group of userGroups(); track group.id) {
                 <div
-                    *ngFor="let group of userGroups()"
                     class="p-4 border rounded-lg cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-zinc-700"
                     [class]="
                         selectedGroup()?.id === group.id
@@ -167,7 +168,8 @@
                             <h3 class="font-medium text-gray-900 dark:text-white">{{ group.name }}</h3>
                             <p class="text-sm text-gray-500 dark:text-gray-400">{{ group.members.length }} members</p>
                         </div>
-                        <div *ngIf="selectedGroup()?.id === group.id" class="text-blue-600">
+                        @if (selectedGroup()?.id === group.id) {
+                        <div class="text-blue-600">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                 <path
                                     fill-rule="evenodd"
@@ -176,14 +178,18 @@
                                 ></path>
                             </svg>
                         </div>
+                        }
                     </div>
                 </div>
+                }
             </div>
             }
         </div>
+        }
 
         <!-- Step 2: Date Selection -->
-        <div *ngIf="currentStep() === 'date'" class="space-y-4">
+        @if (currentStep() === 'date') {
+        <div class="space-y-4">
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"> Session Date </label>
                 <input
@@ -192,15 +198,23 @@
                     class="w-full px-3 py-2 border border-gray-300 dark:border-zinc-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:text-white"
                     [class]="sessionDate.invalid && (sessionDate.dirty || sessionDate.touched) ? 'border-red-500' : ''"
                 />
-                <div *ngIf="sessionDate.invalid && (sessionDate.dirty || sessionDate.touched)" class="mt-1 text-sm text-red-600">
-                    <div *ngIf="sessionDate.hasError('required')">Date is required</div>
-                    <div *ngIf="sessionDate.hasError('futureDate')">Date cannot be in the future</div>
+                @if (sessionDate.invalid && (sessionDate.dirty || sessionDate.touched)) {
+                <div class="mt-1 text-sm text-red-600">
+                    @if (sessionDate.hasError('required')) {
+                    <div>Date is required</div>
+                    }
+                    @if (sessionDate.hasError('futureDate')) {
+                    <div>Date cannot be in the future</div>
+                    }
                 </div>
+                }
             </div>
         </div>
+        }
 
         <!-- Step 3: Attendee Selection -->
-        <div *ngIf="currentStep() === 'attendees'" class="space-y-4">
+        @if (currentStep() === 'attendees') {
+        <div class="space-y-4">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white">Select Attendees</h3>
                 <div class="flex space-x-2">
@@ -221,8 +235,8 @@
                 </div>
             </div>
             <div class="grid lg:grid-cols-2 gap-4">
+                @for (attendee of attendees(); track attendee.user.id) {
                 <button
-                    *ngFor="let attendee of attendees()"
                     (click)="toggleAttendee(attendee.user.id)"
                     class="rounded-lg cursor-pointer flex items-center justify-start border"
                     [ngClass]="{
@@ -253,11 +267,14 @@
                         </div>
                     </div>
                 </button>
+                }
             </div>
         </div>
+        }
 
         <!-- Step 4: Game Selection -->
-        <div *ngIf="currentStep() === 'games'" class="space-y-4">
+        @if (currentStep() === 'games') {
+        <div class="space-y-4">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white">Select Games</h3>
                 <div class="flex space-x-2">
@@ -278,8 +295,8 @@
                 </div>
             </div>
             <div class="grid lg:grid-cols-2 gap-4">
+                @for (game of games(); track game.game.id) {
                 <button
-                    *ngFor="let game of games()"
                     (click)="toggleGame(game.game.id)"
                     class="rounded-lg cursor-pointer flex items-center justify-start border"
                     [ngClass]="{
@@ -303,7 +320,7 @@
                                 <image-background [src]="game.game.imageUrl" class="h-24" />
                             </div>
                             <div class="ml-3 text-nowrap overflow-hidden text-ellipsis whitespace-nowrap">
-                                <p class="font-semibold">{{ game.game.titleTranslations?.en || game.game.title }}</p>
+                                <p class="font-semibold">{{ game.game.titleTranslations.en || game.game.title }}</p>
                                 <p class="text-secondary text-sm text-start w-full">
                                     <i class="bi bi-clock-fill"></i> {{ game.game.gameAvgDuration }} mins
                                 </p>
@@ -314,11 +331,14 @@
                         </div>
                     </div>
                 </button>
+                }
             </div>
         </div>
+        }
 
         <!-- Step 5: Matrix -->
-        <div *ngIf="currentStep() === 'matrix'" class="space-y-4">
+        @if (currentStep() === 'matrix') {
+        <div class="space-y-4">
             <div class="overflow-x-auto">
                 <table class="min-w-full border border-gray-200 dark:border-zinc-600 rounded-lg">
                     <thead>
@@ -326,8 +346,8 @@
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 Player / Game
                             </th>
+                            @for (game of getSelectedGames(); track game.game.id) {
                             <th
-                                *ngFor="let game of getSelectedGames()"
                                 class="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                             >
                                 <div class="flex flex-col items-center">
@@ -335,7 +355,7 @@
                                         <image-background [src]="game.game.imageUrl" class="h-8 w-8" />
                                     </div>
                                     <span class="text-xs"
-                                        >{{ game.game.titleTranslations?.en || game.game.title | slice : 0 : 10 }}{{ (game.game.titleTranslations?.en || game.game.title).length > 10 ? '...' : '' }}</span
+                                        >{{ game.game.titleTranslations.en || game.game.title | slice : 0 : 10 }}{{ (game.game.titleTranslations.en || game.game.title).length > 10 ? '...' : '' }}</span
                                     >
                                     <button
                                         type="button"
@@ -346,10 +366,12 @@
                                     </button>
                                 </div>
                             </th>
+                            }
                         </tr>
                     </thead>
                     <tbody class="bg-white dark:bg-zinc-800 divide-y divide-gray-200 dark:divide-zinc-600">
-                        <tr *ngFor="let attendee of getSelectedAttendees()">
+                        @for (attendee of getSelectedAttendees(); track attendee.user.id) {
+                        <tr>
                             <td class="px-4 py-3 whitespace-nowrap">
                                 <div class="flex items-center">
                                     <div
@@ -364,7 +386,8 @@
                                     </div>
                                 </div>
                             </td>
-                            <td *ngFor="let game of getSelectedGames()" class="px-4 py-3 text-center">
+                            @for (game of getSelectedGames(); track game.game.id) {
+                            <td class="px-4 py-3 text-center">
                                 <input
                                     type="checkbox"
                                     [checked]="isMatrixCellSelected(attendee.user.id, game.game.id)"
@@ -372,14 +395,18 @@
                                     class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-zinc-800 focus:ring-2 dark:bg-zinc-700 dark:border-zinc-600"
                                 />
                             </td>
+                            }
                         </tr>
+                        }
                     </tbody>
                 </table>
             </div>
         </div>
+        }
 
         <!-- Navigation Buttons -->
-        <div *ngIf="currentStep() !== 'group'" class="flex justify-between items-center mt-8 pt-6 border-t border-gray-200 dark:border-zinc-600">
+        @if (currentStep() !== 'group') {
+        <div class="flex justify-between items-center mt-8 pt-6 border-t border-gray-200 dark:border-zinc-600">
             <button
                 type="button"
                 (click)="previousStep()"
@@ -394,14 +421,18 @@
                 [disabled]="!canProceedToNextStep() || isLoading()"
                 class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-                <span *ngIf="isLoading()" class="flex items-center">
+                @if (isLoading()) {
+                <span class="flex items-center">
                     <app-spinner size="small" class="mr-2"></app-spinner>
                     Processing...
                 </span>
-                <span *ngIf="!isLoading()">
+                } @else {
+                <span>
                     {{ currentStep() === 'matrix' ? 'Submit Session' : 'Next' }}
                 </span>
+                }
             </button>
         </div>
+        }
     </div>
 </container-wrapper>
