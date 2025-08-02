@@ -27,9 +27,9 @@
     }"
 >
     <!-- Coming Soon badge -->
-    <div *ngIf="comingSoon" class="absolute top-0 right-0 bg-gray-800 text-white px-3 py-1 text-sm font-medium z-10 rounded-bl-lg">
-        Coming Soon
-    </div>
+    @if (comingSoon) {
+        <div class="absolute top-0 right-0 bg-gray-800 text-white px-3 py-1 text-sm font-medium z-10 rounded-bl-lg">Coming Soon</div>
+    }
 
     <a [routerLink]="comingSoon ? null : cardLink" [attr.disabled]="comingSoon ? true : null" class="block p-6 h-full">
         <div class="flex items-start h-full">
