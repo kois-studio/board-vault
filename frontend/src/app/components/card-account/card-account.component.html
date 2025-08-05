@@ -1,5 +1,7 @@
-@if (member) {
-<div class="flex justify-start items-center p-4">
+<div class="flex justify-start items-center" [ngClass]="{
+    'p-4': format === 'default',
+    'p-2': format === 'compact',
+}">
     <app-image-profile [avatar]="member.avatar" />
     <div class="ml-3 text-nowrap text-start">
         <p class="font-semibold max-w-[140px] overflow-hidden text-ellipsis">{{ member.displayName }}</p>
@@ -11,4 +13,3 @@
         </p>
     </div>
 </div>
-}

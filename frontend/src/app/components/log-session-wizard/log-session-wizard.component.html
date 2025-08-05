@@ -11,7 +11,10 @@
                         [class]="
                             currentStep() === 'group'
                                 ? 'bg-blue-600 text-white'
-                                : currentStep() === 'date' || currentStep() === 'attendees' || currentStep() === 'games' || currentStep() === 'matrix'
+                                : currentStep() === 'date' ||
+                                  currentStep() === 'attendees' ||
+                                  currentStep() === 'games' ||
+                                  currentStep() === 'matrix'
                                 ? 'bg-green-600 text-white'
                                 : 'bg-gray-200 dark:bg-zinc-700 text-gray-600 dark:text-gray-400'
                         "
@@ -23,7 +26,10 @@
                         [class]="
                             currentStep() === 'group'
                                 ? 'text-blue-600 dark:text-blue-400'
-                                : currentStep() === 'date' || currentStep() === 'attendees' || currentStep() === 'games' || currentStep() === 'matrix'
+                                : currentStep() === 'date' ||
+                                  currentStep() === 'attendees' ||
+                                  currentStep() === 'games' ||
+                                  currentStep() === 'matrix'
                                 ? 'text-green-600 dark:text-green-400'
                                 : 'text-gray-500 dark:text-gray-400'
                         "
@@ -202,8 +208,7 @@
                 <div class="mt-1 text-sm text-red-600">
                     @if (sessionDate.hasError('required')) {
                     <div>Date is required</div>
-                    }
-                    @if (sessionDate.hasError('futureDate')) {
+                    } @if (sessionDate.hasError('futureDate')) {
                     <div>Date cannot be in the future</div>
                     }
                 </div>
@@ -218,20 +223,8 @@
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white">Select Attendees</h3>
                 <div class="flex space-x-2">
-                    <app-button
-                        variant="primary"
-                        size="small"
-                        (click)="selectAllAttendees()"
-                    >
-                        Select All
-                    </app-button>
-                    <app-button
-                        variant="secondary"
-                        size="small"
-                        (click)="deselectAllAttendees()"
-                    >
-                        Deselect All
-                    </app-button>
+                    <app-button variant="primary" size="small" (click)="selectAllAttendees()"> Select All </app-button>
+                    <app-button variant="secondary" size="small" (click)="deselectAllAttendees()"> Deselect All </app-button>
                 </div>
             </div>
             <div class="grid lg:grid-cols-2 gap-4">
@@ -278,20 +271,8 @@
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white">Select Games</h3>
                 <div class="flex space-x-2">
-                    <app-button
-                        variant="primary"
-                        size="small"
-                        (click)="selectAllGames()"
-                    >
-                        Select All
-                    </app-button>
-                    <app-button
-                        variant="secondary"
-                        size="small"
-                        (click)="deselectAllGames()"
-                    >
-                        Deselect All
-                    </app-button>
+                    <app-button variant="primary" size="small" (click)="selectAllGames()"> Select All </app-button>
+                    <app-button variant="secondary" size="small" (click)="deselectAllGames()"> Deselect All </app-button>
                 </div>
             </div>
             <div class="grid lg:grid-cols-2 gap-4">
@@ -347,15 +328,14 @@
                                 Player / Game
                             </th>
                             @for (game of getSelectedGames(); track game.game.id) {
-                            <th
-                                class="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                            >
+                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 <div class="flex flex-col items-center">
                                     <div class="w-8 h-8 rounded-lg mb-1">
                                         <image-background [src]="game.game.imageUrl" class="h-8 w-8" />
                                     </div>
                                     <span class="text-xs"
-                                        >{{ game.game.titleTranslations.en || game.game.title | slice : 0 : 10 }}{{ (game.game.titleTranslations.en || game.game.title).length > 10 ? '...' : '' }}</span
+                                        >{{ game.game.titleTranslations.en || game.game.title | slice : 0 : 10
+                                        }}{{ (game.game.titleTranslations.en || game.game.title).length > 10 ? '...' : '' }}</span
                                     >
                                     <app-button
                                         variant="primary"
@@ -373,19 +353,8 @@
                     <tbody class="bg-white dark:bg-zinc-800 divide-y divide-gray-200 dark:divide-zinc-600">
                         @for (attendee of getSelectedAttendees(); track attendee.user.id) {
                         <tr>
-                            <td class="px-4 py-3 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div
-                                        class="w-8 h-8 rounded-full bg-gray-300 dark:bg-zinc-600 flex items-center justify-center text-sm font-medium text-gray-700 dark:text-gray-300 mr-3"
-                                    >
-                                        {{ attendee.user.displayName || attendee.user.username | slice : 0 : 2 | uppercase }}
-                                    </div>
-                                    <div>
-                                        <p class="text-sm font-medium text-gray-900 dark:text-white">
-                                            {{ attendee.user.displayName || attendee.user.username }}
-                                        </p>
-                                    </div>
-                                </div>
+                            <td class="whitespace-nowrap">
+                                <app-card-account [member]="attendee.user" format="compact" />
                             </td>
                             @for (game of getSelectedGames(); track game.game.id) {
                             <td class="px-4 py-3 text-center">
@@ -408,24 +377,14 @@
         <!-- Navigation Buttons -->
         <div class="flex justify-between items-center mt-8 pt-6 border-t border-gray-200 dark:border-zinc-600">
             @if (currentStep() !== 'group') {
-            <app-button
-                variant="secondary"
-                (click)="previousStep()"
-            >
-                Previous
-            </app-button>
+            <app-button variant="secondary" (click)="previousStep()"> Previous </app-button>
             } @else {
             <div></div>
             }
 
-            <app-button
-                variant="primary"
-                [disabled]="!canProceedToNextStep() || isLoading()"
-                [loading]="isLoading()"
-                (click)="nextStep()"
-            >
+            <app-button variant="primary" [disabled]="!canProceedToNextStep() || isLoading()" [loading]="isLoading()" (click)="nextStep()">
                 @if (!isLoading()) {
-                    {{ currentStep() === 'matrix' ? 'Submit Session' : 'Next' }}
+                {{ currentStep() === 'matrix' ? 'Submit Session' : 'Next' }}
                 }
             </app-button>
         </div>
