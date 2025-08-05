@@ -136,7 +136,7 @@
     </div>
 
     <!-- Step Content -->
-    <div class="bg-white dark:bg-zinc-800 rounded-lg shadow-sm border border-gray-200 dark:border-zinc-700 p-6">
+    <div class="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-gray-200 dark:border-zinc-700 p-6">
         <!-- Step Header -->
         <div class="mb-6">
             <h2 class="text-xl font-semibold text-gray-900 dark:text-white">{{ getStepTitle() }}</h2>
@@ -218,20 +218,20 @@
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white">Select Attendees</h3>
                 <div class="flex space-x-2">
-                    <button
-                        type="button"
+                    <app-button
+                        variant="primary"
+                        size="small"
                         (click)="selectAllAttendees()"
-                        class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
                     >
                         Select All
-                    </button>
-                    <button
-                        type="button"
+                    </app-button>
+                    <app-button
+                        variant="secondary"
+                        size="small"
                         (click)="deselectAllAttendees()"
-                        class="px-3 py-1 text-sm bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors"
                     >
                         Deselect All
-                    </button>
+                    </app-button>
                 </div>
             </div>
             <div class="grid lg:grid-cols-2 gap-4">
@@ -278,20 +278,20 @@
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white">Select Games</h3>
                 <div class="flex space-x-2">
-                    <button
-                        type="button"
+                    <app-button
+                        variant="primary"
+                        size="small"
                         (click)="selectAllGames()"
-                        class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
                     >
                         Select All
-                    </button>
-                    <button
-                        type="button"
+                    </app-button>
+                    <app-button
+                        variant="secondary"
+                        size="small"
                         (click)="deselectAllGames()"
-                        class="px-3 py-1 text-sm bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors"
                     >
                         Deselect All
-                    </button>
+                    </app-button>
                 </div>
             </div>
             <div class="grid lg:grid-cols-2 gap-4">
@@ -357,13 +357,14 @@
                                     <span class="text-xs"
                                         >{{ game.game.titleTranslations.en || game.game.title | slice : 0 : 10 }}{{ (game.game.titleTranslations.en || game.game.title).length > 10 ? '...' : '' }}</span
                                     >
-                                    <button
-                                        type="button"
+                                    <app-button
+                                        variant="primary"
+                                        size="small"
                                         (click)="selectAllForGame(game.game.id)"
-                                        class="mt-1 text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                                        class="mt-1 text-xs"
                                     >
                                         All
-                                    </button>
+                                    </app-button>
                                 </div>
                             </th>
                             }
@@ -405,34 +406,28 @@
         }
 
         <!-- Navigation Buttons -->
-        @if (currentStep() !== 'group') {
         <div class="flex justify-between items-center mt-8 pt-6 border-t border-gray-200 dark:border-zinc-600">
-            <button
-                type="button"
+            @if (currentStep() !== 'group') {
+            <app-button
+                variant="secondary"
                 (click)="previousStep()"
-                class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-zinc-700 border border-gray-300 dark:border-zinc-600 rounded-md hover:bg-gray-50 dark:hover:bg-zinc-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
                 Previous
-            </button>
+            </app-button>
+            } @else {
+            <div></div>
+            }
 
-            <button
-                type="button"
-                (click)="nextStep()"
+            <app-button
+                variant="primary"
                 [disabled]="!canProceedToNextStep() || isLoading()"
-                class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                [loading]="isLoading()"
+                (click)="nextStep()"
             >
-                @if (isLoading()) {
-                <span class="flex items-center">
-                    <app-spinner size="small" class="mr-2"></app-spinner>
-                    Processing...
-                </span>
-                } @else {
-                <span>
+                @if (!isLoading()) {
                     {{ currentStep() === 'matrix' ? 'Submit Session' : 'Next' }}
-                </span>
                 }
-            </button>
+            </app-button>
         </div>
-        }
     </div>
 </container-wrapper>
