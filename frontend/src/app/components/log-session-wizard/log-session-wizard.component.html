@@ -2,144 +2,47 @@
 
 <container-wrapper>
     <!-- Progress Indicator -->
-    <div class="mb-8">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-2">
-                <div class="flex items-center">
-                    <div
-                        class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
-                        [class]="
-                            currentStep() === 'group'
-                                ? 'bg-blue-600 text-white'
-                                : currentStep() === 'date' ||
-                                  currentStep() === 'attendees' ||
-                                  currentStep() === 'games' ||
-                                  currentStep() === 'matrix'
-                                ? 'bg-green-600 text-white'
-                                : 'bg-gray-200 dark:bg-zinc-700 text-gray-600 dark:text-gray-400'
-                        "
-                    >
-                        1
-                    </div>
-                    <div
-                        class="ml-2 text-sm font-medium"
-                        [class]="
-                            currentStep() === 'group'
-                                ? 'text-blue-600 dark:text-blue-400'
-                                : currentStep() === 'date' ||
-                                  currentStep() === 'attendees' ||
-                                  currentStep() === 'games' ||
-                                  currentStep() === 'matrix'
-                                ? 'text-green-600 dark:text-green-400'
-                                : 'text-gray-500 dark:text-gray-400'
-                        "
-                    >
-                        Group
-                    </div>
+    <nav aria-label="Progress" class="mb-8">
+        <ol class="flex items-center gap-3">
+            @for (step of steps; track step.key) {
+            <li class="flex items-center gap-2">
+                <div
+                    class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors text-white"
+                    [ngClass]="{
+                        'bg-blue-600': currentStep() === step.key,
+                        'bg-green-600': isStepComplete(step.key) && currentStep() !== step.key,
+                        'bg-gray-200 dark:bg-zinc-700 text-gray-600 dark:text-gray-400':
+                            !isStepComplete(step.key) && currentStep() !== step.key
+                    }"
+                    [attr.aria-current]="currentStep() === step.key ? 'step' : null"
+                >
+                    {{ steps.indexOf(step) + 1 }}
                 </div>
-                <div class="w-8 h-1 bg-gray-200 dark:bg-zinc-700"></div>
-                <div class="flex items-center">
-                    <div
-                        class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
-                        [class]="
-                            currentStep() === 'date'
-                                ? 'bg-blue-600 text-white'
-                                : currentStep() === 'attendees' || currentStep() === 'games' || currentStep() === 'matrix'
-                                ? 'bg-green-600 text-white'
-                                : 'bg-gray-200 dark:bg-zinc-700 text-gray-600 dark:text-gray-400'
-                        "
+                <div class="flex flex-col">
+                    <span
+                        class="text-sm font-medium"
+                        [ngClass]="{
+                            'text-blue-600 dark:text-blue-400': currentStep() === step.key,
+                            'text-green-600 dark:text-green-400': isStepComplete(step.key) && currentStep() !== step.key,
+                            'text-gray-500 dark:text-gray-400':
+                                !isStepComplete(step.key) && currentStep() !== step.key
+                        }"
                     >
-                        2
-                    </div>
-                    <div
-                        class="ml-2 text-sm font-medium"
-                        [class]="
-                            currentStep() === 'date'
-                                ? 'text-blue-600 dark:text-blue-400'
-                                : currentStep() === 'attendees' || currentStep() === 'games' || currentStep() === 'matrix'
-                                ? 'text-green-600 dark:text-green-400'
-                                : 'text-gray-500 dark:text-gray-400'
-                        "
-                    >
-                        Date
-                    </div>
+                        {{ step.label }}
+                    </span>
+                    @if (isStepComplete(step.key) && getStepSummary(step.key)) {
+                    <span class="text-xs text-gray-500 dark:text-gray-400">
+                        {{ getStepSummary(step.key) }}
+                    </span>
+                    }
                 </div>
-                <div class="w-8 h-1 bg-gray-200 dark:bg-zinc-700"></div>
-                <div class="flex items-center">
-                    <div
-                        class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
-                        [class]="
-                            currentStep() === 'attendees'
-                                ? 'bg-blue-600 text-white'
-                                : currentStep() === 'games' || currentStep() === 'matrix'
-                                ? 'bg-green-600 text-white'
-                                : 'bg-gray-200 dark:bg-zinc-700 text-gray-600 dark:text-gray-400'
-                        "
-                    >
-                        3
-                    </div>
-                    <div
-                        class="ml-2 text-sm font-medium"
-                        [class]="
-                            currentStep() === 'attendees'
-                                ? 'text-blue-600 dark:text-blue-400'
-                                : currentStep() === 'games' || currentStep() === 'matrix'
-                                ? 'text-green-600 dark:text-green-400'
-                                : 'text-gray-500 dark:text-gray-400'
-                        "
-                    >
-                        Attendees
-                    </div>
-                </div>
-                <div class="w-8 h-1 bg-gray-200 dark:bg-zinc-700"></div>
-                <div class="flex items-center">
-                    <div
-                        class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
-                        [class]="
-                            currentStep() === 'games'
-                                ? 'bg-blue-600 text-white'
-                                : currentStep() === 'matrix'
-                                ? 'bg-green-600 text-white'
-                                : 'bg-gray-200 dark:bg-zinc-700 text-gray-600 dark:text-gray-400'
-                        "
-                    >
-                        4
-                    </div>
-                    <div
-                        class="ml-2 text-sm font-medium"
-                        [class]="
-                            currentStep() === 'games'
-                                ? 'text-blue-600 dark:text-blue-400'
-                                : currentStep() === 'matrix'
-                                ? 'text-green-600 dark:text-green-400'
-                                : 'text-gray-500 dark:text-gray-400'
-                        "
-                    >
-                        Games
-                    </div>
-                </div>
-                <div class="w-8 h-1 bg-gray-200 dark:bg-zinc-700"></div>
-                <div class="flex items-center">
-                    <div
-                        class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
-                        [class]="
-                            currentStep() === 'matrix'
-                                ? 'bg-blue-600 text-white'
-                                : 'bg-gray-200 dark:bg-zinc-700 text-gray-600 dark:text-gray-400'
-                        "
-                    >
-                        5
-                    </div>
-                    <div
-                        class="ml-2 text-sm font-medium"
-                        [class]="currentStep() === 'matrix' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'"
-                    >
-                        Matrix
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+                @if (steps.indexOf(step) < steps.length - 1) {
+                <div class="w-8 h-0.5 bg-gray-200 dark:bg-zinc-700"></div>
+                }
+            </li>
+            }
+        </ol>
+    </nav>
 
     <!-- Step Content -->
     <div class="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-gray-200 dark:border-zinc-700 p-6">
