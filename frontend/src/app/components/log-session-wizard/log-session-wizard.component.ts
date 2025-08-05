@@ -172,14 +172,14 @@ export class LogSessionWizardComponent {
             const selectedAttendees = this.attendees().filter((a) => a.selected)
             const selectedGames = this.games().filter((g) => g.selected)
 
-            // Rebuild matrix when selections change
+            // Rebuild matrix when selections change - set all cells to selected by default
             const newMatrix: MatrixCell[] = []
             for (const attendee of selectedAttendees) {
                 for (const game of selectedGames) {
                     newMatrix.push({
                         attendeeId: attendee.user.id,
                         gameId: game.game.id,
-                        selected: false,
+                        selected: true, // Default to selected
                     })
                 }
             }
@@ -311,6 +311,26 @@ export class LogSessionWizardComponent {
         this.matrix.set(updatedMatrix)
     }
 
+    public toggleAllForAttendee(attendeeId: number): void {
+        const attendeeCells = this.matrix().filter((cell) => cell.attendeeId === attendeeId)
+        const allSelected = attendeeCells.every((cell) => cell.selected)
+        
+        const updatedMatrix = this.matrix().map((cell) => 
+            cell.attendeeId === attendeeId ? { ...cell, selected: !allSelected } : cell
+        )
+        this.matrix.set(updatedMatrix)
+    }
+
+    public toggleAllForGame(gameId: number): void {
+        const gameCells = this.matrix().filter((cell) => cell.gameId === gameId)
+        const allSelected = gameCells.every((cell) => cell.selected)
+        
+        const updatedMatrix = this.matrix().map((cell) => 
+            cell.gameId === gameId ? { ...cell, selected: !allSelected } : cell
+        )
+        this.matrix.set(updatedMatrix)
+    }
+
     public selectAllForAttendee(attendeeId: number): void {
         const updatedMatrix = this.matrix().map((cell) => (cell.attendeeId === attendeeId ? { ...cell, selected: true } : cell))
         this.matrix.set(updatedMatrix)
@@ -323,6 +343,16 @@ export class LogSessionWizardComponent {
 
     public isMatrixCellSelected(attendeeId: number, gameId: number): boolean {
         return this.matrix().some((cell) => cell.attendeeId === attendeeId && cell.gameId === gameId && cell.selected)
+    }
+
+    public isAllSelectedForAttendee(attendeeId: number): boolean {
+        const attendeeCells = this.matrix().filter((cell) => cell.attendeeId === attendeeId)
+        return attendeeCells.length > 0 && attendeeCells.every((cell) => cell.selected)
+    }
+
+    public isAllSelectedForGame(gameId: number): boolean {
+        const gameCells = this.matrix().filter((cell) => cell.gameId === gameId)
+        return gameCells.length > 0 && gameCells.every((cell) => cell.selected)
     }
 
     // --------------------------------------------------------------------------
