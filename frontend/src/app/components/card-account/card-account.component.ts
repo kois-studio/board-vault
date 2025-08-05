@@ -12,7 +12,7 @@ export class CardAccountComponent {
     // --------------------------------------------------------------------------
     //        IN / OUT
     // --------------------------------------------------------------------------
-    @Input({ required: true }) member!: UserType
+    @Input({ required: true }) member: null | UserType = null
     @Input({ required: false }) isOwner = false
     @Input({ required: false }) format: 'default' | 'compact' = 'default'
 }

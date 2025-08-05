@@ -338,12 +338,12 @@
                                         }}{{ (game.game.titleTranslations.en || game.game.title).length > 10 ? '...' : '' }}</span
                                     >
                                     <app-button
-                                        variant="primary"
+                                        [variant]="isAllSelectedForGame(game.game.id) ? 'secondary' : 'primary'"
                                         size="small"
-                                        (click)="selectAllForGame(game.game.id)"
+                                        (click)="toggleAllForGame(game.game.id)"
                                         class="mt-1 text-xs"
                                     >
-                                        All
+                                        {{ isAllSelectedForGame(game.game.id) ? 'Unselect All' : 'Select All' }}
                                     </app-button>
                                 </div>
                             </th>
@@ -352,9 +352,19 @@
                     </thead>
                     <tbody class="bg-white dark:bg-zinc-800 divide-y divide-gray-200 dark:divide-zinc-600">
                         @for (attendee of getSelectedAttendees(); track attendee.user.id) {
-                        <tr>
-                            <td class="whitespace-nowrap">
-                                <app-card-account [member]="attendee.user" format="compact" />
+                        <tr class="hover:bg-gray-50 dark:hover:bg-zinc-700 transition-colors">
+                            <td class="whitespace-nowrap cursor-pointer" (click)="toggleAllForAttendee(attendee.user.id)">
+                                <div class="flex items-center justify-between pr-4">
+                                    <app-card-account [member]="attendee.user" format="compact" />
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-xs text-gray-500 dark:text-gray-400">
+                                            {{ isAllSelectedForAttendee(attendee.user.id) ? 'All selected' : 'Click to toggle all' }}
+                                        </span>
+                                        <div class="w-2 h-2 rounded-full" 
+                                             [ngClass]="isAllSelectedForAttendee(attendee.user.id) ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'">
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
                             @for (game of getSelectedGames(); track game.game.id) {
                             <td class="px-4 py-3 text-center">
@@ -362,6 +372,7 @@
                                     type="checkbox"
                                     [checked]="isMatrixCellSelected(attendee.user.id, game.game.id)"
                                     (change)="toggleMatrixCell(attendee.user.id, game.game.id)"
+                                    (click)="$event.stopPropagation()"
                                     class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-zinc-800 focus:ring-2 dark:bg-zinc-700 dark:border-zinc-600"
                                 />
                             </td>
