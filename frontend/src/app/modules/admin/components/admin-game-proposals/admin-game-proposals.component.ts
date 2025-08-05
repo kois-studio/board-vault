@@ -6,7 +6,7 @@ import { SpinnerComponent } from '../../../../components/ui/spinner/spinner.comp
 import { AdminGameProposalsService } from './admin-game-proposals.service'
 
 @Component({
-    imports: [CommonModule, FormsModule, ButtonComponent, SpinnerComponent],
+    imports: [CommonModule, FormsModule, SpinnerComponent],
     providers: [AdminGameProposalsService],
     selector: 'app-admin-game-proposals',
     templateUrl: './admin-game-proposals.component.html',
