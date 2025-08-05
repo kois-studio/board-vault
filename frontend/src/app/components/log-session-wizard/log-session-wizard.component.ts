@@ -35,6 +35,13 @@ interface MatrixCell {
     selected: boolean
 }
 
+interface StepInfo {
+    key: SessionStep
+    label: string
+    description: string
+    summary?: string
+}
+
 @Component({
     selector: 'app-log-session-wizard',
     templateUrl: './log-session-wizard.component.html',
@@ -71,6 +78,20 @@ export class LogSessionWizardComponent {
     public currentStep = signal<SessionStep>('group')
     public isLoading = signal<boolean>(false)
 
+    // Track which steps the user has actually interacted with
+    public completedSteps = signal<Set<SessionStep>>(new Set())
+
+    // --------------------------------------------------------------------------
+    //        STEPS MODEL
+    // --------------------------------------------------------------------------
+    public steps: StepInfo[] = [
+        { key: 'group', label: 'Group', description: 'Choose the group for this play session' },
+        { key: 'date', label: 'Date', description: 'When did this session take place?' },
+        { key: 'attendees', label: 'Attendees', description: 'Select who attended this session' },
+        { key: 'games', label: 'Games', description: 'Select which games were played' },
+        { key: 'matrix', label: 'Matrix', description: 'Mark who played which games' },
+    ]
+
     // --------------------------------------------------------------------------
     //        STEP 1: GROUP SELECTION
     // --------------------------------------------------------------------------
@@ -104,16 +125,99 @@ export class LogSessionWizardComponent {
     // --------------------------------------------------------------------------
     public matrix = signal<MatrixCell[]>([])
 
+    // --------------------------------------------------------------------------
+    //        STEP COMPLETION TRACKING
+    // --------------------------------------------------------------------------
+    public isStepComplete = (step: SessionStep): boolean => {
+        // Check if the step has valid data
+        const hasValidData = (() => {
+            switch (step) {
+                case 'group':
+                    return this.selectedGroup() !== null
+                case 'date':
+                    return this.sessionDate.valid && this.sessionDate.value !== null
+                case 'attendees':
+                    return this.attendees().some((a) => a.selected)
+                case 'games':
+                    return this.games().some((g) => g.selected)
+                case 'matrix':
+                    return this.matrix().some((cell) => cell.selected)
+                default:
+                    return false
+            }
+        })()
+
+        // For steps with valid data, mark as complete if:
+        // 1. User has explicitly interacted with the step, OR
+        // 2. User has navigated past this step (meaning they've seen it and it was valid)
+        if (hasValidData) {
+            if (this.completedSteps().has(step)) {
+                return true
+            }
+            
+            // Check if user has navigated past this step
+            const stepOrder = ['group', 'date', 'attendees', 'games', 'matrix']
+            const currentStepIndex = stepOrder.indexOf(this.currentStep())
+            const stepIndex = stepOrder.indexOf(step)
+            
+            return stepIndex < currentStepIndex
+        }
+        
+        return false
+    }
+
+    public getStepSummary = (step: SessionStep): string => {
+        // Only show summary if step is actually complete
+        if (!this.isStepComplete(step)) {
+            return ''
+        }
+
+        switch (step) {
+            case 'group':
+                const group = this.selectedGroup()
+                return group ? group.name : ''
+            case 'date':
+                return this.sessionDate.value ? new Date(this.sessionDate.value).toLocaleDateString() : ''
+            case 'attendees':
+                const selectedAttendees = this.attendees().filter((a) => a.selected)
+                return selectedAttendees.length > 0 ? `${selectedAttendees.length} selected` : ''
+            case 'games':
+                const selectedGames = this.games().filter((g) => g.selected)
+                return selectedGames.length > 0 ? `${selectedGames.length} selected` : ''
+            case 'matrix':
+                const selectedCells = this.matrix().filter((cell) => cell.selected)
+                return selectedCells.length > 0 ? `${selectedCells.length} combinations` : ''
+            default:
+                return ''
+        }
+    }
+
+    // Helper method to mark a step as interacted with
+    private markStepAsInteracted(step: SessionStep): void {
+        const currentCompleted = this.completedSteps()
+        if (!currentCompleted.has(step)) {
+            this.completedSteps.set(new Set([...currentCompleted, step]))
+        }
+    }
+
     constructor() {
         // Set today as default date
         const today = new Date().toISOString().split('T')[0]
         this.sessionDate.setValue(today)
 
+        // Track date field interactions
+        this.sessionDate.valueChanges.subscribe(() => {
+            this.markStepAsInteracted('date')
+        })
+
         effect(() => {
             const group = this.selectedGroup()
             if (group) {
-                // Auto-advance to step 2 when group is selected
-                this.currentStep.set('date')
+                // Only auto-advance if we're currently on step 1
+                if (this.currentStep() === 'group') {
+                    this.currentStep.set('date')
+                    this.markStepAsInteracted('group')
+                }
 
                 // Initialize attendees from group members
                 this.attendees.set(
@@ -191,6 +295,7 @@ export class LogSessionWizardComponent {
     //        STEP NAVIGATION
     // --------------------------------------------------------------------------
     public canProceedToNextStep(): boolean {
+        // Check if current step has valid data to proceed to next step
         switch (this.currentStep()) {
             case 'group':
                 return this.selectedGroup() !== null
@@ -211,15 +316,27 @@ export class LogSessionWizardComponent {
         switch (this.currentStep()) {
             case 'group':
                 this.currentStep.set('date')
+                // Mark group step as complete
+                this.markStepAsInteracted('group')
+                // Mark date step as complete if it has valid data
+                if (this.sessionDate.valid && this.sessionDate.value) {
+                    this.markStepAsInteracted('date')
+                }
                 break
             case 'date':
                 this.currentStep.set('attendees')
+                // Mark date step as complete
+                this.markStepAsInteracted('date')
                 break
             case 'attendees':
                 this.currentStep.set('games')
+                // Mark attendees step as complete
+                this.markStepAsInteracted('attendees')
                 break
             case 'games':
                 this.currentStep.set('matrix')
+                // Mark games step as complete
+                this.markStepAsInteracted('games')
                 break
             case 'matrix':
                 this.submitSession()
@@ -249,6 +366,7 @@ export class LogSessionWizardComponent {
     // --------------------------------------------------------------------------
     public selectGroup(group: GroupWithMembersAndGames): void {
         this.selectedGroup.set(group)
+        this.markStepAsInteracted('group')
     }
 
     // --------------------------------------------------------------------------
@@ -259,6 +377,7 @@ export class LogSessionWizardComponent {
             attendee.user.id === attendeeId ? { ...attendee, selected: !attendee.selected } : attendee,
         )
         this.attendees.set(updatedAttendees)
+        this.markStepAsInteracted('attendees')
     }
 
     public selectAllAttendees(): void {
@@ -267,6 +386,7 @@ export class LogSessionWizardComponent {
             selected: true,
         }))
         this.attendees.set(updatedAttendees)
+        this.markStepAsInteracted('attendees')
     }
 
     public deselectAllAttendees(): void {
@@ -275,6 +395,7 @@ export class LogSessionWizardComponent {
             selected: false,
         }))
         this.attendees.set(updatedAttendees)
+        this.markStepAsInteracted('attendees')
     }
 
     // --------------------------------------------------------------------------
@@ -283,6 +404,7 @@ export class LogSessionWizardComponent {
     public toggleGame(gameId: number): void {
         const updatedGames = this.games().map((game) => (game.game.id === gameId ? { ...game, selected: !game.selected } : game))
         this.games.set(updatedGames)
+        this.markStepAsInteracted('games')
     }
 
     public selectAllGames(): void {
@@ -291,6 +413,7 @@ export class LogSessionWizardComponent {
             selected: true,
         }))
         this.games.set(updatedGames)
+        this.markStepAsInteracted('games')
     }
 
     public deselectAllGames(): void {
@@ -299,6 +422,7 @@ export class LogSessionWizardComponent {
             selected: false,
         }))
         this.games.set(updatedGames)
+        this.markStepAsInteracted('games')
     }
 
     // --------------------------------------------------------------------------
@@ -309,6 +433,7 @@ export class LogSessionWizardComponent {
             cell.attendeeId === attendeeId && cell.gameId === gameId ? { ...cell, selected: !cell.selected } : cell,
         )
         this.matrix.set(updatedMatrix)
+        this.markStepAsInteracted('matrix')
     }
 
     public toggleAllForAttendee(attendeeId: number): void {
@@ -319,6 +444,7 @@ export class LogSessionWizardComponent {
             cell.attendeeId === attendeeId ? { ...cell, selected: !allSelected } : cell
         )
         this.matrix.set(updatedMatrix)
+        this.markStepAsInteracted('matrix')
     }
 
     public toggleAllForGame(gameId: number): void {
@@ -329,16 +455,19 @@ export class LogSessionWizardComponent {
             cell.gameId === gameId ? { ...cell, selected: !allSelected } : cell
         )
         this.matrix.set(updatedMatrix)
+        this.markStepAsInteracted('matrix')
     }
 
     public selectAllForAttendee(attendeeId: number): void {
         const updatedMatrix = this.matrix().map((cell) => (cell.attendeeId === attendeeId ? { ...cell, selected: true } : cell))
         this.matrix.set(updatedMatrix)
+        this.markStepAsInteracted('matrix')
     }
 
     public selectAllForGame(gameId: number): void {
         const updatedMatrix = this.matrix().map((cell) => (cell.gameId === gameId ? { ...cell, selected: true } : cell))
         this.matrix.set(updatedMatrix)
+        this.markStepAsInteracted('matrix')
     }
 
     public isMatrixCellSelected(attendeeId: number, gameId: number): boolean {
@@ -383,37 +512,13 @@ export class LogSessionWizardComponent {
     //        UTILITY METHODS
     // --------------------------------------------------------------------------
     public getStepTitle(): string {
-        switch (this.currentStep()) {
-            case 'group':
-                return 'Select Group'
-            case 'date':
-                return 'Session Date'
-            case 'attendees':
-                return 'Select Attendees'
-            case 'games':
-                return 'Select Games'
-            case 'matrix':
-                return 'Who Played What'
-            default:
-                return ''
-        }
+        const currentStepInfo = this.steps.find(s => s.key === this.currentStep())
+        return currentStepInfo?.label || ''
     }
 
     public getStepDescription(): string {
-        switch (this.currentStep()) {
-            case 'group':
-                return 'Choose the group for this play session'
-            case 'date':
-                return 'When did this session take place?'
-            case 'attendees':
-                return 'Select who attended this session'
-            case 'games':
-                return 'Select which games were played'
-            case 'matrix':
-                return 'Mark who played which games'
-            default:
-                return ''
-        }
+        const currentStepInfo = this.steps.find(s => s.key === this.currentStep())
+        return currentStepInfo?.description || ''
     }
 
     public getSelectedAttendees(): AttendeeSelection[] {
