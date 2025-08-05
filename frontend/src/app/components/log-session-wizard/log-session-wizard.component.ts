@@ -3,6 +3,7 @@ import { Component, computed, effect, inject, signal } from '@angular/core'
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router } from '@angular/router'
 import type { GameCompleteType, GameReviewDto, GroupWithMembersAndGames, UserType } from '../../api/api.types'
+import { ButtonComponent } from '../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'
 import { SpinnerComponent } from '../../components/ui/spinner/spinner.component'
@@ -45,6 +46,7 @@ interface MatrixCell {
         ContainerWrapperComponent,
         CardAccountComponent,
         ImageBackgroundComponent,
+        ButtonComponent,
     ],
 })
 export class LogSessionWizardComponent {
