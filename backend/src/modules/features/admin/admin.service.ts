@@ -280,16 +280,25 @@ export class AdminService {
         const createdGame = await this.gameService.createGame(gameData)
         const createdGameId = createdGame.id
 
+        // Track if English translation was added
+        let englishTranslationAdded = false
+
         // Add translations if provided
-        if (approvalData.translations) {
+        if (approvalData.translations && Object.keys(approvalData.translations).length > 0) {
             for (const [languageCode, title] of Object.entries(approvalData.translations)) {
                 if (title?.trim()) {
-                    await this.gameTranslationService.createGameTranslation(createdGameId, languageCode as SupportedLanguage, title)
+                    // Use upsert to avoid duplicate key errors if translation already exists
+                    await this.gameTranslationService.upsertGameTranslation(createdGameId, languageCode as SupportedLanguage, title)
+                    if (languageCode === 'en') {
+                        englishTranslationAdded = true
+                    }
                 }
             }
-        } else {
-            // Add default translation in English
-            await this.gameTranslationService.createGameTranslation(createdGameId, 'en' as SupportedLanguage, proposal.title)
+        }
+
+        // Ensure English translation exists if not provided
+        if (!englishTranslationAdded) {
+            await this.gameTranslationService.upsertGameTranslation(createdGameId, 'en' as SupportedLanguage, proposal.title)
         }
 
         // Add tags if provided
