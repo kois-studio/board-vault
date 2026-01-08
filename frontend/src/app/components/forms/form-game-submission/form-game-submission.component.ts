@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, EventEmitter, Output, inject } from '@angular/core'
+import { Component, EventEmitter, Input, OnInit, OnChanges, Output, SimpleChanges, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Api } from '../../../api/api'
 import type { CreateGameProposalType } from '../../../api/api.types'
@@ -12,7 +12,7 @@ import { ButtonComponent } from '../../ui/button/button.component'
     selector: 'form-game-submission',
     templateUrl: 'form-game-submission.component.html',
 })
-export class FormGameSubmissionComponent {
+export class FormGameSubmissionComponent implements OnInit, OnChanges {
     private readonly api = inject(Api)
     private readonly dataService = inject(DataService)
     private readonly toastService = inject(ToastService)
@@ -25,6 +25,7 @@ export class FormGameSubmissionComponent {
     // --------------------------------------------------------------------------
     //        Component props
     // --------------------------------------------------------------------------
+    @Input() initialTitle?: string
     @Output() proposalSubmitted = new EventEmitter<void>()
 
     public isSubmitting = false
@@ -154,6 +155,19 @@ export class FormGameSubmissionComponent {
             this.maxPlayers?.setErrors({ invalidRange: true })
         } else {
             this.maxPlayers?.setErrors(null)
+        }
+    }
+
+    ngOnInit() {
+        // Set initial title if provided
+        if (this.initialTitle && !this.title?.value) {
+            this.title?.setValue(this.initialTitle)
+        }
+    }
+
+    ngOnChanges(changes: SimpleChanges) {
+        if (changes['initialTitle'] && this.initialTitle && !this.title?.value) {
+            this.title?.setValue(this.initialTitle)
         }
     }
 }

@@ -129,6 +129,13 @@ export class GameProposalService {
         await this.cacheService.deleteOne(`${this.CACHE_KEY}:bySubmitter:${submittedBy}`)
         await this.cacheService.deleteOne(`${this.CACHE_KEY}:byStatus:pending`)
 
+        // TODO: Future enhancements - Add side effects here:
+        // - Send email notification to admin about new proposal
+        // - Send notification to user confirming proposal submission
+        // - Log analytics event for proposal creation
+        // - Trigger webhook for external integrations
+        // - Update proposal statistics cache
+
         return createdProposal
     }
 

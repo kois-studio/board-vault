@@ -1,6 +1,6 @@
 import { Component, computed, effect, inject } from '@angular/core'
 import { ReactiveFormsModule } from '@angular/forms'
-import { RouterLink } from '@angular/router'
+import { Router, RouterLink } from '@angular/router'
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
 import { Api } from '../../../api/api'
 import { CardGameComponent } from '../../../components/card-game/card-game.component'
@@ -27,6 +27,7 @@ export class BrowsePageComponent {
     private readonly api = inject(Api)
     private readonly dataService = inject(DataService)
     private readonly browsePageService = inject(BrowsePageService)
+    private readonly router = inject(Router)
     // --------------------------------------------------------------------------
     //        Services signals
     // --------------------------------------------------------------------------
@@ -105,6 +106,17 @@ export class BrowsePageComponent {
 
         this.currentPage$.update((page) => page + 1)
         this._searchGames(true)
+    }
+
+    public navigateToProposeGame() {
+        const searchTerm = this.searchTerm$().trim()
+        if (searchTerm) {
+            this.router.navigate(['/collection/propose-game'], {
+                queryParams: { title: searchTerm },
+            })
+        } else {
+            this.router.navigate(['/collection/propose-game'])
+        }
     }
 
     private _searchGames(isNextPage = false) {

@@ -747,9 +747,11 @@ export class DatabaseService implements OnModuleInit {
     }
 
     createNotification(notificationDto: CreateNotificationBody) {
+        // Serialize data to JSON string for storage
+        const dataJson = JSON.stringify(notificationDto.data || {})
         return this._tursoExecute({
-            sql: 'INSERT INTO Notification (accountId, type, message) VALUES (?, ?, ?)',
-            args: [notificationDto.accountId, notificationDto.type, notificationDto.message],
+            sql: 'INSERT INTO Notification (accountId, type, message, data) VALUES (?, ?, ?, ?)',
+            args: [notificationDto.accountId, notificationDto.type, notificationDto.message, dataJson],
         })
     }
 

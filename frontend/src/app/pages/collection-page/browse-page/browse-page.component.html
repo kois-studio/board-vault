@@ -25,9 +25,15 @@
     <!-- Loading state -->
     @if (!isSearching$() && gamesListComputed().length === 0) {
         <!-- no data -->
-        <div class="text-center text-secondary">
+        <div class="text-center text-secondary space-y-4">
             @if (searchTermIsValid$()) {
-                <p>No games found matching "{{searchTerm$().trim()}}"</p>
+                <div>
+                    <p class="mb-2">No games found matching "{{searchTerm$().trim()}}"</p>
+                    <p class="text-sm text-gray-500 mb-4">Please review the spelling</p>
+                    <app-button (click)="navigateToProposeGame()">
+                        Propose this game
+                    </app-button>
+                </div>
             } @else {
                 <p>Type a game name to search for!</p>
             }

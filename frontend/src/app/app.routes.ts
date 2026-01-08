@@ -13,6 +13,7 @@ import { VerifyEmailComponent } from './pages/auth/verify-email/verify-email.com
 import { BrowsePageComponent } from './pages/collection-page/browse-page/browse-page.component'
 import { CollectionPageComponent } from './pages/collection-page/collection-page.component'
 import { MyGamesPageComponent } from './pages/collection-page/my-games-page/my-games-page.component'
+import { ProposeGamePageComponent } from './pages/collection-page/propose-game-page/propose-game-page.component'
 import { ReviewsPageComponent } from './pages/collection-page/reviews-page/reviews-page.component'
 import { WishlistPageComponent } from './pages/collection-page/wishlist-page/wishlist-page.component'
 import { DashboardPageComponent } from './pages/dashboard-page/dashboard-page.component'
@@ -111,6 +112,7 @@ export const routes: Routes = [
             { path: 'groups/:groupId/leave', component: GroupLeaveComponent, canActivate: [AuthOnlyGuard] },
             { path: 'groups/:groupId/delete', component: GroupDeleteComponent, canActivate: [AuthOnlyGuard] },
             { path: 'meets/:meetId/confirm', component: MeetConfirmComponent, canActivate: [AuthOnlyGuard] },
+            { path: 'collection/propose-game', component: ProposeGamePageComponent, canActivate: [AuthOnlyGuard] },
         ],
     },
     { path: '**', component: PageNotFoundComponent }, // Wildcard route for a 404 page
