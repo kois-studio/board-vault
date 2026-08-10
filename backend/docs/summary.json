@@ -16,9 +16,5 @@
                 "file": "roadmap/2-planification.md"
             }
         ]
-    },
-    {
-        "title": "Database",
-        "file": "database/database-definition.md"
     }
 ]

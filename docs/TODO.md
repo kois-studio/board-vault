@@ -27,7 +27,7 @@ Statuses are `Planned`, `Blocked`, or `Deferred` until evidence changes them. Pr
 ### READINESS-003 [Critical] DATA-001/DATA-002 — Establish schema truth and migrations
 
 - **Status:** Blocked until deployment access/decision is available
-- **Affected area:** Turso deployment, `context/database/database-definition.md`, `backend/src/modules/common/database/`
+- **Affected area:** Turso deployment, `database/`, `backend/src/modules/common/database/`
 - **Evidence:** Source schema intent exists; live schema and reproducible migrations do not.
 - **Risk:** Destructive drift, unrepeatable environments, and unsafe session-domain changes.
 - **Next action:** Export/inspect the deployed schema, publish a drift report, then add numbered migrations.
@@ -100,13 +100,13 @@ Statuses are `Planned`, `Blocked`, or `Deferred` until evidence changes them. Pr
 - **Next action:** Fix style integration, define route audit matrix, and link findings to `EQ-006`/`TRUTH-001`.
 - **Dependencies:** Product truth/brand decision where claims are involved.
 
-### READINESS-011 [Medium] DOC-003/007/009 — Consolidate legacy documentation
+### READINESS-011 [Medium] DOC-003/007/009 — Consolidate remaining legacy documentation
 
 - **Status:** Deferred
-- **Affected area:** root README, `backend/docs/`, `context/`
-- **Evidence:** New docs package now defines authority, but legacy docs include starter text, placeholders, and aspirational conventions.
+- **Affected area:** root README, `backend/docs/`
+- **Evidence:** New docs package now defines authority, but legacy backend docs and starter READMEs still include placeholders and framework boilerplate.
 - **Risk:** Future agents follow stale or duplicated instructions.
-- **Next action:** Relabel, redirect, merge, or archive legacy docs without losing durable decisions.
+- **Next action:** Relabel, redirect, merge, or archive remaining legacy docs without losing durable decisions.
 - **Dependencies:** Keep current feature work out of this documentation-only cleanup.
 
 ### READINESS-012 [Medium] NEST-012/013/DATA-004/006 — Define persistence and cache boundaries

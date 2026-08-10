@@ -15,7 +15,7 @@ This is the canonical project-specific instruction file for AI developer agents.
 - Implemented architecture and boundaries: [architecture.md](architecture.md) and `backend/src/`, `frontend/src/`.
 - Product thesis, sequencing, and acceptance intent: [todo/00-master-brief.md](../todo/00-master-brief.md) through [todo/07-product-truth-and-launch-readiness.md](../todo/07-product-truth-and-launch-readiness.md).
 - API implementation: Nest controllers under `backend/src/modules/`; generated Swagger is served at `/swagger` when the API starts. Contract status is documented in [api.md](api.md).
-- Data intent and current persistence adapter: [data-model.md](data-model.md), `context/database/database-definition.md`, and `backend/src/modules/common/database/database.service.ts`.
+- Data intent and current persistence adapter: [data-model.md](data-model.md), [database/](../database/), and `backend/src/modules/common/database/database.service.ts`.
 - Environment, commands, deployment, and troubleshooting: [operations.md](operations.md).
 - Security boundaries and findings: [security.md](security.md).
 - Test inventory and verified baseline: [testing.md](testing.md).

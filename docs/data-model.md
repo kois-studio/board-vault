@@ -4,7 +4,7 @@
 
 The backend uses `@libsql/client` against Turso-hosted SQLite. `DatabaseService` creates the client during `OnModuleInit` from `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN`, then exposes raw SQL helper methods to the rest of the backend. The repository contains no migration directory, migration runner, schema snapshot generated from deployment, or disposable local database setup.
 
-The intended schema is described in [context/database/database-definition.md](../context/database/database-definition.md) and represented partly by Zod schemas under `backend/src/common/schemas/`. That definition is a project artifact, not verified evidence of the deployed database. The first data task is to inspect the actual Turso schema and produce a drift report.
+The intended schema is described in [database/schema/documented-schema.sql](../database/schema/documented-schema.sql) and represented partly by Zod schemas under `backend/src/common/schemas/`. That definition is a project artifact, not verified evidence of the deployed database. The first data task is to inspect the actual Turso schema and produce a drift report.
 
 ## Documented entities
 
@@ -36,7 +36,7 @@ The backend source also has corresponding service/type/schema areas. The current
 
 ## Data safety rules for future agents
 
-- Treat `context/database/database-definition.md` as schema intent until a live schema audit is completed.
+- Treat `database/schema/documented-schema.sql` as schema intent until a live schema audit is completed.
 - Do not manually edit production Turso tables for a feature task.
 - Any schema change must first identify current deployment state, add a numbered migration strategy, define rollback/recovery expectations, and update the data-model workstream.
 - Do not add a new session or recommendation entity without resolving the canonical state and ownership semantics in [todo/03-data-model-and-session-domain.md](../todo/03-data-model-and-session-domain.md).
@@ -52,8 +52,9 @@ The backend source also has corresponding service/type/schema areas. The current
 
 ## Source evidence
 
-- [Database definition](../context/database/database-definition.md)
+- [Database workspace](../database/README.md)
+- [Documented schema intent](../database/schema/documented-schema.sql)
 - [Database service](../backend/src/modules/common/database/database.service.ts)
 - [Database module](../backend/src/modules/common/database/database.module.ts)
-- [Database operations notes](../backend/docs/database/database-management.md)
+- [Database operations notes](../database/operations.md)
 - [Session/data workstream](../todo/03-data-model-and-session-domain.md)

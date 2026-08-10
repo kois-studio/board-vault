@@ -14,7 +14,7 @@ Known examples:
 
 Relevant areas:
 
-- `context/database/database-definition.md`
+- `database/schema/documented-schema.sql`
 - `backend/src/modules/common/database/database.service.ts`
 - `backend/src/modules/features/play/play.service.ts`
 - meeting-related frontend pages and services.

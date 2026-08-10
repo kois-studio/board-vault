@@ -47,7 +47,7 @@ compliance:
       next_action: Update the index with every maintained document added or moved.
     - id: DOC-003
       status: partial
-      evidence: docs/README.md; context, backend/docs, and todo contain overlapping historical guidance
+      evidence: docs/README.md; legacy backend docs and todo contain some overlapping historical guidance
       priority: medium
       next_action: Consolidate or explicitly label duplicate guidance during the next documentation pass.
     - id: DOC-004
@@ -62,7 +62,7 @@ compliance:
       next_action: Update current-state docs with each behavior or boundary change.
     - id: DOC-006
       status: compliant
-      evidence: docs/README.md separates current state, product TODOs, context, and ADRs
+      evidence: docs/README.md separates current state, product TODOs, database artifacts, and ADRs
       priority: medium
       next_action: Keep temporary investigations out of maintained docs unless they preserve durable reasoning.
     - id: DOC-007
@@ -390,7 +390,7 @@ compliance:
 
     - id: DATA-001
       status: partial
-      evidence: context/database/database-definition.md and backend schemas describe a model; deployed Turso schema is explicitly a TODO
+      evidence: database/schema/documented-schema.sql and backend schemas describe a model; deployed Turso schema is explicitly a TODO
       priority: critical
       next_action: Compare live schema with code and publish a drift report.
     - id: DATA-002
@@ -636,10 +636,6 @@ compliance:
 exceptions: []
 
 deferred_work:
-  - id: DOC-LEGACY-001
-    status: deferred
-    reason: Existing backend/context documents are retained for continuity during this sanitation session; their authority is now scoped by docs/README.md.
-    next_action: Consolidate or relabel legacy guidance in a later documentation-only session.
   - id: DEP-LOCK-001
     status: deferred
     reason: Lockfile creation changes dependency reproducibility and should be handled as the first engineering-quality task, not silently during documentation bootstrap.

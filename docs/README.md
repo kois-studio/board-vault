@@ -19,6 +19,9 @@ This directory is the canonical operating manual for AI developer agents working
 - [Effective local rules](standards.md)
 - [Readiness TODOs](TODO.md)
 - [ADR index](adr/README.md)
+- [ADR 0001 — Group-first product context](adr/0001-group-first-product-context.md)
+- [ADR 0002 — Deterministic recommendations](adr/0002-deterministic-explainable-recommendations.md)
+- [ADR 0003 — Session domain](adr/0003-session-as-first-class-domain.md)
 
 ### Current-state architecture and boundaries
 
@@ -35,7 +38,7 @@ This directory is the canonical operating manual for AI developer agents working
 - [Backend README](../backend/README.md) — Nest starter text; use [operations.md](operations.md) for verified commands.
 - [Frontend README](../frontend/README.md) — Angular starter text; use [operations.md](operations.md) for verified commands.
 - [Backend docs index](../backend/docs/index.md)
-- [Database management notes](../backend/docs/database/database-management.md)
+- [Database operations notes](../database/operations.md)
 - [Backend style guide](../backend/docs/style-guide.md)
 - [Backend roadmap: why](../backend/docs/roadmap/1-why.md)
 - [Backend roadmap: planification](../backend/docs/roadmap/2-planification.md)
@@ -44,17 +47,12 @@ This directory is the canonical operating manual for AI developer agents working
 - [Database service notes](../backend/src/modules/common/database/database.service.md)
 - [Collection activity module notes](../backend/src/modules/core/collection-activity/collection-activity.module.md)
 
-### Project context and product direction
+### Database workspace and product direction
 
-The `context/` documents are useful historical/convention notes. They contain a mixture of implemented patterns, aspirations, and examples; verify them against source before treating them as current behavior.
-
-- [Project definition](../context/general/project-definition.md)
-- [Development patterns](../context/general/development-patterns.md)
-- [Backend patterns](../context/backend/backend-patterns.md)
-- [Backend module organization](../context/backend/modules-organization.md)
-- [Frontend patterns](../context/frontend/frontend-patterns.md)
-- [Frontend structure](../context/frontend/frontend-structure.md)
-- [Database definition](../context/database/database-definition.md)
+- [Database workspace](../database/README.md)
+- [Documented schema intent](../database/schema/documented-schema.sql)
+- [Database operations notes](../database/operations.md)
+- [Product definition and direction](../todo/01-product-direction.md)
 
 ### Product backlog and agent coordination
 
@@ -74,6 +72,6 @@ The `/todo/` package is the source of truth for the planned second development r
 
 - Current implementation facts belong in this `docs/` package or in the source/configuration they describe.
 - Product intent, sequencing, and task ownership belong in `/todo/`.
-- Database schema intent currently lives in [context/database/database-definition.md](../context/database/database-definition.md), but the deployed Turso schema remains unverified.
+- Database schema intent lives in [database/schema/documented-schema.sql](../database/schema/documented-schema.sql), but the deployed Turso schema remains unverified.
 - Durable architectural or policy decisions belong in [docs/adr/](adr/README.md).
 - When code changes a documented boundary, update the affected document in the same change.
