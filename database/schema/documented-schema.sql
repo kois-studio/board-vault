@@ -1,8 +1,8 @@
-# Database definition
+-- Board Vault documented schema intent.
+--
+-- This file is not verified against the deployed Turso database and is not a
+-- migration. Do not apply it directly without completing DATA-001 and DATA-002.
 
-The main database is a SQLite hosted in turso.tech.
-
-```sql
 -- -----------------------------------------------------
 -- Table 'Account'
 -- -----------------------------------------------------
@@ -225,7 +225,7 @@ CREATE TABLE IF NOT EXISTS GameProposal (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     submittedBy INTEGER NOT NULL, -- Account that submitted the proposal
     status TEXT NOT NULL CHECK (status IN ('pending', 'approved', 'rejected', 'duplicate')) DEFAULT 'pending',
-    
+
     -- User-submitted data
     title TEXT NOT NULL,
     imageUrl TEXT,
@@ -233,17 +233,17 @@ CREATE TABLE IF NOT EXISTS GameProposal (
     minPlayers INTEGER,
     maxPlayers INTEGER,
     -- Storing proposed tags as JSON text is flexible for the review process
-    proposedTags TEXT, 
+    proposedTags TEXT,
     notes TEXT, -- User's description or notes about the game
-    
+
     -- Admin review fields
     reviewedBy INTEGER, -- Admin account that reviewed the proposal
     reviewedAt DATETIME,
     reviewNotes TEXT, -- Admin notes (especially for rejections/duplicates)
-    
+
     -- Link to the created game if approved
     createdGameId INTEGER,
-    
+
     submittedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (submittedBy) REFERENCES Account(id) ON DELETE CASCADE,
@@ -260,5 +260,3 @@ CREATE INDEX idx_gametranslation_normalized_title ON GameTranslation(normalizedT
 -- for game proposal queries
 CREATE INDEX idx_gameproposal_status ON GameProposal(status);
 CREATE INDEX idx_gameproposal_submitted_by ON GameProposal(submittedBy);
-```
-
