@@ -1,0 +1,650 @@
+contract_version: 0.2.0
+standards_version: 0.2.0
+
+standards_source:
+  repository: /Users/dawichi/Documents/GitHub/engineering-standards
+  revision: 34e2a8ffe9e081cdf755aa989ff16c375b7691f9
+  inspected_on: 2026-08-11
+
+project:
+  name: board-vault
+  lifecycle: existing
+  maturity: active foundation; pre-launch
+  audited_commit: 9cc3083
+  audit_scope: documentation and AI-readiness bootstrap; no behavior refactor
+
+standards:
+  - documentation
+  - testing
+  - typescript
+  - styling
+  - security
+  - dependencies
+  - ci-cd
+  - operations
+  - api
+  - data
+  - web
+
+profiles:
+  - angular-application
+  - nestjs-backend
+
+# Status values use the states defined by docs/agent-modes.md:
+# compliant, partial, gap, deferred, exception, not-applicable, unknown.
+# Every item below has a local evidence path or verified command.
+compliance:
+  rules:
+    - id: DOC-001
+      status: compliant
+      evidence: docs/AGENTS.md
+      priority: high
+      next_action: Keep this file canonical when agent-facing rules change.
+    - id: DOC-002
+      status: compliant
+      evidence: docs/README.md
+      priority: high
+      next_action: Update the index with every maintained document added or moved.
+    - id: DOC-003
+      status: partial
+      evidence: docs/README.md; context, backend/docs, and todo contain overlapping historical guidance
+      priority: medium
+      next_action: Consolidate or explicitly label duplicate guidance during the next documentation pass.
+    - id: DOC-004
+      status: compliant
+      evidence: docs/README.md and local-link validation performed during this session
+      priority: high
+      next_action: Re-run local-link validation when documentation paths change.
+    - id: DOC-005
+      status: partial
+      evidence: docs/architecture.md; source contains known unfinished flows and stale route claims
+      priority: high
+      next_action: Update current-state docs with each behavior or boundary change.
+    - id: DOC-006
+      status: compliant
+      evidence: docs/README.md separates current state, product TODOs, context, and ADRs
+      priority: medium
+      next_action: Keep temporary investigations out of maintained docs unless they preserve durable reasoning.
+    - id: DOC-007
+      status: partial
+      evidence: docs/README.md defines ownership, but legacy docs do not consistently declare authority
+      priority: medium
+      next_action: Label legacy/context documents as current, historical, or illustrative as they are touched.
+    - id: DOC-008
+      status: compliant
+      evidence: this contract and docs/TODO.md record exceptions, unknowns, gaps, and deferred work
+      priority: high
+      next_action: Do not silently promote a finding to compliant.
+    - id: DOC-009
+      status: partial
+      evidence: README.md is mostly a frontend structure note; backend and frontend READMEs are framework starters
+      priority: medium
+      next_action: Replace or redirect the root README to docs/README.md and verified setup guidance.
+    - id: DOC-010
+      status: compliant
+      evidence: docs/README.md and docs/AGENTS.md define audience boundaries
+      priority: medium
+      next_action: Preserve the separation between agent instructions, current facts, and product backlog.
+
+    - id: TEST-001
+      status: gap
+      evidence: backend/test/app.e2e-spec.ts is the only backend test; frontend has one generated smoke test
+      priority: high
+      next_action: Add layered unit, integration, and journey tests for the flagship loop.
+    - id: TEST-002
+      status: gap
+      evidence: no meaningful regression suite for auth, ownership, groups, collection, or sessions
+      priority: critical
+      next_action: Start with privilege-boundary and object-authorization regressions.
+    - id: TEST-003
+      status: unknown
+      evidence: no isolated test strategy is documented; e2e module setup requires external configuration
+      priority: high
+      next_action: Define disposable test data and provider fakes before adding integration coverage.
+    - id: TEST-004
+      status: partial
+      evidence: generated tests assert creation only; starter e2e asserts a stale root response
+      priority: high
+      next_action: Replace starter assertions with user-visible behavior and denied-path assertions.
+    - id: TEST-005
+      status: gap
+      evidence: current test count does not match security and core-loop risk
+      priority: critical
+      next_action: Cover auth, identity boundaries, group membership, collection ownership, session transactions, and recommendation rules.
+    - id: TEST-006
+      status: gap
+      evidence: backend unit command exits with “No tests found”; frontend command passes only one smoke test
+      priority: high
+      next_action: Make supported test commands meaningful and required in CI.
+    - id: TEST-007
+      status: gap
+      evidence: CacheService, EmailService, and Turso are instantiated through application modules without a documented test boundary
+      priority: high
+      next_action: Add adapter seams and deterministic fakes for external providers.
+    - id: TEST-008
+      status: gap
+      evidence: no CI and lint/format checks currently fail
+      priority: high
+      next_action: Establish a baseline quality gate after fixing or explicitly scoping existing failures.
+
+    - id: TS-001
+      status: compliant
+      evidence: frontend/tsconfig.json strict true; backend/tsconfig.json enables strict null and noImplicitAny checks
+      priority: medium
+      next_action: Preserve strict settings in new code.
+    - id: TS-002
+      status: partial
+      evidence: backend/.eslintrc.js disables no-explicit-any and cache/database code uses any
+      priority: medium
+      next_action: Stop adding undocumented any and narrow legacy boundary uses incrementally.
+    - id: TS-003
+      status: partial
+      evidence: shared types and Swagger DTOs exist, but frontend API schemas are a TODO and routes are not contract-tested
+      priority: high
+      next_action: Define a machine-readable API contract and align generated/client types.
+    - id: TS-004
+      status: partial
+      evidence: domain types exist, while session and recommendation states remain incomplete
+      priority: high
+      next_action: Establish canonical session and recommendation state models before implementation.
+    - id: TS-005
+      status: gap
+      evidence: backend main.ts does not apply a global ValidationPipe; frontend api.schemas.ts is unimplemented
+      priority: critical
+      next_action: Activate and test boundary validation on both API and client response boundaries.
+    - id: TS-006
+      status: partial
+      evidence: zod schemas and class-validator dependencies exist, but the effective global strategy is not enabled
+      priority: high
+      next_action: Select one boundary-validation approach per boundary and document it.
+    - id: TS-007
+      status: compliant
+      evidence: backend/tsconfig*.json, frontend/tsconfig*.json, backend/.eslintrc.js, frontend/biome.json
+      priority: medium
+      next_action: Keep tool configuration versioned and aligned with package scripts.
+    - id: TS-008
+      status: partial
+      evidence: backend lint reports 17 errors/3 warnings; frontend Biome reports 8 findings
+      priority: high
+      next_action: Repair formatting/import/lint baseline in scoped quality work.
+    - id: TS-009
+      status: unknown
+      evidence: strict configs exist, but no dedicated type-check command or full clean validation is documented
+      priority: medium
+      next_action: Add explicit type-check verification to the supported workflow.
+    - id: TS-010
+      status: gap
+      evidence: no CI and no root quality command
+      priority: high
+      next_action: Add reproducible quality checks after lockfiles and install policy exist.
+    - id: TS-011
+      status: unknown
+      evidence: exact optional-property semantics are not explicitly configured or tested
+      priority: low
+      next_action: Assess during API contract and DTO cleanup.
+
+    - id: SEC-001
+      status: partial
+      evidence: docs/security.md; JWT, ownership, admin, verified-user, and group guards exist
+      priority: critical
+      next_action: Complete the trust-boundary and object-authorization audit.
+    - id: SEC-002
+      status: partial
+      evidence: backend/.env is ignored and not tracked; runtime secret names are validated, but no clean-install/history/CI secret process exists
+      priority: critical
+      next_action: Add safe environment documentation and repository secret scanning.
+    - id: SEC-003
+      status: gap
+      evidence: several authenticated controllers accept account/group/reviewer IDs without consistent object-level guards
+      priority: critical
+      next_action: Execute SEC-001 through SEC-004 in todo/06-agent-task-board.md.
+    - id: SEC-004
+      status: gap
+      evidence: no global request validation; raw SQL logging formats user arguments; HTML email interpolates values
+      priority: critical
+      next_action: Validate/encode at boundaries and remove sensitive formatted SQL logging.
+    - id: SEC-005
+      status: unknown
+      evidence: Account data, password reset tokens, and user activity are persisted; retention, encryption, and deletion policy are not documented
+      priority: high
+      next_action: Classify data and document storage, retention, deletion, and provider responsibilities.
+    - id: SEC-006
+      status: gap
+      evidence: DatabaseService logs formatted SQL; auth/email/cache log user identifiers and provider errors
+      priority: critical
+      next_action: Define safe structured logging and redaction tests.
+    - id: SEC-007
+      status: gap
+      evidence: production/provider permissions and database roles are not documented or reviewable here
+      priority: high
+      next_action: Record provider access ownership and least-privilege scopes.
+    - id: SEC-008
+      status: gap
+      evidence: no security behavior tests beyond a generated app test
+      priority: critical
+      next_action: Add denied, cross-owner, cross-group, expired-token, and malformed-input tests.
+    - id: SEC-009
+      status: gap
+      evidence: no vulnerability intake, dependency audit, or response process is documented
+      priority: medium
+      next_action: Add vulnerability monitoring to the delivery workflow.
+
+    - id: DEP-001
+      status: gap
+      evidence: backend/.gitignore explicitly ignores npm/pnpm/yarn lockfiles; none are tracked
+      priority: critical
+      next_action: Choose a package manager and commit one lockfile per package.
+    - id: DEP-002
+      status: gap
+      evidence: no CI and no reproducible clean-install workflow
+      priority: high
+      next_action: Add locked installation and dependency-cache policy to CI.
+    - id: DEP-003
+      status: gap
+      evidence: Node version is observed locally but no version file or supported package-manager version is committed
+      priority: high
+      next_action: Pin/document Node and package-manager versions.
+    - id: DEP-004
+      status: unknown
+      evidence: package scripts include build/start/test commands; install/build script safety has not been audited
+      priority: medium
+      next_action: Review lifecycle scripts and allowlisted install behavior.
+    - id: DEP-005
+      status: partial
+      evidence: direct dependencies map to Angular, Nest, Turso, Redis, email, auth, validation, and tooling responsibilities
+      priority: medium
+      next_action: Review unused/duplicate packages during lockfile work.
+    - id: DEP-006
+      status: gap
+      evidence: no audit automation or remediation record
+      priority: high
+      next_action: Add dependency audit and owner/severity workflow.
+    - id: DEP-007
+      status: partial
+      evidence: backend README says pnpm while package files and verified commands use npm; no lockfile resolves the choice
+      priority: high
+      next_action: Decide and document one package-manager policy.
+
+    - id: CI-001
+      status: gap
+      evidence: no .github workflow or other CI configuration found
+      priority: critical
+      next_action: Add CI after reproducible installation is established.
+    - id: CI-002
+      status: gap
+      evidence: builds, tests, lint, formatting, and migration checks are not automated
+      priority: critical
+      next_action: Implement gates from todo/05-engineering-quality-and-delivery.md.
+    - id: CI-003
+      status: gap
+      evidence: no lockfiles, runtime pin, or clean environment definition
+      priority: critical
+      next_action: Pin toolchain and install from committed lockfiles.
+    - id: CI-004
+      status: gap
+      evidence: no protected required checks
+      priority: high
+      next_action: Configure required checks once CI exists.
+    - id: CI-005
+      status: unknown
+      evidence: no workflow exists to inspect for permissions, secret handling, or untrusted PR behavior
+      priority: medium
+      next_action: Review workflow permissions as part of CI introduction.
+    - id: CI-006
+      status: unknown
+      evidence: no CI resource budget or cache policy
+      priority: low
+      next_action: Define after initial CI runtime is measured.
+    - id: CI-007
+      status: gap
+      evidence: local results are not published by automation
+      priority: high
+      next_action: Publish build/test/lint results and failure artifacts.
+
+    - id: OPS-001
+      status: partial
+      evidence: backend/src/common/validators/validateEnv.ts checks Turso and JWT variables; EmailService fails later for Resend
+      priority: critical
+      next_action: Centralize typed startup configuration validation for all required providers.
+    - id: OPS-002
+      status: gap
+      evidence: development and production frontend API URLs exist, but environment ownership and backend deployment values are not documented
+      priority: high
+      next_action: Document local/test/production boundaries without secrets.
+    - id: OPS-003
+      status: unknown
+      evidence: Turso, Upstash, and Resend calls exist; timeouts, cancellation, and resource limits are not documented
+      priority: high
+      next_action: Audit provider client bounds and failure behavior.
+    - id: OPS-004
+      status: not-applicable
+      evidence: no queue, worker, or explicit retry loop was found in the inspected source
+      priority: low
+      next_action: Reassess if asynchronous processing is introduced.
+    - id: OPS-005
+      status: gap
+      evidence: no health/readiness controller or deployment probe is configured
+      priority: high
+      next_action: Add API and database health signaling before launch work.
+    - id: OPS-006
+      status: unknown
+      evidence: Nest app starts a listener, but shutdown behavior and provider cleanup are not documented or tested
+      priority: medium
+      next_action: Verify graceful shutdown and resource release.
+    - id: OPS-007
+      status: partial
+      evidence: Nest Logger and a request middleware exist, but logs include SQL/user/provider details and lack documented correlation
+      priority: high
+      next_action: Define structured safe diagnostic events.
+    - id: OPS-008
+      status: gap
+      evidence: no metrics, tracing, alerting, or error monitoring configuration found
+      priority: medium
+      next_action: Add minimum production signals for errors, latency, and availability.
+    - id: OPS-009
+      status: gap
+      evidence: Vercel config and Turso dump notes exist, but ownership, restore testing, and failure runbooks do not
+      priority: high
+      next_action: Document backup/restore and deployment recovery ownership.
+
+    - id: API-001
+      status: partial
+      evidence: Nest Swagger is generated at runtime and DTO decorators exist; no committed versioned OpenAPI artifact or contract tests
+      priority: high
+      next_action: Establish a versioned machine-readable contract.
+    - id: API-002
+      status: gap
+      evidence: ParseIntPipe is used selectively, but no global body/query validation pipe is configured
+      priority: critical
+      next_action: Enable boundary validation and negative tests.
+    - id: API-003
+      status: gap
+      evidence: no project-wide stable error schema or exception mapping is documented
+      priority: high
+      next_action: Define safe machine-readable validation/auth/conflict/internal errors.
+    - id: API-004
+      status: gap
+      evidence: controllers mark multiple routes deprecated, but no compatibility/deprecation policy exists
+      priority: high
+      next_action: Document route ownership, versioning, deprecation, and migration policy.
+    - id: API-005
+      status: partial
+      evidence: limit/offset pipes and paginated admin routes exist; global bounds and coverage are not documented
+      priority: high
+      next_action: Define maximum page size and expensive-query behavior.
+    - id: API-006
+      status: unknown
+      evidence: mutations span groups, collection, invitations, and meets; idempotency/duplicate behavior is not documented
+      priority: high
+      next_action: Specify duplicate and retry behavior per mutation.
+    - id: API-007
+      status: gap
+      evidence: only starter e2e exists; no producer/consumer contract tests
+      priority: high
+      next_action: Add contract/integration coverage for the supported frontend journeys.
+    - id: API-008
+      status: gap
+      evidence: no correlation, latency, throughput, or error metrics
+      priority: medium
+      next_action: Add safe interface observability with OPS work.
+
+    - id: DATA-001
+      status: partial
+      evidence: context/database/database-definition.md and backend schemas describe a model; deployed Turso schema is explicitly a TODO
+      priority: critical
+      next_action: Compare live schema with code and publish a drift report.
+    - id: DATA-002
+      status: gap
+      evidence: no migrations directory or migration runner; docs describe manual Turso dump/drop/restore commands
+      priority: critical
+      next_action: Add numbered migrations and empty-state recreation.
+    - id: DATA-003
+      status: partial
+      evidence: SQLite tables and application checks exist, but constraints/transaction guarantees are not verified against deployment
+      priority: critical
+      next_action: Define enforced invariants and test them on a disposable database.
+    - id: DATA-004
+      status: gap
+      evidence: DashboardService creates a group and membership in separate calls; session creation is TODO
+      priority: critical
+      next_action: Define transaction/partial-failure behavior for multi-record use cases.
+    - id: DATA-005
+      status: partial
+      evidence: raw SQL queries and pagination helpers exist; index ownership and query performance evidence are absent
+      priority: high
+      next_action: Document indexes and test representative query limits.
+    - id: DATA-006
+      status: partial
+      evidence: CacheService has TTLs and selected invalidations, but disabled configuration initializes Redis and correctness is not tested
+      priority: high
+      next_action: Define cache ownership, invalidation, disabled mode, and tests.
+    - id: DATA-007
+      status: gap
+      evidence: Turso dump instructions exist, but no scheduled backup, restore test, or owner
+      priority: high
+      next_action: Establish and rehearse backup/restore procedure.
+
+    - id: STYLE-001
+      status: partial
+      evidence: Tailwind CSS is configured as the primary frontend system, with substantial SCSS in components/global styles
+      priority: medium
+      next_action: Define the intended boundary between utilities and custom styles.
+    - id: STYLE-002
+      status: compliant
+      evidence: frontend package/configuration uses Tailwind CSS 4 and @tailwindcss/postcss
+      priority: low
+      next_action: Preserve the existing primary styling choice.
+    - id: STYLE-003
+      status: partial
+      evidence: SCSS is used for component and global styling without a documented exception boundary
+      priority: medium
+      next_action: Document when custom SCSS is preferred and remove competing legacy patterns incrementally.
+    - id: STYLE-004
+      status: gap
+      evidence: build reports Sass @import deprecation and 405 skipped selector errors
+      priority: high
+      next_action: Repair Tailwind/Sass integration in the frontend-quality workstream.
+    - id: STYLE-005
+      status: unknown
+      evidence: icon usage is present but no project-wide icon-system decision is documented
+      priority: low
+      next_action: Record the existing icon choice during UX sanitation.
+    - id: STYLE-006
+      status: partial
+      evidence: no local style exception policy or verification rule
+      priority: low
+      next_action: Add conventions to the frontend documentation when style work resumes.
+
+    - id: WEB-001
+      status: gap
+      evidence: no repeatable rendered-page accessibility/responsive audit exists; frontend has one component smoke test
+      priority: high
+      next_action: Audit landing, auth, collection, group, and play routes.
+    - id: WEB-002
+      status: gap
+      evidence: no audit cadence or ownership
+      priority: medium
+      next_action: Add route audit cadence to launch readiness.
+    - id: WEB-003
+      status: gap
+      evidence: no browser journey coverage for authenticated or responsive routes
+      priority: high
+      next_action: Define representative route matrix and browser checks.
+    - id: WEB-004
+      status: gap
+      evidence: known placeholder links and hardcoded play UI remain in source
+      priority: high
+      next_action: Track findings through TRUTH-001 and EQ-006.
+
+    - id: ANGULAR-001
+      status: partial
+      evidence: frontend/src/app has pages, components, core, layout, api, and admin feature areas; shared DataService remains broad
+      priority: medium
+      next_action: Preserve feature boundaries while reducing cross-feature state coupling.
+    - id: ANGULAR-002
+      status: partial
+      evidence: components and services are separated in many areas, but log-session wizard contains substantial workflow logic
+      priority: medium
+      next_action: Extract independently testable domain/workflow rules during PROD-005.
+    - id: ANGULAR-003
+      status: compliant
+      evidence: strict frontend TypeScript and Angular template/compiler options are enabled
+      priority: medium
+      next_action: Keep new API/form boundaries typed.
+    - id: ANGULAR-004
+      status: partial
+      evidence: log-session wizard has explicit steps/signals, but submit behavior is TODO
+      priority: high
+      next_action: Define and test complete loading/validation/submission/error transitions.
+    - id: ANGULAR-005
+      status: compliant
+      evidence: Tailwind is the selected styling system; icon choice remains undocumented
+      priority: low
+      next_action: Record icon convention when frontend sanitation starts.
+    - id: ANGULAR-006
+      status: gap
+      evidence: frontend/src/app/api/api.schemas.ts begins with a TODO to define response schemas
+      priority: critical
+      next_action: Validate external responses and user input at API/form boundaries.
+    - id: ANGULAR-007
+      status: partial
+      evidence: root-provided services and signals exist, but ownership/reset semantics are not documented
+      priority: medium
+      next_action: Document state lifecycle for auth, DataService, loading, and cache state.
+    - id: ANGULAR-008
+      status: gap
+      evidence: only one frontend spec and no isolated core workflow tests
+      priority: high
+      next_action: Extract and unit-test recommendation/session/authorization rules.
+    - id: ANGULAR-009
+      status: gap
+      evidence: guards/interceptor exist without focused guard/interceptor tests
+      priority: high
+      next_action: Add denied, expired, and malformed-auth tests.
+    - id: ANGULAR-010
+      status: unknown
+      evidence: observable subscriptions and signal effects are present, but lifecycle testing is absent
+      priority: medium
+      next_action: Audit long-lived services/components for teardown and repeated initialization.
+    - id: ANGULAR-011
+      status: gap
+      evidence: no end-to-end browser suite
+      priority: high
+      next_action: Add coverage for signup/group/collection/session journey.
+    - id: ANGULAR-012
+      status: compliant
+      evidence: frontend tsconfig has strictTemplates, strictInjectionParameters, and strictInputAccessModifiers
+      priority: medium
+      next_action: Keep strict compiler checks enabled.
+    - id: ANGULAR-013
+      status: partial
+      evidence: frontend guards exist and backend guards exist, but backend object authorization is inconsistent
+      priority: critical
+      next_action: Treat SEC-002 as the authoritative remediation.
+    - id: ANGULAR-014
+      status: partial
+      evidence: loading/error patterns exist, but play pages contain hardcoded content and TODO states
+      priority: high
+      next_action: Make async states explicit for the flagship journey.
+    - id: ANGULAR-015
+      status: unknown
+      evidence: global services and signals are used; persistence/reset policy is not fully documented
+      priority: medium
+      next_action: Document logout, navigation, refresh, and invalidation behavior.
+
+    - id: NEST-001
+      status: partial
+      evidence: backend separates common, core, and feature modules, with legacy/deprecated route overlap
+      priority: medium
+      next_action: Keep capability ownership explicit while API routes are stabilized.
+    - id: NEST-002
+      status: compliant
+      evidence: controllers generally delegate to services; some controllers expose legacy operations without consistent policy
+      priority: medium
+      next_action: Preserve thin transport handlers and remove stale endpoints only through planned API work.
+    - id: NEST-003
+      status: gap
+      evidence: domain behavior is implemented inside Nest services and raw persistence-oriented services
+      priority: medium
+      next_action: Isolate core session/recommendation rules for unit testing.
+    - id: NEST-004
+      status: gap
+      evidence: DTO classes/types exist, but global validation is not configured
+      priority: critical
+      next_action: Activate boundary DTO validation and negative tests.
+    - id: NEST-005
+      status: gap
+      evidence: Logger exists, but no consistent error mapper, correlation, or safe logging contract
+      priority: high
+      next_action: Implement OPS-007 and SEC-006 together.
+    - id: NEST-006
+      status: partial
+      evidence: modules have clear names and providers; module README/index coverage is inconsistent
+      priority: medium
+      next_action: Document public exports and ownership for modules changed in future work.
+    - id: NEST-007
+      status: partial
+      evidence: feature modules import core services, matching documented intent, but boundaries are not contract-tested
+      priority: medium
+      next_action: Make cross-module public interfaces explicit.
+    - id: NEST-008
+      status: gap
+      evidence: authorization is primarily controller guards; services and alternate routes do not uniformly enforce invariants
+      priority: critical
+      next_action: Audit defense beyond controllers.
+    - id: NEST-009
+      status: gap
+      evidence: external inputs enter many controllers without a global validation pipe
+      priority: critical
+      next_action: Enable validation before application logic.
+    - id: NEST-010
+      status: gap
+      evidence: no stable safe error contract or exception filter
+      priority: high
+      next_action: Define and test the API error envelope.
+    - id: NEST-011
+      status: partial
+      evidence: validateEnv checks three variables and `.env` is ignored; Email/Redis requirements are not centralized
+      priority: critical
+      next_action: Validate all required runtime configuration before serving.
+    - id: NEST-012
+      status: gap
+      evidence: DatabaseService and CacheService exist, but application code is tightly coupled to concrete infrastructure services
+      priority: high
+      next_action: Define adapter/module interfaces around persistence and cache.
+    - id: NEST-013
+      status: gap
+      evidence: multi-step group creation is separate writes; no transaction or partial-failure policy
+      priority: critical
+      next_action: Implement DATA-004 for core mutations.
+    - id: NEST-014
+      status: not-applicable
+      evidence: no queue consumer, webhook processor, or scheduled handler was found
+      priority: low
+      next_action: Reassess when asynchronous handlers are added.
+    - id: NEST-015
+      status: gap
+      evidence: no health/readiness or graceful-shutdown verification; CacheService initializes Redis before disabled-mode check
+      priority: high
+      next_action: Make infrastructure lifecycle explicit and testable.
+    - id: NEST-016
+      status: gap
+      evidence: runtime Swagger exists, but no versioned contract artifact or contract compatibility checks
+      priority: high
+      next_action: Stabilize API contract and publish verification.
+
+exceptions: []
+
+deferred_work:
+  - id: DOC-LEGACY-001
+    status: deferred
+    reason: Existing backend/context documents are retained for continuity during this sanitation session; their authority is now scoped by docs/README.md.
+    next_action: Consolidate or relabel legacy guidance in a later documentation-only session.
+  - id: DEP-LOCK-001
+    status: deferred
+    reason: Lockfile creation changes dependency reproducibility and should be handled as the first engineering-quality task, not silently during documentation bootstrap.
+    next_action: Execute EQ-001 before adding CI.
+  - id: DATA-MIGRATION-001
+    status: deferred
+    reason: No live Turso schema inspection or migration design was authorized in this session.
+    next_action: Execute DATA-001, then DATA-002, before changing the session domain.

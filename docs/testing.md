@@ -1,0 +1,53 @@
+# Testing and verification
+
+## Inventory at bootstrap
+
+- Backend: one `backend/test/app.e2e-spec.ts`; no `*.spec.ts` unit tests under `backend/src`.
+- Frontend: one `frontend/src/app/app.component.spec.ts`, a generated app-creation smoke test.
+- No browser end-to-end framework or CI workflow was found.
+- No contract, migration, authorization, persistence, provider-adapter, accessibility, or responsive tests were found.
+
+## Verified baseline
+
+| Check | Result | Interpretation |
+|---|---|---|
+| `cd backend && npm run build` | Pass | TypeScript/Nest build currently compiles. |
+| `cd backend && npm test -- --runInBand` | Fail | Jest finds no unit tests under `backend/src`. |
+| `cd backend && npm run test:e2e -- --runInBand` | Fail | Test setup throws because `RESEND_API_KEY` is missing; the test itself expects a stale `/` Hello World route. |
+| `cd backend && npx eslint "{src,apps,libs,test}/**/*.ts"` | Fail | 17 errors and 3 warnings across schemas, database, collection, play, and profile code. |
+| `cd frontend && npm run build` | Pass with warnings | Bundle budget, Sass deprecation, and selector warnings remain. |
+| `cd frontend && npx biome check` | Fail | 8 findings in the form submission, log-session wizard, and propose-game page files. |
+| `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` | Pass | One generated smoke test passes. |
+
+## Required testing strategy for the next development round
+
+### P0 security and data truth
+
+- user update privilege boundaries;
+- JWT expiry, verification state, reset behavior, and generic account responses;
+- object-level ownership for users, collections, groups, invitations, notifications, meets, and admin actions;
+- malformed/oversized input and stable error responses;
+- schema/migration recreation and transaction partial-failure behavior.
+
+### P1 flagship journey
+
+- group creation/joining and invitation lifecycle;
+- collection activation with empty/error states;
+- deterministic explainable recommendation scoring;
+- atomic session creation, planned/played distinction, completion, and history;
+- frontend loading, empty, failure, retry, and mobile/accessibility states.
+
+### P2 delivery quality
+
+- API contract compatibility and response validation;
+- provider fakes for Turso/Redis/Resend;
+- health/readiness and shutdown behavior;
+- browser journey coverage against a clean environment.
+
+## Test isolation rules
+
+Tests must not depend on a developer’s real Turso, Redis, or Resend credentials. Use a disposable database or explicit provider fakes. Do not make a test pass by disabling authorization or using production data. Record any intentionally untested boundary as an explicit exception or deferred gap.
+
+## Completion evidence
+
+A feature task is not complete because the build passes. The task board requires affected checks, authorization/invalid-input evidence where relevant, documentation/API updates, and known follow-ups. See [todo/README.md](../todo/README.md).
