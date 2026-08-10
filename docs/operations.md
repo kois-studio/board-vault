@@ -45,4 +45,4 @@ Deployment ownership, domain configuration, environment provisioning, provider s
 
 ## Existing operational notes
 
-[backend/docs/database/database-management.md](../backend/docs/database/database-management.md) contains Turso CLI dump/drop/restore examples. They are manual operational notes, not a migration or recovery system, and must be reviewed before use against a real database.
+[database/operations.md](../database/operations.md) contains Turso CLI dump/drop/restore examples. They are manual operational notes, not a migration or recovery system, and must be reviewed before use against a real database.
