@@ -5,9 +5,10 @@ This directory owns database-specific artifacts and tooling for Board Vault. It 
 ## Current status
 
 - The application uses Turso/libSQL SQLite through `backend/src/modules/common/database/database.service.ts`.
-- [schema/documented-schema.sql](schema/documented-schema.sql) is the historical documented schema intent migrated from the former `context/` folder. It has not been verified against the deployed Turso database and MUST NOT be treated as a migration or applied directly without review.
+- [schema/schema.sql](schema/schema.sql) is the current schema export supplied from the Turso SQL run panel on 2026-08-11. It is an observed snapshot, not a migration, and MUST NOT be applied directly to another environment without review.
+- Repository reconciliation has found code drift against this baseline: `DatabaseService` references `MeetAttendee` and `MeetGame`, which are absent from the schema. The deployed `Game` table also has no `title` column; the application passes a title but the current insert path does not persist it in `Game`.
 - There is currently no migration runner, versioned migration history, disposable test database, fixture set, Docker test environment, or restore rehearsal.
-- The first database work is `DATA-001`: inspect the deployed schema and publish a code/schema drift report. Follow with migrations and the canonical session model.
+- The first database work is `DATA-001`: resolve the code/schema drift report against this current baseline. Follow with migrations and the canonical session model.
 
 ## Planned layout
 
@@ -27,7 +28,7 @@ Only `schema/` is populated today. Create the other directories when their first
 
 - Domain semantics, persistence risks, and migration requirements: [docs/data-model.md](../docs/data-model.md).
 - Current backend persistence implementation: [DatabaseService](../backend/src/modules/common/database/database.service.ts).
-- Schema intent: [schema/documented-schema.sql](schema/documented-schema.sql), until a verified migration baseline replaces it.
+- Current schema snapshot: [schema/schema.sql](schema/schema.sql). Future migrations will become the reproducible source of truth.
 - Product/session decisions: [todo/03-data-model-and-session-domain.md](../todo/03-data-model-and-session-domain.md) and proposed [ADR-0003](../docs/adr/0003-session-as-first-class-domain.md).
 - API behavior and transaction expectations: [docs/api.md](../docs/api.md).
 

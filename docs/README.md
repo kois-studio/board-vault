@@ -50,7 +50,7 @@ This directory is the canonical operating manual for AI developer agents working
 ### Database workspace and product direction
 
 - [Database workspace](../database/README.md)
-- [Documented schema intent](../database/schema/documented-schema.sql)
+- [Current database schema](../database/schema/schema.sql)
 - [Database operations notes](../database/operations.md)
 - [Product definition and direction](../todo/01-product-direction.md)
 
@@ -72,6 +72,6 @@ The `/todo/` package is the source of truth for the planned second development r
 
 - Current implementation facts belong in this `docs/` package or in the source/configuration they describe.
 - Product intent, sequencing, and task ownership belong in `/todo/`.
-- Database schema intent lives in [database/schema/documented-schema.sql](../database/schema/documented-schema.sql), but the deployed Turso schema remains unverified.
+- [database/schema/schema.sql](../database/schema/schema.sql) is the current Turso schema export; repository code/schema drift is documented in [data-model.md](data-model.md).
 - Durable architectural or policy decisions belong in [docs/adr/](adr/README.md).
 - When code changes a documented boundary, update the affected document in the same change.

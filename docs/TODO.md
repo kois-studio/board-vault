@@ -24,14 +24,14 @@ Statuses are `Planned`, `Blocked`, or `Deferred` until evidence changes them. Pr
 - **Next action:** Select and enable server input validation, define client response schemas, and add negative tests.
 - **Dependencies:** API error contract and security review.
 
-### READINESS-003 [Critical] DATA-001/DATA-002 — Establish schema truth and migrations
+### READINESS-003 [Critical] DATA-001/DATA-002 — Reconcile schema and establish migrations
 
-- **Status:** Blocked until deployment access/decision is available
+- **Status:** Planned
 - **Affected area:** Turso deployment, `database/`, `backend/src/modules/common/database/`
-- **Evidence:** Source schema intent exists; live schema and reproducible migrations do not.
+- **Evidence:** The current Turso export is recorded in `database/schema/schema.sql`; repository code still references absent `MeetAttendee`/`MeetGame` tables, and the deployed `Game` table has no `title` column even though the application passes one. No migration runner exists.
 - **Risk:** Destructive drift, unrepeatable environments, and unsafe session-domain changes.
-- **Next action:** Export/inspect the deployed schema, publish a drift report, then add numbered migrations.
-- **Dependencies:** Authorized access to the deployed Turso schema and owner for migration rollout.
+- **Next action:** Fix or retire stale SQL paths, record the drift report, then add numbered migrations from the confirmed baseline.
+- **Dependencies:** Product decision on whether legacy meeting paths are retired or migrated; no deployment access required for the initial reconciliation.
 
 ### READINESS-004 [Critical] DEP-001/DEP-007/CI-003 — Make installation reproducible
 
@@ -120,7 +120,7 @@ Statuses are `Planned`, `Blocked`, or `Deferred` until evidence changes them. Pr
 
 ## Known unknowns
 
-- Deployed Turso schema, migration history, backup schedule, and database owner.
+- Migration history, backup schedule, and database owner. The deployed schema baseline is owner-confirmed for this work, though not independently queried in this session.
 - Vercel project settings, frontend hosting, domain/DNS ownership, production environment provisioning, and rollback path.
 - Whether Upstash Redis is required in production or intended to remain optional.
 - Supported Node/package-manager versions beyond the observed local runtime.

@@ -14,7 +14,7 @@ Known examples:
 
 Relevant areas:
 
-- `database/schema/documented-schema.sql`
+- `database/schema/schema.sql` (current Turso export)
 - `backend/src/modules/common/database/database.service.ts`
 - `backend/src/modules/features/play/play.service.ts`
 - meeting-related frontend pages and services.
@@ -89,8 +89,8 @@ Use separate semantics for:
 
 ## Migration plan
 
-1. Export and inspect the real deployed Turso schema.
-2. Compare it with the documented schema and all SQL queries.
+1. Treat the owner-confirmed documented schema as the current deployed baseline.
+2. Compare it with all SQL queries and publish a code/schema drift report.
 3. Decide the canonical names and compatibility strategy.
 4. Add a migration runner and numbered migrations.
 5. Add constraints, foreign keys, uniqueness rules, and indexes deliberately.

@@ -390,9 +390,9 @@ compliance:
 
     - id: DATA-001
       status: partial
-      evidence: database/schema/documented-schema.sql and backend schemas describe a model; deployed Turso schema is explicitly a TODO
+      evidence: database/schema/schema.sql is the current Turso export; code still references absent MeetAttendee/MeetGame and does not persist the application title in the deployed Game table
       priority: critical
-      next_action: Compare live schema with code and publish a drift report.
+      next_action: Publish and resolve the repository code/schema drift report against the owner-confirmed baseline.
     - id: DATA-002
       status: gap
       evidence: no migrations directory or migration runner; docs describe manual Turso dump/drop/restore commands
@@ -642,5 +642,5 @@ deferred_work:
     next_action: Execute EQ-001 before adding CI.
   - id: DATA-MIGRATION-001
     status: deferred
-    reason: No live Turso schema inspection or migration design was authorized in this session.
+    reason: Migration design and live deployment operations remain outside this documentation update; the deployed baseline is owner-confirmed, while repository drift is now actionable without deployment access.
     next_action: Execute DATA-001, then DATA-002, before changing the session domain.

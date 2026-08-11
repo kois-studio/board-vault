@@ -12,7 +12,7 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 | SEC-002 | TODO | Security | Audit and enforce object-level authorization across user, group, invitation, notification, meeting, and collection APIs. | SEC-001 recommended |
 | SEC-003 | TODO | Security | Derive admin reviewer identity from JWT and add admin authorization tests. | SEC-002 |
 | SEC-004 | TODO | Security | Enable strict validation, rate limits, safe CORS, token expiry, and generic reset responses. | None |
-| DATA-001 | TODO | Data model | Inspect deployed Turso schema and produce a code/schema drift report. | None |
+| DATA-001 | TODO | Data model | Reconcile repository SQL and services against the owner-confirmed deployed schema and produce a code/schema drift report. | None |
 | DATA-002 | TODO | Data model | Add numbered migrations and make the schema reproducible from empty state. | DATA-001 |
 | DATA-003 | TODO | Data model | Choose and implement the canonical session schema, including attendance and planned/played games. | DATA-001 |
 | DATA-004 | TODO | Data model | Add transaction boundaries for group, session, proposal, and collection mutations. | DATA-002, DATA-003 |
