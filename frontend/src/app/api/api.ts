@@ -44,6 +44,15 @@ export class Api {
         return this.http.get<{ isValid: true; userId: number; isAdmin: boolean }>(`${this.url}/auth/status`)
     }
 
+    clerkAuthStatus() {
+        return this.http.get<{
+            isValid: true
+            userId: number
+            isAdmin: boolean
+            clerkUserId: string
+        }>(`${this.url}/auth/clerk/status`)
+    }
+
     login(email: string, password: string) {
         return this.http.post<{ access_token: string }>(`${this.url}/auth/login`, { email, password })
     }

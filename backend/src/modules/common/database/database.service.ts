@@ -98,6 +98,20 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    getUserByClerkId(clerkUserId: string) {
+        return this._tursoExecute({
+            sql: 'SELECT * FROM Account WHERE clerkUserId = ?',
+            args: [clerkUserId],
+        })
+    }
+
+    linkUserToClerkId(accountId: number, clerkUserId: string) {
+        return this._tursoExecute({
+            sql: 'UPDATE Account SET clerkUserId = ? WHERE id = ? AND clerkUserId IS NULL',
+            args: [clerkUserId, accountId],
+        })
+    }
+
     getUserByPasswordResetToken(token: string) {
         return this._tursoExecute({
             sql: 'SELECT * FROM Account WHERE password_reset_token = ?',

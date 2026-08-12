@@ -2,12 +2,14 @@ import { Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { JwtModule } from '@nestjs/jwt'
 
+import { ClerkAuthGuard } from '../../../common/guards/clerk-auth.guard'
 import { UsersModule } from '../../core/users/users.module'
 import { DatabaseService } from '../database/database.service'
 import { EmailModule } from '../email/email.module'
 
 import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
+import { ClerkIdentityService } from './clerk-identity.service'
 import { JwtStrategy } from './jwt-strategy'
 
 @Module({
@@ -25,6 +27,6 @@ import { JwtStrategy } from './jwt-strategy'
         ConfigModule,
     ],
     controllers: [AuthController],
-    providers: [AuthService, JwtStrategy, DatabaseService],
+    providers: [AuthService, ClerkIdentityService, JwtStrategy, ClerkAuthGuard, DatabaseService],
 })
 export class AuthModule {}
