@@ -10,8 +10,8 @@ project:
   name: board-vault
   lifecycle: existing
   maturity: active foundation; pre-launch
-  audited_commit: 23f2e40
-  audit_scope: documentation, staged Clerk authentication integration, SEC-001 profile-update boundary, and the first SEC-002 user-scoped ownership slice; broader object authorization remains incomplete
+  audited_commit: 99228ac
+  audit_scope: documentation, staged Clerk authentication integration, SEC-001 profile-update boundary, and SEC-002 user-scoped plus reviewed group ownership slices; invitation/membership identity and broader object authorization remain incomplete
 
 standards:
   - documentation
