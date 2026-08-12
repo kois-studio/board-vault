@@ -1,9 +1,16 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Req, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
+import { UserInGroupGuard } from '../../../common/guards/user-in-group.guard'
 import { SuccessDto } from '../../../common/types/auth.type'
-import { CreateInvitationBody, CreateInvitationByUsernameBody, InvitationDto } from '../../../common/types/invitation.type'
+import {
+    CreateInvitationBody,
+    CreateInvitationByUsernameBody,
+    CreateInvitationByUsernameRequestBody,
+    CreateInvitationRequestBody,
+    InvitationDto,
+} from '../../../common/types/invitation.type'
 import { UserGetDto } from '../../../common/types/user.type'
 
 import { InvitationsService } from './invitations.service'
@@ -22,11 +29,15 @@ export class InvitationsController {
         return this.invitationsService.getInvitations()
     }
 
+    @UseGuards(UserInGroupGuard)
     @Post('/')
     @ApiOperation({ summary: 'Create a new invitation', deprecated: true })
     @ApiResponse({ status: 201, type: SuccessDto, description: 'The invitation has been succesfully created' })
-    async createInvitation(@Body() invitationDto: CreateInvitationBody) {
-        return this.invitationsService.createInvitation(invitationDto)
+    async createInvitation(@Req() request: { user: { userId: number } }, @Body() invitationDto: CreateInvitationRequestBody) {
+        return this.invitationsService.createInvitation({
+            ...invitationDto,
+            fromAccountId: request.user.userId,
+        } as CreateInvitationBody)
     }
 
     @Get('/:invitationId')
@@ -37,12 +48,19 @@ export class InvitationsController {
         return this.invitationsService.getInvitationById(invitationId)
     }
 
+    @UseGuards(UserInGroupGuard)
     @Post('/byUsername')
     @ApiOperation({ summary: 'Create a new invitation' })
     @ApiResponse({ status: 201, type: UserGetDto, description: 'The invitation has been succesfully created' })
     @ApiResponse({ status: 404, description: 'User not found' })
-    async createInvitationByUsername(@Body() invitationDto: CreateInvitationByUsernameBody) {
-        return this.invitationsService.createInvitationByUsername(invitationDto)
+    async createInvitationByUsername(
+        @Req() request: { user: { userId: number } },
+        @Body() invitationDto: CreateInvitationByUsernameRequestBody,
+    ) {
+        return this.invitationsService.createInvitationByUsername({
+            ...invitationDto,
+            fromAccountId: request.user.userId,
+        } as CreateInvitationByUsernameBody)
     }
 
     @Delete('/:invitationId')

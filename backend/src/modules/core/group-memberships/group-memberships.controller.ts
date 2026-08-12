@@ -1,8 +1,13 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Req, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
-import { CreateGroupMembershipBody, GroupMembershipDto } from '../../../common/types/group-membership.type'
+import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
+import {
+    CreateGroupMembershipBody,
+    CreateGroupMembershipRequestBody,
+    GroupMembershipDto,
+} from '../../../common/types/group-membership.type'
 
 import { GroupMembershipsService } from './group-memberships.service'
 
@@ -23,10 +28,14 @@ export class GroupMembershipsController {
     @Post('/')
     @ApiOperation({ summary: 'Create a new membership', deprecated: true })
     @ApiResponse({ status: 201, description: 'The membership has been succesfully created' })
-    async createGroupMembership(@Body() membershipDto: CreateGroupMembershipBody) {
-        return this.groupMembershipsService.createGroupMembership(membershipDto)
+    async createGroupMembership(@Req() request: { user: { userId: number } }, @Body() membershipDto: CreateGroupMembershipRequestBody) {
+        return this.groupMembershipsService.createGroupMembership({
+            ...membershipDto,
+            accountId: request.user.userId,
+        } as CreateGroupMembershipBody)
     }
 
+    @UseGuards(UserOwnershipGuard)
     @Get('/:accountId/:groupId')
     @ApiOperation({ summary: 'Get membership by id', deprecated: true })
     @ApiResponse({ status: 200, type: GroupMembershipDto, description: 'Membership found' })
@@ -35,6 +44,7 @@ export class GroupMembershipsController {
         return this.groupMembershipsService.getGroupMembershipById(accountId, groupId)
     }
 
+    @UseGuards(UserOwnershipGuard)
     @Delete('/:accountId/:groupId')
     @ApiOperation({ summary: 'Delete a membership by Id' })
     @ApiResponse({ status: 200, description: 'The membership has been succesfully deleted' })

@@ -18,3 +18,4 @@ export class GroupMembershipDto {
  * POST requests --> no db generated props
  */
 export class CreateGroupMembershipBody extends OmitType(GroupMembershipDto, ['joinedAt']) {}
+export class CreateGroupMembershipRequestBody extends OmitType(CreateGroupMembershipBody, ['accountId']) {}

@@ -120,8 +120,8 @@ export class Api {
         return this.http.delete<{ success: true }>(`${this.url}/invitations/${invitationId}`)
     }
 
-    createInvitation(groupId: number, fromAccountId: number, username: string) {
-        return this.http.post<UserType>(`${this.url}/invitations/byUsername`, { groupId, fromAccountId, username })
+    createInvitation(groupId: number, username: string) {
+        return this.http.post<UserType>(`${this.url}/invitations/byUsername`, { groupId, username })
     }
 
     // #region notifications

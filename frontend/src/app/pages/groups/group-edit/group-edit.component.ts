@@ -38,7 +38,7 @@ export class GroupEditComponent {
             this.invitationsGroupIndex = this.dataService.invitationsGroupIndex()
 
             const groupId = Number.parseInt(this.route.snapshot.paramMap.get('groupId') || '')
-            const groupData = this.userGroups.find((group) => group.id === groupId)
+            const groupData = this.userGroups.find(group => group.id === groupId)
 
             if (Number.isNaN(groupId) || !this.userData || !groupData) {
                 return
@@ -61,11 +61,11 @@ export class GroupEditComponent {
         if (!this.groupData || !this.usernameToInvite.value) {
             return true
         }
-        const usernames = this.groupData.members.map((member) => member.username)
+        const usernames = this.groupData.members.map(member => member.username)
 
         const isUserAlreadyInGroup = usernames.includes(this.usernameToInvite.value)
         const isUserAlreadyInvited = this.invitationsGroupIndex[this.groupData.id].some(
-            (invitation) => invitation.toAccount.username === this.usernameToInvite.value,
+            invitation => invitation.toAccount.username === this.usernameToInvite.value,
         )
         return this.isLoading || this.usernameToInvite.invalid || isUserAlreadyInGroup || isUserAlreadyInvited
     }
@@ -89,7 +89,7 @@ export class GroupEditComponent {
 
     markAsToRemove(accountId: number) {
         if (this.membersToRemoveFromGroup.includes(accountId)) {
-            this.membersToRemoveFromGroup = this.membersToRemoveFromGroup.filter((id) => id !== accountId)
+            this.membersToRemoveFromGroup = this.membersToRemoveFromGroup.filter(id => id !== accountId)
         } else {
             this.membersToRemoveFromGroup.push(accountId)
         }
@@ -99,7 +99,7 @@ export class GroupEditComponent {
         if (!this.groupData || !this.userData || !this.usernameToInvite.value) return
         this.isLoading = true
 
-        this.dataService.addInvitedToGroup(this.groupData.id, this.userData.id, this.usernameToInvite.value)
+        this.dataService.addInvitedToGroup(this.groupData.id, this.usernameToInvite.value)
 
         // clear input
         this.usernameToInvite.reset()
@@ -113,7 +113,7 @@ export class GroupEditComponent {
         for (const accountId of this.membersToRemoveFromGroup) {
             // 1. its being removed from invited zone
             const invitations = this.invitationsGroupIndex[this.groupData.id]
-            const invitation = invitations.find((invitation) => invitation.toAccount.id === accountId)
+            const invitation = invitations.find(invitation => invitation.toAccount.id === accountId)
             if (invitation) {
                 this.dataService.removeInvitedFromGroup(invitation.id)
                 continue
