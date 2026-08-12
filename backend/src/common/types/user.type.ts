@@ -79,21 +79,28 @@ export class CreateUserBody extends OmitType(UserCompleteDto, [
 ]) {}
 
 /**
- * PUT requests --> editable fields
+ * PUT /users/:userId requests --> safe profile fields only
  */
-export class UpdateUserBody extends PartialType(
-    PickType(UserCompleteDto, [
-        'email',
-        'username',
-        'password',
-        'displayName',
-        'avatar',
-        'isAdmin',
-        'email_verified',
-        'verification_token',
-        'password_reset_token',
-    ]),
-) {}
+export class UpdateUserBody extends PartialType(PickType(UserCompleteDto, ['username', 'displayName', 'avatar'])) {}
+
+/**
+ * Internal account-state updates used by authentication workflows.
+ * This type must never be used as an HTTP request body.
+ */
+export type UpdateUserRecord = Partial<
+    Pick<
+        UserCompleteDto,
+        | 'email'
+        | 'username'
+        | 'password'
+        | 'displayName'
+        | 'avatar'
+        | 'isAdmin'
+        | 'email_verified'
+        | 'verification_token'
+        | 'password_reset_token'
+    >
+>
 
 /**
  * POST /auth/register

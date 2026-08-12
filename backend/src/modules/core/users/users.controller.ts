@@ -43,7 +43,13 @@ export class UsersController {
     @ApiResponse({ status: 200, description: 'The user has been successfully updated.' })
     @ApiResponse({ status: 404, description: 'User not found.' })
     updateUser(@Param('userId', ParseIntPipe) userId: number, @Body() partialUserDto: UpdateUserBody) {
-        return this.usersService.updateUser(userId, partialUserDto)
+        const { username, displayName, avatar } = partialUserDto ?? {}
+
+        return this.usersService.updateUser(userId, {
+            ...(username !== undefined ? { username } : {}),
+            ...(displayName !== undefined ? { displayName } : {}),
+            ...(avatar !== undefined ? { avatar } : {}),
+        })
     }
 
     @UseGuards(UserOwnershipGuard)
