@@ -20,6 +20,7 @@ import { ProfileService } from './profile.service'
 export class ProfileController {
     constructor(private readonly profileService: ProfileService) {}
 
+    @UseGuards(UserOwnershipGuard)
     @Get('/users/:userId')
     @ApiOperation({ summary: 'Get user by id', deprecated: false })
     @ApiResponse({ status: 200, type: UserGetDto, description: 'User found' })
@@ -28,6 +29,7 @@ export class ProfileController {
         return this.profileService.getUserById(userId)
     }
 
+    @UseGuards(UserOwnershipGuard)
     @Get('/users/:userId/notifications')
     @ApiOperation({ summary: 'Get notifications by user id', deprecated: false })
     @ApiResponse({ status: 200, type: NotificationDto, description: 'Notifications found' })
@@ -36,6 +38,7 @@ export class ProfileController {
         return this.profileService.getNotificationsByAccountId(userId)
     }
 
+    @UseGuards(UserOwnershipGuard)
     @Get('/users/:userId/invitations')
     @ApiOperation({ summary: 'Get invitations received', deprecated: false })
     @ApiResponse({ status: 200, type: [InvitationWithExtraData] })

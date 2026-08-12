@@ -9,7 +9,7 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 | ID | Status | Workstream | Task | Dependencies |
 |---|---|---|---|---|
 | SEC-001 | REVIEW | Security | Remove privileged fields from public user updates and add privilege-boundary tests. | None |
-| SEC-002 | TODO | Security | Audit and enforce object-level authorization across user, group, invitation, notification, meeting, and collection APIs. | SEC-001 recommended |
+| SEC-002 | REVIEW | Security | Audit and enforce object-level authorization across user, group, invitation, notification, meeting, and collection APIs. | SEC-001 recommended |
 | SEC-003 | TODO | Security | Derive admin reviewer identity from JWT and add admin authorization tests. | SEC-002 |
 | SEC-004 | TODO | Security | Enable strict validation, rate limits, safe CORS, token expiry, and generic reset responses. | None |
 | DATA-001 | TODO | Data model | Reconcile repository SQL and services against the owner-confirmed deployed schema and produce a code/schema drift report. | None |
@@ -69,6 +69,22 @@ Review: SEC-001
 Changed: Public user profile updates now expose only `username`, `displayName`, and `avatar`; authentication account-state updates use a separate internal database path.
 Verified: `cd backend && npm test -- --runInBand`; `cd backend && npm run build`; Prettier check for affected files.
 Known follow-ups: SEC-002 must audit object-level authorization across the remaining user, group, invitation, notification, meeting, collection, and admin routes.
+
+Most recent claim:
+
+```text
+Task: SEC-002
+Owner: Codex
+Claimed: 2026-08-13
+Branch/worktree: main / shared workspace
+Scope: user-scoped read routes and deprecated user lookup routes; broader group/object policy remains for follow-up review
+```
+
+Review: SEC-002
+
+Changed: Added `UserOwnershipGuard` to user-scoped profile, collection, history, dashboard, and deprecated user lookup reads that were accepting arbitrary user IDs.
+Verified: `cd backend && npm test -- --runInBand` (5 tests); `cd backend && npm run build`; Prettier check for affected files.
+Known follow-ups: Audit group-owner/member authorization and invitation, notification, meeting, meet-account-game, and remaining legacy collection mutations.
 
 When claiming a task, add:
 

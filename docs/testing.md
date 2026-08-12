@@ -2,10 +2,10 @@
 
 ## Inventory at bootstrap
 
-- Backend: one `backend/test/app.e2e-spec.ts` plus the focused `backend/src/modules/core/users/users.service.spec.ts` privilege-boundary suite.
+- Backend: one stale `backend/test/app.e2e-spec.ts` plus focused profile-update and ownership-boundary suites under `backend/src/`.
 - Frontend: one `frontend/src/app/app.component.spec.ts`, a generated app-creation smoke test.
 - No browser end-to-end framework or CI workflow was found.
-- No contract, migration, authorization, persistence, provider-adapter, accessibility, or responsive tests were found.
+- No broad contract, migration, persistence, provider-adapter, accessibility, or responsive tests were found; focused authorization boundary tests now exist.
 - A manual migration verification was run against a restored SQLite backup copy; it is not an automated migration suite.
 
 ## Verified baseline
@@ -13,7 +13,7 @@
 | Check | Result | Interpretation |
 |---|---|---|
 | `cd backend && npm run build` | Pass | TypeScript/Nest build currently compiles. |
-| `cd backend && npm test -- --runInBand` | Pass | Two focused HTTP-boundary tests prove privileged fields are not forwarded by the public profile-update route and privileged-only input is rejected; broader coverage remains absent. |
+| `cd backend && npm test -- --runInBand` | Pass | Five focused tests cover profile-update filtering plus ownership-guard denial and route wiring; broader authorization coverage remains absent. |
 | `cd backend && npm run test:e2e -- --runInBand` | Fail | Test setup throws because `RESEND_API_KEY` is missing; the test itself expects a stale `/` Hello World route. |
 | `cd backend && npx eslint "{src,apps,libs,test}/**/*.ts"` | Fail | 17 errors and 3 warnings across schemas, database, collection, play, and profile code. |
 | `cd frontend && npm run build` | Pass with warnings | Bundle budget, Sass deprecation, and selector warnings remain. |
