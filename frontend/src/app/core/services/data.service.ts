@@ -140,7 +140,7 @@ export class DataService {
 
     private _getUserGames(userId: number) {
         this.api.getUserGames(userId).subscribe({
-            next: (games) => {
+            next: games => {
                 this.userGames.set(games)
             },
             error: () => {
@@ -154,7 +154,7 @@ export class DataService {
 
     private _getUserInvitations(userId: number) {
         this.api.getUserInvitations(userId).subscribe({
-            next: (invitations) => {
+            next: invitations => {
                 this.userInvitations.set(invitations)
             },
             error: () => {
@@ -165,7 +165,7 @@ export class DataService {
 
     private _getUserNotifications(userId: number) {
         this.api.getUserNotifications(userId).subscribe({
-            next: (notifications) => {
+            next: notifications => {
                 this.userNotifications.set(notifications)
             },
             error: () => {
@@ -176,7 +176,7 @@ export class DataService {
 
     private _getUserReviews(accountId: number) {
         this.api.getUserReviews(accountId).subscribe({
-            next: (reviews) => {
+            next: reviews => {
                 this.userReviews.set(reviews)
             },
             error: () => {
@@ -190,13 +190,13 @@ export class DataService {
 
     private _getUserGroups(accountId: number) {
         this.api.getUserGroups(accountId).subscribe({
-            next: (groups) => {
+            next: groups => {
                 this.userGroups.set(groups)
 
                 for (const group of groups) {
                     this.api.getGroupInvitations(group.id).subscribe({
-                        next: (invitations) => {
-                            this.invitationsGroupIndex.update((index) => ({
+                        next: invitations => {
+                            this.invitationsGroupIndex.update(index => ({
                                 ...index,
                                 [group.id]: invitations,
                             }))
@@ -218,7 +218,7 @@ export class DataService {
 
     private _getUserMeets(userId: number) {
         this.api.getUserMeets(userId).subscribe({
-            next: (meets) => {
+            next: meets => {
                 this.userMeets.set(meets)
             },
             error: () => {
@@ -229,7 +229,7 @@ export class DataService {
 
     private _getUserHistory(userId: number) {
         this.api.getUserGamesHistory(userId).subscribe({
-            next: (history) => {
+            next: history => {
                 this.userHistory.set(history)
             },
             error: () => {
@@ -243,7 +243,7 @@ export class DataService {
 
     private _getUserWishlist(userId: number) {
         this.api.getUserWishlist(userId).subscribe({
-            next: (wishlist) => {
+            next: wishlist => {
                 this.userWishlist.set(wishlist)
             },
             error: () => {
@@ -257,7 +257,7 @@ export class DataService {
 
     private _getUserCollectionActivity(userId: number) {
         this.api.getUserCollectionActivity(userId).subscribe({
-            next: (collectionActivity) => {
+            next: collectionActivity => {
                 this.userCollectionActivity.set(collectionActivity)
             },
             error: () => {
@@ -271,7 +271,7 @@ export class DataService {
 
     private _getUserStats(userId: number) {
         this.api.getUserStats(userId).subscribe({
-            next: (stats) => {
+            next: stats => {
                 this.userStats.set(stats)
             },
             error: () => {
@@ -299,14 +299,14 @@ export class DataService {
         // 1.
         this.api
             .updateUser(currentUser.id, requestBody)
-            .pipe(concatMap((res) => this.api.getUserById(currentUser.id)))
+            .pipe(concatMap(res => this.api.getUserById(currentUser.id)))
             .subscribe({
-                next: (updatedUser) => {
+                next: updatedUser => {
                     // 2.
                     this.currentUser.set(updatedUser)
-                    this.userGroups.update((groups) =>
-                        groups.map((group) => {
-                            const userIndex = group.members.findIndex((member) => member.id === currentUser.id)
+                    this.userGroups.update(groups =>
+                        groups.map(group => {
+                            const userIndex = group.members.findIndex(member => member.id === currentUser.id)
                             if (userIndex === -1) return group
 
                             // update the user data inside that group
@@ -343,12 +343,12 @@ export class DataService {
 
         // 1.
         this.api.removeMember(currentUser.id, groupId, memberId).subscribe({
-            next: (res) => {
+            next: res => {
                 // 2.
-                this.userGroups.update((groups) =>
-                    groups.map((group) => {
+                this.userGroups.update(groups =>
+                    groups.map(group => {
                         if (group.id === groupId) {
-                            group.members = group.members.filter((member) => member.id !== memberId)
+                            group.members = group.members.filter(member => member.id !== memberId)
                         }
                         return group
                     }),
@@ -366,12 +366,12 @@ export class DataService {
     public removeInvitedFromGroup(invitationId: number) {
         // 1.
         this.api.deleteInvitation(invitationId).subscribe({
-            next: (res) => {
+            next: res => {
                 // 2.
-                this.invitationsGroupIndex.update((index) => {
+                this.invitationsGroupIndex.update(index => {
                     const groupIds = Object.keys(index).map(Number)
                     for (const groupId of groupIds) {
-                        index[groupId] = index[groupId].filter((invitation) => invitation.id !== invitationId)
+                        index[groupId] = index[groupId].filter(invitation => invitation.id !== invitationId)
                     }
                     return index
                 })
@@ -385,14 +385,14 @@ export class DataService {
         })
     }
 
-    public addInvitedToGroup(groupId: number, userId: number, invitedUsername: string) {
+    public addInvitedToGroup(groupId: number, invitedUsername: string) {
         // 1.
-        this.api.createInvitation(groupId, userId, invitedUsername).subscribe({
-            next: (res) => {
+        this.api.createInvitation(groupId, invitedUsername).subscribe({
+            next: res => {
                 // 2.
                 this.api.getGroupInvitations(groupId).subscribe({
-                    next: (invitations) => {
-                        this.invitationsGroupIndex.update((index) => ({
+                    next: invitations => {
+                        this.invitationsGroupIndex.update(index => ({
                             ...index,
                             [groupId]: invitations,
                         }))
@@ -405,7 +405,7 @@ export class DataService {
                     },
                 })
             },
-            error: (error) => {
+            error: error => {
                 if (error.status === 404) {
                     return this.toastService.error('User not found')
                 }
@@ -419,8 +419,8 @@ export class DataService {
     public updateUserGames(userGameIds: Array<number>, gameIdsToToggle: Array<number>) {
         const currentUser = this.currentUser()
         if (!currentUser) return
-        const gamesToAdd = gameIdsToToggle.filter((id) => !userGameIds.includes(id))
-        const gamesToRemove = userGameIds.filter((id) => gameIdsToToggle.includes(id))
+        const gamesToAdd = gameIdsToToggle.filter(id => !userGameIds.includes(id))
+        const gamesToRemove = userGameIds.filter(id => gameIdsToToggle.includes(id))
 
         // 1.
         this.api
@@ -428,14 +428,12 @@ export class DataService {
             .pipe(
                 concatMap(() =>
                     // 2.
-                    this.api
-                        .getUserGames(currentUser.id)
-                        .pipe(
-                            catchError(() => {
-                                this.toastService.error('Error fetching updated games')
-                                return of([]) // Return an empty array if fetching fails
-                            }),
-                        ),
+                    this.api.getUserGames(currentUser.id).pipe(
+                        catchError(() => {
+                            this.toastService.error('Error fetching updated games')
+                            return of([]) // Return an empty array if fetching fails
+                        }),
+                    ),
                 ),
                 catchError(() => {
                     this.toastService.error('Error updating games')
@@ -443,12 +441,12 @@ export class DataService {
                 }),
             )
             .subscribe({
-                next: (games) => {
+                next: games => {
                     if (games) {
                         this.userGames.set(games)
-                        this.userGroups.update((groups) =>
-                            groups.map((group) => {
-                                const userIndex = group.members.findIndex((member) => member.id === currentUser.id)
+                        this.userGroups.update(groups =>
+                            groups.map(group => {
+                                const userIndex = group.members.findIndex(member => member.id === currentUser.id)
                                 if (userIndex === -1) return group
 
                                 // TODO: fix this
@@ -471,7 +469,7 @@ export class DataService {
 
         // 1.
         this.api.createGroup(currentUser.id, groupName).subscribe({
-            next: (res) => {
+            next: res => {
                 // 2.
                 this.userGroups.set([])
                 this._getUserGroups(currentUser.id)
@@ -479,7 +477,7 @@ export class DataService {
                 // 3.
                 this.toastService.success(`You have created the group ${groupName}`)
             },
-            error: (error) => {
+            error: error => {
                 if (error.status === 404) {
                     return this.toastService.error('User not found')
                 }
@@ -496,14 +494,14 @@ export class DataService {
 
         // 1.
         this.api.leaveGroup(currentUser.id, groupId).subscribe({
-            next: (res) => {
+            next: res => {
                 // 2.
-                this.userGroups.update((groups) => groups.filter((group) => group.id !== groupId))
+                this.userGroups.update(groups => groups.filter(group => group.id !== groupId))
 
                 // 3.
                 this.toastService.success('You have left the group')
             },
-            error: (error) => {
+            error: error => {
                 if (error.status === 404) {
                     return this.toastService.error('User or Group not found')
                 }
@@ -523,14 +521,14 @@ export class DataService {
 
         // 1.
         this.api.deleteGroup(currentUser.id, groupId).subscribe({
-            next: (res) => {
+            next: res => {
                 // 2.
-                this.userGroups.update((groups) => groups.filter((group) => group.id !== groupId))
+                this.userGroups.update(groups => groups.filter(group => group.id !== groupId))
 
                 // 3.
                 this.toastService.success('You have deleted the group')
             },
-            error: (error) => {
+            error: error => {
                 if (error.status === 404) {
                     return this.toastService.error('Group not found')
                 }
@@ -547,9 +545,9 @@ export class DataService {
 
         // 1.
         this.api.acceptInvitation(currentUser.id, invitationId).subscribe({
-            next: (res) => {
+            next: res => {
                 // 2.
-                this.userInvitations.update((invitations) => invitations.filter((invitation) => invitation.id !== invitationId))
+                this.userInvitations.update(invitations => invitations.filter(invitation => invitation.id !== invitationId))
 
                 // refresh groups (you have a new one now)
                 // TODO: smoother way to update the groups (don't reload everything)
@@ -570,14 +568,14 @@ export class DataService {
     public deleteNotification(notificationId: number) {
         // 1.
         this.api.deleteNotification(notificationId).subscribe({
-            next: (res) => {
+            next: res => {
                 // 2.
-                this.userNotifications.update((notifications) => notifications.filter((notification) => notification.id !== notificationId))
+                this.userNotifications.update(notifications => notifications.filter(notification => notification.id !== notificationId))
 
                 // 3.
                 this.toastService.success('You have deleted the notification')
             },
-            error: (error) => {
+            error: error => {
                 if (error.status === 404) {
                     return this.toastService.error('Notification not found')
                 }
@@ -588,16 +586,16 @@ export class DataService {
 
     public updateNotification(notificationId: number) {
         this.api.updateNotification(notificationId, { isRead: true }).subscribe({
-            next: (res) => {
-                this.userNotifications.update((notifications) =>
-                    notifications.map((notification) =>
+            next: res => {
+                this.userNotifications.update(notifications =>
+                    notifications.map(notification =>
                         notification.id === notificationId ? { ...notification, isRead: true } : notification,
                     ),
                 )
 
                 this.toastService.success('Notification marked as read')
             },
-            error: (error) => {
+            error: error => {
                 if (error.status === 404) {
                     return this.toastService.error('Notification not found')
                 }
@@ -611,7 +609,7 @@ export class DataService {
     public saveGameReview(accountId: number, gameId: number, review: number) {
         // 1.
         this.api.saveGameReview(accountId, gameId, review).subscribe({
-            next: (res) => {
+            next: res => {
                 // TODO: res should return GameReviewType so we just append it to the array later
                 // 2.
                 this.userReviews.set([])
@@ -620,7 +618,7 @@ export class DataService {
                 // 3.
                 this.toastService.success('Review saved')
             },
-            error: (error) => {
+            error: error => {
                 this.toastService.error('Error saving review')
             },
         })
@@ -647,7 +645,7 @@ export class DataService {
     public createMeeting(accountId: number, groupId: number) {
         // 1.
         this.api.createMeeting(accountId, groupId).subscribe({
-            next: (res) => {
+            next: res => {
                 // 2.
                 this.userMeets.set([])
                 this._getUserMeets(groupId)
@@ -664,8 +662,8 @@ export class DataService {
 
     public createMeetAttendee(meetId: number, accountId: number) {
         this.api.createMeetAttendee(meetId, accountId).subscribe({
-            next: (res) => {},
-            error: (error) => {
+            next: res => {},
+            error: error => {
                 if (error.status === 404) {
                     return this.toastService.error('MeetAttendee not found')
                 }
@@ -676,8 +674,8 @@ export class DataService {
 
     public deleteMeetAttendee(meetId: number, accountId: number) {
         this.api.deleteMeetAttendee(meetId, accountId).subscribe({
-            next: (res) => {},
-            error: (error) => {
+            next: res => {},
+            error: error => {
                 if (error.status === 404) {
                     return this.toastService.error('MeetAttendee not found')
                 }
@@ -688,8 +686,8 @@ export class DataService {
 
     public createMeetAccountGame(accountId: number, meetId: number, gameId: number) {
         this.api.createMeetAccountGame(accountId, meetId, gameId).subscribe({
-            next: (res) => {},
-            error: (error) => {
+            next: res => {},
+            error: error => {
                 if (error.status === 404) {
                     return this.toastService.error('MeetGame not found')
                 }
@@ -700,8 +698,8 @@ export class DataService {
 
     public deleteMeetAccountGame(accountId: number, meetId: number, gameId: number) {
         this.api.deleteMeetAccountGame(accountId, meetId, gameId).subscribe({
-            next: (res) => {},
-            error: (error) => {
+            next: res => {},
+            error: error => {
                 if (error.status === 404) {
                     return this.toastService.error('MeetGame not found')
                 }
@@ -712,7 +710,7 @@ export class DataService {
 
     private _getUserProposals(userId: number) {
         this.api.getUserProposals(userId).subscribe({
-            next: (proposals) => {
+            next: proposals => {
                 this.userProposals.set(proposals)
             },
             error: () => {
@@ -723,7 +721,7 @@ export class DataService {
 
     private _getUserProposalStats(userId: number) {
         this.api.getUserProposalStats(userId).subscribe({
-            next: (stats) => {
+            next: stats => {
                 this.userProposalStats.set(stats)
             },
             error: () => {

@@ -28,7 +28,7 @@ The backend is authoritative for authentication, authorization, data validation,
 
 ## Material findings
 
-- Authorization is inconsistent. User-scoped reads and the reviewed legacy group routes now enforce ownership or membership checks, but all-group listings, client-supplied invitation/membership identities, and several legacy invitation, notification, meeting, and collection mutations still need object-level authorization. This remains the P0 security backlog.
+- Authorization is inconsistent. User-scoped reads and the reviewed legacy group routes enforce ownership or membership checks, and invitation/membership creation now derives the actor from the JWT. All-group listings, invitation deletion/rejection, and several legacy notification, meeting, and collection mutations still need object-level authorization. This remains the P0 security backlog.
 - The public user profile-update route now forwards only `username`, `displayName`, and `avatar`; internal authentication workflows use a separate account-state update path. Broader object-level authorization remains unresolved.
 - Admin proposal operations contain TODOs to obtain reviewer identity from JWT rather than request data.
 - `main.ts` enables unrestricted CORS and does not configure global input validation or security headers/rate limits.

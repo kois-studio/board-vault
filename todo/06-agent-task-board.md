@@ -77,14 +77,14 @@ Task: SEC-002
 Owner: Codex
 Claimed: 2026-08-13
 Branch/worktree: main / shared workspace
-Scope: group owner/member authorization after the completed user-scoped route slice
+Scope: invitation and membership actor identity after the completed user/group ownership slices
 ```
 
 Review: SEC-002
 
-Changed: Added `UserOwnershipGuard` to user-scoped profile, collection, history, dashboard, and deprecated user lookup reads; added `GroupOwnerGuard` and membership checks to reviewed legacy group routes.
-Verified: `cd backend && npm test -- --runInBand` (8 tests); `cd backend && npm run build`; Prettier check for affected files.
-Known follow-ups: Derive invitation and membership actor identity from the verified JWT, then audit notification, meeting, meet-account-game, all-group listing, and remaining legacy collection mutations.
+Changed: Added `UserOwnershipGuard` to user-scoped reads; added `GroupOwnerGuard` and membership checks to reviewed legacy group routes; invitation and membership creation now derive actor IDs from the verified JWT, with membership checks on invitation creation.
+Verified: `cd backend && npm test -- --runInBand` (15 tests); `cd backend && npm run build`; `cd frontend && npm run build`; Prettier check for affected files.
+Known follow-ups: Authorize invitation deletion/rejection and group-join policy, then audit all-group listings, notifications, meetings, meet-account-games, and remaining legacy collection mutations.
 
 When claiming a task, add:
 
