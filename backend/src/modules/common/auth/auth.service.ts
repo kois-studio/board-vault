@@ -104,7 +104,7 @@ export class AuthService {
         }
 
         // Update the user's status to verified
-        await this.databaseService.updateUser(Number(userId), {
+        await this.databaseService.updateUserRecord(Number(userId), {
             email_verified: true,
             verification_token: null,
         })
@@ -124,7 +124,7 @@ export class AuthService {
         const resetToken = randomUUID()
 
         // Store the reset token in the database with an expiration time
-        await this.databaseService.updateUser(user.id, { password_reset_token: resetToken })
+        await this.databaseService.updateUserRecord(user.id, { password_reset_token: resetToken })
 
         // Send password reset email
         await this.emailService.sendPasswordResetEmail(email, resetToken)
@@ -143,7 +143,7 @@ export class AuthService {
             return false // Invalid or expired token
         }
 
-        await this.databaseService.updateUser(Number(userId), {
+        await this.databaseService.updateUserRecord(Number(userId), {
             password,
             password_reset_token: null,
         })
