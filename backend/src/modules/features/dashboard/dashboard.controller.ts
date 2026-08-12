@@ -28,6 +28,7 @@ export class DashboardController {
         return this.dashboardService.getStatsOfUser(userId)
     }
 
+    @UseGuards(UserOwnershipGuard)
     @Get('/users/:userId/groups')
     @ApiOperation({ summary: 'Get all groups of a user with members and games', deprecated: false })
     @ApiResponse({ status: 200, type: [GroupWithMembersAndGames], description: 'List of all groups of the user' })

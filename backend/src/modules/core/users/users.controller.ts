@@ -29,6 +29,7 @@ export class UsersController {
         return this.usersService.createUser(userDto, 'do-not-use-this-token')
     }
 
+    @UseGuards(UserOwnershipGuard)
     @Get('/:userId')
     @ApiOperation({ summary: 'Get user by id', deprecated: true })
     @ApiResponse({ status: 200, type: UserGetDto, description: 'User found' })

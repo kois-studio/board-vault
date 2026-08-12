@@ -16,6 +16,7 @@ import { HistoryRecordDto } from './play.types'
 export class PlayController {
     constructor(private readonly playService: PlayService) {}
 
+    @UseGuards(UserOwnershipGuard)
     @Get('/users/:userId/history')
     @ApiOperation({ summary: 'List of all games played by the user', deprecated: false })
     @ApiResponse({ status: 200, type: [HistoryRecordDto], description: 'List of all games played by the user' })

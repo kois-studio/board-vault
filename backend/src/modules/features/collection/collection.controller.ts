@@ -21,6 +21,7 @@ import { CollectionService } from './collection.service'
 export class CollectionController {
     constructor(private readonly collectionService: CollectionService) {}
 
+    @UseGuards(UserOwnershipGuard)
     @Get('/users/:userId/games')
     @ApiOperation({ summary: 'Get all games owned by a user', deprecated: false })
     @ApiResponse({ status: 200, type: [GameCompleteDto], description: 'List of all games owned by the user' })
@@ -77,6 +78,7 @@ export class CollectionController {
         return { isWishlisted }
     }
 
+    @UseGuards(UserOwnershipGuard)
     @Get('/users/:userId/browse/games')
     @ApiOperation({ summary: 'Browse games not owned by a user', deprecated: false })
     @ApiResponse({ status: 200, type: [BrowseGamesResultDto], description: 'List of all games not owned by the user' })
@@ -89,6 +91,7 @@ export class CollectionController {
         return this.collectionService.getGamesNotOwnedByUser(userId, search, page, limit)
     }
 
+    @UseGuards(UserOwnershipGuard)
     @Get('/users/:userId/reviews')
     @ApiOperation({ summary: 'Get all reviews of a user', deprecated: false })
     @ApiResponse({ status: 200, type: [GameReviewWithGameDataDto], description: 'List of all reviews of the user' })
@@ -108,6 +111,7 @@ export class CollectionController {
         return this.collectionService.saveGameReview(userId, gameId, gameReviewDto)
     }
 
+    @UseGuards(UserOwnershipGuard)
     @Get('/users/:userId/wishlist')
     @ApiOperation({ summary: 'Get all wishlist of a user', deprecated: false })
     @ApiResponse({ status: 200, type: [GameDto], description: 'List of all wishlist of the user' })
