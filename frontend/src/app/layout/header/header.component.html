@@ -12,8 +12,23 @@
                 @if (!isAuthenticated()) {
                     <a class="hidden lg:block" href="#features">Features</a>
                     <a class="hidden lg:block" href="#how-it-works">How it works</a>
-                    <a routerLink="/login">Log In</a>
-                    <app-button routerLink="/register">Sign Up</app-button>
+                    @if (clerkIsConfigured() && clerkIsLoaded()) {
+                        @if (!clerkIsSignedIn()) {
+                            <button type="button" class="cursor-pointer" (click)="openClerkSignIn()">Log In</button>
+                            <app-button type="button" (click)="openClerkSignUp()">Sign Up</app-button>
+                        } @else {
+                            <button type="button" class="cursor-pointer" (click)="verifyClerkLink()" [disabled]="clerkLinkInProgress()">
+                                {{ clerkLinkInProgress() ? 'Checking…' : 'Verify Clerk link' }}
+                            </button>
+                            <button type="button" class="cursor-pointer" (click)="signOutClerk()">Sign Out</button>
+                        }
+                        @if (clerkLinkStatus()) {
+                            <span class="max-w-64 text-xs text-right" role="status">{{ clerkLinkStatus() }}</span>
+                        }
+                    } @else {
+                        <a routerLink="/login">Log In</a>
+                        <app-button routerLink="/register">Sign Up</app-button>
+                    }
                 } @else {
                     @if (isCurrentUserAdmin()) {
                         <a routerLink="/admin" class="text-sm font-medium hover:underline text-red-600 dark:text-red-400" aria-label="Admin Panel">

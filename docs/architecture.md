@@ -41,7 +41,7 @@ The Angular application is organized into `api`, reusable `components`, `core` g
 
 Important route families include:
 
-- authentication: `/login`, `/register`, email verification, password reset;
+- authentication: legacy `/login`, `/register`, email verification, and password reset; development Clerk sign-in/sign-up controls and the isolated `/auth/clerk/status` bridge;
 - collection: `/collection`, games, browse, reviews, wishlist, proposal;
 - groups: `/groups`, creation, detail, edit, leave, delete;
 - play: `/play`, log session, upcoming sessions, history;

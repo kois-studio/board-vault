@@ -41,6 +41,6 @@ publishable key through its environment configuration; never place
 `CLERK_SECRET_KEY` in Angular environment files or browser code.
 
 The current implementation keeps `/auth/status` and all existing JWT guards in
-place. The isolated `/auth/clerk/status` route is the verification and
-identity-link test surface until the first account link and frontend cutover
-are explicitly recorded.
+place. The isolated `/auth/clerk/status` route is the verified
+identity-link surface while broader frontend cutover, recovery, and legacy-auth
+removal remain outstanding.

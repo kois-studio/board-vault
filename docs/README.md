@@ -1,6 +1,6 @@
 # Board Vault project documentation
 
-This directory is the canonical operating manual for AI developer agents working in Board Vault. It describes the committed repository baseline at `23ad286` as reviewed on 2026-08-12, plus the staged Clerk authentication changes currently being prepared. The application is an existing Angular/NestJS foundation, not a launch-ready implementation.
+This directory is the canonical operating manual for AI developer agents working in Board Vault. It describes the committed repository baseline as reviewed on 2026-08-13, including the staged Clerk authentication changes and the first verified account link. The application is an existing Angular/NestJS foundation, not a launch-ready implementation.
 
 ## Start here
 

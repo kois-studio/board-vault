@@ -16,7 +16,7 @@ The backend reads these variable names from the environment or ignored local `.e
 - used by cache: `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, `UPSTASH_REDIS_REST_DISABLE`.
 - used by the staged Clerk backend boundary: `CLERK_SECRET_KEY`, with optional comma-separated `CLERK_AUTHORIZED_PARTIES` for exact frontend origins.
 
-The exact local values are intentionally not documented. No `.env.example`, typed configuration schema, test environment, or production environment ownership record was found. The frontend uses committed environment files containing only public API URLs, a production boolean, the development Clerk publishable key, and the disabled `clerkAuthEnabled` rollout toggle; these values are configuration, not secrets. The Clerk secret must remain backend-only.
+The exact local values are intentionally not documented. No `.env.example`, typed configuration schema, test environment, or production environment ownership record was found. The frontend uses committed environment files containing only public API URLs, a production boolean, the development Clerk publishable key, and a development-only `clerkAuthEnabled` rollout toggle; these values are configuration, not secrets. The Clerk secret must remain backend-only.
 
 ## Build, test, and quality baseline
 
@@ -30,6 +30,7 @@ Use the exact commands and current results in [AGENTS.md](AGENTS.md) and [testin
 - frontend Biome fails with 8 findings;
 - frontend browser tests pass one generated app-creation test.
 - the Clerk identity migration passes a restored-backup SQLite check and was applied to live Turso with integrity `ok` and unchanged counts of 15 accounts, 13 meets, and 101 meet/game links.
+- a local Clerk Google sign-in completed through Board Vault; `/auth/clerk/status` verified the session and linked the matching existing live account `#1`, preserving its admin state. Live Turso now reports one linked account.
 
 ## Deployment shape
 

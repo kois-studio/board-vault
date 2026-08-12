@@ -36,7 +36,7 @@ The backend is authoritative for authentication, authorization, data validation,
 - `EmailService` interpolates values into HTML email and logs recipient/provider context; output encoding, generic reset responses, and safe failure behavior need review.
 - Runtime configuration is only partly validated. `RESEND_API_KEY` fails later in provider construction, and `CacheService` initializes `Redis.fromEnv()` before checking its disabled flag.
 - No security behavior test suite, secret scanning, vulnerability response process, or least-privilege deployment record was found.
-- Clerk production readiness is incomplete: the development instance is configured, but no production instance/authorized-party policy or identity-link test has been recorded.
+- Clerk production readiness is incomplete: the development instance and local authorized-party test are configured, and one existing-account identity link has been verified, but no production instance, production origin policy, or full migration/cutover test suite has been recorded.
 
 ## Rules for security-sensitive changes
 

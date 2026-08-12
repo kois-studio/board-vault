@@ -8,7 +8,7 @@ This directory owns database-specific artifacts and tooling for Board Vault. It 
 - [schema/schema.sql](schema/schema.sql) is the current live Turso schema snapshot verified on 2026-08-12. It is an observed snapshot, not a migration, and MUST NOT be applied directly to another environment without review.
 - Repository reconciliation has found code drift against this baseline: `DatabaseService` references `MeetAttendee` and `MeetGame`, which are absent from the schema. The deployed `Game` table also has no `title` column; the application passes a title but the current insert path does not persist it in `Game`.
 - There is currently no migration runner, disposable test database, fixture set, Docker test environment, or restore rehearsal.
-- Migration `0001-add-clerk-user-id.sql` has been applied to live Turso and verified without changing historical row counts. It adds the Clerk identity bridge; no accounts are linked yet.
+- Migration `0001-add-clerk-user-id.sql` has been applied to live Turso and verified without changing historical row counts. It adds the Clerk identity bridge; one existing account has been linked through the verified local Clerk flow.
 - The first database work remains `DATA-001`: resolve the code/schema drift report against this current baseline. The Clerk frontend cutover and migration runner remain separate work.
 
 ## Planned layout

@@ -14,8 +14,8 @@ meet/play records. Deleting `Account` rows would cascade into that history.
 
 Clerk provides the intended authentication experience and manages email,
 username, and configured social sign-in providers. The live database now has
-the additive Clerk identity column, but no account is linked yet and the
-frontend remains on the legacy path.
+the additive Clerk identity column, and one existing account has been linked
+through the staged boundary; the broader frontend remains on the legacy path.
 
 ## Decision
 
@@ -64,13 +64,14 @@ It does not replace the existing JWT guards yet.
 - Clerk development application is created and linked locally.
 - Frontend and backend SDKs are installed; the frontend adapter lazy-loads the
   Clerk bundle.
-- The frontend rollout toggle remains `clerkAuthEnabled: false` until the
-  endpoint and first-account identity link are verified.
+- The development frontend rollout toggle is `clerkAuthEnabled: true` for the
+  staged sign-in controls; the production environment remains on the legacy
+  path until cutover controls and rollback evidence are complete.
 - [Migration 0001](../../database/migrations/0001-add-clerk-user-id.sql) has
   been applied to live Turso and passed against the preserved SQLite backup
   copy, retaining 15 accounts, 13 meets, and 101 meet/game links.
-- Live Turso currently reports zero linked Clerk accounts; frontend cutover is
-  still disabled.
+- Live Turso currently reports one linked Clerk account; broader frontend
+  cutover is still disabled outside the development verification path.
 - The original backup remains outside the repository and must not be committed.
-- First-user link verification, frontend auth controls, and
-  legacy-auth removal remain rollout tasks in [docs/TODO.md](../TODO.md).
+- Broader account-link coverage, route/interceptor cutover, recovery checks,
+  and legacy-auth removal remain rollout tasks in [docs/TODO.md](../TODO.md).
