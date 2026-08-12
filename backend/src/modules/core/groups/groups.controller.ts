@@ -1,7 +1,9 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
+import { GroupOwnerGuard } from '../../../common/guards/group-owner.guard'
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
+import { UserInGroupGuard } from '../../../common/guards/user-in-group.guard'
 import { CreateGroupBody, GroupDto, UpdateGroupBody } from '../../../common/types/group.type'
 import { InvitationWithAccountsData } from '../../../common/types/invitation.type'
 
@@ -28,6 +30,7 @@ export class GroupsController {
         return this.groupsService.createGroup(groupBody)
     }
 
+    @UseGuards(UserInGroupGuard)
     @Get('/:groupId')
     @ApiOperation({ summary: 'Get group by id', deprecated: true })
     @ApiResponse({ status: 200, type: GroupDto, description: 'Group found' })
@@ -36,6 +39,7 @@ export class GroupsController {
         return this.groupsService.getGroupById(groupId)
     }
 
+    @UseGuards(GroupOwnerGuard)
     @Put('/:groupId')
     @ApiOperation({ summary: 'Update a group by ID', deprecated: true })
     @ApiResponse({ status: 200, description: 'The group has been successfully updated.' })
@@ -44,6 +48,7 @@ export class GroupsController {
         return this.groupsService.updateGroup(groupId, partialGroupDto)
     }
 
+    @UseGuards(GroupOwnerGuard)
     @Delete('/:groupId')
     @ApiOperation({ summary: 'Delete a group by Id', deprecated: true })
     @ApiResponse({ status: 200, description: 'The group has been succesfully deleted' })
@@ -52,6 +57,7 @@ export class GroupsController {
     }
 
     // TODO: migrate to dashboard controller
+    @UseGuards(UserInGroupGuard)
     @Get('/:groupId/invitations')
     @ApiOperation({ summary: 'Get all group invitations' })
     @ApiResponse({ status: 200, type: [InvitationWithAccountsData] })
