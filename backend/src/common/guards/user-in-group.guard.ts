@@ -12,7 +12,7 @@ export class UserInGroupGuard implements CanActivate {
         const request = context.switchToHttp().getRequest()
         const user: undefined | { userId: number } = request.user // Set by JwtStrategy
         const userId = Number(user?.userId)
-        const groupId = Number(request.params.groupId)
+        const groupId = Number(request.params.groupId ?? request.body?.groupId)
 
         if (!userId || !groupId) {
             this.LOGGER.error('Missing userId or groupId')
