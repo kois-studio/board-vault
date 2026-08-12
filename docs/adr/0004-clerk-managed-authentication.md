@@ -13,9 +13,9 @@ Turso database contains domain history worth preserving, including games and
 meet/play records. Deleting `Account` rows would cascade into that history.
 
 Clerk provides the intended authentication experience and manages email,
-username, and configured social sign-in providers. The current deployed
-database has no Clerk identity column, and a live migration must be performed
-before Clerk sessions can authorize domain requests.
+username, and configured social sign-in providers. The live database now has
+the additive Clerk identity column, but no account is linked yet and the
+frontend remains on the legacy path.
 
 ## Decision
 
@@ -45,8 +45,8 @@ It does not replace the existing JWT guards yet.
   the publishable key.
 - Existing accounts need an exact-email link or an explicitly designed manual
   provisioning path before they can use the new provider.
-- The migration is additive but still changes the live identity boundary and
-  must be validated on the preserved backup before deployment.
+- The migration is additive and has changed the live identity boundary; the
+  preserved backup validation and post-migration row-count check are recorded.
 - The old auth implementation remains maintenance burden until cutover is
   completed.
 
@@ -64,11 +64,13 @@ It does not replace the existing JWT guards yet.
 - Clerk development application is created and linked locally.
 - Frontend and backend SDKs are installed; the frontend adapter lazy-loads the
   Clerk bundle.
-- The frontend rollout toggle remains `clerkAuthEnabled: false` until the live
-  identity migration and endpoint verification are complete.
+- The frontend rollout toggle remains `clerkAuthEnabled: false` until the
+  endpoint and first-account identity link are verified.
 - [Migration 0001](../../database/migrations/0001-add-clerk-user-id.sql) has
-  passed against the preserved SQLite backup copy, retaining 15 accounts, 13
-  meets, and 101 meet/game links.
+  been applied to live Turso and passed against the preserved SQLite backup
+  copy, retaining 15 accounts, 13 meets, and 101 meet/game links.
+- Live Turso currently reports zero linked Clerk accounts; frontend cutover is
+  still disabled.
 - The original backup remains outside the repository and must not be committed.
-- Live migration, first-user link verification, frontend auth controls, and
+- First-user link verification, frontend auth controls, and
   legacy-auth removal remain rollout tasks in [docs/TODO.md](../TODO.md).

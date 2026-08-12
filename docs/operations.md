@@ -29,7 +29,7 @@ Use the exact commands and current results in [AGENTS.md](AGENTS.md) and [testin
 - backend lint fails with 17 errors and 3 warnings;
 - frontend Biome fails with 8 findings;
 - frontend browser tests pass one generated app-creation test.
-- the Clerk identity migration passes a restored-backup SQLite check with integrity `ok` and unchanged counts of 15 accounts, 13 meets, and 101 meet/game links; this is not yet a live Turso migration test.
+- the Clerk identity migration passes a restored-backup SQLite check and was applied to live Turso with integrity `ok` and unchanged counts of 15 accounts, 13 meets, and 101 meet/game links.
 
 ## Deployment shape
 

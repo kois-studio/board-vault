@@ -4,13 +4,13 @@
 
 The backend uses `@libsql/client` against Turso-hosted SQLite. `DatabaseService` creates the client during `OnModuleInit` from `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN`, then exposes raw SQL helper methods to the rest of the backend. The repository contains no migration directory, migration runner, schema snapshot generated from deployment, or disposable local database setup.
 
-The current deployed baseline is captured in [database/schema/schema.sql](../database/schema/schema.sql), based on the Turso SQL export supplied by the project owner. It is represented partly by Zod schemas under `backend/src/common/schemas/`. The first data task is repository reconciliation against this baseline, not deployment discovery.
+The current deployed baseline is captured in [database/schema/schema.sql](../database/schema/schema.sql), based on the owner-supplied Turso export and the verified 2026-08-12 identity migration. It is represented partly by Zod schemas under `backend/src/common/schemas/`. The first data task is repository reconciliation against this baseline, not deployment discovery.
 
-The baseline does not yet contain `Account.clerkUserId`. Migration
+The live baseline now contains nullable `Account.clerkUserId`. Migration
 [`0001-add-clerk-user-id.sql`](../database/migrations/0001-add-clerk-user-id.sql)
-is prepared and has passed against a restored backup copy, but it has not been
-applied to live Turso. Until that rollout is complete, the legacy JWT/password
-path remains active.
+was applied to live Turso on 2026-08-12 after passing against a restored backup
+copy. No accounts are linked yet, so the legacy JWT/password path remains
+active until frontend cutover is complete.
 
 ## Current deployed entities
 

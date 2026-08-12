@@ -395,9 +395,9 @@ compliance:
       next_action: Publish and resolve the repository code/schema drift report against the owner-confirmed baseline.
     - id: DATA-002
       status: partial
-      evidence: database/migrations/0001-add-clerk-user-id.sql is prepared and tested against a restored backup copy, but no migration runner or live rollout exists
+      evidence: database/migrations/0001-add-clerk-user-id.sql is applied to live Turso and tested against a restored backup copy; no migration runner or empty-state recreation exists
       priority: critical
-      next_action: Add migration execution/recreation tooling and explicitly roll out the identity migration after review.
+      next_action: Add migration execution/recreation tooling and complete the Clerk frontend cutover after identity-link review.
     - id: DATA-003
       status: partial
       evidence: SQLite tables and application checks exist, but constraints/transaction guarantees are not verified against deployment
@@ -642,5 +642,5 @@ deferred_work:
     next_action: Execute EQ-001 before adding CI.
   - id: DATA-MIGRATION-001
     status: deferred
-    reason: Live deployment operations and a migration runner remain unresolved; the Clerk identity migration is prepared and tested locally, but applying it requires explicit rollout authorization.
-    next_action: Execute DATA-001, then apply and verify the prepared migration before changing the session domain or enabling Clerk auth.
+    reason: Live deployment operations and a migration runner remain unresolved; the Clerk identity migration is applied, but first-user linking and frontend cutover remain gated.
+    next_action: Execute DATA-001, then add migration execution/recreation tooling and complete Clerk cutover with identity-link and recovery evidence.

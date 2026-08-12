@@ -42,4 +42,5 @@ publishable key through its environment configuration; never place
 
 The current implementation keeps `/auth/status` and all existing JWT guards in
 place. The isolated `/auth/clerk/status` route is the verification and
-identity-link test surface until migration rollout is explicitly recorded.
+identity-link test surface until the first account link and frontend cutover
+are explicitly recorded.

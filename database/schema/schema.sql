@@ -1,6 +1,7 @@
 -- Board Vault current deployed schema export.
 --
--- Source: Turso SQL run panel, supplied by the project owner on 2026-08-11.
+-- Source: Turso schema inspection, supplied by the project owner and verified
+-- against the live database on 2026-08-12.
 -- This is an observed schema snapshot, not a migration. Do not apply it
 -- directly to another environment without creating and reviewing migrations.
 
@@ -16,7 +17,8 @@ CREATE TABLE Account (
     isAdmin BOOLEAN DEFAULT FALSE,
     email_verified BOOLEAN DEFAULT FALSE,
     verification_token TEXT,
-    password_reset_token TEXT
+    password_reset_token TEXT,
+    clerkUserId TEXT
 );
 
 CREATE TABLE CollectionActivity (
@@ -192,3 +194,4 @@ CREATE INDEX idx_gameproposal_status ON GameProposal(status);
 CREATE INDEX idx_gameproposal_submitted_by ON GameProposal(submittedBy);
 CREATE INDEX idx_groupmembership_accountId ON GroupMembership(accountId);
 CREATE INDEX idx_ownedgame_gameId ON OwnedGame(gameId);
+CREATE UNIQUE INDEX idx_account_clerk_user_id ON Account(clerkUserId);

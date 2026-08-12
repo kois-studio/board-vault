@@ -1,8 +1,8 @@
 # Database migrations
 
 Migrations are numbered, forward-executable SQL changes from the baseline in
-[`../schema/schema.sql`](../schema/schema.sql). They are reviewable artifacts,
-not an indication that the live Turso database has already been changed.
+[`../schema/schema.sql`](../schema/schema.sql). Their application status is
+recorded in the migration file and project handoff documentation.
 
 ## Current migration
 
@@ -15,9 +15,13 @@ The migration is intentionally additive. It does not delete accounts, alter
 foreign keys, or remove the legacy password columns. Those changes require a
 separate reviewed migration after identity reconciliation and recovery checks.
 
+It was applied to live `board-vault` on 2026-08-12. Post-migration checks
+reported integrity `ok`, 15 accounts, 13 meets, 101 meet/game links, and zero
+linked Clerk accounts.
+
 ## Execution rule
 
-There is no migration runner yet. Before applying a migration to Turso:
+There is no migration runner yet. Before applying a future migration to Turso:
 
 1. Restore the current backup into a disposable SQLite/libSQL database.
 2. Apply the migration and verify schema, row counts, and representative domain
