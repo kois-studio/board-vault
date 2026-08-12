@@ -1,6 +1,9 @@
 import { Injectable, signal } from '@angular/core'
 import type { Clerk } from '@clerk/clerk-js'
 
+type ClerkLoadOptions = NonNullable<Parameters<Clerk['load']>[0]>
+type ClerkUiConstructor = NonNullable<ClerkLoadOptions['ui']>['ClerkUI']
+
 import { environment } from '../../../environments/environment'
 
 /**
@@ -28,8 +31,9 @@ export class ClerkService {
 
         try {
             const { Clerk: ClerkConstructor } = await import('@clerk/clerk-js')
+            const clerkUiCtor = await this.loadClerkUiScript()
             const clerk = new ClerkConstructor(environment.clerkPublishableKey)
-            await clerk.load()
+            await clerk.load({ ui: { ClerkUI: clerkUiCtor } })
 
             this.clerk = clerk
             this.syncState()
@@ -72,5 +76,61 @@ export class ClerkService {
         this.clerk = null
         this.isSignedIn.set(false)
         this.userId.set(null)
+    }
+
+    private loadClerkUiScript(): Promise<ClerkUiConstructor> {
+        const existingScript = document.querySelector<HTMLScriptElement>('script[data-clerk-ui-script]')
+        const uiConstructor = (globalThis as { __internal_ClerkUICtor?: ClerkUiConstructor }).__internal_ClerkUICtor
+
+        if (uiConstructor) {
+            return Promise.resolve(uiConstructor)
+        }
+
+        const frontendApi = this.decodeFrontendApi(environment.clerkPublishableKey)
+        if (!frontendApi) {
+            return Promise.reject(new Error('The Clerk publishable key does not contain a frontend API.'))
+        }
+
+        return new Promise((resolve, reject) => {
+            const onReady = () => {
+                const loadedUiConstructor = (globalThis as { __internal_ClerkUICtor?: ClerkUiConstructor }).__internal_ClerkUICtor
+                if (loadedUiConstructor) {
+                    resolve(loadedUiConstructor)
+                } else {
+                    reject(new Error('The Clerk UI script loaded without its UI constructor.'))
+                }
+            }
+
+            if (existingScript) {
+                existingScript.addEventListener('load', onReady, { once: true })
+                existingScript.addEventListener('error', () => reject(new Error('The Clerk UI script could not be loaded.')), {
+                    once: true,
+                })
+                return
+            }
+
+            const script = document.createElement('script')
+            script.async = true
+            script.crossOrigin = 'anonymous'
+            script.dataset['clerkUiScript'] = 'true'
+            script.dataset['clerkPublishableKey'] = environment.clerkPublishableKey
+            script.src = `https://${frontendApi}/npm/@clerk/ui@1.30.1/dist/ui.browser.js`
+            script.onload = onReady
+            script.onerror = () => reject(new Error('The Clerk UI script could not be loaded.'))
+            document.head.appendChild(script)
+        })
+    }
+
+    private decodeFrontendApi(publishableKey: string): string | null {
+        const encodedFrontendApi = publishableKey.split('_')[2]
+        if (!encodedFrontendApi) {
+            return null
+        }
+
+        try {
+            return globalThis.atob(encodedFrontendApi).slice(0, -1)
+        } catch {
+            return null
+        }
     }
 }

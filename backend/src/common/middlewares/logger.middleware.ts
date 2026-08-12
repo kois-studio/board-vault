@@ -7,7 +7,7 @@ export class LoggerMiddleware implements NestMiddleware {
 
     use(req: Request, res: Response, next: NextFunction) {
         this.LOGGER.verbose(`${req.method} ${req.originalUrl}`)
-        this.LOGGER.debug(`Authorization Header: ${req.headers['authorization']}`)
+        this.LOGGER.debug(`Authorization header present: ${Boolean(req.headers['authorization'])}`)
         next()
     }
 }

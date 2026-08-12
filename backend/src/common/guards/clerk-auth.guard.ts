@@ -36,12 +36,12 @@ export class ClerkAuthGuard implements CanActivate {
             throw new UnauthorizedException('The Clerk session could not be verified')
         }
 
-        if (verification.errors || !verification.data.sub) {
+        if (!verification?.sub) {
             throw new UnauthorizedException('The Clerk session is invalid or expired')
         }
 
         request.user = {
-            clerkUserId: verification.data.sub,
+            clerkUserId: verification.sub,
         }
 
         return true

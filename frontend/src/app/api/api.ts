@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http'
+import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { environment } from '../../environments/environment'
 import type {
@@ -44,13 +44,15 @@ export class Api {
         return this.http.get<{ isValid: true; userId: number; isAdmin: boolean }>(`${this.url}/auth/status`)
     }
 
-    clerkAuthStatus() {
+    clerkAuthStatus(accessToken: string) {
         return this.http.get<{
             isValid: true
             userId: number
             isAdmin: boolean
             clerkUserId: string
-        }>(`${this.url}/auth/clerk/status`)
+        }>(`${this.url}/auth/clerk/status`, {
+            headers: new HttpHeaders({ Authorization: `Bearer ${accessToken}` }),
+        })
     }
 
     login(email: string, password: string) {
