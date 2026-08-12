@@ -195,7 +195,7 @@ compliance:
       next_action: Add safe environment documentation and repository secret scanning.
     - id: SEC-003
       status: gap
-      evidence: user-scoped profile, collection, history, dashboard, and deprecated user reads now use ownership guards; several authenticated group, invitation, notification, meeting, and legacy mutation controllers still accept object IDs without consistent object-level guards
+      evidence: user-scoped reads and legacy group lookup/update/delete/invitation routes now use ownership or membership guards; all-group listings, client-supplied invitation/membership identities, and several authenticated notification, meeting, and legacy mutation controllers still lack consistent object-level guards
       priority: critical
       next_action: Execute SEC-001 through SEC-004 in todo/06-agent-task-board.md.
     - id: SEC-004

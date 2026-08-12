@@ -10,9 +10,9 @@ Statuses are `Planned`, `Blocked`, or `Deferred` until evidence changes them. Pr
 
 - **Status:** In progress
 - **Affected area:** `backend/src/common/guards/`, `backend/src/modules/core/`, `backend/src/modules/features/`
-- **Evidence:** SEC-001 has a runtime profile-update boundary and passing denied/filtered-input tests. SEC-002 now protects user-scoped profile, collection, history, dashboard, and deprecated user reads with `UserOwnershipGuard`; legacy group, invitation, notification, meeting, and collection/object paths still need review.
+- **Evidence:** SEC-001 has a runtime profile-update boundary and passing denied/filtered-input tests. SEC-002 protects user-scoped reads with `UserOwnershipGuard` and reviewed legacy group routes with membership/owner guards; all-group listings, client-supplied invitation/membership identities, and several legacy object mutations still need review.
 - **Risk:** Cross-user or cross-group data access and privilege escalation.
-- **Next action:** Review this user-scoped route slice, then audit group ownership/membership and invitation, notification, meeting, and legacy collection mutations.
+- **Next action:** Review this group authorization slice, then derive invitation/membership actor identity from the verified JWT and audit notification, meeting, and remaining legacy mutations.
 - **Dependencies:** None; coordinate with the canonical session/data decision.
 
 ### READINESS-002 [Critical] TS-005/NEST-004/API-002 — Activate boundary validation

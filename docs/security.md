@@ -20,7 +20,7 @@ The backend is authoritative for authentication, authorization, data validation,
 ## Existing controls
 
 - JWT bearer authentication uses `passport-jwt` and rejects expired tokens through `ignoreExpiration: false`.
-- `VerifiedUserGuard`, `UserOwnershipGuard`, `UserInGroupGuard`, and `AdminGuard` exist and are applied to selected controllers.
+- `VerifiedUserGuard`, `UserOwnershipGuard`, `UserInGroupGuard`, `GroupOwnerGuard`, and `AdminGuard` exist and are applied to selected controllers.
 - Passwords use `bcryptjs` in the auth service.
 - Clerk backend verification and a conservative exact-primary-email identity bridge are implemented behind the isolated `/auth/clerk/status` route. The existing JWT/password routes are still authoritative until the migration rollout is complete.
 - `.env` is ignored by `backend/.gitignore`, and `validateEnv.ts` checks Turso and JWT variables at startup.
@@ -28,7 +28,7 @@ The backend is authoritative for authentication, authorization, data validation,
 
 ## Material findings
 
-- Authorization is inconsistent. User-scoped reads in the current profile, collection, history, dashboard, and deprecated user routes now enforce `UserOwnershipGuard`, but several legacy/core routes still accept `accountId`, `groupId`, `meetId`, or other object identifiers with incomplete ownership or membership checks. This remains the P0 security backlog.
+- Authorization is inconsistent. User-scoped reads and the reviewed legacy group routes now enforce ownership or membership checks, but all-group listings, client-supplied invitation/membership identities, and several legacy invitation, notification, meeting, and collection mutations still need object-level authorization. This remains the P0 security backlog.
 - The public user profile-update route now forwards only `username`, `displayName`, and `avatar`; internal authentication workflows use a separate account-state update path. Broader object-level authorization remains unresolved.
 - Admin proposal operations contain TODOs to obtain reviewer identity from JWT rather than request data.
 - `main.ts` enables unrestricted CORS and does not configure global input validation or security headers/rate limits.

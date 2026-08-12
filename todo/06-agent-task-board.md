@@ -77,14 +77,14 @@ Task: SEC-002
 Owner: Codex
 Claimed: 2026-08-13
 Branch/worktree: main / shared workspace
-Scope: user-scoped read routes and deprecated user lookup routes; broader group/object policy remains for follow-up review
+Scope: group owner/member authorization after the completed user-scoped route slice
 ```
 
 Review: SEC-002
 
-Changed: Added `UserOwnershipGuard` to user-scoped profile, collection, history, dashboard, and deprecated user lookup reads that were accepting arbitrary user IDs.
-Verified: `cd backend && npm test -- --runInBand` (5 tests); `cd backend && npm run build`; Prettier check for affected files.
-Known follow-ups: Audit group-owner/member authorization and invitation, notification, meeting, meet-account-game, and remaining legacy collection mutations.
+Changed: Added `UserOwnershipGuard` to user-scoped profile, collection, history, dashboard, and deprecated user lookup reads; added `GroupOwnerGuard` and membership checks to reviewed legacy group routes.
+Verified: `cd backend && npm test -- --runInBand` (8 tests); `cd backend && npm run build`; Prettier check for affected files.
+Known follow-ups: Derive invitation and membership actor identity from the verified JWT, then audit notification, meeting, meet-account-game, all-group listing, and remaining legacy collection mutations.
 
 When claiming a task, add:
 

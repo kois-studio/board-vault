@@ -13,7 +13,7 @@ The runtime Swagger document is generated from source. There is no committed ver
 | Auth | `/auth/status`, `/auth/register`, `/auth/login`, email verification, password reset | Public and authenticated paths are mixed; reset and enumeration behavior needs review. |
 | Users/profile | `/users/*`, `/profile/users/:userId/*` | User-scoped profile reads and the deprecated single-user lookup now require ownership; invitation/proposal mutations have selected ownership guards. |
 | Collection | `/collection/users/:userId/*` | Feature controller applies JWT/verified guards and ownership across the current-user collection routes; broader group/object policy remains incomplete. |
-| Dashboard/groups | `/dashboard/users/:userId/*`, `/groups/*`, `/memberships/*` | Group membership and owner authorization are inconsistent across legacy/new controllers. |
+| Dashboard/groups | `/dashboard/users/:userId/*`, `/groups/*`, `/memberships/*` | Dashboard group routes already check user ownership/membership; legacy group lookup, update, delete, and invitation routes now check membership/ownership, while all-group and membership mutation routes remain under review. |
 | Meets/play | `/meets/*`, `/meetAccountGames/*`, `/play/users/:userId/*` | User history now requires ownership; legacy meet/account-game routes still need object-level review. Planned session creation is unfinished. |
 | Admin | `/admin/*` | Controller uses JWT, verified-user, and admin guards; reviewer identity still has TODOs. |
 | Cache | `/cache/print`, `/cache/reset`, `/cache/delete/:key` | Operationally sensitive endpoints are present in the application module graph and require explicit exposure review. |
