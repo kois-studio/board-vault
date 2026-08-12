@@ -10,8 +10,8 @@ project:
   name: board-vault
   lifecycle: existing
   maturity: active foundation; pre-launch
-  audited_commit: 23ad286
-  audit_scope: documentation and staged Clerk authentication integration; legacy auth retained and no live database migration
+  audited_commit: 1f30156
+  audit_scope: documentation, staged Clerk authentication integration, and SEC-001 public profile-update boundary; broader object authorization remains incomplete
 
 standards:
   - documentation
