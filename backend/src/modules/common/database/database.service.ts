@@ -10,7 +10,7 @@ import type { CreateGroupMembershipBody } from '../../../common/types/group-memb
 import type { CreateGroupBody, UpdateGroupBody } from '../../../common/types/group.type'
 import type { CreateInvitationBody, CreateInvitationByUsernameBody } from '../../../common/types/invitation.type'
 import type { CreateNotificationBody, UpdateNotificationBody } from '../../../common/types/notification.type'
-import type { CreateUserBody, UpdateUserBody } from '../../../common/types/user.type'
+import type { CreateUserBody, UpdateUserBody, UpdateUserRecord } from '../../../common/types/user.type'
 import type { MeetAccountGameQueryOptions } from '../../../modules/core/meet-account-games/meet-account-games.types'
 
 @Injectable()
@@ -129,7 +129,17 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
-    async updateUser(id: number, partialUserDto: UpdateUserBody) {
+    updateUserProfile(id: number, partialUserDto: UpdateUserBody) {
+        const { username, displayName, avatar } = partialUserDto
+
+        return this.updateUserRecord(id, {
+            ...(username !== undefined ? { username } : {}),
+            ...(displayName !== undefined ? { displayName } : {}),
+            ...(avatar !== undefined ? { avatar } : {}),
+        })
+    }
+
+    async updateUserRecord(id: number, partialUserDto: UpdateUserRecord) {
         // Array to store fields to update
         const fields = []
         const args = []

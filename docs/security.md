@@ -29,7 +29,7 @@ The backend is authoritative for authentication, authorization, data validation,
 ## Material findings
 
 - Authorization is inconsistent. Several legacy/core routes accept `accountId`, `groupId`, `meetId`, or other object identifiers with JWT authentication but without a uniform ownership or membership check. This is the P0 security backlog.
-- User update fields include security-sensitive state in the service update path; the backlog explicitly requires removing privileged fields from public user updates.
+- The public user profile-update route now forwards only `username`, `displayName`, and `avatar`; internal authentication workflows use a separate account-state update path. Broader object-level authorization remains unresolved.
 - Admin proposal operations contain TODOs to obtain reviewer identity from JWT rather than request data.
 - `main.ts` enables unrestricted CORS and does not configure global input validation or security headers/rate limits.
 - `DatabaseService` logs SQL after interpolating values for display. This can expose email addresses, tokens, user data, or other input in logs.

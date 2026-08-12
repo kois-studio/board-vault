@@ -126,7 +126,7 @@ export class UsersService {
 
     async updateUser(id: number, partialUserDto: UpdateUserBody): Promise<{ success: boolean }> {
         this.LOGGER.log(`Updating user with id ${id}`)
-        const resultSet = await this.databaseService.updateUser(id, partialUserDto)
+        const resultSet = await this.databaseService.updateUserProfile(id, partialUserDto)
 
         if (resultSet.rows.length === 0) {
             throw new NotFoundException(`User with id ${id} not found`)

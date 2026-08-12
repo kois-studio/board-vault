@@ -2,7 +2,7 @@
 
 ## Inventory at bootstrap
 
-- Backend: one `backend/test/app.e2e-spec.ts`; no `*.spec.ts` unit tests under `backend/src`.
+- Backend: one `backend/test/app.e2e-spec.ts` plus the focused `backend/src/modules/core/users/users.service.spec.ts` privilege-boundary suite.
 - Frontend: one `frontend/src/app/app.component.spec.ts`, a generated app-creation smoke test.
 - No browser end-to-end framework or CI workflow was found.
 - No contract, migration, authorization, persistence, provider-adapter, accessibility, or responsive tests were found.
@@ -13,7 +13,7 @@
 | Check | Result | Interpretation |
 |---|---|---|
 | `cd backend && npm run build` | Pass | TypeScript/Nest build currently compiles. |
-| `cd backend && npm test -- --runInBand` | Fail | Jest finds no unit tests under `backend/src`. |
+| `cd backend && npm test -- --runInBand` | Pass | Two focused HTTP-boundary tests prove privileged fields are not forwarded by the public profile-update route and privileged-only input is rejected; broader coverage remains absent. |
 | `cd backend && npm run test:e2e -- --runInBand` | Fail | Test setup throws because `RESEND_API_KEY` is missing; the test itself expects a stale `/` Hello World route. |
 | `cd backend && npx eslint "{src,apps,libs,test}/**/*.ts"` | Fail | 17 errors and 3 warnings across schemas, database, collection, play, and profile code. |
 | `cd frontend && npm run build` | Pass with warnings | Bundle budget, Sass deprecation, and selector warnings remain. |

@@ -88,7 +88,7 @@ compliance:
 
     - id: TEST-001
       status: gap
-      evidence: backend/test/app.e2e-spec.ts is the only backend test; frontend has one generated smoke test
+      evidence: backend has one focused profile-update privilege-boundary suite and one stale starter e2e test; frontend has one generated smoke test
       priority: high
       next_action: Add layered unit, integration, and journey tests for the flagship loop.
     - id: TEST-002
@@ -113,7 +113,7 @@ compliance:
       next_action: Cover auth, identity boundaries, group membership, collection ownership, session transactions, and recommendation rules.
     - id: TEST-006
       status: gap
-      evidence: backend unit command exits with “No tests found”; frontend command passes only one smoke test
+      evidence: backend unit command now passes two focused privilege-boundary tests; frontend command still passes only one smoke test and the overall suite is insufficient
       priority: high
       next_action: Make supported test commands meaningful and required in CI.
     - id: TEST-007
@@ -185,7 +185,7 @@ compliance:
 
     - id: SEC-001
       status: partial
-      evidence: docs/security.md; JWT, ownership, admin, verified-user, and group guards exist
+      evidence: docs/security.md; the public profile-update route filters privileged fields and has passing boundary tests, while JWT, ownership, admin, verified-user, and group coverage remains incomplete
       priority: critical
       next_action: Complete the trust-boundary and object-authorization audit.
     - id: SEC-002

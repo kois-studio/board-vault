@@ -8,7 +8,7 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 
 | ID | Status | Workstream | Task | Dependencies |
 |---|---|---|---|---|
-| SEC-001 | TODO | Security | Remove privileged fields from public user updates and add privilege-boundary tests. | None |
+| SEC-001 | REVIEW | Security | Remove privileged fields from public user updates and add privilege-boundary tests. | None |
 | SEC-002 | TODO | Security | Audit and enforce object-level authorization across user, group, invitation, notification, meeting, and collection APIs. | SEC-001 recommended |
 | SEC-003 | TODO | Security | Derive admin reviewer identity from JWT and add admin authorization tests. | SEC-002 |
 | SEC-004 | TODO | Security | Enable strict validation, rate limits, safe CORS, token expiry, and generic reset responses. | None |
@@ -54,6 +54,21 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 | EXP-005 | TODO | Product | Evaluate mobile, offline, public API, and localization work. | Stable API and proven core loop |
 
 ## Claiming protocol
+
+Most recent claim:
+
+```text
+Task: SEC-001
+Owner: Codex
+Claimed: 2026-08-13
+Branch/worktree: main / shared workspace
+```
+
+Review: SEC-001
+
+Changed: Public user profile updates now expose only `username`, `displayName`, and `avatar`; authentication account-state updates use a separate internal database path.
+Verified: `cd backend && npm test -- --runInBand`; `cd backend && npm run build`; Prettier check for affected files.
+Known follow-ups: SEC-002 must audit object-level authorization across the remaining user, group, invitation, notification, meeting, collection, and admin routes.
 
 When claiming a task, add:
 

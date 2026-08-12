@@ -8,11 +8,11 @@ Statuses are `Planned`, `Blocked`, or `Deferred` until evidence changes them. Pr
 
 ### READINESS-001 [Critical] SEC-003/SEC-008 — Complete object-level authorization audit
 
-- **Status:** Planned
+- **Status:** In progress
 - **Affected area:** `backend/src/common/guards/`, `backend/src/modules/core/`, `backend/src/modules/features/`
-- **Evidence:** JWT and several guards exist, but many legacy/core routes accept object IDs with inconsistent ownership or group checks.
+- **Evidence:** SEC-001 now has a runtime profile-update boundary and two passing denied/filtered-input tests. JWT and several guards exist, but many legacy/core routes still accept object IDs with inconsistent ownership or group checks.
 - **Risk:** Cross-user or cross-group data access and privilege escalation.
-- **Next action:** Execute `SEC-001` and `SEC-002` from the product task board; add denied-path tests before feature expansion.
+- **Next action:** Move SEC-001 through review, then execute SEC-002 with denied-path tests for object ownership and membership.
 - **Dependencies:** None; coordinate with the canonical session/data decision.
 
 ### READINESS-002 [Critical] TS-005/NEST-004/API-002 — Activate boundary validation
