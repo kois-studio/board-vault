@@ -14,8 +14,9 @@ The backend reads these variable names from the environment or ignored local `.e
 - required by provider construction: `RESEND_API_KEY`;
 - used by email links/defaults: `NO_REPLY_EMAIL`, `APP_BASE_URL`;
 - used by cache: `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, `UPSTASH_REDIS_REST_DISABLE`.
+- used by the staged Clerk backend boundary: `CLERK_SECRET_KEY`, with optional comma-separated `CLERK_AUTHORIZED_PARTIES` for exact frontend origins.
 
-The exact local values are intentionally not documented. No `.env.example`, typed configuration schema, test environment, or production environment ownership record was found. The frontend uses committed environment files containing only public API URLs and a production boolean; these values are configuration, not secrets.
+The exact local values are intentionally not documented. No `.env.example`, typed configuration schema, test environment, or production environment ownership record was found. The frontend uses committed environment files containing only public API URLs, a production boolean, the development Clerk publishable key, and the disabled `clerkAuthEnabled` rollout toggle; these values are configuration, not secrets. The Clerk secret must remain backend-only.
 
 ## Build, test, and quality baseline
 
@@ -28,6 +29,7 @@ Use the exact commands and current results in [AGENTS.md](AGENTS.md) and [testin
 - backend lint fails with 17 errors and 3 warnings;
 - frontend Biome fails with 8 findings;
 - frontend browser tests pass one generated app-creation test.
+- the Clerk identity migration passes a restored-backup SQLite check with integrity `ok` and unchanged counts of 15 accounts, 13 meets, and 101 meet/game links; this is not yet a live Turso migration test.
 
 ## Deployment shape
 

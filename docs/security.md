@@ -22,6 +22,7 @@ The backend is authoritative for authentication, authorization, data validation,
 - JWT bearer authentication uses `passport-jwt` and rejects expired tokens through `ignoreExpiration: false`.
 - `VerifiedUserGuard`, `UserOwnershipGuard`, `UserInGroupGuard`, and `AdminGuard` exist and are applied to selected controllers.
 - Passwords use `bcryptjs` in the auth service.
+- Clerk backend verification and a conservative exact-primary-email identity bridge are implemented behind the isolated `/auth/clerk/status` route. The existing JWT/password routes are still authoritative until the migration rollout is complete.
 - `.env` is ignored by `backend/.gitignore`, and `validateEnv.ts` checks Turso and JWT variables at startup.
 - Parameterized libSQL statements are used for execution, although the database service separately formats arguments for logging.
 
@@ -35,6 +36,7 @@ The backend is authoritative for authentication, authorization, data validation,
 - `EmailService` interpolates values into HTML email and logs recipient/provider context; output encoding, generic reset responses, and safe failure behavior need review.
 - Runtime configuration is only partly validated. `RESEND_API_KEY` fails later in provider construction, and `CacheService` initializes `Redis.fromEnv()` before checking its disabled flag.
 - No security behavior test suite, secret scanning, vulnerability response process, or least-privilege deployment record was found.
+- Clerk production readiness is incomplete: the development instance is configured, but no production instance/authorized-party policy or identity-link test has been recorded.
 
 ## Rules for security-sensitive changes
 
@@ -47,6 +49,8 @@ The backend is authoritative for authentication, authorization, data validation,
 ## Source evidence
 
 - [JWT strategy](../backend/src/modules/common/auth/jwt-strategy.ts)
+- [Clerk guard](../backend/src/common/guards/clerk-auth.guard.ts)
+- [Clerk identity bridge](../backend/src/modules/common/auth/clerk-identity.service.ts)
 - [Guards](../backend/src/common/guards/)
 - [Environment validation](../backend/src/common/validators/validateEnv.ts)
 - [User controller/service](../backend/src/modules/core/users/users.controller.ts)

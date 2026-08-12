@@ -33,6 +33,15 @@ Statuses are `Planned`, `Blocked`, or `Deferred` until evidence changes them. Pr
 - **Next action:** Fix or retire stale SQL paths, record the drift report, then add numbered migrations from the confirmed baseline.
 - **Dependencies:** Product decision on whether legacy meeting paths are retired or migrated; no deployment access required for the initial reconciliation.
 
+### READINESS-013 [Critical] AUTH-001/AUTH-002 — Roll out and complete Clerk identity migration
+
+- **Status:** Planned
+- **Affected area:** `database/migrations/0001-add-clerk-user-id.sql`, Clerk deployment configuration, auth guards, frontend session controls
+- **Evidence:** Clerk development setup, SDKs, token guard, and exact-email identity bridge are implemented. The migration has passed against a restored backup copy, but live Turso still needs the additive column and unique index; legacy JWT/password auth remains active.
+- **Risk:** Premature cutover could strand users, break local foreign-key identity, or leave authenticated Clerk sessions without a local account.
+- **Next action:** Authorize and apply the migration to the intended Turso database, verify one existing account link and preserved meet history, add Clerk sign-in/sign-up controls plus route/interceptor cutover, then test recovery and remove legacy auth only after a documented rollback window.
+- **Dependencies:** Live deployment authorization, production Clerk instance, authorized-party configuration, and identity-link test coverage.
+
 ### READINESS-004 [Critical] DEP-001/DEP-007/CI-003 — Make installation reproducible
 
 - **Status:** Planned

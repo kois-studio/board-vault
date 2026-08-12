@@ -6,6 +6,12 @@ The backend uses `@libsql/client` against Turso-hosted SQLite. `DatabaseService`
 
 The current deployed baseline is captured in [database/schema/schema.sql](../database/schema/schema.sql), based on the Turso SQL export supplied by the project owner. It is represented partly by Zod schemas under `backend/src/common/schemas/`. The first data task is repository reconciliation against this baseline, not deployment discovery.
 
+The baseline does not yet contain `Account.clerkUserId`. Migration
+[`0001-add-clerk-user-id.sql`](../database/migrations/0001-add-clerk-user-id.sql)
+is prepared and has passed against a restored backup copy, but it has not been
+applied to live Turso. Until that rollout is complete, the legacy JWT/password
+path remains active.
+
 ## Current deployed entities
 
 The schema snapshot names these tables/entities:
@@ -53,6 +59,7 @@ These are actionable code/schema drift findings. They must be resolved or explic
 - Any schema change must first identify current deployment state, add a numbered migration strategy, define rollback/recovery expectations, and update the data-model workstream.
 - Do not add a new session or recommendation entity without resolving the canonical state and ownership semantics in [todo/03-data-model-and-session-domain.md](../todo/03-data-model-and-session-domain.md).
 - Keep user identity derived from the authenticated request and enforce ownership/group authorization at the server boundary.
+- Clerk identity is an external subject; `Account.id` remains the local foreign-key identity. The bridge must be unique, nullable during rollout, and never inferred from a client-supplied numeric account ID.
 
 ## Required follow-up
 

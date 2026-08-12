@@ -4,14 +4,14 @@ standards_version: 0.2.0
 standards_source:
   repository: /Users/dawichi/Documents/GitHub/engineering-standards
   revision: 34e2a8ffe9e081cdf755aa989ff16c375b7691f9
-  inspected_on: 2026-08-11
+  inspected_on: 2026-08-12
 
 project:
   name: board-vault
   lifecycle: existing
   maturity: active foundation; pre-launch
-  audited_commit: 9cc3083
-  audit_scope: documentation and AI-readiness bootstrap; no behavior refactor
+  audited_commit: 23ad286
+  audit_scope: documentation and staged Clerk authentication integration; legacy auth retained and no live database migration
 
 standards:
   - documentation
@@ -308,7 +308,7 @@ compliance:
       next_action: Centralize typed startup configuration validation for all required providers.
     - id: OPS-002
       status: gap
-      evidence: development and production frontend API URLs exist, but environment ownership and backend deployment values are not documented
+      evidence: development and production frontend API URLs exist and Clerk variable names are documented, but environment ownership and backend deployment values are not documented
       priority: high
       next_action: Document local/test/production boundaries without secrets.
     - id: OPS-003
@@ -394,10 +394,10 @@ compliance:
       priority: critical
       next_action: Publish and resolve the repository code/schema drift report against the owner-confirmed baseline.
     - id: DATA-002
-      status: gap
-      evidence: no migrations directory or migration runner; docs describe manual Turso dump/drop/restore commands
+      status: partial
+      evidence: database/migrations/0001-add-clerk-user-id.sql is prepared and tested against a restored backup copy, but no migration runner or live rollout exists
       priority: critical
-      next_action: Add numbered migrations and empty-state recreation.
+      next_action: Add migration execution/recreation tooling and explicitly roll out the identity migration after review.
     - id: DATA-003
       status: partial
       evidence: SQLite tables and application checks exist, but constraints/transaction guarantees are not verified against deployment
@@ -642,5 +642,5 @@ deferred_work:
     next_action: Execute EQ-001 before adding CI.
   - id: DATA-MIGRATION-001
     status: deferred
-    reason: Migration design and live deployment operations remain outside this documentation update; the deployed baseline is owner-confirmed, while repository drift is now actionable without deployment access.
-    next_action: Execute DATA-001, then DATA-002, before changing the session domain.
+    reason: Live deployment operations and a migration runner remain unresolved; the Clerk identity migration is prepared and tested locally, but applying it requires explicit rollout authorization.
+    next_action: Execute DATA-001, then apply and verify the prepared migration before changing the session domain or enabling Clerk auth.

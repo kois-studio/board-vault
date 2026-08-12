@@ -31,6 +31,9 @@ yarn-error.log
 # Miscellaneous
 /.angular/cache
 .sass-cache/
+.env
+.env.*
+!.env.example
 /connect.lock
 /coverage
 /libpeerconnection.log

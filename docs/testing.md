@@ -6,6 +6,7 @@
 - Frontend: one `frontend/src/app/app.component.spec.ts`, a generated app-creation smoke test.
 - No browser end-to-end framework or CI workflow was found.
 - No contract, migration, authorization, persistence, provider-adapter, accessibility, or responsive tests were found.
+- A manual migration verification was run against a restored SQLite backup copy; it is not an automated migration suite.
 
 ## Verified baseline
 
@@ -18,6 +19,7 @@
 | `cd frontend && npm run build` | Pass with warnings | Bundle budget, Sass deprecation, and selector warnings remain. |
 | `cd frontend && npx biome check` | Fail | 8 findings in the form submission, log-session wizard, and propose-game page files. |
 | `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` | Pass | One generated smoke test passes. |
+| `sqlite3 backup-copy < database/migrations/0001-add-clerk-user-id.sql` | Pass | SQLite integrity remains `ok`; 15 accounts, 13 meets, and 101 meet/game links are preserved; the original backup was not used as the test target. |
 
 ## Required testing strategy for the next development round
 

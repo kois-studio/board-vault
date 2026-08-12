@@ -86,6 +86,32 @@ export class UsersService {
         }
     }
 
+    async getUserByClerkId(clerkUserId: string): Promise<UserGetDto> {
+        this.LOGGER.log(`Getting user linked to Clerk identity ${clerkUserId}`)
+        const resultSet = await this.databaseService.getUserByClerkId(clerkUserId)
+        const users = this._parseResultSet(resultSet)
+
+        if (users.length === 0) {
+            throw new NotFoundException(`No user linked to Clerk identity ${clerkUserId}`)
+        }
+
+        users[0].password = undefined!
+        users[0].verification_token = undefined!
+        users[0].password_reset_token = undefined!
+        return users[0]
+    }
+
+    async linkClerkUser(accountId: number, clerkUserId: string): Promise<UserGetDto> {
+        this.LOGGER.log(`Linking local user ${accountId} to Clerk identity ${clerkUserId}`)
+        const resultSet = await this.databaseService.linkUserToClerkId(accountId, clerkUserId)
+
+        if (resultSet.rowsAffected !== 1) {
+            throw new ConflictException('The local account is already linked to another Clerk identity')
+        }
+
+        return this.getUserById(accountId)
+    }
+
     async createUser(userDto: CreateUserBody, verificationToken: string) {
         this.LOGGER.log(`Creating user ${userDto.username} - ${userDto.email}`)
         try {

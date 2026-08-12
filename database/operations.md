@@ -31,3 +31,15 @@ turso db shell <database-name> < dump.sql
 ```
 
 These procedures need to be replaced or supplemented by versioned migrations, scheduled backups, restore tests, ownership, and rollback documentation before launch.
+
+## Clerk migration configuration
+
+The backend Clerk boundary reads `CLERK_SECRET_KEY`. Before production
+cutover, also set `CLERK_AUTHORIZED_PARTIES` to the exact frontend origins that
+may issue sessions, separated by commas. The frontend uses only the Clerk
+publishable key through its environment configuration; never place
+`CLERK_SECRET_KEY` in Angular environment files or browser code.
+
+The current implementation keeps `/auth/status` and all existing JWT guards in
+place. The isolated `/auth/clerk/status` route is the verification and
+identity-link test surface until migration rollout is explicitly recorded.

@@ -20,7 +20,7 @@ This is the canonical project-specific instruction file for AI developer agents.
 - Security boundaries and findings: [security.md](security.md).
 - Test inventory and verified baseline: [testing.md](testing.md).
 - Standards gaps and remediation sequencing: [TODO.md](TODO.md) and the YAML contract.
-- Durable decisions: [adr/README.md](adr/README.md). No accepted ADRs were found during this bootstrap.
+- Durable decisions: [adr/README.md](adr/README.md). ADR-0004 is accepted for staged Clerk rollout; ADRs 0001–0003 remain proposals.
 
 ## Effective standards
 

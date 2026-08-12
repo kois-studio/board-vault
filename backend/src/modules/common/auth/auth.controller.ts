@@ -2,16 +2,38 @@
 import { BadRequestException, Body, Controller, Get, Post, Query, Param, NotFoundException, UseGuards, Req } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
+import { ClerkAuthGuard } from '../../../common/guards/clerk-auth.guard'
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
 import { AccessTokenDto, ForgotPasswordDto, ResetPasswordDto, SuccessDto, TokenStatusDto } from '../../../common/types/auth.type'
 import { LoginUserDto, RegisterUserDto } from '../../../common/types/user.type'
 
 import { AuthService } from './auth.service'
+import { ClerkIdentityService } from './clerk-identity.service'
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-    constructor(private readonly authService: AuthService) {}
+    constructor(
+        private readonly authService: AuthService,
+        private readonly clerkIdentityService: ClerkIdentityService,
+    ) {}
+
+    @Get('/clerk/status')
+    @UseGuards(ClerkAuthGuard)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Verify a Clerk session during the migration' })
+    @ApiResponse({ status: 200, description: 'Clerk session is valid' })
+    @ApiResponse({ status: 401, description: 'Clerk session is invalid or expired' })
+    async getClerkStatus(@Req() request: { user: { clerkUserId: string } }) {
+        const user = await this.clerkIdentityService.resolveAccount(request.user.clerkUserId)
+
+        return {
+            isValid: true,
+            userId: user.id,
+            isAdmin: user.isAdmin,
+            clerkUserId: request.user.clerkUserId,
+        }
+    }
 
     @Get('/status')
     @UseGuards(JwtAuthGuard)

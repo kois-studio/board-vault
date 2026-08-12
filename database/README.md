@@ -7,8 +7,9 @@ This directory owns database-specific artifacts and tooling for Board Vault. It 
 - The application uses Turso/libSQL SQLite through `backend/src/modules/common/database/database.service.ts`.
 - [schema/schema.sql](schema/schema.sql) is the current schema export supplied from the Turso SQL run panel on 2026-08-11. It is an observed snapshot, not a migration, and MUST NOT be applied directly to another environment without review.
 - Repository reconciliation has found code drift against this baseline: `DatabaseService` references `MeetAttendee` and `MeetGame`, which are absent from the schema. The deployed `Game` table also has no `title` column; the application passes a title but the current insert path does not persist it in `Game`.
-- There is currently no migration runner, versioned migration history, disposable test database, fixture set, Docker test environment, or restore rehearsal.
-- The first database work is `DATA-001`: resolve the code/schema drift report against this current baseline. Follow with migrations and the canonical session model.
+- There is currently no migration runner, disposable test database, fixture set, Docker test environment, or restore rehearsal.
+- A first numbered migration is prepared in [migrations/](migrations/): it adds a Clerk identity bridge but is not yet applied to live Turso.
+- The first database work remains `DATA-001`: resolve the code/schema drift report against this current baseline. The Clerk migration must be validated and explicitly rolled out before auth cutover.
 
 ## Planned layout
 
@@ -22,7 +23,7 @@ database/
 └── scripts/      # future validation, dump, restore, and fixture tooling
 ```
 
-Only `schema/` is populated today. Create the other directories when their first artifact is needed; do not add empty placeholders.
+`schema/` and `migrations/` are populated today. Create the other directories when their first artifact is needed; do not add empty placeholders.
 
 ## Source-of-truth boundaries
 
@@ -30,6 +31,7 @@ Only `schema/` is populated today. Create the other directories when their first
 - Current backend persistence implementation: [DatabaseService](../backend/src/modules/common/database/database.service.ts).
 - Current schema snapshot: [schema/schema.sql](schema/schema.sql). Future migrations will become the reproducible source of truth.
 - Product/session decisions: [todo/03-data-model-and-session-domain.md](../todo/03-data-model-and-session-domain.md) and proposed [ADR-0003](../docs/adr/0003-session-as-first-class-domain.md).
+- Authentication identity decision: [ADR-0004](../docs/adr/0004-clerk-managed-authentication.md).
 - API behavior and transaction expectations: [docs/api.md](../docs/api.md).
 
 ## Rules for future database work
