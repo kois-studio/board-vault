@@ -77,14 +77,14 @@ Task: SEC-002
 Owner: Codex
 Claimed: 2026-08-13
 Branch/worktree: main / shared workspace
-Scope: invitation and membership actor identity after the completed user/group ownership slices
+Scope: invitation lifecycle authorization after the completed user/group ownership and actor-identity slices
 ```
 
 Review: SEC-002
 
-Changed: Added `UserOwnershipGuard` to user-scoped reads; added `GroupOwnerGuard` and membership checks to reviewed legacy group routes; invitation and membership creation now derive actor IDs from the verified JWT, with membership checks on invitation creation.
-Verified: `cd backend && npm test -- --runInBand` (15 tests); `cd backend && npm run build`; `cd frontend && npm run build`; Prettier check for affected files.
-Known follow-ups: Authorize invitation deletion/rejection and group-join policy, then audit all-group listings, notifications, meetings, meet-account-games, and remaining legacy collection mutations.
+Changed: Added `UserOwnershipGuard` to user-scoped reads; added `GroupOwnerGuard` and membership checks to reviewed legacy group routes; invitation and membership creation derive actor IDs from the verified JWT; invitation cancellation is sender-only, while rejection and acceptance are recipient-only.
+Verified: `cd backend && npm test -- --runInBand` (20 tests); `cd backend && npm run build`; `cd frontend && npm run build`; Prettier checks for affected files.
+Known follow-ups: Define group-join policy, then audit all-group listings, notifications, meetings, meet-account-games, and remaining legacy collection mutations.
 
 When claiming a task, add:
 

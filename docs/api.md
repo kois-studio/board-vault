@@ -11,9 +11,9 @@ The runtime Swagger document is generated from source. There is no committed ver
 | Area | Representative paths | Boundary notes |
 |---|---|---|
 | Auth | `/auth/status`, `/auth/register`, `/auth/login`, email verification, password reset | Public and authenticated paths are mixed; reset and enumeration behavior needs review. |
-| Users/profile | `/users/*`, `/profile/users/:userId/*` | User-scoped profile reads and the deprecated single-user lookup now require ownership; invitation/proposal mutations have selected ownership guards. |
+| Users/profile | `/users/*`, `/profile/users/:userId/*` | User-scoped profile reads and the deprecated single-user lookup require ownership; invitation acceptance requires the authenticated user to be the invitation recipient. |
 | Collection | `/collection/users/:userId/*` | Feature controller applies JWT/verified guards and ownership across the current-user collection routes; broader group/object policy remains incomplete. |
-| Dashboard/groups | `/dashboard/users/:userId/*`, `/groups/*`, `/memberships/*` | Dashboard group routes check user ownership/membership; legacy group routes check membership/ownership, and invitation/membership creation derives the actor from JWT. All-group, invitation deletion/rejection, and group-join policy remain under review. |
+| Dashboard/groups | `/dashboard/users/:userId/*`, `/groups/*`, `/memberships/*` | Dashboard group routes check user ownership/membership; legacy group routes check membership/ownership, invitation/membership creation derives the actor from JWT, and invitation lifecycle actions check sender/recipient ownership. All-group and group-join policy remain under review. |
 | Meets/play | `/meets/*`, `/meetAccountGames/*`, `/play/users/:userId/*` | User history now requires ownership; legacy meet/account-game routes still need object-level review. Planned session creation is unfinished. |
 | Admin | `/admin/*` | Controller uses JWT, verified-user, and admin guards; reviewer identity still has TODOs. |
 | Cache | `/cache/print`, `/cache/reset`, `/cache/delete/:key` | Operationally sensitive endpoints are present in the application module graph and require explicit exposure review. |

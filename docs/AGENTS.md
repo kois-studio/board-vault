@@ -45,7 +45,7 @@ Commands run from the package directory. Dependencies are currently present in i
 |---|---|---|
 | Backend install | `cd backend && npm install` | Not verified in this session; lockfile is absent and the package README still says `pnpm`. |
 | Backend build | `cd backend && npm run build` | Passes. |
-| Backend unit tests | `cd backend && npm test -- --runInBand` | Passes focused profile-update, ownership, group-owner, invitation, and membership identity suites; broader coverage is still missing. |
+| Backend unit tests | `cd backend && npm test -- --runInBand` | Passes focused profile-update, ownership, group-owner, invitation lifecycle, and membership identity suites; broader coverage is still missing. |
 | Backend e2e tests | `cd backend && npm run test:e2e -- --runInBand` | Fails during module setup because `RESEND_API_KEY` is missing; it also contains a stale `/` “Hello World” assertion. |
 | Backend lint, no mutation | `cd backend && npx eslint "{src,apps,libs,test}/**/*.ts"` | Fails with 17 errors and 3 warnings. Do not use the package `lint` script casually because it includes `--fix`. |
 | Backend formatting, writes files | `cd backend && npm run format` | Available; run only when formatting changes are in scope. |

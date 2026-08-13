@@ -19,6 +19,7 @@ export class CardInvitationComponent {
     }
 
     rejectInvitation() {
-        console.log('reject invitation')
+        if (!this.invitation) return
+        this.dataService.rejectInvitation(this.invitation.id)
     }
 }

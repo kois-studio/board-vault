@@ -195,7 +195,7 @@ compliance:
       next_action: Add safe environment documentation and repository secret scanning.
     - id: SEC-003
       status: gap
-      evidence: user-scoped reads and legacy group routes use ownership or membership guards; invitation/membership creation derives actor IDs from JWT, while all-group listings, invitation deletion/rejection, group-join policy, and several authenticated notification, meeting, and legacy mutation controllers still lack consistent object-level guards
+      evidence: user-scoped reads and legacy group routes use ownership or membership guards; invitation/membership creation derives actor IDs from JWT and invitation lifecycle actions enforce sender/recipient ownership, while all-group listings, group-join policy, and several authenticated notification, meeting, and legacy mutation controllers still lack consistent object-level guards
       priority: critical
       next_action: Execute SEC-001 through SEC-004 in todo/06-agent-task-board.md.
     - id: SEC-004
