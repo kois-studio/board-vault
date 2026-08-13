@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common'
+import { ForbiddenException, Injectable, Logger } from '@nestjs/common'
 
 import { LogFeature } from '../../../common/decorators/logger.decorator'
 import { InvitationWithExtraData } from '../../../common/types/invitation.type'
@@ -54,6 +54,10 @@ export class ProfileService {
         // Step 1: get invitation data
         const invitationData = await this.invitationsService.getInvitationById(invitationId)
 
+        if (invitationData.toAccountId !== userId) {
+            throw new ForbiddenException('You are not the recipient of this invitation')
+        }
+
         // Step 2: get group data (it may have been deleted)
         const groupData = await this.groupsService.getGroupById(invitationData.groupId)
 
@@ -61,7 +65,7 @@ export class ProfileService {
         await this.groupMembershipsService.createGroupMembership({ accountId: invitationData.toAccountId, groupId: invitationData.groupId })
 
         // Step 4: delete the invitation
-        await this.invitationsService.deleteInvitationById(invitationId)
+        await this.invitationsService.deleteInvitationForRecipient(invitationId, userId)
 
         // Step 5: create the notification for the group owner
         const invited = await this.usersService.getUserById(invitationData.toAccountId)

@@ -563,6 +563,18 @@ export class DataService {
         })
     }
 
+    public rejectInvitation(invitationId: number) {
+        this.api.rejectInvitation(invitationId).subscribe({
+            next: () => {
+                this.userInvitations.update(invitations => invitations.filter(invitation => invitation.id !== invitationId))
+                this.toastService.success('Invitation declined')
+            },
+            error: () => {
+                this.toastService.error('Error declining invitation')
+            },
+        })
+    }
+
     // #region notifications
 
     public deleteNotification(notificationId: number) {

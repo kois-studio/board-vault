@@ -1,5 +1,5 @@
 import { ResultSet } from '@libsql/client/.'
-import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common'
+import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { invitationsSchema } from '../../../common/schemas'
 import { DatabaseService } from '../../common/database/database.service'
@@ -92,7 +92,27 @@ export class InvitationsService {
         }
     }
 
-    async deleteInvitationById(id: number): Promise<{ success: boolean }> {
+    async deleteInvitationById(id: number, requesterId: number): Promise<{ success: boolean }> {
+        const invitation = await this.getInvitationById(id)
+
+        if (invitation.fromAccountId !== requesterId) {
+            throw new ForbiddenException('You are not allowed to cancel this invitation')
+        }
+
+        return this.deleteInvitationRecord(id)
+    }
+
+    async deleteInvitationForRecipient(id: number, requesterId: number): Promise<{ success: boolean }> {
+        const invitation = await this.getInvitationById(id)
+
+        if (invitation.toAccountId !== requesterId) {
+            throw new ForbiddenException('You are not the recipient of this invitation')
+        }
+
+        return this.deleteInvitationRecord(id)
+    }
+
+    private async deleteInvitationRecord(id: number): Promise<{ success: boolean }> {
         this.LOGGER.log(`Deleting invitation with id ${id}`)
         const resultSet = await this.databaseService.deleteInvitationById(id)
 
@@ -103,9 +123,9 @@ export class InvitationsService {
         return { success: true }
     }
 
-    async rejectInvitation(invitationId: number): Promise<{ success: boolean }> {
+    async rejectInvitation(invitationId: number, requesterId: number): Promise<{ success: boolean }> {
         this.LOGGER.log(`Rejecting invitation with id ${invitationId}`)
 
-        return { success: true }
+        return this.deleteInvitationForRecipient(invitationId, requesterId)
     }
 }
