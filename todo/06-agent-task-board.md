@@ -77,7 +77,7 @@ Task: SEC-002
 Owner: Codex
 Claimed: 2026-08-13
 Branch/worktree: main / shared workspace
-Scope: invitation lifecycle authorization after the completed user/group ownership and actor-identity slices
+Scope: invite-only policy enforcement for the deprecated direct membership-creation route after the completed user/group ownership, actor-identity, and invitation-lifecycle slices
 ```
 
 Review: SEC-002
