@@ -37,6 +37,7 @@ The backend source also has corresponding service/type/schema areas. The current
 ## Ownership and consistency boundaries
 
 - User, group, collection, invitation, review, notification, meet, and proposal mutations are exposed through many service/controller paths.
+- The deprecated direct membership endpoint currently implements an invite-only join boundary: the authenticated account must have a pending invitation for the target group, and the invitation is consumed after membership creation. The broader product decision on self-join versus invite-only groups remains open in the product workstream.
 - A group creation flow in `DashboardService` creates the group, looks up its ID by name, and creates the owner membership as separate operations. The repository does not document atomicity or partial-failure behavior.
 - `Meet`/`MeetAccountGame` currently support historical play lookup, but the canonical model for planned sessions, attendance, planned games, played games, cancellation, and completion is unresolved.
 - Cache TTLs are declared in `cache.types.ts` and selected services invalidate keys, but cache ownership, stale-read behavior, disabled mode, and correctness tests are not documented.

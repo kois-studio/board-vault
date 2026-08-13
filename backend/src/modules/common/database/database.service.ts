@@ -706,6 +706,13 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    getInvitationByGroupAndRecipient(groupId: number, accountId: number) {
+        return this._tursoExecute({
+            sql: 'SELECT * FROM Invitation WHERE groupId = ? AND toAccountId = ?',
+            args: [groupId, accountId],
+        })
+    }
+
     async createInvitation(invitationDto: CreateInvitationBody) {
         await this._tursoExecute({
             sql: 'INSERT INTO Invitation (groupId, fromAccountId, toAccountId) VALUES (?, ?, ?)',

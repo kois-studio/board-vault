@@ -29,10 +29,7 @@ export class GroupMembershipsController {
     @ApiOperation({ summary: 'Create a new membership', deprecated: true })
     @ApiResponse({ status: 201, description: 'The membership has been succesfully created' })
     async createGroupMembership(@Req() request: { user: { userId: number } }, @Body() membershipDto: CreateGroupMembershipRequestBody) {
-        return this.groupMembershipsService.createGroupMembership({
-            ...membershipDto,
-            accountId: request.user.userId,
-        } as CreateGroupMembershipBody)
+        return this.groupMembershipsService.createGroupMembershipFromInvitation(request.user.userId, membershipDto.groupId)
     }
 
     @UseGuards(UserOwnershipGuard)

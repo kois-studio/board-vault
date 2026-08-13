@@ -82,9 +82,9 @@ Scope: invitation lifecycle authorization after the completed user/group ownersh
 
 Review: SEC-002
 
-Changed: Added `UserOwnershipGuard` to user-scoped reads; added `GroupOwnerGuard` and membership checks to reviewed legacy group routes; invitation and membership creation derive actor IDs from the verified JWT; invitation cancellation is sender-only, while rejection and acceptance are recipient-only.
-Verified: `cd backend && npm test -- --runInBand` (20 tests); `cd backend && npm run build`; `cd frontend && npm run build`; Prettier checks for affected files.
-Known follow-ups: Define group-join policy, then audit all-group listings, notifications, meetings, meet-account-games, and remaining legacy collection mutations.
+Changed: Added `UserOwnershipGuard` to user-scoped reads; added `GroupOwnerGuard` and membership checks to reviewed legacy group routes; invitation and membership creation derive actor IDs from the verified JWT; invitation cancellation is sender-only, rejection and acceptance are recipient-only; deprecated direct membership creation requires a pending invitation and consumes it after joining.
+Verified: `cd backend && npm test -- --runInBand` (22 tests); `cd backend && npm run build`; `cd frontend && npm run build`; Prettier checks for affected files.
+Known follow-ups: Resolve the broader self-join versus invite-only product decision, then audit all-group listings, notifications, meetings, meet-account-games, and remaining legacy collection mutations.
 
 When claiming a task, add:
 
