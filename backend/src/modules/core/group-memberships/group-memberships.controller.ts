@@ -3,11 +3,7 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
-import {
-    CreateGroupMembershipBody,
-    CreateGroupMembershipRequestBody,
-    GroupMembershipDto,
-} from '../../../common/types/group-membership.type'
+import { CreateGroupMembershipRequestBody, GroupMembershipDto } from '../../../common/types/group-membership.type'
 
 import { GroupMembershipsService } from './group-memberships.service'
 
