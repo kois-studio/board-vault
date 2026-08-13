@@ -120,6 +120,10 @@ export class Api {
         return this.http.delete<{ success: true }>(`${this.url}/invitations/${invitationId}`)
     }
 
+    rejectInvitation(invitationId: number) {
+        return this.http.post<{ success: true }>(`${this.url}/invitations/${invitationId}/reject`, {})
+    }
+
     createInvitation(groupId: number, username: string) {
         return this.http.post<UserType>(`${this.url}/invitations/byUsername`, { groupId, username })
     }
