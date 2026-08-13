@@ -8,13 +8,13 @@ import { GroupMembershipsService } from './group-memberships.service'
 
 describe('GroupMembershipsController actor identity', () => {
     it('derives the membership account from the authenticated user', async () => {
-        const createGroupMembership = jest.fn().mockResolvedValue({ success: true })
-        const controller = new GroupMembershipsController({ createGroupMembership } as unknown as GroupMembershipsService)
+        const createGroupMembershipFromInvitation = jest.fn().mockResolvedValue({ success: true })
+        const controller = new GroupMembershipsController({ createGroupMembershipFromInvitation } as unknown as GroupMembershipsService)
         const body = { groupId: 12, accountId: 999 } as unknown as CreateGroupMembershipRequestBody
 
         await controller.createGroupMembership({ user: { userId: 7 } }, body)
 
-        expect(createGroupMembership).toHaveBeenCalledWith({ groupId: 12, accountId: 7 })
+        expect(createGroupMembershipFromInvitation).toHaveBeenCalledWith(7, 12)
     })
 
     it('protects legacy membership reads and deletes with ownership checks', () => {
