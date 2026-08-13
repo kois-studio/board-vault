@@ -1,5 +1,5 @@
 import { ResultSet } from '@libsql/client/.'
-import { Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common'
+import { ForbiddenException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common'
 
 import { groupMembreshipsSchema } from '../../../common/schemas'
 import { CreateGroupMembershipBody, GroupMembershipDto } from '../../../common/types/group-membership.type'
@@ -81,6 +81,19 @@ export class GroupMembershipsService {
             this.LOGGER.error('Failed to create membership', error)
             throw new InternalServerErrorException('Failed to create membership')
         }
+    }
+
+    async createGroupMembershipFromInvitation(accountId: number, groupId: number) {
+        const invitation = await this.databaseService.getInvitationByGroupAndRecipient(groupId, accountId)
+
+        if (invitation.rows.length === 0) {
+            throw new ForbiddenException('A pending invitation is required to join this group')
+        }
+
+        await this.createGroupMembership({ accountId, groupId })
+        await this.databaseService.deleteInvitationById(Number(invitation.rows[0][0]))
+
+        return { success: true }
     }
 
     async deleteGroupMembershipById(accountId: number, groupId: number): Promise<{ success: boolean }> {
