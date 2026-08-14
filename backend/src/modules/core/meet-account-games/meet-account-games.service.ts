@@ -1,5 +1,5 @@
 import { ResultSet } from '@libsql/client/.'
-import { Injectable, Logger, NotFoundException } from '@nestjs/common'
+import { ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { meetAccountGamesSchema } from '../../../common/schemas/db-meet-account-game.schema'
 import { DatabaseService } from '../../common/database/database.service'
@@ -115,6 +115,26 @@ export class MeetAccountGamesService {
     }
 
     // #region other
+
+    private async _assertAccountCanAccessMeet(accountId: number, meetId: number) {
+        const resultSet = await this.databaseService.getMeetByIdForAccount(meetId, accountId)
+
+        if (resultSet.rows.length === 0) {
+            throw new ForbiddenException('You are not a member of this meet group')
+        }
+    }
+
+    async createMeetAccountGameForAccount(accountId: number, meetId: number, gameId: number): Promise<MeetAccountGameDto> {
+        await this._assertAccountCanAccessMeet(accountId, meetId)
+
+        return this.createMeetAccountGame(accountId, meetId, gameId)
+    }
+
+    async deleteMeetAccountGameForAccount(accountId: number, meetId: number, gameId: number): Promise<{ success: boolean }> {
+        await this._assertAccountCanAccessMeet(accountId, meetId)
+
+        return this.deleteMeetAccountGame(accountId, meetId, gameId)
+    }
 
     async createMeetAccountGame(accountId: number, meetId: number, gameId: number): Promise<MeetAccountGameDto> {
         this.LOGGER.log(`Creating meetAccountGame with accountId ${accountId}, meetId ${meetId} and gameId ${gameId}`)
