@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuard
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
+import { AdminGuard } from '../../../common/guards/admin.guard'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
 import { SuccessDto } from '../../../common/types/auth.type'
 import { CreateUserBody, UpdateUserBody, UserGetDto, UserUpdateGamesBody } from '../../../common/types/user.type'
@@ -16,8 +17,10 @@ export class UsersController {
     constructor(private readonly usersService: UsersService) {}
 
     @Get('/')
+    @UseGuards(AdminGuard)
     @ApiOperation({ summary: 'Get all users', deprecated: true })
     @ApiResponse({ status: 200, type: [UserGetDto], description: 'List of all users' })
+    @ApiResponse({ status: 403, description: 'Administrator access required' })
     async getUsers() {
         return this.usersService.getUsers()
     }
