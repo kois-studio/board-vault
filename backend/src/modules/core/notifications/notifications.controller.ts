@@ -1,8 +1,8 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Req, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
-import { CreateNotificationBody, NotificationDto, UpdateNotificationBody } from '../../../common/types/notification.type'
+import { CreateNotificationRequestBody, NotificationDto, UpdateNotificationRequestBody } from '../../../common/types/notification.type'
 
 import { NotificationsService } from './notifications.service'
 
@@ -16,23 +16,23 @@ export class NotificationsController {
     @Get('/')
     @ApiOperation({ summary: 'Get all notifications', deprecated: true })
     @ApiResponse({ status: 200, type: [NotificationDto], description: 'List of all notifications' })
-    async getNotifications() {
-        return this.notificationsService.getNotifications()
+    async getNotifications(@Req() request: { user: { userId: number } }) {
+        return this.notificationsService.getNotificationsByAccountId(request.user.userId)
     }
 
     @Post('/')
     @ApiOperation({ summary: 'Create a new notification', deprecated: true })
     @ApiResponse({ status: 201, description: 'The notification has been succesfully created' })
-    async createNotification(@Body() notificationDto: CreateNotificationBody) {
-        return this.notificationsService.createNotification(notificationDto)
+    async createNotification(@Req() request: { user: { userId: number } }, @Body() notificationDto: CreateNotificationRequestBody) {
+        return this.notificationsService.createNotification({ ...notificationDto, accountId: request.user.userId })
     }
 
     @Get('/:notificationId')
     @ApiOperation({ summary: 'Get notification by id', deprecated: true })
     @ApiResponse({ status: 200, type: NotificationDto, description: 'Notification found' })
     @ApiResponse({ status: 404, description: 'Notification not found' })
-    getNotificationById(@Param('notificationId', ParseIntPipe) notificationId: number) {
-        return this.notificationsService.getNotificationById(notificationId)
+    getNotificationById(@Req() request: { user: { userId: number } }, @Param('notificationId', ParseIntPipe) notificationId: number) {
+        return this.notificationsService.getNotificationById(notificationId, request.user.userId)
     }
 
     @Put(':notificationId')
@@ -40,16 +40,20 @@ export class NotificationsController {
     @ApiResponse({ status: 200, description: 'The notification has been successfully updated.' })
     @ApiResponse({ status: 404, description: 'Notification not found.' })
     updateNotification(
+        @Req() request: { user: { userId: number } },
         @Param('notificationId', ParseIntPipe) notificationId: number,
-        @Body() partialNotificationDto: UpdateNotificationBody,
+        @Body() partialNotificationDto: UpdateNotificationRequestBody,
     ) {
-        return this.notificationsService.updateNotification(notificationId, partialNotificationDto)
+        return this.notificationsService.updateNotification(notificationId, request.user.userId, partialNotificationDto)
     }
 
     @Delete('/:notificationId')
     @ApiOperation({ summary: 'Delete a notification by Id' })
     @ApiResponse({ status: 200, description: 'The notification has been succesfully deleted' })
-    async deleteNotificationById(@Param('notificationId', ParseIntPipe) notificationId: number) {
-        return this.notificationsService.deleteNotificationById(notificationId)
+    async deleteNotificationById(
+        @Req() request: { user: { userId: number } },
+        @Param('notificationId', ParseIntPipe) notificationId: number,
+    ) {
+        return this.notificationsService.deleteNotificationById(notificationId, request.user.userId)
     }
 }

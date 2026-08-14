@@ -759,17 +759,17 @@ export class DatabaseService implements OnModuleInit {
         return this._tursoExecute('SELECT * FROM Notification')
     }
 
-    getNotificationById(id: number) {
+    getNotificationById(id: number, accountId: number) {
         return this._tursoExecute({
-            sql: 'SELECT * FROM Notification WHERE id = ?',
-            args: [id],
+            sql: 'SELECT * FROM Notification WHERE id = ? AND accountId = ?',
+            args: [id, accountId],
         })
     }
 
     getNotificationsByAccountId(accountId: number) {
         return this._tursoExecute({
             sql: `
-                SELECT n.id, n.accountId, n.type, n.message, n.createdAt, n.isRead
+                SELECT n.id, n.accountId, n.type, n.message, n.data, n.createdAt, n.isRead
                 FROM Notification n
                 WHERE n.accountId = ?
             `,
@@ -786,28 +786,13 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
-    updateNotification(id: number, partialNotificationDto: UpdateNotificationBody) {
+    updateNotification(id: number, accountId: number, partialNotificationDto: Pick<UpdateNotificationBody, 'isRead'>) {
         // Array to store fields to update
         const fields = []
         const args = []
 
-        // Dynamically build the update query based on the provided properties
-        if (partialNotificationDto.accountId) {
-            fields.push('accountId = ?')
-            args.push(partialNotificationDto.accountId)
-        }
-
-        if (partialNotificationDto.type) {
-            fields.push('type = ?')
-            args.push(partialNotificationDto.type)
-        }
-
-        if (partialNotificationDto.message) {
-            fields.push('message = ?')
-            args.push(partialNotificationDto.message)
-        }
-
-        if (partialNotificationDto.isRead) {
+        // Only the recipient's read state is mutable through the user-facing route.
+        if (partialNotificationDto.isRead !== undefined) {
             fields.push('isRead = ?')
             args.push(partialNotificationDto.isRead)
         }
@@ -817,24 +802,24 @@ export class DatabaseService implements OnModuleInit {
             throw new BadRequestException('No fields to update')
         }
 
-        // Add user id as the last argument
-        args.push(id)
+        // Scope the mutation to the authenticated recipient.
+        args.push(id, accountId)
 
         // Construct the final query
         const sql = `
           UPDATE Notification
           SET ${fields.join(', ')}
-          WHERE id = ?
+          WHERE id = ? AND accountId = ?
         `
 
         // Execute the query
         return this._tursoExecute({ sql, args })
     }
 
-    deleteNotificationById(id: number) {
+    deleteNotificationById(id: number, accountId: number) {
         return this._tursoExecute({
-            sql: 'DELETE FROM Notification WHERE id = ?',
-            args: [id],
+            sql: 'DELETE FROM Notification WHERE id = ? AND accountId = ?',
+            args: [id, accountId],
         })
     }
 
