@@ -13,7 +13,7 @@
 | Check | Result | Interpretation |
 |---|---|---|
 | `cd backend && npm run build` | Pass | TypeScript/Nest build currently compiles. |
-| `cd backend && npm test -- --runInBand` | Pass | Forty-eight focused tests cover profile-update filtering, user/group ownership, group/membership listing boundaries, collection route ownership, invitation actor identity/lifecycle, invite-only joining, notification ownership, meet reads, meet-account-game membership, admin reviewer identity/guard behavior, and password-reset response behavior; broader authorization coverage remains absent. |
+| `cd backend && npm test -- --runInBand` | Pass | Forty-nine focused tests cover profile-update filtering, user/group ownership, group/membership listing boundaries, collection route ownership, invitation actor identity/lifecycle, invite-only joining, notification ownership, meet reads, meet-account-game membership, admin reviewer identity/guard behavior, password-reset response behavior, and deprecated global-user-list protection; broader authorization coverage remains absent. |
 | `cd backend && npm run test:e2e -- --runInBand` | Fail | Test setup throws because `RESEND_API_KEY` is missing; the test itself expects a stale `/` Hello World route. |
 | `cd backend && npx eslint "{src,apps,libs,test}/**/*.ts"` | Fail | 17 errors and 3 warnings across schemas, database, collection, play, and profile code. |
 | `cd frontend && npm run build` | Pass with warnings | Bundle budget, Sass deprecation, and selector warnings remain. |

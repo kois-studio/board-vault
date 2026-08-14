@@ -118,6 +118,22 @@ Changed: Forgot-password requests now return the same successful outcome when th
 Verified: `cd backend && npm test -- --runInBand` (48 tests); `cd backend && npm run build`; Prettier checks for affected auth files.
 Known follow-ups: Add persisted reset-token expiry and rate limiting, choose deployment-safe CORS origins, and activate global request validation in separate contract-aware slices.
 
+Most recent claim:
+
+```text
+Task: SEC-002
+Owner: Codex
+Claimed: 2026-08-15
+Branch/worktree: main / shared workspace
+Scope: restrict the deprecated global user listing to administrators after the completed user-scoped authorization slices
+```
+
+Review: SEC-002
+
+Changed: The deprecated `GET /users/` global listing now requires `AdminGuard`; the current frontend has no caller for this route, and a regression test proves a non-admin receives 403.
+Verified: `cd backend && npm test -- --runInBand` (49 tests); `cd backend && npm run build`; Prettier checks for affected user files.
+Known follow-ups: Review user response-field/privacy exposure, then define the canonical session model and the remaining group-join policy.
+
 When claiming a task, add:
 
 ```text
