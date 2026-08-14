@@ -923,14 +923,27 @@ export class DatabaseService implements OnModuleInit {
 
     // #region Meetings
 
-    getMeets() {
-        return this._tursoExecute('SELECT * FROM Meet')
+    getMeetsForAccount(accountId: number) {
+        return this._tursoExecute({
+            sql: `
+                SELECT DISTINCT m.*
+                FROM Meet m
+                INNER JOIN GroupMembership gm ON gm.groupId = m.groupId
+                WHERE gm.accountId = ?
+            `,
+            args: [accountId],
+        })
     }
 
-    getMeetById(meetId: number) {
+    getMeetByIdForAccount(meetId: number, accountId: number) {
         return this._tursoExecute({
-            sql: 'SELECT * FROM Meet WHERE id = ?',
-            args: [meetId],
+            sql: `
+                SELECT m.*
+                FROM Meet m
+                INNER JOIN GroupMembership gm ON gm.groupId = m.groupId
+                WHERE m.id = ? AND gm.accountId = ?
+            `,
+            args: [meetId, accountId],
         })
     }
 
@@ -941,7 +954,7 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
-    getMeetDetailsById(meetId: number) {
+    getMeetDetailsByIdForAccount(meetId: number, accountId: number) {
         return this._tursoExecute({
             sql: `
             SELECT 
@@ -961,9 +974,10 @@ export class DatabaseService implements OnModuleInit {
                     WHERE mg.meetId = m.id
                 ) AS playedGames
             FROM Meet m
-            WHERE m.id = ?
+            INNER JOIN GroupMembership gm ON gm.groupId = m.groupId
+            WHERE m.id = ? AND gm.accountId = ?
             `,
-            args: [meetId],
+            args: [meetId, accountId],
         })
     }
 

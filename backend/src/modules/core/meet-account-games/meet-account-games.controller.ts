@@ -1,4 +1,4 @@
-import { Controller, Delete, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common'
+import { Controller, Delete, Param, ParseIntPipe, Post, Req, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
@@ -19,11 +19,11 @@ export class MeetAccountGamesController {
     @ApiResponse({ status: 200, type: MeetAccountGameDto, description: 'The meetAccountGames has been successfully created.' })
     @ApiResponse({ status: 404, description: 'MeetId not found.' })
     createMeetAccountGame(
-        @Param('accountId', ParseIntPipe) accountId: number,
+        @Req() request: { user: { userId: number } },
         @Param('meetId', ParseIntPipe) meetId: number,
         @Param('gameId', ParseIntPipe) gameId: number,
     ) {
-        return this.meetAccountGamesService.createMeetAccountGame(accountId, meetId, gameId)
+        return this.meetAccountGamesService.createMeetAccountGameForAccount(request.user.userId, meetId, gameId)
     }
 
     @Delete(':accountId/:meetId/:gameId')
@@ -31,10 +31,10 @@ export class MeetAccountGamesController {
     @ApiResponse({ status: 200, type: SuccessDto, description: 'The meetGames has been successfully updated.' })
     @ApiResponse({ status: 404, description: 'MeetId not found.' })
     updateMeetAccountGame(
-        @Param('accountId', ParseIntPipe) accountId: number,
+        @Req() request: { user: { userId: number } },
         @Param('meetId', ParseIntPipe) meetId: number,
         @Param('gameId', ParseIntPipe) gameId: number,
     ) {
-        return this.meetAccountGamesService.deleteMeetAccountGame(accountId, meetId, gameId)
+        return this.meetAccountGamesService.deleteMeetAccountGameForAccount(request.user.userId, meetId, gameId)
     }
 }
