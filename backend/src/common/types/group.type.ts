@@ -24,6 +24,7 @@ export class GroupDto {
  * POST requests --> no db generated props
  */
 export class CreateGroupBody extends OmitType(GroupDto, ['id', 'createdAt']) {}
+export class CreateGroupRequestBody extends OmitType(CreateGroupBody, ['createdBy']) {}
 
 /**
  * PUT requests --> you can only update the group name

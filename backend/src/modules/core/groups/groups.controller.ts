@@ -1,10 +1,10 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Req, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { GroupOwnerGuard } from '../../../common/guards/group-owner.guard'
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
 import { UserInGroupGuard } from '../../../common/guards/user-in-group.guard'
-import { CreateGroupBody, GroupDto, UpdateGroupBody } from '../../../common/types/group.type'
+import { CreateGroupRequestBody, GroupDto, UpdateGroupBody } from '../../../common/types/group.type'
 import { InvitationWithAccountsData } from '../../../common/types/invitation.type'
 
 import { GroupsService } from './groups.service'
@@ -19,15 +19,15 @@ export class GroupsController {
     @Get('/')
     @ApiOperation({ summary: 'Get all groups', deprecated: true })
     @ApiResponse({ status: 200, type: [GroupDto], description: 'List of all groups' })
-    async getGroups() {
-        return this.groupsService.getGroups()
+    async getGroups(@Req() request: { user: { userId: number } }) {
+        return this.groupsService.getGroupsForAccount(request.user.userId)
     }
 
     @Post('/')
     @ApiOperation({ summary: 'Create a new group', deprecated: true })
     @ApiResponse({ status: 201, description: 'The group has been succesfully created' })
-    async createGroup(@Body() groupBody: CreateGroupBody) {
-        return this.groupsService.createGroup(groupBody)
+    async createGroup(@Req() request: { user: { userId: number } }, @Body() groupBody: CreateGroupRequestBody) {
+        return this.groupsService.createGroup({ ...groupBody, createdBy: request.user.userId })
     }
 
     @UseGuards(UserInGroupGuard)
