@@ -45,4 +45,24 @@ describe('UserOwnershipGuard', () => {
         expect(hasOwnershipGuard(ProfileController.prototype, 'getNotificationsByAccountId')).toBe(true)
         expect(hasOwnershipGuard(ProfileController.prototype, 'getUserInvitations')).toBe(true)
     })
+
+    it('protects every collection read and mutation route', () => {
+        const collectionMethods = [
+            'getGamesOwnedByUser',
+            'getGameViewByUserId',
+            'addGameToUserCollection',
+            'removeGameFromUserCollection',
+            'updateGameOwnership',
+            'toggleWishlist',
+            'getGamesNotOwnedByUser',
+            'getReviewsOfUser',
+            'saveGameReview',
+            'getUserWishlist',
+            'getUserCollectionActivities',
+        ]
+
+        for (const method of collectionMethods) {
+            expect(hasOwnershipGuard(CollectionController.prototype, method)).toBe(true)
+        }
+    })
 })
