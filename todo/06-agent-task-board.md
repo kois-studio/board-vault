@@ -11,7 +11,7 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 | SEC-001 | REVIEW | Security | Remove privileged fields from public user updates and add privilege-boundary tests. | None |
 | SEC-002 | REVIEW | Security | Audit and enforce object-level authorization across user, group, invitation, notification, meeting, and collection APIs. | SEC-001 recommended |
 | SEC-003 | REVIEW | Security | Derive admin reviewer identity from JWT and add admin authorization tests. | SEC-002 |
-| SEC-004 | TODO | Security | Enable strict validation, rate limits, safe CORS, token expiry, and generic reset responses. | None |
+| SEC-004 | REVIEW | Security | Enable strict validation, rate limits, safe CORS, token expiry, and generic reset responses. | None |
 | DATA-001 | TODO | Data model | Reconcile repository SQL and services against the owner-confirmed deployed schema and produce a code/schema drift report. | None |
 | DATA-002 | TODO | Data model | Add numbered migrations and make the schema reproducible from empty state. | DATA-001 |
 | DATA-003 | TODO | Data model | Choose and implement the canonical session schema, including attendance and planned/played games. | DATA-001 |
@@ -101,6 +101,22 @@ Review: SEC-003
 Changed: Admin proposal approval, rejection, and duplicate actions now derive `reviewedBy` from the verified JWT; reviewer query parameters were removed from the frontend API; `AdminGuard` coverage now includes administrator, non-administrator, and missing-user paths.
 Verified: `cd backend && npm test -- --runInBand` (46 tests); `cd backend && npm run build`; `cd frontend && npm run build` (existing Sass, selector, and bundle-budget warnings); Prettier checks for affected files.
 Known follow-ups: Review global legacy user exposure, then define the canonical session model and admin action audit logging.
+
+Most recent claim:
+
+```text
+Task: SEC-004
+Owner: Codex
+Claimed: 2026-08-15
+Branch/worktree: main / shared workspace
+Scope: password-reset enumeration resistance; preserve validation, rate-limit, CORS, and reset-token-expiry findings for separate follow-up slices
+```
+
+Review: SEC-004
+
+Changed: Forgot-password requests now return the same successful outcome when the requested email does not belong to an account; existing-account requests continue to create and send a reset token. Added service tests for both paths.
+Verified: `cd backend && npm test -- --runInBand` (48 tests); `cd backend && npm run build`; Prettier checks for affected auth files.
+Known follow-ups: Add persisted reset-token expiry and rate limiting, choose deployment-safe CORS origins, and activate global request validation in separate contract-aware slices.
 
 When claiming a task, add:
 
