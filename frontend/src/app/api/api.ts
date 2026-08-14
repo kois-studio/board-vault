@@ -388,7 +388,6 @@ export class Api {
 
     approveGameProposal(
         id: number,
-        reviewerId: number,
         approvalData: {
             reviewNotes?: string
             imageUrl?: string
@@ -399,25 +398,18 @@ export class Api {
             tagIds?: number[]
         },
     ) {
-        const params = new URLSearchParams()
-        params.append('reviewerId', reviewerId.toString())
-
         return this.http.post<{ success: boolean; createdGameId?: number }>(
-            `${this.url}/admin/proposals/${id}/approve?${params.toString()}`,
+            `${this.url}/admin/proposals/${id}/approve`,
             approvalData,
         )
     }
 
-    rejectGameProposal(id: number, reviewerId: number, rejectionData: { reviewNotes: string }) {
-        const params = new URLSearchParams()
-        params.append('reviewerId', reviewerId.toString())
-
-        return this.http.post<{ success: boolean }>(`${this.url}/admin/proposals/${id}/reject?${params.toString()}`, rejectionData)
+    rejectGameProposal(id: number, rejectionData: { reviewNotes: string }) {
+        return this.http.post<{ success: boolean }>(`${this.url}/admin/proposals/${id}/reject`, rejectionData)
     }
 
-    markGameProposalAsDuplicate(id: number, reviewerId: number, reviewNotes?: string) {
+    markGameProposalAsDuplicate(id: number, reviewNotes?: string) {
         const params = new URLSearchParams()
-        params.append('reviewerId', reviewerId.toString())
         if (reviewNotes) params.append('reviewNotes', reviewNotes)
 
         return this.http.post<{ success: boolean }>(`${this.url}/admin/proposals/${id}/duplicate?${params.toString()}`, {})

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, UseGuards } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, Req, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { AdminGuard } from '../../../common/guards/admin.guard'
@@ -165,12 +165,11 @@ export class AdminController {
         },
     })
     async approveGameProposal(
+        @Req() request: { user: { userId: number } },
         @Param('id') id: string,
         @Body() approvalData: ApproveGameProposalBody,
-        // TODO: Get reviewerId from JWT token
-        @Query('reviewerId', ParseIntPipe) reviewerId: number,
     ) {
-        return this.adminService.approveGameProposal(Number(id), reviewerId, approvalData)
+        return this.adminService.approveGameProposal(Number(id), request.user.userId, approvalData)
     }
 
     @Post('/proposals/:id/reject')
@@ -181,12 +180,11 @@ export class AdminController {
         type: SuccessDto,
     })
     async rejectGameProposal(
+        @Req() request: { user: { userId: number } },
         @Param('id') id: string,
         @Body() rejectionData: RejectGameProposalBody,
-        // TODO: Get reviewerId from JWT token
-        @Query('reviewerId', ParseIntPipe) reviewerId: number,
     ) {
-        return this.adminService.rejectGameProposal(Number(id), reviewerId, rejectionData)
+        return this.adminService.rejectGameProposal(Number(id), request.user.userId, rejectionData)
     }
 
     @Post('/proposals/:id/duplicate')
@@ -197,12 +195,11 @@ export class AdminController {
         type: SuccessDto,
     })
     async markGameProposalAsDuplicate(
+        @Req() request: { user: { userId: number } },
         @Param('id') id: string,
-        // TODO: Get reviewerId from JWT token
-        @Query('reviewerId', ParseIntPipe) reviewerId: number,
         @Query('reviewNotes') reviewNotes?: string,
     ) {
-        return this.adminService.markGameProposalAsDuplicate(Number(id), reviewerId, reviewNotes)
+        return this.adminService.markGameProposalAsDuplicate(Number(id), request.user.userId, reviewNotes)
     }
 
     @Delete('/proposals/:id')

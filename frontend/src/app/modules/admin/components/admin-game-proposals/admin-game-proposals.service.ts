@@ -68,14 +68,8 @@ export class AdminGameProposalsService {
             tagIds?: number[]
         },
     ): Promise<boolean> {
-        const currentUserId = this.loginService.currentUserId()
-        if (!currentUserId) {
-            this.toastService.error('User not authenticated')
-            return false
-        }
-
         try {
-            const response = await this.api.approveGameProposal(proposalId, currentUserId, approvalData).toPromise()
+            const response = await this.api.approveGameProposal(proposalId, approvalData).toPromise()
             if (response?.success) {
                 this.toastService.success('Game proposal approved successfully!')
                 await this.loadProposals(this.currentStatus() || undefined, this.currentPage(), this.itemsPerPage())
@@ -90,14 +84,8 @@ export class AdminGameProposalsService {
     }
 
     public async rejectProposal(proposalId: number, reviewNotes: string): Promise<boolean> {
-        const currentUserId = this.loginService.currentUserId()
-        if (!currentUserId) {
-            this.toastService.error('User not authenticated')
-            return false
-        }
-
         try {
-            const response = await this.api.rejectGameProposal(proposalId, currentUserId, { reviewNotes }).toPromise()
+            const response = await this.api.rejectGameProposal(proposalId, { reviewNotes }).toPromise()
             if (response?.success) {
                 this.toastService.success('Game proposal rejected')
                 await this.loadProposals(this.currentStatus() || undefined, this.currentPage(), this.itemsPerPage())
@@ -112,14 +100,8 @@ export class AdminGameProposalsService {
     }
 
     public async markAsDuplicate(proposalId: number, reviewNotes?: string): Promise<boolean> {
-        const currentUserId = this.loginService.currentUserId()
-        if (!currentUserId) {
-            this.toastService.error('User not authenticated')
-            return false
-        }
-
         try {
-            const response = await this.api.markGameProposalAsDuplicate(proposalId, currentUserId, reviewNotes).toPromise()
+            const response = await this.api.markGameProposalAsDuplicate(proposalId, reviewNotes).toPromise()
             if (response?.success) {
                 this.toastService.success('Game proposal marked as duplicate')
                 await this.loadProposals(this.currentStatus() || undefined, this.currentPage(), this.itemsPerPage())
