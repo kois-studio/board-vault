@@ -113,21 +113,23 @@ export class AuthService {
     }
 
     async forgotPassword(email: string): Promise<void> {
-        // Check if the email exists in the database
-        const user = await this.usersService.getUserByEmail(email, true)
+        try {
+            const user = await this.usersService.getUserByEmail(email)
 
-        if (user instanceof Error || !user) {
-            throw new NotFoundException('Email not found')
+            // Generate a unique password reset token
+            const resetToken = randomUUID()
+
+            // Store the reset token in the database with an expiration time
+            await this.databaseService.updateUserRecord(user.id, { password_reset_token: resetToken })
+
+            // Send password reset email
+            await this.emailService.sendPasswordResetEmail(email, resetToken)
+        } catch (error) {
+            if (error instanceof NotFoundException) {
+                return
+            }
+            throw error
         }
-
-        // Generate a unique password reset token
-        const resetToken = randomUUID()
-
-        // Store the reset token in the database with an expiration time
-        await this.databaseService.updateUserRecord(user.id, { password_reset_token: resetToken })
-
-        // Send password reset email
-        await this.emailService.sendPasswordResetEmail(email, resetToken)
     }
 
     async resetPassword(token: string, password: string): Promise<boolean> {
