@@ -3,6 +3,7 @@ import { Test } from '@nestjs/testing'
 import * as request from 'supertest'
 
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
+import { AdminGuard } from '../../../common/guards/admin.guard'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
 import { DatabaseService } from '../../common/database/database.service'
 
@@ -24,7 +25,13 @@ describe('UsersController profile update boundary', () => {
 
         const module = await Test.createTestingModule({
             controllers: [UsersController],
-            providers: [UsersService, { provide: DatabaseService, useValue: { updateUserProfile } }, JwtAuthGuard, UserOwnershipGuard],
+            providers: [
+                UsersService,
+                { provide: DatabaseService, useValue: { updateUserProfile } },
+                JwtAuthGuard,
+                UserOwnershipGuard,
+                AdminGuard,
+            ],
         })
             .overrideGuard(JwtAuthGuard)
             .useValue({
@@ -80,5 +87,9 @@ describe('UsersController profile update boundary', () => {
             .expect(400)
 
         expect(updateUserProfile).toHaveBeenCalledWith(1, {})
+    })
+
+    it('does not expose the deprecated global user list to a non-admin', async () => {
+        await request(app.getHttpServer()).get('/users/').expect(403)
     })
 })
