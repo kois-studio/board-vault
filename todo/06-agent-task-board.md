@@ -77,14 +77,14 @@ Task: SEC-002
 Owner: Codex
 Claimed: 2026-08-15
 Branch/worktree: main / shared workspace
-Scope: legacy meet reads and meet-account-game actor/membership boundaries after the completed group, invitation, join, and notification slices
+Scope: collection route ownership audit after the completed group, invitation, notification, and meet access slices
 ```
 
 Review: SEC-002
 
-Changed: Added `UserOwnershipGuard` to user-scoped reads; legacy group listing is limited to owned/member groups; legacy membership listing is limited to the authenticated account; legacy group creation derives `createdBy` from the verified JWT; reviewed legacy meet lists/details require group membership; meet-account-game create/delete derives the account from the verified JWT and requires meet-group membership; added `GroupOwnerGuard` and membership checks to reviewed legacy group routes; invitation and membership creation derive actor IDs from the verified JWT; invitation cancellation is sender-only, rejection and acceptance are recipient-only; deprecated direct membership creation requires a pending invitation and consumes it after joining; legacy notification list, ID reads, creation, read-state updates, and deletes derive or enforce the authenticated account, with account-scoped reads retaining notification data.
-Verified: `cd backend && npm test -- --runInBand` (39 tests); `cd backend && npm run build`; Prettier checks for affected files.
-Known follow-ups: Resolve the broader self-join versus invite-only product decision, then audit remaining legacy collection mutations and define the canonical session model.
+Changed: Added `UserOwnershipGuard` to user-scoped reads and every current collection route; legacy group listing is limited to owned/member groups; legacy membership listing is limited to the authenticated account; legacy group creation derives `createdBy` from the verified JWT; reviewed legacy meet lists/details require group membership; meet-account-game create/delete derives the account from the verified JWT and requires meet-group membership; added `GroupOwnerGuard` and membership checks to reviewed legacy group routes; invitation and membership creation derive actor IDs from the verified JWT; invitation cancellation is sender-only, rejection and acceptance are recipient-only; deprecated direct membership creation requires a pending invitation and consumes it after joining; legacy notification list, ID reads, creation, read-state updates, and deletes derive or enforce the authenticated account, with account-scoped reads retaining notification data.
+Verified: `cd backend && npm test -- --runInBand` (40 tests); `cd backend && npm run build`; Prettier checks for affected files.
+Known follow-ups: Resolve the broader self-join versus invite-only product decision, then continue with admin reviewer identity and global legacy exposure review while defining the canonical session model.
 
 When claiming a task, add:
 
