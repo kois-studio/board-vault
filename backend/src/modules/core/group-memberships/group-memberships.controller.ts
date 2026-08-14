@@ -17,8 +17,8 @@ export class GroupMembershipsController {
     @Get('/')
     @ApiOperation({ summary: 'Get all memberships', deprecated: true })
     @ApiResponse({ status: 200, type: [GroupMembershipDto], description: 'List of all memberships' })
-    async getGroupMemberships() {
-        return this.groupMembershipsService.getGroupMemberships()
+    async getGroupMemberships(@Req() request: { user: { userId: number } }) {
+        return this.groupMembershipsService.getGroupMembershipsByAccountId(request.user.userId)
     }
 
     @Post('/')
