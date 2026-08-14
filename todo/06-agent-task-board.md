@@ -75,16 +75,16 @@ Most recent claim:
 ```text
 Task: SEC-002
 Owner: Codex
-Claimed: 2026-08-13
+Claimed: 2026-08-14
 Branch/worktree: main / shared workspace
-Scope: invite-only policy enforcement for the deprecated direct membership-creation route after the completed user/group ownership, actor-identity, and invitation-lifecycle slices
+Scope: notification ownership and response correctness after the completed user/group ownership, actor-identity, invitation lifecycle, and legacy join slices
 ```
 
 Review: SEC-002
 
-Changed: Added `UserOwnershipGuard` to user-scoped reads; added `GroupOwnerGuard` and membership checks to reviewed legacy group routes; invitation and membership creation derive actor IDs from the verified JWT; invitation cancellation is sender-only, rejection and acceptance are recipient-only; deprecated direct membership creation requires a pending invitation and consumes it after joining.
-Verified: `cd backend && npm test -- --runInBand` (22 tests); `cd backend && npm run build`; `cd frontend && npm run build`; Prettier checks for affected files.
-Known follow-ups: Resolve the broader self-join versus invite-only product decision, then audit all-group listings, notifications, meetings, meet-account-games, and remaining legacy collection mutations.
+Changed: Added `UserOwnershipGuard` to user-scoped reads; added `GroupOwnerGuard` and membership checks to reviewed legacy group routes; invitation and membership creation derive actor IDs from the verified JWT; invitation cancellation is sender-only, rejection and acceptance are recipient-only; deprecated direct membership creation requires a pending invitation and consumes it after joining; legacy notification list, ID reads, creation, read-state updates, and deletes derive or enforce the authenticated account, with account-scoped reads retaining notification data.
+Verified: `cd backend && npm test -- --runInBand` (28 tests); `cd backend && npm run build`; Prettier checks for affected files.
+Known follow-ups: Resolve the broader self-join versus invite-only product decision, then audit all-group listings, meetings, meet-account-games, and remaining legacy collection mutations.
 
 When claiming a task, add:
 

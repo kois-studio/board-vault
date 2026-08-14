@@ -10,9 +10,9 @@ Statuses are `Planned`, `Blocked`, or `Deferred` until evidence changes them. Pr
 
 - **Status:** In progress
 - **Affected area:** `backend/src/common/guards/`, `backend/src/modules/core/`, `backend/src/modules/features/`
-- **Evidence:** SEC-001 has a runtime profile-update boundary and passing denied/filtered-input tests. SEC-002 protects user-scoped reads with `UserOwnershipGuard`, reviewed legacy group routes with membership/owner guards, invitation/membership creation derives actor IDs from JWT, invitation lifecycle actions enforce sender/recipient ownership, and deprecated direct joining requires a pending invitation; all-group listings, the broader group-join product decision, and several legacy object mutations still need review.
+- **Evidence:** SEC-001 has a runtime profile-update boundary and passing denied/filtered-input tests. SEC-002 protects user-scoped reads with `UserOwnershipGuard`, reviewed legacy group routes with membership/owner guards, invitation/membership creation derives actor IDs from JWT, invitation lifecycle actions enforce sender/recipient ownership, deprecated direct joining requires a pending invitation, and legacy notification reads/mutations are scoped to the authenticated account; all-group listings, the broader group-join product decision, and remaining legacy object mutations still need review.
 - **Risk:** Cross-user or cross-group data access and privilege escalation.
-- **Next action:** Review this invite-only legacy join boundary, resolve the broader group-join product decision in `todo/01-product-direction.md`, then audit all-group listings, notifications, meetings, and remaining legacy mutations.
+- **Next action:** Resolve the broader group-join product decision in `todo/01-product-direction.md`, then audit all-group listings, meetings, meet-account-games, and remaining legacy collection mutations.
 - **Dependencies:** None; coordinate with the canonical session/data decision.
 
 ### READINESS-002 [Critical] TS-005/NEST-004/API-002 — Activate boundary validation

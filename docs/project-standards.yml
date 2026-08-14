@@ -10,8 +10,8 @@ project:
   name: board-vault
   lifecycle: existing
   maturity: active foundation; pre-launch
-  audited_commit: 74d0c8c
-  audit_scope: documentation, staged Clerk authentication integration, SEC-001 profile-update boundary, and SEC-002 user-scoped, group ownership, invitation/membership identity, invitation lifecycle, and invite-only legacy join slices; broader object authorization remains incomplete
+  audited_commit: dbcec65
+  audit_scope: documentation, staged Clerk authentication integration, SEC-001 profile-update boundary, and SEC-002 user-scoped, group ownership, invitation/membership identity, invitation lifecycle, invite-only legacy join, and notification ownership slices; broader object authorization remains incomplete
 
 standards:
   - documentation
@@ -195,7 +195,7 @@ compliance:
       next_action: Add safe environment documentation and repository secret scanning.
     - id: SEC-003
       status: gap
-      evidence: user-scoped reads and legacy group routes use ownership or membership guards; invitation/membership creation derives actor IDs from JWT, invitation lifecycle actions enforce sender/recipient ownership, and deprecated direct joining requires a pending invitation, while all-group listings, the broader group-join product decision, and several authenticated notification, meeting, and legacy mutation controllers still lack consistent object-level guards
+      evidence: user-scoped reads and legacy group routes use ownership or membership guards; invitation/membership creation derives actor IDs from JWT, invitation lifecycle actions enforce sender/recipient ownership, deprecated direct joining requires a pending invitation, and legacy notification reads/mutations are scoped to the authenticated account, while all-group listings, the broader group-join product decision, and several meeting and legacy mutation controllers still lack consistent object-level guards
       priority: critical
       next_action: Execute SEC-001 through SEC-004 in todo/06-agent-task-board.md.
     - id: SEC-004
