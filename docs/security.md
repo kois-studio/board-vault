@@ -28,9 +28,9 @@ The backend is authoritative for authentication, authorization, data validation,
 
 ## Material findings
 
-- Authorization is inconsistent. User-scoped reads, legacy group listings, reviewed group routes, legacy meet reads, and every current collection route enforce ownership or membership checks; group and invitation/membership creation derives actors from the JWT; invitation cancellation/rejection/acceptance checks the sender or recipient; the deprecated direct-membership endpoint requires a pending invitation; notification reads/mutations and meet-account-game mutations are scoped to the authenticated account. Global legacy user exposure, admin reviewer identity, and the unfinished session model still need review. This remains the P0 security backlog.
+- Authorization is inconsistent. User-scoped reads, legacy group listings, reviewed group routes, legacy meet reads, and every current collection route enforce ownership or membership checks; group and invitation/membership creation derives actors from the JWT; invitation cancellation/rejection/acceptance checks the sender or recipient; the deprecated direct-membership endpoint requires a pending invitation; notification reads/mutations, meet-account-game mutations, and proposal review actions are scoped to authenticated identities. Global legacy user exposure and the unfinished session model still need review. This remains the P0 security backlog.
 - The public user profile-update route now forwards only `username`, `displayName`, and `avatar`; internal authentication workflows use a separate account-state update path. Broader object-level authorization remains unresolved.
-- Admin proposal operations contain TODOs to obtain reviewer identity from JWT rather than request data.
+- Admin proposal review operations now derive `reviewedBy` from the authenticated administrator; broader admin action audit logging remains unresolved.
 - `main.ts` enables unrestricted CORS and does not configure global input validation or security headers/rate limits.
 - `DatabaseService` logs SQL after interpolating values for display. This can expose email addresses, tokens, user data, or other input in logs.
 - `EmailService` interpolates values into HTML email and logs recipient/provider context; output encoding, generic reset responses, and safe failure behavior need review.

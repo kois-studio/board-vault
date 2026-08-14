@@ -10,8 +10,8 @@ project:
   name: board-vault
   lifecycle: existing
   maturity: active foundation; pre-launch
-  audited_commit: debf684
-  audit_scope: documentation, staged Clerk authentication integration, SEC-001 profile-update boundary, and SEC-002 user-scoped, group ownership, group/membership listing and actor identity, collection route ownership, invitation lifecycle, invite-only legacy join, notification ownership, meet reads, and meet-account-game membership slices; broader object authorization remains incomplete
+  audited_commit: 1e0c880
+  audit_scope: documentation, staged Clerk authentication integration, SEC-001 profile-update boundary, SEC-002 user-scoped, group ownership, group/membership listing and actor identity, collection route ownership, invitation lifecycle, invite-only legacy join, notification ownership, meet reads, and meet-account-game membership slices, and SEC-003 admin reviewer identity; broader authorization and exposure work remains incomplete
 
 standards:
   - documentation
@@ -195,7 +195,7 @@ compliance:
       next_action: Add safe environment documentation and repository secret scanning.
     - id: SEC-003
       status: gap
-      evidence: user-scoped reads, legacy group listings, reviewed group routes, legacy meet reads, and every current collection route use ownership or membership guards; group and invitation/membership creation derives actor IDs from JWT, invitation lifecycle actions enforce sender/recipient ownership, deprecated direct joining requires a pending invitation, and legacy notification and meet-account-game mutations are scoped to the authenticated account, while global legacy user exposure, the broader group-join product decision, and the session model still need review
+      evidence: user-scoped reads, legacy group listings, reviewed group routes, legacy meet reads, and every current collection route use ownership or membership guards; group and invitation/membership creation derives actor IDs from JWT, invitation lifecycle actions enforce sender/recipient ownership, deprecated direct joining requires a pending invitation, legacy notification and meet-account-game mutations are scoped to the authenticated account, and proposal review actions derive reviewers from the verified JWT behind `AdminGuard`, while global legacy user exposure, the broader group-join product decision, and the session model still need review
       priority: critical
       next_action: Execute SEC-001 through SEC-004 in todo/06-agent-task-board.md.
     - id: SEC-004

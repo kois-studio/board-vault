@@ -16,7 +16,7 @@ The runtime Swagger document is generated from source. There is no committed ver
 | Dashboard/groups | `/dashboard/users/:userId/*`, `/groups/*`, `/memberships/*` | Dashboard group routes check user ownership/membership; deprecated group listing is limited to owned/member groups, membership listing is limited to the authenticated account, legacy group creation derives the creator from JWT, other legacy group routes check membership/ownership, invitation lifecycle actions check sender/recipient ownership, and deprecated membership creation requires a pending invitation. Broader group-join policy remains open. |
 | Notifications | `/notifications/*`, `/profile/users/:userId/notifications` | Profile reads require user ownership; deprecated notification list, ID reads, creation, read-state updates, and deletes now derive or enforce the authenticated account. |
 | Meets/play | `/meets/*`, `/meetAccountGames/*`, `/play/users/:userId/*` | User history requires ownership; legacy meet lists/details are limited to group members; meet-account-game create/delete derives the account from JWT and requires meet-group membership. Planned session creation remains unfinished. |
-| Admin | `/admin/*` | Controller uses JWT, verified-user, and admin guards; reviewer identity still has TODOs. |
+| Admin | `/admin/*` | Controller uses JWT, verified-user, and admin guards; proposal approval, rejection, and duplicate actions derive reviewer identity from the JWT. |
 | Cache | `/cache/print`, `/cache/reset`, `/cache/delete/:key` | Operationally sensitive endpoints are present in the application module graph and require explicit exposure review. |
 
 The list is intentionally representative rather than a second route registry. The source controllers and Swagger output are authoritative for exact routes.
@@ -27,7 +27,7 @@ The list is intentionally representative rather than a second route registry. Th
 - `frontend/src/app/api/api.schemas.ts` explicitly contains a TODO to define response schemas, so client response validation is not implemented.
 - Error shape, compatibility policy, deprecation policy, pagination limits, and retry/idempotency behavior are not documented as stable contracts.
 - Pagination helpers exist (`limit.pipe.ts`, `offset.pipe.ts`) and some admin operations are paginated, but maximum bounds and expensive-query behavior are not consistently evidenced.
-- The admin controller has TODOs to derive reviewer identity from JWT; sensitive operations must not trust client-supplied reviewer IDs.
+- Proposal review operations derive reviewer identity from the JWT; the frontend no longer sends reviewer query parameters.
 - Multiple controllers mark endpoints deprecated without a migration/versioning contract.
 
 ## Effective rules for API changes
