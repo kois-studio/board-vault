@@ -1,6 +1,6 @@
 # Board Vault project documentation
 
-This directory is the canonical operating manual for AI developer agents working in Board Vault. It describes the committed repository baseline as reviewed on 2026-08-15, including the staged Clerk authentication changes, the first verified account link, and the reviewed legacy group, membership, and notification ownership boundaries. The application is an existing Angular/NestJS foundation, not a launch-ready implementation.
+This directory is the canonical operating manual for AI developer agents working in Board Vault. It describes the committed repository baseline as reviewed on 2026-08-15, including the staged Clerk authentication changes, the first verified account link, and the reviewed legacy group, membership, notification, and meet access boundaries. The application is an existing Angular/NestJS foundation, not a launch-ready implementation.
 
 ## Start here
 

@@ -10,8 +10,8 @@ project:
   name: board-vault
   lifecycle: existing
   maturity: active foundation; pre-launch
-  audited_commit: f8a65a2
-  audit_scope: documentation, staged Clerk authentication integration, SEC-001 profile-update boundary, and SEC-002 user-scoped, group ownership, group/membership listing and actor identity, invitation lifecycle, invite-only legacy join, and notification ownership slices; broader object authorization remains incomplete
+  audited_commit: 650e432
+  audit_scope: documentation, staged Clerk authentication integration, SEC-001 profile-update boundary, and SEC-002 user-scoped, group ownership, group/membership listing and actor identity, invitation lifecycle, invite-only legacy join, notification ownership, meet reads, and meet-account-game membership slices; broader object authorization remains incomplete
 
 standards:
   - documentation
@@ -195,7 +195,7 @@ compliance:
       next_action: Add safe environment documentation and repository secret scanning.
     - id: SEC-003
       status: gap
-      evidence: user-scoped reads, legacy group listings, and reviewed group routes use ownership or membership guards; group and invitation/membership creation derives actor IDs from JWT, invitation lifecycle actions enforce sender/recipient ownership, deprecated direct joining requires a pending invitation, and legacy notification reads/mutations are scoped to the authenticated account, while the broader group-join product decision and several meeting and legacy mutation controllers still lack consistent object-level guards
+      evidence: user-scoped reads, legacy group listings, reviewed group routes, and legacy meet reads use ownership or membership guards; group and invitation/membership creation derives actor IDs from JWT, invitation lifecycle actions enforce sender/recipient ownership, deprecated direct joining requires a pending invitation, and legacy notification and meet-account-game mutations are scoped to the authenticated account, while the broader group-join product decision, session model, and remaining collection mutations still need review
       priority: critical
       next_action: Execute SEC-001 through SEC-004 in todo/06-agent-task-board.md.
     - id: SEC-004
