@@ -39,9 +39,9 @@ export class GroupsService {
 
     // #region methods
 
-    async getGroups(): Promise<Array<GroupDto>> {
-        this.LOGGER.log('Getting all groups')
-        const resultSet = await this.databaseService.getGroups()
+    async getGroupsForAccount(accountId: number): Promise<Array<GroupDto>> {
+        this.LOGGER.log(`Getting groups for account ${accountId}`)
+        const resultSet = await this.databaseService.getGroupsForAccount(accountId)
 
         return this._parseResultSet(resultSet)
     }

@@ -263,8 +263,16 @@ export class DatabaseService implements OnModuleInit {
 
     // #region Group
 
-    getGroups() {
-        return this._tursoExecute('SELECT * FROM UserGroup')
+    getGroupsForAccount(accountId: number) {
+        return this._tursoExecute({
+            sql: `
+                SELECT DISTINCT ug.*
+                FROM UserGroup ug
+                LEFT JOIN GroupMembership gm ON gm.groupId = ug.id
+                WHERE ug.createdBy = ? OR gm.accountId = ?
+            `,
+            args: [accountId, accountId],
+        })
     }
 
     getGroupById(id: number) {
