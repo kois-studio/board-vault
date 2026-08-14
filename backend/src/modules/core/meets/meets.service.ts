@@ -33,16 +33,16 @@ export class MeetsService {
         return result.data
     }
 
-    async getMeets(): Promise<Array<MeetDto>> {
-        this.LOGGER.log('Getting all meets')
-        const resultSet = await this.databaseService.getMeets()
+    async getMeetsForAccount(accountId: number): Promise<Array<MeetDto>> {
+        this.LOGGER.log(`Getting meets for account ${accountId}`)
+        const resultSet = await this.databaseService.getMeetsForAccount(accountId)
 
         return this._parseResultSet(resultSet)
     }
 
-    async getMeetById(id: number): Promise<MeetDto> {
+    async getMeetById(id: number, accountId: number): Promise<MeetDto> {
         this.LOGGER.log(`Getting meet with id ${id}`)
-        const resultSet = await this.databaseService.getMeetById(id)
+        const resultSet = await this.databaseService.getMeetByIdForAccount(id, accountId)
         const meets = this._parseResultSet(resultSet)
 
         if (meets.length === 0) {
@@ -60,9 +60,13 @@ export class MeetsService {
     }
 
     // TODO: sus
-    async getMeetDetailsById(id: number): Promise<MeetWithAttendeesAndGames> {
+    async getMeetDetailsById(id: number, accountId: number): Promise<MeetWithAttendeesAndGames> {
         this.LOGGER.log(`Getting meet details with id ${id}`)
-        const resultSet = await this.databaseService.getMeetDetailsById(id)
+        const resultSet = await this.databaseService.getMeetDetailsByIdForAccount(id, accountId)
+
+        if (resultSet.rows.length === 0) {
+            throw new NotFoundException(`Meet with id ${id} not found`)
+        }
 
         return resultSet.rows.map(row => ({
             id: Number(row[0]),
