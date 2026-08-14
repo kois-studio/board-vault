@@ -2,7 +2,7 @@ import { ResultSet } from '@libsql/client/.'
 import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { notificationsSchema } from '../../../common/schemas'
-import { CreateNotificationBody, NotificationDto, UpdateNotificationBody } from '../../../common/types/notification.type'
+import { CreateNotificationBody, NotificationDto, UpdateNotificationRequestBody } from '../../../common/types/notification.type'
 import { DatabaseService } from '../../common/database/database.service'
 
 import { NotificationDataMap, NotificationTypeEnum } from './notifications-enum.type'
@@ -46,9 +46,9 @@ export class NotificationsService {
         return this._parseResultSet(resultSet)
     }
 
-    async getNotificationById(id: number): Promise<NotificationDto> {
+    async getNotificationById(id: number, accountId: number): Promise<NotificationDto> {
         this.LOGGER.log(`Getting notification with id ${id}`)
-        const resultSet = await this.databaseService.getNotificationById(id)
+        const resultSet = await this.databaseService.getNotificationById(id, accountId)
         const notifications = this._parseResultSet(resultSet)
 
         if (notifications.length === 0) {
@@ -76,9 +76,13 @@ export class NotificationsService {
         }
     }
 
-    async updateNotification(id: number, partialNotificationDto: UpdateNotificationBody): Promise<{ success: boolean }> {
+    async updateNotification(
+        id: number,
+        accountId: number,
+        partialNotificationDto: UpdateNotificationRequestBody,
+    ): Promise<{ success: boolean }> {
         this.LOGGER.log(`Updating notification with id ${id}`)
-        const resultSet = await this.databaseService.updateNotification(id, partialNotificationDto)
+        const resultSet = await this.databaseService.updateNotification(id, accountId, partialNotificationDto)
 
         if (resultSet.rowsAffected === 0) {
             throw new NotFoundException(`Notification with id ${id} not found`)
@@ -87,9 +91,9 @@ export class NotificationsService {
         return { success: true }
     }
 
-    async deleteNotificationById(id: number): Promise<{ success: boolean }> {
+    async deleteNotificationById(id: number, accountId: number): Promise<{ success: boolean }> {
         this.LOGGER.log(`Deleting notification with id ${id}`)
-        const resultSet = await this.databaseService.deleteNotificationById(id)
+        const resultSet = await this.databaseService.deleteNotificationById(id, accountId)
 
         if (resultSet.rowsAffected === 0) {
             throw new NotFoundException(`Notification with id ${id} not found`)
