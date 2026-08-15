@@ -86,3 +86,8 @@ legacy password/JWT path remains available during rollout.
 - Production Clerk instance/domain configuration, deployed-origin checks,
   recovery checks, and legacy-auth removal remain rollout tasks in
   [docs/TODO.md](../TODO.md).
+- The production Clerk instance is now configured for `board-vault.com`; Vercel
+  manages the required `clerk.board-vault.com`, `accounts.board-vault.com`,
+  mail, and DKIM CNAME records. Production Vercel variables have been added to
+  the separate frontend and backend projects, pending a fresh deployment and
+  live smoke check.
