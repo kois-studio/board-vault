@@ -131,7 +131,7 @@ Statuses are `Planned`, `Blocked`, or `Deferred` until evidence changes them. Pr
 
 - Migration history, backup schedule, and database owner. The deployed schema baseline is owner-confirmed for this work, though not independently queried in this session.
 - Vercel project settings, frontend hosting, domain/DNS ownership, production environment provisioning, and rollback path.
-- Whether Upstash Redis is required in production or intended to remain optional.
+- Upstash Redis is explicitly optional only for local development; production authentication rate limiting requires it enabled and configured.
 - Supported Node/package-manager versions beyond the observed local runtime.
 - Data retention, deletion, encryption, provider scopes, and privacy/terms ownership.
 - Whether legacy route families are still consumed externally and which deprecated routes may be removed.

@@ -47,9 +47,9 @@ Hotspot: `backend/src/modules/features/admin/admin.controller.ts`.
 ## Hardening tasks
 
 - Add a global `ValidationPipe` with whitelist, forbidden extra fields, and transformation.
-- Restrict CORS to configured origins.
-- Add rate limits for login, registration, password reset, verification, and availability checks.
-- Return a generic response from forgot-password requests. **Implemented:** known and unknown emails now receive the same successful outcome; rate limiting remains open.
+- Restrict CORS to configured origins. **Implemented:** production Board Vault and observed local development origins are allowlisted; optional `CORS_ORIGINS` additions are supported; credentialed cookies remain disabled.
+- Add rate limits for login, registration, password reset, verification, and availability checks. **Implemented:** Upstash-backed fixed-window limits are applied per route; production must keep Redis enabled, while explicitly disabled local mode fails open.
+- Return a generic response from forgot-password requests. **Implemented:** known and unknown emails now receive the same successful outcome; the forgot-password route is also rate limited.
 - Add expiry and one-time-use semantics to verification and reset tokens. **Implemented in code, pending deployment:** verification tokens expire after 24 hours and password-reset tokens after 1 hour; atomic conditional updates clear consumed tokens; migration `database/migrations/0002-add-auth-token-expiry.sql` must be applied and verified before rollout.
 - Decide whether to move browser auth from `localStorage` to a safer cookie/session design.
 - Reject deleted or disabled users in JWT validation. **Partial:** soft-deleted accounts are rejected; a separate disabled-account state is not modeled.

@@ -19,7 +19,7 @@ Browser
   NestJS 10 application (backend/)
     main.ts → AppModule → LoggerMiddleware → controllers/guards → services
           ├── Turso/libSQL SQLite via DatabaseService
-          ├── Upstash Redis via CacheService (optional intent; disabled mode is incomplete)
+          ├── Upstash Redis via CacheService (cache and auth rate limiting; explicitly disabled only in local mode)
           └── Resend via EmailService (verification and password-reset email)
 ```
 
@@ -27,7 +27,7 @@ The frontend production environment points at `https://backend.board-vault.com`;
 
 ## Backend boundaries
 
-- `backend/src/main.ts` validates selected environment variables, creates the Nest app, enables unrestricted CORS, creates runtime Swagger, and listens on `PORT` or 3000.
+- `backend/src/main.ts` validates selected environment variables, creates the Nest app, applies the configured CORS allowlist, creates runtime Swagger, and listens on `PORT` or 3000.
 - `backend/src/app.module.ts` imports global configuration, common modules (`auth`, `cache`, `database`, `email`), core entity modules, and feature modules.
 - Common modules own cross-cutting auth/cache/database/email concerns.
 - Core modules own entity-oriented services such as users, groups, memberships, games, meets, invitations, reviews, tags, translations, notifications, and collection activity.
