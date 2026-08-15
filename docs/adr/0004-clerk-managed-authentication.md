@@ -13,7 +13,9 @@ Turso database contains domain history worth preserving, including games and
 meet/play records. Deleting `Account` rows would cascade into that history.
 
 Clerk provides the intended authentication experience and manages email,
-username, and configured social sign-in providers. The live database now has
+username, password, and any explicitly configured social sign-in providers.
+Production currently uses required email/password/username authentication;
+Google OAuth is deliberately deferred. The live database now has
 the additive Clerk identity column, and one existing account has been linked
 through the staged boundary.
 
@@ -94,3 +96,7 @@ legacy password/JWT path remains available during rollout.
   Clerk status route, enables the production frontend key, and restricts API
   CORS to `https://board-vault.com`. Authenticated browser and preserved-data
   verification remain outstanding.
+- The production Clerk configuration was finalized through the CLI with email
+  verification, password, and username required for sign-up; Google OAuth is
+  disabled until a future product decision supplies production Google
+  credentials.

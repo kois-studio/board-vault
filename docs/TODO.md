@@ -39,7 +39,7 @@ Statuses are `Planned`, `Blocked`, or `Deferred` until evidence changes them. Pr
 - **Affected area:** `database/migrations/0001-add-clerk-user-id.sql`, Clerk deployment configuration, auth guards, frontend session controls
 - **Evidence:** Clerk development setup, SDKs, token guard, verified-primary-email linking, new-account provisioning, protected-route Clerk session middleware, Clerk-aware frontend token transport, production-only CORS defaults, additive live migration, sign-in controls, focused identity tests, and one end-to-end existing-account link are complete. Turso reports integrity `ok`, with 15 accounts, 13 meets, 101 meet/game links, and one linked account; legacy JWT/password auth remains active.
 - **Risk:** Premature cutover could strand users, break local foreign-key identity, or leave authenticated Clerk sessions without a local account.
-- **Next action:** Complete the manual production smoke test: sign in through Board Vault, verify `/auth/clerk/status`, exercise one preserved-data route, and record rollback/recovery evidence before removing legacy auth.
+- **Next action:** Complete the manual production email/password/username smoke test: sign in through Board Vault, verify `/auth/clerk/status`, exercise one preserved-data route, and record rollback/recovery evidence before removing legacy auth. Google OAuth is intentionally deferred.
 - **Dependencies:** Production Clerk instance/domain, Vercel environment access, authorized-party configuration, and a live deployment verification.
 
 ### READINESS-004 [Critical] DEP-001/DEP-007/CI-003 — Make installation reproducible
