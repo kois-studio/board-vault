@@ -310,6 +310,22 @@ Changed: `PUT /users/:userId` now uses a dedicated strict DTO with whitelist/for
 Verified: `cd backend && npm test -- --runInBand` (70 tests); `cd backend && npm run build`; Prettier checks for affected files.
 Known follow-ups: Continue the DTO audit incrementally; rate limiting, safe CORS, global validation, and response-DTO privacy still require separate decisions or boundary slices.
 
+Most recent claim:
+
+```text
+Task: SEC-004
+Owner: Codex
+Claimed: 2026-08-15
+Branch/worktree: main / shared workspace
+Scope: validate the deprecated user game-collection update body
+```
+
+Review: SEC-004
+
+Changed: `PUT /users/:userId/games` now rejects unknown fields and requires `gamesToAdd`/`gamesToRemove` to be arrays of positive integers before service/database access.
+Verified: `cd backend && npm test -- --runInBand` (72 tests); `cd backend && npm run build`; Prettier checks for affected files.
+Known follow-ups: Continue the DTO audit incrementally; request-size limits, rate limiting, safe CORS, global validation, and response-DTO privacy remain unresolved.
+
 When claiming a task, add:
 
 ```text
