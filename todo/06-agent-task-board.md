@@ -438,6 +438,22 @@ Changed: `EmailService` now URL-encodes verification/reset token path segments a
 Verified: `cd backend && npm test -- --runInBand` (83 tests); `cd backend && npm run build`; affected-file Prettier check passes.
 Known follow-ups: Review provider-failure/timeout behavior, continue the DTO inventory before enabling global validation, add transport-boundary tests, apply migration 0002, and complete production Clerk cutover.
 
+Most recent claim:
+
+```text
+Task: SEC-004
+Owner: Codex
+Claimed: 2026-08-15
+Branch/worktree: main / shared workspace
+Scope: add automated tests for API body-size rejection and security response headers
+```
+
+Review: SEC-004
+
+Changed: Extracted API body-parser and security-header setup into a testable HTTP-hardening module. Regression tests now prove JSON bodies over 100 KB return 413 and production mode emits the baseline security headers plus HSTS.
+Verified: `cd backend && npm test -- --runInBand` (85 tests); `cd backend && npm run build`; affected-file Prettier check passes.
+Known follow-ups: Apply migration 0002, continue the DTO inventory before global validation, review provider-failure/timeout behavior, and complete production Clerk cutover.
+
 When claiming a task, add:
 
 ```text

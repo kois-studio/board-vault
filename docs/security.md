@@ -36,7 +36,7 @@ The backend is authoritative for authentication, authorization, data validation,
 - Login, registration, password-reset, availability-query, legacy token path, profile, game-update, review, proposal, and administrator catalog/review inputs now reject malformed, empty, and unexpected values through targeted validation; global request validation remains intentionally unenabled pending a DTO compatibility audit.
 - Verification tokens expire after 24 hours and password-reset tokens expire after 1 hour, using UTC epoch seconds persisted in `Account`. Verification and password reset consume tokens through one conditional database update that clears the token and its expiry; expired, legacy-null-expiry, and already-consumed tokens fail closed.
 - `main.ts` restricts CORS to `https://board-vault.com`, the two observed local development origins, and optional comma-separated `CORS_ORIGINS` additions. Credentialed cookies remain disabled. Legacy authentication endpoints have Upstash-backed fixed-window limits: registration 5/minute, login and verification/reset 10/minute, and availability checks 30/minute. The limiter fails open only when Redis is explicitly disabled or unavailable; production must keep Redis enabled.
-- The API bootstrap explicitly limits JSON and URL-encoded request bodies to 100 KB and sets `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, and `Permissions-Policy`; HSTS is emitted only when `NODE_ENV=production`. A comprehensive header/oversized-request test remains open.
+- The API bootstrap explicitly limits JSON and URL-encoded request bodies to 100 KB and sets `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, and `Permissions-Policy`; HSTS is emitted only when `NODE_ENV=production`. Regression tests cover oversized JSON rejection and the response-header policy.
 - `DatabaseService` now logs only parameterized SQL templates and excludes bound values; `EmailService` no longer logs recipient addresses; `CacheService` no longer logs keys or serialized payloads; auth/user-service logs no longer include email, username, or Clerk identity values. A global structured logging/redaction policy and provider-error handling remain unresolved.
 - Nested user responses use `UserPublicDto` with only identity/display fields; email, deletion, administrator, and verification state remain reserved for dedicated self/admin boundaries. The full response-DTO and client response-schema audit remains open.
 - `EmailService` now HTML-escapes notification text and generated links before interpolation; provider-failure behavior, timeout policy, and recipient/provider context remain under review.
@@ -59,6 +59,7 @@ The backend is authoritative for authentication, authorization, data validation,
 - [Clerk identity bridge](../backend/src/modules/common/auth/clerk-identity.service.ts)
 - [Guards](../backend/src/common/guards/)
 - [Environment validation](../backend/src/common/validators/validateEnv.ts)
+- [HTTP hardening](../backend/src/common/http/http-hardening.ts)
 - [User controller/service](../backend/src/modules/core/users/users.controller.ts)
 - [Admin controller](../backend/src/modules/features/admin/admin.controller.ts)
 - [Database logging](../backend/src/modules/common/database/database.service.ts)
