@@ -11,6 +11,8 @@ import { EmailService } from '../email/email.service'
 @Injectable()
 export class AuthService {
     private readonly LOGGER: Logger = new Logger(this.constructor.name)
+    private readonly VERIFICATION_TOKEN_TTL_SECONDS = 24 * 60 * 60
+    private readonly PASSWORD_RESET_TOKEN_TTL_SECONDS = 60 * 60
 
     constructor(
         private readonly jwtService: JwtService,
@@ -67,6 +69,7 @@ export class AuthService {
                 },
             },
             verificationToken,
+            this.getTokenExpiry(this.VERIFICATION_TOKEN_TTL_SECONDS),
         )
 
         if (user.success) {
@@ -90,26 +93,9 @@ export class AuthService {
     }
 
     async verifyEmail(token: string): Promise<boolean> {
-        // Find the user associated with the verification token
-        const user = await this.databaseService.findUserByVerificationToken(token)
+        const result = await this.databaseService.verifyEmailToken(token)
 
-        if (user.rows.length === 0) {
-            return false // Invalid or expired token
-        }
-
-        const userId = user.rows[0]['id']
-
-        if (Number.isNaN(userId)) {
-            return false // Invalid or expired token
-        }
-
-        // Update the user's status to verified
-        await this.databaseService.updateUserRecord(Number(userId), {
-            email_verified: true,
-            verification_token: null,
-        })
-
-        return true // Email successfully verified
+        return result.rowsAffected === 1
     }
 
     async forgotPassword(email: string): Promise<void> {
@@ -119,8 +105,11 @@ export class AuthService {
             // Generate a unique password reset token
             const resetToken = randomUUID()
 
-            // Store the reset token in the database with an expiration time
-            await this.databaseService.updateUserRecord(user.id, { password_reset_token: resetToken })
+            // Store the reset token with an expiration time.
+            await this.databaseService.updateUserRecord(user.id, {
+                password_reset_token: resetToken,
+                password_reset_token_expires_at: this.getTokenExpiry(this.PASSWORD_RESET_TOKEN_TTL_SECONDS),
+            })
 
             // Send password reset email
             await this.emailService.sendPasswordResetEmail(email, resetToken)
@@ -133,23 +122,12 @@ export class AuthService {
     }
 
     async resetPassword(token: string, password: string): Promise<boolean> {
-        const user = await this.databaseService.getUserByPasswordResetToken(token)
+        const result = await this.databaseService.resetPasswordWithToken(token, password)
 
-        if (user.rows.length === 0) {
-            return false // Invalid or expired token
-        }
+        return result.rowsAffected === 1
+    }
 
-        const userId = user.rows[0]['id']
-
-        if (Number.isNaN(userId)) {
-            return false // Invalid or expired token
-        }
-
-        await this.databaseService.updateUserRecord(Number(userId), {
-            password,
-            password_reset_token: null,
-        })
-
-        return true
+    private getTokenExpiry(ttlSeconds: number): number {
+        return Math.floor(Date.now() / 1000) + ttlSeconds
     }
 }

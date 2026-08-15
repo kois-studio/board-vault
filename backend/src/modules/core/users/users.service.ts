@@ -112,10 +112,10 @@ export class UsersService {
         return this.getUserById(accountId)
     }
 
-    async createUser(userDto: CreateUserBody, verificationToken: string) {
+    async createUser(userDto: CreateUserBody, verificationToken: string, verificationTokenExpiresAt?: number) {
         this.LOGGER.log('Creating user')
         try {
-            await this.databaseService.createUser(userDto, verificationToken)
+            await this.databaseService.createUser(userDto, verificationToken, verificationTokenExpiresAt)
 
             return { success: true }
         } catch (error) {

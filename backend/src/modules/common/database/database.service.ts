@@ -92,18 +92,41 @@ export class DatabaseService implements OnModuleInit {
 
     getUserByPasswordResetToken(token: string) {
         return this._tursoExecute({
-            sql: 'SELECT * FROM Account WHERE password_reset_token = ?',
+            sql: 'SELECT * FROM Account WHERE password_reset_token = ? AND password_reset_token_expires_at IS NOT NULL AND password_reset_token_expires_at > unixepoch()',
             args: [token],
         })
     }
 
-    async createUser(userDto: CreateUserBody, verificationToken: string) {
+    async resetPasswordWithToken(token: string, password: string) {
+        const hashedPassword = await bcrypt.hash(password, 10)
+
+        return this._tursoExecute({
+            sql: `
+                UPDATE Account
+                SET password = ?, password_reset_token = NULL, password_reset_token_expires_at = NULL
+                WHERE password_reset_token = ?
+                  AND password_reset_token_expires_at IS NOT NULL
+                  AND password_reset_token_expires_at > unixepoch()
+            `,
+            args: [hashedPassword, token],
+        })
+    }
+
+    async createUser(userDto: CreateUserBody, verificationToken: string, verificationTokenExpiresAt?: number) {
         const { email, password, username, displayName, avatar } = userDto
         const hashedPassword = await bcrypt.hash(password, 10)
 
         await this._tursoExecute({
-            sql: 'INSERT INTO Account (email, password, username, displayName, avatar, verification_token) VALUES (?, ?, ?, ?, ?, ?)',
-            args: [email, hashedPassword, username, displayName, JSON.stringify(avatar), verificationToken],
+            sql: 'INSERT INTO Account (email, password, username, displayName, avatar, verification_token, verification_token_expires_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            args: [
+                email,
+                hashedPassword,
+                username,
+                displayName,
+                JSON.stringify(avatar),
+                verificationToken,
+                verificationTokenExpiresAt ?? null,
+            ],
         })
     }
 
@@ -160,6 +183,14 @@ export class DatabaseService implements OnModuleInit {
         if (partialUserDto.password_reset_token !== undefined) {
             fields.push('password_reset_token = ?')
             args.push(partialUserDto.password_reset_token)
+        }
+        if (partialUserDto.verification_token_expires_at !== undefined) {
+            fields.push('verification_token_expires_at = ?')
+            args.push(partialUserDto.verification_token_expires_at)
+        }
+        if (partialUserDto.password_reset_token_expires_at !== undefined) {
+            fields.push('password_reset_token_expires_at = ?')
+            args.push(partialUserDto.password_reset_token_expires_at)
         }
 
         // Error if no fields are provided
@@ -234,7 +265,20 @@ export class DatabaseService implements OnModuleInit {
 
     async findUserByVerificationToken(token: string) {
         return this._tursoExecute({
-            sql: 'SELECT * FROM Account WHERE verification_token = ?',
+            sql: 'SELECT * FROM Account WHERE verification_token = ? AND verification_token_expires_at IS NOT NULL AND verification_token_expires_at > unixepoch()',
+            args: [token],
+        })
+    }
+
+    verifyEmailToken(token: string) {
+        return this._tursoExecute({
+            sql: `
+                UPDATE Account
+                SET email_verified = TRUE, verification_token = NULL, verification_token_expires_at = NULL
+                WHERE verification_token = ?
+                  AND verification_token_expires_at IS NOT NULL
+                  AND verification_token_expires_at > unixepoch()
+            `,
             args: [token],
         })
     }
