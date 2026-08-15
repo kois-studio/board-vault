@@ -53,7 +53,7 @@ Hotspot: `backend/src/modules/features/admin/admin.controller.ts`.
 - Add expiry and one-time-use semantics to verification and reset tokens. **Implemented in code, pending deployment:** verification tokens expire after 24 hours and password-reset tokens after 1 hour; atomic conditional updates clear consumed tokens; migration `database/migrations/0002-add-auth-token-expiry.sql` must be applied and verified before rollout.
 - Decide whether to move browser auth from `localStorage` to a safer cookie/session design.
 - Reject deleted or disabled users in JWT validation. **Partial:** soft-deleted accounts are rejected; a separate disabled-account state is not modeled.
-- Add security headers and request size limits.
+- Add security headers and request size limits. **Implemented baseline:** JSON/URL-encoded bodies are limited to 100 KB; baseline content-type, framing, referrer, permissions, and production HSTS headers are emitted. Comprehensive transport tests and any endpoint-specific size policy remain open.
 - Remove sensitive SQL and token logging. **Partial:** database bound values, email recipients, cache keys/payloads, and auth identity values are excluded; global structured redaction and provider-error policy remain open.
 - Review password, email, and avatar exposure in all response DTOs. **Partial:** nested group/member, invitation, play-history, and invitation-by-username responses now use `UserPublicDto` with only identity/display fields; complete self-profile/admin DTO and client response-schema review remains open.
 - Add audit logging for privilege changes and admin actions.

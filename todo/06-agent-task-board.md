@@ -390,6 +390,22 @@ Changed: Added `UserPublicDto` and `UserPublicWithGames`; nested group members, 
 Verified: `cd backend && npm test -- --runInBand` (80 tests); `cd backend && npm run build`; `cd frontend && npm run build` (existing Sass/selector/bundle warnings only); `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless`; affected-file Prettier check passes.
 Known follow-ups: Complete the self-profile/admin DTO inventory and client response-schema review; global validation, request-size/security-header hardening, migration 0002 deployment, and production Clerk cutover remain open.
 
+Most recent claim:
+
+```text
+Task: SEC-004
+Owner: Codex
+Claimed: 2026-08-15
+Branch/worktree: main / shared workspace
+Scope: add explicit API request-size and security-response-header boundaries without enabling the unfinished global validation policy
+```
+
+Review: SEC-004
+
+Changed: The Nest bootstrap now disables implicit body parsing, installs explicit 100 KB JSON and URL-encoded body limits, and emits `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`, and production-only HSTS. The global `ValidationPipe` remains intentionally deferred because the legacy DTO inventory is incomplete.
+Verified: `cd backend && npm run build`; `cd backend && npm test -- --runInBand` (80 tests); affected-file Prettier check passes.
+Known follow-ups: Add transport-boundary tests, apply migration 0002, finish the DTO audit before global validation, and complete email-output encoding and production Clerk cutover reviews.
+
 When claiming a task, add:
 
 ```text

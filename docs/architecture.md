@@ -27,7 +27,7 @@ The frontend production environment points at `https://backend.board-vault.com`;
 
 ## Backend boundaries
 
-- `backend/src/main.ts` validates selected environment variables, creates the Nest app, applies the configured CORS allowlist, creates runtime Swagger, and listens on `PORT` or 3000.
+- `backend/src/main.ts` validates selected environment variables, creates the Nest app with explicit 100 KB JSON/URL-encoded body limits, applies baseline security headers and the configured CORS allowlist, creates runtime Swagger, and listens on `PORT` or 3000.
 - `backend/src/app.module.ts` imports global configuration, common modules (`auth`, `cache`, `database`, `email`), core entity modules, and feature modules.
 - Common modules own cross-cutting auth/cache/database/email concerns.
 - Core modules own entity-oriented services such as users, groups, memberships, games, meets, invitations, reviews, tags, translations, notifications, and collection activity.

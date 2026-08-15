@@ -23,7 +23,7 @@ The list is intentionally representative rather than a second route registry. Th
 
 ## Contract findings
 
-- `ParseIntPipe` is used on selected route parameters, but `main.ts` does not install a global `ValidationPipe` for bodies, query parameters, and DTOs.
+- `ParseIntPipe` is used on selected route parameters, but `main.ts` does not install a global `ValidationPipe` for bodies, query parameters, and DTOs. The bootstrap does apply an explicit 100 KB JSON/URL-encoded body limit; route-level request validation remains incomplete.
 - `frontend/src/app/api/api.schemas.ts` explicitly contains a TODO to define response schemas, so client response validation is not implemented.
 - Error shape, compatibility policy, deprecation policy, pagination limits, and retry/idempotency behavior are not documented as stable contracts.
 - Pagination helpers exist (`limit.pipe.ts`, `offset.pipe.ts`) and some admin operations are paginated, but maximum bounds and expensive-query behavior are not consistently evidenced.
