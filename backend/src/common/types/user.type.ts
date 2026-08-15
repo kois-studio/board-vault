@@ -1,22 +1,32 @@
+import { Type } from 'class-transformer'
 import { ApiProperty, OmitType, PartialType, PickType } from '@nestjs/swagger'
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator'
+import { IsEmail, IsIn, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator'
 
 import { GameCompleteDto } from './game.type'
 
 export class AvatarDto {
     @ApiProperty({ example: '#3B82F6' })
+    @IsString()
+    @IsNotEmpty()
     backgroundColor: string
 
     @ApiProperty({ example: 'person-fill' })
+    @IsOptional()
+    @IsString()
     iconName: string | null
 
     @ApiProperty({ example: null })
+    @IsOptional()
+    @IsString()
     emoji: string | null
 
     @ApiProperty({ example: 'icon' })
+    @IsIn(['icon', 'emoji', 'initials'])
     type: 'icon' | 'emoji' | 'initials'
 
     @ApiProperty({ example: 'AB' })
+    @IsString()
+    @IsNotEmpty()
     initials: string
 }
 
@@ -82,7 +92,25 @@ export class CreateUserBody extends OmitType(UserCompleteDto, [
 /**
  * PUT /users/:userId requests --> safe profile fields only
  */
-export class UpdateUserBody extends PartialType(PickType(UserCompleteDto, ['username', 'displayName', 'avatar'])) {}
+export class UpdateUserBody {
+    @ApiProperty({ example: 'joseantonio', required: false })
+    @IsOptional()
+    @IsString()
+    @IsNotEmpty()
+    username?: string
+
+    @ApiProperty({ example: 'Jose Antonio', required: false })
+    @IsOptional()
+    @IsString()
+    @IsNotEmpty()
+    displayName?: string
+
+    @ApiProperty({ type: AvatarDto, required: false })
+    @IsOptional()
+    @ValidateNested()
+    @Type(() => AvatarDto)
+    avatar?: AvatarDto
+}
 
 /**
  * Internal account-state updates used by authentication workflows.

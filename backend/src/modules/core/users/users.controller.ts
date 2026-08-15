@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
@@ -43,6 +43,7 @@ export class UsersController {
 
     @UseGuards(UserOwnershipGuard)
     @Put('/:userId')
+    @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
     @ApiOperation({ summary: 'Update a user by ID' })
     @ApiResponse({ status: 200, description: 'The user has been successfully updated.' })
     @ApiResponse({ status: 404, description: 'User not found.' })
