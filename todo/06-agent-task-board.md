@@ -374,6 +374,22 @@ Changed: CORS now allowlists `https://board-vault.com`, observed local developme
 Verified: `cd backend && npm test -- --runInBand` (79 tests); `cd backend && npm run build`; Prettier checks for affected files.
 Known follow-ups: Apply migration 0002, then continue request-size/security-header hardening, global validation, response-DTO privacy, and production Clerk cutover.
 
+Most recent claim:
+
+```text
+Task: SEC-002
+Owner: Codex
+Claimed: 2026-08-15
+Branch/worktree: main / shared workspace
+Scope: establish a public nested-user response boundary without changing self-profile or admin responses
+```
+
+Review: SEC-002
+
+Changed: Added `UserPublicDto` and `UserPublicWithGames`; nested group members, play history, invitations, and invitation-by-username responses now expose only `id`, `username`, `displayName`, and `avatar`. The group-invitation SQL projection was narrowed as well, the Angular API types now distinguish public nested users from private current-user data, and a service regression test proves sensitive account fields are not returned by the public projection.
+Verified: `cd backend && npm test -- --runInBand` (80 tests); `cd backend && npm run build`; `cd frontend && npm run build` (existing Sass/selector/bundle warnings only); `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless`; affected-file Prettier check passes.
+Known follow-ups: Complete the self-profile/admin DTO inventory and client response-schema review; global validation, request-size/security-header hardening, migration 0002 deployment, and production Clerk cutover remain open.
+
 When claiming a task, add:
 
 ```text

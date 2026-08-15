@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { Component, Input } from '@angular/core'
-import { UserType } from '../../api/api.types'
+import { PublicUserType } from '../../api/api.types'
 import { ImageProfileComponent } from '../image-profile/image-profile.component'
 
 @Component({
@@ -12,7 +12,7 @@ export class CardAccountComponent {
     // --------------------------------------------------------------------------
     //        IN / OUT
     // --------------------------------------------------------------------------
-    @Input({ required: true }) member: null | UserType = null
+    @Input({ required: true }) member: null | PublicUserType = null
     @Input({ required: false }) isOwner = false
     @Input({ required: false }) format: 'default' | 'compact' = 'default'
 }

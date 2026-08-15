@@ -363,25 +363,19 @@ export class DatabaseService implements OnModuleInit {
             sql: `
             SELECT 
                 i.id, i.groupId, i.fromAccountId, i.toAccountId, i.sentAt,
-                -- Selecting all properties for the fromAccount
+                -- Nested account responses expose public identity fields only.
                 json_object(
                     'id', fa.id,
-                    'email', fa.email,
                     'username', fa.username,
                     'displayName', fa.displayName,
-                    'avatar', fa.avatar,
-                    'createdAt', fa.created_at,
-                    'isDeleted', fa.isDeleted
+                    'avatar', fa.avatar
                 ) as fromAccount,
-                -- Selecting all properties for the toAccount
+                -- Nested account responses expose public identity fields only.
                 json_object(
                     'id', ta.id,
-                    'email', ta.email,
                     'username', ta.username,
                     'displayName', ta.displayName,
-                    'avatar', ta.avatar,
-                    'createdAt', ta.created_at,
-                    'isDeleted', ta.isDeleted
+                    'avatar', ta.avatar
                 ) as toAccount
             FROM Invitation i
             JOIN Account fa ON i.fromAccountId = fa.id AND fa.isDeleted = 0

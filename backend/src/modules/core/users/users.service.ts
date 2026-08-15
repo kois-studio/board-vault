@@ -2,7 +2,7 @@ import { ResultSet } from '@libsql/client/.'
 import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { usersSchema } from '../../../common/schemas'
-import { AvatarDto, CreateUserBody, UpdateUserBody, UserCompleteDto, UserGetDto } from '../../../common/types/user.type'
+import { AvatarDto, CreateUserBody, UpdateUserBody, UserCompleteDto, UserGetDto, UserPublicDto } from '../../../common/types/user.type'
 import { DatabaseService } from '../../common/database/database.service'
 
 @Injectable()
@@ -62,6 +62,17 @@ export class UsersService {
         users[0].password_reset_token = undefined!
 
         return users[0]
+    }
+
+    async getPublicUserById(id: number): Promise<UserPublicDto> {
+        const user = await this.getUserById(id)
+
+        return {
+            id: user.id,
+            username: user.username,
+            displayName: user.displayName,
+            avatar: user.avatar,
+        }
     }
 
     /**

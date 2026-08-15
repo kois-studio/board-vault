@@ -17,7 +17,7 @@ import type { SuccessDto } from '../../../common/types/auth.type'
 import type { GroupMemberWithGames, GroupWithMembersAndGames } from '../../../common/types/group.type'
 import type { MeetCreatedDto } from '../../../common/types/meet.type'
 import type { UserStatsDto, UserProposalStatsDto } from '../../../common/types/stats.type'
-import type { UserWithGames } from '../../../common/types/user.type'
+import type { UserPublicWithGames } from '../../../common/types/user.type'
 import type { HistoryRecordDto } from '../play/play.types'
 
 @Injectable()
@@ -60,7 +60,7 @@ export class DashboardService {
                 const _memberships = await this.groupMembershipsService.getGroupMembershipsByGroupId(membership.groupId)
                 const members: Array<GroupMemberWithGames> = await Promise.all(
                     _memberships.map(async _membership => {
-                        const user = await this.usersService.getUserById(_membership.accountId)
+                        const user = await this.usersService.getPublicUserById(_membership.accountId)
                         const gamesOwned = await this.gamesOwnedService.getGamesOwnedByAccountId(_membership.accountId)
                         const games = await Promise.all(gamesOwned.map(game => this.gamesService.getGameById(game.gameId)))
                         const gamesWithTranslations = await Promise.all(
@@ -70,7 +70,7 @@ export class DashboardService {
                             })),
                         )
 
-                        const userWithGames: UserWithGames = { ...user, games: gamesWithTranslations }
+                        const userWithGames: UserPublicWithGames = { ...user, games: gamesWithTranslations }
                         const userReviews = await this.reviewsService.getGameReviewsByAccountId(_membership.accountId)
 
                         return {
@@ -136,7 +136,9 @@ export class DashboardService {
                         const game = await this.gamesService.getGameById(gameId)
                         const gameTranslations = await this.gameTranslationService.getGameTranslations(gameId)
                         const playedByIds = await this.meetAccountGamesService.getDistinctAccountIdsByMeetIdAndGameId(meetData.id, gameId)
-                        const playedByData = await Promise.all(playedByIds.map(async accountId => this.usersService.getUserById(accountId)))
+                        const playedByData = await Promise.all(
+                            playedByIds.map(async accountId => this.usersService.getPublicUserById(accountId)),
+                        )
 
                         return {
                             gameData: {

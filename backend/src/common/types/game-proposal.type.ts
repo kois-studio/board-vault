@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { IsInt, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator'
 
-import { UserGetDto } from './user.type'
+import { UserPublicDto } from './user.type'
 
 /**
  * Base GameProposal as it comes from db
@@ -240,10 +240,10 @@ export class GameProposalCompleteDto extends GameProposalDto {
  */
 export class GameProposalWithSubmitterDetailsDto extends GameProposalDto {
     @ApiProperty({
-        type: UserGetDto,
-        description: 'Full information about the user who submitted the proposal',
+        type: UserPublicDto,
+        description: 'Public identity of the user who submitted the proposal',
     })
-    submitter: UserGetDto
+    submitter: UserPublicDto
 }
 
 /**
@@ -251,9 +251,9 @@ export class GameProposalWithSubmitterDetailsDto extends GameProposalDto {
  */
 export class GameProposalWithReviewerDetailsDto extends GameProposalDto {
     @ApiProperty({
-        type: UserGetDto,
+        type: UserPublicDto,
         nullable: true,
-        description: 'Full information about the admin who reviewed the proposal',
+        description: 'Public identity of the admin who reviewed the proposal',
     })
-    reviewer?: UserGetDto
+    reviewer?: UserPublicDto
 }

@@ -44,7 +44,7 @@ export class ProfileService {
             invitations.map(async invitation => ({
                 ...invitation,
                 group: await this.groupsService.getGroupById(invitation.groupId),
-                fromAccount: await this.usersService.getUserById(invitation.fromAccountId),
+                fromAccount: await this.usersService.getPublicUserById(invitation.fromAccountId),
             })),
         )
     }

@@ -55,7 +55,7 @@ Hotspot: `backend/src/modules/features/admin/admin.controller.ts`.
 - Reject deleted or disabled users in JWT validation. **Partial:** soft-deleted accounts are rejected; a separate disabled-account state is not modeled.
 - Add security headers and request size limits.
 - Remove sensitive SQL and token logging. **Partial:** database bound values, email recipients, cache keys/payloads, and auth identity values are excluded; global structured redaction and provider-error policy remain open.
-- Review password, email, and avatar exposure in all response DTOs.
+- Review password, email, and avatar exposure in all response DTOs. **Partial:** nested group/member, invitation, play-history, and invitation-by-username responses now use `UserPublicDto` with only identity/display fields; complete self-profile/admin DTO and client response-schema review remains open.
 - Add audit logging for privilege changes and admin actions.
 
 ## Required authorization test matrix
