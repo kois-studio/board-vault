@@ -17,6 +17,8 @@ The backend reads these variable names from the environment or ignored local `.e
 - used by CORS: optional comma-separated `CORS_ORIGINS` additions; the defaults are `https://board-vault.com`, `http://localhost:4200`, and `http://127.0.0.1:4200`, and wildcard `*` is ignored.
 - used by the staged Clerk backend boundary: `CLERK_SECRET_KEY`, with optional comma-separated `CLERK_AUTHORIZED_PARTIES` for exact frontend origins.
 
+The API accepts JSON and URL-encoded request bodies up to 100 KB. This is configured in `backend/src/main.ts`; multipart uploads are not an evidenced supported interface.
+
 The exact local values are intentionally not documented. No `.env.example`, typed configuration schema, test environment, or production environment ownership record was found. The frontend uses committed environment files containing only public API URLs, a production boolean, the development Clerk publishable key, and a development-only `clerkAuthEnabled` rollout toggle; these values are configuration, not secrets. The Clerk secret must remain backend-only.
 
 ## Build, test, and quality baseline
