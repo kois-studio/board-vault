@@ -13,6 +13,7 @@ import { UsersService } from './users.service'
 describe('UsersController profile update boundary', () => {
     let app: INestApplication
     let updateUserProfile: jest.Mock
+    let updateGames: jest.Mock
 
     beforeEach(async () => {
         updateUserProfile = jest.fn(async (_userId: number, update: Record<string, unknown>) => {
@@ -22,12 +23,13 @@ describe('UsersController profile update boundary', () => {
 
             return { rows: [{ id: 1 }] }
         })
+        updateGames = jest.fn().mockResolvedValue(undefined)
 
         const module = await Test.createTestingModule({
             controllers: [UsersController],
             providers: [
                 UsersService,
-                { provide: DatabaseService, useValue: { updateUserProfile } },
+                { provide: DatabaseService, useValue: { updateUserProfile, updateGames } },
                 JwtAuthGuard,
                 UserOwnershipGuard,
                 AdminGuard,
@@ -97,6 +99,24 @@ describe('UsersController profile update boundary', () => {
             .expect(400)
 
         expect(updateUserProfile).not.toHaveBeenCalled()
+    })
+
+    it('rejects malformed game collection update data', async () => {
+        await request(app.getHttpServer())
+            .put('/users/1/games')
+            .send({ gamesToAdd: [1, '2'], gamesToRemove: [-3], unexpected: true })
+            .expect(400)
+
+        expect(updateGames).not.toHaveBeenCalled()
+    })
+
+    it('accepts a valid game collection update', async () => {
+        await request(app.getHttpServer())
+            .put('/users/1/games')
+            .send({ gamesToAdd: [1, 2], gamesToRemove: [] })
+            .expect(200)
+
+        expect(updateGames).toHaveBeenCalledWith(1, [1, 2], [])
     })
 
     it('does not expose the deprecated global user list to a non-admin', async () => {
