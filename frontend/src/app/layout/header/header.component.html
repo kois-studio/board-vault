@@ -12,7 +12,7 @@
                 @if (!isAuthenticated()) {
                     <a class="hidden lg:block" href="#features">Features</a>
                     <a class="hidden lg:block" href="#how-it-works">How it works</a>
-                    @if (clerkIsConfigured() && clerkIsLoaded()) {
+                    @if (clerkIsAvailable()) {
                         @if (!clerkIsSignedIn()) {
                             <button type="button" class="cursor-pointer" (click)="openClerkSignIn()">Log In</button>
                             <app-button type="button" (click)="openClerkSignUp()">Sign Up</app-button>
