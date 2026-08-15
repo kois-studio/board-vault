@@ -134,6 +134,22 @@ Changed: The deprecated `GET /users/` global listing now requires `AdminGuard`; 
 Verified: `cd backend && npm test -- --runInBand` (49 tests); `cd backend && npm run build`; Prettier checks for affected user files.
 Known follow-ups: Review user response-field/privacy exposure, then define the canonical session model and the remaining group-join policy.
 
+Most recent claim:
+
+```text
+Task: SEC-002
+Owner: Codex
+Claimed: 2026-08-15
+Branch/worktree: main / shared workspace
+Scope: reject soft-deleted accounts during legacy JWT validation after the completed route-authorization slices
+```
+
+Review: SEC-002
+
+Changed: Legacy `JwtStrategy` now rejects tokens whose local account is soft-deleted, while active accounts retain their administrator claim. Added active/deleted account validation tests.
+Verified: `cd backend && npm test -- --runInBand` (51 tests); `cd backend && npm run build`; Prettier checks for affected auth files.
+Known follow-ups: Resolve the user response-field/privacy policy, then define canonical session semantics and remaining account lifecycle states.
+
 When claiming a task, add:
 
 ```text
