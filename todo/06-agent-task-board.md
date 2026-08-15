@@ -333,22 +333,6 @@ Task: SEC-004
 Owner: Codex
 Claimed: 2026-08-15
 Branch/worktree: main / shared workspace
-Scope: restrict CORS and add Upstash-backed fixed-window limits to legacy authentication endpoints
-```
-
-Review: SEC-004
-
-Changed: CORS now allowlists `https://board-vault.com`, observed local development origins, and optional `CORS_ORIGINS` additions without credentialed cookies. Registration, login, verification/reset, and availability routes now use route-specific Upstash Redis limits; Redis credentials are required at startup unless explicitly disabled for local development.
-Verified: `cd backend && npm test -- --runInBand` (79 tests); `cd backend && npm run build`; Prettier checks for affected files.
-Known follow-ups: Apply migration 0002, then continue request-size/security-header hardening, global validation, response-DTO privacy, and production Clerk cutover.
-
-Most recent claim:
-
-```text
-Task: SEC-004
-Owner: Codex
-Claimed: 2026-08-15
-Branch/worktree: main / shared workspace
 Scope: validate profile game-proposal request fields with established type/range semantics
 ```
 
@@ -357,6 +341,22 @@ Review: SEC-004
 Changed: `POST /profile/users/:userId/proposals` now validates title/content types and non-negative integer duration/player fields, rejecting unexpected fields before the profile service is called. URL/content policy remains intentionally unspecified.
 Verified: `cd backend && npm test -- --runInBand` (76 tests); `cd backend && npm run build`; Prettier checks for affected files.
 Known follow-ups: Continue the DTO audit incrementally; request-size limits, rate limiting, safe CORS, global validation, and response-DTO privacy remain unresolved.
+
+Most recent claim:
+
+```text
+Task: SEC-004
+Owner: Codex
+Claimed: 2026-08-15
+Branch/worktree: main / shared workspace
+Scope: restrict CORS and add Upstash-backed fixed-window limits to legacy authentication endpoints
+```
+
+Review: SEC-004
+
+Changed: CORS now allowlists `https://board-vault.com`, observed local development origins, and optional `CORS_ORIGINS` additions without credentialed cookies. Registration, login, verification/reset, and availability routes now use route-specific Upstash Redis limits; Redis credentials are required at startup unless explicitly disabled for local development.
+Verified: `cd backend && npm test -- --runInBand` (79 tests); `cd backend && npm run build`; Prettier checks for affected files.
+Known follow-ups: Apply migration 0002, then continue request-size/security-header hardening, global validation, response-DTO privacy, and production Clerk cutover.
 
 Most recent claim:
 
