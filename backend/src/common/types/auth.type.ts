@@ -19,6 +19,19 @@ export class ForgotPasswordDto {
     email: string
 }
 
+export class CheckEmailDto {
+    @ApiProperty({ description: 'The email address to check' })
+    @IsEmail()
+    email: string
+}
+
+export class CheckUsernameDto {
+    @ApiProperty({ description: 'The username to check' })
+    @IsString()
+    @IsNotEmpty()
+    username: string
+}
+
 export class ResetPasswordDto {
     @ApiProperty({ description: 'The new password for the user' })
     @IsString()

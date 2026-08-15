@@ -15,19 +15,23 @@ describe('AuthController request validation', () => {
     let resetPassword: jest.Mock
     let register: jest.Mock
     let login: jest.Mock
+    let checkEmail: jest.Mock
+    let checkUsername: jest.Mock
 
     beforeEach(async () => {
         forgotPassword = jest.fn().mockResolvedValue(undefined)
         resetPassword = jest.fn().mockResolvedValue(true)
         register = jest.fn().mockResolvedValue({ success: true })
         login = jest.fn().mockResolvedValue({ access_token: 'token' })
+        checkEmail = jest.fn().mockResolvedValue(true)
+        checkUsername = jest.fn().mockResolvedValue(true)
 
         const module = await Test.createTestingModule({
             controllers: [AuthController],
             providers: [
                 {
                     provide: AuthService,
-                    useValue: { forgotPassword, resetPassword, register, login },
+                    useValue: { forgotPassword, resetPassword, register, login, checkEmail, checkUsername },
                 },
                 {
                     provide: ClerkIdentityService,
@@ -86,5 +90,17 @@ describe('AuthController request validation', () => {
             .expect(400)
 
         expect(register).not.toHaveBeenCalled()
+    })
+
+    it('rejects malformed email availability queries before the service call', async () => {
+        await request(app.getHttpServer()).get('/auth/check-email').query({ email: 'not-an-email' }).expect(400)
+
+        expect(checkEmail).not.toHaveBeenCalled()
+    })
+
+    it('rejects empty username availability queries before the service call', async () => {
+        await request(app.getHttpServer()).get('/auth/check-username').query({ username: '' }).expect(400)
+
+        expect(checkUsername).not.toHaveBeenCalled()
     })
 })
