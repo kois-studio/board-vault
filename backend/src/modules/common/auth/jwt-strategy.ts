@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common'
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { PassportStrategy } from '@nestjs/passport'
 import { ExtractJwt, Strategy } from 'passport-jwt'
@@ -22,6 +22,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     async validate(payload: { sub: string; email: string; iat: number; exp: number }) {
         const user = await this.usersService.getUserById(Number(payload.sub))
+
+        if (user.isDeleted) {
+            this.LOGGER.warn(`Rejected JWT for deleted user ${user.id}`)
+            throw new UnauthorizedException('Account is unavailable')
+        }
 
         return { userId: payload.sub, email: payload.email, isAdmin: user.isAdmin }
     }
