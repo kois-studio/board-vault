@@ -28,34 +28,12 @@ export class DatabaseService implements OnModuleInit {
     }
 
     /**
-     * Helper function to format the SQL string by replacing '?' with the actual arguments
-     */
-    private _formatSqlWithArgs(sql: string, args: any[] = []): string {
-        let i = 0
-
-        return sql.replace(/\?/g, () => {
-            const value = args[i++]
-
-            if (typeof value === 'string') {
-                return `'${value.replace(/'/g, "''")}'`
-            }
-            return String(value)
-        })
-    }
-
-    /**
-     * Use this instead of directly calling `tursoClient.execute` to log the SQL query before executing it
+     * Use this instead of directly calling `tursoClient.execute` to log the parameterized SQL template before executing it.
+     * Bound values are intentionally excluded because they may contain secrets or personal data.
      */
     private _tursoExecute(stmt: InStatement) {
-        let sql: string = ''
+        const sql = typeof stmt === 'string' ? stmt : stmt.sql
 
-        if (typeof stmt === 'string') {
-            sql = stmt
-        } else {
-            sql = this._formatSqlWithArgs(stmt.sql, stmt.args as any[])
-        }
-
-        // Log the formatted SQL
         this.LOGGER.log(sql)
 
         // Execute the query
