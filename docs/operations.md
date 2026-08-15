@@ -41,6 +41,12 @@ Use the exact commands and current results in [AGENTS.md](AGENTS.md) and [testin
 
 `backend/vercel.json` configures a Vercel Node build from `src/main.ts` and routes HTTP methods to it. `frontend/src/environments/environment.ts` targets `https://backend.board-vault.com`. The repository does not contain Vercel project metadata, frontend hosting configuration, CI deployment workflow, health probes, migration checks, backup scheduling, or rollback instructions.
 
+External smoke check on 2026-08-15: `https://board-vault.com` returned HTTP 200
+from Vercel, but `https://backend.board-vault.com/auth/clerk/status` returned
+HTTP 404 (`Cannot GET /auth/clerk/status`). The deployed API therefore does not
+yet contain the Clerk route committed here; production Clerk readiness cannot be
+claimed until the backend is deployed from the current commits and rechecked.
+
 Deployment ownership, domain configuration, environment provisioning, provider scopes, and production traffic behavior are therefore unknown and must not be inferred from the committed URLs/config alone.
 
 ## Operational risks and next steps
