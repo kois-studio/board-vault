@@ -6,6 +6,7 @@ import {
     Get,
     NotFoundException,
     Param,
+    ParseUUIDPipe,
     Post,
     Query,
     Req,
@@ -119,7 +120,7 @@ export class AuthController {
     @ApiOperation({ summary: 'Verify user email' })
     @ApiResponse({ status: 200, description: 'Email successfully verified' })
     @ApiResponse({ status: 400, description: 'Invalid or expired token' })
-    async verifyEmail(@Param('token') token: string) {
+    async verifyEmail(@Param('token', new ParseUUIDPipe()) token: string) {
         const result = await this.authService.verifyEmail(token)
 
         if (!result) {
@@ -148,7 +149,7 @@ export class AuthController {
     @ApiOperation({ summary: 'Reset user password' })
     @ApiResponse({ status: 200, description: 'Password reset successfully' })
     @ApiResponse({ status: 400, description: 'Invalid or expired token' })
-    async resetPassword(@Param('token') token: string, @Body() resetPasswordDto: ResetPasswordDto) {
+    async resetPassword(@Param('token', new ParseUUIDPipe()) token: string, @Body() resetPasswordDto: ResetPasswordDto) {
         const result = await this.authService.resetPassword(token, resetPasswordDto.password)
 
         if (!result) {

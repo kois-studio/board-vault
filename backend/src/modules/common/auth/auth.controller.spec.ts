@@ -17,6 +17,7 @@ describe('AuthController request validation', () => {
     let login: jest.Mock
     let checkEmail: jest.Mock
     let checkUsername: jest.Mock
+    let verifyEmail: jest.Mock
 
     beforeEach(async () => {
         forgotPassword = jest.fn().mockResolvedValue(undefined)
@@ -25,13 +26,14 @@ describe('AuthController request validation', () => {
         login = jest.fn().mockResolvedValue({ access_token: 'token' })
         checkEmail = jest.fn().mockResolvedValue(true)
         checkUsername = jest.fn().mockResolvedValue(true)
+        verifyEmail = jest.fn().mockResolvedValue(true)
 
         const module = await Test.createTestingModule({
             controllers: [AuthController],
             providers: [
                 {
                     provide: AuthService,
-                    useValue: { forgotPassword, resetPassword, register, login, checkEmail, checkUsername },
+                    useValue: { forgotPassword, resetPassword, register, login, checkEmail, checkUsername, verifyEmail },
                 },
                 {
                     provide: ClerkIdentityService,
@@ -66,15 +68,27 @@ describe('AuthController request validation', () => {
     })
 
     it('rejects empty reset passwords and unexpected fields', async () => {
-        await request(app.getHttpServer()).post('/auth/reset-password/token').send({ password: '', isAdmin: true }).expect(400)
+        await request(app.getHttpServer())
+            .post('/auth/reset-password/550e8400-e29b-41d4-a716-446655440000')
+            .send({ password: '', isAdmin: true })
+            .expect(400)
+
+        expect(resetPassword).not.toHaveBeenCalled()
+    })
+
+    it('rejects malformed reset tokens before the service call', async () => {
+        await request(app.getHttpServer()).post('/auth/reset-password/not-a-uuid').send({ password: 'new-password' }).expect(400)
 
         expect(resetPassword).not.toHaveBeenCalled()
     })
 
     it('forwards a validated reset-password body', async () => {
-        await request(app.getHttpServer()).post('/auth/reset-password/token').send({ password: 'new-password' }).expect(201)
+        await request(app.getHttpServer())
+            .post('/auth/reset-password/550e8400-e29b-41d4-a716-446655440000')
+            .send({ password: 'new-password' })
+            .expect(201)
 
-        expect(resetPassword).toHaveBeenCalledWith('token', 'new-password')
+        expect(resetPassword).toHaveBeenCalledWith('550e8400-e29b-41d4-a716-446655440000', 'new-password')
     })
 
     it('rejects malformed login input before the service call', async () => {
@@ -102,5 +116,11 @@ describe('AuthController request validation', () => {
         await request(app.getHttpServer()).get('/auth/check-username').query({ username: '' }).expect(400)
 
         expect(checkUsername).not.toHaveBeenCalled()
+    })
+
+    it('rejects malformed verification tokens before the service call', async () => {
+        await request(app.getHttpServer()).get('/auth/verify-email/not-a-uuid').expect(400)
+
+        expect(verifyEmail).not.toHaveBeenCalled()
     })
 })
