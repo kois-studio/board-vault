@@ -18,6 +18,7 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 
 import { ClerkAuthGuard } from '../../../common/guards/clerk-auth.guard'
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
+import { RateLimit, RateLimitGuard } from '../../../common/guards/rate-limit.guard'
 import {
     AccessTokenDto,
     CheckEmailDto,
@@ -78,6 +79,8 @@ export class AuthController {
     }
 
     @Post('/register')
+    @UseGuards(RateLimitGuard)
+    @RateLimit(5, 60)
     @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
     @ApiOperation({ summary: 'Create a new user' })
     @ApiResponse({ status: 201, type: SuccessDto, description: 'The user has been successfully created' })
@@ -86,6 +89,8 @@ export class AuthController {
     }
 
     @Post('/login')
+    @UseGuards(RateLimitGuard)
+    @RateLimit(10, 60)
     @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
     @ApiOperation({ summary: 'Log in a user' })
     @ApiResponse({ status: 201, type: AccessTokenDto, description: 'Successfully logged in' })
@@ -95,6 +100,8 @@ export class AuthController {
     }
 
     @Get('/check-email')
+    @UseGuards(RateLimitGuard)
+    @RateLimit(30, 60)
     @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
     @ApiOperation({ summary: 'Check if an email exists' })
     @ApiResponse({ status: 200, description: 'Email availability status' })
@@ -106,6 +113,8 @@ export class AuthController {
     }
 
     @Get('/check-username')
+    @UseGuards(RateLimitGuard)
+    @RateLimit(30, 60)
     @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
     @ApiOperation({ summary: 'Check if a username exists' })
     @ApiResponse({ status: 200, description: 'Username availability status' })
@@ -117,6 +126,8 @@ export class AuthController {
     }
 
     @Get('/verify-email/:token')
+    @UseGuards(RateLimitGuard)
+    @RateLimit(10, 60)
     @ApiOperation({ summary: 'Verify user email' })
     @ApiResponse({ status: 200, description: 'Email successfully verified' })
     @ApiResponse({ status: 400, description: 'Invalid or expired token' })
@@ -130,6 +141,8 @@ export class AuthController {
     }
 
     @Post('/forgot-password')
+    @UseGuards(RateLimitGuard)
+    @RateLimit(5, 60)
     @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
     @ApiOperation({ summary: 'Request a password reset' })
     @ApiResponse({ status: 200, description: 'Password reset link sent' })
@@ -145,6 +158,8 @@ export class AuthController {
     }
 
     @Post('/reset-password/:token')
+    @UseGuards(RateLimitGuard)
+    @RateLimit(5, 60)
     @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
     @ApiOperation({ summary: 'Reset user password' })
     @ApiResponse({ status: 200, description: 'Password reset successfully' })

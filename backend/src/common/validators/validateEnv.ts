@@ -24,17 +24,17 @@ export function validateEnv(): void {
         err.push('Example value: "eyJfdjsbrEzr..."\n')
     }
 
-    // Validate if the redis is disabled
-    // if (!process.env.UPSTASH_REDIS_REST_DISABLE) {
-    //     err.push('Missing in .env file: UPSTASH_REDIS_REST_DISABLE')
-    //     err.push('Example value: true')
-    // }
+    const redisDisabled = process.env.UPSTASH_REDIS_REST_DISABLE === 'true'
 
-    // Validate boolean format
-    // if (process.env.UPSTASH_REDIS_REST_DISABLE !== 'true' && process.env.UPSTASH_REDIS_REST_DISABLE !== 'false') {
-    //     err.push('Invalid format in .env file: UPSTASH_REDIS_REST_DISABLE')
-    //     err.push('Example value: true')
-    // }
+    if (!redisDisabled) {
+        if (!process.env.UPSTASH_REDIS_REST_URL) {
+            err.push('Missing in .env file: UPSTASH_REDIS_REST_URL')
+        }
+
+        if (!process.env.UPSTASH_REDIS_REST_TOKEN) {
+            err.push('Missing in .env file: UPSTASH_REDIS_REST_TOKEN')
+        }
+    }
 
     if (err.length > 0) {
         err.forEach(error => logger.error(error))
