@@ -1,4 +1,5 @@
 import { ApiProperty, OmitType, PartialType, PickType } from '@nestjs/swagger'
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator'
 
 import { GameCompleteDto } from './game.type'
 
@@ -105,12 +106,35 @@ export type UpdateUserRecord = Partial<
 /**
  * POST /auth/register
  */
-export class RegisterUserDto extends PickType(UserCompleteDto, ['email', 'username', 'password']) {}
+export class RegisterUserDto {
+    @ApiProperty({ example: 'jose@email.com' })
+    @IsEmail()
+    email: string
+
+    @ApiProperty({ example: 'joseantonio' })
+    @IsString()
+    @IsNotEmpty()
+    username: string
+
+    @ApiProperty({ example: 'correct-horse-battery-staple' })
+    @IsString()
+    @IsNotEmpty()
+    password: string
+}
 
 /**
  * POST /auth/login
  */
-export class LoginUserDto extends PickType(UserCompleteDto, ['email', 'password']) {}
+export class LoginUserDto {
+    @ApiProperty({ example: 'jose@email.com' })
+    @IsEmail()
+    email: string
+
+    @ApiProperty({ example: 'correct-horse-battery-staple' })
+    @IsString()
+    @IsNotEmpty()
+    password: string
+}
 
 /**
  * User containing the games they have
