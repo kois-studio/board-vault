@@ -10,8 +10,8 @@ project:
   name: board-vault
   lifecycle: existing
   maturity: active foundation; pre-launch
-  audited_commit: 4a84c2e
-  audit_scope: documentation, Clerk protected-session bridge and local provisioning, SEC-001 profile, user-game-update, and proposal-input validation boundaries, SEC-002 user-scoped, global user listing, deleted-account JWT, group ownership, group/membership listing and actor identity, collection route ownership, invitation lifecycle, invite-only legacy join, notification ownership, meet reads, meet-account-game membership, review-score validation, legacy-token expiry and one-time-use, CORS allowlist, auth-rate-limit, and public nested-user response slices, and SEC-003 admin reviewer identity; production deployment and broader authorization remain incomplete
+  audited_commit: 2e73a66
+  audit_scope: documentation, Clerk protected-session bridge and local provisioning, verified-primary-email linking, production CORS defaults, SEC-001 profile, user-game-update, and proposal-input validation boundaries, SEC-002 user-scoped, global user listing, deleted-account JWT, group ownership, group/membership listing and actor identity, collection route ownership, invitation lifecycle, invite-only legacy join, notification ownership, meet reads, meet-account-game membership, review-score validation, legacy-token expiry and one-time-use, CORS allowlist, auth-rate-limit, and public nested-user response slices, and SEC-003 admin reviewer identity; production deployment and broader authorization remain incomplete
 
 standards:
   - documentation
@@ -303,7 +303,7 @@ compliance:
 
     - id: OPS-001
       status: partial
-      evidence: backend/src/common/validators/validateEnv.ts checks Turso/JWT variables and fails production startup without Clerk secret/authorized parties; EmailService fails later for Resend
+      evidence: backend/src/common/validators/validateEnv.ts checks Turso/JWT variables and fails production startup without Clerk secret/authorized parties; main.ts keeps localhost out of production CORS defaults; EmailService fails later for Resend
       priority: critical
       next_action: Centralize typed startup configuration validation for all required providers.
     - id: OPS-002

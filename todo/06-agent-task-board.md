@@ -512,6 +512,12 @@ Branch/worktree: main / shared workspace
 Scope: harden production Clerk UX, trusted-origin defaults, and verified-email identity linking
 ```
 
+Review: AUTH-002
+
+Changed: Production CORS defaults now exclude localhost, Clerk identity linking/provisioning requires a verified primary email, Clerk initialization failures fall back to visible legacy controls instead of exposing unusable Clerk actions, and guest routing recognizes active Clerk sessions. Regression coverage adds CORS-default and configured-origin tests.
+Verified: `cd backend && npm test -- --runInBand` (98 tests); `cd backend && npm run build`; `cd frontend && npm run build`; affected backend lint reports no errors; affected backend Prettier check passes.
+Known follow-ups: Configure the production Clerk instance/domain and Vercel variables, deploy the current backend (the 2026-08-15 smoke check still returned 404 for `/auth/clerk/status`), verify the production origin and preserved-data routes, apply migration 0002 where required, and document rollback/recovery evidence before removing legacy auth.
+
 When claiming a task, add:
 
 ```text

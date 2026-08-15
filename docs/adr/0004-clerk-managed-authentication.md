@@ -27,7 +27,8 @@ as the Board Vault domain-profile and authorization record during migration.
 - Verify Clerk bearer tokens in NestJS with Clerk's backend SDK.
 - Resolve a verified Clerk subject to an existing local account. If it is not
   already linked, permit a one-time exact match against Clerk's primary email
-  and attach the Clerk subject. If no local account exists, provision a local
+  only after Clerk reports that email as verified, and attach the Clerk subject.
+  If no local account exists, provision a local
   domain account with an unusable legacy password, verified email state, and a
   generated safe profile identity.
 - Do not delete historical accounts or copy Clerk administrative claims into
@@ -72,6 +73,8 @@ legacy password/JWT path remains available during rollout.
   production environment remains disabled until the production publishable
   key, backend secret, authorized parties, deployment settings, and rollback
   evidence are supplied.
+- The backend production CORS default is the Board Vault HTTPS origin only;
+  localhost is limited to non-production defaults.
 - [Migration 0001](../../database/migrations/0001-add-clerk-user-id.sql) has
   been applied to live Turso and passed against the preserved SQLite backup
   copy, retaining 15 accounts, 13 meets, and 101 meet/game links.
