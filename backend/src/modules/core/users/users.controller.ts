@@ -67,6 +67,7 @@ export class UsersController {
 
     @UseGuards(UserOwnershipGuard)
     @Put('/:userId/games')
+    @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
     @ApiOperation({ summary: 'Modify games owned by user' })
     @ApiResponse({ status: 200, type: SuccessDto, description: 'The games have been successfully updated.' })
     @ApiResponse({ status: 404, description: 'User not found.' })

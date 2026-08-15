@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer'
 import { ApiProperty, OmitType, PartialType, PickType } from '@nestjs/swagger'
-import { IsEmail, IsIn, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator'
+import { IsArray, IsEmail, IsIn, IsInt, IsNotEmpty, IsOptional, IsString, Min, ValidateNested } from 'class-validator'
 
 import { GameCompleteDto } from './game.type'
 
@@ -179,8 +179,14 @@ export class UserWithGames extends UserGetDto {
 
 export class UserUpdateGamesBody {
     @ApiProperty({ type: [Number], description: 'The games to add to user' })
+    @IsArray()
+    @IsInt({ each: true })
+    @Min(1, { each: true })
     gamesToAdd: Array<number>
 
     @ApiProperty({ type: [Number], description: 'The games to remove from user' })
+    @IsArray()
+    @IsInt({ each: true })
+    @Min(1, { each: true })
     gamesToRemove: Array<number>
 }
