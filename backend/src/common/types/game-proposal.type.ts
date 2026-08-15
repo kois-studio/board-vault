@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
+import { IsInt, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator'
 
 import { UserGetDto } from './user.type'
 
@@ -104,6 +105,8 @@ export class GameProposalDto {
  */
 export class CreateGameProposalBody {
     @ApiProperty({ example: 'Catan', description: 'Game title' })
+    @IsString()
+    @IsNotEmpty()
     title: string
 
     @ApiProperty({
@@ -111,6 +114,8 @@ export class CreateGameProposalBody {
         required: false,
         description: 'Game image URL',
     })
+    @IsOptional()
+    @IsString()
     imageUrl?: string
 
     @ApiProperty({
@@ -118,6 +123,9 @@ export class CreateGameProposalBody {
         required: false,
         description: 'Average duration of the game in minutes',
     })
+    @IsOptional()
+    @IsInt()
+    @Min(0)
     gameAvgDuration?: number
 
     @ApiProperty({
@@ -125,6 +133,9 @@ export class CreateGameProposalBody {
         required: false,
         description: 'Minimum number of players required',
     })
+    @IsOptional()
+    @IsInt()
+    @Min(0)
     minPlayers?: number
 
     @ApiProperty({
@@ -132,6 +143,9 @@ export class CreateGameProposalBody {
         required: false,
         description: 'Maximum number of players allowed',
     })
+    @IsOptional()
+    @IsInt()
+    @Min(0)
     maxPlayers?: number
 
     @ApiProperty({
@@ -139,6 +153,8 @@ export class CreateGameProposalBody {
         required: false,
         description: 'Proposed tags as JSON string',
     })
+    @IsOptional()
+    @IsString()
     proposedTags?: string
 
     @ApiProperty({
@@ -146,6 +162,8 @@ export class CreateGameProposalBody {
         required: false,
         description: 'User notes about the game',
     })
+    @IsOptional()
+    @IsString()
     notes?: string
 }
 
