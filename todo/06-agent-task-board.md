@@ -500,7 +500,7 @@ Review: AUTH-001
 
 Changed: Clerk sessions now resolve into the existing local request identity before compatibility JWT guards, protected API routes accept Clerk bearer tokens, new Clerk identities provision local accounts with unusable legacy passwords and verified local email state, deleted linked accounts fail closed, frontend transport refreshes Clerk tokens when Clerk is active, and production startup requires `CLERK_SECRET_KEY` plus explicit `CLERK_AUTHORIZED_PARTIES`. Focused tests cover middleware resolution and identity provisioning.
 Verified: `cd backend && npm test -- --runInBand` (95 tests); `cd backend && npm run build`; `cd frontend && npm run build`; affected backend files pass Prettier.
-Known follow-ups: Configure the production Clerk instance/domain and Vercel variables, deploy, verify the production origin and preserved-data routes, apply migration 0002 where required, and document rollback/recovery evidence before removing legacy auth.
+Known follow-ups: Configure the production Clerk instance/domain and Vercel variables, deploy the current backend (the 2026-08-15 smoke check still returned 404 for `/auth/clerk/status`), verify the production origin and preserved-data routes, apply migration 0002 where required, and document rollback/recovery evidence before removing legacy auth.
 
 When claiming a task, add:
 
