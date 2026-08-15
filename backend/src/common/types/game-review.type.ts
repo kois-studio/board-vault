@@ -1,4 +1,5 @@
-import { ApiProperty, PickType } from '@nestjs/swagger'
+import { ApiProperty } from '@nestjs/swagger'
+import { IsInt, Max, Min } from 'class-validator'
 
 import { GameCompleteDto } from './game.type'
 
@@ -22,7 +23,13 @@ export class GameReviewDto {
 /**
  * POST requests --> no db generated props
  */
-export class CreateGameReviewBody extends PickType(GameReviewDto, ['review']) {}
+export class CreateGameReviewBody {
+    @ApiProperty({ example: 8, minimum: 0, maximum: 10 })
+    @IsInt()
+    @Min(0)
+    @Max(10)
+    review: number
+}
 
 export class GameReviewWithGameDataDto extends GameReviewDto {
     @ApiProperty({ type: GameCompleteDto })
