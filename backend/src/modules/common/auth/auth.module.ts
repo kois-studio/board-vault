@@ -3,7 +3,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
 import { JwtModule } from '@nestjs/jwt'
 
 import { ClerkAuthGuard } from '../../../common/guards/clerk-auth.guard'
+import { RateLimitGuard } from '../../../common/guards/rate-limit.guard'
 import { UsersModule } from '../../core/users/users.module'
+import { CacheModule } from '../cache/cache.module'
 import { DatabaseService } from '../database/database.service'
 import { EmailModule } from '../email/email.module'
 
@@ -16,6 +18,7 @@ import { JwtStrategy } from './jwt-strategy'
     imports: [
         UsersModule,
         EmailModule,
+        CacheModule,
         JwtModule.registerAsync({
             imports: [ConfigModule],
             useFactory: async (configService: ConfigService) => ({
@@ -27,6 +30,6 @@ import { JwtStrategy } from './jwt-strategy'
         ConfigModule,
     ],
     controllers: [AuthController],
-    providers: [AuthService, ClerkIdentityService, JwtStrategy, ClerkAuthGuard, DatabaseService],
+    providers: [AuthService, ClerkIdentityService, JwtStrategy, ClerkAuthGuard, RateLimitGuard, DatabaseService],
 })
 export class AuthModule {}

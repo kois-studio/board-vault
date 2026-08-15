@@ -4,6 +4,7 @@ import * as request from 'supertest'
 
 import { ClerkAuthGuard } from '../../../common/guards/clerk-auth.guard'
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
+import { RateLimitGuard } from '../../../common/guards/rate-limit.guard'
 
 import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
@@ -44,6 +45,8 @@ describe('AuthController request validation', () => {
             .overrideGuard(ClerkAuthGuard)
             .useValue({ canActivate: () => true })
             .overrideGuard(JwtAuthGuard)
+            .useValue({ canActivate: () => true })
+            .overrideGuard(RateLimitGuard)
             .useValue({ canActivate: () => true })
             .compile()
 
