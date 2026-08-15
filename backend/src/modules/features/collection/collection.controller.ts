@@ -29,6 +29,7 @@ import { WishlistResponseDto } from '../../../common/types/wishlisted-game.type'
 import { CollectionService } from './collection.service'
 
 @UseGuards(JwtAuthGuard, VerifiedUserGuard)
+@UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
 @ApiTags('collection')
 @ApiBearerAuth()
 @Controller('collection')
