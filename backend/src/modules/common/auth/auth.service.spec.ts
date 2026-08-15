@@ -3,18 +3,22 @@ import { NotFoundException } from '@nestjs/common'
 import { AuthService } from './auth.service'
 
 describe('AuthService password reset', () => {
-    const jwtService = {} as never
     const databaseService = {
         updateUserRecord: jest.fn(),
     }
     const usersService = {
         getUserByEmail: jest.fn(),
+        createUser: jest.fn(),
     }
     const emailService = {
         sendPasswordResetEmail: jest.fn(),
+        sendVerificationEmail: jest.fn(),
+    }
+    const jwtService = {
+        sign: jest.fn().mockReturnValue('access-token'),
     }
 
-    const createService = () => new AuthService(jwtService, databaseService as never, usersService as never, emailService as never)
+    const createService = () => new AuthService(jwtService as never, databaseService as never, usersService as never, emailService as never)
 
     beforeEach(() => {
         jest.clearAllMocks()
@@ -38,5 +42,18 @@ describe('AuthService password reset', () => {
             password_reset_token: expect.any(String),
         })
         expect(emailService.sendPasswordResetEmail).toHaveBeenCalledWith('known@example.com', expect.any(String))
+    })
+
+    it('does not log email or username values during registration', async () => {
+        usersService.createUser.mockResolvedValue({ success: true })
+        const service = createService()
+        const logger = (service as unknown as { LOGGER: { log: jest.Mock } }).LOGGER
+        const log = jest.spyOn(logger, 'log')
+
+        await service.register('known@example.com', 'known-user', 'password')
+
+        expect(log).toHaveBeenCalledWith('Registration attempt received')
+        expect(log).not.toHaveBeenCalledWith(expect.stringContaining('known@example.com'))
+        expect(log).not.toHaveBeenCalledWith(expect.stringContaining('known-user'))
     })
 })
