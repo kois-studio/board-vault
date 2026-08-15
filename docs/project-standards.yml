@@ -10,7 +10,7 @@ project:
   name: board-vault
   lifecycle: existing
   maturity: active foundation; pre-launch
-  audited_commit: f5e3fcf
+  audited_commit: 1d18de6
   audit_scope: documentation, staged Clerk authentication integration, SEC-001 profile, user-game-update, and proposal-input validation boundaries, SEC-002 user-scoped, global user listing, deleted-account JWT, group ownership, group/membership listing and actor identity, collection route ownership, invitation lifecycle, invite-only legacy join, notification ownership, meet reads, meet-account-game membership, review-score validation, legacy-token expiry and one-time-use, CORS allowlist, auth-rate-limit, and public nested-user response slices, and SEC-003 admin reviewer identity; broader authorization and self/admin exposure work remains incomplete
 
 standards:
