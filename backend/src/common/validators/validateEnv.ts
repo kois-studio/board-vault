@@ -24,6 +24,21 @@ export function validateEnv(): void {
         err.push('Example value: "eyJfdjsbrEzr..."\n')
     }
 
+    if (process.env.NODE_ENV === 'production') {
+        if (!process.env.CLERK_SECRET_KEY) {
+            err.push('Missing in production environment: CLERK_SECRET_KEY')
+        }
+
+        if (
+            !process.env.CLERK_AUTHORIZED_PARTIES?.split(',')
+                .map(value => value.trim())
+                .filter(Boolean).length
+        ) {
+            err.push('Missing in production environment: CLERK_AUTHORIZED_PARTIES')
+            err.push('Example value: "https://board-vault.com"\n')
+        }
+    }
+
     const redisDisabled = process.env.UPSTASH_REDIS_REST_DISABLE === 'true'
 
     if (!redisDisabled) {

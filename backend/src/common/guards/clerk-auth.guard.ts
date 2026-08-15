@@ -1,5 +1,5 @@
 import { verifyToken } from '@clerk/backend'
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common'
+import { CanActivate, ExecutionContext, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 
 type ClerkRequestUser = {
@@ -24,6 +24,10 @@ export class ClerkAuthGuard implements CanActivate {
             ?.split(',')
             .map(value => value.trim())
             .filter(Boolean)
+
+        if (process.env.NODE_ENV === 'production' && !authorizedParties?.length) {
+            throw new InternalServerErrorException('Clerk authorized parties are not configured')
+        }
 
         let verification: Awaited<ReturnType<typeof verifyToken>>
 
