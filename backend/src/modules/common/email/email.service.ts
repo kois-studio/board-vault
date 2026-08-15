@@ -22,15 +22,30 @@ export class EmailService {
         this.resend = new Resend(resendApiKey)
     }
 
+    private escapeHtml(value: string): string {
+        return value.replace(
+            /[&<>'\"]/g,
+            character =>
+                ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;',
+                })[character] ?? character,
+        )
+    }
+
     async sendVerificationEmail(to: string, verificationToken: string): Promise<void> {
-        const verificationLink = `${this.appBaseUrl}/verify-email/${verificationToken}`
+        const verificationLink = `${this.appBaseUrl}/verify-email/${encodeURIComponent(verificationToken)}`
+        const safeVerificationLink = this.escapeHtml(verificationLink)
 
         try {
             const { data, error } = await this.resend.emails.send({
                 from: this.noReplyEmail,
                 to: [to],
                 subject: 'Verify Your Email Address',
-                html: `<p>Please click the following link to verify your email address: <a href="${verificationLink}">${verificationLink}</a></p>`,
+                html: `<p>Please click the following link to verify your email address: <a href="${safeVerificationLink}">${safeVerificationLink}</a></p>`,
             })
 
             if (error) {
@@ -46,14 +61,15 @@ export class EmailService {
     }
 
     async sendPasswordResetEmail(to: string, resetToken: string): Promise<void> {
-        const resetLink = `${this.appBaseUrl}/reset-password/${resetToken}`
+        const resetLink = `${this.appBaseUrl}/reset-password/${encodeURIComponent(resetToken)}`
+        const safeResetLink = this.escapeHtml(resetLink)
 
         try {
             const { data, error } = await this.resend.emails.send({
                 from: this.noReplyEmail,
                 to: [to],
                 subject: 'Reset Your Password',
-                html: `<p>Please click the following link to reset your password: <a href="${resetLink}">${resetLink}</a></p>`,
+                html: `<p>Please click the following link to reset your password: <a href="${safeResetLink}">${safeResetLink}</a></p>`,
             })
 
             if (error) {
@@ -69,12 +85,14 @@ export class EmailService {
     }
 
     async sendNotificationEmail(to: string, message: string): Promise<void> {
+        const safeMessage = this.escapeHtml(message)
+
         try {
             const { data, error } = await this.resend.emails.send({
                 from: this.noReplyEmail,
                 to: [to],
                 subject: 'Important Notification',
-                html: `<p>${message}</p>`,
+                html: `<p>${safeMessage}</p>`,
             })
 
             if (error) {
