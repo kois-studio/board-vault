@@ -70,4 +70,22 @@ describe('ClerkIdentityService', () => {
         expect(mockedCreateClerkClient).not.toHaveBeenCalled()
         expect(usersService.createClerkUser).not.toHaveBeenCalled()
     })
+
+    it('migrates an exact-email account from a development Clerk identity', async () => {
+        const existingAccount = {
+            id: 1,
+            email: 'new@example.com',
+            isAdmin: true,
+            isDeleted: false,
+            clerkUserId: 'user_development',
+        }
+        const migratedAccount = { ...existingAccount, clerkUserId: 'user_new' }
+
+        usersService.getUserByEmail.mockResolvedValue(existingAccount)
+        usersService.linkClerkUser.mockResolvedValue(migratedAccount)
+
+        await expect(service.resolveAccount('user_new')).resolves.toBe(migratedAccount)
+        expect(usersService.linkClerkUser).toHaveBeenCalledWith(1, 'user_new')
+        expect(usersService.createClerkUser).not.toHaveBeenCalled()
+    })
 })

@@ -94,8 +94,11 @@ export class DatabaseService implements OnModuleInit {
 
     linkUserToClerkId(accountId: number, clerkUserId: string) {
         return this._tursoExecute({
-            sql: 'UPDATE Account SET clerkUserId = ? WHERE id = ? AND clerkUserId IS NULL',
-            args: [clerkUserId, accountId],
+            // A verified exact-email match may migrate an account from the
+            // development Clerk instance to production. The identity service
+            // performs that email and verification check before this update.
+            sql: 'UPDATE Account SET clerkUserId = ? WHERE id = ? AND (clerkUserId IS NULL OR clerkUserId <> ?)',
+            args: [clerkUserId, accountId, clerkUserId],
         })
     }
 
