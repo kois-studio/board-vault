@@ -290,7 +290,7 @@ export class DataService {
 
     // #region form-update-profile
 
-    public updateCurrentUserData(requestBody: { email?: string; username?: string; displayName?: string; avatar?: UserType['avatar'] }) {
+    public updateCurrentUserData(requestBody: { username?: string; displayName?: string; avatar?: UserType['avatar'] }) {
         const currentUser = this.currentUser()
         if (!currentUser) {
             return
@@ -316,10 +316,6 @@ export class DataService {
                             if (requestBody.displayName) {
                                 group.members[userIndex].displayName = requestBody.displayName
                             }
-                            if (requestBody.email) {
-                                group.members[userIndex].email = requestBody.email
-                            }
-
                             if (requestBody.avatar) {
                                 group.members[userIndex].avatar = requestBody.avatar
                             }

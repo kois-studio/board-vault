@@ -26,6 +26,7 @@ import type {
     TagType,
     UpdateGameOwnedType,
     UserProposalStatsType,
+    PublicUserType,
     UserStatsType,
     UserType,
 } from './api.types'
@@ -88,8 +89,6 @@ export class Api {
     updateUser(
         userId: number,
         requesBody: {
-            email?: string
-            password?: string
             username?: string
             displayName?: string
             avatar?: UserType['avatar']
@@ -125,7 +124,7 @@ export class Api {
     }
 
     createInvitation(groupId: number, username: string) {
-        return this.http.post<UserType>(`${this.url}/invitations/byUsername`, { groupId, username })
+        return this.http.post<PublicUserType>(`${this.url}/invitations/byUsername`, { groupId, username })
     }
 
     // #region notifications
@@ -398,10 +397,7 @@ export class Api {
             tagIds?: number[]
         },
     ) {
-        return this.http.post<{ success: boolean; createdGameId?: number }>(
-            `${this.url}/admin/proposals/${id}/approve`,
-            approvalData,
-        )
+        return this.http.post<{ success: boolean; createdGameId?: number }>(`${this.url}/admin/proposals/${id}/approve`, approvalData)
     }
 
     rejectGameProposal(id: number, rejectionData: { reviewNotes: string }) {

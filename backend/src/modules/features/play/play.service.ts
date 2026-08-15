@@ -33,7 +33,9 @@ export class PlayService {
                         const game = await this.gamesService.getGameById(gameId)
                         const gameTranslations = await this.gameTranslationService.getGameTranslations(gameId)
                         const playedByIds = await this.meetAccountGamesService.getDistinctAccountIdsByMeetIdAndGameId(meetId, gameId)
-                        const playedByData = await Promise.all(playedByIds.map(async accountId => this.usersService.getUserById(accountId)))
+                        const playedByData = await Promise.all(
+                            playedByIds.map(async accountId => this.usersService.getPublicUserById(accountId)),
+                        )
 
                         return {
                             gameData: {

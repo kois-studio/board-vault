@@ -5,7 +5,7 @@ import { invitationsSchema } from '../../../common/schemas'
 import { DatabaseService } from '../../common/database/database.service'
 
 import type { CreateInvitationBody, CreateInvitationByUsernameBody, InvitationDto } from '../../../common/types/invitation.type'
-import type { AvatarDto, UserGetDto } from '../../../common/types/user.type'
+import type { AvatarDto, UserPublicDto } from '../../../common/types/user.type'
 
 @Injectable()
 export class InvitationsService {
@@ -72,7 +72,7 @@ export class InvitationsService {
     }
 
     // TODO: composite en databaseService? oh nonono
-    async createInvitationByUsername(invitationDto: CreateInvitationByUsernameBody): Promise<UserGetDto> {
+    async createInvitationByUsername(invitationDto: CreateInvitationByUsernameBody): Promise<UserPublicDto> {
         this.LOGGER.log(
             `Creating invitation to group ${invitationDto.groupId}: ${invitationDto.fromAccountId} -> ${invitationDto.username}`,
         )
@@ -80,15 +80,9 @@ export class InvitationsService {
 
         return {
             id: Number(userRow[0]),
-            email: String(userRow[1]),
             username: String(userRow[2]),
-            // password: String(userRow[3]), // Do not return password
             avatar: JSON.parse(String(userRow[4])) as AvatarDto,
             displayName: String(userRow[5]),
-            createdAt: String(userRow[6]),
-            isDeleted: Boolean(userRow[7]),
-            isAdmin: Number(userRow[8]) === 1 ? true : false, // TODO: review if this is working
-            email_verified: Boolean(userRow[9]),
         }
     }
 
