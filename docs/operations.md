@@ -54,8 +54,8 @@ returning Vercel `FUNCTION_INVOCATION_FAILED` until its production variables
 were configured. The production Clerk instance is now present with Clerk
 domain `board-vault.com`, frontend API `https://clerk.board-vault.com`, and
 accounts portal `https://accounts.board-vault.com`; its required DNS records
-are managed by Vercel and verified by Clerk. SSL provisioning remains in
-progress at the time of this update.
+are managed by Vercel and verified by Clerk, and Clerk reports the production
+domain and SSL setup as complete.
 
 Vercel Production variables are now configured in the separate projects:
 `board-vault-front` has `CLERK_PUBLISHABLE_KEY` and `CLERK_AUTH_ENABLED`, while
@@ -64,16 +64,28 @@ Vercel Production variables are now configured in the separate projects:
 live: the frontend returns HTTP 200 and exposes an enabled production runtime
 configuration, while the unauthenticated backend Clerk status route returns
 HTTP 401 with `Access-Control-Allow-Origin: https://board-vault.com` rather
-than a wildcard. The remaining verification is an authenticated browser smoke
-test and preserved-data check; manual production sign-in has not yet been
-claimed as complete.
+than a wildcard. An authenticated production signup/sign-in was completed
+with email, password, and username, and the matching preserved local account
+was linked to its production Clerk identity. Google OAuth remains intentionally
+disabled.
+
+On 2026-08-15, an authenticated request to
+`/collection/users/1/games` returned a Vercel 504 because the configured
+Upstash Redis hostname failed DNS resolution. The browser reported this as a
+CORS error because the generated 504 did not include the API CORS header;
+direct origin checks against the backend returned the expected allow-origin
+header. Cache operations now use a 250 ms deadline, no SDK retries, and a
+30-second failure cooldown so a Redis outage cannot consume the Vercel
+invocation. Production still needs a valid Upstash database configured before
+rate limiting can be considered operational; the current limiter intentionally
+fails open when Redis is unavailable.
 
 Deployment ownership, domain configuration, environment provisioning, provider scopes, and production traffic behavior are therefore unknown and must not be inferred from the committed URLs/config alone.
 
 ## Operational risks and next steps
 
 1. Establish locked installation, Node/package-manager support, and a disposable test database.
-2. Keep Redis explicitly disabled only in local environments; production rate limiting requires valid Upstash credentials.
+2. Replace the invalid production Upstash endpoint and verify a Redis-backed rate-limit request; Redis may remain explicitly disabled only in local environments.
 3. Add health/readiness, safe structured request logs, error monitoring, and graceful shutdown checks.
 4. Add migration/deployment gates and document Turso backup/restore ownership and rehearsal.
 5. Record Vercel/frontend deployment responsibilities and rollback behavior.
