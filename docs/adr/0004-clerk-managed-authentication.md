@@ -95,7 +95,8 @@ legacy password/JWT path remains available during rollout.
   the fresh deployment returns the expected unauthenticated `401` from the
   Clerk status route, enables the production frontend key, and restricts API
   CORS to `https://board-vault.com`. Authenticated browser and preserved-data
-  verification remain outstanding.
+  verification now includes a successful production email/password/username
+  signup and migration of preserved Account `#1` to its production Clerk ID.
 - The production Clerk configuration was finalized through the CLI with email
   verification, password, and username required for sign-up; Google OAuth is
   disabled until a future product decision supplies production Google
