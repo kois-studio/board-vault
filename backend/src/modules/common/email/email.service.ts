@@ -34,13 +34,13 @@ export class EmailService {
             })
 
             if (error) {
-                this.LOGGER.error(`Failed to send verification email to ${to}`, error)
+                this.LOGGER.error('Failed to send verification email', error)
                 throw error
             }
 
-            this.LOGGER.log(`Verification email sent to ${to}. Message ID: ${data!.id}`)
+            this.LOGGER.log(`Verification email sent. Message ID: ${data!.id}`)
         } catch (error) {
-            this.LOGGER.error(`Failed to send verification email to ${to}`, error)
+            this.LOGGER.error('Failed to send verification email', error)
             throw error // Re-throw the error to be handled by the calling function
         }
     }
@@ -57,13 +57,13 @@ export class EmailService {
             })
 
             if (error) {
-                this.LOGGER.error(`Failed to send password reset email to ${to}`, error)
+                this.LOGGER.error('Failed to send password reset email', error)
                 throw error
             }
 
-            this.LOGGER.log(`Password reset email sent to ${to}. Message ID: ${data!.id}`)
+            this.LOGGER.log(`Password reset email sent. Message ID: ${data!.id}`)
         } catch (error) {
-            this.LOGGER.error(`Failed to send password reset email to ${to}`, error)
+            this.LOGGER.error('Failed to send password reset email', error)
             throw error // Re-throw the error to be handled by the calling function
         }
     }
@@ -78,13 +78,13 @@ export class EmailService {
             })
 
             if (error) {
-                this.LOGGER.error(`Failed to send notification email to ${to}`, error)
+                this.LOGGER.error('Failed to send notification email', error)
                 throw error
             }
 
-            this.LOGGER.log(`Notification email sent to ${to}. Message ID: ${data!.id}`)
+            this.LOGGER.log(`Notification email sent. Message ID: ${data!.id}`)
         } catch (error) {
-            this.LOGGER.error(`Failed to send notification email to ${to}`, error)
+            this.LOGGER.error('Failed to send notification email', error)
             throw error // Re-throw the error to be handled by the calling function
         }
     }
