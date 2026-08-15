@@ -1,4 +1,4 @@
-import { createClerkClient, type User as ClerkUser } from '@clerk/backend'
+import { createClerkClient } from '@clerk/backend'
 import { NotFoundException } from '@nestjs/common'
 
 import { ClerkIdentityService } from './clerk-identity.service'
@@ -28,7 +28,7 @@ describe('ClerkIdentityService', () => {
                     firstName: 'New',
                     lastName: 'Player',
                     primaryEmailAddressId: 'email_1',
-                    emailAddresses: [{ id: 'email_1', emailAddress: 'new@example.com' }],
+                    emailAddresses: [{ id: 'email_1', emailAddress: 'new@example.com', verification: { status: 'verified' } }],
                 }),
             },
         } as never)
@@ -63,6 +63,7 @@ describe('ClerkIdentityService', () => {
 
     it('keeps an already linked account authoritative', async () => {
         const linkedAccount = { id: 1, email: 'existing@example.com', isAdmin: true, isDeleted: false } as never
+
         usersService.getUserByClerkId.mockReset().mockResolvedValue(linkedAccount)
 
         await expect(service.resolveAccount('user_existing')).resolves.toBe(linkedAccount)

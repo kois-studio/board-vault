@@ -1,8 +1,8 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 
-import { LoggerMiddleware } from './common/middlewares/logger.middleware'
 import { ClerkSessionMiddleware } from './common/middlewares/clerk-session.middleware'
+import { LoggerMiddleware } from './common/middlewares/logger.middleware'
 // Common
 import { AuthModule } from './modules/common/auth/auth.module'
 import { CacheModule } from './modules/common/cache/cache.module'
