@@ -19,7 +19,7 @@ Statuses are `Planned`, `Blocked`, or `Deferred` until evidence changes them. Pr
 
 - **Status:** Planned
 - **Affected area:** `backend/src/main.ts`, DTO/type boundaries, `frontend/src/app/api/api.schemas.ts`
-- **Evidence:** No global `ValidationPipe`; login, registration, password-reset, availability query, legacy token path, user profile-update, and user game-update inputs now have targeted whitelist/forbid-extra-field validation, including nested avatar and positive integer-array validation. Verification/reset tokens now have persisted expiry and atomic one-time-use enforcement. Frontend response schemas remain a TODO.
+- **Evidence:** No global `ValidationPipe`; login, registration, password-reset, availability query, legacy token path, user profile-update, user game-update, and review inputs now have targeted whitelist/forbid-extra-field validation, including nested avatar, positive integer-array, and database-aligned 0..10 review validation. Verification/reset tokens now have persisted expiry and atomic one-time-use enforcement. Frontend response schemas remain a TODO.
 - **Risk:** Malformed, unexpected, oversized, or unsafe values reach services, SQL, HTML, or client state.
 - **Next action:** Audit remaining DTO decorators and enable server input validation incrementally, define client response schemas, and add negative tests beyond the authentication boundary.
 - **Dependencies:** API error contract and security review.

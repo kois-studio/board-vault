@@ -326,6 +326,22 @@ Changed: `PUT /users/:userId/games` now rejects unknown fields and requires `gam
 Verified: `cd backend && npm test -- --runInBand` (72 tests); `cd backend && npm run build`; Prettier checks for affected files.
 Known follow-ups: Continue the DTO audit incrementally; request-size limits, rate limiting, safe CORS, global validation, and response-DTO privacy remain unresolved.
 
+Most recent claim:
+
+```text
+Task: SEC-004
+Owner: Codex
+Claimed: 2026-08-15
+Branch/worktree: main / shared workspace
+Scope: validate the game-review request against the deployed database range
+```
+
+Review: SEC-004
+
+Changed: `POST /collection/users/:userId/reviews/:gameId` now requires an integer review from 0 through 10 and rejects unexpected fields before the collection service is called.
+Verified: `cd backend && npm test -- --runInBand` (74 tests); `cd backend && npm run build`; Prettier checks for affected files.
+Known follow-ups: Continue the DTO audit incrementally; request-size limits, rate limiting, safe CORS, global validation, and response-DTO privacy remain unresolved.
+
 When claiming a task, add:
 
 ```text
