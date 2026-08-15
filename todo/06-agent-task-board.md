@@ -422,6 +422,22 @@ Changed: Administrator catalog and proposal-review request DTOs now validate typ
 Verified: `cd backend && npm test -- --runInBand` (82 tests); `cd backend && npm run build`; affected-file Prettier check passes.
 Known follow-ups: Continue the remaining DTO inventory before enabling global validation; transport-boundary tests, migration 0002, email-output encoding, and production Clerk cutover remain open.
 
+Most recent claim:
+
+```text
+Task: SEC-004
+Owner: Codex
+Claimed: 2026-08-15
+Branch/worktree: main / shared workspace
+Scope: prevent untrusted notification and token values from being interpolated into email HTML
+```
+
+Review: SEC-004
+
+Changed: `EmailService` now URL-encodes verification/reset token path segments and HTML-escapes generated links and notification message text before sending provider HTML. Regression coverage proves notification markup is escaped.
+Verified: `cd backend && npm test -- --runInBand` (83 tests); `cd backend && npm run build`; affected-file Prettier check passes.
+Known follow-ups: Review provider-failure/timeout behavior, continue the DTO inventory before enabling global validation, add transport-boundary tests, apply migration 0002, and complete production Clerk cutover.
+
 When claiming a task, add:
 
 ```text
