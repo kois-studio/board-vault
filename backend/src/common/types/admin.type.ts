@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
+import { IsArray, IsInt, IsNotEmpty, IsObject, IsOptional, IsString, Min } from 'class-validator'
 
 import { GameProposalCompleteDto } from './game-proposal.type'
 import { SupportedLanguage } from './game-translation.type'
@@ -10,6 +11,8 @@ export class UpdateGameTranslationsBody {
         example: 'Catan',
         required: false,
     })
+    @IsOptional()
+    @IsString()
     en?: string
 
     @ApiProperty({
@@ -17,6 +20,8 @@ export class UpdateGameTranslationsBody {
         example: 'Catan',
         required: false,
     })
+    @IsOptional()
+    @IsString()
     es?: string
 }
 
@@ -26,6 +31,9 @@ export class UpdateGameTagsBody {
         example: [1, 2, 3],
         type: [Number],
     })
+    @IsArray()
+    @IsInt({ each: true })
+    @Min(1, { each: true })
     tagIds: number[]
 }
 
@@ -49,6 +57,8 @@ export class ApproveGameProposalBody {
         required: false,
         description: 'Admin review notes for approval',
     })
+    @IsOptional()
+    @IsString()
     reviewNotes?: string
 
     @ApiProperty({
@@ -56,6 +66,8 @@ export class ApproveGameProposalBody {
         required: false,
         description: 'Image URL for the game (if not provided in proposal)',
     })
+    @IsOptional()
+    @IsString()
     imageUrl?: string
 
     @ApiProperty({
@@ -63,6 +75,9 @@ export class ApproveGameProposalBody {
         required: false,
         description: 'Average duration in minutes (if not provided in proposal)',
     })
+    @IsOptional()
+    @IsInt()
+    @Min(0)
     gameAvgDuration?: number
 
     @ApiProperty({
@@ -70,6 +85,9 @@ export class ApproveGameProposalBody {
         required: false,
         description: 'Minimum players (if not provided in proposal)',
     })
+    @IsOptional()
+    @IsInt()
+    @Min(0)
     minPlayers?: number
 
     @ApiProperty({
@@ -77,6 +95,9 @@ export class ApproveGameProposalBody {
         required: false,
         description: 'Maximum players (if not provided in proposal)',
     })
+    @IsOptional()
+    @IsInt()
+    @Min(0)
     maxPlayers?: number
 
     @ApiProperty({
@@ -84,6 +105,8 @@ export class ApproveGameProposalBody {
         required: false,
         description: 'Game title translations',
     })
+    @IsOptional()
+    @IsObject()
     translations?: Record<SupportedLanguage, string>
 
     @ApiProperty({
@@ -91,6 +114,10 @@ export class ApproveGameProposalBody {
         required: false,
         description: 'Tag IDs to assign to the game',
     })
+    @IsOptional()
+    @IsArray()
+    @IsInt({ each: true })
+    @Min(1, { each: true })
     tagIds?: number[]
 }
 
@@ -99,6 +126,8 @@ export class RejectGameProposalBody {
         example: 'This game is already in our database',
         description: 'Admin review notes explaining the rejection',
     })
+    @IsString()
+    @IsNotEmpty()
     reviewNotes: string
 }
 
