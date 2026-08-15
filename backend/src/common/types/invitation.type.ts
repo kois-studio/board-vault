@@ -1,4 +1,5 @@
 import { ApiProperty, OmitType } from '@nestjs/swagger'
+import { IsInt, IsNotEmpty, IsString, Min } from 'class-validator'
 
 import type { GroupDto } from './group.type'
 import type { UserPublicDto } from './user.type'
@@ -11,12 +12,18 @@ export class InvitationDto {
     id: number
 
     @ApiProperty({ example: 12345 })
+    @IsInt()
+    @Min(1)
     groupId: number
 
     @ApiProperty({ example: 12345 })
+    @IsInt()
+    @Min(1)
     fromAccountId: number
 
     @ApiProperty({ example: 12345 })
+    @IsInt()
+    @Min(1)
     toAccountId: number
 
     @ApiProperty({ example: '2021-10-10T12:00:00Z' })
@@ -30,6 +37,8 @@ export class CreateInvitationBody extends OmitType(InvitationDto, ['id', 'sentAt
 export class CreateInvitationRequestBody extends OmitType(CreateInvitationBody, ['fromAccountId']) {}
 export class CreateInvitationByUsernameBody extends OmitType(InvitationDto, ['id', 'toAccountId', 'sentAt']) {
     @ApiProperty({ example: 'username', description: 'The username to invite.' })
+    @IsString()
+    @IsNotEmpty()
     username: string
 }
 export class CreateInvitationByUsernameRequestBody extends OmitType(CreateInvitationByUsernameBody, ['fromAccountId']) {}

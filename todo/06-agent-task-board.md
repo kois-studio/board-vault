@@ -454,6 +454,22 @@ Changed: Extracted API body-parser and security-header setup into a testable HTT
 Verified: `cd backend && npm test -- --runInBand` (85 tests); `cd backend && npm run build`; affected-file Prettier check passes.
 Known follow-ups: Apply migration 0002, continue the DTO inventory before global validation, review provider-failure/timeout behavior, and complete production Clerk cutover.
 
+Most recent claim:
+
+```text
+Task: SEC-004
+Owner: Codex
+Claimed: 2026-08-15
+Branch/worktree: main / shared workspace
+Scope: add strict validation to legacy group, invitation, and notification write bodies
+```
+
+Review: SEC-004
+
+Changed: Legacy group, invitation, and notification request DTOs now carry type/range/content validators, and their controllers apply strict whitelist/forbid-extra-field pipes. Regression coverage proves client-supplied creator, sender/recipient, and recipient account fields are rejected before service access.
+Verified: `cd backend && npm test -- --runInBand` (88 tests); `cd backend && npm run build`; affected-file Prettier check passes.
+Known follow-ups: Continue the remaining DTO inventory before global validation, apply migration 0002, review provider-failure/timeout behavior, and complete production Clerk cutover.
+
 When claiming a task, add:
 
 ```text
