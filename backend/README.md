@@ -34,6 +34,9 @@ and database configuration is documented in
 [`../docs/operations.md`](../docs/operations.md); never commit environment
 files or database dumps.
 
+The production Vercel project must provide `CLERK_SECRET_KEY` and
+`CLERK_AUTHORIZED_PARTIES=https://board-vault.com` before the API can start.
+
 ## Project setup
 
 ```bash
