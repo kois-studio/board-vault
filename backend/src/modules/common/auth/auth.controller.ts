@@ -17,7 +17,15 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 
 import { ClerkAuthGuard } from '../../../common/guards/clerk-auth.guard'
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
-import { AccessTokenDto, ForgotPasswordDto, ResetPasswordDto, SuccessDto, TokenStatusDto } from '../../../common/types/auth.type'
+import {
+    AccessTokenDto,
+    CheckEmailDto,
+    CheckUsernameDto,
+    ForgotPasswordDto,
+    ResetPasswordDto,
+    SuccessDto,
+    TokenStatusDto,
+} from '../../../common/types/auth.type'
 import { LoginUserDto, RegisterUserDto } from '../../../common/types/user.type'
 
 import { AuthService } from './auth.service'
@@ -86,27 +94,23 @@ export class AuthController {
     }
 
     @Get('/check-email')
+    @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
     @ApiOperation({ summary: 'Check if an email exists' })
     @ApiResponse({ status: 200, description: 'Email availability status' })
     @ApiResponse({ status: 400, description: 'Email is required' })
-    async checkEmail(@Query('email') email: string) {
-        if (!email) {
-            throw new BadRequestException('Email is required')
-        }
-        const isAvailable = await this.authService.checkEmail(email)
+    async checkEmail(@Query() checkEmailDto: CheckEmailDto) {
+        const isAvailable = await this.authService.checkEmail(checkEmailDto.email)
 
         return { isAvailable }
     }
 
     @Get('/check-username')
+    @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
     @ApiOperation({ summary: 'Check if a username exists' })
     @ApiResponse({ status: 200, description: 'Username availability status' })
     @ApiResponse({ status: 400, description: 'Username is required' })
-    async checkUsername(@Query('username') username: string) {
-        if (!username) {
-            throw new BadRequestException('Username is required')
-        }
-        const isAvailable = await this.authService.checkUsername(username)
+    async checkUsername(@Query() checkUsernameDto: CheckUsernameDto) {
+        const isAvailable = await this.authService.checkUsername(checkUsernameDto.username)
 
         return { isAvailable }
     }
