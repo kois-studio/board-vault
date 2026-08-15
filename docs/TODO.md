@@ -75,9 +75,9 @@ Statuses are `Planned`, `Blocked`, or `Deferred` until evidence changes them. Pr
 
 - **Status:** Planned
 - **Affected area:** `backend/.env` contract, deployment configuration, Turso/Vercel/Resend/Upstash operations
-- **Evidence:** Partial environment validation exists; no `.env.example`, health/readiness, backup/restore owner, or rollback procedure.
+- **Evidence:** Partial environment validation exists; no `.env.example`, health/readiness, backup/restore owner, or rollback procedure. On 2026-08-15 the configured production Upstash hostname failed DNS resolution and caused an authenticated collection request to hit Vercel's 10-second timeout; the cache now fails fast and cools down after provider failure, but production rate limiting still needs a valid Redis service.
 - **Risk:** Unsafe startup, provider outage ambiguity, and unrecoverable deployment/data failures.
-- **Next action:** Add safe variable documentation, health checks, provider failure runbook, backup/restore rehearsal, and deployment ownership.
+- **Next action:** Replace the invalid production Upstash endpoint, verify rate limiting and collection routes after deployment, then add safe variable documentation, health checks, provider failure runbook, backup/restore rehearsal, and deployment ownership.
 - **Dependencies:** Deployment owner and access to non-production infrastructure.
 
 ### READINESS-008 [High] SEC-006/OPS-007 — Make logs safe and diagnosable

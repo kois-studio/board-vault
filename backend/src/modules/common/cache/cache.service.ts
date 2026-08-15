@@ -6,7 +6,8 @@ import { PrintKeysDto } from '../../../common/types/cache.type'
 
 import { CACHE_TTL } from './cache.types'
 
-let is_redis_disabled = false
+const REDIS_REQUEST_TIMEOUT_MS = 250
+const REDIS_FAILURE_COOLDOWN_MS = 30_000
 
 /**
  * This decorator wraps all the methods providing:
@@ -21,9 +22,18 @@ function Wrapper(response_on_error: any = null) {
         const LOGGER = new Logger(target.constructor.name)
 
         descriptor.value = async function (...args: any[]) {
+            const service = this as {
+                REDIS_DISABLED?: boolean
+                REDIS_UNAVAILABLE_UNTIL?: number
+            }
+
             // Before running any method, check if redis is disabled
-            if (is_redis_disabled) {
+            if (service.REDIS_DISABLED) {
                 LOGGER.warn(`[${propertyKey}] Redis is disabled`)
+                return response_on_error
+            }
+
+            if ((service.REDIS_UNAVAILABLE_UNTIL ?? 0) > Date.now()) {
                 return response_on_error
             }
 
@@ -31,7 +41,10 @@ function Wrapper(response_on_error: any = null) {
             try {
                 return await originalMethod.apply(this, args)
             } catch (err) {
-                LOGGER.error(`[${propertyKey}] Error with Redis!`, err)
+                service.REDIS_UNAVAILABLE_UNTIL = Date.now() + REDIS_FAILURE_COOLDOWN_MS
+                LOGGER.error(
+                    `[${propertyKey}] Redis request failed; continuing without cache or rate limiting (${err instanceof Error ? err.name : 'unknown error'})`,
+                )
                 return response_on_error
             }
         }
@@ -43,11 +56,16 @@ export class CacheService {
     private readonly LOGGER: Logger = new Logger(this.constructor.name)
     private readonly REDIS: Redis | null
     private readonly REDIS_DISABLED: boolean
+    private REDIS_UNAVAILABLE_UNTIL = 0
 
     constructor(private readonly configService: ConfigService) {
         this.REDIS_DISABLED = configService.get<string>('UPSTASH_REDIS_REST_DISABLE') === 'true'
-        this.REDIS = this.REDIS_DISABLED ? null : Redis.fromEnv()
-        is_redis_disabled = this.REDIS_DISABLED
+        this.REDIS = this.REDIS_DISABLED
+            ? null
+            : Redis.fromEnv({
+                  retry: false,
+                  signal: () => AbortSignal.timeout(REDIS_REQUEST_TIMEOUT_MS),
+              })
     }
 
     // #region endpoints
