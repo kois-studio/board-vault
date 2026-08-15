@@ -13,13 +13,14 @@
 | Check | Result | Interpretation |
 |---|---|---|
 | `cd backend && npm run build` | Pass | TypeScript/Nest build currently compiles. |
-| `cd backend && npm test -- --runInBand` | Pass | Sixty-six focused tests cover profile-update filtering, user/group ownership, group/membership listing boundaries, collection route ownership, invitation actor identity/lifecycle, invite-only joining, notification ownership, meet reads, meet-account-game membership, admin reviewer identity/guard behavior, authentication path/query validation, deprecated global-user-list protection, deleted-account JWT behavior, database-log redaction, email-log redaction, cache-log redaction, and auth-log redaction; broader authorization coverage remains absent. |
+| `cd backend && npm test -- --runInBand` | Pass | Sixty-eight focused tests cover profile-update filtering, user/group ownership, group/membership listing boundaries, collection route ownership, invitation actor identity/lifecycle, invite-only joining, notification ownership, meet reads, meet-account-game membership, admin reviewer identity/guard behavior, authentication path/query validation, deprecated global-user-list protection, deleted-account JWT behavior, database-log redaction, email-log redaction, cache-log redaction, auth-log redaction, and token expiry/one-time-use service behavior; broader authorization coverage remains absent. |
 | `cd backend && npm run test:e2e -- --runInBand` | Fail | Test setup throws because `RESEND_API_KEY` is missing; the test itself expects a stale `/` Hello World route. |
 | `cd backend && npx eslint "{src,apps,libs,test}/**/*.ts"` | Fail | 17 errors and 3 warnings across schemas, database, collection, play, and profile code. |
 | `cd frontend && npm run build` | Pass with warnings | Bundle budget, Sass deprecation, and selector warnings remain. |
 | `cd frontend && npx biome check` | Fail | 8 findings in the form submission, log-session wizard, and propose-game page files. |
 | `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` | Pass | One generated smoke test passes. |
 | `sqlite3 backup-copy < database/migrations/0001-add-clerk-user-id.sql` | Pass | SQLite integrity remains `ok`; 15 accounts, 13 meets, and 101 meet/game links are preserved; the original backup was not used as the test target. |
+| Schema plus migration 0002 in disposable SQLite memory database | Pass | Full schema loaded with migration 0002; integrity is `ok`, both expiry columns exist, a valid token succeeds once, second use affects zero rows, and an expired token affects zero rows. No live Turso data was changed. |
 | Local Clerk Google sign-in plus `GET /auth/clerk/status` | Pass | Clerk session verification succeeded and linked the matching existing live account `#1`; live Turso reports one linked account and preserved admin state. This is a manual development verification, not automated coverage. |
 
 ## Required testing strategy for the next development round

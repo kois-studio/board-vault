@@ -10,8 +10,8 @@ project:
   name: board-vault
   lifecycle: existing
   maturity: active foundation; pre-launch
-  audited_commit: 1bdcf91
-  audit_scope: documentation, staged Clerk authentication integration, SEC-001 profile-update boundary, SEC-002 user-scoped, global user listing, deleted-account JWT, group ownership, group/membership listing and actor identity, collection route ownership, invitation lifecycle, invite-only legacy join, notification ownership, meet reads, and meet-account-game membership slices, and SEC-003 admin reviewer identity; broader authorization and exposure work remains incomplete
+  audited_commit: 7c482de
+  audit_scope: documentation, staged Clerk authentication integration, SEC-001 profile-update boundary, SEC-002 user-scoped, global user listing, deleted-account JWT, group ownership, group/membership listing and actor identity, collection route ownership, invitation lifecycle, invite-only legacy join, notification ownership, meet reads, meet-account-game membership, legacy-token expiry and one-time-use slices, and SEC-003 admin reviewer identity; broader authorization and exposure work remains incomplete
 
 standards:
   - documentation
@@ -200,9 +200,9 @@ compliance:
       next_action: Execute SEC-001 through SEC-004 in todo/06-agent-task-board.md.
     - id: SEC-004
       status: gap
-      evidence: no global request validation; targeted login, registration, password-reset, availability-query, and legacy-token validation is enabled; forgot-password now returns the same success behavior for missing and existing accounts, but reset-token expiry and rate limiting remain unresolved; DatabaseService no longer formats bound SQL arguments in logs; HTML email interpolates values
+      evidence: no global request validation; targeted login, registration, password-reset, availability-query, and legacy-token validation is enabled; forgot-password now returns the same success behavior for missing and existing accounts; verification/reset token expiry and atomic one-time-use enforcement are implemented behind pending migration 0002; rate limiting remains unresolved; DatabaseService no longer formats bound SQL arguments in logs; HTML email interpolates values
       priority: critical
-      next_action: Validate/encode at boundaries and remove sensitive formatted SQL logging.
+      next_action: Apply and verify migration 0002 in each deployment, then choose deployment-safe rate limits/CORS and continue the global validation and email-encoding reviews.
     - id: SEC-005
       status: unknown
       evidence: Account data, password reset tokens, and user activity are persisted; retention, encryption, and deletion policy are not documented

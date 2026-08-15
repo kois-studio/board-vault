@@ -2,7 +2,7 @@
 
 ## Current persistence
 
-The backend uses `@libsql/client` against Turso-hosted SQLite. `DatabaseService` creates the client during `OnModuleInit` from `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN`, then exposes raw SQL helper methods to the rest of the backend. The repository contains no migration directory, migration runner, schema snapshot generated from deployment, or disposable local database setup.
+The backend uses `@libsql/client` against Turso-hosted SQLite. `DatabaseService` creates the client during `OnModuleInit` from `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN`, then exposes raw SQL helper methods to the rest of the backend. The repository contains numbered migration files but no migration runner, disposable local database setup, or automated migration gate.
 
 The current deployed baseline is captured in [database/schema/schema.sql](../database/schema/schema.sql), based on the owner-supplied Turso export and the verified 2026-08-12 identity migration. It is represented partly by Zod schemas under `backend/src/common/schemas/`. The first data task is repository reconciliation against this baseline, not deployment discovery.
 
@@ -12,6 +12,15 @@ was applied to live Turso on 2026-08-12 after passing against a restored backup
 copy. One existing account has now been linked through the verified Clerk
 boundary; the legacy JWT/password path remains active until frontend cutover
 is complete.
+
+Migration `0002-add-auth-token-expiry.sql` is a pending additive change. It adds
+UTC epoch-second expiry columns for legacy verification and password-reset
+tokens. The application code fails closed when those columns are absent or NULL,
+so the migration must be applied before deploying the new token issuance and
+consumption paths. The current schema snapshot remains the last confirmed live
+export until that rollout is verified.
+The migration is tracked in
+[`database/migrations/0002-add-auth-token-expiry.sql`](../database/migrations/0002-add-auth-token-expiry.sql).
 
 ## Current deployed entities
 

@@ -278,6 +278,22 @@ Changed: Legacy verification and password-reset routes now reject non-UUID token
 Verified: `cd backend && npm test -- --runInBand` (66 tests); `cd backend && npm run build`; Prettier checks for affected auth files.
 Known follow-ups: Add expiry/one-time-use semantics to these tokens through the database migration plan, then continue rate limiting, safe CORS, and remaining DTO validation.
 
+Most recent claim:
+
+```text
+Task: SEC-004
+Owner: Codex
+Claimed: 2026-08-15
+Branch/worktree: main / shared workspace
+Scope: persist expiry and enforce atomic one-time use for legacy verification and password-reset tokens
+```
+
+Review: SEC-004
+
+Changed: Legacy verification tokens now receive a 24-hour UTC epoch-second expiry and password-reset tokens receive a one-hour expiry. Lookups reject NULL/expired values, while verification and password reset use conditional updates that clear the token and expiry in the same write, preventing reuse after a successful request. Added migration `database/migrations/0002-add-auth-token-expiry.sql`, ADR-0005, and focused service tests.
+Verified: `cd backend && npm test -- --runInBand` (68 tests); `cd backend && npm run build`.
+Known follow-ups: Apply migration 0002 to live Turso, re-export `database/schema/schema.sql`, and then continue rate limiting, safe CORS, global validation, and response-DTO privacy review.
+
 When claiming a task, add:
 
 ```text

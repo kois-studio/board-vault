@@ -19,7 +19,7 @@ Statuses are `Planned`, `Blocked`, or `Deferred` until evidence changes them. Pr
 
 - **Status:** Planned
 - **Affected area:** `backend/src/main.ts`, DTO/type boundaries, `frontend/src/app/api/api.schemas.ts`
-- **Evidence:** No global `ValidationPipe`; login, registration, password-reset, availability query, and legacy token path inputs now have targeted whitelist/forbid-extra-field validation, while frontend response schemas remain a TODO.
+- **Evidence:** No global `ValidationPipe`; login, registration, password-reset, availability query, and legacy token path inputs now have targeted whitelist/forbid-extra-field validation, and verification/reset tokens now have persisted expiry and atomic one-time-use enforcement. Frontend response schemas remain a TODO.
 - **Risk:** Malformed, unexpected, oversized, or unsafe values reach services, SQL, HTML, or client state.
 - **Next action:** Audit remaining DTO decorators and enable server input validation incrementally, define client response schemas, and add negative tests beyond the authentication boundary.
 - **Dependencies:** API error contract and security review.
@@ -135,3 +135,4 @@ Statuses are `Planned`, `Blocked`, or `Deferred` until evidence changes them. Pr
 - Supported Node/package-manager versions beyond the observed local runtime.
 - Data retention, deletion, encryption, provider scopes, and privacy/terms ownership.
 - Whether legacy route families are still consumed externally and which deprecated routes may be removed.
+- Whether the pending auth-token migration has been applied to every deployed environment; rows without the new expiry values intentionally fail closed until the migration and new token issuance path are deployed together.

@@ -1,6 +1,6 @@
 # Board Vault project documentation
 
-This directory is the canonical operating manual for AI developer agents working in Board Vault. It describes the committed repository baseline as reviewed on 2026-08-15, including the staged Clerk authentication changes, the first verified account link, and the reviewed legacy group, membership, notification, meet, collection, admin reviewer, global-user-list, deleted-account JWT, database-log, email-log, cache-log, auth-log, and authentication path/query validation boundaries. The application is an existing Angular/NestJS foundation, not a launch-ready implementation.
+This directory is the canonical operating manual for AI developer agents working in Board Vault. It describes the committed repository baseline as reviewed on 2026-08-15, including the staged Clerk authentication changes, the first verified account link, and the reviewed legacy group, membership, notification, meet, collection, admin reviewer, global-user-list, deleted-account JWT, database-log, email-log, cache-log, auth-log, authentication path/query validation, and legacy-token lifecycle boundaries. The application is an existing Angular/NestJS foundation, not a launch-ready implementation.
 
 ## Start here
 
@@ -23,6 +23,7 @@ This directory is the canonical operating manual for AI developer agents working
 - [ADR 0002 — Deterministic recommendations](adr/0002-deterministic-explainable-recommendations.md)
 - [ADR 0003 — Session domain](adr/0003-session-as-first-class-domain.md)
 - [ADR 0004 — Clerk-managed authentication](adr/0004-clerk-managed-authentication.md)
+- [ADR 0005 — Verification and password-reset token lifecycle](adr/0005-auth-token-lifecycle.md)
 
 ### Current-state architecture and boundaries
 

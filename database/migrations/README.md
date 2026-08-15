@@ -31,3 +31,13 @@ There is no migration runner yet. Before applying a future migration to Turso:
 
 The live deployment must not be edited manually as a substitute for a
 versioned migration.
+
+## Pending migration 0002
+
+`0002-add-auth-token-expiry.sql` adds nullable `INTEGER` columns
+`Account.verification_token_expires_at` and
+`Account.password_reset_token_expires_at`. Values are UTC epoch seconds. The
+updated backend rejects tokens when the expiry is NULL, in the past, or when a
+previous request has already cleared the token. The migration has not yet been
+applied to live Turso; apply and verify it before deploying the corresponding
+backend code. Re-export `database/schema/schema.sql` after successful rollout.
