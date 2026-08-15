@@ -80,6 +80,12 @@ invocation. Production still needs a valid Upstash database configured before
 rate limiting can be considered operational; the current limiter intentionally
 fails open when Redis is unavailable.
 
+On 2026-08-16, the production authenticated browser smoke test was repeated
+after deployment `736b11f`: Board Vault loaded successfully and the collection
+data loaded without the previous 504/CORS symptom. This verifies the
+application-side Redis failure containment, but not healthy Redis-backed rate
+limiting.
+
 Deployment ownership, domain configuration, environment provisioning, provider scopes, and production traffic behavior are therefore unknown and must not be inferred from the committed URLs/config alone.
 
 ## Operational risks and next steps
