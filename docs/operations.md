@@ -13,7 +13,8 @@ The backend reads these variable names from the environment or ignored local `.e
 - required by `validateEnv.ts`: `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`, `JWT_SECRET`;
 - required by provider construction: `RESEND_API_KEY`;
 - used by email links/defaults: `NO_REPLY_EMAIL`, `APP_BASE_URL`;
-- used by cache: `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, `UPSTASH_REDIS_REST_DISABLE`.
+- used by cache and authentication rate limiting: `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, `UPSTASH_REDIS_REST_DISABLE`; Redis credentials are required unless the disable flag is exactly `true`.
+- used by CORS: optional comma-separated `CORS_ORIGINS` additions; the defaults are `https://board-vault.com`, `http://localhost:4200`, and `http://127.0.0.1:4200`, and wildcard `*` is ignored.
 - used by the staged Clerk backend boundary: `CLERK_SECRET_KEY`, with optional comma-separated `CLERK_AUTHORIZED_PARTIES` for exact frontend origins.
 
 The exact local values are intentionally not documented. No `.env.example`, typed configuration schema, test environment, or production environment ownership record was found. The frontend uses committed environment files containing only public API URLs, a production boolean, the development Clerk publishable key, and a development-only `clerkAuthEnabled` rollout toggle; these values are configuration, not secrets. The Clerk secret must remain backend-only.
@@ -41,7 +42,7 @@ Deployment ownership, domain configuration, environment provisioning, provider s
 ## Operational risks and next steps
 
 1. Establish locked installation, Node/package-manager support, and a disposable test database.
-2. Validate all startup configuration before serving traffic; make optional Redis genuinely optional.
+2. Keep Redis explicitly disabled only in local environments; production rate limiting requires valid Upstash credentials.
 3. Add health/readiness, safe structured request logs, error monitoring, and graceful shutdown checks.
 4. Add migration/deployment gates and document Turso backup/restore ownership and rehearsal.
 5. Record Vercel/frontend deployment responsibilities and rollback behavior.
