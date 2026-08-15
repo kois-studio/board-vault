@@ -20,7 +20,7 @@ This is the canonical project-specific instruction file for AI developer agents.
 - Security boundaries and findings: [security.md](security.md).
 - Test inventory and verified baseline: [testing.md](testing.md).
 - Standards gaps and remediation sequencing: [TODO.md](TODO.md) and the YAML contract.
-- Durable decisions: [adr/README.md](adr/README.md). ADR-0004 is accepted for staged Clerk rollout; ADRs 0001–0003 remain proposals.
+- Durable decisions: [adr/README.md](adr/README.md). ADR-0004 is accepted for the staged Clerk rollout and protected-session bridge; ADRs 0001–0003 remain proposals.
 
 ## Effective standards
 
@@ -45,7 +45,7 @@ Commands run from the package directory. Dependencies are currently present in i
 |---|---|---|
 | Backend install | `cd backend && npm install` | Not verified in this session; lockfile is absent and the package README still says `pnpm`. |
 | Backend build | `cd backend && npm run build` | Passes. |
-| Backend unit tests | `cd backend && npm test -- --runInBand` | Passes focused profile-update, ownership, group-owner, group/membership listing, collection route ownership, invitation lifecycle, membership identity, invite-only join, notification ownership, meet-read, meet-account-game membership, admin reviewer, authentication path/query validation, global-user-list, deleted-account JWT, database-log, email-log, cache-log, and auth-log suites; broader coverage is still missing. |
+| Backend unit tests | `cd backend && npm test -- --runInBand` | Passes 95 focused tests, including Clerk identity provisioning and protected-session middleware; broader coverage is still missing. |
 | Backend e2e tests | `cd backend && npm run test:e2e -- --runInBand` | Fails during module setup because `RESEND_API_KEY` is missing; it also contains a stale `/` “Hello World” assertion. |
 | Backend lint, no mutation | `cd backend && npx eslint "{src,apps,libs,test}/**/*.ts"` | Fails with 17 errors and 3 warnings. Do not use the package `lint` script casually because it includes `--fix`. |
 | Backend formatting, writes files | `cd backend && npm run format` | Available; run only when formatting changes are in scope. |

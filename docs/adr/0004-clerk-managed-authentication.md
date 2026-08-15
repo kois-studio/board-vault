@@ -15,7 +15,7 @@ meet/play records. Deleting `Account` rows would cascade into that history.
 Clerk provides the intended authentication experience and manages email,
 username, and configured social sign-in providers. The live database now has
 the additive Clerk identity column, and one existing account has been linked
-through the staged boundary; the broader frontend remains on the legacy path.
+through the staged boundary.
 
 ## Decision
 
@@ -27,24 +27,28 @@ as the Board Vault domain-profile and authorization record during migration.
 - Verify Clerk bearer tokens in NestJS with Clerk's backend SDK.
 - Resolve a verified Clerk subject to an existing local account. If it is not
   already linked, permit a one-time exact match against Clerk's primary email
-  and attach the Clerk subject.
-- Do not silently create a local account, delete historical accounts, or copy
-  Clerk administrative claims into local authorization state. Local `isAdmin`
-  remains authoritative until a separate authorization decision changes it.
+  and attach the Clerk subject. If no local account exists, provision a local
+  domain account with an unusable legacy password, verified email state, and a
+  generated safe profile identity.
+- Do not delete historical accounts or copy Clerk administrative claims into
+  local authorization state. Local `isAdmin` remains authoritative until a
+  separate authorization decision changes it.
 - Keep the legacy password/JWT path during the rollout and recovery window.
   Remove it only after migration, account-link verification, frontend cutover,
   and recovery checks are complete.
 
-The first implementation exposes an isolated `/auth/clerk/status` boundary.
-It does not replace the existing JWT guards yet.
+The Clerk implementation exposes `/auth/clerk/status` and resolves verified
+Clerk sessions into the existing `request.user` shape before the compatibility
+JWT guard. Protected routes therefore accept Clerk bearer sessions while the
+legacy password/JWT path remains available during rollout.
 
 ## Consequences
 
 - Historical `Account` foreign keys and domain records remain intact.
 - Clerk secrets are required only by the backend; the browser receives only
   the publishable key.
-- Existing accounts need an exact-email link or an explicitly designed manual
-  provisioning path before they can use the new provider.
+- Existing accounts are linked by exact primary email; new Clerk identities are
+  provisioned on their first verified API session.
 - The migration is additive and has changed the live identity boundary; the
   preserved backup validation and post-migration row-count check are recorded.
 - The old auth implementation remains maintenance burden until cutover is
@@ -64,14 +68,18 @@ It does not replace the existing JWT guards yet.
 - Clerk development application is created and linked locally.
 - Frontend and backend SDKs are installed; the frontend adapter lazy-loads the
   Clerk bundle.
-- The development frontend rollout toggle is `clerkAuthEnabled: true` for the
-  staged sign-in controls; the production environment remains on the legacy
-  path until cutover controls and rollback evidence are complete.
+- The development frontend rollout toggle is `clerkAuthEnabled: true`; the
+  production environment remains disabled until the production publishable
+  key, backend secret, authorized parties, deployment settings, and rollback
+  evidence are supplied.
 - [Migration 0001](../../database/migrations/0001-add-clerk-user-id.sql) has
   been applied to live Turso and passed against the preserved SQLite backup
   copy, retaining 15 accounts, 13 meets, and 101 meet/game links.
-- Live Turso currently reports one linked Clerk account; broader frontend
-  cutover is still disabled outside the development verification path.
+- Live Turso currently reports one linked Clerk account. Protected-route
+  middleware, Clerk-aware frontend token transport, new-account provisioning,
+  and production configuration fail-closed checks are implemented locally but
+  have not yet been verified against the production deployment.
 - The original backup remains outside the repository and must not be committed.
-- Broader account-link coverage, route/interceptor cutover, recovery checks,
-  and legacy-auth removal remain rollout tasks in [docs/TODO.md](../TODO.md).
+- Production Clerk instance/domain configuration, deployed-origin checks,
+  recovery checks, and legacy-auth removal remain rollout tasks in
+  [docs/TODO.md](../TODO.md).

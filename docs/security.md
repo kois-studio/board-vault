@@ -22,7 +22,7 @@ The backend is authoritative for authentication, authorization, data validation,
 - JWT bearer authentication uses `passport-jwt` and rejects expired tokens through `ignoreExpiration: false`.
 - `VerifiedUserGuard`, `UserOwnershipGuard`, `UserInGroupGuard`, `GroupOwnerGuard`, and `AdminGuard` exist and are applied to selected controllers.
 - Passwords use `bcryptjs` in the auth service.
-- Clerk backend verification and a conservative exact-primary-email identity bridge are implemented behind the isolated `/auth/clerk/status` route. The existing JWT/password routes are still authoritative until the migration rollout is complete.
+- Clerk backend verification, exact-primary-email linking, new-account provisioning, and Clerk-aware request identity resolution are implemented behind `/auth/clerk/status` and the protected-route middleware. Local `isAdmin` remains authoritative, and the existing JWT/password path remains available during the rollout.
 - `.env` is ignored by `backend/.gitignore`, and `validateEnv.ts` checks Turso and JWT variables at startup.
 - Parameterized libSQL statements are used for execution, and database logging now excludes bound argument values.
 
@@ -42,7 +42,7 @@ The backend is authoritative for authentication, authorization, data validation,
 - `EmailService` now HTML-escapes notification text and generated links before interpolation; provider-failure behavior, timeout policy, and recipient/provider context remain under review.
 - Runtime configuration is only partly validated. `RESEND_API_KEY` fails later in provider construction; Redis credentials are now required unless `UPSTASH_REDIS_REST_DISABLE=true`, while broader provider timeout and ownership checks remain unresolved.
 - No comprehensive security behavior suite, secret scanning, vulnerability response process, or least-privilege deployment record was found; focused authorization, validation, logging, token-lifecycle, and rate-limit regression tests now exist.
-- Clerk production readiness is incomplete: the development instance and local authorized-party test are configured, and one existing-account identity link has been verified, but no production instance, production origin policy, or full migration/cutover test suite has been recorded.
+- Clerk production readiness is incomplete: the development instance, local authorized-party test, protected-route bridge, provisioning coverage, and one existing-account identity link are verified, but the production instance/domain, production origin policy, deployed environment, and full cutover/recovery test are not recorded.
 
 ## Rules for security-sensitive changes
 
@@ -57,6 +57,7 @@ The backend is authoritative for authentication, authorization, data validation,
 - [JWT strategy](../backend/src/modules/common/auth/jwt-strategy.ts)
 - [Clerk guard](../backend/src/common/guards/clerk-auth.guard.ts)
 - [Clerk identity bridge](../backend/src/modules/common/auth/clerk-identity.service.ts)
+- [Clerk session middleware](../backend/src/common/middlewares/clerk-session.middleware.ts)
 - [Guards](../backend/src/common/guards/)
 - [Environment validation](../backend/src/common/validators/validateEnv.ts)
 - [HTTP hardening](../backend/src/common/http/http-hardening.ts)

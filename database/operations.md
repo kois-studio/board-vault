@@ -40,7 +40,8 @@ may issue sessions, separated by commas. The frontend uses only the Clerk
 publishable key through its environment configuration; never place
 `CLERK_SECRET_KEY` in Angular environment files or browser code.
 
-The current implementation keeps `/auth/status` and all existing JWT guards in
-place. The isolated `/auth/clerk/status` route is the verified
-identity-link surface while broader frontend cutover, recovery, and legacy-auth
-removal remain outstanding.
+The current implementation keeps `/auth/status` and the legacy JWT path in
+place for the recovery window. `/auth/clerk/status` is the explicit
+identity-link surface, while protected API routes also accept verified Clerk
+sessions through the backend middleware. Production deployment, recovery
+verification, and legacy-auth removal remain outstanding.

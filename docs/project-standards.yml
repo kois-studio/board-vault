@@ -10,8 +10,8 @@ project:
   name: board-vault
   lifecycle: existing
   maturity: active foundation; pre-launch
-  audited_commit: 4d26221
-  audit_scope: documentation, staged Clerk authentication integration, SEC-001 profile, user-game-update, and proposal-input validation boundaries, SEC-002 user-scoped, global user listing, deleted-account JWT, group ownership, group/membership listing and actor identity, collection route ownership, invitation lifecycle, invite-only legacy join, notification ownership, meet reads, meet-account-game membership, review-score validation, legacy-token expiry and one-time-use, CORS allowlist, auth-rate-limit, and public nested-user response slices, and SEC-003 admin reviewer identity; broader authorization and self/admin exposure work remains incomplete
+  audited_commit: 4a84c2e
+  audit_scope: documentation, Clerk protected-session bridge and local provisioning, SEC-001 profile, user-game-update, and proposal-input validation boundaries, SEC-002 user-scoped, global user listing, deleted-account JWT, group ownership, group/membership listing and actor identity, collection route ownership, invitation lifecycle, invite-only legacy join, notification ownership, meet reads, meet-account-game membership, review-score validation, legacy-token expiry and one-time-use, CORS allowlist, auth-rate-limit, and public nested-user response slices, and SEC-003 admin reviewer identity; production deployment and broader authorization remain incomplete
 
 standards:
   - documentation
@@ -303,12 +303,12 @@ compliance:
 
     - id: OPS-001
       status: partial
-      evidence: backend/src/common/validators/validateEnv.ts checks Turso and JWT variables; EmailService fails later for Resend
+      evidence: backend/src/common/validators/validateEnv.ts checks Turso/JWT variables and fails production startup without Clerk secret/authorized parties; EmailService fails later for Resend
       priority: critical
       next_action: Centralize typed startup configuration validation for all required providers.
     - id: OPS-002
       status: gap
-      evidence: development and production frontend API URLs exist and Clerk variable names are documented, but environment ownership and backend deployment values are not documented
+      evidence: development and production frontend API URLs exist and Clerk variable names plus production fail-closed requirements are documented, but environment ownership and backend deployment values are not documented
       priority: high
       next_action: Document local/test/production boundaries without secrets.
     - id: OPS-003
@@ -395,9 +395,9 @@ compliance:
       next_action: Publish and resolve the repository code/schema drift report against the owner-confirmed baseline.
     - id: DATA-002
       status: partial
-      evidence: database/migrations/0001-add-clerk-user-id.sql is applied to live Turso and tested against a restored backup copy; no migration runner or empty-state recreation exists
+      evidence: database/migrations/0001-add-clerk-user-id.sql is applied to live Turso and tested against a restored backup copy; the Clerk bridge/provisioning code is covered locally, but no migration runner or empty-state recreation exists
       priority: critical
-      next_action: Add migration execution/recreation tooling and complete the Clerk frontend cutover after identity-link review.
+    next_action: Add migration execution/recreation tooling and complete the production Clerk deployment verification after identity-link and recovery review.
     - id: DATA-003
       status: partial
       evidence: SQLite tables and application checks exist, but constraints/transaction guarantees are not verified against deployment
@@ -642,5 +642,5 @@ deferred_work:
     next_action: Execute EQ-001 before adding CI.
   - id: DATA-MIGRATION-001
     status: deferred
-    reason: Live deployment operations and a migration runner remain unresolved; the Clerk identity migration is applied, but first-user linking and frontend cutover remain gated.
-    next_action: Execute DATA-001, then add migration execution/recreation tooling and complete Clerk cutover with identity-link and recovery evidence.
+    reason: Live deployment operations and a migration runner remain unresolved; the Clerk identity migration is applied, but production instance configuration, deployment verification, and recovery evidence remain gated.
+    next_action: Execute DATA-001, then add migration execution/recreation tooling and complete Clerk cutover with production origin and recovery evidence.

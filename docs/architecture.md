@@ -2,7 +2,7 @@
 
 ## Scope and confidence
 
-This is an implementation description, not a proposed redesign. It is based on `main` at commit `4d26221` and source/configuration inspection on 2026-08-15. The `/todo/` documents describe intended product work and must not be read as proof that those flows are complete.
+This is an implementation description, not a proposed redesign. It is based on `main` at commit `4a84c2e` and source/configuration inspection on 2026-08-15. The `/todo/` documents describe intended product work and must not be read as proof that those flows are complete.
 
 ## Product shape
 
@@ -14,7 +14,7 @@ The repository describes Board Vault as a tabletop-game collection, group, meeti
 Browser
   Angular 19 application (frontend/)
     routes, components, pages, guards, interceptor, root DataService/API adapter
-          │ bearer HTTP requests
+          │ Clerk or legacy bearer HTTP requests
           ▼
   NestJS 10 application (backend/)
     main.ts → AppModule → LoggerMiddleware → controllers/guards → services
@@ -28,7 +28,7 @@ The frontend production environment points at `https://backend.board-vault.com`;
 ## Backend boundaries
 
 - `backend/src/main.ts` validates selected environment variables, creates the Nest app with explicit 100 KB JSON/URL-encoded body limits, applies baseline security headers and the configured CORS allowlist, creates runtime Swagger, and listens on `PORT` or 3000.
-- `backend/src/app.module.ts` imports global configuration, common modules (`auth`, `cache`, `database`, `email`), core entity modules, and feature modules.
+- `backend/src/app.module.ts` imports global configuration, common modules (`auth`, `cache`, `database`, `email`), core entity modules, and feature modules; `ClerkSessionMiddleware` resolves verified Clerk sessions into the local request identity before compatibility JWT guards.
 - Common modules own cross-cutting auth/cache/database/email concerns.
 - Core modules own entity-oriented services such as users, groups, memberships, games, meets, invitations, reviews, tags, translations, notifications, and collection activity.
 - Feature modules orchestrate cross-domain flows for admin, collection, dashboard, play, and profile.
@@ -53,7 +53,7 @@ The source references `/play/recommendations` and `/play/quick-play` from naviga
 ## Main request and data flow
 
 1. Angular components call the root `Api`/`DataService` services.
-2. The auth interceptor adds the stored bearer token and logs out on most 401 responses.
+2. The auth interceptor refreshes a Clerk session token when Clerk is the active provider, otherwise adds the stored legacy bearer token, and logs out on most 401 responses.
 3. Nest controllers apply selected JWT, verified-user, ownership, group-membership, or admin guards.
 4. Feature services orchestrate core services; core services call `DatabaseService` and selected cache methods.
 5. Database writes are individual calls; there is no migration runner or documented transaction boundary.

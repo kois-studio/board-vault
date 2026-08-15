@@ -10,8 +10,9 @@ The live baseline now contains nullable `Account.clerkUserId`. Migration
 [`0001-add-clerk-user-id.sql`](../database/migrations/0001-add-clerk-user-id.sql)
 was applied to live Turso on 2026-08-12 after passing against a restored backup
 copy. One existing account has now been linked through the verified Clerk
-boundary; the legacy JWT/password path remains active until frontend cutover
-is complete.
+boundary. Verified Clerk sessions can now use protected API routes and new
+identities can be provisioned into the local account model; the legacy
+JWT/password path remains active for the rollout and recovery window.
 
 Migration `0002-add-auth-token-expiry.sql` is a pending additive change. It adds
 UTC epoch-second expiry columns for legacy verification and password-reset

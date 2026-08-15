@@ -15,11 +15,13 @@ The backend reads these variable names from the environment or ignored local `.e
 - used by email links/defaults: `NO_REPLY_EMAIL`, `APP_BASE_URL`;
 - used by cache and authentication rate limiting: `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, `UPSTASH_REDIS_REST_DISABLE`; Redis credentials are required unless the disable flag is exactly `true`.
 - used by CORS: optional comma-separated `CORS_ORIGINS` additions; the defaults are `https://board-vault.com`, `http://localhost:4200`, and `http://127.0.0.1:4200`, and wildcard `*` is ignored.
-- used by the staged Clerk backend boundary: `CLERK_SECRET_KEY`, with optional comma-separated `CLERK_AUTHORIZED_PARTIES` for exact frontend origins.
+- used by the Clerk backend boundary: `CLERK_SECRET_KEY`; production also requires comma-separated `CLERK_AUTHORIZED_PARTIES` containing only exact frontend origins such as `https://board-vault.com`.
 
 The API accepts JSON and URL-encoded request bodies up to 100 KB. This is configured in `backend/src/main.ts`; multipart uploads are not an evidenced supported interface.
 
-The exact local values are intentionally not documented. No `.env.example`, typed configuration schema, test environment, or production environment ownership record was found. The frontend uses committed environment files containing only public API URLs, a production boolean, the development Clerk publishable key, and a development-only `clerkAuthEnabled` rollout toggle; these values are configuration, not secrets. The Clerk secret must remain backend-only.
+The exact local values are intentionally not documented. No `.env.example`, typed configuration schema, test environment, or production environment ownership record was found. The frontend uses committed environment files containing only public API URLs, a production boolean, the development Clerk publishable key, and a development-only `clerkAuthEnabled` rollout toggle; the production toggle/key remain unset until the production Clerk instance is configured. These values are configuration, not secrets. The Clerk secret must remain backend-only.
+
+When `NODE_ENV=production`, startup fails closed unless `CLERK_SECRET_KEY` and `CLERK_AUTHORIZED_PARTIES` are present. This prevents a deployment from accepting Clerk sessions without an explicit trusted frontend-origin policy.
 
 ## Build, test, and quality baseline
 
@@ -33,7 +35,7 @@ Use the exact commands and current results in [AGENTS.md](AGENTS.md) and [testin
 - frontend Biome fails with 8 findings;
 - frontend browser tests pass one generated app-creation test.
 - the Clerk identity migration passes a restored-backup SQLite check and was applied to live Turso with integrity `ok` and unchanged counts of 15 accounts, 13 meets, and 101 meet/game links.
-- a local Clerk Google sign-in completed through Board Vault; `/auth/clerk/status` verified the session and linked the matching existing live account `#1`, preserving its admin state. Live Turso now reports one linked account.
+- a local Clerk Google sign-in completed through Board Vault; `/auth/clerk/status` verified the session and linked the matching existing live account `#1`, preserving its admin state. Live Turso now reports one linked account. Protected-route Clerk transport and new-account provisioning are covered by focused backend tests but not yet by a deployed production check.
 
 ## Deployment shape
 

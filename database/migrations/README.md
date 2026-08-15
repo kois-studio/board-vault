@@ -16,8 +16,8 @@ foreign keys, or remove the legacy password columns. Those changes require a
 separate reviewed migration after identity reconciliation and recovery checks.
 
 It was applied to live `board-vault` on 2026-08-12. Post-migration checks
-reported integrity `ok`, 15 accounts, 13 meets, 101 meet/game links, and zero
-linked Clerk accounts.
+reported integrity `ok`, 15 accounts, 13 meets, 101 meet/game links, and one
+linked Clerk account.
 
 ## Execution rule
 
