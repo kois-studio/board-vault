@@ -41,11 +41,12 @@ function Wrapper(response_on_error: any = null) {
 @Injectable()
 export class CacheService {
     private readonly LOGGER: Logger = new Logger(this.constructor.name)
-    private readonly REDIS: Redis = Redis.fromEnv()
-    private readonly REDIS_DISABLED: boolean = false
+    private readonly REDIS: Redis | null
+    private readonly REDIS_DISABLED: boolean
 
     constructor(private readonly configService: ConfigService) {
         this.REDIS_DISABLED = configService.get<string>('UPSTASH_REDIS_REST_DISABLE') === 'true'
+        this.REDIS = this.REDIS_DISABLED ? null : Redis.fromEnv()
         is_redis_disabled = this.REDIS_DISABLED
     }
 
@@ -56,7 +57,7 @@ export class CacheService {
     @Wrapper({ total: 0, keys: [] })
     async keys(): Promise<PrintKeysDto> {
         try {
-            const keys = await this.REDIS.keys('*')
+            const keys = await this.REDIS!.keys('*')
 
             this.LOGGER.log(`REDIS: Found ${keys.length} keys!`)
             return { total: keys.length, keys }
@@ -65,7 +66,7 @@ export class CacheService {
             // For now there is no intention to implement scan(), so just delete all keys
             this.LOGGER.error('REDIS: Error while getting keys', err)
             this.LOGGER.log('REDIS: Deleting all keys to avoid issues')
-            await this.REDIS.flushdb()
+            await this.REDIS!.flushdb()
             return { total: 0, keys: [] }
         }
     }
@@ -75,10 +76,10 @@ export class CacheService {
      */
     @Wrapper(false)
     async deleteAll(): Promise<boolean> {
-        const keys = await this.REDIS.keys('*')
+        const keys = await this.REDIS!.keys('*')
 
         this.LOGGER.log(`REDIS: Deleting all ${keys.length} keys...`)
-        await this.REDIS.flushdb()
+        await this.REDIS!.flushdb()
         return true
     }
 
@@ -88,7 +89,7 @@ export class CacheService {
     @Wrapper(false)
     async deleteOne(key: string): Promise<boolean> {
         this.LOGGER.log('REDIS: Deleting single cache key...')
-        await this.REDIS.del(key)
+        await this.REDIS!.del(key)
         return true
     }
 
@@ -104,13 +105,24 @@ export class CacheService {
     async set(key: string, data: any, ttl: keyof typeof CACHE_TTL = 'short'): Promise<void> {
         this.LOGGER.log(`REDIS: set cache value with ${CACHE_TTL[ttl]}s TTL`)
 
-        await this.REDIS.set(key, data, { ex: CACHE_TTL[ttl] })
+        await this.REDIS!.set(key, data, { ex: CACHE_TTL[ttl] })
     }
 
     @Wrapper()
     async get(key: string): Promise<any> {
         this.LOGGER.log('REDIS: get cache value')
 
-        return await this.REDIS.get(key)
+        return await this.REDIS!.get(key)
+    }
+
+    @Wrapper(null)
+    async increment(key: string, ttlSeconds: number): Promise<number | null> {
+        const count = await this.REDIS!.incr(key)
+
+        if (count === 1) {
+            await this.REDIS!.expire(key, ttlSeconds)
+        }
+
+        return count
     }
 }

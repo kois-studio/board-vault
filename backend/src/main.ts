@@ -25,13 +25,19 @@ async function bootstrap() {
     // Create the Nest application
     const app = await NestFactory.create(AppModule)
 
-    // TODO: in the future, apply a more secure CORS policy like this:
-    // app.enableCors({
-    //     origin: ['https://board-vault.app', 'https://www.board-vault.app'],
-    //     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-    //     credentials: true,
-    // })
-    app.enableCors({})
+    const defaultCorsOrigins = ['https://board-vault.com', 'http://localhost:4200', 'http://127.0.0.1:4200']
+    const configuredCorsOrigins = process.env.CORS_ORIGINS?.split(',')
+        .map(origin => origin.trim())
+        .filter(origin => origin.length > 0 && origin !== '*')
+    const corsOrigins = [...new Set([...defaultCorsOrigins, ...(configuredCorsOrigins ?? [])])]
+
+    app.enableCors({
+        origin: corsOrigins,
+        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+        allowedHeaders: ['Authorization', 'Content-Type'],
+        credentials: false,
+        maxAge: 86400,
+    })
 
     // Create the swagger documentation
     const swaggerConfig = new DocumentBuilder()
