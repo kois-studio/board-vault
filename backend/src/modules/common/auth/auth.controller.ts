@@ -1,5 +1,18 @@
 // auth.controller.ts
-import { BadRequestException, Body, Controller, Get, Post, Query, Param, NotFoundException, UseGuards, Req } from '@nestjs/common'
+import {
+    BadRequestException,
+    Body,
+    Controller,
+    Get,
+    NotFoundException,
+    Param,
+    Post,
+    Query,
+    Req,
+    UseGuards,
+    UsePipes,
+    ValidationPipe,
+} from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { ClerkAuthGuard } from '../../../common/guards/clerk-auth.guard'
@@ -110,6 +123,7 @@ export class AuthController {
     }
 
     @Post('/forgot-password')
+    @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
     @ApiOperation({ summary: 'Request a password reset' })
     @ApiResponse({ status: 200, description: 'Password reset link sent' })
     @ApiResponse({ status: 400, description: 'Email is required' })
@@ -124,6 +138,7 @@ export class AuthController {
     }
 
     @Post('/reset-password/:token')
+    @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
     @ApiOperation({ summary: 'Reset user password' })
     @ApiResponse({ status: 200, description: 'Password reset successfully' })
     @ApiResponse({ status: 400, description: 'Invalid or expired token' })
