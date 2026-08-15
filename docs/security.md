@@ -34,7 +34,7 @@ The backend is authoritative for authentication, authorization, data validation,
 - Admin proposal review operations now derive `reviewedBy` from the authenticated administrator; broader admin action audit logging remains unresolved.
 - Forgot-password requests now return the same successful outcome when the email is absent or present, reducing account-enumeration leakage; reset-token expiry and request rate limiting remain unresolved.
 - `main.ts` enables unrestricted CORS and does not configure global input validation or security headers/rate limits.
-- `DatabaseService` logs SQL after interpolating values for display. This can expose email addresses, tokens, user data, or other input in logs.
+- `DatabaseService` now logs only parameterized SQL templates and excludes bound values; auth/email/cache logging still includes user or provider context without a documented redaction policy.
 - `EmailService` interpolates values into HTML email and logs recipient/provider context; output encoding and safe provider-failure behavior need review.
 - Runtime configuration is only partly validated. `RESEND_API_KEY` fails later in provider construction, and `CacheService` initializes `Redis.fromEnv()` before checking its disabled flag.
 - No security behavior test suite, secret scanning, vulnerability response process, or least-privilege deployment record was found.

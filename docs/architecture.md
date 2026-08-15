@@ -33,7 +33,7 @@ The frontend production environment points at `https://backend.board-vault.com`;
 - Core modules own entity-oriented services such as users, groups, memberships, games, meets, invitations, reviews, tags, translations, notifications, and collection activity.
 - Feature modules orchestrate cross-domain flows for admin, collection, dashboard, play, and profile.
 - Controllers are mostly thin service delegators, but legacy/deprecated controllers and direct identity parameters create an inconsistent authorization surface.
-- `DatabaseService` centralizes a large raw-SQL surface over a single libSQL client. It logs SQL after interpolating arguments for display, which is an operational and secret-safety risk even though execution uses parameterized statements.
+- `DatabaseService` centralizes a large raw-SQL surface over a single libSQL client. It logs parameterized SQL templates without bound values; auth/email/cache logging still needs a redaction policy.
 
 ## Frontend boundaries
 

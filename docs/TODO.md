@@ -84,7 +84,7 @@ Statuses are `Planned`, `Blocked`, or `Deferred` until evidence changes them. Pr
 
 - **Status:** Planned
 - **Affected area:** `DatabaseService`, auth/email/cache services, logger middleware
-- **Evidence:** Formatted SQL and user/provider context are logged without documented redaction or correlation.
+- **Evidence:** `DatabaseService` now excludes bound values from SQL logs, but auth/email/cache services still log user or provider context without documented redaction or correlation.
 - **Risk:** Secret/PII exposure and poor incident diagnosis.
 - **Next action:** Define structured events, remove value-interpolated SQL logging, redact sensitive fields, and test representative failures.
 - **Dependencies:** Security owner and observability decision.

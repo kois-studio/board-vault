@@ -10,7 +10,7 @@ project:
   name: board-vault
   lifecycle: existing
   maturity: active foundation; pre-launch
-  audited_commit: 76ac7b2
+  audited_commit: d8d232a
   audit_scope: documentation, staged Clerk authentication integration, SEC-001 profile-update boundary, SEC-002 user-scoped, global user listing, deleted-account JWT, group ownership, group/membership listing and actor identity, collection route ownership, invitation lifecycle, invite-only legacy join, notification ownership, meet reads, and meet-account-game membership slices, and SEC-003 admin reviewer identity; broader authorization and exposure work remains incomplete
 
 standards:
@@ -200,7 +200,7 @@ compliance:
       next_action: Execute SEC-001 through SEC-004 in todo/06-agent-task-board.md.
     - id: SEC-004
       status: gap
-      evidence: no global request validation; forgot-password now returns the same success behavior for missing and existing accounts, but reset-token expiry and rate limiting remain unresolved; raw SQL logging formats user arguments; HTML email interpolates values
+      evidence: no global request validation; forgot-password now returns the same success behavior for missing and existing accounts, but reset-token expiry and rate limiting remain unresolved; DatabaseService no longer formats bound SQL arguments in logs; HTML email interpolates values
       priority: critical
       next_action: Validate/encode at boundaries and remove sensitive formatted SQL logging.
     - id: SEC-005
@@ -210,7 +210,7 @@ compliance:
       next_action: Classify data and document storage, retention, deletion, and provider responsibilities.
     - id: SEC-006
       status: gap
-      evidence: DatabaseService logs formatted SQL; auth/email/cache log user identifiers and provider errors
+      evidence: DatabaseService excludes bound values from SQL logs, but auth/email/cache log user identifiers and provider errors without a documented redaction policy
       priority: critical
       next_action: Define safe structured logging and redaction tests.
     - id: SEC-007
