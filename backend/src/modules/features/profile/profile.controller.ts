@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common'
+import { Body, Controller, Get, Param, ParseIntPipe, Post, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
@@ -75,6 +75,7 @@ export class ProfileController {
 
     @UseGuards(UserOwnershipGuard)
     @Post('/users/:userId/proposals')
+    @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
     @ApiOperation({ summary: 'Create a new game proposal', deprecated: false })
     @ApiResponse({ status: 201, type: GameProposalDto, description: 'Game proposal created' })
     @ApiResponse({ status: 400, description: 'Invalid proposal data' })
