@@ -2,7 +2,7 @@
 
 ## Scope and confidence
 
-This is an implementation description, not a proposed redesign. It is based on `main` at commit `2143b8b` and source/configuration inspection on 2026-08-15. The `/todo/` documents describe intended product work and must not be read as proof that those flows are complete.
+This is an implementation description, not a proposed redesign. It is based on `main` at commit `b1142d7` and source/configuration inspection on 2026-08-15. The `/todo/` documents describe intended product work and must not be read as proof that those flows are complete.
 
 ## Product shape
 
