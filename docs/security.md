@@ -33,6 +33,7 @@ The backend is authoritative for authentication, authorization, data validation,
 - Legacy JWT validation now rejects soft-deleted accounts; disabled-account semantics beyond the existing `isDeleted` flag are not defined.
 - Admin proposal review operations now derive `reviewedBy` from the authenticated administrator; broader admin action audit logging remains unresolved.
 - Forgot-password requests now return the same successful outcome when the email is absent or present, reducing account-enumeration leakage; reset-token expiry and request rate limiting remain unresolved.
+- Password-reset request bodies now reject malformed, empty, and unexpected fields through targeted validation; global request validation remains intentionally unenabled pending a DTO compatibility audit.
 - `main.ts` enables unrestricted CORS and does not configure global input validation or security headers/rate limits.
 - `DatabaseService` now logs only parameterized SQL templates and excludes bound values; `EmailService` no longer logs recipient addresses; `CacheService` no longer logs keys or serialized payloads; auth/user-service logs no longer include email, username, or Clerk identity values. A global structured logging/redaction policy and provider-error handling remain unresolved.
 - `EmailService` interpolates values into HTML email and logs recipient/provider context; output encoding and safe provider-failure behavior need review.

@@ -10,7 +10,7 @@ project:
   name: board-vault
   lifecycle: existing
   maturity: active foundation; pre-launch
-  audited_commit: c9f3f0e
+  audited_commit: c31e9bc
   audit_scope: documentation, staged Clerk authentication integration, SEC-001 profile-update boundary, SEC-002 user-scoped, global user listing, deleted-account JWT, group ownership, group/membership listing and actor identity, collection route ownership, invitation lifecycle, invite-only legacy join, notification ownership, meet reads, and meet-account-game membership slices, and SEC-003 admin reviewer identity; broader authorization and exposure work remains incomplete
 
 standards:
@@ -154,7 +154,7 @@ compliance:
       next_action: Activate and test boundary validation on both API and client response boundaries.
     - id: TS-006
       status: partial
-      evidence: zod schemas and class-validator dependencies exist, but the effective global strategy is not enabled
+      evidence: zod schemas and class-validator dependencies exist; targeted password-reset request validation is enabled, but the effective global strategy is not enabled
       priority: high
       next_action: Select one boundary-validation approach per boundary and document it.
     - id: TS-007
@@ -200,7 +200,7 @@ compliance:
       next_action: Execute SEC-001 through SEC-004 in todo/06-agent-task-board.md.
     - id: SEC-004
       status: gap
-      evidence: no global request validation; forgot-password now returns the same success behavior for missing and existing accounts, but reset-token expiry and rate limiting remain unresolved; DatabaseService no longer formats bound SQL arguments in logs; HTML email interpolates values
+      evidence: no global request validation; targeted password-reset validation is enabled; forgot-password now returns the same success behavior for missing and existing accounts, but reset-token expiry and rate limiting remain unresolved; DatabaseService no longer formats bound SQL arguments in logs; HTML email interpolates values
       priority: critical
       next_action: Validate/encode at boundaries and remove sensitive formatted SQL logging.
     - id: SEC-005
