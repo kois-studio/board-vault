@@ -17,6 +17,7 @@ The backend reads these variable names from the environment or ignored local `.e
 - used by CORS: optional comma-separated `CORS_ORIGINS` additions; production defaults only to `https://board-vault.com`, development also allows `http://localhost:4200` and `http://127.0.0.1:4200`, and wildcard `*` is ignored.
 - used by the Clerk backend boundary: `CLERK_SECRET_KEY`; production also requires comma-separated `CLERK_AUTHORIZED_PARTIES` containing only exact frontend origins such as `https://board-vault.com`.
 - used by the frontend production build: public `CLERK_PUBLISHABLE_KEY`; optional `CLERK_AUTH_ENABLED=false` can explicitly keep the Clerk controls disabled.
+- production Clerk sign-up policy: verified email, password, and username are required; Google OAuth is currently disabled and can be re-enabled later through the Clerk instance configuration.
 
 The API accepts JSON and URL-encoded request bodies up to 100 KB. This is configured in `backend/src/main.ts`; multipart uploads are not an evidenced supported interface.
 
@@ -36,7 +37,7 @@ Use the exact commands and current results in [AGENTS.md](AGENTS.md) and [testin
 - frontend Biome fails with 8 findings;
 - frontend browser tests pass one generated app-creation test.
 - the Clerk identity migration passes a restored-backup SQLite check and was applied to live Turso with integrity `ok` and unchanged counts of 15 accounts, 13 meets, and 101 meet/game links.
-- a local Clerk Google sign-in completed through Board Vault; `/auth/clerk/status` verified the session and linked the matching existing live account `#1`, preserving its admin state. Live Turso now reports one linked account. Protected-route Clerk transport and new-account provisioning are covered by focused backend tests but not yet by a deployed production check.
+- a local Clerk Google sign-in completed through Board Vault during development; `/auth/clerk/status` verified the session and linked the matching existing live account `#1`, preserving its admin state. Production currently uses email/password/username only; live Turso now reports one linked account. Protected-route Clerk transport and new-account provisioning are covered by focused backend tests but not yet by a deployed production check.
 
 ## Deployment shape
 
