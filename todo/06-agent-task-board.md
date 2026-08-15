@@ -294,6 +294,22 @@ Changed: Legacy verification tokens now receive a 24-hour UTC epoch-second expir
 Verified: `cd backend && npm test -- --runInBand` (68 tests); `cd backend && npm run build`.
 Known follow-ups: Apply migration 0002 to live Turso, re-export `database/schema/schema.sql`, and then continue rate limiting, safe CORS, global validation, and response-DTO privacy review.
 
+Most recent claim:
+
+```text
+Task: SEC-004
+Owner: Codex
+Claimed: 2026-08-15
+Branch/worktree: main / shared workspace
+Scope: add strict validation to the user profile update boundary, including nested avatar data
+```
+
+Review: SEC-004
+
+Changed: `PUT /users/:userId` now uses a dedicated strict DTO with whitelist/forbid-extra-field validation and nested avatar validation. Privileged fields, malformed avatar values, and empty profile updates are rejected before service/database access.
+Verified: `cd backend && npm test -- --runInBand` (70 tests); `cd backend && npm run build`; Prettier checks for affected files.
+Known follow-ups: Continue the DTO audit incrementally; rate limiting, safe CORS, global validation, and response-DTO privacy still require separate decisions or boundary slices.
+
 When claiming a task, add:
 
 ```text

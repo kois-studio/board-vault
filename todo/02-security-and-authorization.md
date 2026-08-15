@@ -6,7 +6,7 @@
 
 ### SEC-001 — prevent self-promotion to admin
 
-The public user update DTO exposes privileged fields including `isAdmin`, verification state, and token fields. The update path appears to persist those fields.
+The historical public user update DTO exposed privileged fields including `isAdmin`, verification state, and token fields. The current profile-update boundary is remediated with a dedicated strict DTO; continue auditing other request DTOs before enabling global validation.
 
 Hotspots:
 
@@ -14,12 +14,14 @@ Hotspots:
 - `backend/src/modules/core/users/users.controller.ts`
 - `backend/src/modules/common/database/database.service.ts`
 
-Required fix:
+Completed boundary:
 
-- create a public profile-update DTO containing only safe profile fields;
-- remove privileged fields from all user-controlled request bodies;
-- create a separate internal/admin-only path for account state changes;
-- add an integration test proving a normal user cannot become an admin or verify their own email.
+- the public profile-update DTO contains only `username`, `displayName`, and `avatar`;
+- privileged fields are rejected before service/database access;
+- internal authentication workflows use a separate account-state update path;
+- regression tests prove privileged fields and malformed nested avatar data are rejected.
+
+Continue the same audit pattern for remaining body/query DTOs before enabling a global validation policy.
 
 ### SEC-002 — audit object-level authorization
 
