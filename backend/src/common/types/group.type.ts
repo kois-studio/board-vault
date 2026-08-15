@@ -1,4 +1,5 @@
 import { ApiProperty, OmitType, PartialType, PickType } from '@nestjs/swagger'
+import { IsNotEmpty, IsString } from 'class-validator'
 
 import { GameReviewDto } from './game-review.type'
 import { UserPublicWithGames } from './user.type'
@@ -11,6 +12,8 @@ export class GroupDto {
     id: number
 
     @ApiProperty({ example: "example-user's Group" })
+    @IsString()
+    @IsNotEmpty()
     name: string
 
     @ApiProperty({ example: 12345 })
