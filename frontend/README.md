@@ -6,6 +6,10 @@ Project-wide architecture, authentication, operations, and deployment guidance
 lives in [`../docs/`](../docs/README.md). The production frontend is deployed
 from this directory through Vercel.
 
+The production Vercel build reads the public Clerk key from
+`CLERK_PUBLISHABLE_KEY`; the build remains safely disabled when that variable
+is absent.
+
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
