@@ -2,9 +2,10 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http'
 import { inject } from '@angular/core'
 import { Router } from '@angular/router'
-import { throwError } from 'rxjs'
-import { catchError } from 'rxjs/operators'
+import { from, throwError } from 'rxjs'
+import { catchError, switchMap } from 'rxjs/operators'
 import { ToastService } from '../../components/toast/toast.service'
+import { ClerkService } from '../services/clerk.service'
 import { LogService } from '../services/log.service'
 import { LoginService } from '../services/login.service'
 
@@ -12,21 +13,23 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     const router = inject(Router)
     const logService = inject(LogService)
     const loginService = inject(LoginService)
+    const clerkService = inject(ClerkService)
     const toastService = inject(ToastService)
-    const token = loginService.token
 
-    // Initialize authReq with the original request
-    let authReq = req
+    const requestWithToken = (token: string | null) => {
+        if (!token || req.headers.has('Authorization')) {
+            return req
+        }
 
-    if (token && !req.headers.has('Authorization')) {
-        // Clone the request and add the Authorization header
-        authReq = req.clone({
+        return req.clone({
             setHeaders: { Authorization: `Bearer ${token}` },
         })
     }
 
-    // Pass the cloned or original request to the next handler
-    return next(authReq).pipe(
+    const clerkTokenRequest = loginService.isAuthenticated() && loginService.authProvider() !== 'clerk' ? Promise.resolve(null) : clerkService.getToken()
+
+    return from(clerkTokenRequest).pipe(
+        switchMap(clerkToken => next(requestWithToken(clerkToken ?? loginService.token))),
         catchError((error: any) => {
             if (error instanceof HttpErrorResponse && error.status === 401) {
                 // Check if the 401 is from the login endpoint itself

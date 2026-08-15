@@ -1,3 +1,5 @@
+import { randomUUID } from 'node:crypto'
+
 import { Client, createClient, type InStatement } from '@libsql/client'
 import { BadRequestException, Injectable, Logger, NotFoundException, OnModuleInit } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
@@ -76,6 +78,13 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    getUserByUsername(username: string) {
+        return this._tursoExecute({
+            sql: 'SELECT * FROM Account WHERE username = ?',
+            args: [username],
+        })
+    }
+
     getUserByClerkId(clerkUserId: string) {
         return this._tursoExecute({
             sql: 'SELECT * FROM Account WHERE clerkUserId = ?',
@@ -127,6 +136,27 @@ export class DatabaseService implements OnModuleInit {
                 verificationToken,
                 verificationTokenExpiresAt ?? null,
             ],
+        })
+    }
+
+    async createClerkUser(user: { email: string; username: string; displayName: string; avatar: string; clerkUserId: string }) {
+        const unusablePassword = await bcrypt.hash(`clerk:${randomUUID()}`, 10)
+
+        return this._tursoExecute({
+            sql: `
+                INSERT INTO Account (
+                    email,
+                    password,
+                    username,
+                    displayName,
+                    avatar,
+                    email_verified,
+                    verification_token,
+                    password_reset_token,
+                    clerkUserId
+                ) VALUES (?, ?, ?, ?, ?, TRUE, NULL, NULL, ?)
+            `,
+            args: [user.email, unusablePassword, user.username, user.displayName, user.avatar, user.clerkUserId],
         })
     }
 

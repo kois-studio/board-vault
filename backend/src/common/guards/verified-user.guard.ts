@@ -17,6 +17,10 @@ export class VerifiedUserGuard implements CanActivate {
             return false // Or throw an UnauthorizedException if you prefer
         }
 
+        if (user.authProvider === 'clerk') {
+            return true
+        }
+
         const userId = user.userId
 
         const userRecord = await this.databaseService.getUserById(userId) // Fetch the user from the database

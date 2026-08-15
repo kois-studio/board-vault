@@ -97,6 +97,21 @@ export class UsersService {
         }
     }
 
+    async getUserByUsername(username: string): Promise<UserGetDto> {
+        this.LOGGER.log('Getting user by username')
+        const resultSet = await this.databaseService.getUserByUsername(username)
+        const users = this._parseResultSet(resultSet)
+
+        if (users.length === 0) {
+            throw new NotFoundException(`User with username ${username} not found`)
+        }
+
+        users[0].password = undefined!
+        users[0].verification_token = undefined!
+        users[0].password_reset_token = undefined!
+        return users[0]
+    }
+
     async getUserByClerkId(clerkUserId: string): Promise<UserGetDto> {
         this.LOGGER.log('Getting user by Clerk identity')
         const resultSet = await this.databaseService.getUserByClerkId(clerkUserId)
@@ -121,6 +136,15 @@ export class UsersService {
         }
 
         return this.getUserById(accountId)
+    }
+
+    async createClerkUser(user: { email: string; username: string; displayName: string; avatar: object; clerkUserId: string }) {
+        await this.databaseService.createClerkUser({
+            ...user,
+            avatar: JSON.stringify(user.avatar),
+        })
+
+        return { success: true }
     }
 
     async createUser(userDto: CreateUserBody, verificationToken: string, verificationTokenExpiresAt?: number) {
