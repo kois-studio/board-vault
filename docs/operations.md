@@ -24,7 +24,7 @@ Use the exact commands and current results in [AGENTS.md](AGENTS.md) and [testin
 
 - backend build passes;
 - frontend production build passes but reports a Sass `@import` deprecation, 405 skipped selector errors, and an initial bundle over the 500 kB warning budget;
-- backend unit tests pass focused profile-update, ownership, group/membership listing, collection route ownership, actor-identity, invitation-lifecycle, invite-only join, notification ownership, meet-read, meet-account-game membership, admin reviewer, password-reset response, global-user-list, deleted-account JWT, database-log, and email-log suites; broader coverage is still missing;
+- backend unit tests pass focused profile-update, ownership, group/membership listing, collection route ownership, actor-identity, invitation-lifecycle, invite-only join, notification ownership, meet-read, meet-account-game membership, admin reviewer, password-reset response, global-user-list, deleted-account JWT, database-log, email-log, and cache-log suites; broader coverage is still missing;
 - backend e2e setup fails because `RESEND_API_KEY` is absent and contains a stale starter assertion;
 - backend lint fails with 17 errors and 3 warnings;
 - frontend Biome fails with 8 findings;

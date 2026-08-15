@@ -10,7 +10,7 @@ project:
   name: board-vault
   lifecycle: existing
   maturity: active foundation; pre-launch
-  audited_commit: 1b4e826
+  audited_commit: 8204808
   audit_scope: documentation, staged Clerk authentication integration, SEC-001 profile-update boundary, SEC-002 user-scoped, global user listing, deleted-account JWT, group ownership, group/membership listing and actor identity, collection route ownership, invitation lifecycle, invite-only legacy join, notification ownership, meet reads, and meet-account-game membership slices, and SEC-003 admin reviewer identity; broader authorization and exposure work remains incomplete
 
 standards:
@@ -210,7 +210,7 @@ compliance:
       next_action: Classify data and document storage, retention, deletion, and provider responsibilities.
     - id: SEC-006
       status: gap
-      evidence: DatabaseService excludes bound values from SQL logs and EmailService excludes recipient addresses, but auth/cache log user identifiers and provider errors without a documented redaction policy
+      evidence: DatabaseService excludes bound values from SQL logs, EmailService excludes recipient addresses, and CacheService excludes keys/payloads, but auth logs user identifiers and provider errors without a documented redaction policy
       priority: critical
       next_action: Define safe structured logging and redaction tests.
     - id: SEC-007
