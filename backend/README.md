@@ -24,7 +24,15 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Board Vault's NestJS API. Project-wide architecture, operations, authentication,
+and deployment guidance lives in [`../docs/`](../docs/README.md).
+
+## Deployment
+
+The backend is deployed from this directory through Vercel. Production Clerk
+and database configuration is documented in
+[`../docs/operations.md`](../docs/operations.md); never commit environment
+files or database dumps.
 
 ## Project setup
 
