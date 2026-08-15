@@ -470,6 +470,22 @@ Changed: Legacy group, invitation, and notification request DTOs now carry type/
 Verified: `cd backend && npm test -- --runInBand` (88 tests); `cd backend && npm run build`; affected-file Prettier check passes.
 Known follow-ups: Continue the remaining DTO inventory before global validation, apply migration 0002, review provider-failure/timeout behavior, and complete production Clerk cutover.
 
+Most recent claim:
+
+```text
+Task: SEC-004
+Owner: Codex
+Claimed: 2026-08-15
+Branch/worktree: main / shared workspace
+Scope: validate collection ownership metadata and deprecated membership request bodies
+```
+
+Review: SEC-004
+
+Changed: Collection ownership metadata now validates non-negative purchase prices, ISO dates, and notes through the controller-local strict pipe; deprecated membership creation validates positive integer group references and rejects unexpected fields. Regression coverage proves malformed ownership and membership inputs stop before service access.
+Verified: `cd backend && npm test -- --runInBand` (90 tests); `cd backend && npm run build`; affected-file Prettier check passes.
+Known follow-ups: Complete the remaining DTO compatibility audit before global validation, apply migration 0002, review provider-failure/timeout behavior, and complete production Clerk cutover.
+
 When claiming a task, add:
 
 ```text

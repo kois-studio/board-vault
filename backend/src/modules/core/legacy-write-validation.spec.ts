@@ -5,6 +5,8 @@ import * as request from 'supertest'
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
 import { UserInGroupGuard } from '../../common/guards/user-in-group.guard'
 
+import { GroupMembershipsController } from './group-memberships/group-memberships.controller'
+import { GroupMembershipsService } from './group-memberships/group-memberships.service'
 import { GroupsController } from './groups/groups.controller'
 import { GroupsService } from './groups/groups.service'
 import { InvitationsController } from './invitations/invitations.controller'
@@ -17,14 +19,16 @@ describe('Legacy write DTO validation', () => {
     const createGroup = jest.fn().mockResolvedValue({ success: true })
     const createInvitation = jest.fn().mockResolvedValue({ success: true })
     const createNotification = jest.fn().mockResolvedValue({ success: true })
+    const createGroupMembershipFromInvitation = jest.fn().mockResolvedValue({ success: true })
 
     beforeEach(async () => {
         const module = await Test.createTestingModule({
-            controllers: [GroupsController, InvitationsController, NotificationsController],
+            controllers: [GroupsController, InvitationsController, NotificationsController, GroupMembershipsController],
             providers: [
                 { provide: GroupsService, useValue: { createGroup } },
                 { provide: InvitationsService, useValue: { createInvitation } },
                 { provide: NotificationsService, useValue: { createNotification } },
+                { provide: GroupMembershipsService, useValue: { createGroupMembershipFromInvitation } },
             ],
         })
             .overrideGuard(JwtAuthGuard)
@@ -66,5 +70,11 @@ describe('Legacy write DTO validation', () => {
             .expect(400)
 
         expect(createNotification).not.toHaveBeenCalled()
+    })
+
+    it('rejects malformed membership references before persistence', async () => {
+        await request(app.getHttpServer()).post('/memberships').send({ groupId: '12' }).expect(400)
+
+        expect(createGroupMembershipFromInvitation).not.toHaveBeenCalled()
     })
 })

@@ -12,13 +12,15 @@ import { CollectionService } from './collection.service'
 describe('CollectionController review validation', () => {
     let app: INestApplication
     let saveGameReview: jest.Mock
+    let updateGameOwnership: jest.Mock
 
     beforeEach(async () => {
         saveGameReview = jest.fn().mockResolvedValue({ success: true })
+        updateGameOwnership = jest.fn().mockResolvedValue({ success: true })
 
         const module = await Test.createTestingModule({
             controllers: [CollectionController],
-            providers: [{ provide: CollectionService, useValue: { saveGameReview } }],
+            providers: [{ provide: CollectionService, useValue: { saveGameReview, updateGameOwnership } }],
         })
             .overrideGuard(JwtAuthGuard)
             .useValue({ canActivate: () => true })
@@ -46,5 +48,14 @@ describe('CollectionController review validation', () => {
         await request(app.getHttpServer()).post('/collection/users/1/reviews/2').send({ review: 11, unexpected: true }).expect(400)
 
         expect(saveGameReview).not.toHaveBeenCalled()
+    })
+
+    it('rejects malformed ownership metadata before service access', async () => {
+        await request(app.getHttpServer())
+            .patch('/collection/users/1/games/2/ownership')
+            .send({ purchasePrice: 'free', unexpected: true })
+            .expect(400)
+
+        expect(updateGameOwnership).not.toHaveBeenCalled()
     })
 })

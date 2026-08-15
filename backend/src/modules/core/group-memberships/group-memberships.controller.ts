@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Req, UseGuards } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
@@ -8,6 +8,7 @@ import { CreateGroupMembershipRequestBody, GroupMembershipDto } from '../../../c
 import { GroupMembershipsService } from './group-memberships.service'
 
 @UseGuards(JwtAuthGuard)
+@UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
 @ApiTags('memberships')
 @ApiBearerAuth()
 @Controller('memberships')
