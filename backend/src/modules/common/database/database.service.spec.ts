@@ -21,4 +21,18 @@ describe('DatabaseService logging', () => {
         expect(logger).not.toHaveBeenCalledWith(expect.stringContaining('person@example.com'))
         expect(logger).not.toHaveBeenCalledWith(expect.stringContaining('reset-token-secret'))
     })
+
+    it('allows a verified identity migration to replace a prior Clerk instance link', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const execute = jest.fn().mockResolvedValue({ rowsAffected: 1 })
+
+        ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
+
+        await service.linkUserToClerkId(1, 'user_production')
+
+        expect(execute).toHaveBeenCalledWith({
+            sql: 'UPDATE Account SET clerkUserId = ? WHERE id = ? AND (clerkUserId IS NULL OR clerkUserId <> ?)',
+            args: ['user_production', 1, 'user_production'],
+        })
+    })
 })
