@@ -24,7 +24,7 @@ The backend is authoritative for authentication, authorization, data validation,
 - Passwords use `bcryptjs` in the auth service.
 - Clerk backend verification and a conservative exact-primary-email identity bridge are implemented behind the isolated `/auth/clerk/status` route. The existing JWT/password routes are still authoritative until the migration rollout is complete.
 - `.env` is ignored by `backend/.gitignore`, and `validateEnv.ts` checks Turso and JWT variables at startup.
-- Parameterized libSQL statements are used for execution, although the database service separately formats arguments for logging.
+- Parameterized libSQL statements are used for execution, and database logging now excludes bound argument values.
 
 ## Material findings
 

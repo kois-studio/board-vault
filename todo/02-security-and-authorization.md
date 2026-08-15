@@ -47,12 +47,12 @@ Hotspot: `backend/src/modules/features/admin/admin.controller.ts`.
 - Add a global `ValidationPipe` with whitelist, forbidden extra fields, and transformation.
 - Restrict CORS to configured origins.
 - Add rate limits for login, registration, password reset, verification, and availability checks.
-- Return a generic response from forgot-password requests.
+- Return a generic response from forgot-password requests. **Implemented:** known and unknown emails now receive the same successful outcome; rate limiting remains open.
 - Add expiry and one-time-use semantics to verification and reset tokens.
 - Decide whether to move browser auth from `localStorage` to a safer cookie/session design.
-- Reject deleted or disabled users in JWT validation.
+- Reject deleted or disabled users in JWT validation. **Partial:** soft-deleted accounts are rejected; a separate disabled-account state is not modeled.
 - Add security headers and request size limits.
-- Remove sensitive SQL and token logging.
+- Remove sensitive SQL and token logging. **Partial:** database bound values, email recipients, cache keys/payloads, and auth identity values are excluded; global structured redaction and provider-error policy remain open.
 - Review password, email, and avatar exposure in all response DTOs.
 - Add audit logging for privilege changes and admin actions.
 
