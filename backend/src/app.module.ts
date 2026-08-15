@@ -2,6 +2,7 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 
 import { LoggerMiddleware } from './common/middlewares/logger.middleware'
+import { ClerkSessionMiddleware } from './common/middlewares/clerk-session.middleware'
 // Common
 import { AuthModule } from './modules/common/auth/auth.module'
 import { CacheModule } from './modules/common/cache/cache.module'
@@ -66,10 +67,10 @@ import { ProfileModule } from './modules/features/profile/profile.module'
         ProfileModule,
     ],
     controllers: [],
-    providers: [],
+    providers: [ClerkSessionMiddleware],
 })
 export class AppModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
-        consumer.apply(LoggerMiddleware).forRoutes('*')
+        consumer.apply(LoggerMiddleware, ClerkSessionMiddleware).forRoutes('*')
     }
 }

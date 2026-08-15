@@ -31,5 +31,6 @@ import { JwtStrategy } from './jwt-strategy'
     ],
     controllers: [AuthController],
     providers: [AuthService, ClerkIdentityService, JwtStrategy, ClerkAuthGuard, RateLimitGuard, DatabaseService],
+    exports: [ClerkIdentityService],
 })
 export class AuthModule {}

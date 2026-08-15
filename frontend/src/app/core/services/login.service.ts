@@ -9,6 +9,7 @@ import { Api } from '../../api/api'
 import { ToastService } from '../../components/toast/toast.service'
 import { LOADING_KEYS } from '../enums/loading-keys-enum'
 import { DataService } from './data.service'
+import { ClerkService } from './clerk.service'
 import { LoadingService } from './loading.service'
 import { LocalStorageService } from './local-storage.service'
 import { LogService } from './log.service'
@@ -23,6 +24,7 @@ export class LoginService {
     private readonly toastService = inject(ToastService)
     private readonly loadingService = inject(LoadingService)
     private readonly localStorageService = inject(LocalStorageService)
+    private readonly clerkService = inject(ClerkService)
 
     // --- localStorage Keys ---
     private readonly KEYS = {
@@ -33,6 +35,7 @@ export class LoginService {
     public readonly isAuthenticated = signal<boolean>(false)
     public readonly currentUserId = signal<number | null>(null)
     public readonly isCurrentUserAdmin = signal<boolean>(false)
+    public readonly authProvider = signal<'legacy' | 'clerk' | null>(null)
 
     // --- Token Management ---
     get token(): string | null {
@@ -52,6 +55,10 @@ export class LoginService {
      * Verifies token, updates auth state, and fetches initial user data.
      */
     public verifyTokenAndFetchUserData(): Observable<boolean> {
+        if (this.clerkService.isSignedIn()) {
+            return this.verifyClerkSession()
+        }
+
         const currentToken = this.token
 
         if (!currentToken) {
@@ -69,6 +76,7 @@ export class LoginService {
                     this.isAuthenticated.set(true)
                     this.currentUserId.set(response.userId)
                     this.isCurrentUserAdmin.set(response.isAdmin || false)
+                    this.authProvider.set('legacy')
                     this._fetchInitialUserData(response.userId)
                     return true
                 }
@@ -112,6 +120,29 @@ export class LoginService {
         )
     }
 
+    public verifyClerkSession(): Observable<boolean> {
+        return this.api.clerkAuthStatus().pipe(
+            map(response => {
+                if (!response?.isValid || response.userId === undefined) {
+                    return false
+                }
+
+                this.logger.log('LoginService: Clerk session is valid.', response)
+                this.isAuthenticated.set(true)
+                this.currentUserId.set(response.userId)
+                this.isCurrentUserAdmin.set(response.isAdmin)
+                this.authProvider.set('clerk')
+                this._fetchInitialUserData(response.userId)
+                return true
+            }),
+            catchError((error: HttpErrorResponse) => {
+                this.logger.error('LoginService: Error validating Clerk session.', error)
+                this._performLogoutCleanup()
+                return of(false)
+            }),
+        )
+    }
+
     /**
      * Initiates the loading of essential user data after authentication.
      */
@@ -150,6 +181,7 @@ export class LoginService {
         this.isAuthenticated.set(false)
         this.currentUserId.set(null)
         this.isCurrentUserAdmin.set(false)
+        this.authProvider.set(null)
         this.dataService.currentUser.set(null) // Clear currentUser in DataService
         this.loadingService.setAllLoadingTo(true) // Reset all loading states
     }
@@ -194,6 +226,7 @@ export class LoginService {
         this.isAuthenticated.set(true)
         this.currentUserId.set(userId)
         this.isCurrentUserAdmin.set(isAdmin)
+        this.authProvider.set('legacy')
 
         this._fetchInitialUserData(userId)
         this.router.navigate(['/dashboard'])

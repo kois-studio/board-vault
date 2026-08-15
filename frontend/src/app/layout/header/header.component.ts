@@ -1,7 +1,6 @@
-import { Component, inject, signal } from '@angular/core'
+import { Component, effect, inject, signal } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
-import { Api } from '../../api/api'
 import { ButtonComponent } from '../../components/ui/button/button.component'
 import { DarkModeToggleComponent } from '../../components/ui/dark-mode-toggle/dark-mode-toggle.component'
 import { ClerkService } from '../../core/services/clerk.service'
@@ -16,7 +15,6 @@ import { ProfileMenuComponent } from '../profile-menu/profile-menu.component'
 export class LayoutHeaderComponent {
     private readonly loginService = inject(LoginService)
     private readonly clerkService = inject(ClerkService)
-    private readonly api = inject(Api)
 
     // --------------------------------------------------------------------------
     //        Services signals
@@ -30,6 +28,21 @@ export class LayoutHeaderComponent {
     public readonly clerkLinkStatus = signal<string | null>(null)
     public readonly clerkLinkedAccountId = signal<number | null>(null)
     public readonly clerkLinkInProgress = signal(false)
+
+    private checkedClerkUserId: string | null = null
+
+    constructor() {
+        effect(() => {
+            const clerkUserId = this.clerkService.userId()
+
+            if (!this.clerkService.isLoaded() || !clerkUserId || clerkUserId === this.checkedClerkUserId || this.isAuthenticated()) {
+                return
+            }
+
+            this.checkedClerkUserId = clerkUserId
+            void this.verifyClerkLink()
+        })
+    }
 
     public openClerkSignIn(): void {
         this.clerkLinkStatus.set(null)
@@ -46,16 +59,21 @@ export class LayoutHeaderComponent {
         this.clerkLinkStatus.set(null)
 
         try {
-            const token = await this.clerkService.getToken()
-
-            if (!token) {
+            if (!this.clerkService.isSignedIn()) {
                 this.clerkLinkStatus.set('No active Clerk session was found.')
                 return
             }
 
-            const response = await firstValueFrom(this.api.clerkAuthStatus(token))
-            this.clerkLinkedAccountId.set(response.userId)
-            this.clerkLinkStatus.set(`Linked to local Board Vault account #${response.userId}.`)
+            const isAuthenticated = await firstValueFrom(this.loginService.verifyClerkSession())
+
+            if (!isAuthenticated) {
+                this.clerkLinkStatus.set('The Clerk session could not be linked to a Board Vault account.')
+                return
+            }
+
+            const userId = this.loginService.currentUserId()
+            this.clerkLinkedAccountId.set(userId)
+            this.clerkLinkStatus.set(`Linked to local Board Vault account #${userId}.`)
         } catch (error: unknown) {
             const message =
                 error &&
@@ -75,6 +93,8 @@ export class LayoutHeaderComponent {
 
     public async signOutClerk(): Promise<void> {
         await this.clerkService.signOut()
+        this.loginService.handleAuthErrorAndLogout()
+        this.checkedClerkUserId = null
         this.clerkLinkStatus.set(null)
         this.clerkLinkedAccountId.set(null)
     }

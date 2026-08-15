@@ -486,6 +486,16 @@ Changed: Collection ownership metadata now validates non-negative purchase price
 Verified: `cd backend && npm test -- --runInBand` (90 tests); `cd backend && npm run build`; affected-file Prettier check passes.
 Known follow-ups: Complete the remaining DTO compatibility audit before global validation, apply migration 0002, review provider-failure/timeout behavior, and complete production Clerk cutover.
 
+Most recent claim:
+
+```text
+Task: AUTH-001
+Owner: Codex
+Claimed: 2026-08-15
+Branch/worktree: main / shared workspace
+Scope: make verified Clerk sessions usable across protected API routes and prepare fail-closed production configuration
+```
+
 When claiming a task, add:
 
 ```text
