@@ -50,7 +50,7 @@ describe('UsersController profile update boundary', () => {
         await app.close()
     })
 
-    it('drops privileged fields from a profile update before persistence', async () => {
+    it('accepts a valid profile update', async () => {
         const avatar = {
             backgroundColor: '#3B82F6',
             iconName: 'person-fill',
@@ -65,11 +65,6 @@ describe('UsersController profile update boundary', () => {
                 username: 'safe-user',
                 displayName: 'Safe User',
                 avatar,
-                password: 'attacker-password',
-                isAdmin: true,
-                email_verified: true,
-                verification_token: 'attacker-verification-token',
-                password_reset_token: 'attacker-reset-token',
             })
             .expect(200)
 
@@ -80,13 +75,28 @@ describe('UsersController profile update boundary', () => {
         })
     })
 
+    it('rejects privileged or unexpected fields before persistence', async () => {
+        await request(app.getHttpServer()).put('/users/1').send({ username: 'safe-user', isAdmin: true }).expect(400)
+
+        expect(updateUserProfile).not.toHaveBeenCalled()
+    })
+
     it('rejects a request containing only privileged fields', async () => {
         await request(app.getHttpServer())
             .put('/users/1')
             .send({ isAdmin: true, email_verified: true, verification_token: 'attacker-token' })
             .expect(400)
 
-        expect(updateUserProfile).toHaveBeenCalledWith(1, {})
+        expect(updateUserProfile).not.toHaveBeenCalled()
+    })
+
+    it('rejects malformed nested avatar data', async () => {
+        await request(app.getHttpServer())
+            .put('/users/1')
+            .send({ avatar: { type: 'unsupported', initials: 42 } })
+            .expect(400)
+
+        expect(updateUserProfile).not.toHaveBeenCalled()
     })
 
     it('does not expose the deprecated global user list to a non-admin', async () => {
