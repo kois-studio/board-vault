@@ -14,7 +14,7 @@ The backend reads these variable names from the environment or ignored local `.e
 - required by provider construction: `RESEND_API_KEY`;
 - used by email links/defaults: `NO_REPLY_EMAIL`, `APP_BASE_URL`;
 - used by cache and authentication rate limiting: `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, `UPSTASH_REDIS_REST_DISABLE`; Redis credentials are required unless the disable flag is exactly `true`.
-- used by CORS: optional comma-separated `CORS_ORIGINS` additions; the defaults are `https://board-vault.com`, `http://localhost:4200`, and `http://127.0.0.1:4200`, and wildcard `*` is ignored.
+- used by CORS: optional comma-separated `CORS_ORIGINS` additions; production defaults only to `https://board-vault.com`, development also allows `http://localhost:4200` and `http://127.0.0.1:4200`, and wildcard `*` is ignored.
 - used by the Clerk backend boundary: `CLERK_SECRET_KEY`; production also requires comma-separated `CLERK_AUTHORIZED_PARTIES` containing only exact frontend origins such as `https://board-vault.com`.
 
 The API accepts JSON and URL-encoded request bodies up to 100 KB. This is configured in `backend/src/main.ts`; multipart uploads are not an evidenced supported interface.
