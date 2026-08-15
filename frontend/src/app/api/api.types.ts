@@ -26,6 +26,8 @@ export type UserType = {
     email_verified: boolean
 }
 
+export type PublicUserType = Pick<UserType, 'id' | 'username' | 'displayName' | 'avatar'>
+
 // #region Game
 
 export type GameType = {
@@ -100,7 +102,7 @@ export type GroupType = {
 
 export type GroupWithMembersAndGames = GroupType & {
     members: Array<
-        UserType & {
+        PublicUserType & {
             joinedAt: string
             games: Array<GameCompleteType>
             reviews: Array<GameReviewDto>
@@ -119,13 +121,13 @@ export type InvitationType = {
 }
 
 export type InvitationWithExtraData = InvitationType & {
-    fromAccount: UserType
+    fromAccount: PublicUserType
     group: GroupType
 }
 
 export type InvitationWithAccountsData = InvitationType & {
-    fromAccount: UserType
-    toAccount: UserType
+    fromAccount: PublicUserType
+    toAccount: PublicUserType
 }
 
 // #region Notification
@@ -222,7 +224,7 @@ export type HistoryRecordType = {
     meetData: MeetType
     gamesPlayed: Array<{
         gameData: GameCompleteType
-        playedBy: Array<UserType>
+        playedBy: Array<PublicUserType>
     }>
 }
 

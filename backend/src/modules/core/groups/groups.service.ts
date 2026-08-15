@@ -6,7 +6,7 @@ import { DatabaseService } from '../../common/database/database.service'
 
 import type { CreateGroupBody, GroupDto, UpdateGroupBody } from '../../../common/types/group.type'
 import type { InvitationWithAccountsData } from '../../../common/types/invitation.type'
-import type { AvatarDto, UserGetDto } from '../../../common/types/user.type'
+import type { AvatarDto, UserPublicDto } from '../../../common/types/user.type'
 
 @Injectable()
 export class GroupsService {
@@ -115,8 +115,8 @@ export class GroupsService {
                 fromAccountId: Number(row[2]),
                 toAccountId: Number(row[3]),
                 sentAt: String(row[4]),
-                fromAccount: JSON.parse(String(row[5])) as UserGetDto,
-                toAccount: JSON.parse(String(row[6])) as UserGetDto,
+                fromAccount: JSON.parse(String(row[5])) as UserPublicDto,
+                toAccount: JSON.parse(String(row[6])) as UserPublicDto,
             }))
             .map(invitation => ({
                 ...invitation,

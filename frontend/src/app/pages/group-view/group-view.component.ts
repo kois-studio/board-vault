@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { Component, computed, effect, inject, signal } from '@angular/core'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { Api } from '../../api/api'
-import type { GameType, HistoryRecordType, InvitationWithAccountsData, UserType } from '../../api/api.types'
+import type { GameType, HistoryRecordType, InvitationWithAccountsData, PublicUserType, UserType } from '../../api/api.types'
 import { CardAccountComponent } from '../../components/card-account/card-account.component'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
 import { SkeletonCardGroupComponent } from '../../components/skeletons/skeleton-card-group/skeleton-card-group.component'
@@ -84,7 +84,7 @@ export class GroupViewComponent {
         effect(() => {
             const currentUser = this.currentUser$()
             const groupId = Number.parseInt(this.route.snapshot.paramMap.get('groupId') || '')
-            const group = this.userGroups$().find((group) => group.id === groupId)
+            const group = this.userGroups$().find(group => group.id === groupId)
 
             if (Number.isNaN(groupId) || !currentUser || !group) {
                 return
@@ -101,10 +101,10 @@ export class GroupViewComponent {
             } else {
                 // get the group meetings
                 this.api.getGroupMeetings(currentUser.id, groupId).subscribe({
-                    next: (groupMeetings) => {
+                    next: groupMeetings => {
                         this.groupHistory$.set(groupMeetings)
                     },
-                    error: (error) => {
+                    error: error => {
                         console.error(error)
                         // Clear previous data on error
                         this.groupHistory$.set([])
@@ -130,10 +130,10 @@ export class GroupViewComponent {
 
     // #region Parse Data
 
-    parseAttendeeIds(memberIds: Array<UserType['id']>): Array<UserType> {
+    parseAttendeeIds(memberIds: Array<UserType['id']>): Array<PublicUserType> {
         const result = memberIds
-            .map((memberId) => this.groupData$()?.members.find((member) => member.id === memberId) || null)
-            .filter((member) => member !== null)
+            .map(memberId => this.groupData$()?.members.find(member => member.id === memberId) || null)
+            .filter(member => member !== null)
 
         // If > 5 members, we will show [1,2,3,4, +n] in the HTML, so we only return the first 4
         //      if 6 -> [1,2,3,4, +2]
@@ -146,9 +146,7 @@ export class GroupViewComponent {
     }
 
     parseGameIds(gameIds: Array<GameType['id']>): Array<GameType> {
-        return gameIds
-            .map((gameId) => this.totalUniqueGamesComputed().find((game) => game.id === gameId))
-            .filter((game) => game !== undefined)
+        return gameIds.map(gameId => this.totalUniqueGamesComputed().find(game => game.id === gameId)).filter(game => game !== undefined)
     }
 
     // #region Button Clicks
@@ -158,7 +156,7 @@ export class GroupViewComponent {
         if (!groupData) return
 
         const allMembersSelected = this.selectedMembers$().length === groupData.members.length
-        this.selectedMembers$.set(allMembersSelected ? [] : groupData.members.map((member) => member.id))
+        this.selectedMembers$.set(allMembersSelected ? [] : groupData.members.map(member => member.id))
     }
 
     onClickMeeting(meetId: number): void {
@@ -168,7 +166,7 @@ export class GroupViewComponent {
     onClickMember(memberId: number) {
         const currentSelected = this.selectedMembers$()
         if (currentSelected.includes(memberId)) {
-            this.selectedMembers$.set(currentSelected.filter((id) => id !== memberId))
+            this.selectedMembers$.set(currentSelected.filter(id => id !== memberId))
         } else {
             this.selectedMembers$.set([...currentSelected, memberId])
         }

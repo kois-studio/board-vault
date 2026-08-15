@@ -77,6 +77,12 @@ export class UserCompleteDto {
 export class UserGetDto extends OmitType(UserCompleteDto, ['password', 'verification_token', 'password_reset_token']) {}
 
 /**
+ * Public identity used when a user is nested in another user's response.
+ * Email and account-state fields are reserved for dedicated self/admin boundaries.
+ */
+export class UserPublicDto extends PickType(UserGetDto, ['id', 'username', 'displayName', 'avatar']) {}
+
+/**
  * POST requests --> no db generated props
  */
 export class CreateUserBody extends OmitType(UserCompleteDto, [
@@ -173,6 +179,14 @@ export class LoginUserDto {
  * User containing the games they have
  */
 export class UserWithGames extends UserGetDto {
+    @ApiProperty({ type: [GameCompleteDto], description: 'The games the user has.' })
+    games: Array<GameCompleteDto>
+}
+
+/**
+ * Public identity plus games used for group member responses.
+ */
+export class UserPublicWithGames extends UserPublicDto {
     @ApiProperty({ type: [GameCompleteDto], description: 'The games the user has.' })
     games: Array<GameCompleteDto>
 }

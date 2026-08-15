@@ -1,7 +1,7 @@
 import { ApiProperty, OmitType, PartialType, PickType } from '@nestjs/swagger'
 
 import { GameReviewDto } from './game-review.type'
-import { UserWithGames } from './user.type'
+import { UserPublicWithGames } from './user.type'
 
 /**
  * base User as it comes from db
@@ -32,9 +32,9 @@ export class CreateGroupRequestBody extends OmitType(CreateGroupBody, ['createdB
 export class UpdateGroupBody extends PartialType(PickType(GroupDto, ['name'])) {}
 
 /**
- * UserWithGames + the date the user joined the group
+ * Public user identity with games + the date the user joined the group
  */
-export class GroupMemberWithGames extends UserWithGames {
+export class GroupMemberWithGames extends UserPublicWithGames {
     @ApiProperty({ example: '2024-09-28 10:02:39', description: 'The date and time the user joined the group.' })
     joinedAt: string
 

@@ -11,7 +11,7 @@ import {
     CreateInvitationRequestBody,
     InvitationDto,
 } from '../../../common/types/invitation.type'
-import { UserGetDto } from '../../../common/types/user.type'
+import { UserPublicDto } from '../../../common/types/user.type'
 
 import { InvitationsService } from './invitations.service'
 
@@ -51,7 +51,7 @@ export class InvitationsController {
     @UseGuards(UserInGroupGuard)
     @Post('/byUsername')
     @ApiOperation({ summary: 'Create a new invitation' })
-    @ApiResponse({ status: 201, type: UserGetDto, description: 'The invitation has been succesfully created' })
+    @ApiResponse({ status: 201, type: UserPublicDto, description: 'The invitation has been succesfully created' })
     @ApiResponse({ status: 404, description: 'User not found' })
     async createInvitationByUsername(
         @Req() request: { user: { userId: number } },
