@@ -89,5 +89,8 @@ legacy password/JWT path remains available during rollout.
 - The production Clerk instance is now configured for `board-vault.com`; Vercel
   manages the required `clerk.board-vault.com`, `accounts.board-vault.com`,
   mail, and DKIM CNAME records. Production Vercel variables have been added to
-  the separate frontend and backend projects, pending a fresh deployment and
-  live smoke check.
+  the separate frontend and backend projects. Clerk DNS and SSL are complete;
+  the fresh deployment returns the expected unauthenticated `401` from the
+  Clerk status route, enables the production frontend key, and restricts API
+  CORS to `https://board-vault.com`. Authenticated browser and preserved-data
+  verification remain outstanding.

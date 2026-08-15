@@ -54,10 +54,13 @@ progress at the time of this update.
 Vercel Production variables are now configured in the separate projects:
 `board-vault-front` has `CLERK_PUBLISHABLE_KEY` and `CLERK_AUTH_ENABLED`, while
 `board-vault-back` has sensitive `CLERK_SECRET_KEY` and
-`CLERK_AUTHORIZED_PARTIES=https://board-vault.com`. A fresh deployment is
-required before live behavior can be rechecked; production Clerk readiness
-cannot be claimed until that deployment serves the route and the frontend is
-built with the production publishable key.
+`CLERK_AUTHORIZED_PARTIES=https://board-vault.com`. The fresh deployment is
+live: the frontend returns HTTP 200 and exposes an enabled production runtime
+configuration, while the unauthenticated backend Clerk status route returns
+HTTP 401 with `Access-Control-Allow-Origin: https://board-vault.com` rather
+than a wildcard. The remaining verification is an authenticated browser smoke
+test and preserved-data check; manual production sign-in has not yet been
+claimed as complete.
 
 Deployment ownership, domain configuration, environment provisioning, provider scopes, and production traffic behavior are therefore unknown and must not be inferred from the committed URLs/config alone.
 
