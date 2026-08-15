@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core'
+import { computed, Injectable, signal } from '@angular/core'
 import type { Clerk } from '@clerk/clerk-js'
 
 type ClerkLoadOptions = NonNullable<Parameters<Clerk['load']>[0]>
@@ -20,6 +20,8 @@ export class ClerkService {
 
     public readonly isConfigured = signal(environment.clerkAuthEnabled && environment.clerkPublishableKey.length > 0)
     public readonly isLoaded = signal(false)
+    public readonly initializationError = signal<string | null>(null)
+    public readonly isAvailable = computed(() => this.isConfigured() && this.isLoaded() && !this.initializationError())
     public readonly isSignedIn = signal(false)
     public readonly userId = signal<string | null>(null)
 
@@ -39,9 +41,10 @@ export class ClerkService {
             this.syncState()
             this.unsubscribe = clerk.addListener(() => this.syncState())
         } catch (error) {
+            this.initializationError.set('Clerk could not be initialized')
             // Clerk must not prevent the application shell from loading. The
-            // backend migration is staged, so legacy auth remains available
-            // while a Clerk configuration is incomplete.
+            // legacy authentication path remains available while the provider
+            // is unavailable.
             console.error('Clerk initialization failed.', error)
         } finally {
             this.isLoaded.set(true)
@@ -74,6 +77,7 @@ export class ClerkService {
         this.unsubscribe?.()
         this.unsubscribe = null
         this.clerk = null
+        this.initializationError.set(null)
         this.isSignedIn.set(false)
         this.userId.set(null)
     }

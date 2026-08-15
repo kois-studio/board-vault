@@ -4,6 +4,7 @@ import { NestFactory } from '@nestjs/core'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 
 import { AppModule } from './app.module'
+import { getCorsOrigins } from './common/http/cors'
 import { applySecurityHeaders, createBodyParsers } from './common/http/http-hardening'
 import { validateEnv } from './common/validators'
 
@@ -30,11 +31,7 @@ async function bootstrap() {
     app.use(...createBodyParsers())
     app.use(applySecurityHeaders)
 
-    const defaultCorsOrigins = ['https://board-vault.com', 'http://localhost:4200', 'http://127.0.0.1:4200']
-    const configuredCorsOrigins = process.env.CORS_ORIGINS?.split(',')
-        .map(origin => origin.trim())
-        .filter(origin => origin.length > 0 && origin !== '*')
-    const corsOrigins = [...new Set([...defaultCorsOrigins, ...(configuredCorsOrigins ?? [])])]
+    const corsOrigins = getCorsOrigins()
 
     app.enableCors({
         origin: corsOrigins,

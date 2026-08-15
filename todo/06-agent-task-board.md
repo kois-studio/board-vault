@@ -502,6 +502,16 @@ Changed: Clerk sessions now resolve into the existing local request identity bef
 Verified: `cd backend && npm test -- --runInBand` (95 tests); `cd backend && npm run build`; `cd frontend && npm run build`; affected backend files pass Prettier.
 Known follow-ups: Configure the production Clerk instance/domain and Vercel variables, deploy the current backend (the 2026-08-15 smoke check still returned 404 for `/auth/clerk/status`), verify the production origin and preserved-data routes, apply migration 0002 where required, and document rollback/recovery evidence before removing legacy auth.
 
+Most recent claim:
+
+```text
+Task: AUTH-002
+Owner: Codex
+Claimed: 2026-08-15
+Branch/worktree: main / shared workspace
+Scope: harden production Clerk UX, trusted-origin defaults, and verified-email identity linking
+```
+
 When claiming a task, add:
 
 ```text

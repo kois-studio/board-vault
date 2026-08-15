@@ -22,8 +22,7 @@ export class LayoutHeaderComponent {
     // loginService
     public readonly isAuthenticated = this.loginService.isAuthenticated
     public readonly isCurrentUserAdmin = this.loginService.isCurrentUserAdmin
-    public readonly clerkIsConfigured = this.clerkService.isConfigured
-    public readonly clerkIsLoaded = this.clerkService.isLoaded
+    public readonly clerkIsAvailable = this.clerkService.isAvailable
     public readonly clerkIsSignedIn = this.clerkService.isSignedIn
     public readonly clerkLinkStatus = signal<string | null>(null)
     public readonly clerkLinkedAccountId = signal<number | null>(null)
@@ -35,7 +34,7 @@ export class LayoutHeaderComponent {
         effect(() => {
             const clerkUserId = this.clerkService.userId()
 
-            if (!this.clerkService.isLoaded() || !clerkUserId || clerkUserId === this.checkedClerkUserId || this.isAuthenticated()) {
+            if (!this.clerkService.isAvailable() || !clerkUserId || clerkUserId === this.checkedClerkUserId || this.isAuthenticated()) {
                 return
             }
 

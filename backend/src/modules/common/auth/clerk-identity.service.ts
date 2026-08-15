@@ -35,12 +35,15 @@ export class ClerkIdentityService {
         }
 
         const clerkUser = await this.getClerkClient().users.getUser(clerkUserId)
-        const primaryEmail = clerkUser.emailAddresses.find(
-            emailAddress => emailAddress.id === clerkUser.primaryEmailAddressId,
-        )?.emailAddress
+        const primaryEmailAddress = clerkUser.emailAddresses.find(emailAddress => emailAddress.id === clerkUser.primaryEmailAddressId)
+        const primaryEmail = primaryEmailAddress?.emailAddress
 
         if (!primaryEmail) {
             throw new UnauthorizedException('The Clerk account has no primary email address')
+        }
+
+        if (primaryEmailAddress?.verification?.status !== 'verified') {
+            throw new UnauthorizedException('The Clerk primary email address is not verified')
         }
 
         let localUser: UserGetDto
@@ -101,6 +104,7 @@ export class ClerkIdentityService {
 
             try {
                 const account = await this.usersService.getUserByEmail(email)
+
                 if (account.isDeleted) {
                     throw new UnauthorizedException('The Board Vault account is unavailable')
                 }
