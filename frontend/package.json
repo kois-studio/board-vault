@@ -5,6 +5,7 @@
         "ng": "ng",
         "start": "ng serve",
         "dev": "ng serve",
+        "prebuild": "node scripts/generate-runtime-config.mjs",
         "build": "ng build",
         "watch": "ng build --watch --configuration development",
         "test": "ng test",

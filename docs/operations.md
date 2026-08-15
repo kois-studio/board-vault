@@ -16,10 +16,11 @@ The backend reads these variable names from the environment or ignored local `.e
 - used by cache and authentication rate limiting: `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, `UPSTASH_REDIS_REST_DISABLE`; Redis credentials are required unless the disable flag is exactly `true`.
 - used by CORS: optional comma-separated `CORS_ORIGINS` additions; production defaults only to `https://board-vault.com`, development also allows `http://localhost:4200` and `http://127.0.0.1:4200`, and wildcard `*` is ignored.
 - used by the Clerk backend boundary: `CLERK_SECRET_KEY`; production also requires comma-separated `CLERK_AUTHORIZED_PARTIES` containing only exact frontend origins such as `https://board-vault.com`.
+- used by the frontend production build: public `CLERK_PUBLISHABLE_KEY`; optional `CLERK_AUTH_ENABLED=false` can explicitly keep the Clerk controls disabled.
 
 The API accepts JSON and URL-encoded request bodies up to 100 KB. This is configured in `backend/src/main.ts`; multipart uploads are not an evidenced supported interface.
 
-The exact local values are intentionally not documented. No `.env.example`, typed configuration schema, test environment, or production environment ownership record was found. The frontend uses committed environment files containing only public API URLs, a production boolean, the development Clerk publishable key, and a development-only `clerkAuthEnabled` rollout toggle; the production toggle/key remain unset until the production Clerk instance is configured. These values are configuration, not secrets. The Clerk secret must remain backend-only.
+The exact local values are intentionally not documented. No `.env.example`, typed configuration schema, test environment, or production environment ownership record was found. The frontend uses committed environment files containing only public API URLs, a production boolean, and the development Clerk publishable key. Production builds generate an ignored `public/runtime-config.js` from the public `CLERK_PUBLISHABLE_KEY` build variable; the production toggle/key remain disabled until the production Clerk instance is configured. These values are configuration, not secrets. The Clerk secret must remain backend-only.
 
 When `NODE_ENV=production`, startup fails closed unless `CLERK_SECRET_KEY` and `CLERK_AUTHORIZED_PARTIES` are present. This prevents a deployment from accepting Clerk sessions without an explicit trusted frontend-origin policy.
 
@@ -41,11 +42,15 @@ Use the exact commands and current results in [AGENTS.md](AGENTS.md) and [testin
 
 `backend/vercel.json` configures a Vercel Node build from `src/main.ts` and routes HTTP methods to it. `frontend/src/environments/environment.ts` targets `https://backend.board-vault.com`. The repository does not contain Vercel project metadata, frontend hosting configuration, CI deployment workflow, health probes, migration checks, backup scheduling, or rollback instructions.
 
-External smoke check on 2026-08-15: `https://board-vault.com` returned HTTP 200
-from Vercel, but `https://backend.board-vault.com/auth/clerk/status` returned
-HTTP 404 (`Cannot GET /auth/clerk/status`). The deployed API therefore does not
-yet contain the Clerk route committed here; production Clerk readiness cannot be
-claimed until the backend is deployed from the current commits and rechecked.
+External smoke checks on 2026-08-15 show that the frontend deployment reacted
+to commit `9c0cf55` and returns HTTP 200. The backend also reacted, but currently
+returns Vercel `FUNCTION_INVOCATION_FAILED` on every tested route instead of
+the previous HTTP 404 for `/auth/clerk/status`. This is consistent with the
+new production fail-closed Clerk configuration check, but Vercel logs are not
+available from this workspace, so the exact missing variable must be confirmed
+in the backend project's environment settings. Production Clerk readiness
+cannot be claimed until the backend serves the route and the frontend is built
+with the production publishable key.
 
 Deployment ownership, domain configuration, environment provisioning, provider scopes, and production traffic behavior are therefore unknown and must not be inferred from the committed URLs/config alone.
 
