@@ -406,6 +406,22 @@ Changed: The Nest bootstrap now disables implicit body parsing, installs explici
 Verified: `cd backend && npm run build`; `cd backend && npm test -- --runInBand` (80 tests); affected-file Prettier check passes.
 Known follow-ups: Add transport-boundary tests, apply migration 0002, finish the DTO audit before global validation, and complete email-output encoding and production Clerk cutover reviews.
 
+Most recent claim:
+
+```text
+Task: SEC-004
+Owner: Codex
+Claimed: 2026-08-15
+Branch/worktree: main / shared workspace
+Scope: add strict validation to administrator catalog and proposal-review request bodies
+```
+
+Review: SEC-004
+
+Changed: Administrator catalog and proposal-review request DTOs now validate types, ranges, arrays, and non-empty review notes; the admin controller applies a strict whitelist/forbid-extra-field pipe to its request bodies. Regression coverage proves unexpected proposal-review fields are rejected before service access while authenticated reviewer derivation remains intact.
+Verified: `cd backend && npm test -- --runInBand` (82 tests); `cd backend && npm run build`; affected-file Prettier check passes.
+Known follow-ups: Continue the remaining DTO inventory before enabling global validation; transport-boundary tests, migration 0002, email-output encoding, and production Clerk cutover remain open.
+
 When claiming a task, add:
 
 ```text
