@@ -9,6 +9,7 @@ describe('CacheService logging', () => {
     const createService = () => {
         const service = Object.create(CacheService.prototype) as CacheService
         const internals = service as unknown as CacheServiceInternals
+
         internals.LOGGER = { log: jest.fn() }
         internals.REDIS = {
             get: jest.fn().mockResolvedValue({ email: 'person@example.com' }),
@@ -41,5 +42,16 @@ describe('CacheService logging', () => {
         expect(internals.REDIS.incr).toHaveBeenCalledWith('rate-limit:secret-hash')
         expect(internals.REDIS.expire).toHaveBeenCalledWith('rate-limit:secret-hash', 60)
         expect(internals.LOGGER.log).not.toHaveBeenCalledWith(expect.stringContaining('secret-hash'))
+    })
+
+    it('stops retrying Redis after a failed request during the cooldown window', async () => {
+        const { service, internals } = createService()
+
+        internals.REDIS.get.mockRejectedValueOnce(new Error('Redis unavailable'))
+
+        await expect(service.get('games:byId:7')).resolves.toBeNull()
+        await expect(service.get('games:byId:8')).resolves.toBeNull()
+
+        expect(internals.REDIS.get).toHaveBeenCalledTimes(1)
     })
 })
