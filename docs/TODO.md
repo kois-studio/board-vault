@@ -19,7 +19,7 @@ Statuses are `Planned`, `Blocked`, or `Deferred` until evidence changes them. Pr
 
 - **Status:** Planned
 - **Affected area:** `backend/src/main.ts`, DTO/type boundaries, `frontend/src/app/api/api.schemas.ts`
-- **Evidence:** No global `ValidationPipe`; login, registration, and password-reset request bodies now have targeted whitelist/forbid-extra-field validation, while frontend response schemas remain a TODO.
+- **Evidence:** No global `ValidationPipe`; login, registration, password-reset, and availability query inputs now have targeted whitelist/forbid-extra-field validation, while frontend response schemas remain a TODO.
 - **Risk:** Malformed, unexpected, oversized, or unsafe values reach services, SQL, HTML, or client state.
 - **Next action:** Audit remaining DTO decorators and enable server input validation incrementally, define client response schemas, and add negative tests beyond the authentication boundary.
 - **Dependencies:** API error contract and security review.
