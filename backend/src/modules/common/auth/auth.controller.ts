@@ -69,6 +69,7 @@ export class AuthController {
     }
 
     @Post('/register')
+    @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
     @ApiOperation({ summary: 'Create a new user' })
     @ApiResponse({ status: 201, type: SuccessDto, description: 'The user has been successfully created' })
     async createUser(@Body() userDto: RegisterUserDto) {
@@ -76,6 +77,7 @@ export class AuthController {
     }
 
     @Post('/login')
+    @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
     @ApiOperation({ summary: 'Log in a user' })
     @ApiResponse({ status: 201, type: AccessTokenDto, description: 'Successfully logged in' })
     @ApiResponse({ status: 401, description: 'Invalid credentials' })

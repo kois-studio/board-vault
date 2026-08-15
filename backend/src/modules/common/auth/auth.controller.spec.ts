@@ -9,21 +9,25 @@ import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
 import { ClerkIdentityService } from './clerk-identity.service'
 
-describe('AuthController password-reset validation', () => {
+describe('AuthController request validation', () => {
     let app: INestApplication
     let forgotPassword: jest.Mock
     let resetPassword: jest.Mock
+    let register: jest.Mock
+    let login: jest.Mock
 
     beforeEach(async () => {
         forgotPassword = jest.fn().mockResolvedValue(undefined)
         resetPassword = jest.fn().mockResolvedValue(true)
+        register = jest.fn().mockResolvedValue({ success: true })
+        login = jest.fn().mockResolvedValue({ access_token: 'token' })
 
         const module = await Test.createTestingModule({
             controllers: [AuthController],
             providers: [
                 {
                     provide: AuthService,
-                    useValue: { forgotPassword, resetPassword },
+                    useValue: { forgotPassword, resetPassword, register, login },
                 },
                 {
                     provide: ClerkIdentityService,
@@ -67,5 +71,20 @@ describe('AuthController password-reset validation', () => {
         await request(app.getHttpServer()).post('/auth/reset-password/token').send({ password: 'new-password' }).expect(201)
 
         expect(resetPassword).toHaveBeenCalledWith('token', 'new-password')
+    })
+
+    it('rejects malformed login input before the service call', async () => {
+        await request(app.getHttpServer()).post('/auth/login').send({ email: 'not-an-email', password: '' }).expect(400)
+
+        expect(login).not.toHaveBeenCalled()
+    })
+
+    it('rejects unexpected registration fields', async () => {
+        await request(app.getHttpServer())
+            .post('/auth/register')
+            .send({ email: 'person@example.com', username: 'person', password: 'password', isAdmin: true })
+            .expect(400)
+
+        expect(register).not.toHaveBeenCalled()
     })
 })
