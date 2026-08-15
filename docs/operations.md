@@ -42,15 +42,22 @@ Use the exact commands and current results in [AGENTS.md](AGENTS.md) and [testin
 
 `backend/vercel.json` configures a Vercel Node build from `src/main.ts` and routes HTTP methods to it. `frontend/src/environments/environment.ts` targets `https://backend.board-vault.com`. The repository does not contain Vercel project metadata, frontend hosting configuration, CI deployment workflow, health probes, migration checks, backup scheduling, or rollback instructions.
 
-External smoke checks on 2026-08-15 show that the frontend deployment reacted
-to commit `9c0cf55` and returns HTTP 200. The backend also reacted, but currently
-returns Vercel `FUNCTION_INVOCATION_FAILED` on every tested route instead of
-the previous HTTP 404 for `/auth/clerk/status`. This is consistent with the
-new production fail-closed Clerk configuration check, but Vercel logs are not
-available from this workspace, so the exact missing variable must be confirmed
-in the backend project's environment settings. Production Clerk readiness
-cannot be claimed until the backend serves the route and the frontend is built
-with the production publishable key.
+External smoke checks on 2026-08-15 first observed the old backend deployment
+(HTTP 404 for `/auth/clerk/status`), then observed the new fail-closed backend
+returning Vercel `FUNCTION_INVOCATION_FAILED` until its production variables
+were configured. The production Clerk instance is now present with Clerk
+domain `board-vault.com`, frontend API `https://clerk.board-vault.com`, and
+accounts portal `https://accounts.board-vault.com`; its required DNS records
+are managed by Vercel and verified by Clerk. SSL provisioning remains in
+progress at the time of this update.
+
+Vercel Production variables are now configured in the separate projects:
+`board-vault-front` has `CLERK_PUBLISHABLE_KEY` and `CLERK_AUTH_ENABLED`, while
+`board-vault-back` has sensitive `CLERK_SECRET_KEY` and
+`CLERK_AUTHORIZED_PARTIES=https://board-vault.com`. A fresh deployment is
+required before live behavior can be rechecked; production Clerk readiness
+cannot be claimed until that deployment serves the route and the frontend is
+built with the production publishable key.
 
 Deployment ownership, domain configuration, environment provisioning, provider scopes, and production traffic behavior are therefore unknown and must not be inferred from the committed URLs/config alone.
 
