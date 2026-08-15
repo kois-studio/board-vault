@@ -87,7 +87,7 @@ export class CacheService {
      */
     @Wrapper(false)
     async deleteOne(key: string): Promise<boolean> {
-        this.LOGGER.log(`REDIS: Deleting single key ${key}...`)
+        this.LOGGER.log('REDIS: Deleting single cache key...')
         await this.REDIS.del(key)
         return true
     }
@@ -102,14 +102,14 @@ export class CacheService {
      */
     @Wrapper()
     async set(key: string, data: any, ttl: keyof typeof CACHE_TTL = 'short'): Promise<void> {
-        this.LOGGER.log(`REDIS: set ${key} -> ${JSON.stringify(data)}`)
+        this.LOGGER.log(`REDIS: set cache value with ${CACHE_TTL[ttl]}s TTL`)
 
         await this.REDIS.set(key, data, { ex: CACHE_TTL[ttl] })
     }
 
     @Wrapper()
     async get(key: string): Promise<any> {
-        this.LOGGER.log(`REDIS: get ${key}`)
+        this.LOGGER.log('REDIS: get cache value')
 
         return await this.REDIS.get(key)
     }
