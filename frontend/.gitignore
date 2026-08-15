@@ -48,3 +48,4 @@ Thumbs.db
 package-lock.json
 pnpm-lock.yaml
 yarn.lock
+public/runtime-config.js
