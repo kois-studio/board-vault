@@ -10,8 +10,8 @@ project:
   name: board-vault
   lifecycle: existing
   maturity: active foundation; pre-launch
-  audited_commit: 219600b
-  audit_scope: documentation, staged Clerk authentication integration, SEC-001 profile and user-game-update validation boundaries, SEC-002 user-scoped, global user listing, deleted-account JWT, group ownership, group/membership listing and actor identity, collection route ownership, invitation lifecycle, invite-only legacy join, notification ownership, meet reads, meet-account-game membership, review-score validation, legacy-token expiry and one-time-use slices, and SEC-003 admin reviewer identity; broader authorization and exposure work remains incomplete
+  audited_commit: c0a6076
+  audit_scope: documentation, staged Clerk authentication integration, SEC-001 profile, user-game-update, and proposal-input validation boundaries, SEC-002 user-scoped, global user listing, deleted-account JWT, group ownership, group/membership listing and actor identity, collection route ownership, invitation lifecycle, invite-only legacy join, notification ownership, meet reads, meet-account-game membership, review-score validation, legacy-token expiry and one-time-use slices, and SEC-003 admin reviewer identity; broader authorization and exposure work remains incomplete
 
 standards:
   - documentation
@@ -200,7 +200,7 @@ compliance:
       next_action: Execute SEC-001 through SEC-004 in todo/06-agent-task-board.md.
     - id: SEC-004
       status: gap
-      evidence: no global request validation; targeted login, registration, password-reset, availability-query, legacy-token, user-profile, user-game-update, and review-score validation is enabled, including nested avatar, positive integer-array, and database-aligned 0..10 review validation; forgot-password now returns the same success behavior for missing and existing accounts; verification/reset token expiry and atomic one-time-use enforcement are implemented behind pending migration 0002; rate limiting remains unresolved; DatabaseService no longer formats bound SQL arguments in logs; HTML email interpolates values
+      evidence: no global request validation; targeted login, registration, password-reset, availability-query, legacy-token, user-profile, user-game-update, review-score, and profile-proposal validation is enabled, including nested avatar, positive integer-array, database-aligned 0..10 review, and non-negative integer proposal-field validation; forgot-password now returns the same success behavior for missing and existing accounts; verification/reset token expiry and atomic one-time-use enforcement are implemented behind pending migration 0002; rate limiting remains unresolved; DatabaseService no longer formats bound SQL arguments in logs; HTML email interpolates values
       priority: critical
       next_action: Apply and verify migration 0002 in each deployment, then choose deployment-safe rate limits/CORS and continue the global validation and email-encoding reviews.
     - id: SEC-005
