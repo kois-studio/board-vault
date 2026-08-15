@@ -1,4 +1,18 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Put, Query, UseGuards } from '@nestjs/common'
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    ParseIntPipe,
+    Patch,
+    Post,
+    Put,
+    Query,
+    UseGuards,
+    UsePipes,
+    ValidationPipe,
+} from '@nestjs/common'
 import { LimitPipe } from '../../../common/pipes'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
@@ -101,6 +115,7 @@ export class CollectionController {
 
     @UseGuards(UserOwnershipGuard)
     @Post('/users/:userId/reviews/:gameId')
+    @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
     @ApiOperation({ summary: 'Save a game review', deprecated: false })
     @ApiResponse({ status: 200, type: SuccessDto, description: 'The review has been succesfully saved' })
     async saveGameReview(
