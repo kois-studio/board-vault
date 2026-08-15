@@ -69,7 +69,7 @@ export class UsersService {
      * thats why `include_password` option available
      */
     async getUserByEmail(email: string, include_password = false): Promise<UserGetDto | UserCompleteDto> {
-        this.LOGGER.log(`Getting user with email ${email}`)
+        this.LOGGER.log('Getting user by email')
         const resultSet = await this.databaseService.getUserByEmail(email)
         const users = this._parseResultSet(resultSet)
 
@@ -87,7 +87,7 @@ export class UsersService {
     }
 
     async getUserByClerkId(clerkUserId: string): Promise<UserGetDto> {
-        this.LOGGER.log(`Getting user linked to Clerk identity ${clerkUserId}`)
+        this.LOGGER.log('Getting user by Clerk identity')
         const resultSet = await this.databaseService.getUserByClerkId(clerkUserId)
         const users = this._parseResultSet(resultSet)
 
@@ -102,7 +102,7 @@ export class UsersService {
     }
 
     async linkClerkUser(accountId: number, clerkUserId: string): Promise<UserGetDto> {
-        this.LOGGER.log(`Linking local user ${accountId} to Clerk identity ${clerkUserId}`)
+        this.LOGGER.log(`Linking local user ${accountId} to Clerk identity`)
         const resultSet = await this.databaseService.linkUserToClerkId(accountId, clerkUserId)
 
         if (resultSet.rowsAffected !== 1) {
@@ -113,7 +113,7 @@ export class UsersService {
     }
 
     async createUser(userDto: CreateUserBody, verificationToken: string) {
-        this.LOGGER.log(`Creating user ${userDto.username} - ${userDto.email}`)
+        this.LOGGER.log('Creating user')
         try {
             await this.databaseService.createUser(userDto, verificationToken)
 

@@ -29,7 +29,7 @@ export class AuthService {
     }
 
     async login(email: string, password: string) {
-        this.LOGGER.log(`Logging in user ${email}`)
+        this.LOGGER.log('Login attempt received')
         const user = await this.validateUser(email, password)
 
         if (!user) {
@@ -44,7 +44,7 @@ export class AuthService {
     }
 
     async register(email: string, username: string, password: string) {
-        this.LOGGER.log(`Creating user ${username} - ${email}`)
+        this.LOGGER.log('Registration attempt received')
 
         // Generate a unique verification token
         const verificationToken = randomUUID()
