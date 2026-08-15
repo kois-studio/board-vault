@@ -5,6 +5,8 @@ import { AuthService } from './auth.service'
 describe('AuthService password reset', () => {
     const databaseService = {
         updateUserRecord: jest.fn(),
+        resetPasswordWithToken: jest.fn(),
+        verifyEmailToken: jest.fn(),
     }
     const usersService = {
         getUserByEmail: jest.fn(),
@@ -40,8 +42,27 @@ describe('AuthService password reset', () => {
 
         expect(databaseService.updateUserRecord).toHaveBeenCalledWith(7, {
             password_reset_token: expect.any(String),
+            password_reset_token_expires_at: expect.any(Number),
         })
         expect(emailService.sendPasswordResetEmail).toHaveBeenCalledWith('known@example.com', expect.any(String))
+    })
+
+    it('accepts an unexpired email verification token once', async () => {
+        databaseService.verifyEmailToken.mockResolvedValueOnce({ rowsAffected: 1 }).mockResolvedValueOnce({ rowsAffected: 0 })
+
+        await expect(createService().verifyEmail('550e8400-e29b-41d4-a716-446655440000')).resolves.toBe(true)
+        await expect(createService().verifyEmail('550e8400-e29b-41d4-a716-446655440000')).resolves.toBe(false)
+
+        expect(databaseService.verifyEmailToken).toHaveBeenCalledTimes(2)
+    })
+
+    it('accepts a password reset token once and rejects an expired or consumed token', async () => {
+        databaseService.resetPasswordWithToken.mockResolvedValueOnce({ rowsAffected: 1 }).mockResolvedValueOnce({ rowsAffected: 0 })
+
+        await expect(createService().resetPassword('550e8400-e29b-41d4-a716-446655440000', 'new-password')).resolves.toBe(true)
+        await expect(createService().resetPassword('550e8400-e29b-41d4-a716-446655440000', 'new-password')).resolves.toBe(false)
+
+        expect(databaseService.resetPasswordWithToken).toHaveBeenCalledTimes(2)
     })
 
     it('does not log email or username values during registration', async () => {
@@ -53,6 +74,7 @@ describe('AuthService password reset', () => {
         await service.register('known@example.com', 'known-user', 'password')
 
         expect(log).toHaveBeenCalledWith('Registration attempt received')
+        expect(usersService.createUser).toHaveBeenCalledWith(expect.any(Object), expect.any(String), expect.any(Number))
         expect(log).not.toHaveBeenCalledWith(expect.stringContaining('known@example.com'))
         expect(log).not.toHaveBeenCalledWith(expect.stringContaining('known-user'))
     })

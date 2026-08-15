@@ -101,7 +101,12 @@ export type UpdateUserRecord = Partial<
         | 'verification_token'
         | 'password_reset_token'
     >
->
+> & {
+    /** Internal UTC epoch-second expiry for the email verification token. */
+    verification_token_expires_at?: number | null
+    /** Internal UTC epoch-second expiry for the password reset token. */
+    password_reset_token_expires_at?: number | null
+}
 
 /**
  * POST /auth/register
