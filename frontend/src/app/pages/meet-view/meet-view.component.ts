@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { Component, effect } from '@angular/core'
-import { ActivatedRoute, Router } from '@angular/router'
+import { ActivatedRoute } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../api/api'
 import type { GameType, GroupWithMembersAndGames, MeetType, MeetWithAttendeesAndGamesType, UserType } from '../../api/api.types'
@@ -42,7 +42,6 @@ export class MeetViewComponent {
 
     constructor(
         private readonly api: Api,
-        private readonly router: Router,
         private readonly route: ActivatedRoute,
         private readonly dataService: DataService,
         private readonly toastService: ToastService,
@@ -101,14 +100,6 @@ export class MeetViewComponent {
         }
 
         return JSON.stringify(this.meetData.attendees) === JSON.stringify(this.meetDataCopyOriginal.attendees)
-    }
-
-    get disableSaveGamesPlayed(): boolean {
-        if (!this.meetData || !this.meetDataCopyOriginal) {
-            return true
-        }
-
-        return JSON.stringify(this.meetData.playedGames) === JSON.stringify(this.meetDataCopyOriginal.playedGames)
     }
 
     get canManageLifecycle(): boolean {
@@ -208,10 +199,6 @@ export class MeetViewComponent {
         }
 
         this.#saveGamesPlayedSelection()
-    }
-
-    onClickMeetConfirm(): void {
-        this.router.navigate(['/meets', this.meetData?.id, 'confirm'])
     }
 
     // #region private methods

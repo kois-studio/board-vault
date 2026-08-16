@@ -27,7 +27,6 @@ import { GroupCreateComponent } from './pages/groups/group-create/group-create.c
 import { GroupEditComponent } from './pages/groups/group-edit/group-edit.component'
 import { GroupsPageComponent } from './pages/groups/groups-page/groups-page.component'
 import { LandingComponent } from './pages/landing/landing.component'
-import { MeetConfirmComponent } from './pages/meet-confirm/meet-confirm.component'
 import { MeetNewComponent } from './pages/meet-new/meet-new.component'
 import { MeetViewComponent } from './pages/meet-view/meet-view.component'
 import { HistoryPageComponent } from './pages/play-page/history-page/history-page.component'
@@ -111,7 +110,6 @@ export const routes: Routes = [
             { path: 'groups/:groupId/edit', component: GroupEditComponent, canActivate: [AuthOnlyGuard] },
             { path: 'groups/:groupId/leave', component: GroupLeaveComponent, canActivate: [AuthOnlyGuard] },
             { path: 'groups/:groupId/delete', component: GroupDeleteComponent, canActivate: [AuthOnlyGuard] },
-            { path: 'meets/:meetId/confirm', component: MeetConfirmComponent, canActivate: [AuthOnlyGuard] },
             { path: 'collection/propose-game', component: ProposeGamePageComponent, canActivate: [AuthOnlyGuard] },
         ],
     },
