@@ -36,7 +36,7 @@ Relevant surfaces: [`app.routes.ts`](../frontend/src/app/app.routes.ts), [`meet-
 - Persist the selected date/time and IANA timezone; completed-session logging now sends both to the backend.
 - Persist the selected group, organizer, attendees, played games, and participant links atomically through `POST /sessions`.
 - Persist scheduled sessions, selected pending attendees, and optional planned games atomically through `POST /sessions/scheduled`; omission of attendees remains a documented compatibility default to all current group members.
-- Replace the `submitSession()` TODO in the log-session wizard with the guarded API call and success/error navigation.
+- Review the now-implemented `submitSession()` flow through authenticated browser coverage, including success, validation, and retryable API failure states.
 - Define and implement transitions between scheduled, active, completed, and cancelled sessions; organizer-controlled transitions now exist for scheduled/active sessions, while completed/cancelled remain terminal.
 - Distinguish planned games from games actually played in all API responses and frontend types; scheduled creation and meet details now preserve planned, played, and skipped game IDs. When a session becomes completed or cancelled, remaining planned games are transactionally marked skipped; richer game objects and planned-game editing remain unfinished.
 - Decide how the legacy `MeetAccountGame` history relation should evolve; the completed write currently preserves it as a compatibility relation.
@@ -128,7 +128,7 @@ Relevant surfaces: [`collection-page`](../frontend/src/app/pages/collection-page
 - Ensure purchase metadata, wishlist priority, reviews, and tags have consistent labels and validation.
 - Game detail history now displays group names through the loaded group index; failed game-detail requests now leave the loading state and expose a retry action.
 - Review responsive card grids, image fallbacks, accessible controls, and keyboard behavior.
-- Add frontend response schemas in [`api.schemas.ts`](../frontend/src/app/api/api.schemas.ts).
+- Expand the targeted frontend response schemas in [`api.schemas.ts`](../frontend/src/app/api/api.schemas.ts) across the remaining API surface.
 
 ### 8. Groups and invitations — Partial / Needs review
 
@@ -187,7 +187,7 @@ Relevant surfaces: [`propose-game-page`](../frontend/src/app/pages/collection-pa
 
 - Replace the generated single frontend smoke test with route/component/state tests for critical journeys. Playwright now covers public landing, signed-out dashboard protection, and the wildcard not-found route.
 - Add browser coverage for Clerk login, collection activation, group invitation, session creation, and session completion.
-- Add frontend API response schemas and validate representative responses at the boundary.
+- Expand frontend API response schemas and validate representative responses at the boundary; session, meet, recommendation, and feedback responses are now covered.
 - Add contract tests for frontend/backend session, collection, group, and recommendation flows.
 - Add clean-environment test data and a documented two-account acceptance journey.
 

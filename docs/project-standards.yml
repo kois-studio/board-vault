@@ -139,7 +139,7 @@ compliance:
       next_action: Stop adding undocumented any and narrow legacy boundary uses incrementally.
     - id: TS-003
       status: partial
-      evidence: shared types and Swagger DTOs exist, but frontend API schemas are a TODO and routes are not contract-tested
+      evidence: shared types and Swagger DTOs exist; targeted frontend schemas cover session, meet, recommendation, and feedback responses, but most routes are not contract-tested
       priority: high
       next_action: Define a machine-readable API contract and align generated/client types.
     - id: TS-004
@@ -149,12 +149,12 @@ compliance:
       next_action: Complete the session API/transaction state contract and establish the recommendation state model before implementation.
     - id: TS-005
       status: gap
-      evidence: backend main.ts does not apply a global ValidationPipe; frontend api.schemas.ts is unimplemented
+      evidence: backend main.ts does not apply a global ValidationPipe; frontend api.schemas.ts validates only the current session, meet, recommendation, and feedback response subset
       priority: critical
       next_action: Activate and test boundary validation on both API and client response boundaries.
     - id: TS-006
       status: partial
-      evidence: zod schemas and class-validator dependencies exist; targeted login, registration, password-reset, availability-query, and legacy-token validation is enabled, but the effective global strategy is not enabled
+      evidence: zod schemas and class-validator dependencies exist; targeted login, registration, password-reset, availability-query, legacy-token, and core frontend response validation is enabled, but the effective global strategy is not enabled
       priority: high
       next_action: Select one boundary-validation approach per boundary and document it.
     - id: TS-007
@@ -405,7 +405,7 @@ compliance:
       next_action: Add session API/write contracts and transaction tests on a disposable database.
     - id: DATA-004
       status: gap
-      evidence: DashboardService creates a group and membership in separate calls; session creation is TODO
+      evidence: DashboardService creates a group and membership in separate calls; canonical session creation is transactional, while group creation still lacks an atomic use-case boundary
       priority: critical
       next_action: Define transaction/partial-failure behavior for multi-record use cases.
     - id: DATA-005
@@ -493,7 +493,7 @@ compliance:
       next_action: Keep new API/form boundaries typed.
     - id: ANGULAR-004
       status: partial
-      evidence: log-session wizard has explicit steps/signals, but submit behavior is TODO
+      evidence: log-session wizard has explicit steps/signals and a guarded submit path; authenticated browser coverage and some state polish remain
       priority: high
       next_action: Define and test complete loading/validation/submission/error transitions.
     - id: ANGULAR-005
@@ -503,9 +503,9 @@ compliance:
       next_action: Record icon convention when frontend sanitation starts.
     - id: ANGULAR-006
       status: gap
-      evidence: frontend/src/app/api/api.schemas.ts begins with a TODO to define response schemas
-      priority: critical
-      next_action: Validate external responses and user input at API/form boundaries.
+      evidence: frontend/src/app/api/api.schemas.ts validates session, meet, recommendation, and feedback responses; remaining API response coverage and client negative tests are open
+      priority: high
+      next_action: Expand external response validation and add malformed-response tests at API/form boundaries.
     - id: ANGULAR-007
       status: partial
       evidence: root-provided services and signals exist, but ownership/reset semantics are not documented
@@ -543,7 +543,7 @@ compliance:
       next_action: Treat SEC-002 as the authoritative remediation.
     - id: ANGULAR-014
       status: partial
-      evidence: loading/error patterns exist, but play pages contain hardcoded content and TODO states
+      evidence: loading/error patterns exist across play pages; a history skeleton TODO and broader authenticated state coverage remain
       priority: high
       next_action: Make async states explicit for the flagship journey.
     - id: ANGULAR-015

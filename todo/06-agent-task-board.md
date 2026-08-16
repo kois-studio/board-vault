@@ -950,6 +950,19 @@ Changed: Generated and committed backend/frontend npm lockfiles, aligned the fro
 Verified: Real `npm ci --ignore-scripts` passed in both packages; backend 136-test suite, 2-test HTTP E2E suite, and build passed; frontend build and public Playwright checks passed; database empty-state verification passed; CI YAML parses as valid YAML; `git diff --check` passes.
 Known follow-ups: Observe the first remote workflow run, align the backend README with npm, add lint/format gates after baseline failures are resolved, and add non-production authenticated E2E with disposable Clerk state.
 
+Continuation claim: EQ-004
+
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: add targeted frontend response validation for the core play/session flows
+
+Review continuation: EQ-004
+
+Changed: Added Zod schemas at the Angular API boundary for meet summaries/details, completed and scheduled session creation, session lifecycle updates, recommendations, and recommendation feedback. The frontend game type now correctly treats the legacy `title` field as optional because translated game responses use `titleTranslations` as their canonical title source.
+Verified: Clean frontend `npm ci --ignore-scripts`, `npm run build`, and `npm run e2e` pass; the public Playwright checks report 3 passed and 4 authenticated checks skipped without Clerk storage state. `git diff --check` passes.
+Known follow-ups: Expand response schemas to the remaining API methods, add malformed-response tests, and generate/verify a versioned OpenAPI or consumer contract.
+
 When claiming a task, add:
 
 ```text

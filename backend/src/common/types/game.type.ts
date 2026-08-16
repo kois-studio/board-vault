@@ -25,6 +25,9 @@ export class GameDto {
 }
 
 export class GameCompleteDto extends GameDto {
+    @ApiProperty({ example: 'Game Title', required: false })
+    title?: string
+
     @ApiProperty({ example: { en: 'Game Title' } })
     titleTranslations: Record<SupportedLanguage, string>
 }

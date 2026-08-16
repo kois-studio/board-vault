@@ -24,7 +24,7 @@ The list is intentionally representative rather than a second route registry. Th
 ## Contract findings
 
 - `ParseIntPipe` is used on selected route parameters, but `main.ts` does not install a global `ValidationPipe` for bodies, query parameters, and DTOs. The bootstrap does apply an explicit 100 KB JSON/URL-encoded body limit; route-level request validation remains incomplete.
-- `frontend/src/app/api/api.schemas.ts` explicitly contains a TODO to define response schemas, so client response validation is not implemented.
+- `frontend/src/app/api/api.schemas.ts` now validates session creation/status, meet details, recommendations, and recommendation feedback at the client boundary. The remaining API methods still rely on TypeScript-only response types.
 - Error shape, compatibility policy, deprecation policy, pagination limits, and retry/idempotency behavior are not documented as stable contracts.
 - Pagination helpers exist (`limit.pipe.ts`, `offset.pipe.ts`) and some admin operations are paginated, but maximum bounds and expensive-query behavior are not consistently evidenced.
 - Proposal review operations derive reviewer identity from the JWT; the frontend no longer sends reviewer query parameters.
@@ -52,5 +52,5 @@ The list is intentionally representative rather than a second route registry. Th
 - [Representative group routes](../backend/src/modules/core/groups/groups.controller.ts)
 - [Admin routes](../backend/src/modules/features/admin/admin.controller.ts)
 - [Frontend API adapter](../frontend/src/app/api/api.ts)
-- [Frontend response schema TODO](../frontend/src/app/api/api.schemas.ts)
+- [Frontend response schemas](../frontend/src/app/api/api.schemas.ts)
 - [Quality backlog](../todo/05-engineering-quality-and-delivery.md)
