@@ -709,24 +709,6 @@ export class DataService {
 
     // #region Meetings
 
-    public createMeeting(accountId: number, groupId: number) {
-        // 1.
-        this.api.createMeeting(accountId, groupId).subscribe({
-            next: res => {
-                // 2.
-                this.userMeets.set([])
-                this._getUserMeets(groupId)
-
-                // 3.
-                this.toastService.success('New meeting created for today!')
-                this.router.navigate([`/groups/${groupId}`])
-            },
-            error: () => {
-                this.toastService.error('Error creating meeting')
-            },
-        })
-    }
-
     public refreshUserMeets() {
         const currentUser = this.currentUser()
         if (!currentUser) return
