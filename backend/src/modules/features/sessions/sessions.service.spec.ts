@@ -91,7 +91,7 @@ describe('SessionsService', () => {
         expect(database.createCompletedSession).not.toHaveBeenCalled()
     })
 
-    it('schedules a session for every current group member', async () => {
+    it('schedules a session for every current group member when attendees are omitted', async () => {
         const database = createDatabaseMock()
         const service = new SessionsService(database as unknown as DatabaseService)
         const scheduledBody = {
@@ -109,6 +109,44 @@ describe('SessionsService', () => {
             attendeeIds: [1, 2, 3],
             plannedGameIds: [],
         })
+    })
+
+    it('schedules a session for selected group attendees', async () => {
+        const database = createDatabaseMock()
+        const service = new SessionsService(database as unknown as DatabaseService)
+
+        await expect(
+            service.createScheduledSession(1, {
+                groupId: 7,
+                sessionDate: '2026-08-21T19:30:00.000Z',
+                timezone: 'Europe/Madrid',
+                attendeeIds: [1, 3],
+                plannedGameIds: [42],
+            }),
+        ).resolves.toEqual({ sessionId: 13, status: 'scheduled' })
+        expect(database.createScheduledSession).toHaveBeenCalledWith({
+            groupId: 7,
+            createdBy: 1,
+            sessionDate: '2026-08-21T19:30:00.000Z',
+            timezone: 'Europe/Madrid',
+            attendeeIds: [1, 3],
+            plannedGameIds: [42],
+        })
+    })
+
+    it('rejects selected attendees outside the group', async () => {
+        const database = createDatabaseMock()
+        const service = new SessionsService(database as unknown as DatabaseService)
+
+        await expect(
+            service.createScheduledSession(1, {
+                groupId: 7,
+                sessionDate: '2026-08-21T19:30:00.000Z',
+                timezone: 'Europe/Madrid',
+                attendeeIds: [1, 99],
+            }),
+        ).rejects.toThrow(BadRequestException)
+        expect(database.createScheduledSession).not.toHaveBeenCalled()
     })
 
     it('rejects planned games unavailable to the selected group', async () => {

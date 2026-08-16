@@ -202,6 +202,7 @@ export type ScheduleSessionRequest = {
     groupId: number
     sessionDate: string
     timezone: string
+    attendeeIds: Array<number>
     plannedGameIds: Array<number>
 }
 
