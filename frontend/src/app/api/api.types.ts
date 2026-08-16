@@ -179,6 +179,7 @@ export type MeetGameType = {
 export type MeetWithAttendeesAndGamesType = MeetType & {
     attendees: Array<UserType['id']>
     playedGames: Array<GameType['id']>
+    plannedGames: Array<GameType['id']>
 }
 
 export type CreatePlaySessionRequest = {
@@ -201,6 +202,7 @@ export type ScheduleSessionRequest = {
     groupId: number
     sessionDate: string
     timezone: string
+    plannedGameIds: Array<number>
 }
 
 export type ScheduledSessionCreatedType = {

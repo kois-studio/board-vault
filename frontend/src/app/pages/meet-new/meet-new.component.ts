@@ -4,6 +4,7 @@ import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../api/api'
+import type { GameCompleteType } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
 import { DataService } from '../../core/services/data.service'
 
@@ -24,6 +25,7 @@ export class MeetNewComponent {
     //        DATA for this component
     // --------------------------------------------------------------------------
     public groupData: null | (typeof this.userGroups)[number] = null
+    public selectedPlannedGameIds: Array<number> = []
     public today = new Date().toISOString().split('T')[0] // Format: YYYY-MM-DD
     public dateForm = new FormControl(this.today, [
         Validators.required,
@@ -63,6 +65,22 @@ export class MeetNewComponent {
         return this.dateForm.valid ? 'border-green-500' : 'border-red-500'
     }
 
+    get availableGames(): Array<GameCompleteType> {
+        const games = new Map<number, GameCompleteType>()
+        for (const member of this.groupData?.members ?? []) {
+            for (const game of member.games) {
+                games.set(game.id, game)
+            }
+        }
+        return [...games.values()].sort((a, b) => (a.titleTranslations.en ?? a.title).localeCompare(b.titleTranslations.en ?? b.title))
+    }
+
+    togglePlannedGame(gameId: number): void {
+        this.selectedPlannedGameIds = this.selectedPlannedGameIds.includes(gameId)
+            ? this.selectedPlannedGameIds.filter(id => id !== gameId)
+            : [...this.selectedPlannedGameIds, gameId]
+    }
+
     get disableCreateButton() {
         if (!this.dateForm.value) {
             return true
@@ -87,6 +105,7 @@ export class MeetNewComponent {
                 groupId,
                 sessionDate: new Date(`${sessionDate}T12:00:00`).toISOString(),
                 timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                plannedGameIds: this.selectedPlannedGameIds,
             }),
         )
             .then(() => {

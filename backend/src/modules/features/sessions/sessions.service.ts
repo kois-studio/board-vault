@@ -79,12 +79,19 @@ export class SessionsService {
             throw new ForbiddenException('You must belong to the group to schedule a session')
         }
 
+        const plannedGameIds = [...new Set(body.plannedGameIds ?? [])]
+        const availableGameIds = new Set(await this.databaseService.getGroupAvailableGameIds(body.groupId))
+        if (plannedGameIds.some(gameId => !availableGameIds.has(gameId))) {
+            throw new BadRequestException('Every planned game must be owned by at least one group member')
+        }
+
         const result = await this.databaseService.createScheduledSession({
             groupId: body.groupId,
             createdBy: actorAccountId,
             sessionDate: body.sessionDate,
             timezone: body.timezone,
             attendeeIds: memberIds,
+            plannedGameIds,
         })
 
         return {
