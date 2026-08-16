@@ -30,6 +30,7 @@ type ScheduledSessionInput = {
     sessionDate: string
     timezone: string
     attendeeIds: Array<number>
+    plannedGameIds: Array<number>
 }
 
 @Injectable()
@@ -1096,6 +1097,11 @@ export class DatabaseService implements OnModuleInit {
                     FROM MeetGame mg
                     WHERE mg.meetId = m.id AND mg.gameStatus = 'played'
                 ) AS playedGames,
+                (
+                    SELECT json_group_array(mg.gameId)
+                    FROM MeetGame mg
+                    WHERE mg.meetId = m.id AND mg.gameStatus = 'planned'
+                ) AS plannedGames,
                 m.status,
                 m.timezone
             FROM Meet m
@@ -1188,6 +1194,16 @@ export class DatabaseService implements OnModuleInit {
                 `,
                 args: [meetId, accountId],
             }))
+
+            for (const gameId of input.plannedGameIds) {
+                statements.push({
+                    sql: `
+                        INSERT INTO MeetGame (meetId, gameId, gameStatus)
+                        VALUES (?, ?, 'planned')
+                    `,
+                    args: [meetId, gameId],
+                })
+            }
 
             await transaction.batch(statements)
             await transaction.commit()
