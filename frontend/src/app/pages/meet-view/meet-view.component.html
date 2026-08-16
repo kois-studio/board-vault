@@ -21,12 +21,18 @@
     <!-- Attendees -->
     <section class="p-4">
         <h2 class="text-xl font-semibold mb-4">Select the attendees</h2>
+        @if (!canEditSession) {
+            <p class="text-secondary text-sm mb-3">This session is closed. Attendees and played games can no longer be changed.</p>
+        } @else {
+            <p class="text-secondary text-sm mb-3">Changes are saved automatically and reverted if saving fails.</p>
+        }
         <hr />
 
         <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4">
             @for (member of groupData?.members; track $index) {
             <button
                 (click)="onClickMember(member.id)"
+                [disabled]="!canEditSession || isPersistingChanges"
                 class="bg-zinc-800 rounded-lg cursor-pointer flex items-center justify-start border"
                 [ngClass]="{
                     'border-zinc-800': !meetData?.attendees?.includes(member.id),
@@ -83,6 +89,7 @@
             @for (game of totalGames ; track $index) {
             <button
                 (click)="onClickGame(game.id)"
+                [disabled]="!canEditSession || isPersistingChanges"
                 class="bg-zinc-800 rounded-lg cursor-pointer flex items-center justify-start border p-2"
                 [ngClass]="{
                         'border-zinc-800': !meetData?.playedGames?.includes(game.id),

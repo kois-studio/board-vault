@@ -162,7 +162,10 @@ describe('DatabaseService logging', () => {
     it('keeps legacy play links and canonical played games synchronized', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: jest.fn().mockResolvedValueOnce({ rowsAffected: 1 }).mockResolvedValueOnce({ rowsAffected: 1 }),
+            execute: jest.fn()
+                .mockResolvedValueOnce({ rowsAffected: 1 })
+                .mockResolvedValueOnce({ rowsAffected: 1 })
+                .mockResolvedValueOnce({ rowsAffected: 1 }),
             commit: jest.fn().mockResolvedValue(undefined),
             rollback: jest.fn().mockResolvedValue(undefined),
             close: jest.fn(),
@@ -178,6 +181,10 @@ describe('DatabaseService logging', () => {
             args: [12, 42],
         })
         expect(transaction.execute).toHaveBeenNthCalledWith(2, {
+            sql: expect.stringContaining("SET gameStatus = 'played'"),
+            args: [12, 42],
+        })
+        expect(transaction.execute).toHaveBeenNthCalledWith(3, {
             sql: 'INSERT OR IGNORE INTO MeetAccountGame (accountId, meetId, gameId) VALUES (?, ?, ?)',
             args: [1, 12, 42],
         })
