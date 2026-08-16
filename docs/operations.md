@@ -52,7 +52,15 @@ Use the exact commands and current results in [AGENTS.md](AGENTS.md) and [testin
   live Turso after a fresh local dump. It created `MeetAttendee` and `MeetGame`,
   backfilled 63 attendee rows and 22 session-game rows from the preserved 101
   `MeetAccountGame` links, and passed integrity/foreign-key checks. The backend
-  detail/setup SQL was aligned and requires deployment verification.
+  detail/setup SQL was aligned and deployment boundary checks passed.
+
+The resulting backend deployment was promoted to production on 2026-08-16.
+Unauthenticated `GET /auth/clerk/status` returned 401, validation on
+`GET /auth/check-email` returned 400, and unauthenticated meet details returned
+401; all three responses included `Access-Control-Allow-Origin:
+https://board-vault.com`. An authenticated meet-detail/selection smoke test is
+still pending because the attendee-write authorization policy is not yet
+implemented.
 
 ## Deployment shape
 
