@@ -57,7 +57,7 @@ Statuses are `Planned`, `Blocked`, or `Deferred` until evidence changes them. Pr
 
 - **Status:** In progress
 - **Affected area:** `backend/test/`, backend `src`, frontend `src/**/*.spec.ts`
-- **Evidence:** Backend now has 38 focused suites and 136 passing unit tests plus 2 environment-safe HTTP E2E tests; frontend has one generated smoke test plus public Playwright coverage, while seeded/integration journeys and authenticated browser coverage remain opt-in.
+- **Evidence:** Backend now has 39 focused suites and 144 passing unit tests plus 2 environment-safe HTTP E2E tests; frontend has one generated smoke test plus public Playwright coverage, while seeded/integration journeys and authenticated browser coverage remain opt-in.
 - **Risk:** Security and product regressions are invisible.
 - **Next action:** Add auth/authorization/data tests first, then core-loop and frontend state tests.
 - **Dependencies:** READINESS-001, READINESS-002, READINESS-003.
