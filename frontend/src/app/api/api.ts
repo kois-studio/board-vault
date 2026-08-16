@@ -17,6 +17,7 @@ import {
     sessionCreatedSchema,
     sessionStatusUpdatedSchema,
     successSchema,
+    userInvitationsSchema,
     userGroupsSchema,
 } from './api.schemas'
 import type {
@@ -382,7 +383,7 @@ export class Api {
     }
 
     getUserInvitations(userId: number) {
-        return this.http.get<Array<InvitationWithExtraData>>(`${this.url}/profile/users/${userId}/invitations`)
+        return this.http.get<Array<InvitationWithExtraData>>(`${this.url}/profile/users/${userId}/invitations`).pipe(map(response => userInvitationsSchema.parse(response)))
     }
 
     acceptInvitation(userId: number, invitationId: number) {

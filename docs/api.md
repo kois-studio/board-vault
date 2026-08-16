@@ -24,7 +24,7 @@ The list is intentionally representative rather than a second route registry. Th
 ## Contract findings
 
 - `ParseIntPipe` is used on selected route parameters, but `main.ts` does not install a global `ValidationPipe` for bodies, query parameters, and DTOs. The bootstrap does apply an explicit 100 KB JSON/URL-encoded body limit; route-level request validation remains incomplete.
-- `frontend/src/app/api/api.schemas.ts` now validates auth status/token, availability, group/member/game/invitation responses, legacy auth messages, session creation/status, meet details, recommendations, recommendation feedback, and the main success-envelope mutations at the client boundary. The remaining API methods still rely on TypeScript-only response types.
+- `frontend/src/app/api/api.schemas.ts` now validates auth status/token, availability, group/member/game/invitation responses (including the user invitation feed), legacy auth messages, session creation/status, meet details, recommendations, recommendation feedback, and the main success-envelope mutations at the client boundary. The remaining API methods still rely on TypeScript-only response types.
 - Error shape, compatibility policy, deprecation policy, pagination limits, and retry/idempotency behavior are not documented as stable contracts.
 - Pagination helpers exist (`limit.pipe.ts`, `offset.pipe.ts`) and some admin operations are paginated, but maximum bounds and expensive-query behavior are not consistently evidenced.
 - Proposal review operations derive reviewer identity from the JWT; the frontend no longer sends reviewer query parameters.

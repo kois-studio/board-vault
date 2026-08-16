@@ -2,8 +2,10 @@ import { z } from 'zod'
 
 import type {
     GameCompleteType,
+    GroupType,
     GroupWithMembersAndGames,
     InvitationWithAccountsData,
+    InvitationWithExtraData,
     MeetType,
     MeetWithAttendeesAndGamesType,
     PublicUserType,
@@ -56,6 +58,13 @@ const publicUserSchema = z.object({
     avatar: avatarSchema,
 })
 
+const groupSchema: z.ZodType<GroupType> = z.object({
+    id: z.number(),
+    name: z.string(),
+    createdBy: z.number(),
+    createdAt: z.string(),
+})
+
 const gameReviewSchema = z.object({
     accountId: z.number(),
     gameId: z.number(),
@@ -89,6 +98,18 @@ export const groupInvitationsSchema: z.ZodType<Array<InvitationWithAccountsData>
         sentAt: z.string(),
         fromAccount: publicUserSchema,
         toAccount: publicUserSchema,
+    }),
+)
+
+export const userInvitationsSchema: z.ZodType<Array<InvitationWithExtraData>> = z.array(
+    z.object({
+        id: z.number(),
+        groupId: z.number(),
+        fromAccountId: z.number(),
+        toAccountId: z.number(),
+        sentAt: z.string(),
+        fromAccount: publicUserSchema,
+        group: groupSchema,
     }),
 )
 
