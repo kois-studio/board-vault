@@ -90,7 +90,7 @@ Use separate semantics for:
 ## Migration plan
 
 1. Treat the owner-confirmed documented schema as the current deployed baseline.
-2. Compare it with all SQL queries and publish a code/schema drift report.
+2. Compare it with all SQL queries and publish a code/schema drift report. **Complete for the current baseline:** see [`database/drift-report.md`](../database/drift-report.md); unresolved findings remain deliberately open.
 3. Decide the canonical names and compatibility strategy.
 4. Add a migration runner and numbered migrations.
 5. Add constraints, foreign keys, uniqueness rules, and indexes deliberately.

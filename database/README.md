@@ -7,10 +7,11 @@ This directory owns database-specific artifacts and tooling for Board Vault. It 
 - The application uses Turso/libSQL SQLite through `backend/src/modules/common/database/database.service.ts`.
 - [schema/schema.sql](schema/schema.sql) is the current live Turso schema snapshot verified on 2026-08-12. It is an observed snapshot, not a migration, and MUST NOT be applied directly to another environment without review.
 - Repository reconciliation has found code drift against this baseline: `DatabaseService` references `MeetAttendee` and `MeetGame`, which are absent from the schema. The deployed `Game` table also has no `title` column; the application passes a title but the current insert path does not persist it in `Game`.
+- The detailed, evidence-backed reconciliation is recorded in [drift-report.md](drift-report.md). It separates confirmed schema gaps from unresolved session/product decisions and does not authorize live schema changes.
 - There is currently no migration runner, disposable test database, fixture set, Docker test environment, or restore rehearsal.
 - Migration `0001-add-clerk-user-id.sql` has been applied to live Turso and verified without changing historical row counts. It adds the Clerk identity bridge; one existing account has been linked through the verified local Clerk flow, and new local accounts can now be provisioned from verified Clerk identities by the backend.
 - Migration `0002-add-auth-token-expiry.sql` is prepared but has not been applied to live Turso. It adds nullable UTC epoch-second expiry columns for legacy verification and password-reset tokens. Deploy this migration before issuing or accepting tokens through the updated backend; rows with NULL expiry fail closed.
-- The first database work remains `DATA-001`: resolve the code/schema drift report against this current baseline. The Clerk frontend cutover and migration runner remain separate work.
+- `DATA-001` is now in review with its evidence in [drift-report.md](drift-report.md). The next database work is the canonical session decision (`DATA-003`), followed by migration execution/recreation (`DATA-002`); the Clerk frontend cutover remains a separate workstream.
 
 ## Planned layout
 

@@ -42,6 +42,7 @@ This directory is the canonical operating manual for AI developer agents working
 - [Frontend README](../frontend/README.md) — Angular starter text; use [operations.md](operations.md) for verified commands.
 - [Backend docs index](../backend/docs/index.md)
 - [Database operations notes](../database/operations.md)
+- [Database drift report](../database/drift-report.md)
 - [Backend style guide](../backend/docs/style-guide.md)
 - [Backend roadmap: why](../backend/docs/roadmap/1-why.md)
 - [Backend roadmap: planification](../backend/docs/roadmap/2-planification.md)

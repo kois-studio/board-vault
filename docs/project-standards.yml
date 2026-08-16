@@ -390,14 +390,14 @@ compliance:
 
     - id: DATA-001
       status: partial
-      evidence: database/schema/schema.sql is the current Turso export; code still references absent MeetAttendee/MeetGame and does not persist the application title in the deployed Game table
+      evidence: database/schema/schema.sql is the current Turso export and database/drift-report.md records the repository reconciliation; stale MeetAttendee/MeetGame SQL, a frontend meetAttendees route without a current backend controller, the indirect Game.title/GameTranslation contract, and pending token-expiry columns remain unresolved
       priority: critical
-      next_action: Publish and resolve the repository code/schema drift report against the owner-confirmed baseline.
+      next_action: Resolve the canonical session model and stale meeting paths, apply and verify migration 0002, then establish repeatable migration execution.
     - id: DATA-002
       status: partial
       evidence: database/migrations/0001-add-clerk-user-id.sql is applied to live Turso and tested against a restored backup copy; the Clerk bridge/provisioning code is covered locally, but no migration runner or empty-state recreation exists
       priority: critical
-    next_action: Add migration execution/recreation tooling and complete the production Clerk deployment verification after identity-link and recovery review.
+      next_action: Add migration execution/recreation tooling and complete the production Clerk deployment verification after identity-link and recovery review.
     - id: DATA-003
       status: partial
       evidence: SQLite tables and application checks exist, but constraints/transaction guarantees are not verified against deployment
@@ -642,5 +642,5 @@ deferred_work:
     next_action: Execute EQ-001 before adding CI.
   - id: DATA-MIGRATION-001
     status: deferred
-    reason: Live deployment operations and a migration runner remain unresolved; the Clerk identity migration is applied, but production instance configuration, deployment verification, and recovery evidence remain gated.
-    next_action: Execute DATA-001, then add migration execution/recreation tooling and complete Clerk cutover with production origin and recovery evidence.
+    reason: Live deployment operations and a migration runner remain unresolved; the Clerk identity migration and production configuration/deployment verification are complete, while recovery evidence, migration 0002, and legacy-auth removal remain gated.
+    next_action: Resolve DATA-003 session semantics, add migration execution/recreation tooling, apply and verify migration 0002, and complete Clerk recovery evidence before removing legacy auth.

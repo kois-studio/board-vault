@@ -26,11 +26,11 @@ Statuses are `Planned`, `Blocked`, or `Deferred` until evidence changes them. Pr
 
 ### READINESS-003 [Critical] DATA-001/DATA-002 — Reconcile schema and establish migrations
 
-- **Status:** Planned
+- **Status:** In progress
 - **Affected area:** Turso deployment, `database/`, `backend/src/modules/common/database/`
-- **Evidence:** The current Turso export is recorded in `database/schema/schema.sql`; repository code still references absent `MeetAttendee`/`MeetGame` tables, and the deployed `Game` table has no `title` column even though the application passes one. No migration runner exists.
+- **Evidence:** The DATA-001 reconciliation is recorded in [`database/drift-report.md`](../database/drift-report.md). Confirmed gaps include stale backend `MeetAttendee`/`MeetGame` SQL, a frontend `meetAttendees` route with no current backend controller, the indirect `Game.title`/`GameTranslation` contract, and backend references to the pending token-expiry columns. No migration runner exists.
 - **Risk:** Destructive drift, unrepeatable environments, and unsafe session-domain changes.
-- **Next action:** Fix or retire stale SQL paths, record the drift report, then add numbered migrations from the confirmed baseline.
+- **Next action:** Resolve the canonical session model and historical `MeetAccountGame` meaning, then retire or replace stale meeting paths. Apply and verify migration 0002 before claiming the token-expiry path is live, then continue with numbered migrations from the confirmed baseline.
 - **Dependencies:** Product decision on whether legacy meeting paths are retired or migrated; no deployment access required for the initial reconciliation.
 
 ### READINESS-013 [Critical] AUTH-001/AUTH-002 — Roll out and complete Clerk identity migration

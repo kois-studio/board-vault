@@ -56,6 +56,9 @@ The backend source also has corresponding service/type/schema areas. The current
 
 The exported deployed schema does not match every current SQL path or historical schema document:
 
+The complete reconciliation, including evidence, compliance states, priorities,
+and unresolved decisions, is maintained in the [database drift report](../database/drift-report.md).
+
 - `database/schema/schema.sql` defines `Meet` and `MeetAccountGame`, but does not define `MeetAttendee` or `MeetGame`.
 - `backend/src/modules/common/database/database.service.ts` still queries `MeetAttendee` and `MeetGame` in meet details and group-meeting setup.
 - The deployed `Game` table has no `title` column. The application passes a title to `createGame()`, but the current insert path does not persist it in `Game`; titles are handled separately through translations in later code.
@@ -75,7 +78,7 @@ These are actionable code/schema drift findings. They must be resolved or explic
 
 ## Required follow-up
 
-1. Execute `DATA-001`: publish a code/schema drift report against the owner-confirmed schema baseline.
+1. Resolve the findings in the [DATA-001 drift report](../database/drift-report.md), beginning with the canonical session model and stale meeting paths.
 2. Execute `DATA-002`: create numbered migrations and prove empty-state recreation.
 3. Execute `DATA-003`: choose canonical session schema and distinguish planned from played state.
 4. Execute `DATA-004`: define transactions and partial-failure behavior for multi-record mutations.

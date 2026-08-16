@@ -12,7 +12,7 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 | SEC-002 | REVIEW | Security | Audit and enforce object-level authorization across user, group, invitation, notification, meeting, and collection APIs. | SEC-001 recommended |
 | SEC-003 | REVIEW | Security | Derive admin reviewer identity from JWT and add admin authorization tests. | SEC-002 |
 | SEC-004 | REVIEW | Security | Enable strict validation, rate limits, safe CORS, token expiry, generic reset responses, and safe logging. | None |
-| DATA-001 | TODO | Data model | Reconcile repository SQL and services against the owner-confirmed deployed schema and produce a code/schema drift report. | None |
+| DATA-001 | REVIEW | Data model | Reconcile repository SQL and services against the owner-confirmed deployed schema and produce a code/schema drift report. | None |
 | DATA-002 | TODO | Data model | Add numbered migrations and make the schema reproducible from empty state. | DATA-001 |
 | DATA-003 | TODO | Data model | Choose and implement the canonical session schema, including attendance and planned/played games. | DATA-001 |
 | DATA-004 | TODO | Data model | Add transaction boundaries for group, session, proposal, and collection mutations. | DATA-002, DATA-003 |
@@ -54,6 +54,22 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 | EXP-005 | TODO | Product | Evaluate mobile, offline, public API, and localization work. | Stable API and proven core loop |
 
 ## Claiming protocol
+
+Most recent claim:
+
+```text
+Task: DATA-001
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: reconcile current repository SQL and frontend meeting paths against the owner-confirmed Turso schema
+```
+
+Review: DATA-001
+
+Changed: Added `database/drift-report.md` with evidence-backed states, priorities, explicit unknowns, and an ordered follow-up. Confirmed the deployed `MeetAccountGame` baseline, stale `MeetAttendee`/`MeetGame` SQL and frontend route, the indirect `Game.title`/`GameTranslation` contract, incomplete meeting creation behavior, and pending token-expiry migration 0002. Linked the report from the database workspace and current-state documentation.
+Verified: Read-only source/schema audit on 2026-08-16; schema parses in SQLite; no live database or runtime behavior was changed.
+Known follow-ups: DATA-003 must decide the canonical session model and historical `MeetAccountGame` meaning before stale meeting paths are retired or replaced. DATA-002 must establish repeatable migration execution; migration 0002 still requires reviewed application and schema re-export.
 
 Most recent claim:
 
