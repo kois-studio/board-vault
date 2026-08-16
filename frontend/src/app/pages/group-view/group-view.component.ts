@@ -86,7 +86,7 @@ export class GroupViewComponent {
         effect(() => {
             const currentUser = this.currentUser$()
             const groupId = Number.parseInt(this.route.snapshot.paramMap.get('groupId') || '')
-            const group = this.userGroups$().find(group => group.id === groupId)
+            const group = this.userGroups$().find((group) => group.id === groupId)
 
             if (Number.isNaN(groupId) || !currentUser || !group) {
                 return
@@ -99,7 +99,7 @@ export class GroupViewComponent {
             // default selection whenever this component displays another group.
             if (this.activeSelectionGroupId !== groupId) {
                 this.activeSelectionGroupId = groupId
-                this.selectedMembers$.set(group.members.map(member => member.id))
+                this.selectedMembers$.set(group.members.map((member) => member.id))
             }
 
             // get the group history
@@ -126,14 +126,14 @@ export class GroupViewComponent {
         this.isLoading.set(true)
         this.groupHistoryError.set(false)
         this.api.getGroupMeetings(userId, groupId).subscribe({
-            next: groupMeetings => {
+            next: (groupMeetings) => {
                 this.groupHistory$.set(groupMeetings)
                 this.dataService.groupHistoryByGroupId.set({
                     ...this.dataService.groupHistoryByGroupId(),
                     [groupId]: groupMeetings,
                 })
             },
-            error: error => {
+            error: (error) => {
                 console.error(error)
                 this.isLoading.set(false)
                 this.groupHistoryError.set(true)
@@ -158,8 +158,8 @@ export class GroupViewComponent {
 
     parseAttendeeIds(memberIds: Array<UserType['id']>): Array<PublicUserType> {
         const result = memberIds
-            .map(memberId => this.groupData$()?.members.find(member => member.id === memberId) || null)
-            .filter(member => member !== null)
+            .map((memberId) => this.groupData$()?.members.find((member) => member.id === memberId) || null)
+            .filter((member) => member !== null)
 
         // If > 5 members, we will show [1,2,3,4, +n] in the HTML, so we only return the first 4
         //      if 6 -> [1,2,3,4, +2]
@@ -172,7 +172,9 @@ export class GroupViewComponent {
     }
 
     parseGameIds(gameIds: Array<GameType['id']>): Array<GameType> {
-        return gameIds.map(gameId => this.totalUniqueGamesComputed().find(game => game.id === gameId)).filter(game => game !== undefined)
+        return gameIds
+            .map((gameId) => this.totalUniqueGamesComputed().find((game) => game.id === gameId))
+            .filter((game) => game !== undefined)
     }
 
     // #region Button Clicks
@@ -182,7 +184,7 @@ export class GroupViewComponent {
         if (!groupData) return
 
         const allMembersSelected = this.selectedMembers$().length === groupData.members.length
-        this.selectedMembers$.set(allMembersSelected ? [] : groupData.members.map(member => member.id))
+        this.selectedMembers$.set(allMembersSelected ? [] : groupData.members.map((member) => member.id))
     }
 
     onClickMeeting(meetId: number): void {
@@ -192,7 +194,7 @@ export class GroupViewComponent {
     onClickMember(memberId: number) {
         const currentSelected = this.selectedMembers$()
         if (currentSelected.includes(memberId)) {
-            this.selectedMembers$.set(currentSelected.filter(id => id !== memberId))
+            this.selectedMembers$.set(currentSelected.filter((id) => id !== memberId))
         } else {
             this.selectedMembers$.set([...currentSelected, memberId])
         }

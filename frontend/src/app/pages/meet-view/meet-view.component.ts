@@ -3,7 +3,14 @@ import { Component, effect, signal } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../api/api'
-import type { GameCompleteType, GameType, GroupWithMembersAndGames, MeetType, MeetWithAttendeesAndGamesType, UserType } from '../../api/api.types'
+import type {
+    GameCompleteType,
+    GameType,
+    GroupWithMembersAndGames,
+    MeetType,
+    MeetWithAttendeesAndGamesType,
+    UserType,
+} from '../../api/api.types'
 import { CardAccountComponent } from '../../components/card-account/card-account.component'
 import { ToastService } from '../../components/toast/toast.service'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
@@ -206,14 +213,18 @@ export class MeetViewComponent {
 
     get plannedGames(): Array<GameCompleteType & { active: boolean }> {
         if (!this.meetData) return []
-        const gamesById = new Map(this.totalGames.map(game => [game.id, game]))
-        return this.meetData.plannedGames.map(gameId => gamesById.get(gameId)).filter((game): game is GameCompleteType & { active: boolean } => game !== undefined)
+        const gamesById = new Map(this.totalGames.map((game) => [game.id, game]))
+        return this.meetData.plannedGames
+            .map((gameId) => gamesById.get(gameId))
+            .filter((game): game is GameCompleteType & { active: boolean } => game !== undefined)
     }
 
     get skippedGames(): Array<GameCompleteType & { active: boolean }> {
         if (!this.meetData) return []
-        const gamesById = new Map(this.totalGames.map(game => [game.id, game]))
-        return this.meetData.skippedGames.map(gameId => gamesById.get(gameId)).filter((game): game is GameCompleteType & { active: boolean } => game !== undefined)
+        const gamesById = new Map(this.totalGames.map((game) => [game.id, game]))
+        return this.meetData.skippedGames
+            .map((gameId) => gamesById.get(gameId))
+            .filter((game): game is GameCompleteType & { active: boolean } => game !== undefined)
     }
 
     // #region Button Clicks

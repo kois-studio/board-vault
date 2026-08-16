@@ -31,7 +31,7 @@ export class RecommendationsPageComponent {
     public readonly isLoading = signal(false)
     public readonly errorMessage = signal<string | null>(null)
     public readonly feedbackState = signal<Record<number, 'saving' | 'saved'>>({})
-    public readonly selectedGroup = computed(() => this.userGroups().find(group => group.id === this.selectedGroupId()) ?? null)
+    public readonly selectedGroup = computed(() => this.userGroups().find((group) => group.id === this.selectedGroupId()) ?? null)
 
     constructor() {
         effect(() => {
@@ -43,15 +43,15 @@ export class RecommendationsPageComponent {
     }
 
     public selectGroup(groupId: number): void {
-        const group = this.userGroups().find(candidate => candidate.id === groupId)
+        const group = this.userGroups().find((candidate) => candidate.id === groupId)
         this.selectedGroupId.set(group?.id ?? null)
-        this.selectedAttendeeIds.set(group?.members.map(member => member.id) ?? [])
+        this.selectedAttendeeIds.set(group?.members.map((member) => member.id) ?? [])
         this.recommendations.set(null)
         this.errorMessage.set(null)
     }
 
     public toggleAttendee(accountId: number): void {
-        this.selectedAttendeeIds.update(ids => ids.includes(accountId) ? ids.filter(id => id !== accountId) : [...ids, accountId])
+        this.selectedAttendeeIds.update((ids) => (ids.includes(accountId) ? ids.filter((id) => id !== accountId) : [...ids, accountId]))
         this.recommendations.set(null)
     }
 
@@ -75,11 +75,15 @@ export class RecommendationsPageComponent {
         this.errorMessage.set(null)
         try {
             const availableMinutes = this.availableMinutes()
-            this.recommendations.set(await firstValueFrom(this.api.getRecommendations({
-                groupId,
-                attendeeIds,
-                ...(availableMinutes ? { availableMinutes } : {}),
-            })))
+            this.recommendations.set(
+                await firstValueFrom(
+                    this.api.getRecommendations({
+                        groupId,
+                        attendeeIds,
+                        ...(availableMinutes ? { availableMinutes } : {}),
+                    }),
+                ),
+            )
         } catch {
             this.recommendations.set(null)
             this.errorMessage.set('Recommendations could not be loaded. Please try again.')
@@ -95,17 +99,19 @@ export class RecommendationsPageComponent {
             return
         }
 
-        this.feedbackState.update(state => ({ ...state, [gameId]: 'saving' }))
+        this.feedbackState.update((state) => ({ ...state, [gameId]: 'saving' }))
         try {
-            await firstValueFrom(this.api.createRecommendationFeedback({
-                groupId,
-                gameId,
-                attendeeIds,
-                feedback: 'not_for_us',
-            }))
-            this.feedbackState.update(state => ({ ...state, [gameId]: 'saved' }))
+            await firstValueFrom(
+                this.api.createRecommendationFeedback({
+                    groupId,
+                    gameId,
+                    attendeeIds,
+                    feedback: 'not_for_us',
+                }),
+            )
+            this.feedbackState.update((state) => ({ ...state, [gameId]: 'saved' }))
         } catch {
-            this.feedbackState.update(state => {
+            this.feedbackState.update((state) => {
                 const nextState = { ...state }
                 delete nextState[gameId]
                 return nextState
@@ -115,7 +121,7 @@ export class RecommendationsPageComponent {
     }
 
     public getMemberName(group: GroupWithMembersAndGames, accountId: number): string {
-        const member = group.members.find(candidate => candidate.id === accountId)
+        const member = group.members.find((candidate) => candidate.id === accountId)
         return member?.displayName || member?.username || 'Member'
     }
 }

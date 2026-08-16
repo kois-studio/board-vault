@@ -63,13 +63,15 @@ export class MeetNewComponent {
                 const requestedAttendees = (this.route.snapshot.queryParamMap.get('attendeeIds') ?? '')
                     .split(',')
                     .map(Number)
-                    .filter(accountId => groupData.members.some(member => member.id === accountId))
+                    .filter((accountId) => groupData.members.some((member) => member.id === accountId))
                 const requestedGameId = Number(this.route.snapshot.queryParamMap.get('plannedGameId'))
 
-                this.selectedAttendeeIds = requestedAttendees.length > 0 ? [...new Set(requestedAttendees)] : groupData.members.map(member => member.id)
-                this.selectedPlannedGameIds = Number.isInteger(requestedGameId) && this.availableGames.some(game => game.id === requestedGameId)
-                    ? [requestedGameId]
-                    : []
+                this.selectedAttendeeIds =
+                    requestedAttendees.length > 0 ? [...new Set(requestedAttendees)] : groupData.members.map((member) => member.id)
+                this.selectedPlannedGameIds =
+                    Number.isInteger(requestedGameId) && this.availableGames.some((game) => game.id === requestedGameId)
+                        ? [requestedGameId]
+                        : []
                 this.didInitializeSelections = true
             }
         })
@@ -92,13 +94,13 @@ export class MeetNewComponent {
 
     togglePlannedGame(gameId: number): void {
         this.selectedPlannedGameIds = this.selectedPlannedGameIds.includes(gameId)
-            ? this.selectedPlannedGameIds.filter(id => id !== gameId)
+            ? this.selectedPlannedGameIds.filter((id) => id !== gameId)
             : [...this.selectedPlannedGameIds, gameId]
     }
 
     toggleAttendee(accountId: number): void {
         this.selectedAttendeeIds = this.selectedAttendeeIds.includes(accountId)
-            ? this.selectedAttendeeIds.filter(id => id !== accountId)
+            ? this.selectedAttendeeIds.filter((id) => id !== accountId)
             : [...this.selectedAttendeeIds, accountId]
     }
 
