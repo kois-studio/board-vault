@@ -138,6 +138,22 @@ Known follow-ups: Feed accepted feedback into future scoring only after enough r
 Most recent claim:
 
 ```text
+Task: TRUTH-001
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: synchronize public landing and play copy with the implemented recommendation/session slices
+```
+
+Review: TRUTH-001
+
+Changed: Public landing copy now describes collection, groups, session planning, and first-release recommendations as available, while preserving the early-product and richer-scoring/analytics caveats. Footer launch-policy copy is explicit rather than a dead placeholder claim.
+Verified: Pending frontend build and public Playwright verification.
+Known follow-ups: Complete the broader public content, responsive, accessibility, and metadata review before launch.
+
+Most recent claim:
+
+```text
 Task: DATA-003
 Owner: Codex
 Claimed: 2026-08-16

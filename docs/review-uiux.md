@@ -70,7 +70,7 @@ For each area, review:
 
 | Area | Routes/components | Current status | Known review scope / next action |
 |---|---|---|---|
-| Play landing | `/play`, `play-page` | Partially reviewed | Upcoming count/date and completed-history count now come from loaded data; recommendations are explicitly coming soon and active links target existing routes. Review loading/error/empty states, responsive layout, accessibility, and richer session summaries. |
+| Play landing | `/play`, `play-page` | Partially reviewed | Upcoming count/date and completed-history count come from loaded data; recommendations link to the implemented first-release flow while analytics remain deferred. Review loading/error/empty states, responsive layout, accessibility, and richer session summaries. |
 | Schedule session | `/play/upcoming-sessions`, schedule form | Partially reviewed | Scheduled/active sessions and the scheduling entry point are backed by persisted lifecycle data; review status cards, date/timezone validation, planned games, loading/error states, and mobile layout. |
 | Log session wizard | `/play/log-session`, `log-session-wizard` | Partially reviewed | The wizard persists completed sessions through the canonical API; review validation, failure recovery, success navigation, loading states, and authenticated browser coverage. |
 | Meeting creation | `/groups/:groupId/meets/new`, `meet-new` | Partially reviewed | The selected date/timezone, attendees, and optional planned games now reach the canonical scheduled-session API; review group selection, member-list empty/loading states, date validation, pending attendees, and failure recovery. |

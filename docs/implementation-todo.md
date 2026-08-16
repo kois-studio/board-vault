@@ -24,7 +24,7 @@ The product is not launch-ready. The main unfinished value loop is:
 group → attendees → recommendation → scheduled session → games actually played → useful history
 ```
 
-Completed-session logging now has a guarded, validated backend write and an atomic Turso transaction from the frontend wizard. Recommendations and analytics are not implemented, while the dashboard and play landing now avoid presenting fabricated metrics or links to unavailable feature routes.
+Completed-session logging now has a guarded, validated backend write and an atomic Turso transaction from the frontend wizard. The first recommendation and feedback slices are implemented, while analytics and richer scoring remain unfinished; the dashboard and play landing avoid presenting fabricated metrics or links to unavailable feature routes.
 
 ## P0 — complete the product’s core loop
 
