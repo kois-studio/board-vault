@@ -117,6 +117,28 @@ describe('PlayService history', () => {
         )
     })
 
+    it('explains which recommendation constraint produced an empty result', async () => {
+        const database = {
+            getGroupById: jest.fn().mockResolvedValue({ rows: [[7]] }),
+            getGroupMemberIds: jest.fn().mockResolvedValue([1, 2]),
+            getRecommendationCandidates: jest.fn().mockResolvedValue({ rows: [] }),
+            getRecommendationCandidateCounts: jest.fn().mockResolvedValue({ rows: [[4, 2, 0]] }),
+        }
+        const service = new PlayService(
+            {} as UsersService,
+            database as unknown as DatabaseService,
+            {} as GamesService,
+            {} as MeetsService,
+            {} as MeetAccountGamesService,
+            {} as GameTranslationService,
+        )
+
+        await expect(service.getRecommendations(1, { groupId: 7, attendeeIds: [1, 2], availableMinutes: 60 })).resolves.toMatchObject({
+            noResultReason: 'No games for 2 players fit within 60 minutes.',
+        })
+        expect(database.getRecommendationCandidateCounts).toHaveBeenCalledWith([1, 2], 2, 60)
+    })
+
     it('persists recommendation feedback only for selected-attendee-owned games', async () => {
         const database = {
             getGroupById: jest.fn().mockResolvedValue({ rows: [[7]] }),
