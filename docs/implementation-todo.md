@@ -125,6 +125,7 @@ Relevant surfaces: [`collection-page`](../frontend/src/app/pages/collection-page
 - Keep collection mutations synchronized with group availability; refreshed ownership data now updates the current member inside loaded group records as well as the personal collection signal.
 - Complete the activation journey with a success state, onboarding preferences, and authenticated browser coverage.
 - Make search, duplicate-add, loading, empty, error, and success states coherent; the primary collection and groups pages now distinguish request failures from empty data and expose retry actions, and game-detail mutation controls recover after failed requests.
+- Review and wishlist pages now distinguish failed loads from empty collections and offer retry actions; derived collection activity also uses a finalized loading state on failure.
 - Browse search now distinguishes catalog load errors from valid no-results responses and offers retry; duplicate/add feedback and broader rendered-state review remain.
 - Resolve game title/translation behavior across cards, search, proposals, history, and game detail.
 - Ensure purchase metadata, wishlist priority, reviews, and tags have consistent labels and validation.

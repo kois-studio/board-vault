@@ -22,6 +22,7 @@ export class LoadingService {
         [LOADING_KEYS.USER_GAMES_HISTORY]: true,
         [LOADING_KEYS.USER_STATS]: true,
         [LOADING_KEYS.USER_WISHLIST]: true,
+        [LOADING_KEYS.USER_COLLECTION_ACTIVITY]: true,
     })
 
     // --------------------------------------------------------------------------

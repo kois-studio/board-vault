@@ -33,6 +33,7 @@ export class ReviewsPageComponent {
     public readonly currentUser$ = this.dataService.currentUser
     public readonly userGroups$ = this.dataService.userGroups
     public readonly userReviews$ = this.dataService.userReviews
+    public readonly reviewsError = this.dataService.userReviewsError
     // loadingService
     public readonly isLoadingReviews = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_REVIEWS])
 
@@ -90,5 +91,9 @@ export class ReviewsPageComponent {
         if (accountId) {
             this.dataService.saveGameReview(accountId, gameId, reviewValue)
         }
+    }
+
+    public retryReviews(): void {
+        this.dataService.refreshGameReviews()
     }
 }

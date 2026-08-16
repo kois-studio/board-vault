@@ -12,6 +12,12 @@
             <app-skeleton-review-game />
             <app-skeleton-review-game />
         </section>
+    } @else if (reviewsError()) {
+        <div class="text-center text-secondary" role="alert">
+            <p>Reviews could not be loaded.</p>
+            <p class="mt-2 text-sm">Check your connection and try again.</p>
+            <app-button class="mt-4" icon="arrow-repeat" (click)="retryReviews()">Retry</app-button>
+        </div>
     } @else if (userReviews$().length === 0) {
         <!-- no data -->
         <div class="text-center text-secondary">
