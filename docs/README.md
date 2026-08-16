@@ -18,6 +18,8 @@ This directory is the canonical operating manual for AI developer agents working
 - [Standards contract](project-standards.yml)
 - [Effective local rules](standards.md)
 - [Readiness TODOs](TODO.md)
+- [Implementation TODO inventory](implementation-todo.md)
+- [Frontend UI/UX review register](review-uiux.md)
 - [ADR index](adr/README.md)
 - [ADR 0001 — Group-first product context](adr/0001-group-first-product-context.md)
 - [ADR 0002 — Deterministic recommendations](adr/0002-deterministic-explainable-recommendations.md)
