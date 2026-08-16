@@ -20,6 +20,10 @@ export class SubmissionsPageComponent {
     public readonly currentUser$ = this.dataService.currentUser
     public readonly userProposals$ = this.dataService.userProposals
     public readonly userProposalStats$ = this.dataService.userProposalStats
+    public readonly proposalsLoading = this.dataService.userProposalsLoading
+    public readonly proposalsError = this.dataService.userProposalsError
+    public readonly proposalStatsLoading = this.dataService.userProposalStatsLoading
+    public readonly proposalStatsError = this.dataService.userProposalStatsError
 
     // --------------------------------------------------------------------------
     //        Component props
@@ -37,9 +41,14 @@ export class SubmissionsPageComponent {
         // Refresh proposals data
         const currentUser = this.currentUser$()
         if (currentUser) {
-            this.dataService['_getUserProposals'](currentUser.id)
-            this.dataService['_getUserProposalStats'](currentUser.id)
+            this.dataService.refreshUserProposals()
+            this.dataService.refreshUserProposalStats()
         }
+    }
+
+    public retryProposals(): void {
+        this.dataService.refreshUserProposals()
+        this.dataService.refreshUserProposalStats()
     }
 
     public getStatusBadgeClass(status: GameProposalType['status']): string {
