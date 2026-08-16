@@ -66,6 +66,7 @@ export class GroupViewComponent {
     public readonly isLoading = signal(false)
     public readonly groupHistoryError = signal(false)
     public readonly groupHistory$ = signal<Array<HistoryRecordType>>([])
+    private activeSelectionGroupId: number | null = null
 
     // --------------------------------------------------------------------------
     //        Computed
@@ -93,6 +94,13 @@ export class GroupViewComponent {
 
             // set the group data
             this.groupData$.set(group)
+
+            // GroupViewService is shared across routes, so establish a fresh
+            // default selection whenever this component displays another group.
+            if (this.activeSelectionGroupId !== groupId) {
+                this.activeSelectionGroupId = groupId
+                this.selectedMembers$.set(group.members.map(member => member.id))
+            }
 
             // get the group history
             const groupHistoryByGroupId = this.groupHistoryByGroupId$()
