@@ -35,7 +35,6 @@ import { PlayPageComponent } from './pages/play-page/play-page.component'
 import { RecommendationsPageComponent } from './pages/play-page/recommendations-page/recommendations-page.component'
 import { UpcomingSessionsPageComponent } from './pages/play-page/upcoming-sessions-page/upcoming-sessions-page.component'
 import { SettingsAccountComponent } from './pages/settings/account/settings-account.component'
-import { SettingsContactComponent } from './pages/settings/contact/settings-contact.component'
 import { SettingsSecurityComponent } from './pages/settings/security/settings-security.component'
 import { SettingsPageComponent } from './pages/settings/settings.component'
 
@@ -93,7 +92,6 @@ export const routes: Routes = [
                     { path: '', redirectTo: 'account', pathMatch: 'full' },
                     { path: 'account', component: SettingsAccountComponent, canActivate: [AuthOnlyGuard] },
                     { path: 'security', component: SettingsSecurityComponent, canActivate: [AuthOnlyGuard] },
-                    { path: 'contact', component: SettingsContactComponent, canActivate: [AuthOnlyGuard] },
                 ],
             },
         ],
