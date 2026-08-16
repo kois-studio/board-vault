@@ -48,7 +48,7 @@ Important route families include:
 - account and profile: dashboard, settings, notifications, invitations;
 - admin: lazy-loaded `/admin` management surfaces.
 
-The source references `/play/recommendations` and `/play/quick-play` from navigation/UI, but those routes are not declared in `app.routes.ts`. The play dashboard also contains hardcoded/sample content and the log-session wizard has a TODO instead of the creation API call.
+The source backlog still describes `/play/recommendations` and `/play/quick-play`, but those routes are not declared in `app.routes.ts`; current navigation uses an explicit coming-soon recommendation card and existing session routes. The Play dashboard no longer presents fabricated sample content, and the log-session wizard writes through the canonical session API.
 
 ## Main request and data flow
 
