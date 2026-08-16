@@ -1,6 +1,6 @@
 import { Injectable, effect, inject, signal } from '@angular/core'
 import { Router } from '@angular/router'
-import { catchError, concatMap, of, throwError } from 'rxjs'
+import { catchError, concatMap, of, tap, throwError } from 'rxjs'
 import { Api } from '../../api/api'
 import type {
     CollectionActivityWithGameDataType,
@@ -335,12 +335,10 @@ export class DataService {
     // #region group-edit
     public removeMemberFromGroup(groupId: number, memberId: number) {
         const currentUser = this.currentUser()
-        if (!currentUser) return
+        if (!currentUser) return throwError(() => new Error('No authenticated user'))
 
-        // 1.
-        this.api.removeMember(currentUser.id, groupId, memberId).subscribe({
-            next: res => {
-                // 2.
+        return this.api.removeMember(currentUser.id, groupId, memberId).pipe(
+            tap(() => {
                 this.userGroups.update(groups =>
                     groups.map(group => {
                         if (group.id === groupId) {
@@ -349,65 +347,53 @@ export class DataService {
                         return group
                     }),
                 )
-                // 3.
                 this.toastService.success('Member removed from group')
-            },
-            error: () => {
+            }),
+            catchError(error => {
                 this.toastService.error('Error removing member')
-            },
-        })
-        this.toastService.info('Removing group member...')
+                return throwError(() => error)
+            }),
+        )
     }
 
     public removeInvitedFromGroup(invitationId: number) {
-        // 1.
-        this.api.deleteInvitation(invitationId).subscribe({
-            next: res => {
-                // 2.
+        return this.api.deleteInvitation(invitationId).pipe(
+            tap(() => {
                 this.invitationsGroupIndex.update(index => {
                     const groupIds = Object.keys(index).map(Number)
                     for (const groupId of groupIds) {
-                        index[groupId] = index[groupId].filter(invitation => invitation.id !== invitationId)
+                        index[groupId] = (index[groupId] ?? []).filter(invitation => invitation.id !== invitationId)
                     }
                     return index
                 })
-
-                // 3.
                 this.toastService.success('Invitation removed')
-            },
-            error: () => {
+            }),
+            catchError(error => {
                 this.toastService.error('Error removing invitation')
-            },
-        })
+                return throwError(() => error)
+            }),
+        )
     }
 
     public addInvitedToGroup(groupId: number, invitedUsername: string) {
-        // 1.
-        this.api.createInvitation(groupId, invitedUsername).subscribe({
-            next: res => {
-                // 2.
-                this.api.getGroupInvitations(groupId).subscribe({
-                    next: invitations => {
-                        this.invitationsGroupIndex.update(index => ({
-                            ...index,
-                            [groupId]: invitations,
-                        }))
-
-                        // 3.
-                        this.toastService.success('Invitation sent')
-                    },
-                    error: () => {
-                        this.toastService.error('Error updating invitations')
-                    },
-                })
-            },
-            error: error => {
+        return this.api.createInvitation(groupId, invitedUsername).pipe(
+            concatMap(() => this.api.getGroupInvitations(groupId)),
+            tap(invitations => {
+                this.invitationsGroupIndex.update(index => ({
+                    ...index,
+                    [groupId]: invitations,
+                }))
+                this.toastService.success('Invitation sent')
+            }),
+            catchError(error => {
                 if (error.status === 404) {
-                    return this.toastService.error('User not found')
+                    this.toastService.error('User not found')
+                } else {
+                    this.toastService.error('Error sending invitation')
                 }
-                this.toastService.error('Error sending invitation')
-            },
-        })
+                return throwError(() => error)
+            }),
+        )
     }
 
     // #region games
