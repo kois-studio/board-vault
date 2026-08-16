@@ -32,7 +32,7 @@ export type PublicUserType = Pick<UserType, 'id' | 'username' | 'displayName' | 
 
 export type GameType = {
     id: number
-    title: string
+    title?: string
     imageUrl: string
     gameAvgDuration: number
     minPlayers: number
