@@ -13,6 +13,12 @@
             @for (item of [1,2]; track $index) {
                 <app-skeleton-card-group />
             }
+        } @else if (userGroupsError()) {
+            <div class="text-center col-span-2 rounded-lg border border-amber-200 bg-amber-50 p-8 dark:border-amber-900/50 dark:bg-amber-950/30" role="alert">
+                <p class="text-lg font-medium">Your groups could not be loaded.</p>
+                <p class="text-secondary mt-2">Try again without losing your saved groups.</p>
+                <button type="button" class="app-btn-primary inline-block mt-4" (click)="retryGroups()">Retry</button>
+            </div>
         } @else if (userGroups$().length === 0) {
             <div class="text-center col-span-2 rounded-lg border border-dashed border-zinc-300 dark:border-zinc-700 p-8">
                 <p class="text-lg font-medium">You don't have any groups yet.</p>
