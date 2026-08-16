@@ -85,7 +85,7 @@ with a preserved account.
 
 ## Deployment shape
 
-`backend/vercel.json` configures a Vercel Node build from `src/main.ts` and routes HTTP methods to it. `frontend/src/environments/environment.ts` targets `https://backend.board-vault.com`. The repository does not contain Vercel project metadata, frontend hosting configuration, CI deployment workflow, health probes, migration checks, backup scheduling, or rollback instructions.
+`backend/vercel.json` configures a Vercel Node build from `src/main.ts` and routes HTTP methods to it. `frontend/src/environments/environment.ts` targets `https://backend.board-vault.com`. The repository contains `.github/workflows/ci.yml` for locked installs, backend tests/build, frontend build/public browser checks, and disposable database verification. It does not deploy, run authenticated production checks, schedule backups, or provide rollback instructions.
 
 External smoke checks on 2026-08-15 first observed the old backend deployment
 (HTTP 404 for `/auth/clerk/status`), then observed the new fail-closed backend

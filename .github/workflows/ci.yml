@@ -1,0 +1,80 @@
+name: Board Vault validation
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+
+permissions:
+    contents: read
+
+concurrency:
+    group: validation-${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    backend:
+        name: Backend tests and build
+        runs-on: ubuntu-24.04
+        timeout-minutes: 15
+        defaults:
+            run:
+                working-directory: backend
+        steps:
+            - name: Check out repository
+              uses: actions/checkout@v4
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version-file: .nvmrc
+                  cache: npm
+                  cache-dependency-path: backend/package-lock.json
+            - name: Install dependencies
+              run: npm ci --ignore-scripts
+            - name: Run unit tests
+              run: npm test -- --runInBand
+            - name: Build backend
+              run: npm run build
+
+    frontend:
+        name: Frontend build and public E2E
+        runs-on: ubuntu-24.04
+        timeout-minutes: 20
+        defaults:
+            run:
+                working-directory: frontend
+        steps:
+            - name: Check out repository
+              uses: actions/checkout@v4
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version-file: .nvmrc
+                  cache: npm
+                  cache-dependency-path: frontend/package-lock.json
+            - name: Install dependencies
+              run: npm ci --ignore-scripts
+            - name: Build frontend
+              run: npm run build
+            - name: Install Playwright browser
+              run: npx playwright install --with-deps chromium
+            - name: Run browser checks
+              run: npm run e2e
+
+    database:
+        name: Database snapshot verification
+        runs-on: ubuntu-24.04
+        timeout-minutes: 10
+        steps:
+            - name: Check out repository
+              uses: actions/checkout@v4
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version-file: .nvmrc
+                  cache: npm
+                  cache-dependency-path: backend/package-lock.json
+            - name: Install database client dependency
+              run: npm ci --ignore-scripts --prefix backend
+            - name: Verify empty-state schema and migration baseline
+              run: node database/scripts/verify-empty-state.mjs
