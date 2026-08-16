@@ -124,6 +124,10 @@ CREATE TABLE Meet (
     createdBy INTEGER NOT NULL,
     meetDate DATETIME DEFAULT CURRENT_TIMESTAMP,
     isConfirmed BOOLEAN DEFAULT FALSE,
+    status TEXT NOT NULL DEFAULT 'completed'
+        CHECK (status IN ('scheduled', 'active', 'completed', 'cancelled')),
+    timezone TEXT NOT NULL DEFAULT 'UTC',
+    updatedAt DATETIME,
     FOREIGN KEY (groupId) REFERENCES UserGroup(id) ON DELETE CASCADE,
     FOREIGN KEY (createdBy) REFERENCES Account(id) ON DELETE CASCADE
 );
@@ -159,6 +163,9 @@ CREATE TABLE MeetGame (
 
 CREATE INDEX idx_meetgame_gameId
     ON MeetGame(gameId);
+
+CREATE INDEX idx_meet_status_date
+    ON Meet(status, meetDate);
 
 CREATE TABLE MeetAccountGame (
     meetId INTEGER NOT NULL,

@@ -15,6 +15,15 @@ import type { CreateNotificationBody, UpdateNotificationBody } from '../../../co
 import type { CreateUserBody, UpdateUserBody, UpdateUserRecord } from '../../../common/types/user.type'
 import type { MeetAccountGameQueryOptions } from '../../../modules/core/meet-account-games/meet-account-games.types'
 
+type CompletedSessionInput = {
+    groupId: number
+    createdBy: number
+    sessionDate: string
+    timezone: string
+    attendeeIds: Array<number>
+    games: Array<{ gameId: number; participantIds: Array<number> }>
+}
+
 @Injectable()
 export class DatabaseService implements OnModuleInit {
     private readonly LOGGER: Logger = new Logger(this.constructor.name)
@@ -444,6 +453,29 @@ export class DatabaseService implements OnModuleInit {
             sql: 'SELECT * FROM GroupMembership WHERE groupId = ?',
             args: [groupId],
         })
+    }
+
+    async getGroupMemberIds(groupId: number): Promise<Array<number>> {
+        const resultSet = await this._tursoExecute({
+            sql: 'SELECT accountId FROM GroupMembership WHERE groupId = ?',
+            args: [groupId],
+        })
+
+        return resultSet.rows.map(row => Number(row[0]))
+    }
+
+    async getGroupAvailableGameIds(groupId: number): Promise<Array<number>> {
+        const resultSet = await this._tursoExecute({
+            sql: `
+                SELECT DISTINCT og.gameId
+                FROM OwnedGame og
+                INNER JOIN GroupMembership gm ON gm.accountId = og.accountId
+                WHERE gm.groupId = ?
+            `,
+            args: [groupId],
+        })
+
+        return resultSet.rows.map(row => Number(row[0]))
     }
 
     async createGroupMembership(groupDto: CreateGroupMembershipBody) {
@@ -1044,7 +1076,9 @@ export class DatabaseService implements OnModuleInit {
                     SELECT json_group_array(mg.gameId)
                     FROM MeetGame mg
                     WHERE mg.meetId = m.id AND mg.gameStatus = 'played'
-                ) AS playedGames
+                ) AS playedGames,
+                m.status,
+                m.timezone
             FROM Meet m
             INNER JOIN GroupMembership gm ON gm.groupId = m.groupId
             WHERE m.id = ? AND gm.accountId = ?
@@ -1058,6 +1092,62 @@ export class DatabaseService implements OnModuleInit {
             sql: 'INSERT INTO Meet (groupId, createdBy) VALUES (?, ?)',
             args: [groupId, createdBy],
         })
+    }
+
+    async createCompletedSession(input: CompletedSessionInput) {
+        const transaction = await this.tursoClient.transaction('write')
+
+        try {
+            const meetResult = await transaction.execute({
+                sql: `
+                INSERT INTO Meet (groupId, createdBy, meetDate, isConfirmed, status, timezone, updatedAt)
+                    VALUES (?, ?, ?, TRUE, 'completed', ?, CURRENT_TIMESTAMP)
+                `,
+                args: [input.groupId, input.createdBy, input.sessionDate, input.timezone],
+            })
+            const meetId = Number(meetResult.lastInsertRowid)
+            const statements: Array<InStatement> = []
+
+            for (const accountId of input.attendeeIds) {
+                statements.push({
+                    sql: `
+                        INSERT INTO MeetAttendee (meetId, accountId, rsvpStatus, attendanceStatus)
+                        VALUES (?, ?, 'accepted', 'attended')
+                    `,
+                    args: [meetId, accountId],
+                })
+            }
+
+            for (const game of input.games) {
+                statements.push({
+                    sql: `
+                        INSERT INTO MeetGame (meetId, gameId, gameStatus)
+                        VALUES (?, ?, 'played')
+                    `,
+                    args: [meetId, game.gameId],
+                })
+
+                for (const accountId of game.participantIds) {
+                    statements.push({
+                        sql: `
+                            INSERT OR IGNORE INTO MeetAccountGame (meetId, accountId, gameId)
+                            VALUES (?, ?, ?)
+                        `,
+                        args: [meetId, accountId, game.gameId],
+                    })
+                }
+            }
+
+            await transaction.batch(statements)
+            await transaction.commit()
+
+            return { lastInsertRowid: meetId }
+        } catch (error) {
+            await transaction.rollback()
+            throw error
+        } finally {
+            transaction.close()
+        }
     }
 
     addGroupMembersToMeeting(meetId: number, groupId: number) {

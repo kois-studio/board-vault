@@ -20,6 +20,8 @@ export class MeetsService {
             createdBy: Number(row[2]),
             meetDate: String(row[3]),
             isConfirmed: Boolean(row[4]),
+            status: String(row[5] ?? 'completed') as MeetDto['status'],
+            timezone: String(row[6] ?? 'UTC'),
         }))
 
         const result = meetsSchema.safeParse(meets)
@@ -76,6 +78,8 @@ export class MeetsService {
             isConfirmed: Boolean(row[4]),
             attendees: JSON.parse(String(row[5])) as Array<UserGetDto['id']>,
             playedGames: JSON.parse(String(row[6])) as Array<GameDto['id']>,
+            status: String(row[7] ?? 'completed') as MeetWithAttendeesAndGames['status'],
+            timezone: String(row[8] ?? 'UTC'),
         }))[0]
     }
 
