@@ -79,6 +79,15 @@ export class SessionsService {
             throw new ForbiddenException('You must belong to the group to schedule a session')
         }
 
+        const attendeeIds = [...new Set(body.attendeeIds ?? memberIds)]
+        if (attendeeIds.length === 0) {
+            throw new BadRequestException('A scheduled session must have at least one attendee')
+        }
+
+        if (attendeeIds.some(accountId => !memberIds.includes(accountId))) {
+            throw new BadRequestException('Every attendee must belong to the selected group')
+        }
+
         const plannedGameIds = [...new Set(body.plannedGameIds ?? [])]
         const availableGameIds = new Set(await this.databaseService.getGroupAvailableGameIds(body.groupId))
         if (plannedGameIds.some(gameId => !availableGameIds.has(gameId))) {
@@ -90,7 +99,7 @@ export class SessionsService {
             createdBy: actorAccountId,
             sessionDate: body.sessionDate,
             timezone: body.timezone,
-            attendeeIds: memberIds,
+            attendeeIds,
             plannedGameIds,
         })
 

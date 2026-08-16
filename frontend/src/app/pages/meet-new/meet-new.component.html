@@ -33,6 +33,26 @@
                     </div>
                 </div>
                 <fieldset class="grid gap-2">
+                    <legend class="font-medium">Attendees</legend>
+                    <p class="text-secondary text-sm">Choose the group members expected at this session.</p>
+                    @if ((groupData?.members?.length ?? 0) === 0) {
+                        <p class="text-secondary text-sm">No group members are available.</p>
+                    } @else {
+                        <div class="grid gap-2 sm:grid-cols-2">
+                            @for (member of groupData?.members ?? []; track member.id) {
+                                <label class="flex items-center gap-3 rounded-lg border border-zinc-200 dark:border-zinc-700 p-3 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        [checked]="selectedAttendeeIds.includes(member.id)"
+                                        (change)="toggleAttendee(member.id)"
+                                    />
+                                    <span>{{ member.displayName || member.username }}</span>
+                                </label>
+                            }
+                        </div>
+                    }
+                </fieldset>
+                <fieldset class="grid gap-2">
                     <legend class="font-medium">Planned games <span class="text-secondary font-normal">(optional)</span></legend>
                     @if (availableGames.length === 0) {
                         <p class="text-secondary text-sm">No games are currently available in this group.</p>

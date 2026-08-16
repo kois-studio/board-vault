@@ -25,6 +25,7 @@ export class MeetNewComponent {
     //        DATA for this component
     // --------------------------------------------------------------------------
     public groupData: null | (typeof this.userGroups)[number] = null
+    public selectedAttendeeIds: Array<number> = []
     public selectedPlannedGameIds: Array<number> = []
     public today = new Date().toISOString().split('T')[0] // Format: YYYY-MM-DD
     public dateForm = new FormControl(this.today, [
@@ -57,6 +58,7 @@ export class MeetNewComponent {
             }
 
             this.groupData = groupData
+            this.selectedAttendeeIds = groupData.members.map(member => member.id)
         })
     }
 
@@ -81,12 +83,18 @@ export class MeetNewComponent {
             : [...this.selectedPlannedGameIds, gameId]
     }
 
+    toggleAttendee(accountId: number): void {
+        this.selectedAttendeeIds = this.selectedAttendeeIds.includes(accountId)
+            ? this.selectedAttendeeIds.filter(id => id !== accountId)
+            : [...this.selectedAttendeeIds, accountId]
+    }
+
     get disableCreateButton() {
         if (!this.dateForm.value) {
             return true
         }
 
-        return this.isCreatingLoading || this.dateForm.invalid
+        return this.isCreatingLoading || this.dateForm.invalid || this.selectedAttendeeIds.length === 0
     }
 
     onClickCreateMeeting() {
@@ -105,6 +113,7 @@ export class MeetNewComponent {
                 groupId,
                 sessionDate: new Date(`${sessionDate}T12:00:00`).toISOString(),
                 timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                attendeeIds: this.selectedAttendeeIds,
                 plannedGameIds: this.selectedPlannedGameIds,
             }),
         )
