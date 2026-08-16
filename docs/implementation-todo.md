@@ -112,6 +112,7 @@ Relevant surface: [`dashboard-page`](../frontend/src/app/pages/dashboard-page/).
 
 - Keep activity, statistics, charts, and session summaries derived from persisted data; fabricated dashboard content has been removed.
 - Keep dashboard links limited to existing routes; the dead activity and analytics links have been removed.
+- Dashboard quick links now import the standalone `RouterLink` directive explicitly; authenticated E2E coverage asserts that the primary destinations expose working `href` values.
 - Make dashboard cards represent the correct entity and count.
 - Define a useful first-login empty state that guides a user to create/join a group and add games.
 - Define loading, failure, and retry states for each dashboard data section; dashboard overview, groups, collection, history, and upcoming-session surfaces now distinguish loading, failure, and empty states, with retry recovering the core requests.

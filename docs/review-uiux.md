@@ -50,7 +50,7 @@ For each area, review:
 
 | Area | Routes/components | Current status | Known review scope / next action |
 |---|---|---|---|
-| Dashboard home | `/dashboard`, `dashboard-page` | Source-audited | Fabricated activity/analytics and dead links were removed; overview loading, failure, retry, and first-entry states are now explicit. Continue with rendered responsive, keyboard, focus, contrast, and visual-hierarchy review. |
+| Dashboard home | `/dashboard`, `dashboard-page` | Source-audited | Fabricated activity/analytics and dead links were removed; overview loading, failure, retry, and first-entry states are now explicit, and dashboard quick links now import `RouterLink` with authenticated E2E destination assertions. Continue with rendered responsive, keyboard, focus, contrast, and visual-hierarchy review. |
 | Groups index | `/groups`, `groups-page` | Source-audited | Loading, empty, and retryable failure states now distinguish unavailable data from no groups; review create/join guidance, group card hierarchy, and responsive grid. |
 | Create group | `/create-group`, `group-create` | Source-audited | Review form labels, validation, success navigation, duplicate/error handling, and mobile form layout. |
 | Group detail | `/groups/:groupId`, `group-view` | Source-audited | Member selection now defaults to all members per group and does not leak across groups; review member/game/history hierarchy, owner actions, invitation feedback, session-shaped loading skeleton, private-data states, and mobile tables/cards. |

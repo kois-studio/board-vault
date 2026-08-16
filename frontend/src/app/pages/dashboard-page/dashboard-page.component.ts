@@ -1,4 +1,5 @@
 import { Component, computed, inject } from '@angular/core'
+import { RouterLink } from '@angular/router'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'
 import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
@@ -6,7 +7,7 @@ import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
 
 @Component({
-    imports: [ContainerWrapperComponent, PageHeaderComponent],
+    imports: [RouterLink, ContainerWrapperComponent, PageHeaderComponent],
     templateUrl: 'dashboard-page.component.html',
 })
 export class DashboardPageComponent {

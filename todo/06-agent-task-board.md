@@ -1242,6 +1242,16 @@ Verified: frontend build, focused Biome check for the changed component, and `gi
 
 Known follow-ups: Add authenticated browser failure-injection coverage for collection mutations and review the game-detail responsive/accessibility states.
 
+Continuation claim: EQ-006
+
+Owner: Codex
+
+Claimed: 2026-08-17
+
+Branch/worktree: main / shared workspace
+
+Scope: restore dashboard quick-link navigation by importing the standalone Angular RouterLink directive and add an authenticated destination assertion
+
 When claiming a task, add:
 
 ```text
