@@ -1,6 +1,18 @@
 import { z } from 'zod'
 
-import type { GameCompleteType, MeetType, MeetWithAttendeesAndGamesType, RecommendationsType, ScheduledSessionCreatedType, SessionAttendeesUpdatedType, SessionCreatedType, SessionStatusUpdatedType } from './api.types'
+import type {
+    GameCompleteType,
+    GroupWithMembersAndGames,
+    InvitationWithAccountsData,
+    MeetType,
+    MeetWithAttendeesAndGamesType,
+    PublicUserType,
+    RecommendationsType,
+    ScheduledSessionCreatedType,
+    SessionAttendeesUpdatedType,
+    SessionCreatedType,
+    SessionStatusUpdatedType,
+} from './api.types'
 
 export const authStatusSchema = z.object({
     isValid: z.literal(true),
@@ -28,6 +40,57 @@ const gameCompleteSchema: z.ZodType<GameCompleteType> = z.object({
         es: z.string(),
     }),
 })
+
+const avatarSchema = z.object({
+    backgroundColor: z.string(),
+    iconName: z.string().nullable(),
+    emoji: z.string().nullable(),
+    type: z.enum(['icon', 'emoji', 'initials']),
+    initials: z.string(),
+})
+
+const publicUserSchema = z.object({
+    id: z.number(),
+    username: z.string(),
+    displayName: z.string(),
+    avatar: avatarSchema,
+})
+
+const gameReviewSchema = z.object({
+    accountId: z.number(),
+    gameId: z.number(),
+    review: z.number(),
+    reviewDate: z.string(),
+})
+
+const groupMemberSchema: z.ZodType<GroupWithMembersAndGames['members'][number]> = z.object({
+    ...publicUserSchema.shape,
+    joinedAt: z.string(),
+    games: z.array(gameCompleteSchema),
+    reviews: z.array(gameReviewSchema),
+})
+
+const groupWithMembersAndGamesSchema: z.ZodType<GroupWithMembersAndGames> = z.object({
+    id: z.number(),
+    name: z.string(),
+    createdBy: z.number(),
+    createdAt: z.string(),
+    members: z.array(groupMemberSchema),
+})
+
+export const userGroupsSchema = z.array(groupWithMembersAndGamesSchema)
+
+export const groupInvitationsSchema: z.ZodType<Array<InvitationWithAccountsData>> = z.array(
+    z.object({
+        id: z.number(),
+        groupId: z.number(),
+        fromAccountId: z.number(),
+        toAccountId: z.number(),
+        sentAt: z.string(),
+        fromAccount: publicUserSchema,
+        toAccount: publicUserSchema,
+    }),
+)
 
 const meetFields = z.object({
     id: z.number(),
@@ -72,17 +135,19 @@ export const recommendationsSchema: z.ZodType<RecommendationsType> = z.object({
     groupId: z.number(),
     attendeeIds: z.array(z.number()),
     availableMinutes: z.number().nullable(),
-    recommendations: z.array(z.object({
-        gameData: gameCompleteSchema,
-        score: z.number(),
-        explanation: z.object({
-            reasons: z.array(z.string()),
-            attendeeOwnerCount: z.number(),
-            attendeeCount: z.number(),
-            averageReview: z.number().nullable(),
-            lastPlayedAt: z.string().nullable(),
+    recommendations: z.array(
+        z.object({
+            gameData: gameCompleteSchema,
+            score: z.number(),
+            explanation: z.object({
+                reasons: z.array(z.string()),
+                attendeeOwnerCount: z.number(),
+                attendeeCount: z.number(),
+                averageReview: z.number().nullable(),
+                lastPlayedAt: z.string().nullable(),
+            }),
         }),
-    })),
+    ),
     noResultReason: z.string().nullable(),
 })
 
