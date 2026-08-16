@@ -18,6 +18,12 @@ export class MeetDto {
 
     @ApiProperty({ example: true })
     isConfirmed: boolean
+
+    @ApiProperty({ example: 'completed', enum: ['scheduled', 'active', 'completed', 'cancelled'] })
+    status: 'scheduled' | 'active' | 'completed' | 'cancelled'
+
+    @ApiProperty({ example: 'UTC' })
+    timezone: string
 }
 
 export class MeetWithAttendeesAndGames extends MeetDto {

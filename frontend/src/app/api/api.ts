@@ -6,6 +6,7 @@ import type {
     BrowseGamesResultType,
     CollectionActivityWithGameDataType,
     CreateGameProposalType,
+    CreatePlaySessionRequest,
     GameCompleteType,
     GameOwnedType,
     GameProposalType,
@@ -22,11 +23,12 @@ import type {
     MeetType,
     MeetWithAttendeesAndGamesType,
     NotificationType,
+    PublicUserType,
+    SessionCreatedType,
     TagCategoryType,
     TagType,
     UpdateGameOwnedType,
     UserProposalStatsType,
-    PublicUserType,
     UserStatsType,
     UserType,
 } from './api.types'
@@ -152,6 +154,10 @@ export class Api {
 
     getMeetDetailsById(meetId: number) {
         return this.http.get<MeetWithAttendeesAndGamesType>(`${this.url}/meets/${meetId}/details`)
+    }
+
+    createPlaySession(body: CreatePlaySessionRequest) {
+        return this.http.post<SessionCreatedType>(`${this.url}/sessions`, body)
     }
 
     // #region meet attendees

@@ -24,25 +24,25 @@ The product is not launch-ready. The main unfinished value loop is:
 group → attendees → recommendation → scheduled session → games actually played → useful history
 ```
 
-The session logging submission is still a TODO, recommendations are not implemented, analytics contain hardcoded/sample content, and several navigation links point to routes that do not exist.
+Completed-session logging now has a guarded, validated backend write and an atomic Turso transaction from the frontend wizard. Recommendations are not implemented, analytics contain hardcoded/sample content, and several navigation links point to routes that do not exist.
 
 ## P0 — complete the product’s core loop
 
-### 1. Session and play flow — Open / Partial
+### 1. Session and play flow — Partial
 
 Relevant surfaces: [`app.routes.ts`](../frontend/src/app/app.routes.ts), [`meet-new`](../frontend/src/app/pages/meet-new/), [`meet-view`](../frontend/src/app/pages/meet-view/), [`log-session-wizard`](../frontend/src/app/components/log-session-wizard/), [`data.service.ts`](../frontend/src/app/core/services/data.service.ts).
 
-- Replace the legacy meeting creation path with one canonical session-creation use case.
-- Persist the selected date/time and timezone; the current `MeetNewComponent` form does not pass the selected date into creation.
-- Persist the selected group, organizer, attendees, planned games, and session state atomically.
-- Replace the `submitSession()` TODO in the log-session wizard with a real API call.
-- Define session lifecycle states: scheduled, active, completed, and cancelled.
-- Distinguish planned games from games actually played in both API responses and frontend types. The current frontend still exposes `playedGames` as an array of IDs while the database now has `MeetGame` state.
-- Decide how the legacy `MeetAccountGame` history relation is written alongside the new session relations.
+- Replace the legacy meeting creation path with one canonical session-creation use case for all session states.
+- Persist the selected date/time and IANA timezone; completed-session logging now sends both to the backend.
+- Persist the selected group, organizer, attendees, played games, and participant links atomically through `POST /sessions`.
+- Replace the `submitSession()` TODO in the log-session wizard with the guarded API call and success/error navigation.
+- Define and implement transitions between scheduled, active, completed, and cancelled sessions.
+- Distinguish planned games from games actually played in all API responses and frontend types; the completed write currently records played games while the detail/history read model still needs richer game objects.
+- Decide how the legacy `MeetAccountGame` history relation should evolve; the completed write currently preserves it as a compatibility relation.
 - Remove or replace the unfinished confirmation flow; `MeetConfirmComponent` already says the confirmation concept will be removed.
 - Make attendee and game changes show persisted success/error state and survive refresh.
 - Complete the organizer-only attendee API verification through the production UI.
-- Add transaction boundaries for session creation, completion, cancellation, attendee changes, and played-game recording.
+- Add transaction boundaries for scheduled-session creation, completion, cancellation, attendee changes, and played-game recording; completed-session logging now has one.
 - Ensure the upcoming sessions page reads real persisted upcoming sessions rather than relying on the old meeting data shape.
 - Ensure completed sessions appear in history and cancelled sessions do not appear as completed history.
 
@@ -187,7 +187,7 @@ Relevant surfaces: [`propose-game-page`](../frontend/src/app/pages/collection-pa
 
 These are not purely frontend tasks, but they block reliable product UX completion:
 
-- Finish the session write API and transaction policy; see [`data-model.md`](data-model.md) and [`database/drift-report.md`](../database/drift-report.md).
+- Extend the completed session write into the full session write/lifecycle API; see [`data-model.md`](data-model.md) and [`database/drift-report.md`](../database/drift-report.md).
 - Establish a repeatable migration runner and empty-state recreation from the synchronized schema.
 - Complete the remaining authorization, response-privacy, validation, and API-contract reviews.
 - Add lockfiles, a documented Node/package-manager choice, and root development commands.
@@ -199,7 +199,7 @@ These are not purely frontend tasks, but they block reliable product UX completi
 ## Recommended execution order
 
 1. Remove dead routes, dead links, unsupported claims, and obviously misleading hardcoded UI.
-2. Complete the canonical session API and transaction boundary.
+2. Extend the canonical completed-session API into scheduled sessions and lifecycle transitions.
 3. Connect session creation, attendee selection, planned games, completion, and history.
 4. Implement recommendations and the first-five-games collection activation flow.
 5. Rework the flagship UI/UX around those stable contracts.

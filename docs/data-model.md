@@ -23,6 +23,14 @@ when those columns are NULL.
 The migration is tracked in
 [`database/migrations/0002-add-auth-token-expiry.sql`](../database/migrations/0002-add-auth-token-expiry.sql).
 
+Migration [`0004-add-session-lifecycle.sql`](../database/migrations/0004-add-session-lifecycle.sql)
+was applied to live Turso on 2026-08-16 after a fresh dump and disposable
+SQLite verification. It adds `Meet.status`, `Meet.timezone`, nullable
+`Meet.updatedAt`, and `idx_meet_status_date`; existing rows retain the
+`completed`/`UTC` defaults. The nullable `updatedAt` column is intentional:
+SQLite does not permit a non-constant default when adding a column, and the
+canonical session write supplies it explicitly.
+
 ## Current deployed entities
 
 The schema snapshot names these tables/entities:
@@ -49,7 +57,7 @@ The backend source also has corresponding service/type/schema areas. The current
 - User, group, collection, invitation, review, notification, meet, and proposal mutations are exposed through many service/controller paths.
 - The deprecated direct membership endpoint currently implements an invite-only join boundary: the authenticated account must have a pending invitation for the target group, and the invitation is consumed after membership creation. The broader product decision on self-join versus invite-only groups remains open in the product workstream.
 - A group creation flow in `DashboardService` creates the group, looks up its ID by name, and creates the owner membership as separate operations. The repository does not document atomicity or partial-failure behavior.
-- `Meet` remains the compatibility/session record. `MeetAttendee` now stores participant RSVP/attendance state, `MeetGame` stores planned/played/skipped session-game state, and `MeetAccountGame` preserves account-to-play links for historical play lookup. Full cancellation, completion, transaction, guest, and timezone behavior remains unfinished.
+- `Meet` remains the compatibility/session record. `MeetAttendee` stores participant RSVP/attendance state, `MeetGame` stores planned/played/skipped session-game state, and `MeetAccountGame` preserves account-to-play links for historical play lookup. The canonical completed-session write now persists the selected date, IANA timezone, attendees, played games, and participant links atomically. Scheduled-session editing, cancellation, completion transitions, and richer event history remain unfinished.
 - Cache TTLs are declared in `cache.types.ts` and selected services invalidate keys, but cache ownership, stale-read behavior, disabled mode, and correctness tests are not documented.
 
 ## Repository reconciliation result
@@ -79,8 +87,8 @@ These findings are now split between resolved schema alignment and remaining API
 ## Required follow-up
 
 1. Resolve the remaining API findings in the [DATA-001 drift report](../database/drift-report.md), especially the frontend attendee route and game-title contract.
-2. Execute `DATA-003`: complete the session API/write contract against the accepted relation model.
-3. Execute `DATA-004`: define transactions and partial-failure behavior for multi-record mutations.
+2. Execute `DATA-003`: extend the session API from completed-session logging to the full scheduled/completed lifecycle.
+3. Execute `DATA-004`: apply the transaction policy to remaining multi-record mutations.
 4. Execute `DATA-002`: create migration execution tooling and prove empty-state recreation.
 5. Add disposable integration data and backup/restore rehearsal before launch claims.
 

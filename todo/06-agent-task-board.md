@@ -25,7 +25,7 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 | PROD-002 | TODO | Core loop | Implement a real first-five-games collection activation flow. | SEC-002, DATA-002 |
 | PROD-003 | TODO | Core loop | Finish invitation acceptance, group roles, and member visibility. | SEC-002, DATA-003 |
 | PROD-004 | TODO | Core loop | Implement deterministic recommendation scoring with explanations and unit tests. | PROD-001, DATA-003 |
-| PROD-005 | TODO | Core loop | Implement atomic session creation and replace the wizard submission TODO. | DATA-003, DATA-004 |
+| PROD-005 | REVIEW | Core loop | Implement atomic session creation and replace the wizard submission TODO. | DATA-003, DATA-004 |
 | PROD-006 | TODO | Core loop | Implement upcoming, active, completed, and cancelled session views using real data. | PROD-005 |
 | PROD-007 | TODO | Core loop | Implement actual play history and basic group statistics. | PROD-005, DATA-003 |
 | PROD-008 | TODO | Core loop | Persist recommendation feedback and feed it into future scoring. | PROD-004, PROD-007 |
@@ -581,6 +581,22 @@ Review: TRUTH-001
 Changed: Replaced the public landing page with an honest Board Vault early-product surface, removed fabricated testimonials/pricing/mobile/API claims and dead anchors, and rebuilt the dashboard around persisted groups, owned games, history, collection value, and real next-step routes.
 Verified: `cd frontend && npm run build` passes with the documented Sass, selector, and bundle-budget warnings; `cd frontend && npm run e2e` passes 3 public-navigation tests, including no `BoardMeet` or `href="#"` content on the landing page.
 Known follow-ups: Complete the rendered responsive/accessibility review and replace remaining legacy product claims only when the corresponding session/recommendation features exist.
+
+Most recent claim:
+
+```text
+Task: PROD-005
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: implement the canonical session creation/logging API and connect the frontend flow to persisted attendees, planned games, and played games
+```
+
+Review: PROD-005
+
+Changed: Added guarded `POST /sessions` with strict request validation, group membership and owned-game checks, per-game participant checks, and a single Turso write transaction. The log-session wizard now submits selected date, IANA timezone, attendees, games, and participant matrix data, then navigates to the persisted meet. Added lifecycle migration 0004 with `status`, `timezone`, `updatedAt`, and a status/date index; the migration was applied to live Turso after backup and disposable SQLite verification. Completed-session history now reads persisted meets instead of returning an empty placeholder.
+Verified: `cd backend && npm test -- --runInBand` (114 tests passed); targeted session and database transaction suites pass; `cd backend && npm run build`; `cd frontend && npm run build`; migration integrity and foreign-key checks pass against a restored pre-0004 dump and live Turso; preserved live counts remain 16 accounts, 13 meets, 101 meet/game links, 63 attendees, and 22 session games.
+Known follow-ups: Add scheduled-session creation/editing/completion/cancellation, richer planned-vs-played read DTOs, authenticated browser coverage with synthetic test state, and production manual verification of the wizard with the preserved account.
 
 When claiming a task, add:
 

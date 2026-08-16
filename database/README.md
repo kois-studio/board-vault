@@ -12,6 +12,7 @@ This directory owns database-specific artifacts and tooling for Board Vault. It 
 - Migration `0001-add-clerk-user-id.sql` has been applied to live Turso and verified without changing historical row counts. It adds the Clerk identity bridge; one existing account has been linked through the verified local Clerk flow, and new local accounts can now be provisioned from verified Clerk identities by the backend.
 - Migration `0002-add-auth-token-expiry.sql` was applied to live Turso on 2026-08-16 after a fresh local dump. Integrity and foreign-key checks passed, both expiry columns are present, and the schema snapshot was re-exported. No existing verification or reset tokens had expiry-bearing rows at verification time.
 - Migration `0003-add-session-relations.sql` was applied to live Turso on 2026-08-16 after a fresh local dump. It added `MeetAttendee` and `MeetGame`, backfilled 63 attendee rows and 22 session-game rows from the 101 preserved `MeetAccountGame` play links, and passed integrity/foreign-key checks.
+- Migration `0004-add-session-lifecycle.sql` was applied to live Turso on 2026-08-16 after a fresh local dump and disposable SQLite verification. It added `Meet.status`, `Meet.timezone`, nullable `Meet.updatedAt`, and `idx_meet_status_date`; preserved row counts and integrity checks passed.
 - `DATA-001` is now in review with its evidence in [drift-report.md](drift-report.md). The canonical v1 session relation decision and migration are recorded; the next work is the session API/transaction contract (`DATA-003`/`DATA-004`), followed by migration execution/recreation (`DATA-002`).
 
 ## Planned layout
@@ -35,6 +36,7 @@ database/
 - Current schema snapshot: [schema/schema.sql](schema/schema.sql). Future migrations will become the reproducible source of truth.
 - Applied auth-token migration: [migrations/0002-add-auth-token-expiry.sql](migrations/0002-add-auth-token-expiry.sql). The live schema claim includes its two nullable UTC epoch-second columns; the migration runner and repeatable empty-state recreation are still missing.
 - Applied session migration: [migrations/0003-add-session-relations.sql](migrations/0003-add-session-relations.sql). It is additive and preserves `MeetAccountGame`; the migration runner and repeatable empty-state recreation are still missing.
+- Applied session lifecycle migration: [migrations/0004-add-session-lifecycle.sql](migrations/0004-add-session-lifecycle.sql). `updatedAt` is nullable because SQLite disallows non-constant defaults in `ALTER TABLE`; application writes set it explicitly.
 - Product/session decisions: [todo/03-data-model-and-session-domain.md](../todo/03-data-model-and-session-domain.md) and accepted [ADR-0003](../docs/adr/0003-session-as-first-class-domain.md).
 - Authentication identity decision: [ADR-0004](../docs/adr/0004-clerk-managed-authentication.md).
 - API behavior and transaction expectations: [docs/api.md](../docs/api.md).

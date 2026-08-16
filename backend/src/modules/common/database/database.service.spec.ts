@@ -35,4 +35,74 @@ describe('DatabaseService logging', () => {
             args: ['user_production', 1, 'user_production'],
         })
     })
+
+    it('writes a completed session and its relations using the captured meet id', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const transaction = {
+            execute: jest.fn().mockResolvedValue({ lastInsertRowid: 42 }),
+            batch: jest.fn().mockResolvedValue([]),
+            commit: jest.fn().mockResolvedValue(undefined),
+            rollback: jest.fn().mockResolvedValue(undefined),
+            close: jest.fn(),
+        }
+
+        ;(service as unknown as { tursoClient: unknown }).tursoClient = {
+            transaction: jest.fn().mockResolvedValue(transaction),
+        }
+
+        await service.createCompletedSession({
+            groupId: 7,
+            createdBy: 1,
+            sessionDate: '2026-08-16T19:30:00.000Z',
+            timezone: 'Europe/Madrid',
+            attendeeIds: [1, 2],
+            games: [{ gameId: 42, participantIds: [1, 2] }],
+        })
+
+        expect(transaction.execute).toHaveBeenCalledWith({
+            sql: expect.stringContaining('INSERT INTO Meet (groupId, createdBy, meetDate, isConfirmed, status, timezone, updatedAt)'),
+            args: [7, 1, '2026-08-16T19:30:00.000Z', 'Europe/Madrid'],
+        })
+        expect(transaction.batch).toHaveBeenCalledWith(
+            expect.arrayContaining([
+                expect.objectContaining({ args: [42, 1] }),
+                expect.objectContaining({ args: [42, 2] }),
+                expect.objectContaining({ args: [42, 42] }),
+                expect.objectContaining({ args: [42, 1, 42] }),
+            ]),
+        )
+        expect(transaction.commit).toHaveBeenCalledTimes(1)
+        expect(transaction.rollback).not.toHaveBeenCalled()
+        expect(transaction.close).toHaveBeenCalledTimes(1)
+    })
+
+    it('rolls back and closes the transaction when a session write fails', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const transaction = {
+            execute: jest.fn().mockRejectedValue(new Error('write failed')),
+            batch: jest.fn(),
+            commit: jest.fn(),
+            rollback: jest.fn().mockResolvedValue(undefined),
+            close: jest.fn(),
+        }
+
+        ;(service as unknown as { tursoClient: unknown }).tursoClient = {
+            transaction: jest.fn().mockResolvedValue(transaction),
+        }
+
+        await expect(
+            service.createCompletedSession({
+                groupId: 7,
+                createdBy: 1,
+                sessionDate: '2026-08-16T19:30:00.000Z',
+                timezone: 'Europe/Madrid',
+                attendeeIds: [1],
+                games: [{ gameId: 42, participantIds: [1] }],
+            }),
+        ).rejects.toThrow('write failed')
+
+        expect(transaction.rollback).toHaveBeenCalledTimes(1)
+        expect(transaction.commit).not.toHaveBeenCalled()
+        expect(transaction.close).toHaveBeenCalledTimes(1)
+    })
 })

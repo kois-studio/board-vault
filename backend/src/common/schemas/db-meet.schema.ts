@@ -6,6 +6,8 @@ export const meetSchema = z.object({
     createdBy: z.number().int().nonnegative(),
     meetDate: z.string().refine(date => !isNaN(Date.parse(date)), { message: 'Invalid date format' }),
     isConfirmed: z.boolean(),
+    status: z.enum(['scheduled', 'active', 'completed', 'cancelled']).default('completed'),
+    timezone: z.string().default('UTC'),
 })
 
 export const meetsSchema = z.array(meetSchema)

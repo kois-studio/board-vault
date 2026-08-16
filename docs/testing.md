@@ -13,13 +13,15 @@
 | Check | Result | Interpretation |
 |---|---|---|
 | `cd backend && npm run build` | Pass | TypeScript/Nest build currently compiles. |
-| `cd backend && npm test -- --runInBand` | Pass | 106 focused tests cover Clerk identity provisioning, verified-primary-email linking, protected-route session resolution, production CORS defaults, strict profile-update, nested-avatar, user game-update, database-aligned review-score, collection ownership metadata, profile-proposal, administrator catalog/proposal-review, group/invitation/notification/membership write, email-output, HTTP body-limit/header, and auth rate-limit validation, public nested-user response projection, user/group ownership, group/membership listing boundaries, collection route ownership, invitation actor identity/lifecycle, invite-only joining, notification ownership, meet reads, meet-account-game membership, organizer-only attendee management, admin reviewer identity/guard behavior, authentication path/query validation, deprecated global-user-list protection, deleted-account JWT behavior, database-log redaction, email-log redaction, cache-log redaction, auth-log redaction, and token expiry/one-time-use service behavior; broader authorization coverage remains absent. |
+| `cd backend && npm test -- --runInBand` | Pass | 114 focused tests cover the previously documented Clerk, validation, authorization, privacy, logging, cache, and migration-boundary areas plus canonical session validation and transaction commit/rollback behavior; broader authorization coverage remains absent. |
 | `cd backend && npm run test:e2e -- --runInBand` | Fail | Test setup throws because `RESEND_API_KEY` is missing; the test itself expects a stale `/` Hello World route. |
 | `cd backend && npx eslint "{src,apps,libs,test}/**/*.ts"` | Fail | 17 errors and 3 warnings across schemas, database, collection, play, and profile code. |
 | `cd frontend && npm run build` | Pass with warnings | Bundle budget, Sass deprecation, and selector warnings remain. |
 | `cd frontend && npx biome check` | Fail | 8 findings in the form submission, log-session wizard, and propose-game page files. |
 | `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` | Pass | One generated smoke test passes. |
 | `cd frontend && npm run e2e` | Pass | Three Playwright tests cover the public landing page, signed-out protection of `/dashboard`, and the wildcard not-found route. Authenticated journeys are not yet covered. |
+| `cd backend && npm test -- --runInBand src/modules/features/sessions/sessions.service.spec.ts` | Pass | Six tests cover canonical session creation, missing groups, actor membership, attendee membership, group game availability, and participant/attendee consistency. |
+| `schema.sql` plus migration 0004 in disposable SQLite | Pass | A restored pre-0004 dump accepts the lifecycle migration; integrity is `ok`, no foreign-key violations are reported, and all four lifecycle columns/indexes exist. |
 | `sqlite3 backup-copy < database/migrations/0001-add-clerk-user-id.sql` | Pass | SQLite integrity remains `ok`; 15 accounts, 13 meets, and 101 meet/game links are preserved; the original backup was not used as the test target. |
 | Schema plus migration 0002 in disposable SQLite memory database | Pass | Full schema loaded with migration 0002; integrity is `ok`, both expiry columns exist, a valid token succeeds once, second use affects zero rows, and an expired token affects zero rows. No live Turso data was changed. |
 | Live Turso migration 0002 verification | Pass | Fresh local dump was taken before the additive migration; live integrity and foreign-key checks passed, both expiry columns exist, aggregate counts remain 16 accounts, 13 meets, and 101 meet/game links, and no existing token-bearing rows required backfill. |
@@ -41,9 +43,9 @@
 - group creation/joining and invitation lifecycle;
 - collection activation with empty/error states;
 - deterministic explainable recommendation scoring;
-- atomic session creation, planned/played distinction, completion, and history;
+- atomic completed-session creation, planned/played distinction, completion, and history;
 - frontend loading, empty, failure, retry, and mobile/accessibility states.
-- frontend browser journeys for public navigation, Clerk authentication, collection activation, group invitations, session creation/completion, and history.
+- frontend browser journeys for public navigation, Clerk authentication, collection activation, group invitations, session creation/completion, and history. The backend write contract is now available for the session journey; authenticated browser coverage still needs a non-production Clerk test state and seeded data.
 
 ### P2 delivery quality
 
