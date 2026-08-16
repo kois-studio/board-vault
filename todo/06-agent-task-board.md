@@ -14,7 +14,7 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 | SEC-004 | REVIEW | Security | Enable strict validation, rate limits, safe CORS, token expiry, generic reset responses, and safe logging. | None |
 | DATA-001 | REVIEW | Data model | Reconcile repository SQL and services against the owner-confirmed deployed schema and produce a code/schema drift report. | None |
 | DATA-002 | TODO | Data model | Add numbered migrations and make the schema reproducible from empty state. | DATA-001 |
-| DATA-003 | TODO | Data model | Choose and implement the canonical session schema, including attendance and planned/played games. | DATA-001 |
+| DATA-003 | REVIEW | Data model | Choose and implement the canonical session schema, including attendance and planned/played games. | DATA-001 |
 | DATA-004 | TODO | Data model | Add transaction boundaries for group, session, proposal, and collection mutations. | DATA-002, DATA-003 |
 
 ## P1 — flagship product loop
@@ -54,6 +54,22 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 | EXP-005 | TODO | Product | Evaluate mobile, offline, public API, and localization work. | Stable API and proven core loop |
 
 ## Claiming protocol
+
+Most recent claim:
+
+```text
+Task: DATA-003
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: establish the canonical v1 session relations while preserving historical MeetAccountGame play links
+```
+
+Review: DATA-003
+
+Changed: Accepted the v1 session mapping: `Meet` remains the compatibility/session record; `MeetAttendee` stores participant RSVP/attendance state; `MeetGame` stores planned/played game state; `MeetAccountGame` remains the account-to-play relation used by historical play history. Migration 0003 backfills the additive relations, and backend detail/setup queries now use them.
+Verified: Empty-state and representative-data migration tests pass; live Turso has 63 attendee rows and 22 session-game rows from 101 historical play links, with integrity and foreign-key checks passing. Backend unit tests (101) and build pass.
+Known follow-ups: Define the attendee API authorization policy, complete session write/API contracts, and add transaction boundaries through DATA-004.
 
 Most recent claim:
 

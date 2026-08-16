@@ -61,7 +61,7 @@ The source references `/play/recommendations` and `/play/quick-play` from naviga
 
 ## Current gaps that affect architecture work
 
-- Session semantics are split across `Meet` and `MeetAccountGame`; planned versus actually played games, attendance, and completion are not yet canonical.
+- Session v1 now separates `Meet` compatibility/session records, `MeetAttendee` participant state, `MeetGame` planned/played state, and `MeetAccountGame` account-to-play links. Transactional session creation/completion, richer play events, and full lifecycle APIs remain unfinished.
 - Recommendations and feedback are product backlog work, not a current backend capability.
 - API routes contain deprecated and newer feature paths without a versioning/compatibility contract.
 - The frontend API schema file is explicitly unfinished; runtime response validation is not established.

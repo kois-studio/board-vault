@@ -20,6 +20,9 @@ product intent do not agree with it.
   `clerkUserId`, `verification_token_expires_at`, and
   `password_reset_token_expires_at`. Integrity and foreign-key checks passed;
   migration 0002 is now reflected in the synchronized schema snapshot.
+- **Live session migration probe:** migration 0003 added `MeetAttendee` and
+  `MeetGame`, backfilled 63 attendee rows and 22 session-game rows from 101
+  preserved `MeetAccountGame` links, and passed integrity/foreign-key checks.
 - **Authority:** the deployed schema snapshot is authoritative for current
   tables and columns. Code, old schema notes, route names, and TypeScript types
   are evidence of intended or historical behavior only.
@@ -32,11 +35,11 @@ product intent do not agree with it.
 
 | ID | Area | Evidence | State | Priority | Required decision or next action |
 |---|---|---|---|---|---|
-| DRIFT-001 | Meeting attendees | `schema.sql` defines `Meet` and `MeetAccountGame`, but no `MeetAttendee`. `DatabaseService.getMeetDetailsByIdForAccount()` and `addGroupMembersToMeeting()` still query or insert `MeetAttendee` (`backend/src/modules/common/database/database.service.ts:1017-1048`). A 2025 commit, `ef6e3d2`, removed the old table/module. | `gap` | Critical | Decide whether attendee state is represented by `MeetAccountGame`, a new session-attendance table, or the legacy path is retired. Then remove/replace the stale SQL and add integration coverage. |
-| DRIFT-002 | Meeting games | `schema.sql` defines `MeetAccountGame(meetId, accountId, gameId)`, but no `MeetGame`. `getMeetDetailsByIdForAccount()` reads `playedGames` from `MeetGame`, and `addGroupGamesToMeeting()` inserts into it (`database.service.ts:1021-1061`). | `gap` | Critical | Define planned versus played game semantics in DATA-003. Preserve historical `MeetAccountGame` meaning only after confirming it against real data; do not create a compatibility table by assumption. |
-| DRIFT-003 | Frontend attendee route | `frontend/src/app/api/api.ts` calls `POST/DELETE /meetAttendees/:meetId/:accountId`; no backend controller currently exposes a `meetAttendees` route. The frontend types and service still call these methods. | `gap` | High | Remove the dead client path or replace it after the canonical session API is designed. Treat current UI methods as stale, not as proof that attendee editing works. |
+| DRIFT-001 | Meeting attendees | Migration 0003 now defines `MeetAttendee` with RSVP and attendance state. It backfilled 63 selected participants from distinct historical `MeetAccountGame` account links, and `DatabaseService.getMeetDetailsByIdForAccount()`/`addGroupMembersToMeeting()` now use the relation. | `partial` | Critical | Add the missing attendee API contract and transactionally update state; preserve the historical backfill interpretation in integration tests. |
+| DRIFT-002 | Meeting games | Migration 0003 now defines `MeetGame` with planned/played/skipped state and backfilled 22 distinct played games from historical `MeetAccountGame` links. Meet detail/setup queries now use the explicit relation, while `MeetAccountGame` remains the per-account play relation. | `partial` | Critical | Add session-game write/read contracts and transactionally coordinate them with attendees; keep richer play-event fields deferred. |
+| DRIFT-003 | Frontend attendee route | `frontend/src/app/api/api.ts` calls `POST/DELETE /meetAttendees/:meetId/:accountId`; no backend controller currently exposes a `meetAttendees` route. The frontend types and service still call these methods, while the canonical `MeetAttendee` relation now exists. | `gap` | High | Define whether group owners, organizers, or individual members may edit attendance, then implement or retire the route with server-side authorization. Treat current UI methods as stale, not as proof that attendee editing works. |
 | DRIFT-004 | Game title storage | The deployed `Game` table has no `title` column. `GamesService.createGame()` accepts a title, but `DatabaseService.createGame()` inserts only the four deployed `Game` columns. Admin proposal approval later writes the title to `GameTranslation`, including a required English fallback. | `partial` | High | Make `GameTranslation` the explicit title source, or approve a separate schema change. Clarify the return contract of generic game creation and test creation before/after translations. |
-| DRIFT-005 | Meeting creation completeness | `DatabaseService.createMeeting()` inserts only `groupId` and `createdBy`; it relies on the deployed `Meet.meetDate` default and does not create attendees or game links. The product workstream expects date/time, attendees, and planned games to be persisted. | `partial` | Critical | Define the session aggregate and transaction boundary in DATA-003/DATA-004 before changing this flow. This is an incomplete behavior path, not evidence that the current schema is missing columns. |
+| DRIFT-005 | Meeting creation completeness | `DatabaseService.createMeeting()` inserts only `groupId` and `createdBy`; it relies on the deployed `Meet.meetDate` default and does not create attendees or game links. The v1 relations now exist, but the product flow still does not populate them atomically. | `partial` | Critical | Implement session creation and completion as transaction-scoped use cases in DATA-004. This is an incomplete behavior path, not evidence that the current schema is missing columns. |
 | DRIFT-006 | Token-expiry migration | Backend SQL reads and writes `verification_token_expires_at` and `password_reset_token_expires_at`. Migration 0002 is applied to live Turso, the columns are present, integrity/foreign-key checks pass, and `schema.sql` is synchronized. | `compliant` | Critical | Preserve this evidence while adding repeatable migration execution and environment-parity checks; nullable/expired values must continue to fail closed. |
 
 ## What is already aligned
@@ -54,12 +57,11 @@ product intent do not agree with it.
 
 ## Recommended order
 
-1. Record the canonical session model and ownership semantics in DATA-003,
-   including whether historical `MeetAccountGame` rows mean played games.
-2. Retire or rewrite the stale attendee/game SQL and frontend attendee route;
-   add a small integration fixture that proves the selected model against the
-   exported schema.
-3. Preserve the completed migration 0002 evidence while defining a reviewed,
+1. Complete the session API/write contract and transaction boundary against the
+   accepted DATA-003 model; the frontend attendee route remains stale.
+2. Add integration fixtures that prove the backfilled relations against the
+   synchronized schema without relying on production data.
+3. Preserve the completed migration 0002/0003 evidence while defining a reviewed,
    repeatable migration procedure and empty-state recreation in DATA-002.
 4. Only then implement the larger session and recommendation TODOs.
 

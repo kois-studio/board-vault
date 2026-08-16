@@ -390,19 +390,19 @@ compliance:
 
     - id: DATA-001
       status: partial
-      evidence: database/schema/schema.sql is the synchronized Turso export and database/drift-report.md records the repository reconciliation; stale MeetAttendee/MeetGame SQL, a frontend meetAttendees route without a current backend controller, and the indirect Game.title/GameTranslation contract remain unresolved; migration 0002 is applied but no migration runner or empty-state recreation exists
+      evidence: database/schema/schema.sql is the synchronized Turso export and database/drift-report.md records the repository reconciliation; migration 0003 defines and backfills MeetAttendee/MeetGame and backend detail/setup SQL is aligned, while the frontend meetAttendees route lacks a current backend controller and the indirect Game.title/GameTranslation contract remains unresolved; migrations 0002/0003 are applied but no migration runner or empty-state recreation exists
       priority: critical
-      next_action: Resolve the canonical session model and stale meeting paths, then establish repeatable migration execution and empty-state recreation.
+      next_action: Complete the session API/authorization contract and establish repeatable migration execution and empty-state recreation.
     - id: DATA-002
       status: partial
-      evidence: database/migrations/0001-add-clerk-user-id.sql is applied to live Turso and tested against a restored backup copy; the Clerk bridge/provisioning code is covered locally, but no migration runner or empty-state recreation exists
+      evidence: database/migrations/0001-add-clerk-user-id.sql, 0002-add-auth-token-expiry.sql, and 0003-add-session-relations.sql are applied to live Turso and tested against restored data; no migration runner or empty-state recreation exists
       priority: critical
-      next_action: Add migration execution/recreation tooling and complete the production Clerk deployment verification after identity-link and recovery review.
+      next_action: Add migration execution/recreation tooling and complete Clerk recovery evidence before legacy-auth removal.
     - id: DATA-003
       status: partial
-      evidence: SQLite tables and application checks exist, but constraints/transaction guarantees are not verified against deployment
+      evidence: SQLite tables, constraints, backfill counts, live integrity checks, and aligned backend queries exist for the v1 session relations; transaction guarantees and complete session API behavior are not verified
       priority: critical
-      next_action: Define enforced invariants and test them on a disposable database.
+      next_action: Add session API/write contracts and transaction tests on a disposable database.
     - id: DATA-004
       status: gap
       evidence: DashboardService creates a group and membership in separate calls; session creation is TODO

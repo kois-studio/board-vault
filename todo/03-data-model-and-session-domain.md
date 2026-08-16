@@ -12,6 +12,8 @@ Known examples:
 - Meeting creation does not consistently persist the selected date or related attendees/games.
 - The confirmation concept is unfinished and appears to be abandoned in some frontend code.
 
+The v1 decision is recorded in [ADR-0003](../docs/adr/0003-session-as-first-class-domain.md): keep `Meet` as the compatibility/session record, add explicit `MeetAttendee` and `MeetGame` relations, and preserve `MeetAccountGame` as the account-to-play relation.
+
 Relevant areas:
 
 - `database/schema/schema.sql` (current Turso export)
@@ -70,31 +72,35 @@ User ownership entity:
 ### Session attendance
 
 - session ID;
-- user or guest identity;
-- invitation/RSVP state;
-- attendance state;
-- response timestamp.
+- account identity for v1;
+- RSVP state: pending, accepted, or declined;
+- attendance state: unknown, attended, or absent;
+- response timestamp and row creation timestamp.
 
 ### Session game
 
 Use separate semantics for:
 
-- candidate/planned game;
-- selected game;
-- actually played game;
-- play order;
+- planned, played, or skipped game state;
+- optional play order;
 - duration;
 - winner or score, if supported;
 - post-play group rating and feedback.
+
+For v1, `MeetGame` stores the planned/played/skipped state and `MeetAccountGame`
+stores which accounts participated in a game. Rich play-event details remain
+deferred.
 
 ## Migration plan
 
 1. Treat the owner-confirmed documented schema as the current deployed baseline.
 2. Compare it with all SQL queries and publish a code/schema drift report. **Complete for the current baseline:** see [`database/drift-report.md`](../database/drift-report.md); unresolved findings remain deliberately open.
-3. Decide the canonical names and compatibility strategy.
+3. **Complete for v1:** accept the `Meet` compatibility mapping and separate
+   attendance, session-game, and play-participant relations in ADR-0003.
 4. Add a migration runner and numbered migrations.
 5. Add constraints, foreign keys, uniqueness rules, and indexes deliberately.
-6. Backfill or remove legacy meeting tables.
+6. Backfill the additive relations; do not delete `MeetAccountGame` until a
+   richer play-event migration exists.
 7. Update services and frontend contracts.
 8. Test migrations from an empty database and from a representative existing database.
 

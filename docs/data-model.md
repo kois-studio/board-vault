@@ -38,7 +38,7 @@ The schema snapshot names these tables/entities:
 - `Notification`
 - `GameReview`
 - `CollectionActivity`
-- `Meet` and `MeetAccountGame`
+- `Meet`, `MeetAttendee`, `MeetGame`, and `MeetAccountGame`
 - `FeatureFlags`
 - `GameProposal`
 
@@ -49,7 +49,7 @@ The backend source also has corresponding service/type/schema areas. The current
 - User, group, collection, invitation, review, notification, meet, and proposal mutations are exposed through many service/controller paths.
 - The deprecated direct membership endpoint currently implements an invite-only join boundary: the authenticated account must have a pending invitation for the target group, and the invitation is consumed after membership creation. The broader product decision on self-join versus invite-only groups remains open in the product workstream.
 - A group creation flow in `DashboardService` creates the group, looks up its ID by name, and creates the owner membership as separate operations. The repository does not document atomicity or partial-failure behavior.
-- `Meet`/`MeetAccountGame` currently support historical play lookup, but the canonical model for planned sessions, attendance, planned games, played games, cancellation, and completion is unresolved.
+- `Meet` remains the compatibility/session record. `MeetAttendee` now stores participant RSVP/attendance state, `MeetGame` stores planned/played/skipped session-game state, and `MeetAccountGame` preserves account-to-play links for historical play lookup. Full cancellation, completion, transaction, guest, and timezone behavior remains unfinished.
 - Cache TTLs are declared in `cache.types.ts` and selected services invalidate keys, but cache ownership, stale-read behavior, disabled mode, and correctness tests are not documented.
 
 ## Repository reconciliation result
@@ -59,13 +59,13 @@ The exported deployed schema does not match every current SQL path or historical
 The complete reconciliation, including evidence, compliance states, priorities,
 and unresolved decisions, is maintained in the [database drift report](../database/drift-report.md).
 
-- `database/schema/schema.sql` defines `Meet` and `MeetAccountGame`, but does not define `MeetAttendee` or `MeetGame`.
-- `backend/src/modules/common/database/database.service.ts` still queries `MeetAttendee` and `MeetGame` in meet details and group-meeting setup.
+- `database/schema/schema.sql` defines `Meet`, `MeetAttendee`, `MeetGame`, and `MeetAccountGame` after migration 0003.
+- `backend/src/modules/common/database/database.service.ts` now queries the explicit session relations for meet details and group-meeting setup; the frontend attendee route still has no current backend controller.
 - The deployed `Game` table has no `title` column. The application passes a title to `createGame()`, but the current insert path does not persist it in `Game`; titles are handled separately through translations in later code.
 - The deployed `OwnedGame.purchaseDate` is `DATE` without the documented default, and deployed indexes differ from the historical schema document.
-- Repository history shows `MeetAttendee` was removed in commit `ef6e3d2`, while later code still contains references to it; this is evidence of stale code, not evidence that the table exists in deployment.
+- Repository history shows the original `MeetAttendee` module was removed in commit `ef6e3d2`; migration 0003 deliberately reintroduced the relation as an additive, stateful session table rather than restoring the removed module unchanged.
 
-These are actionable code/schema drift findings. They must be resolved or explicitly retired before migration work or session-domain implementation.
+These findings are now split between resolved schema alignment and remaining API/product work. The unresolved frontend attendee route, game-title contract, transaction boundaries, and session lifecycle rules must be handled before claiming the session domain complete.
 
 ## Data safety rules for future agents
 
@@ -78,10 +78,10 @@ These are actionable code/schema drift findings. They must be resolved or explic
 
 ## Required follow-up
 
-1. Resolve the findings in the [DATA-001 drift report](../database/drift-report.md), beginning with the canonical session model and stale meeting paths.
-2. Execute `DATA-002`: create numbered migrations and prove empty-state recreation.
-3. Execute `DATA-003`: choose canonical session schema and distinguish planned from played state.
-4. Execute `DATA-004`: define transactions and partial-failure behavior for multi-record mutations.
+1. Resolve the remaining API findings in the [DATA-001 drift report](../database/drift-report.md), especially the frontend attendee route and game-title contract.
+2. Execute `DATA-003`: complete the session API/write contract against the accepted relation model.
+3. Execute `DATA-004`: define transactions and partial-failure behavior for multi-record mutations.
+4. Execute `DATA-002`: create migration execution tooling and prove empty-state recreation.
 5. Add disposable integration data and backup/restore rehearsal before launch claims.
 
 ## Source evidence

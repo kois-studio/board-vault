@@ -43,3 +43,14 @@ live `board-vault` on 2026-08-16 after a fresh local dump. Live integrity and
 foreign-key checks passed, both columns were present, and no existing
 verification or password-reset rows had an expiry-bearing token at verification
 time. `database/schema/schema.sql` was re-exported after rollout.
+
+## Applied migration 0003
+
+`0003-add-session-relations.sql` adds `MeetAttendee` for participant RSVP and
+attendance state and `MeetGame` for planned/played/skipped session-game state.
+It backfills selected participants and played games from distinct historical
+`MeetAccountGame` pairs without deleting or rewriting those play links.
+
+Migration 0003 was applied to live `board-vault` on 2026-08-16 after a fresh
+local dump. It produced 63 attendee rows and 22 session-game rows from 101
+source play links; integrity and foreign-key checks passed.

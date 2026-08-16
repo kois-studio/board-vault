@@ -1020,7 +1020,7 @@ export class DatabaseService implements OnModuleInit {
                 (
                     SELECT json_group_array(mg.gameId)
                     FROM MeetGame mg
-                    WHERE mg.meetId = m.id
+                    WHERE mg.meetId = m.id AND mg.gameStatus = 'played'
                 ) AS playedGames
             FROM Meet m
             INNER JOIN GroupMembership gm ON gm.groupId = m.groupId
@@ -1040,7 +1040,7 @@ export class DatabaseService implements OnModuleInit {
     addGroupMembersToMeeting(meetId: number, groupId: number) {
         return this._tursoExecute({
             sql: `
-            INSERT INTO MeetAttendee (meetId, accountId)
+            INSERT OR IGNORE INTO MeetAttendee (meetId, accountId)
             SELECT ?, gm.accountId
             FROM GroupMembership gm
             WHERE gm.groupId = ?;
