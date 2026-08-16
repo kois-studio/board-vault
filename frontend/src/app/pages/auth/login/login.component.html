@@ -1,6 +1,14 @@
-<h1 class="text-4xl text-center pt-24 lg:pt-48">Login</h1>
-<p class="text-secondary text-center py-8">
-    New here? <a routerLink="/register" class="underline">Create an account</a>
-</p>
+@if (clerkIsAvailable()) {
+    <h1 class="text-4xl text-center pt-24 lg:pt-48">Sign in to Board Vault</h1>
+    <p class="text-secondary text-center py-8">Use your Board Vault email, password, or enabled sign-in method.</p>
+    <div class="flex justify-center">
+        <button type="button" class="app-btn-primary" (click)="openClerkSignIn()">Open secure sign-in</button>
+    </div>
+} @else {
+    <h1 class="text-4xl text-center pt-24 lg:pt-48">Login</h1>
+    <p class="text-secondary text-center py-8">
+        New here? <a routerLink="/register" class="underline">Create an account</a>
+    </p>
 
-<app-form-login />
+    <app-form-login />
+}

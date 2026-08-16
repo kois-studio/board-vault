@@ -1,6 +1,14 @@
-<h1 class="text-4xl text-center pt-24 lg:pt-48">Create an account</h1>
-<p class="text-secondary text-center py-8">
-    Already have an account? <a routerLink="/login" class="underline">Login</a>
-</p>
+@if (clerkIsAvailable()) {
+    <h1 class="text-4xl text-center pt-24 lg:pt-48">Create your Board Vault account</h1>
+    <p class="text-secondary text-center py-8">Set up your identity directly in Board Vault with Clerk.</p>
+    <div class="flex justify-center">
+        <button type="button" class="app-btn-primary" (click)="openClerkSignUp()">Open secure sign-up</button>
+    </div>
+} @else {
+    <h1 class="text-4xl text-center pt-24 lg:pt-48">Create an account</h1>
+    <p class="text-secondary text-center py-8">
+        Already have an account? <a routerLink="/login" class="underline">Login</a>
+    </p>
 
-<app-form-register />
+    <app-form-register />
+}
