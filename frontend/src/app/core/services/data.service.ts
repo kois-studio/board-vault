@@ -57,6 +57,8 @@ export class DataService {
     public readonly userHistoryError = signal(false)
     public readonly userInvitationsLoading = signal(false)
     public readonly userInvitationsError = signal(false)
+    public readonly userNotificationsLoading = signal(false)
+    public readonly userNotificationsError = signal(false)
     public readonly userWishlist = signal<Array<GameCompleteType>>([])
     public readonly userCollectionActivity = signal<Array<CollectionActivityWithGameDataType>>([])
     public readonly userProposals = signal<Array<GameProposalType>>([])
@@ -129,6 +131,8 @@ export class DataService {
         this.userHistoryError.set(false)
         this.userInvitationsLoading.set(false)
         this.userInvitationsError.set(false)
+        this.userNotificationsLoading.set(false)
+        this.userNotificationsError.set(false)
         this.userWishlist.set([])
         this.userCollectionActivity.set([])
         this.userProposals.set([])
@@ -196,14 +200,24 @@ export class DataService {
     }
 
     private _getUserNotifications(userId: number) {
-        this.api.getUserNotifications(userId).subscribe({
+        this.userNotificationsLoading.set(true)
+        this.userNotificationsError.set(false)
+        this.api.getUserNotifications(userId).pipe(
+            finalize(() => this.userNotificationsLoading.set(false)),
+        ).subscribe({
             next: notifications => {
                 this.userNotifications.set(notifications)
             },
             error: () => {
+                this.userNotificationsError.set(true)
                 this.toastService.error("Error retrieving user's notifications")
             },
         })
+    }
+
+    public retryUserNotifications(): void {
+        const currentUser = this.currentUser()
+        if (currentUser) this._getUserNotifications(currentUser.id)
     }
 
     private _getUserReviews(accountId: number) {
