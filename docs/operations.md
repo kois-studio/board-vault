@@ -43,6 +43,11 @@ Use the exact commands and current results in [AGENTS.md](AGENTS.md) and [testin
   `#1` from the development Clerk identity to production identity
   `user_3HxXASrQGVtKs0Cg2CGzfxmjeMS`; the header link warning disappeared and a
   read-only Turso check confirmed the production Clerk ID on the account.
+- On 2026-08-16, migration `0002-add-auth-token-expiry.sql` was applied to live
+  Turso after a fresh local dump. Integrity and foreign-key checks passed, the
+  two expiry columns were present, the preserved aggregate counts remained 16
+  accounts, 13 meets, and 101 meet/game links, and the committed schema export
+  was updated. No token values were printed or committed.
 
 ## Deployment shape
 
