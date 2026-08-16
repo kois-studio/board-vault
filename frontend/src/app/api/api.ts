@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
+import { map } from 'rxjs'
 import { environment } from '../../environments/environment'
 import type {
     AdminGamesResultType,
@@ -37,6 +38,7 @@ import type {
     UserStatsType,
     UserType,
 } from './api.types'
+import { meetDetailsSchema, meetSchema, recommendationsSchema, scheduledSessionCreatedSchema, sessionCreatedSchema, sessionStatusUpdatedSchema, successSchema } from './api.schemas'
 
 @Injectable({ providedIn: 'root' })
 export class Api {
@@ -154,23 +156,23 @@ export class Api {
     }
 
     getMeetById(meetId: number) {
-        return this.http.get<MeetType>(`${this.url}/meets/${meetId}`)
+        return this.http.get<MeetType>(`${this.url}/meets/${meetId}`).pipe(map(response => meetSchema.parse(response)))
     }
 
     getMeetDetailsById(meetId: number) {
-        return this.http.get<MeetWithAttendeesAndGamesType>(`${this.url}/meets/${meetId}/details`)
+        return this.http.get<MeetWithAttendeesAndGamesType>(`${this.url}/meets/${meetId}/details`).pipe(map(response => meetDetailsSchema.parse(response)))
     }
 
     createPlaySession(body: CreatePlaySessionRequest) {
-        return this.http.post<SessionCreatedType>(`${this.url}/sessions`, body)
+        return this.http.post<SessionCreatedType>(`${this.url}/sessions`, body).pipe(map(response => sessionCreatedSchema.parse(response)))
     }
 
     scheduleSession(body: ScheduleSessionRequest) {
-        return this.http.post<ScheduledSessionCreatedType>(`${this.url}/sessions/scheduled`, body)
+        return this.http.post<ScheduledSessionCreatedType>(`${this.url}/sessions/scheduled`, body).pipe(map(response => scheduledSessionCreatedSchema.parse(response)))
     }
 
     updateSessionStatus(sessionId: number, body: UpdateSessionStatusRequest) {
-        return this.http.patch<SessionStatusUpdatedType>(`${this.url}/sessions/${sessionId}/status`, body)
+        return this.http.patch<SessionStatusUpdatedType>(`${this.url}/sessions/${sessionId}/status`, body).pipe(map(response => sessionStatusUpdatedSchema.parse(response)))
     }
 
     // #region meet attendees
@@ -345,7 +347,7 @@ export class Api {
     }
 
     getRecommendations(body: { groupId: number; attendeeIds: Array<number>; availableMinutes?: number }) {
-        return this.http.post<RecommendationsType>(`${this.url}/play/recommendations`, body)
+        return this.http.post<RecommendationsType>(`${this.url}/play/recommendations`, body).pipe(map(response => recommendationsSchema.parse(response)))
     }
 
     createRecommendationFeedback(body: {
@@ -354,7 +356,7 @@ export class Api {
         attendeeIds: Array<number>
         feedback: 'interested' | 'not_for_us' | 'played'
     }) {
-        return this.http.post<{ success: true }>(`${this.url}/play/recommendations/feedback`, body)
+        return this.http.post<{ success: true }>(`${this.url}/play/recommendations/feedback`, body).pipe(map(response => successSchema.parse(response)))
     }
 
     // --------------------------------------------------------------------------

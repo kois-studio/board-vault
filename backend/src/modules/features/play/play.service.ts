@@ -110,6 +110,7 @@ export class PlayService {
         return {
             gameData: {
                 id: gameId,
+                title: titleEn,
                 imageUrl: String(row[1]),
                 gameAvgDuration,
                 minPlayers,
