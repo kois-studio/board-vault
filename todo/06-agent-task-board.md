@@ -1170,6 +1170,24 @@ Verified: frontend build, focused Biome check for the changed invitation modal, 
 
 Known follow-ups: Run the two-account invitation journey with disposable Clerk state and seeded data; complete group-role/member-visibility decisions.
 
+Continuation claim: EQ-003
+
+Owner: Codex
+
+Claimed: 2026-08-16
+
+Branch/worktree: main / shared workspace
+
+Scope: make profile notification loading and failure states truthful and retryable
+
+Review continuation: EQ-003
+
+Changed: The profile notification modal now distinguishes loading, failed fetch, retry, and empty states. The shared data service exposes notification request state and a retry method while preserving the last successful list during a failed refresh.
+
+Verified: frontend build, focused Biome check for the changed notification modal, and `git diff --check` pass.
+
+Known follow-ups: Review focus management for profile modals and decide whether notifications need pagination or retention limits.
+
 When claiming a task, add:
 
 ```text
