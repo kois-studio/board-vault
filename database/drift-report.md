@@ -10,6 +10,14 @@ product intent do not agree with it.
 - **Baseline:** [`schema/schema.sql`](schema/schema.sql), the owner-supplied
   Turso export verified on 2026-08-12.
 - **Repository audit:** backend and frontend source inspected on 2026-08-16.
+- **Live aggregate probe:** read-only Turso CLI queries on 2026-08-16 found 16
+  accounts, 5 groups, 13 meets, and 101 `MeetAccountGame` rows. Every meet has
+  at least one link; per-meet aggregates contain 2–8 distinct accounts and 1–3
+  distinct games. The probe did not expose personal fields and did not mutate
+  the database.
+- **Live migration probe:** `Account` currently contains `clerkUserId`, but
+  does not contain `verification_token_expires_at` or
+  `password_reset_token_expires_at`; migration 0002 remains unapplied.
 - **Authority:** the deployed schema snapshot is authoritative for current
   tables and columns. Code, old schema notes, route names, and TypeScript types
   are evidence of intended or historical behavior only.
