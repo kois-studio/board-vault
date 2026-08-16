@@ -959,9 +959,22 @@ Scope: add targeted frontend response validation for the core play/session flows
 
 Review continuation: EQ-004
 
-Changed: Added Zod schemas at the Angular API boundary for meet summaries/details, completed and scheduled session creation, session lifecycle updates, recommendations, and recommendation feedback. The frontend game type now correctly treats the legacy `title` field as optional because translated game responses use `titleTranslations` as their canonical title source.
+Changed: Added Zod schemas at the Angular API boundary for meet summaries/details, completed and scheduled session creation, session lifecycle updates, recommendations, and recommendation feedback. Recommendation responses now include their English fallback as the explicit legacy `title` field required by the current frontend game contract; other translated game responses continue to use `titleTranslations`.
 Verified: Clean frontend `npm ci --ignore-scripts`, `npm run build`, and `npm run e2e` pass; the public Playwright checks report 3 passed and 4 authenticated checks skipped without Clerk storage state. `git diff --check` passes.
 Known follow-ups: Expand response schemas to the remaining API methods, add malformed-response tests, and generate/verify a versioned OpenAPI or consumer contract.
+
+Continuation claim: PROD-005
+
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: make dashboard overview states truthful when core data requests fail
+
+Review continuation: PROD-005
+
+Changed: Dashboard overview now distinguishes loading from loaded data, renders a retryable warning when groups, collection, history, or stats fail, avoids showing failed requests as zero counts, and suppresses the first-entry onboarding prompt until the required requests are known to have succeeded. DataService now tracks these errors, resets/restarts the corresponding loading keys, and exposes dashboard retry methods.
+Verified: `cd frontend && npm run build` passes with the documented baseline warnings; `git diff --check` passes.
+Known follow-ups: Add authenticated browser coverage for dashboard failure/retry states and continue the broader responsive/accessibility review.
 
 When claiming a task, add:
 

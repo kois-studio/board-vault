@@ -543,7 +543,7 @@ compliance:
       next_action: Treat SEC-002 as the authoritative remediation.
     - id: ANGULAR-014
       status: partial
-      evidence: loading/error patterns exist across play pages; a history skeleton TODO and broader authenticated state coverage remain
+      evidence: loading/error patterns exist across dashboard and play pages; a history skeleton TODO and broader authenticated state coverage remain
       priority: high
       next_action: Make async states explicit for the flagship journey.
     - id: ANGULAR-015

@@ -111,7 +111,7 @@ Relevant surface: [`dashboard-page`](../frontend/src/app/pages/dashboard-page/).
 - Keep dashboard links limited to existing routes; the dead activity and analytics links have been removed.
 - Make dashboard cards represent the correct entity and count.
 - Define a useful first-login empty state that guides a user to create/join a group and add games.
-- Define loading, failure, and retry states for each dashboard data section; history and upcoming-session surfaces now distinguish loading, failure, and empty states.
+- Define loading, failure, and retry states for each dashboard data section; dashboard overview, history, and upcoming-session surfaces now distinguish loading, failure, and empty states, with dashboard retry recovering the core overview requests.
 - Review responsive layout and visual hierarchy.
 
 ### 7. Collection — Partial / Needs review

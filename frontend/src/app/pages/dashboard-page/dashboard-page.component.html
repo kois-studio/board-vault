@@ -9,28 +9,43 @@
             </div>
         </div>
 
+        @if (isLoadingOverview()) {
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4" aria-label="Loading dashboard overview" aria-busy="true">
+                @for (item of [1, 2, 3, 4]; track item) {
+                    <div class="h-36 animate-pulse rounded-2xl border border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900" aria-hidden="true"></div>
+                }
+            </div>
+        } @else {
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <a routerLink="/groups" class="rounded-2xl border border-zinc-200 bg-white p-5 transition hover:border-indigo-300 hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-indigo-700">
                 <span class="text-sm text-zinc-500 dark:text-zinc-400">Groups</span>
-                <span class="mt-2 block text-3xl font-bold text-zinc-900 dark:text-white">{{ userGroups$().length }}</span>
+                <span class="mt-2 block text-3xl font-bold text-zinc-900 dark:text-white">{{ userGroupsError() ? '—' : userGroups$().length }}</span>
                 <span class="mt-2 block text-sm font-medium text-indigo-600 dark:text-indigo-400">View groups →</span>
             </a>
             <a routerLink="/collection/games" class="rounded-2xl border border-zinc-200 bg-white p-5 transition hover:border-indigo-300 hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-indigo-700">
                 <span class="text-sm text-zinc-500 dark:text-zinc-400">Owned games</span>
-                <span class="mt-2 block text-3xl font-bold text-zinc-900 dark:text-white">{{ userGames$().length }}</span>
+                <span class="mt-2 block text-3xl font-bold text-zinc-900 dark:text-white">{{ userGamesError() ? '—' : userGames$().length }}</span>
                 <span class="mt-2 block text-sm font-medium text-indigo-600 dark:text-indigo-400">Open collection →</span>
             </a>
             <a routerLink="/play/history" class="rounded-2xl border border-zinc-200 bg-white p-5 transition hover:border-indigo-300 hover:shadow-sm dark:border-zinc-800 dark:hover:border-indigo-700">
                 <span class="text-sm text-zinc-500 dark:text-zinc-400">Recorded history</span>
-                <span class="mt-2 block text-3xl font-bold text-zinc-900 dark:text-white">{{ userHistory$().length }}</span>
+                <span class="mt-2 block text-3xl font-bold text-zinc-900 dark:text-white">{{ userHistoryError() ? '—' : userHistory$().length }}</span>
                 <span class="mt-2 block text-sm font-medium text-indigo-600 dark:text-indigo-400">View history →</span>
             </a>
             <div class="rounded-2xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
                 <span class="text-sm text-zinc-500 dark:text-zinc-400">Collection value</span>
-                <span class="mt-2 block text-3xl font-bold text-zinc-900 dark:text-white">${{ userStats$().totalGamesValue }}</span>
+                <span class="mt-2 block text-3xl font-bold text-zinc-900 dark:text-white">{{ userStatsError() ? '—' : '$' + userStats$().totalGamesValue }}</span>
                 <span class="mt-2 block text-sm text-zinc-500 dark:text-zinc-400">From saved purchase data</span>
             </div>
         </div>
+        }
+
+        @if (hasOverviewError()) {
+            <div class="mt-4 flex flex-col gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900 sm:flex-row sm:items-center sm:justify-between dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200" role="alert">
+                <span>Some dashboard data could not be loaded. Your saved data is unchanged.</span>
+                <button type="button" class="font-semibold underline underline-offset-2" (click)="retryOverview()">Retry</button>
+            </div>
+        }
     </section>
 
     <section class="mt-10" aria-labelledby="dashboard-next-heading">
@@ -61,7 +76,7 @@
         </div>
     </section>
 
-    @if (userGroups$().length === 0 || userGames$().length === 0) {
+    @if (!isLoadingOverview() && !hasOverviewError() && (userGroups$().length === 0 || userGames$().length === 0)) {
         <section class="mt-10 rounded-2xl border border-indigo-100 bg-indigo-50 p-6 dark:border-indigo-900/50 dark:bg-indigo-950/30" aria-labelledby="dashboard-empty-heading">
             <h2 id="dashboard-empty-heading" class="text-lg font-semibold text-zinc-900 dark:text-white">Your workspace is ready for its first entries.</h2>
             <p class="mt-2 max-w-2xl leading-7 text-zinc-600 dark:text-zinc-300">
