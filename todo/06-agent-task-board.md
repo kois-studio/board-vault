@@ -21,7 +21,7 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 
 | ID | Status | Workstream | Task | Dependencies |
 |---|---|---|---|---|
-| PROD-001 | TODO | Product | Decide and document canonical brand, nouns, persona, and ownership policy. Session semantics are accepted in ADR-0003. | None |
+| PROD-001 | TODO | Product | Decide and document canonical brand, nouns, and persona; recommendation ownership is accepted as collective selected-attendee ownership in ADR-0002, and session semantics are accepted in ADR-0003. | None |
 | PROD-002 | REVIEW | Core loop | Implement a real first-five-games collection activation flow. | SEC-002, DATA-002 |
 | PROD-003 | IN_PROGRESS | Core loop | Finish invitation acceptance, group roles, and member visibility; invitation fetch now has truthful loading/error/retry states. | SEC-002, DATA-003 |
 | PROD-004 | REVIEW | Core loop | Implement deterministic recommendation scoring with explanations and unit tests. | PROD-001, DATA-003 |

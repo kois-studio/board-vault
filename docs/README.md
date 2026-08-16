@@ -22,7 +22,7 @@ This directory is the canonical operating manual for AI developer agents working
 - [Frontend UI/UX review register](review-uiux.md)
 - [ADR index](adr/README.md)
 - [ADR 0001 — Group-first product context](adr/0001-group-first-product-context.md)
-- [ADR 0002 — Deterministic recommendations](adr/0002-deterministic-explainable-recommendations.md)
+- [ADR 0002 — Deterministic recommendations](adr/0002-deterministic-explainable-recommendations.md) — Accepted selected-attendee ownership policy
 - [ADR 0003 — Session domain](adr/0003-session-as-first-class-domain.md)
 - [ADR 0004 — Clerk-managed authentication](adr/0004-clerk-managed-authentication.md)
 - [ADR 0005 — Verification and password-reset token lifecycle](adr/0005-auth-token-lifecycle.md)

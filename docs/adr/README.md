@@ -1,15 +1,15 @@
 # Architecture decision records
 
-This directory contains durable project decisions and explicitly marked proposals. ADRs 0001–0002 remain proposals derived from existing product direction. ADR-0003 is accepted for the session domain and ADR-0004 is accepted for staged authentication rollout:
+This directory contains durable project decisions and explicitly marked proposals. ADR-0001 remains a proposal derived from existing product direction. ADR-0002 is accepted for the first-release recommendation eligibility and scoring policy. ADR-0003 is accepted for the session domain and ADR-0004 is accepted for staged authentication rollout:
 
 - [0001 — Group-first product context](0001-group-first-product-context.md)
-- [0002 — Deterministic and explainable first-release recommendations](0002-deterministic-explainable-recommendations.md)
+- [0002 — Deterministic and explainable first-release recommendations](0002-deterministic-explainable-recommendations.md) — Accepted; collective selected-attendee ownership is the v1 eligibility rule
 - [0003 — Session as a first-class domain concept](0003-session-as-first-class-domain.md) — Accepted; lifecycle work is in progress
 - [0004 — Clerk-managed authentication with preserved local accounts](0004-clerk-managed-authentication.md) — Accepted; rollout in progress
 - [0005 — Verification and password-reset token lifecycle](0005-auth-token-lifecycle.md) — Accepted; migration 0002 applied to live Turso on 2026-08-16
 - [0006 — Public nested-user response boundary](0006-user-response-privacy.md) — Accepted; self/admin DTO audit remains open
 
-The project had no accepted ADRs before ADR-0003 was adopted. Proposals do not authorize implementation and must not be treated as settled decisions until accepted.
+ADR-0001 remains a proposal and does not authorize implementation. Accepted ADRs are durable constraints unless a later ADR explicitly supersedes them.
 
 Create an ADR when a decision changes architecture, persistence, security policy, API compatibility, deployment responsibility, or another durable project constraint. Do not use ADRs for TODOs, bugs, status updates, or temporary investigations.
 
