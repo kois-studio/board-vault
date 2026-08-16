@@ -6,6 +6,13 @@ import {
     accessTokenSchema,
     authStatusSchema,
     availabilitySchema,
+    adminApprovalResponseSchema,
+    adminGameProposalSchema,
+    adminGameProposalsSchema,
+    adminGamesSchema,
+    adminSuccessResponseSchema,
+    adminTagCategoriesSchema,
+    adminTagsSchema,
     browseGamesSchema,
     clerkAuthStatusSchema,
     gameOwnedSchema,
@@ -21,6 +28,9 @@ import {
     sessionCreatedSchema,
     sessionStatusUpdatedSchema,
     successSchema,
+    gameProposalSchema,
+    tagCategorySchema,
+    tagSchema,
     userCollectionActivitySchema,
     userInvitationsSchema,
     userGroupsSchema,
@@ -29,6 +39,8 @@ import {
     userMeetsSchema,
     userNotificationsSchema,
     userReviewsSchema,
+    userProposalStatsSchema,
+    userProposalsSchema,
     userStatsSchema,
     wishlistResponseSchema,
 } from './api.schemas'
@@ -227,15 +239,15 @@ export class Api {
     // #region admin
     // --------------------------------------------------------------------------
     getAdminTagCategories() {
-        return this.http.get<Array<TagCategoryType>>(`${this.url}/admin/tag-categories`)
+        return this.http.get<Array<TagCategoryType>>(`${this.url}/admin/tag-categories`).pipe(map(response => adminTagCategoriesSchema.parse(response)))
     }
 
     createAdminTagCategory(name: string) {
-        return this.http.post<TagCategoryType>(`${this.url}/admin/tag-categories`, { name })
+        return this.http.post<TagCategoryType>(`${this.url}/admin/tag-categories`, { name }).pipe(map(response => tagCategorySchema.parse(response)))
     }
 
     updateAdminTagCategory(id: number, name: string) {
-        return this.http.put<TagCategoryType>(`${this.url}/admin/tag-categories/${id}`, { name })
+        return this.http.put<TagCategoryType>(`${this.url}/admin/tag-categories/${id}`, { name }).pipe(map(response => tagCategorySchema.parse(response)))
     }
 
     deleteAdminTagCategory(id: number) {
@@ -243,15 +255,15 @@ export class Api {
     }
 
     getAdminTags() {
-        return this.http.get<Array<TagType>>(`${this.url}/admin/tags`)
+        return this.http.get<Array<TagType>>(`${this.url}/admin/tags`).pipe(map(response => adminTagsSchema.parse(response)))
     }
 
     createAdminTag(payload: { name: string; categoryId: number }) {
-        return this.http.post<TagType>(`${this.url}/admin/tags`, payload)
+        return this.http.post<TagType>(`${this.url}/admin/tags`, payload).pipe(map(response => tagSchema.parse(response)))
     }
 
     updateAdminTag(id: number, payload: { name: string; categoryId: number }) {
-        return this.http.put<TagType>(`${this.url}/admin/tags/${id}`, payload)
+        return this.http.put<TagType>(`${this.url}/admin/tags/${id}`, payload).pipe(map(response => tagSchema.parse(response)))
     }
 
     deleteAdminTag(id: number) {
@@ -266,7 +278,7 @@ export class Api {
         params.append('page', page.toString())
         params.append('limit', limit.toString())
 
-        return this.http.get<AdminGamesResultType>(`${this.url}/admin/games?${params.toString()}`)
+        return this.http.get<AdminGamesResultType>(`${this.url}/admin/games?${params.toString()}`).pipe(map(response => adminGamesSchema.parse(response)))
     }
 
     updateAdminGameTranslations(gameId: number, translations: Record<string, string>) {
@@ -405,15 +417,15 @@ export class Api {
     // #region Game Proposals
 
     createGameProposal(userId: number, proposalData: CreateGameProposalType) {
-        return this.http.post<GameProposalType>(`${this.url}/profile/users/${userId}/proposals`, proposalData)
+        return this.http.post<GameProposalType>(`${this.url}/profile/users/${userId}/proposals`, proposalData).pipe(map(response => gameProposalSchema.parse(response)))
     }
 
     getUserProposals(userId: number) {
-        return this.http.get<Array<GameProposalType>>(`${this.url}/profile/users/${userId}/proposals`)
+        return this.http.get<Array<GameProposalType>>(`${this.url}/profile/users/${userId}/proposals`).pipe(map(response => userProposalsSchema.parse(response)))
     }
 
     getUserProposalStats(userId: number) {
-        return this.http.get<UserProposalStatsType>(`${this.url}/profile/users/${userId}/proposal-stats`)
+        return this.http.get<UserProposalStatsType>(`${this.url}/profile/users/${userId}/proposal-stats`).pipe(map(response => userProposalStatsSchema.parse(response)))
     }
 
     // #endregion
@@ -434,11 +446,11 @@ export class Api {
                 totalItems: number
                 itemsPerPage: number
             }
-        }>(`${this.url}/admin/proposals?${params.toString()}`)
+        }>(`${this.url}/admin/proposals?${params.toString()}`).pipe(map(response => adminGameProposalsSchema.parse(response)))
     }
 
     getAdminGameProposal(id: number) {
-        return this.http.get<GameProposalType & { submitterId: number; reviewerId?: number }>(`${this.url}/admin/proposals/${id}`)
+        return this.http.get<GameProposalType & { submitterId: number; reviewerId?: number }>(`${this.url}/admin/proposals/${id}`).pipe(map(response => adminGameProposalSchema.parse(response)))
     }
 
     approveGameProposal(
@@ -453,22 +465,22 @@ export class Api {
             tagIds?: number[]
         },
     ) {
-        return this.http.post<{ success: boolean; createdGameId?: number }>(`${this.url}/admin/proposals/${id}/approve`, approvalData)
+        return this.http.post<{ success: boolean; createdGameId?: number }>(`${this.url}/admin/proposals/${id}/approve`, approvalData).pipe(map(response => adminApprovalResponseSchema.parse(response)))
     }
 
     rejectGameProposal(id: number, rejectionData: { reviewNotes: string }) {
-        return this.http.post<{ success: boolean }>(`${this.url}/admin/proposals/${id}/reject`, rejectionData)
+        return this.http.post<{ success: boolean }>(`${this.url}/admin/proposals/${id}/reject`, rejectionData).pipe(map(response => adminSuccessResponseSchema.parse(response)))
     }
 
     markGameProposalAsDuplicate(id: number, reviewNotes?: string) {
         const params = new URLSearchParams()
         if (reviewNotes) params.append('reviewNotes', reviewNotes)
 
-        return this.http.post<{ success: boolean }>(`${this.url}/admin/proposals/${id}/duplicate?${params.toString()}`, {})
+        return this.http.post<{ success: boolean }>(`${this.url}/admin/proposals/${id}/duplicate?${params.toString()}`, {}).pipe(map(response => adminSuccessResponseSchema.parse(response)))
     }
 
     deleteGameProposal(id: number) {
-        return this.http.delete<{ success: boolean }>(`${this.url}/admin/proposals/${id}`)
+        return this.http.delete<{ success: boolean }>(`${this.url}/admin/proposals/${id}`).pipe(map(response => adminSuccessResponseSchema.parse(response)))
     }
 
     // #endregion
