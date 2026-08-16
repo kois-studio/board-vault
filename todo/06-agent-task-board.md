@@ -1188,6 +1188,24 @@ Verified: frontend build, focused Biome check for the changed notification modal
 
 Known follow-ups: Review focus management for profile modals and decide whether notifications need pagination or retention limits.
 
+Continuation claim: PROD-002
+
+Owner: Codex
+
+Claimed: 2026-08-16
+
+Branch/worktree: main / shared workspace
+
+Scope: make game-detail collection, wishlist, review, and purchase mutations recoverable after API failures
+
+Review continuation: PROD-002
+
+Changed: Game-detail mutation busy flags now reset through RxJS `finalize`, including error paths, so a failed request leaves wishlist, review, ownership, and purchase-detail controls retryable without a reload.
+
+Verified: frontend build, focused Biome check for the changed component, and `git diff --check` pass.
+
+Known follow-ups: Add authenticated browser failure-injection coverage for collection mutations and review the game-detail responsive/accessibility states.
+
 When claiming a task, add:
 
 ```text

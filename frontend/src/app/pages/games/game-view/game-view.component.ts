@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { Component, OnDestroy, computed, effect, inject, signal } from '@angular/core'
 import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
-import { Subscription } from 'rxjs'
+import { Subscription, finalize } from 'rxjs'
 import { Api } from '../../../api/api'
 import type { GameViewType } from '../../../api/api.types'
 import { CardGameComponent } from '../../../components/card-game/card-game.component'
@@ -177,7 +177,11 @@ export class GameViewPageComponent implements OnDestroy {
         }, 300)
 
         // save the wishlist status
-        this.api.toggleWishlist(currentUser.id, gameId).subscribe({
+        this.api.toggleWishlist(currentUser.id, gameId).pipe(
+            finalize(() => {
+                this.PREVENT_SPAM.isLoadingWishlist = false
+            }),
+        ).subscribe({
             next: (response) => {
                 this.gameView$.update((game) => {
                     if (!game) {
@@ -208,9 +212,6 @@ export class GameViewPageComponent implements OnDestroy {
                 // On error, reload the game data
                 this._loadGameData(currentUser.id, gameId)
             },
-            complete: () => {
-                this.PREVENT_SPAM.isLoadingWishlist = false
-            },
         })
     }
 
@@ -226,7 +227,11 @@ export class GameViewPageComponent implements OnDestroy {
 
         this.PREVENT_SPAM.isLoadingReview = true
 
-        this.api.saveGameReview(currentUser.id, gameId, reviewValue).subscribe({
+        this.api.saveGameReview(currentUser.id, gameId, reviewValue).pipe(
+            finalize(() => {
+                this.PREVENT_SPAM.isLoadingReview = false
+            }),
+        ).subscribe({
             next: (res) => {
                 this.gameView$.update((game) => {
                     if (!game) {
@@ -249,7 +254,6 @@ export class GameViewPageComponent implements OnDestroy {
                 this._loadGameData(currentUser.id, gameId)
             },
             complete: () => {
-                this.PREVENT_SPAM.isLoadingReview = false
                 this.dataService.refreshGameReviews()
             },
         })
@@ -266,7 +270,11 @@ export class GameViewPageComponent implements OnDestroy {
 
         this.PREVENT_SPAM.isLoadingAddToCollection = true
 
-        this.api.addGameToUserCollection(currentUser.id, gameId).subscribe({
+        this.api.addGameToUserCollection(currentUser.id, gameId).pipe(
+            finalize(() => {
+                this.PREVENT_SPAM.isLoadingAddToCollection = false
+            }),
+        ).subscribe({
             next: (res) => {
                 this.toastService.success('Game added to collection')
 
@@ -304,9 +312,6 @@ export class GameViewPageComponent implements OnDestroy {
                 // On error, reload the game data
                 this._loadGameData(currentUser.id, gameId)
             },
-            complete: () => {
-                this.PREVENT_SPAM.isLoadingAddToCollection = false
-            },
         })
     }
 
@@ -320,7 +325,11 @@ export class GameViewPageComponent implements OnDestroy {
 
         this.PREVENT_SPAM.isLoadingRemoveFromCollection = true
 
-        this.api.removeGameFromUserCollection(currentUser.id, gameId).subscribe({
+        this.api.removeGameFromUserCollection(currentUser.id, gameId).pipe(
+            finalize(() => {
+                this.PREVENT_SPAM.isLoadingRemoveFromCollection = false
+            }),
+        ).subscribe({
             next: (res) => {
                 this.toastService.success('Game removed from collection')
                 this.gameView$.update((game) => {
@@ -336,9 +345,6 @@ export class GameViewPageComponent implements OnDestroy {
                 this.toastService.error('Error removing game from collection')
                 // On error, reload the game data
                 this._loadGameData(currentUser.id, gameId)
-            },
-            complete: () => {
-                this.PREVENT_SPAM.isLoadingRemoveFromCollection = false
             },
         })
     }
@@ -364,7 +370,11 @@ export class GameViewPageComponent implements OnDestroy {
 
         this.PREVENT_SPAM.isLoadingUpdateOwnership = true
 
-        this.api.patchGameOwnership(currentUser.id, gameId, updatedOwnedGameData).subscribe({
+        this.api.patchGameOwnership(currentUser.id, gameId, updatedOwnedGameData).pipe(
+            finalize(() => {
+                this.PREVENT_SPAM.isLoadingUpdateOwnership = false
+            }),
+        ).subscribe({
             next: (res) => {
                 this.gameView$.update((game) => {
                     if (!game) {
@@ -379,9 +389,6 @@ export class GameViewPageComponent implements OnDestroy {
                 this.toastService.error('Error updating purchase details')
                 // On error, reload the game data
                 this._loadGameData(currentUser.id, gameId)
-            },
-            complete: () => {
-                this.PREVENT_SPAM.isLoadingUpdateOwnership = false
             },
         })
     }
