@@ -4,16 +4,19 @@ import type {
     GameCompleteType,
     GroupType,
     GroupWithMembersAndGames,
+    HistoryRecordType,
     InvitationWithAccountsData,
     InvitationWithExtraData,
     MeetType,
     MeetWithAttendeesAndGamesType,
+    NotificationType,
     PublicUserType,
     RecommendationsType,
     ScheduledSessionCreatedType,
     SessionAttendeesUpdatedType,
     SessionCreatedType,
     SessionStatusUpdatedType,
+    UserStatsType,
 } from './api.types'
 
 export const authStatusSchema = z.object({
@@ -131,6 +134,35 @@ export const meetDetailsSchema: z.ZodType<MeetWithAttendeesAndGamesType> = meetF
     plannedGames: z.array(z.number()),
     skippedGames: z.array(z.number()),
 })
+
+const historyRecordSchema: z.ZodType<HistoryRecordType> = z.object({
+    meetData: meetFields,
+    gamesPlayed: z.array(
+        z.object({
+            gameData: gameCompleteSchema,
+            playedBy: z.array(publicUserSchema),
+        }),
+    ),
+})
+
+export const userHistorySchema = z.array(historyRecordSchema)
+
+export const userMeetsSchema = z.array(meetFields)
+
+export const userStatsSchema: z.ZodType<UserStatsType> = z.object({
+    totalGamesValue: z.number(),
+})
+
+export const userNotificationsSchema: z.ZodType<Array<NotificationType>> = z.array(
+    z.object({
+        id: z.number(),
+        accountId: z.number(),
+        type: z.string(),
+        message: z.string(),
+        createdAt: z.string(),
+        isRead: z.boolean(),
+    }),
+)
 
 export const sessionCreatedSchema: z.ZodType<SessionCreatedType> = z.object({
     sessionId: z.number(),
