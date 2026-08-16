@@ -496,6 +496,33 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    getRecommendationCandidateCounts(attendeeIds: Array<number>, playerCount: number, availableMinutes?: number) {
+        const placeholders = attendeeIds.map(() => '?').join(', ')
+        const durationExpression = availableMinutes === undefined
+            ? '1'
+            : '(g.gameAvgDuration IS NULL OR g.gameAvgDuration <= ?)'
+        const args: Array<number> = [playerCount, playerCount, playerCount, playerCount]
+
+        if (availableMinutes !== undefined) args.push(availableMinutes)
+        args.push(...attendeeIds)
+
+        return this._tursoExecute({
+            sql: `
+                SELECT
+                    COUNT(DISTINCT g.id) AS ownedGameCount,
+                    COUNT(DISTINCT CASE WHEN (g.minPlayers IS NULL OR g.minPlayers <= ?)
+                        AND (g.maxPlayers IS NULL OR g.maxPlayers >= ?) THEN g.id END) AS playerFitCount,
+                    COUNT(DISTINCT CASE WHEN (g.minPlayers IS NULL OR g.minPlayers <= ?)
+                        AND (g.maxPlayers IS NULL OR g.maxPlayers >= ?)
+                        AND ${durationExpression} THEN g.id END) AS durationFitCount
+                FROM Game g
+                INNER JOIN OwnedGame og ON og.gameId = g.id
+                    AND og.accountId IN (${placeholders})
+            `,
+            args,
+        })
+    }
+
     createRecommendationFeedback(input: {
         accountId: number
         groupId: number
