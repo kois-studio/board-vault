@@ -112,12 +112,13 @@ Relevant surface: [`dashboard-page`](../frontend/src/app/pages/dashboard-page/).
 - Define loading, failure, and retry states for each dashboard data section.
 - Review responsive layout and visual hierarchy.
 
-### 7. Collection — Verified slice / Needs review
+### 7. Collection — Partial / Needs review
 
 Relevant surfaces: [`collection-page`](../frontend/src/app/pages/collection-page/), [`game-view`](../frontend/src/app/pages/games/game-view/), collection API/service code.
 
 - Run a complete manual journey: browse/search, add, view ownership, review, wishlist, refresh, and remove/update.
-- Build the first-five-games activation flow from the existing collection primitives.
+- Keep the first-five-games activation flow visible on the collection page; the progress prompt and browse CTA now exist and ownership changes refresh the collection signal.
+- Complete the activation journey with a success state, onboarding preferences, and authenticated browser coverage.
 - Make search, duplicate-add, loading, empty, error, and success states coherent.
 - Resolve game title/translation behavior across cards, search, proposals, history, and game detail.
 - Ensure purchase metadata, wishlist priority, reviews, and tags have consistent labels and validation.

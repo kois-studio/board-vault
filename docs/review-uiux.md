@@ -57,10 +57,10 @@ For each area, review:
 | Edit/leave/delete group | `/groups/:groupId/{edit,leave,delete}` | Source-audited | Review permissions, confirmation language, destructive actions, cancellation, and failure recovery. |
 | Invitations | profile invitation modal, group edit invitation controls | Source-audited | Verify two-account journey and review pending/accepted/rejected/expired/error states. |
 | Notifications | profile notification modal | Source-audited | Review unread/read behavior, message clarity, empty state, and accessible modal announcements. |
-| Collection landing | `/collection`, `collection-page` | Partially reviewed | Collection is the strongest implementation slice; still needs first-five-games activation, full empty/error/refresh review, and responsive/accessibility testing. |
+| Collection landing | `/collection`, `collection-page` | Partially reviewed | First-five-games activation progress and a browse CTA now exist; still needs full empty/error/refresh review and responsive/accessibility testing. |
 | My games | `/collection/games`, `my-games-page` | Source-audited | Review ownership status, sorting, duplicate/empty/loading states, and card responsiveness. |
 | Browse games | `/collection/browse`, `browse-page` | Source-audited | Review search, filtering, no-results, pagination/loading, add feedback, and keyboard operation. |
-| Game detail | `/games/:gameId`, `game-view` | Source-audited | Review ownership, wishlist, reviews, tags, history, purchase metadata, group naming, image fallbacks, and permission states. |
+| Game detail | `/games/:gameId`, `game-view` | Source-audited | Ownership mutations now refresh collection state and history resolves group names; still review ownership, wishlist, reviews, tags, purchase metadata, image fallbacks, and permission states. |
 | Reviews | `/collection/reviews`, `reviews-page` | Source-audited | Review rating scale, edit/delete behavior, aggregation clarity, empty state, and validation. |
 | Wishlist | `/collection/wishlist`, `wishlist-page` | Source-audited | Review priority, notes, add/remove behavior, empty state, sorting, and responsive layout. |
 | Game proposal | `/collection/propose-game`, `propose-game-page` | Source-audited | Review long form, validation, image URL errors, duplicate/pending messaging, and submission feedback. |
@@ -73,11 +73,11 @@ For each area, review:
 | Play landing | `/play`, `play-page` | Blocked | The information architecture is visible, but recommendations, analytics, and some counts/content are placeholder or linked to missing routes. Review after session contracts stabilize. |
 | Schedule session | `/play/upcoming-sessions`, schedule form | Blocked | Review after canonical session creation persists date/time, attendees, planned games, and state. Current form/API behavior is incomplete. |
 | Log session wizard | `/play/log-session`, `log-session-wizard` | Blocked | The wizard has steps and UI state, but final submission is still a TODO. Review interaction model after persistence exists. |
-| Meeting creation | `/groups/:groupId/meets/new`, `meet-new` | Blocked | Current creation ignores the selected date and uses legacy meeting semantics. Needs canonical session API before final UX review. |
-| Meeting detail | `/meets/:meetId`, `meet-view` | Blocked | Attendee/game selection uses legacy array-shaped frontend contracts. Review after attendee, planned-game, played-game, and permissions are coherent. |
+| Meeting creation | `/groups/:groupId/meets/new`, `meet-new` | Partially reviewed | The selected date/timezone now reaches the canonical scheduled-session API; review group selection, date validation, pending attendees, and failure recovery. |
+| Meeting detail | `/meets/:meetId`, `meet-view` | Partially reviewed | Organizer lifecycle controls and synchronized played-game writes now exist; review planned-game selection, attendee semantics, terminal-state editing, and responsive controls. |
 | Meeting confirmation | `/meets/:meetId/confirm`, `meet-confirm` | Blocked | The component indicates the confirmation concept is being removed. Decide whether to delete, redirect, or redesign it. |
-| Upcoming sessions | `/play/upcoming-sessions` | Blocked | Route exists, but meaningful upcoming-session behavior depends on session creation/lifecycle work. |
-| History | `/play/history` | Blocked | Existing historical data can render, but the page needs real completed-session semantics, useful empty states, and accurate navigation. |
+| Upcoming sessions | `/play/upcoming-sessions` | Partially reviewed | Reads scheduled/active sessions and offers real group scheduling links; review status cards, group labels, loading/error states, and mobile layout. |
+| History | `/play/history` | Partially reviewed | Reads completed-only history with actionable empty state and group labels; review richer game/session details, loading/error states, and responsive cards. |
 | Recommendations | `/play/recommendations` link only | Blocked | No route or implemented recommendation flow currently exists. |
 | Quick play | `/play/quick-play` link/reference only | Blocked | No declared route or implemented flow currently exists. |
 | Analytics | `/play/analytics` link only | Blocked | No declared route; dashboard analytics are currently placeholder/sample content. |

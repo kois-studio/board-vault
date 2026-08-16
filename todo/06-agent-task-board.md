@@ -22,7 +22,7 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 | ID | Status | Workstream | Task | Dependencies |
 |---|---|---|---|---|
 | PROD-001 | TODO | Product | Decide and document canonical brand, nouns, persona, and ownership policy. Session semantics are accepted in ADR-0003. | None |
-| PROD-002 | TODO | Core loop | Implement a real first-five-games collection activation flow. | SEC-002, DATA-002 |
+| PROD-002 | REVIEW | Core loop | Implement a real first-five-games collection activation flow. | SEC-002, DATA-002 |
 | PROD-003 | TODO | Core loop | Finish invitation acceptance, group roles, and member visibility. | SEC-002, DATA-003 |
 | PROD-004 | TODO | Core loop | Implement deterministic recommendation scoring with explanations and unit tests. | PROD-001, DATA-003 |
 | PROD-005 | REVIEW | Core loop | Implement atomic session creation and replace the wizard submission TODO. | DATA-003, DATA-004 |
@@ -642,6 +642,22 @@ Review: PROD-007
 Changed: Personal play history now excludes scheduled, active, and cancelled sessions even when compatibility `MeetAccountGame` rows exist. Added service regression coverage for the completed-only rule and kept meet sorting deterministic. History and upcoming pages now resolve group names from the loaded group data instead of presenting raw group IDs; history sorting no longer mutates the source signal.
 Verified: `cd backend && npm test -- --runInBand` (123 tests passed); `cd backend && npm run build`; `cd frontend && npm run build`; targeted PlayService history tests pass.
 Known follow-ups: Add persisted group statistics, richer session/game read DTOs, a clean data-backed analytics route, and authenticated browser assertions for history.
+
+Most recent claim:
+
+```text
+Task: PROD-002
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: add first-five-games collection activation guidance and keep collection state synchronized after ownership mutations
+```
+
+Review: PROD-002
+
+Changed: Added a truthful first-five-games activation prompt to the collection landing page with live progress and a real browse-games CTA. Adding or removing a game from the game detail page now refreshes `DataService.userGames`, so the activation progress and collection badge remain synchronized after a mutation. The game-detail history table now resolves group names instead of exposing raw IDs.
+Verified: `cd frontend && npm run build` passes with the documented Sass, selector, and bundle-budget warnings; the existing Playwright public suite remains green.
+Known follow-ups: Add a completed activation state and preferences, cover collection activation with an authenticated browser state, and review browse/search/duplicate/error states in the rendered UI.
 
 When claiming a task, add:
 

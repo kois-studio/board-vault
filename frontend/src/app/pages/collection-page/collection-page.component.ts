@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core'
+import { Component, computed, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { CardSectionComponent } from '../../components/cards/card-section/card-section.component'
 import { CollectionActivityComponent } from '../../components/collection-activity/collection-activity.component'
@@ -31,4 +31,8 @@ export class CollectionPageComponent {
     public readonly userReviews$ = this.dataService.userReviews
     public readonly userWishlist$ = this.dataService.userWishlist
     public readonly userCollectionActivity$ = this.dataService.userCollectionActivity
+    public readonly activationTarget = 5
+    public readonly activationCount = computed(() => Math.min(this.userGames$().length, this.activationTarget))
+    public readonly activationProgress = computed(() => (this.activationCount() / this.activationTarget) * 100)
+    public readonly activationComplete = computed(() => this.userGames$().length >= this.activationTarget)
 }
