@@ -16,7 +16,6 @@ import { UsersService } from '../../core/users/users.service'
 
 import type { SuccessDto } from '../../../common/types/auth.type'
 import type { GroupMemberWithGames, GroupWithMembersAndGames } from '../../../common/types/group.type'
-import type { MeetCreatedDto } from '../../../common/types/meet.type'
 import type { UserStatsDto, UserProposalStatsDto } from '../../../common/types/stats.type'
 import type { UserPublicWithGames } from '../../../common/types/user.type'
 import type { HistoryRecordDto } from '../play/play.types'
@@ -148,20 +147,6 @@ export class DashboardService {
                 }
             }),
         )
-    }
-
-    @LogFeature(new Logger('DashboardService'))
-    async createMeeting(userId: number, groupId: number): Promise<MeetCreatedDto> {
-        // Step 1: Get group data
-        const groupData = await this.groupsService.getGroupById(groupId)
-
-        // Step 2: Create meeting
-        const meetCreatedDto = await this.meetsService.createMeeting(groupData.id, userId)
-
-        // Step 3: Notify all members of the group
-        // TODO:
-        // await this.databaseService.notifyGroupMembers(groupId, 'Meeting created')
-        return meetCreatedDto
     }
 
     @LogFeature(new Logger('DashboardService'))
