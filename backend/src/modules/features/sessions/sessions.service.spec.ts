@@ -22,6 +22,10 @@ function createDatabaseMock() {
         getGroupAvailableGameIds: jest.fn().mockResolvedValue([42, 43]),
         createCompletedSession: jest.fn().mockResolvedValue({ lastInsertRowid: 12 }),
         createScheduledSession: jest.fn().mockResolvedValue({ lastInsertRowid: 13 }),
+        getMeetByIdForCreator: jest
+            .fn()
+            .mockResolvedValue({ rows: [[12, 7, 1, '2026-08-16T19:30:00.000Z', 0, 'scheduled', 'Europe/Madrid', null]] }),
+        updateMeetStatus: jest.fn().mockResolvedValue({ rowsAffected: 1 }),
     }
 }
 
@@ -119,5 +123,31 @@ describe('SessionsService', () => {
             }),
         ).rejects.toThrow(ForbiddenException)
         expect(database.createScheduledSession).not.toHaveBeenCalled()
+    })
+
+    it('allows an organizer to transition a scheduled session to active', async () => {
+        const database = createDatabaseMock()
+        const service = new SessionsService(database as unknown as DatabaseService)
+
+        await expect(service.updateSessionStatus(1, 12, { status: 'active' })).resolves.toEqual({ sessionId: 12, status: 'active' })
+        expect(database.updateMeetStatus).toHaveBeenCalledWith(12, 'active')
+    })
+
+    it('rejects invalid lifecycle transitions', async () => {
+        const database = createDatabaseMock()
+        database.getMeetByIdForCreator.mockResolvedValue({ rows: [[12, 7, 1, '2026-08-16T19:30:00.000Z', 1, 'completed', 'UTC', null]] })
+        const service = new SessionsService(database as unknown as DatabaseService)
+
+        await expect(service.updateSessionStatus(1, 12, { status: 'active' })).rejects.toThrow(BadRequestException)
+        expect(database.updateMeetStatus).not.toHaveBeenCalled()
+    })
+
+    it('requires the organizer to transition a session', async () => {
+        const database = createDatabaseMock()
+        database.getMeetByIdForCreator.mockResolvedValue({ rows: [] })
+        const service = new SessionsService(database as unknown as DatabaseService)
+
+        await expect(service.updateSessionStatus(2, 12, { status: 'cancelled' })).rejects.toThrow(ForbiddenException)
+        expect(database.updateMeetStatus).not.toHaveBeenCalled()
     })
 })

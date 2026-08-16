@@ -1047,6 +1047,17 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    updateMeetStatus(meetId: number, status: 'scheduled' | 'active' | 'completed' | 'cancelled') {
+        return this._tursoExecute({
+            sql: `
+                UPDATE Meet
+                SET status = ?, isConfirmed = ?, updatedAt = CURRENT_TIMESTAMP
+                WHERE id = ?
+            `,
+            args: [status, status === 'completed' || status === 'cancelled', meetId],
+        })
+    }
+
     getMeetMember(meetId: number, accountId: number) {
         return this._tursoExecute({
             sql: `
@@ -1270,18 +1281,58 @@ export class DatabaseService implements OnModuleInit {
         return this._tursoExecute({ sql, args })
     }
 
-    createMeetAccountGame(accountId: number, meetId: number, gameId: number) {
-        return this._tursoExecute({
-            sql: 'INSERT INTO MeetAccountGame (accountId, meetId, gameId) VALUES (?, ?, ?)',
-            args: [accountId, meetId, gameId],
-        })
+    async createMeetAccountGame(accountId: number, meetId: number, gameId: number) {
+        const transaction = await this.tursoClient.transaction('write')
+
+        try {
+            await transaction.execute({
+                sql: `
+                    INSERT OR IGNORE INTO MeetGame (meetId, gameId, gameStatus)
+                    VALUES (?, ?, 'played')
+                `,
+                args: [meetId, gameId],
+            })
+            const result = await transaction.execute({
+                sql: 'INSERT OR IGNORE INTO MeetAccountGame (accountId, meetId, gameId) VALUES (?, ?, ?)',
+                args: [accountId, meetId, gameId],
+            })
+            await transaction.commit()
+            return result
+        } catch (error) {
+            await transaction.rollback()
+            throw error
+        } finally {
+            transaction.close()
+        }
     }
 
-    deleteMeetAccountGame(accountId: number, meetId: number, gameId: number) {
-        return this._tursoExecute({
-            sql: 'DELETE FROM MeetAccountGame WHERE accountId = ? AND meetId = ? AND gameId = ?',
-            args: [accountId, meetId, gameId],
-        })
+    async deleteMeetAccountGame(accountId: number, meetId: number, gameId: number) {
+        const transaction = await this.tursoClient.transaction('write')
+
+        try {
+            const result = await transaction.execute({
+                sql: 'DELETE FROM MeetAccountGame WHERE accountId = ? AND meetId = ? AND gameId = ?',
+                args: [accountId, meetId, gameId],
+            })
+            await transaction.execute({
+                sql: `
+                    DELETE FROM MeetGame
+                    WHERE meetId = ? AND gameId = ?
+                      AND NOT EXISTS (
+                          SELECT 1 FROM MeetAccountGame
+                          WHERE meetId = ? AND gameId = ?
+                      )
+                `,
+                args: [meetId, gameId, meetId, gameId],
+            })
+            await transaction.commit()
+            return result
+        } catch (error) {
+            await transaction.rollback()
+            throw error
+        } finally {
+            transaction.close()
+        }
     }
 
     // #region Tag

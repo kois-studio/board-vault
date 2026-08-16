@@ -27,9 +27,11 @@ import type {
     SessionCreatedType,
     ScheduleSessionRequest,
     ScheduledSessionCreatedType,
+    SessionStatusUpdatedType,
     TagCategoryType,
     TagType,
     UpdateGameOwnedType,
+    UpdateSessionStatusRequest,
     UserProposalStatsType,
     UserStatsType,
     UserType,
@@ -164,6 +166,10 @@ export class Api {
 
     scheduleSession(body: ScheduleSessionRequest) {
         return this.http.post<ScheduledSessionCreatedType>(`${this.url}/sessions/scheduled`, body)
+    }
+
+    updateSessionStatus(sessionId: number, body: UpdateSessionStatusRequest) {
+        return this.http.patch<SessionStatusUpdatedType>(`${this.url}/sessions/${sessionId}/status`, body)
     }
 
     // #region meet attendees

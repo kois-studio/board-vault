@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
-import { ArrayMinSize, ArrayUnique, IsArray, IsISO8601, IsInt, IsString, MaxLength, Min, ValidateNested } from 'class-validator'
+import { ArrayMinSize, ArrayUnique, IsArray, IsISO8601, IsIn, IsInt, IsString, MaxLength, Min, ValidateNested } from 'class-validator'
 
 export class PlaySessionGameBody {
     @ApiProperty({ example: 42 })
@@ -78,4 +78,18 @@ export class ScheduledSessionCreatedDto {
 
     @ApiProperty({ example: 'scheduled' })
     status: 'scheduled'
+}
+
+export class UpdateSessionStatusBody {
+    @ApiProperty({ example: 'active', enum: ['active', 'completed', 'cancelled'] })
+    @IsIn(['active', 'completed', 'cancelled'])
+    status: 'active' | 'completed' | 'cancelled'
+}
+
+export class SessionStatusUpdatedDto {
+    @ApiProperty({ example: 12345 })
+    sessionId: number
+
+    @ApiProperty({ example: 'active', enum: ['scheduled', 'active', 'completed', 'cancelled'] })
+    status: 'scheduled' | 'active' | 'completed' | 'cancelled'
 }
