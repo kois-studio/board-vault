@@ -128,6 +128,38 @@ CREATE TABLE Meet (
     FOREIGN KEY (createdBy) REFERENCES Account(id) ON DELETE CASCADE
 );
 
+CREATE TABLE MeetAttendee (
+    meetId INTEGER NOT NULL,
+    accountId INTEGER NOT NULL,
+    rsvpStatus TEXT NOT NULL DEFAULT 'accepted'
+        CHECK (rsvpStatus IN ('pending', 'accepted', 'declined')),
+    attendanceStatus TEXT NOT NULL DEFAULT 'unknown'
+        CHECK (attendanceStatus IN ('unknown', 'attended', 'absent')),
+    respondedAt DATETIME,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (meetId) REFERENCES Meet(id) ON DELETE CASCADE,
+    FOREIGN KEY (accountId) REFERENCES Account(id) ON DELETE CASCADE,
+    PRIMARY KEY (meetId, accountId)
+);
+
+CREATE INDEX idx_meetattendee_accountId
+    ON MeetAttendee(accountId);
+
+CREATE TABLE MeetGame (
+    meetId INTEGER NOT NULL,
+    gameId INTEGER NOT NULL,
+    gameStatus TEXT NOT NULL DEFAULT 'planned'
+        CHECK (gameStatus IN ('planned', 'played', 'skipped')),
+    playOrder INTEGER,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (meetId) REFERENCES Meet(id) ON DELETE CASCADE,
+    FOREIGN KEY (gameId) REFERENCES Game(id) ON DELETE CASCADE,
+    PRIMARY KEY (meetId, gameId)
+);
+
+CREATE INDEX idx_meetgame_gameId
+    ON MeetGame(gameId);
+
 CREATE TABLE MeetAccountGame (
     meetId INTEGER NOT NULL,
     accountId INTEGER NOT NULL,

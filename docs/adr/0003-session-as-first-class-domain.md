@@ -1,7 +1,7 @@
 # ADR: Session as a first-class domain concept
 
-- **Status:** Proposed
-- **Date:** 2026-08-11
+- **Status:** Accepted
+- **Date:** 2026-08-16
 - **Supersedes:** None
 - **Superseded by:** None
 
@@ -11,17 +11,40 @@ The current implementation uses `Meet` and `MeetAccountGame`, while frontend flo
 
 ## Decision
 
-The product should use **session** as the stable UI/API concept covering scheduled, active, completed, and cancelled game events. The domain model should represent attendance separately from session games and distinguish candidate/planned/selected games from games actually played. A temporary database mapping from `Meet` is acceptable only while compatibility is documented and the session-oriented contract remains stable.
+The product uses **session** as the stable domain concept covering scheduled,
+active, completed, and cancelled game events. `Meet` remains the physical
+compatibility name for the current session record until a separately reviewed
+rename is justified.
 
-This ADR is proposed, not accepted. The final ownership, guest, privacy, timestamp/timezone, rating, and state-transition rules must be resolved before schema implementation, as listed in [todo/01-product-direction.md](../../todo/01-product-direction.md) and [todo/03-data-model-and-session-domain.md](../../todo/03-data-model-and-session-domain.md).
+The v1 persistence model separates the concerns that were previously mixed:
+
+- `MeetAttendee` stores one row per selected participant, with RSVP state and
+  attendance state.
+- `MeetGame` stores one row per session game, with planned/played/skipped state
+  and optional play order.
+- `MeetAccountGame` remains the account-to-game play relation. Existing rows
+  are preserved and are treated as historical played-game participation; new
+  play-history writes continue to use this relation until a richer play-event
+  model is required.
+
+The initial backfill derives selected attendees and played session games from
+distinct `MeetAccountGame` pairs. This is the least-destructive interpretation
+of the observed data because current dashboard/play code already uses that
+table for historical play lookup. Guest identities, timezone-aware scheduling,
+ratings, scores, and richer state-transition rules remain deferred product
+decisions.
 
 ## Consequences
 
 - Session creation and completion become explicit multi-record use cases with transaction or compensation requirements.
 - API, frontend, database, and history work can converge on one vocabulary.
-- Existing `Meet` tables and routes may require a compatibility layer or migration.
+- Existing `Meet` routes remain a compatibility layer over the session concept;
+  the new relations are additive and do not delete or rewrite historical play
+  links.
 - Planned and actual play data can support explainable recommendations and trustworthy history.
-- More domain decisions are required before implementation; agents must not invent them in feature code.
+- The v1 relation boundaries are decided, but guest identities, timezones,
+  ratings, scores, and full transaction/state-transition behavior remain
+  separate follow-up decisions.
 
 ## Alternatives considered
 

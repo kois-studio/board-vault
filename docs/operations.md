@@ -48,6 +48,11 @@ Use the exact commands and current results in [AGENTS.md](AGENTS.md) and [testin
   two expiry columns were present, the preserved aggregate counts remained 16
   accounts, 13 meets, and 101 meet/game links, and the committed schema export
   was updated. No token values were printed or committed.
+- Also on 2026-08-16, migration `0003-add-session-relations.sql` was applied to
+  live Turso after a fresh local dump. It created `MeetAttendee` and `MeetGame`,
+  backfilled 63 attendee rows and 22 session-game rows from the preserved 101
+  `MeetAccountGame` links, and passed integrity/foreign-key checks. The backend
+  detail/setup SQL was aligned and requires deployment verification.
 
 ## Deployment shape
 
