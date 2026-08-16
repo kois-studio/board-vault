@@ -20,7 +20,7 @@ This is the canonical project-specific instruction file for AI developer agents.
 - Security boundaries and findings: [security.md](security.md).
 - Test inventory and verified baseline: [testing.md](testing.md).
 - Standards gaps and remediation sequencing: [TODO.md](TODO.md) and the YAML contract.
-- Durable decisions: [adr/README.md](adr/README.md). ADR-0003 is accepted for the session domain, ADR-0004 for the staged Clerk rollout, ADR-0005 for token lifecycle, and ADR-0006 for nested-user privacy; ADRs 0001–0002 remain proposals.
+- Durable decisions: [adr/README.md](adr/README.md). ADR-0002 is accepted for recommendation eligibility/scoring, ADR-0003 for the session domain, ADR-0004 for the staged Clerk rollout, ADR-0005 for token lifecycle, ADR-0006 for nested-user privacy, and ADR-0007 for invite-only group membership; ADR-0001 remains a proposal.
 
 ## Effective standards
 
