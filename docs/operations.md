@@ -35,7 +35,7 @@ Use the exact commands and current results in [AGENTS.md](AGENTS.md) and [testin
 - backend e2e setup fails because `RESEND_API_KEY` is absent and contains a stale starter assertion;
 - backend lint fails with 17 errors and 3 warnings;
 - frontend Biome fails with 8 findings;
-- frontend browser tests pass one generated app-creation test.
+- frontend unit/browser baseline includes one generated Angular smoke test and three passing Playwright public-navigation tests; authenticated browser journeys are still missing.
 - the Clerk identity migration passes a restored-backup SQLite check and was applied to live Turso with integrity `ok` and unchanged counts of 15 accounts, 13 meets, and 101 meet/game links.
 - a local Clerk Google sign-in completed through Board Vault during development; `/auth/clerk/status` verified the session and linked the matching existing live account `#1`, preserving its admin state. Production currently uses email/password/username only; live Turso now reports one linked account. Protected-route Clerk transport and new-account provisioning are covered by focused backend tests but not yet by a deployed production check.
 - On 2026-08-15, a production email/password/username signup for the preserved
