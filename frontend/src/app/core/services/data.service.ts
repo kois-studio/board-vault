@@ -244,6 +244,11 @@ export class DataService {
                 this.userGroups.set(groups)
 
                 for (const group of groups) {
+                    if (group.createdBy !== accountId) {
+                        this.invitationsGroupIndex.update(index => ({ ...index, [group.id]: [] }))
+                        continue
+                    }
+
                     this.api.getGroupInvitations(group.id).subscribe({
                         next: invitations => {
                             this.invitationsGroupIndex.update(index => ({

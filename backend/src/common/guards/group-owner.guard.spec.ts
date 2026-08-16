@@ -35,6 +35,7 @@ describe('GroupOwnerGuard', () => {
 
         expect(getGuards('updateGroup')).toContain(GroupOwnerGuard)
         expect(getGuards('deleteGroupById')).toContain(GroupOwnerGuard)
+        expect(getGuards('getGroupInvitations')).toContain(GroupOwnerGuard)
         expect(getGuards('getGroupById')).toContain(UserInGroupGuard)
     })
 })

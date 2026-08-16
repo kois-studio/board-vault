@@ -57,10 +57,9 @@ export class GroupsController {
         return this.groupsService.deleteGroupById(groupId)
     }
 
-    // TODO: migrate to dashboard controller
-    @UseGuards(UserInGroupGuard)
+    @UseGuards(GroupOwnerGuard)
     @Get('/:groupId/invitations')
-    @ApiOperation({ summary: 'Get all group invitations' })
+    @ApiOperation({ summary: 'Get pending invitations for a group (owner only)' })
     @ApiResponse({ status: 200, type: [InvitationWithAccountsData] })
     getGroupInvitations(@Param('groupId', ParseIntPipe) groupId: number) {
         return this.groupsService.getGroupInvitations(groupId)
