@@ -28,6 +28,7 @@ import type {
     SessionStatusUpdatedType,
     UserStatsType,
     UserProposalStatsType,
+    UserType,
     GameProposalType,
 } from './api.types'
 
@@ -156,6 +157,15 @@ const publicUserSchema = z.object({
     username: z.string(),
     displayName: z.string(),
     avatar: avatarSchema,
+})
+
+export const userSchema: z.ZodType<UserType> = z.object({
+    ...publicUserSchema.shape,
+    email: z.string().email(),
+    createdAt: z.string(),
+    isDeleted: z.boolean(),
+    isAdmin: z.boolean(),
+    email_verified: z.boolean(),
 })
 
 const groupSchema: z.ZodType<GroupType> = z.object({
