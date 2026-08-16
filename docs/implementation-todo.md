@@ -121,6 +121,7 @@ Relevant surfaces: [`collection-page`](../frontend/src/app/pages/collection-page
 - Keep collection mutations synchronized with group availability; refreshed ownership data now updates the current member inside loaded group records as well as the personal collection signal.
 - Complete the activation journey with a success state, onboarding preferences, and authenticated browser coverage.
 - Make search, duplicate-add, loading, empty, error, and success states coherent.
+- Browse search now distinguishes catalog load errors from valid no-results responses and offers retry; duplicate/add feedback and broader rendered-state review remain.
 - Resolve game title/translation behavior across cards, search, proposals, history, and game detail.
 - Ensure purchase metadata, wishlist priority, reviews, and tags have consistent labels and validation.
 - Fix the game-detail TODO that displays `groupId` instead of a group name.

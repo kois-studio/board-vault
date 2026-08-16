@@ -776,6 +776,19 @@ Changed: User-game refreshes now update both the personal collection signal and 
 Verified: `cd frontend && npm run build` passes with the documented baseline warnings; `git diff --check` passes.
 Known follow-ups: Add authenticated browser coverage for collection activation and group availability, and review duplicate/add/remove/error states in the rendered UI.
 
+Continuation claim: PROD-002
+
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: distinguish browse-catalog search failures from legitimate no-results states and provide a retry action
+
+Review continuation: PROD-002
+
+Changed: Browse Games now shows a retryable load-error state instead of presenting a failed catalog request as a legitimate no-results response; changing the query clears the error state.
+Verified: `cd frontend && npm run build` passes with the documented baseline warnings; `git diff --check` passes.
+Known follow-ups: Add authenticated browser coverage for collection/search and review duplicate/add/remove feedback in the rendered UI.
+
 When claiming a task, add:
 
 ```text
