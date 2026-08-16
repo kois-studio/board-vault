@@ -70,7 +70,7 @@ export class GroupViewComponent {
     //        Computed
     // --------------------------------------------------------------------------
     public readonly sortedGroupHistoryComputed = computed(() => {
-        return this.groupHistory$().sort((a, b) => new Date(b.meetData.meetDate).getTime() - new Date(a.meetData.meetDate).getTime())
+        return [...this.groupHistory$()].sort((a, b) => new Date(b.meetData.meetDate).getTime() - new Date(a.meetData.meetDate).getTime())
     })
 
     public readonly isGroupOwnerComputed = computed(() => {
@@ -99,19 +99,28 @@ export class GroupViewComponent {
             if (groupHistoryByGroupId[groupId] !== undefined) {
                 this.groupHistory$.set(groupHistoryByGroupId[groupId])
             } else {
+                this.isLoading = true
                 // get the group meetings
                 this.api.getGroupMeetings(currentUser.id, groupId).subscribe({
                     next: groupMeetings => {
                         this.groupHistory$.set(groupMeetings)
+                        this.dataService.groupHistoryByGroupId.set({
+                            ...this.dataService.groupHistoryByGroupId(),
+                            [groupId]: groupMeetings,
+                        })
                     },
                     error: error => {
                         console.error(error)
+                        this.isLoading = false
                         // Clear previous data on error
                         this.groupHistory$.set([])
                         this.dataService.groupHistoryByGroupId.set({
                             ...this.dataService.groupHistoryByGroupId(),
                             [groupId]: [],
                         })
+                    },
+                    complete: () => {
+                        this.isLoading = false
                     },
                 })
             }
