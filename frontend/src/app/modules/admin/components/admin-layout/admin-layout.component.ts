@@ -11,7 +11,8 @@ export class AdminLayoutComponent {
     // --------------------------------------------------------------------------
     //        Component signals
     // --------------------------------------------------------------------------
-    public readonly isSidebarCollapsed = signal(false)
+    // Start collapsed so the admin area is usable on narrow screens.
+    public readonly isSidebarCollapsed = signal(true)
 
     // --------------------------------------------------------------------------
     //        Component methods
