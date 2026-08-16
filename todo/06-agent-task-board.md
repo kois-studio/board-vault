@@ -562,9 +562,9 @@ Scope: establish frontend browser E2E infrastructure and replace the generated s
 
 Review: EQ-003
 
-Changed: Added Playwright browser-test infrastructure with an isolated local server target and environment-driven external target support. Added public landing, signed-out protected-route, and wildcard not-found coverage; generated reports and results are ignored.
-Verified: `cd frontend && npm run e2e` (3 tests passed); `cd frontend && npm run build` remains the next affected frontend build check.
-Known follow-ups: Add authenticated Clerk journey setup without repository secrets, then cover collection activation, invitation lifecycle, canonical session creation/completion, and history.
+Changed: Added Playwright browser-test infrastructure with an isolated local server target and environment-driven external target support. Added public landing, signed-out protected-route, and wildcard not-found coverage, plus an authenticated core-navigation suite activated by an uncommitted Clerk storage-state file; generated reports and results are ignored.
+Verified: `cd frontend && npm run e2e` (3 public tests passed, 3 authenticated tests intentionally skipped without storage state); `cd frontend && npm run build` passes with the documented warnings.
+Known follow-ups: Run the authenticated suite with a disposable Clerk test state, then cover collection activation, invitation lifecycle, canonical session creation/completion, and history submission.
 
 Most recent claim:
 

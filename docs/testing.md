@@ -4,7 +4,7 @@
 
 - Backend: one stale `backend/test/app.e2e-spec.ts` plus focused profile-update and ownership-boundary suites under `backend/src/`.
 - Frontend: one `frontend/src/app/app.component.spec.ts`, a generated app-creation smoke test.
-- Frontend browser coverage now uses Playwright under `frontend/e2e/`; the suite is configured to run against an isolated local Angular server on port 4300 or an explicit `PLAYWRIGHT_BASE_URL`.
+- Frontend browser coverage now uses Playwright under `frontend/e2e/`; the suite is configured to run against an isolated local Angular server on port 4300 or an explicit `PLAYWRIGHT_BASE_URL`. Public tests run by default. Authenticated core-navigation tests activate only when `PLAYWRIGHT_AUTH_STORAGE_STATE` points to a local, uncommitted Clerk storage-state JSON file.
 - No broad contract, migration, persistence, provider-adapter, accessibility, or responsive tests were found; focused authorization boundary tests now exist.
 - A manual migration verification was run against a restored SQLite backup copy; it is not an automated migration suite.
 
@@ -19,7 +19,7 @@
 | `cd frontend && npm run build` | Pass with warnings | Bundle budget, Sass deprecation, and selector warnings remain. |
 | `cd frontend && npx biome check` | Fail | 8 findings in the form submission, log-session wizard, and propose-game page files. |
 | `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` | Pass | One generated smoke test passes. |
-| `cd frontend && npm run e2e` | Pass | Three Playwright tests cover the public landing page, signed-out protection of `/dashboard`, and the wildcard not-found route. Authenticated journeys are not yet covered. |
+| `cd frontend && npm run e2e` | Pass | Three public Playwright tests pass; three authenticated core-navigation tests are intentionally skipped unless `PLAYWRIGHT_AUTH_STORAGE_STATE` is supplied. |
 | `cd backend && npm test -- --runInBand src/modules/features/sessions/sessions.service.spec.ts` | Pass | Six tests cover canonical session creation, missing groups, actor membership, attendee membership, group game availability, and participant/attendee consistency. |
 | `schema.sql` plus migration 0004 in disposable SQLite | Pass | A restored pre-0004 dump accepts the lifecycle migration; integrity is `ok`, no foreign-key violations are reported, and all four lifecycle columns/indexes exist. |
 | `sqlite3 backup-copy < database/migrations/0001-add-clerk-user-id.sql` | Pass | SQLite integrity remains `ok`; 15 accounts, 13 meets, and 101 meet/game links are preserved; the original backup was not used as the test target. |
@@ -45,7 +45,7 @@
 - deterministic explainable recommendation scoring;
 - atomic completed-session creation, planned/played distinction, completion, and history;
 - frontend loading, empty, failure, retry, and mobile/accessibility states.
-- frontend browser journeys for public navigation, Clerk authentication, collection activation, group invitations, session creation/completion, and history. The backend write contract is now available for the session journey; authenticated browser coverage still needs a non-production Clerk test state and seeded data.
+- frontend browser journeys for public navigation, Clerk authentication, collection activation, group invitations, session creation/completion, and history. The reusable authenticated navigation suite is present; collection, invitation, and full session submission still need a non-production Clerk test state and seeded data.
 
 ### P2 delivery quality
 
@@ -57,6 +57,18 @@
 ## Test isolation rules
 
 Tests must not depend on a developer’s real Turso, Redis, or Resend credentials. Use a disposable database or explicit provider fakes. Do not make a test pass by disabling authorization or using production data. Record any intentionally untested boundary as an explicit exception or deferred gap.
+
+## Running authenticated browser journeys
+
+Create a local Playwright storage state by signing in with a dedicated test
+account, then point the suite at that uncommitted file:
+
+```shell
+PLAYWRIGHT_AUTH_STORAGE_STATE=/absolute/path/to/board-vault-auth.json npm run e2e
+```
+
+The storage-state file may contain session cookies and tokens. Keep it outside
+the repository, never commit it, and prefer a disposable Clerk/test account.
 
 ## Completion evidence
 
