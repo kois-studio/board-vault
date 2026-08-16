@@ -106,6 +106,22 @@ Known follow-ups: Add authenticated browser coverage for scheduling with a non-d
 Most recent claim:
 
 ```text
+Task: PROD-004
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: connect recommendation results to scheduling with selected attendees and a preselected planned game
+```
+
+Review: PROD-004
+
+Changed: Recommendation cards now hand off to the scheduled-session form with the selected attendee IDs and chosen game in query parameters; the form validates those values against the loaded group and preselects them.
+Verified: Pending frontend build and browser verification.
+Known follow-ups: Add persisted recommendation feedback and a clean authenticated end-to-end journey across recommendation → schedule → session detail.
+
+Most recent claim:
+
+```text
 Task: DATA-003
 Owner: Codex
 Claimed: 2026-08-16

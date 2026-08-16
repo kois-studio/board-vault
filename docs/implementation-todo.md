@@ -58,6 +58,7 @@ Relevant intent: [`todo/04-core-product-loop.md`](../todo/04-core-product-loop.m
 - Add a useful no-results state that explains which constraint excluded candidates.
 - Add recommendation feedback and persist it for future scoring.
 - Added the authenticated `/play/recommendations` route, Play navigation entry, selection form, result cards, and empty/error states.
+- Recommendation results now provide a direct scheduling link that carries the selected attendees and chosen game into the scheduling form.
 - Add authenticated browser coverage when a Clerk storage state is available; the test is present but skipped without that local secret-bearing state.
 - Recommendation feedback, richer preferences, complexity scoring, and history-weighted scoring remain deferred.
 - Resolve the indirect game-title contract: `Game` stores no title; titles are provided through `GameTranslation`. The recommendation query uses English with Spanish fallback.

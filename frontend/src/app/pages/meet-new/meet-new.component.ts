@@ -27,6 +27,7 @@ export class MeetNewComponent {
     public groupData: null | (typeof this.userGroups)[number] = null
     public selectedAttendeeIds: Array<number> = []
     public selectedPlannedGameIds: Array<number> = []
+    private didInitializeSelections = false
     public today = new Date().toISOString().split('T')[0] // Format: YYYY-MM-DD
     public dateForm = new FormControl(this.today, [
         Validators.required,
@@ -58,7 +59,19 @@ export class MeetNewComponent {
             }
 
             this.groupData = groupData
-            this.selectedAttendeeIds = groupData.members.map(member => member.id)
+            if (!this.didInitializeSelections) {
+                const requestedAttendees = (this.route.snapshot.queryParamMap.get('attendeeIds') ?? '')
+                    .split(',')
+                    .map(Number)
+                    .filter(accountId => groupData.members.some(member => member.id === accountId))
+                const requestedGameId = Number(this.route.snapshot.queryParamMap.get('plannedGameId'))
+
+                this.selectedAttendeeIds = requestedAttendees.length > 0 ? [...new Set(requestedAttendees)] : groupData.members.map(member => member.id)
+                this.selectedPlannedGameIds = Number.isInteger(requestedGameId) && this.availableGames.some(game => game.id === requestedGameId)
+                    ? [requestedGameId]
+                    : []
+                this.didInitializeSelections = true
+            }
         })
     }
 
