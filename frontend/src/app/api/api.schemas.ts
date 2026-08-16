@@ -1,8 +1,13 @@
 import { z } from 'zod'
 
 import type {
+    BrowseGamesResultType,
+    CollectionActivityWithGameDataType,
     GameCompleteType,
+    GameOwnedType,
+    GameReviewWithGameData,
     GameType,
+    GameViewType,
     GroupType,
     GroupWithMembersAndGames,
     HistoryRecordType,
@@ -59,6 +64,47 @@ const gameSchema: z.ZodType<GameType> = z.object({
 export const gamesSchema = z.array(gameSchema)
 export const userGamesSchema = z.array(gameCompleteSchema)
 
+const paginationSchema = z.object({
+    currentPage: z.number(),
+    totalPages: z.number(),
+    totalItems: z.number(),
+    itemsPerPage: z.number(),
+})
+
+export const browseGamesSchema: z.ZodType<BrowseGamesResultType> = z.object({
+    games: z.array(gameCompleteSchema),
+    pagination: paginationSchema,
+})
+
+export const gameOwnedSchema: z.ZodType<GameOwnedType> = z.object({
+    accountId: z.number(),
+    gameId: z.number(),
+    purchaseDate: z.string().nullable(),
+    purchasePrice: z.number().nullable(),
+    purchaseNotes: z.string().nullable(),
+})
+
+const gameViewRatingSchema = z.object({
+    userRating: z.number().nullable(),
+    avgGroupsRating: z.object({ review: z.number(), count: z.number() }).nullable(),
+    avgGlobalRating: z.object({ review: z.number(), count: z.number() }).nullable(),
+})
+
+export const gameViewSchema: z.ZodType<GameViewType> = z.object({
+    gameData: gameCompleteSchema,
+    ownedGameData: z
+        .object({
+            purchaseDate: z.string().nullable(),
+            purchasePrice: z.number().nullable(),
+            purchaseNotes: z.string().nullable(),
+        })
+        .nullable(),
+    tags: z.array(z.object({ tag: z.string(), category: z.string() })),
+    wishlistedGameData: z.object({ dateAdded: z.string(), notes: z.string() }).nullable(),
+    ratingData: gameViewRatingSchema,
+    similarGames: z.array(gameCompleteSchema),
+})
+
 const avatarSchema = z.object({
     backgroundColor: z.string(),
     iconName: z.string().nullable(),
@@ -87,6 +133,27 @@ const gameReviewSchema = z.object({
     review: z.number(),
     reviewDate: z.string(),
 })
+
+const gameReviewWithGameDataSchema: z.ZodType<GameReviewWithGameData> = gameReviewSchema.extend({
+    gameData: gameCompleteSchema,
+})
+
+export const userReviewsSchema = z.array(gameReviewWithGameDataSchema)
+
+const collectionActivitySchema = z.object({
+    id: z.number(),
+    accountId: z.number(),
+    gameId: z.number(),
+    actionType: z.enum(['added', 'rated', 'wishlisted', 'unwishlisted', 'updated', 'removed']),
+    actionDetails: z.object({ rating: z.number().nullable() }).nullable(),
+    createdAt: z.string(),
+})
+
+const collectionActivityWithGameDataSchema: z.ZodType<CollectionActivityWithGameDataType> = collectionActivitySchema.extend({
+    gameData: gameCompleteSchema,
+})
+
+export const userCollectionActivitySchema = z.array(collectionActivityWithGameDataSchema)
 
 const groupMemberSchema: z.ZodType<GroupWithMembersAndGames['members'][number]> = z.object({
     ...publicUserSchema.shape,
@@ -218,3 +285,5 @@ export const recommendationsSchema: z.ZodType<RecommendationsType> = z.object({
 })
 
 export const successSchema = z.object({ success: z.literal(true) })
+
+export const wishlistResponseSchema = z.object({ isWishlisted: z.boolean() })

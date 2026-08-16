@@ -6,7 +6,10 @@ import {
     accessTokenSchema,
     authStatusSchema,
     availabilitySchema,
+    browseGamesSchema,
     clerkAuthStatusSchema,
+    gameOwnedSchema,
+    gameViewSchema,
     groupInvitationsSchema,
     gamesSchema,
     meetDetailsSchema,
@@ -18,13 +21,16 @@ import {
     sessionCreatedSchema,
     sessionStatusUpdatedSchema,
     successSchema,
+    userCollectionActivitySchema,
     userInvitationsSchema,
     userGroupsSchema,
     userGamesSchema,
     userHistorySchema,
     userMeetsSchema,
     userNotificationsSchema,
+    userReviewsSchema,
     userStatsSchema,
+    wishlistResponseSchema,
 } from './api.schemas'
 import type {
     AdminGamesResultType,
@@ -283,11 +289,11 @@ export class Api {
     browseGamesNotOwnedByUser(userId: number, search: string, page: number, limit: number) {
         return this.http.get<BrowseGamesResultType>(
             `${this.url}/collection/users/${userId}/browse/games?search=${search}&page=${page}&limit=${limit}`,
-        )
+        ).pipe(map(response => browseGamesSchema.parse(response)))
     }
 
     getGameView(userId: number, gameId: number) {
-        return this.http.get<GameViewType>(`${this.url}/collection/users/${userId}/games/${gameId}`)
+        return this.http.get<GameViewType>(`${this.url}/collection/users/${userId}/games/${gameId}`).pipe(map(response => gameViewSchema.parse(response)))
     }
 
     addGameToUserCollection(userId: number, gameId: number) {
@@ -299,15 +305,15 @@ export class Api {
     }
 
     patchGameOwnership(userId: number, gameId: number, ownedGameDto: UpdateGameOwnedType) {
-        return this.http.patch<GameOwnedType>(`${this.url}/collection/users/${userId}/games/${gameId}/ownership`, ownedGameDto)
+        return this.http.patch<GameOwnedType>(`${this.url}/collection/users/${userId}/games/${gameId}/ownership`, ownedGameDto).pipe(map(response => gameOwnedSchema.parse(response)))
     }
 
     toggleWishlist(userId: number, gameId: number) {
-        return this.http.put<{ isWishlisted: boolean }>(`${this.url}/collection/users/${userId}/games/${gameId}/wishlist`, {})
+        return this.http.put<{ isWishlisted: boolean }>(`${this.url}/collection/users/${userId}/games/${gameId}/wishlist`, {}).pipe(map(response => wishlistResponseSchema.parse(response)))
     }
 
     getUserReviews(userId: number) {
-        return this.http.get<Array<GameReviewWithGameData>>(`${this.url}/collection/users/${userId}/reviews`)
+        return this.http.get<Array<GameReviewWithGameData>>(`${this.url}/collection/users/${userId}/reviews`).pipe(map(response => userReviewsSchema.parse(response)))
     }
 
     saveGameReview(userId: number, gameId: number, review: number) {
@@ -319,7 +325,7 @@ export class Api {
     }
 
     getUserCollectionActivity(userId: number) {
-        return this.http.get<Array<CollectionActivityWithGameDataType>>(`${this.url}/collection/users/${userId}/recent-activity`)
+        return this.http.get<Array<CollectionActivityWithGameDataType>>(`${this.url}/collection/users/${userId}/recent-activity`).pipe(map(response => userCollectionActivitySchema.parse(response)))
     }
 
     // --------------------------------------------------------------------------
