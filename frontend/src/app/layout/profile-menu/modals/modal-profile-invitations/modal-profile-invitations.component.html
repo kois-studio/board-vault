@@ -1,28 +1,37 @@
 <!-- Dialog overlay -->
 @if (isVisible) {
-<div class="fixed inset-0 bg-zinc-900/60 flex justify-center items-center" (click)="hideDialog()">
+<div class="fixed inset-0 bg-zinc-900/60 flex justify-center items-center" role="presentation" (click)="hideDialog()">
     <!-- Dialog box -->
-    <div class="bg-zinc-900 rounded border border-zinc-700 w-3/4 max-w-xl relative" (click)="$event.stopPropagation()">
+    <div class="bg-zinc-900 rounded border border-zinc-700 w-3/4 max-w-xl relative" role="dialog" aria-modal="true" aria-labelledby="invitations-dialog-title" (click)="$event.stopPropagation()">
         <!-- Close button -->
-        <button (click)="hideDialog()" class="py-2 px-4 rounded-lg hover:bg-zinc-800 absolute top-2 right-2">
-            <i class="bi bi-x-lg"></i>
+        <button type="button" (click)="hideDialog()" aria-label="Close invitations" class="py-2 px-4 rounded-lg hover:bg-zinc-800 absolute top-2 right-2">
+            <i class="bi bi-x-lg" aria-hidden="true"></i>
         </button>
         <!-- Dialog content -->
         <div class="p-8">
-            <h2 class="text-2xl font-bold tracking-wider"><i class="bi bi-envelope"></i> Invitations</h2>
+            <h2 id="invitations-dialog-title" class="text-2xl font-bold tracking-wider"><i class="bi bi-envelope" aria-hidden="true"></i> Invitations</h2>
             <h3 class="text-gray-400 text-sm border-b border-zinc-500 py-4">
                 Accept or decline invitations to groups.
             </h3>
 
+            @if (isLoading()) {
+                <p class="pt-4 text-secondary" role="status">Loading invitations…</p>
+            } @else if (hasError()) {
+                <div class="pt-4" role="alert">
+                    <p class="text-red-300">Invitations could not be loaded.</p>
+                    <button type="button" class="app-btn-primary mt-3" (click)="retry()">Retry</button>
+                </div>
+            } @else {
             <ul class="pt-4 grid gap-y-4">
-                @for (invitation of userInvitations; track $index) {
+                @for (invitation of userInvitations(); track invitation.id) {
                 <li>
                     <app-card-invitation [invitation]="invitation" />
                 </li>
-                } @if (userInvitations.length === 0) {
+                } @if (userInvitations().length === 0) {
                 <li class="text-center pt-2">No invitations pending.</li>
                 }
             </ul>
+            }
         </div>
     </div>
 </div>

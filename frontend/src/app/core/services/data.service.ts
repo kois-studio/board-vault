@@ -55,6 +55,8 @@ export class DataService {
     public readonly userStatsError = signal(false)
     public readonly userMeetsError = signal(false)
     public readonly userHistoryError = signal(false)
+    public readonly userInvitationsLoading = signal(false)
+    public readonly userInvitationsError = signal(false)
     public readonly userWishlist = signal<Array<GameCompleteType>>([])
     public readonly userCollectionActivity = signal<Array<CollectionActivityWithGameDataType>>([])
     public readonly userProposals = signal<Array<GameProposalType>>([])
@@ -125,6 +127,8 @@ export class DataService {
         this.userStatsError.set(false)
         this.userMeetsError.set(false)
         this.userHistoryError.set(false)
+        this.userInvitationsLoading.set(false)
+        this.userInvitationsError.set(false)
         this.userWishlist.set([])
         this.userCollectionActivity.set([])
         this.userProposals.set([])
@@ -171,14 +175,24 @@ export class DataService {
     }
 
     private _getUserInvitations(userId: number) {
-        this.api.getUserInvitations(userId).subscribe({
+        this.userInvitationsLoading.set(true)
+        this.userInvitationsError.set(false)
+        this.api.getUserInvitations(userId).pipe(
+            finalize(() => this.userInvitationsLoading.set(false)),
+        ).subscribe({
             next: invitations => {
                 this.userInvitations.set(invitations)
             },
             error: () => {
+                this.userInvitationsError.set(true)
                 this.toastService.error("Error retrieving user's invitations")
             },
         })
+    }
+
+    public retryUserInvitations(): void {
+        const currentUser = this.currentUser()
+        if (currentUser) this._getUserInvitations(currentUser.id)
     }
 
     private _getUserNotifications(userId: number) {

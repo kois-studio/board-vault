@@ -1,4 +1,4 @@
-import { Component, effect } from '@angular/core'
+import { Component, inject } from '@angular/core'
 import { CardInvitationComponent } from '../../../../components/card-invitation/card-invitation.component'
 import { DataService } from '../../../../core/services/data.service'
 
@@ -8,14 +8,11 @@ import { DataService } from '../../../../core/services/data.service'
     templateUrl: 'modal-profile-invitations.component.html',
 })
 export class ModalProfileInvitationsComponent {
+    private readonly dataService = inject(DataService)
     public isVisible = false
-    public userInvitations: ReturnType<typeof this.dataService.userInvitations> = []
-
-    constructor(private readonly dataService: DataService) {
-        effect(() => {
-            this.userInvitations = this.dataService.userInvitations()
-        })
-    }
+    public readonly userInvitations = this.dataService.userInvitations
+    public readonly isLoading = this.dataService.userInvitationsLoading
+    public readonly hasError = this.dataService.userInvitationsError
 
     public showDialog() {
         this.isVisible = true
@@ -23,5 +20,9 @@ export class ModalProfileInvitationsComponent {
 
     public hideDialog() {
         this.isVisible = false
+    }
+
+    public retry() {
+        this.dataService.retryUserInvitations()
     }
 }
