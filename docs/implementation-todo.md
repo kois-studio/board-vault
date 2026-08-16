@@ -24,7 +24,7 @@ The product is not launch-ready. The main unfinished value loop is:
 group → attendees → recommendation → scheduled session → games actually played → useful history
 ```
 
-Completed-session logging now has a guarded, validated backend write and an atomic Turso transaction from the frontend wizard. Recommendations are not implemented, analytics contain hardcoded/sample content, and several navigation links point to routes that do not exist.
+Completed-session logging now has a guarded, validated backend write and an atomic Turso transaction from the frontend wizard. Recommendations and analytics are not implemented, while the dashboard and play landing now avoid presenting fabricated metrics or links to unavailable feature routes.
 
 ## P0 — complete the product’s core loop
 
@@ -58,7 +58,7 @@ Relevant intent: [`todo/04-core-product-loop.md`](../todo/04-core-product-loop.m
 - Add a useful no-results state that explains which constraint excluded candidates.
 - Add recommendation feedback and persist it for future scoring.
 - Create the missing `/play/recommendations` route or remove every link that points to it until the feature exists.
-- Replace recommendation claims on the landing page and play dashboard until a real flow is available.
+- Keep recommendation claims explicit about their coming-soon status until a real flow is available; the landing page and play dashboard no longer present recommendations as an active capability.
 - Resolve the indirect game-title contract: `Game` stores no title; titles are provided through `GameTranslation`.
 
 ### 3. History and analytics — Partial / Open
@@ -67,7 +67,7 @@ Relevant surfaces: [`history-page`](../frontend/src/app/pages/play-page/history-
 
 - Make personal history reflect actual persisted sessions and games played.
 - Add group history and basic statistics from persisted data.
-- Remove hardcoded/sample charts, counts, and analytics cards.
+- Remove any remaining hardcoded/sample charts, counts, and analytics cards as those surfaces are implemented; the dashboard and play landing cleanup is complete for the currently identified fabricated content.
 - Create the `/play/analytics` route or remove the dashboard link to it.
 - Replace misleading counts such as group counts displayed as session counts.
 - Show date, attendees, games actually played, and relevant session state.
@@ -93,7 +93,7 @@ Relevant surface: [`landing.component.html`](../frontend/src/app/pages/landing/l
 Relevant surfaces: [`header`](../frontend/src/app/layout/header/), [`top-bar`](../frontend/src/app/layout/top-bar/), [`profile-menu`](../frontend/src/app/layout/profile-menu/), [`footer`](../frontend/src/app/layout/footer/), [`app.routes.ts`](../frontend/src/app/app.routes.ts).
 
 - Define the final information architecture for dashboard, collection, groups, and play.
-- Remove links to nonexistent routes, including recommendations, quick play, and analytics.
+- Remove links to nonexistent routes, including recommendations, quick play, and analytics; the currently identified dashboard/play links are now limited to existing routes or explicit coming-soon cards.
 - Replace footer placeholder links with real routes or remove them.
 - Review authenticated versus unauthenticated navigation after the Clerk migration.
 - Review mobile navigation and the known admin sidebar mobile TODO.

@@ -659,6 +659,19 @@ Changed: Added a truthful first-five-games activation prompt to the collection l
 Verified: `cd frontend && npm run build` passes with the documented Sass, selector, and bundle-budget warnings; the existing Playwright public suite remains green.
 Known follow-ups: Add a completed activation state and preferences, cover collection activation with an authenticated browser state, and review browse/search/duplicate/error states in the rendered UI.
 
+Continuation claim: TRUTH-001
+
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: remove fabricated play-dashboard content and invalid recommendation/analytics affordances while retaining explicit coming-soon states for unimplemented features
+
+Review continuation: TRUTH-001
+
+Changed: Replaced the Play landing page's fabricated group, date, avatar, quick-stat, and recommendation links with persisted upcoming/history counts, real links to existing session flows, and an explicit coming-soon recommendation state.
+Verified: `cd frontend && npm run build` passes with the documented baseline Sass, selector, and bundle-budget warnings; `cd frontend && npm run e2e` reports 3 passed and 3 skipped (the skipped tests require an opt-in Clerk storage state).
+Known follow-ups: Build the recommendation and analytics contracts before adding routes or navigation; review Play loading, error, empty, responsive, accessibility, and richer session-summary states.
+
 When claiming a task, add:
 
 ```text

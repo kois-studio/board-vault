@@ -1,139 +1,55 @@
 <app-page-header titleText="Play Sessions" [showActionButton]="true">
-    Schedule game sessions, track plays, and get recommendations
+    Schedule game sessions and keep a reliable history of what your group played.
     <app-button class="action-button" icon="plus-lg" routerLink="/play/log-session">Log a Play Session</app-button>
 </app-page-header>
 
 <container-wrapper>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- --------------------------
-            1 - Upcoming Sessions Card
-        ---------------------------- -->
         <app-card-section
             icon="calendar3"
             titleText="Upcoming Sessions"
             description="View and manage your scheduled game nights"
             cardLink="/play/upcoming-sessions"
         >
-            <!-- TODO: show the actual count -->
-            <!-- Badge -->
-            <app-badge class="app-card-section-badge" color="indigo" [text]="userGroups$().length + ' sessions'" />
-
-            <!-- Content-->
-            <div class="w-full">
-                <div class="bg-indigo-50 dark:bg-indigo-900/20 rounded-lg p-3 w-full">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center">
-                            <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                            <span class="font-medium text-zinc-900 dark:text-white">Weekend Warriors</span>
-                        </div>
-                        <span class="text-sm text-zinc-500 dark:text-zinc-400">Tomorrow, 7 PM</span>
-                    </div>
-                    <div class="flex -space-x-2">
-                        <!-- TODO: show some game images-->
-                        <app-image-profile
-                            class="border-2 rounded-full border-red-100 dark:border-zinc-800"
-                            [avatar]="currentUser$()?.avatar"
-                        />
-                        <app-image-profile
-                            class="border-2 rounded-full border-red-100 dark:border-zinc-800"
-                            [avatar]="currentUser$()?.avatar"
-                        />
-                        <app-image-profile
-                            class="border-2 rounded-full border-red-100 dark:border-zinc-800"
-                            [avatar]="currentUser$()?.avatar"
-                        />
-                    </div>
-                </div>
-            </div>
+            <app-badge class="app-card-section-badge" color="indigo" [text]="upcomingSessions().length + ' sessions'" />
+            @if (upcomingSessions().length > 0) {
+                <p class="text-secondary">Next: {{ getGroupName(upcomingSessions()[0].groupId) }} · {{ upcomingSessions()[0].meetDate | date }}</p>
+            } @else {
+                <p class="text-secondary">No upcoming sessions yet.</p>
+            }
+            <span class="text-indigo-600 dark:text-indigo-400 group-hover:underline flex items-center text-sm font-medium">Open sessions &gt;</span>
         </app-card-section>
 
-        <!-- --------------------------
-            2 - Session History Card
-        ---------------------------- -->
         <app-card-section
             icon="clock"
             color="green"
             titleText="Session History"
-            description="Browse your games played in the past meetings"
+            description="Browse games played in completed sessions"
             cardLink="/play/history"
         >
-            <!-- Badge -->
             <app-badge class="app-card-section-badge" color="green" [text]="userHistory$().length + ' sessions'" />
-
-            <!-- Content-->
-            <div></div>
-
-            <!-- View all highlight -->
-            <span class="text-green-600 dark:text-green-400 group-hover:underline flex items-center text-sm font-medium">
-                View history >
-            </span>
+            <p class="text-secondary">Your recorded play history.</p>
+            <span class="text-green-600 dark:text-green-400 group-hover:underline flex items-center text-sm font-medium">View history &gt;</span>
         </app-card-section>
 
-        <!-- --------------------------
-            3 - Game Recommendations Card
-        ---------------------------- -->
         <app-card-section
             icon="lightbulb"
             color="fuchsia"
             titleText="Game Recommendations"
-            description="Find the perfect games to play next based on your preferences"
-            cardLink="/play/recommendations"
+            description="Recommendations based on your group are still being built."
             [comingSoon]="true"
         >
-            <!-- Content-->
-            <div></div>
-
-            <!-- View all highlight -->
-            <span class="text-fuchsia-600 dark:text-fuchsia-400 group-hover:underline flex items-center text-sm font-medium">
-                View all >
-            </span>
+            <p class="text-secondary">This area will use your collection, attendees, and play history.</p>
         </app-card-section>
 
-        <!-- --------------------------
-            4 - Quick Stats Card
-        ---------------------------- -->
         <app-card-section
-            icon="lightning-charge-fill"
+            icon="dice-5-fill"
             color="cyan"
-            titleText="Quick Play & Stats"
-            description="Quickly log a game session or view your play statistics"
-            cardLink="/play/recommendations"
-            [comingSoon]="true"
+            titleText="Log a Session"
+            description="Record who attended and which games were played."
+            cardLink="/play/log-session"
         >
-            <!-- Badge -->
-            <!-- TODO: show actual count -->
-            <app-badge class="app-card-section-badge" color="cyan" [text]="userGroups$().length + ' sessions'" />
-
-            <!-- Content-->
-            <div class="mt-4 grid grid-cols-2 gap-3 w-full">
-                <div class="bg-indigo-600 text-white rounded-lg p-3 text-center hover:bg-indigo-700 transition shadow-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mx-auto mb-1" viewBox="0 0 20 20" fill="currentColor">
-                        <path
-                            fill-rule="evenodd"
-                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z"
-                            clip-rule="evenodd"
-                        />
-                    </svg>
-                    <span class="text-sm font-medium">Log a Play</span>
-                </div>
-                <div
-                    class="bg-indigo-50 dark:bg-indigo-900/20 rounded-lg p-3 text-center hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition"
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-5 w-5 mx-auto mb-1 text-indigo-600 dark:text-indigo-400"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                    >
-                        <path
-                            fill-rule="evenodd"
-                            d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 0l-2 2a1 1 0 101.414 1.414L8 10.414l1.293 1.293a1 1 0 001.414 0l4-4z"
-                            clip-rule="evenodd"
-                        />
-                    </svg>
-                    <span class="text-sm font-medium text-indigo-700 dark:text-indigo-300">Play Stats</span>
-                </div>
-            </div>
+            <span class="text-cyan-600 dark:text-cyan-400 group-hover:underline flex items-center text-sm font-medium">Start logging &gt;</span>
         </app-card-section>
     </div>
 </container-wrapper>

@@ -70,9 +70,9 @@ For each area, review:
 
 | Area | Routes/components | Current status | Known review scope / next action |
 |---|---|---|---|
-| Play landing | `/play`, `play-page` | Blocked | The information architecture is visible, but recommendations, analytics, and some counts/content are placeholder or linked to missing routes. Review after session contracts stabilize. |
-| Schedule session | `/play/upcoming-sessions`, schedule form | Blocked | Review after canonical session creation persists date/time, attendees, planned games, and state. Current form/API behavior is incomplete. |
-| Log session wizard | `/play/log-session`, `log-session-wizard` | Blocked | The wizard has steps and UI state, but final submission is still a TODO. Review interaction model after persistence exists. |
+| Play landing | `/play`, `play-page` | Partially reviewed | Upcoming count/date and completed-history count now come from loaded data; recommendations are explicitly coming soon and active links target existing routes. Review loading/error/empty states, responsive layout, accessibility, and richer session summaries. |
+| Schedule session | `/play/upcoming-sessions`, schedule form | Partially reviewed | Scheduled/active sessions and the scheduling entry point are backed by persisted lifecycle data; review status cards, date/timezone validation, planned games, loading/error states, and mobile layout. |
+| Log session wizard | `/play/log-session`, `log-session-wizard` | Partially reviewed | The wizard persists completed sessions through the canonical API; review validation, failure recovery, success navigation, loading states, and authenticated browser coverage. |
 | Meeting creation | `/groups/:groupId/meets/new`, `meet-new` | Partially reviewed | The selected date/timezone now reaches the canonical scheduled-session API; review group selection, date validation, pending attendees, and failure recovery. |
 | Meeting detail | `/meets/:meetId`, `meet-view` | Partially reviewed | Organizer lifecycle controls and synchronized played-game writes now exist; review planned-game selection, attendee semantics, terminal-state editing, and responsive controls. |
 | Meeting confirmation | `/meets/:meetId/confirm`, `meet-confirm` | Blocked | The component indicates the confirmation concept is being removed. Decide whether to delete, redirect, or redesign it. |
@@ -80,7 +80,7 @@ For each area, review:
 | History | `/play/history` | Partially reviewed | Reads completed-only history with actionable empty state and group labels; review richer game/session details, loading/error states, and responsive cards. |
 | Recommendations | `/play/recommendations` link only | Blocked | No route or implemented recommendation flow currently exists. |
 | Quick play | `/play/quick-play` link/reference only | Blocked | No declared route or implemented flow currently exists. |
-| Analytics | `/play/analytics` link only | Blocked | No declared route; dashboard analytics are currently placeholder/sample content. |
+| Analytics | `/play/analytics` link only | Blocked | No declared route or persisted analytics read model exists; create the contract before exposing analytics navigation. |
 
 ## Settings and administration
 
