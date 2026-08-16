@@ -24,9 +24,13 @@ export class PlayService {
     async getUserGamesHistory(userId: number): Promise<Array<HistoryRecordDto>> {
         const meetsYouParticipatedIn = await this.meetAccountGamesService.getDistinctMeetIdsByAccountId(userId)
 
-        return Promise.all(
+        const history = await Promise.all(
             meetsYouParticipatedIn.map(async meetId => {
                 const meetData = await this.meetsService.getMeetById(meetId, userId)
+                if (meetData.status !== 'completed') {
+                    return null
+                }
+
                 const gameIds = await this.meetAccountGamesService.getDistinctGameIdsByMeetId(meetId)
                 const gamesPlayed = await Promise.all(
                     gameIds.map(async gameId => {
@@ -53,6 +57,8 @@ export class PlayService {
                 }
             }),
         )
+
+        return history.filter((record): record is HistoryRecordDto => record !== null)
     }
 
     @LogFeature(new Logger('PlayService'))

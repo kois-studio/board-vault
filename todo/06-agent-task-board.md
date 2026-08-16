@@ -27,7 +27,7 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 | PROD-004 | TODO | Core loop | Implement deterministic recommendation scoring with explanations and unit tests. | PROD-001, DATA-003 |
 | PROD-005 | REVIEW | Core loop | Implement atomic session creation and replace the wizard submission TODO. | DATA-003, DATA-004 |
 | PROD-006 | REVIEW | Core loop | Implement upcoming, active, completed, and cancelled session views using real data. | PROD-005 |
-| PROD-007 | TODO | Core loop | Implement actual play history and basic group statistics. | PROD-005, DATA-003 |
+| PROD-007 | REVIEW | Core loop | Implement actual play history and basic group statistics. | PROD-005, DATA-003 |
 | PROD-008 | TODO | Core loop | Persist recommendation feedback and feed it into future scoring. | PROD-004, PROD-007 |
 
 ## P2 — quality and launch readiness
@@ -626,6 +626,22 @@ Review continuation: PROD-006
 Changed: Added `PATCH /sessions/:sessionId/status` with organizer authorization and explicit lifecycle transitions: scheduled → active/completed/cancelled, active → completed/cancelled, and terminal completed/cancelled states. The session view now exposes organizer-only lifecycle controls, and legacy played-game writes now synchronize `MeetGame` with `MeetAccountGame` transactionally so active sessions remain visible after refresh.
 Verified: `cd backend && npm test -- --runInBand` (121 tests passed); targeted session, database transaction, and legacy play-link suites pass; `cd backend && npm run build`; `cd frontend && npm run build`.
 Known follow-ups: Add planned-game selection for scheduled sessions, show group names/member details instead of IDs, add authenticated browser assertions for lifecycle controls, and manually verify scheduling/transitions against production.
+
+Most recent claim:
+
+```text
+Task: PROD-007
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: make personal play history completed-session-only and replace raw group identifiers in history surfaces
+```
+
+Review: PROD-007
+
+Changed: Personal play history now excludes scheduled, active, and cancelled sessions even when compatibility `MeetAccountGame` rows exist. Added service regression coverage for the completed-only rule and kept meet sorting deterministic. History and upcoming pages now resolve group names from the loaded group data instead of presenting raw group IDs; history sorting no longer mutates the source signal.
+Verified: `cd backend && npm test -- --runInBand` (123 tests passed); `cd backend && npm run build`; `cd frontend && npm run build`; targeted PlayService history tests pass.
+Known follow-ups: Add persisted group statistics, richer session/game read DTOs, a clean data-backed analytics route, and authenticated browser assertions for history.
 
 When claiming a task, add:
 
