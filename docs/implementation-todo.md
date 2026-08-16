@@ -144,6 +144,7 @@ Relevant surfaces: [`groups`](../frontend/src/app/pages/groups/), [`group-view`]
 - Remove unnecessary reload-all behavior after group mutations where safe.
 - Review invitation and notification feedback, unread/read states, and failure recovery.
 - Review member cards, avatars, long usernames, and mobile layouts.
+- Group detail now initializes each newly opened group with all members selected, preventing shared singleton selection state from leaking between groups; member-filter interaction still needs rendered responsive/accessibility review.
 
 ### 9. Authentication, profile, and settings — Verified slice / Partial
 
