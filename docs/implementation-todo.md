@@ -56,7 +56,7 @@ Relevant intent: [`todo/04-core-product-loop.md`](../todo/04-core-product-loop.m
 - Implemented deterministic filtering and scoring using player count, collective attendee ownership, selected-attendee ratings, and optional duration fit.
 - Return explanations with each recommendation, including owner coverage, rating, and last-play context.
 - Add a useful no-results state that explains which constraint excluded candidates.
-- Add recommendation feedback and persist it for future scoring.
+- Added `POST /play/recommendations/feedback` and a “Not for us” action. Feedback stores selected-attendee context after group membership and ownership validation; future scoring integration remains deferred.
 - Added the authenticated `/play/recommendations` route, Play navigation entry, selection form, result cards, and empty/error states.
 - Recommendation results now provide a direct scheduling link that carries the selected attendees and chosen game into the scheduling form.
 - Add authenticated browser coverage when a Clerk storage state is available; the test is present but skipped without that local secret-bearing state.

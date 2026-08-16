@@ -8,8 +8,8 @@ product intent do not agree with it.
 ## Scope and baseline
 
 - **Baseline:** [`schema/schema.sql`](schema/schema.sql), the owner-supplied
-  Turso export verified on 2026-08-12 and re-exported after migration 0002 on
-  2026-08-16.
+  Turso export verified on 2026-08-12 and re-exported after migrations 0002
+  through 0005 on 2026-08-16.
 - **Repository audit:** backend and frontend source inspected on 2026-08-16.
 - **Live aggregate probe:** read-only Turso CLI queries on 2026-08-16 found 16
   accounts, 5 groups, 13 meets, and 101 `MeetAccountGame` rows. Every meet has
@@ -23,6 +23,9 @@ product intent do not agree with it.
 - **Live session migration probe:** migration 0003 added `MeetAttendee` and
   `MeetGame`, backfilled 63 attendee rows and 22 session-game rows from 101
   preserved `MeetAccountGame` links, and passed integrity/foreign-key checks.
+- **Live recommendation migration probe:** migration 0005 added
+  `RecommendationFeedback` and its group/date index; integrity and
+  foreign-key checks passed and the initial row count was zero.
 - **Authority:** the deployed schema snapshot is authoritative for current
   tables and columns. Code, old schema notes, route names, and TypeScript types
   are evidence of intended or historical behavior only.

@@ -24,11 +24,11 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 | PROD-001 | TODO | Product | Decide and document canonical brand, nouns, persona, and ownership policy. Session semantics are accepted in ADR-0003. | None |
 | PROD-002 | REVIEW | Core loop | Implement a real first-five-games collection activation flow. | SEC-002, DATA-002 |
 | PROD-003 | TODO | Core loop | Finish invitation acceptance, group roles, and member visibility. | SEC-002, DATA-003 |
-| PROD-004 | TODO | Core loop | Implement deterministic recommendation scoring with explanations and unit tests. | PROD-001, DATA-003 |
+| PROD-004 | REVIEW | Core loop | Implement deterministic recommendation scoring with explanations and unit tests. | PROD-001, DATA-003 |
 | PROD-005 | REVIEW | Core loop | Implement atomic session creation and replace the wizard submission TODO. | DATA-003, DATA-004 |
 | PROD-006 | REVIEW | Core loop | Implement upcoming, active, completed, and cancelled session views using real data. | PROD-005 |
 | PROD-007 | REVIEW | Core loop | Implement actual play history and basic group statistics. | PROD-005, DATA-003 |
-| PROD-008 | TODO | Core loop | Persist recommendation feedback and feed it into future scoring. | PROD-004, PROD-007 |
+| PROD-008 | REVIEW | Core loop | Persist recommendation feedback and feed it into future scoring. | PROD-004, PROD-007 |
 
 ## P2 — quality and launch readiness
 
@@ -118,6 +118,22 @@ Review: PROD-004
 Changed: Recommendation cards now hand off to the scheduled-session form with the selected attendee IDs and chosen game in query parameters; the form validates those values against the loaded group and preselects them.
 Verified: Pending frontend build and browser verification.
 Known follow-ups: Add persisted recommendation feedback and a clean authenticated end-to-end journey across recommendation → schedule → session detail.
+
+Most recent claim:
+
+```text
+Task: PROD-008
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: persist lightweight recommendation feedback with group, attendee, and ownership validation
+```
+
+Review: PROD-008
+
+Changed: Added migration 0005, `POST /play/recommendations/feedback`, backend validation/tests, and a frontend “Not for us” action. Feedback stores selected attendee IDs as JSON context for future scoring work.
+Verified: Disposable SQLite migration integrity/foreign-key check passed; live Turso migration applied on 2026-08-16 with integrity/foreign-key checks passing and zero initial rows; backend 131-test suite/build, frontend build, and Playwright public suite pass.
+Known follow-ups: Feed accepted feedback into future scoring only after enough real usage exists; add “interested/played” signals through the scheduling and completion flows.
 
 Most recent claim:
 

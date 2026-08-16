@@ -54,3 +54,12 @@ It backfills selected participants and played games from distinct historical
 Migration 0003 was applied to live `board-vault` on 2026-08-16 after a fresh
 local dump. It produced 63 attendee rows and 22 session-game rows from 101
 source play links; integrity and foreign-key checks passed.
+
+## Migration 0005
+
+`0005-add-recommendation-feedback.sql` adds `RecommendationFeedback` for the
+small first feedback loop. It stores the authenticated account, group, game,
+selected attendee IDs as JSON text, and one of `interested`, `not_for_us`, or
+`played`. It is additive and contains no authentication secrets. Apply it only
+after disposable SQLite verification and a fresh live backup; record the live
+verification in the operations handoff.

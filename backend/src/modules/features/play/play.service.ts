@@ -8,7 +8,14 @@ import { MeetAccountGamesService } from '../../core/meet-account-games/meet-acco
 import { MeetsService } from '../../core/meets/meets.service'
 import { UsersService } from '../../core/users/users.service'
 
-import type { HistoryRecordDto, RecommendationDto, RecommendationRequestBody, RecommendationsDto } from './play.types'
+import type {
+    HistoryRecordDto,
+    RecommendationDto,
+    RecommendationFeedbackBody,
+    RecommendationFeedbackDto,
+    RecommendationRequestBody,
+    RecommendationsDto,
+} from './play.types'
 import type { MeetDto } from '../../../common/types/meet.type'
 
 @Injectable()
@@ -93,6 +100,38 @@ export class PlayService {
                 lastPlayedAt,
             },
         }
+    }
+
+    @LogFeature(new Logger('PlayService'))
+    async createRecommendationFeedback(actorAccountId: number, body: RecommendationFeedbackBody): Promise<RecommendationFeedbackDto> {
+        const group = await this.databaseService.getGroupById(body.groupId)
+        if (group.rows.length === 0) {
+            throw new NotFoundException(`Group with id ${body.groupId} not found`)
+        }
+
+        const memberIds = await this.databaseService.getGroupMemberIds(body.groupId)
+        if (!memberIds.includes(actorAccountId)) {
+            throw new ForbiddenException('You must belong to the group to submit recommendation feedback')
+        }
+
+        if (body.attendeeIds.some(accountId => !memberIds.includes(accountId))) {
+            throw new BadRequestException('Every attendee must belong to the selected group')
+        }
+
+        const ownedGame = await this.databaseService.getOwnedGameByAnyAccount(body.gameId, body.attendeeIds)
+        if (ownedGame.rows.length === 0) {
+            throw new BadRequestException('The selected attendees do not own this game')
+        }
+
+        await this.databaseService.createRecommendationFeedback({
+            accountId: actorAccountId,
+            groupId: body.groupId,
+            gameId: body.gameId,
+            attendeeIds: JSON.stringify(body.attendeeIds),
+            feedback: body.feedback,
+        })
+
+        return { success: true }
     }
 
     @LogFeature(new Logger('PlayService'))

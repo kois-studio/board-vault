@@ -37,6 +37,7 @@ database/
 - Applied auth-token migration: [migrations/0002-add-auth-token-expiry.sql](migrations/0002-add-auth-token-expiry.sql). The live schema claim includes its two nullable UTC epoch-second columns; the migration runner and repeatable empty-state recreation are still missing.
 - Applied session migration: [migrations/0003-add-session-relations.sql](migrations/0003-add-session-relations.sql). It is additive and preserves `MeetAccountGame`; the migration runner and repeatable empty-state recreation are still missing.
 - Applied session lifecycle migration: [migrations/0004-add-session-lifecycle.sql](migrations/0004-add-session-lifecycle.sql). `updatedAt` is nullable because SQLite disallows non-constant defaults in `ALTER TABLE`; application writes set it explicitly.
+- Recommendation feedback migration: [migrations/0005-add-recommendation-feedback.sql](migrations/0005-add-recommendation-feedback.sql). This additive table stores lightweight feedback context and contains no authentication secrets.
 - Product/session decisions: [todo/03-data-model-and-session-domain.md](../todo/03-data-model-and-session-domain.md) and accepted [ADR-0003](../docs/adr/0003-session-as-first-class-domain.md).
 - Authentication identity decision: [ADR-0004](../docs/adr/0004-clerk-managed-authentication.md).
 - API behavior and transaction expectations: [docs/api.md](../docs/api.md).

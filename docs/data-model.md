@@ -49,6 +49,7 @@ The schema snapshot names these tables/entities:
 - `Meet`, `MeetAttendee`, `MeetGame`, and `MeetAccountGame`
 - `FeatureFlags`
 - `GameProposal`
+- `RecommendationFeedback`
 
 The backend source also has corresponding service/type/schema areas. The current product backlog identifies migration reproducibility, session transactions/API contracts, richer play events, and recommendation state as P0/P1 work.
 
@@ -59,6 +60,7 @@ The backend source also has corresponding service/type/schema areas. The current
 - A group creation flow in `DashboardService` creates the group, looks up its ID by name, and creates the owner membership as separate operations. The repository does not document atomicity or partial-failure behavior.
 - `Meet` remains the compatibility/session record. `MeetAttendee` stores participant RSVP/attendance state, `MeetGame` stores planned/played/skipped session-game state, and `MeetAccountGame` preserves account-to-play links for historical play lookup. The canonical completed-session write now persists the selected date, IANA timezone, attendees, played games, and participant links atomically. Scheduled-session creation now optionally persists planned games in the same transaction; editing, RSVP mutation, richer event history, and broader lifecycle read models remain unfinished.
 - Cache TTLs are declared in `cache.types.ts` and selected services invalidate keys, but cache ownership, stale-read behavior, disabled mode, and correctness tests are not documented.
+- `RecommendationFeedback` stores the first lightweight product signal. The actor and attendee IDs are validated against group membership, and the game must be owned by at least one selected attendee before the feedback is accepted. Rich preference history and automated score weighting remain deferred.
 
 ## Repository reconciliation result
 
