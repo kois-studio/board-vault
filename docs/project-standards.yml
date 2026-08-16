@@ -441,7 +441,7 @@ compliance:
       next_action: Document when custom SCSS is preferred and remove competing legacy patterns incrementally.
     - id: STYLE-004
       status: gap
-      evidence: build reports Sass @import deprecation and 405 skipped selector errors
+      evidence: build reports Sass @import deprecation and 410 skipped selector errors
       priority: high
       next_action: Repair Tailwind/Sass integration in the frontend-quality workstream.
     - id: STYLE-005
