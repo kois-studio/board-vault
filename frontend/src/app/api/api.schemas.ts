@@ -2,6 +2,7 @@ import { z } from 'zod'
 
 import type {
     GameCompleteType,
+    GameType,
     GroupType,
     GroupWithMembersAndGames,
     HistoryRecordType,
@@ -45,6 +46,18 @@ const gameCompleteSchema: z.ZodType<GameCompleteType> = z.object({
         es: z.string(),
     }),
 })
+
+const gameSchema: z.ZodType<GameType> = z.object({
+    id: z.number(),
+    title: z.string().optional(),
+    imageUrl: z.string(),
+    gameAvgDuration: z.number(),
+    minPlayers: z.number(),
+    maxPlayers: z.number(),
+})
+
+export const gamesSchema = z.array(gameSchema)
+export const userGamesSchema = z.array(gameCompleteSchema)
 
 const avatarSchema = z.object({
     backgroundColor: z.string(),
