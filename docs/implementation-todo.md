@@ -183,6 +183,7 @@ Relevant surfaces: [`propose-game-page`](../frontend/src/app/pages/collection-pa
 - Resolve the eight current Biome findings in the form submission, log-session wizard, and proposal page.
 - Add timezone-focused browser coverage around scheduled-session display and keep all relative-time utilities based on instant timestamps rather than server/local offset corrections; `formatDate.ts` no longer applies a fixed Spain correction.
 - Avoid mutating nested signal state in place where it can produce stale UI.
+- Group member and invitation removal now update nested signal state immutably; continue auditing remaining collection and session updates for the same failure mode.
 - Add shared UI conventions for buttons, cards, forms, modal behavior, spacing, typography, colors, and icons.
 
 ### 12. Frontend testing and contracts — Partial

@@ -397,10 +397,9 @@ export class DataService {
             tap(() => {
                 this.userGroups.update(groups =>
                     groups.map(group => {
-                        if (group.id === groupId) {
-                            group.members = group.members.filter(member => member.id !== memberId)
-                        }
-                        return group
+                        return group.id === groupId
+                            ? { ...group, members: group.members.filter(member => member.id !== memberId) }
+                            : group
                     }),
                 )
                 this.toastService.success('Member removed from group')
@@ -415,13 +414,12 @@ export class DataService {
     public removeInvitedFromGroup(invitationId: number) {
         return this.api.deleteInvitation(invitationId).pipe(
             tap(() => {
-                this.invitationsGroupIndex.update(index => {
-                    const groupIds = Object.keys(index).map(Number)
-                    for (const groupId of groupIds) {
-                        index[groupId] = (index[groupId] ?? []).filter(invitation => invitation.id !== invitationId)
-                    }
-                    return index
-                })
+                this.invitationsGroupIndex.update(index => Object.fromEntries(
+                    Object.entries(index).map(([groupId, invitations]) => [
+                        groupId,
+                        invitations.filter(invitation => invitation.id !== invitationId),
+                    ]),
+                ))
                 this.toastService.success('Invitation removed')
             }),
             catchError(error => {
@@ -655,12 +653,9 @@ export class DataService {
         // 1.
         this.api.saveGameReview(accountId, gameId, review).subscribe({
             next: res => {
-                // TODO: res should return GameReviewType so we just append it to the array later
-                // 2.
                 this.userReviews.set([])
                 this._getUserReviews(accountId)
 
-                // 3.
                 this.toastService.success('Review saved')
             },
             error: error => {
