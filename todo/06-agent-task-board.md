@@ -1002,6 +1002,19 @@ Changed: `formatDate()` now compares timestamp instants directly, clamps future 
 Verified: `cd frontend && npm run build` passes with the documented baseline warnings; `git diff --check` passes.
 Known follow-ups: Add browser coverage for timezone-aware scheduled-session display and complete the broader responsive/accessibility pass.
 
+Continuation claim: PROD-006
+
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: make meeting detail loading failures recoverable and game labels truthful
+
+Review continuation: PROD-006
+
+Changed: Meeting detail now catches failed API loads, exposes loading/error/retry states, prevents duplicate initial requests while data is settling, and uses translated game titles with a safe fallback instead of relying on the absent base `Game.title` field.
+Verified: `cd frontend && npm run build` passes with the documented baseline warnings; `git diff --check` passes.
+Known follow-ups: Add authenticated browser coverage for meeting-detail retry and review the lifecycle/action controls at mobile widths.
+
 Continuation claim: PROD-005
 
 Owner: Codex
