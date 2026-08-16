@@ -8,8 +8,8 @@ import { catchError, map } from 'rxjs/operators'
 import { Api } from '../../api/api'
 import { ToastService } from '../../components/toast/toast.service'
 import { LOADING_KEYS } from '../enums/loading-keys-enum'
-import { DataService } from './data.service'
 import { ClerkService } from './clerk.service'
+import { DataService } from './data.service'
 import { LoadingService } from './loading.service'
 import { LocalStorageService } from './local-storage.service'
 import { LogService } from './log.service'
@@ -122,7 +122,7 @@ export class LoginService {
 
     public verifyClerkSession(): Observable<boolean> {
         return this.api.clerkAuthStatus().pipe(
-            map(response => {
+            map((response) => {
                 if (!response?.isValid || response.userId === undefined) {
                     return false
                 }

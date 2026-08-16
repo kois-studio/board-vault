@@ -187,7 +187,7 @@ Relevant surfaces: [`propose-game-page`](../frontend/src/app/pages/collection-pa
 - Define consistent loading, empty, error, retry, disabled, and success states.
 - Fix the Sass deprecation and selector warnings.
 - Reduce the initial bundle over the configured warning budget.
-- Resolve the remaining 19 frontend Biome formatting/style diagnostics across 16 files; the form submission, log-session wizard, and proposal page now pass targeted checks.
+- Keep the frontend source tree passing Biome; the current `src/app` check is clean. Backend lint findings remain tracked separately.
 - Add timezone-focused browser coverage around scheduled-session display and keep all relative-time utilities based on instant timestamps rather than server/local offset corrections; `formatDate.ts` no longer applies a fixed Spain correction.
 - Avoid mutating nested signal state in place where it can produce stale UI.
 - Group member and invitation removal now update nested signal state immutably; continue auditing remaining collection and session updates for the same failure mode.

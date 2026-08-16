@@ -52,7 +52,7 @@ Commands run from the package directory. Dependencies are currently present in i
 | Frontend install | `cd frontend && npm ci --ignore-scripts` | Passes from the committed `frontend/package-lock.json`; Angular packages are pinned to a coherent 19.2 toolchain. |
 | Frontend build | `cd frontend && npm run build` | Passes with Sass deprecation, selector, and initial bundle-budget warnings. |
 | Frontend tests | `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` | Passes 1 generated smoke test. |
-| Frontend checks | `cd frontend && npx biome check src/app` | Fails with 19 formatting/style diagnostics across 16 files; the previously flagged form submission, log-session wizard, and proposal page files are clean. |
+| Frontend checks | `cd frontend && npx biome check src/app` | Passes with no diagnostics. |
 | Frontend formatting, writes files | `cd frontend && npm run format` | Available; run only when formatting changes are in scope. |
 | Database empty-state verification | `node database/scripts/verify-empty-state.mjs` | Passes against disposable SQLite and records the current snapshot baseline at migration 0005. |
 

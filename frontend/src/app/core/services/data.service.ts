@@ -171,39 +171,41 @@ export class DataService {
     private _getUserGames(userId: number) {
         this.userGamesError.set(false)
         this.loadingService.start(LOADING_KEYS.USER_GAMES)
-        this.api.getUserGames(userId).pipe(
-            finalize(() => this.loadingService.finish(LOADING_KEYS.USER_GAMES)),
-        ).subscribe({
-            next: games => {
-                this.userGames.set(games)
-                this.userGroups.update(groups =>
-                    groups.map(group => ({
-                        ...group,
-                        members: group.members.map(member => (member.id === userId ? { ...member, games } : member)),
-                    })),
-                )
-            },
-            error: () => {
-                this.userGamesError.set(true)
-                this.toastService.error('Error retrieving user games')
-            },
-        })
+        this.api
+            .getUserGames(userId)
+            .pipe(finalize(() => this.loadingService.finish(LOADING_KEYS.USER_GAMES)))
+            .subscribe({
+                next: (games) => {
+                    this.userGames.set(games)
+                    this.userGroups.update((groups) =>
+                        groups.map((group) => ({
+                            ...group,
+                            members: group.members.map((member) => (member.id === userId ? { ...member, games } : member)),
+                        })),
+                    )
+                },
+                error: () => {
+                    this.userGamesError.set(true)
+                    this.toastService.error('Error retrieving user games')
+                },
+            })
     }
 
     private _getUserInvitations(userId: number) {
         this.userInvitationsLoading.set(true)
         this.userInvitationsError.set(false)
-        this.api.getUserInvitations(userId).pipe(
-            finalize(() => this.userInvitationsLoading.set(false)),
-        ).subscribe({
-            next: invitations => {
-                this.userInvitations.set(invitations)
-            },
-            error: () => {
-                this.userInvitationsError.set(true)
-                this.toastService.error("Error retrieving user's invitations")
-            },
-        })
+        this.api
+            .getUserInvitations(userId)
+            .pipe(finalize(() => this.userInvitationsLoading.set(false)))
+            .subscribe({
+                next: (invitations) => {
+                    this.userInvitations.set(invitations)
+                },
+                error: () => {
+                    this.userInvitationsError.set(true)
+                    this.toastService.error("Error retrieving user's invitations")
+                },
+            })
     }
 
     public retryUserInvitations(): void {
@@ -214,17 +216,18 @@ export class DataService {
     private _getUserNotifications(userId: number) {
         this.userNotificationsLoading.set(true)
         this.userNotificationsError.set(false)
-        this.api.getUserNotifications(userId).pipe(
-            finalize(() => this.userNotificationsLoading.set(false)),
-        ).subscribe({
-            next: notifications => {
-                this.userNotifications.set(notifications)
-            },
-            error: () => {
-                this.userNotificationsError.set(true)
-                this.toastService.error("Error retrieving user's notifications")
-            },
-        })
+        this.api
+            .getUserNotifications(userId)
+            .pipe(finalize(() => this.userNotificationsLoading.set(false)))
+            .subscribe({
+                next: (notifications) => {
+                    this.userNotifications.set(notifications)
+                },
+                error: () => {
+                    this.userNotificationsError.set(true)
+                    this.toastService.error("Error retrieving user's notifications")
+                },
+            })
     }
 
     public retryUserNotifications(): void {
@@ -235,126 +238,133 @@ export class DataService {
     private _getUserReviews(accountId: number) {
         this.userReviewsError.set(false)
         this.loadingService.start(LOADING_KEYS.USER_REVIEWS)
-        this.api.getUserReviews(accountId).pipe(
-            finalize(() => this.loadingService.finish(LOADING_KEYS.USER_REVIEWS)),
-        ).subscribe({
-            next: reviews => {
-                this.userReviews.set(reviews)
-            },
-            error: () => {
-                this.userReviewsError.set(true)
-                this.toastService.error("Error retrieving user's reviews")
-            },
-        })
+        this.api
+            .getUserReviews(accountId)
+            .pipe(finalize(() => this.loadingService.finish(LOADING_KEYS.USER_REVIEWS)))
+            .subscribe({
+                next: (reviews) => {
+                    this.userReviews.set(reviews)
+                },
+                error: () => {
+                    this.userReviewsError.set(true)
+                    this.toastService.error("Error retrieving user's reviews")
+                },
+            })
     }
 
     private _getUserGroups(accountId: number) {
         this.userGroupsError.set(false)
         this.loadingService.start(LOADING_KEYS.USER_GROUPS)
-        this.api.getUserGroups(accountId).pipe(
-            finalize(() => this.loadingService.finish(LOADING_KEYS.USER_GROUPS)),
-        ).subscribe({
-            next: groups => {
-                this.userGroups.set(groups)
+        this.api
+            .getUserGroups(accountId)
+            .pipe(finalize(() => this.loadingService.finish(LOADING_KEYS.USER_GROUPS)))
+            .subscribe({
+                next: (groups) => {
+                    this.userGroups.set(groups)
 
-                for (const group of groups) {
-                    if (group.createdBy !== accountId) {
-                        this.invitationsGroupIndex.update(index => ({ ...index, [group.id]: [] }))
-                        continue
+                    for (const group of groups) {
+                        if (group.createdBy !== accountId) {
+                            this.invitationsGroupIndex.update((index) => ({ ...index, [group.id]: [] }))
+                            continue
+                        }
+
+                        this.api.getGroupInvitations(group.id).subscribe({
+                            next: (invitations) => {
+                                this.invitationsGroupIndex.update((index) => ({
+                                    ...index,
+                                    [group.id]: invitations,
+                                }))
+                            },
+                            error: () => {
+                                this.toastService.error(`Error retrieving invited members for group: ${group.name}`)
+                            },
+                        })
                     }
-
-                    this.api.getGroupInvitations(group.id).subscribe({
-                        next: invitations => {
-                            this.invitationsGroupIndex.update(index => ({
-                                ...index,
-                                [group.id]: invitations,
-                            }))
-                        },
-                        error: () => {
-                            this.toastService.error(`Error retrieving invited members for group: ${group.name}`)
-                        },
-                    })
-                }
-            },
-            error: () => {
-                this.userGroupsError.set(true)
-                this.toastService.error("Error retrieving user's groups")
-            },
-        })
+                },
+                error: () => {
+                    this.userGroupsError.set(true)
+                    this.toastService.error("Error retrieving user's groups")
+                },
+            })
     }
 
     private _getUserMeets(userId: number) {
         this.userMeetsError.set(false)
         this.loadingService.start(LOADING_KEYS.USER_MEETS)
-        this.api.getUserMeets(userId).pipe(
-            finalize(() => this.loadingService.finish(LOADING_KEYS.USER_MEETS)),
-        ).subscribe({
-            next: meets => this.userMeets.set(meets),
-            error: () => {
-                this.userMeetsError.set(true)
-                this.toastService.error("Error retrieving user's meets")
-            },
-        })
+        this.api
+            .getUserMeets(userId)
+            .pipe(finalize(() => this.loadingService.finish(LOADING_KEYS.USER_MEETS)))
+            .subscribe({
+                next: (meets) => this.userMeets.set(meets),
+                error: () => {
+                    this.userMeetsError.set(true)
+                    this.toastService.error("Error retrieving user's meets")
+                },
+            })
     }
 
     private _getUserHistory(userId: number) {
         this.userHistoryError.set(false)
         this.loadingService.start(LOADING_KEYS.USER_GAMES_HISTORY)
-        this.api.getUserGamesHistory(userId).pipe(
-            finalize(() => this.loadingService.finish(LOADING_KEYS.USER_GAMES_HISTORY)),
-        ).subscribe({
-            next: history => this.userHistory.set(history),
-            error: () => {
-                this.userHistoryError.set(true)
-                this.toastService.error("Error retrieving user's history")
-            },
-        })
+        this.api
+            .getUserGamesHistory(userId)
+            .pipe(finalize(() => this.loadingService.finish(LOADING_KEYS.USER_GAMES_HISTORY)))
+            .subscribe({
+                next: (history) => this.userHistory.set(history),
+                error: () => {
+                    this.userHistoryError.set(true)
+                    this.toastService.error("Error retrieving user's history")
+                },
+            })
     }
 
     private _getUserWishlist(userId: number) {
         this.userWishlistError.set(false)
         this.loadingService.start(LOADING_KEYS.USER_WISHLIST)
-        this.api.getUserWishlist(userId).pipe(
-            finalize(() => this.loadingService.finish(LOADING_KEYS.USER_WISHLIST)),
-        ).subscribe({
-            next: wishlist => {
-                this.userWishlist.set(wishlist)
-            },
-            error: () => {
-                this.userWishlistError.set(true)
-                this.toastService.error("Error retrieving user's wishlist")
-            },
-        })
+        this.api
+            .getUserWishlist(userId)
+            .pipe(finalize(() => this.loadingService.finish(LOADING_KEYS.USER_WISHLIST)))
+            .subscribe({
+                next: (wishlist) => {
+                    this.userWishlist.set(wishlist)
+                },
+                error: () => {
+                    this.userWishlistError.set(true)
+                    this.toastService.error("Error retrieving user's wishlist")
+                },
+            })
     }
 
     private _getUserCollectionActivity(userId: number) {
         this.loadingService.start(LOADING_KEYS.USER_COLLECTION_ACTIVITY)
-        this.api.getUserCollectionActivity(userId).pipe(
-            finalize(() => this.loadingService.finish(LOADING_KEYS.USER_COLLECTION_ACTIVITY)),
-        ).subscribe({
-            next: collectionActivity => {
-                this.userCollectionActivity.set(collectionActivity)
-            },
-            error: () => {
-                this.toastService.error("Error retrieving user's collection activity")
-            },
-        })
+        this.api
+            .getUserCollectionActivity(userId)
+            .pipe(finalize(() => this.loadingService.finish(LOADING_KEYS.USER_COLLECTION_ACTIVITY)))
+            .subscribe({
+                next: (collectionActivity) => {
+                    this.userCollectionActivity.set(collectionActivity)
+                },
+                error: () => {
+                    this.toastService.error("Error retrieving user's collection activity")
+                },
+            })
     }
 
     private _getUserStats(userId: number) {
         this.userStatsError.set(false)
         this.loadingService.start(LOADING_KEYS.USER_STATS)
-        this.api.getUserStats(userId).pipe(
-            finalize(() => this.loadingService.finish(LOADING_KEYS.USER_STATS)),
-        ).subscribe({
-            next: stats => {
-                this.userStats.set(stats)
-            },
-            error: () => {
-                this.userStatsError.set(true)
-                this.toastService.error("Error retrieving user's stats")
-            },
-        })
+        this.api
+            .getUserStats(userId)
+            .pipe(finalize(() => this.loadingService.finish(LOADING_KEYS.USER_STATS)))
+            .subscribe({
+                next: (stats) => {
+                    this.userStats.set(stats)
+                },
+                error: () => {
+                    this.userStatsError.set(true)
+                    this.toastService.error("Error retrieving user's stats")
+                },
+            })
     }
     // #region ## public methods ##
 
@@ -376,14 +386,14 @@ export class DataService {
         // 1.
         this.api
             .updateUser(currentUser.id, requestBody)
-            .pipe(concatMap(res => this.api.getUserById(currentUser.id)))
+            .pipe(concatMap((res) => this.api.getUserById(currentUser.id)))
             .subscribe({
-                next: updatedUser => {
+                next: (updatedUser) => {
                     // 2.
                     this.currentUser.set(updatedUser)
-                    this.userGroups.update(groups =>
-                        groups.map(group => {
-                            const userIndex = group.members.findIndex(member => member.id === currentUser.id)
+                    this.userGroups.update((groups) =>
+                        groups.map((group) => {
+                            const userIndex = group.members.findIndex((member) => member.id === currentUser.id)
                             if (userIndex === -1) return group
 
                             // update the user data inside that group
@@ -416,16 +426,16 @@ export class DataService {
 
         return this.api.removeMember(currentUser.id, groupId, memberId).pipe(
             tap(() => {
-                this.userGroups.update(groups =>
-                    groups.map(group => {
+                this.userGroups.update((groups) =>
+                    groups.map((group) => {
                         return group.id === groupId
-                            ? { ...group, members: group.members.filter(member => member.id !== memberId) }
+                            ? { ...group, members: group.members.filter((member) => member.id !== memberId) }
                             : group
                     }),
                 )
                 this.toastService.success('Member removed from group')
             }),
-            catchError(error => {
+            catchError((error) => {
                 this.toastService.error('Error removing member')
                 return throwError(() => error)
             }),
@@ -435,15 +445,17 @@ export class DataService {
     public removeInvitedFromGroup(invitationId: number) {
         return this.api.deleteInvitation(invitationId).pipe(
             tap(() => {
-                this.invitationsGroupIndex.update(index => Object.fromEntries(
-                    Object.entries(index).map(([groupId, invitations]) => [
-                        groupId,
-                        invitations.filter(invitation => invitation.id !== invitationId),
-                    ]),
-                ))
+                this.invitationsGroupIndex.update((index) =>
+                    Object.fromEntries(
+                        Object.entries(index).map(([groupId, invitations]) => [
+                            groupId,
+                            invitations.filter((invitation) => invitation.id !== invitationId),
+                        ]),
+                    ),
+                )
                 this.toastService.success('Invitation removed')
             }),
-            catchError(error => {
+            catchError((error) => {
                 this.toastService.error('Error removing invitation')
                 return throwError(() => error)
             }),
@@ -453,14 +465,14 @@ export class DataService {
     public addInvitedToGroup(groupId: number, invitedUsername: string) {
         return this.api.createInvitation(groupId, invitedUsername).pipe(
             concatMap(() => this.api.getGroupInvitations(groupId)),
-            tap(invitations => {
-                this.invitationsGroupIndex.update(index => ({
+            tap((invitations) => {
+                this.invitationsGroupIndex.update((index) => ({
                     ...index,
                     [groupId]: invitations,
                 }))
                 this.toastService.success('Invitation sent')
             }),
-            catchError(error => {
+            catchError((error) => {
                 if (error.status === 404) {
                     this.toastService.error('User not found')
                 } else {
@@ -476,8 +488,8 @@ export class DataService {
     public updateUserGames(userGameIds: Array<number>, gameIdsToToggle: Array<number>) {
         const currentUser = this.currentUser()
         if (!currentUser) return
-        const gamesToAdd = gameIdsToToggle.filter(id => !userGameIds.includes(id))
-        const gamesToRemove = userGameIds.filter(id => !gameIdsToToggle.includes(id))
+        const gamesToAdd = gameIdsToToggle.filter((id) => !userGameIds.includes(id))
+        const gamesToRemove = userGameIds.filter((id) => !gameIdsToToggle.includes(id))
 
         // 1.
         this.api
@@ -485,12 +497,14 @@ export class DataService {
             .pipe(
                 concatMap(() =>
                     // 2.
-                    this.api.getUserGames(currentUser.id).pipe(
-                        catchError(() => {
-                            this.toastService.error('Error fetching updated games')
-                            return of([]) // Return an empty array if fetching fails
-                        }),
-                    ),
+                    this.api
+                        .getUserGames(currentUser.id)
+                        .pipe(
+                            catchError(() => {
+                                this.toastService.error('Error fetching updated games')
+                                return of([]) // Return an empty array if fetching fails
+                            }),
+                        ),
                 ),
                 catchError(() => {
                     this.toastService.error('Error updating games')
@@ -498,17 +512,17 @@ export class DataService {
                 }),
             )
             .subscribe({
-                next: games => {
+                next: (games) => {
                     if (games) {
                         this.userGames.set(games)
-                        this.userGroups.update(groups =>
-                            groups.map(group => {
-                                const userIndex = group.members.findIndex(member => member.id === currentUser.id)
+                        this.userGroups.update((groups) =>
+                            groups.map((group) => {
+                                const userIndex = group.members.findIndex((member) => member.id === currentUser.id)
                                 if (userIndex === -1) return group
 
                                 return {
                                     ...group,
-                                    members: group.members.map(member => (member.id === currentUser.id ? { ...member, games } : member)),
+                                    members: group.members.map((member) => (member.id === currentUser.id ? { ...member, games } : member)),
                                 }
                             }),
                         )
@@ -532,7 +546,7 @@ export class DataService {
                 this.toastService.success(`You have created the group ${groupName}`)
                 return of(true)
             }),
-            catchError(error => {
+            catchError((error) => {
                 if (error.status === 404) {
                     this.toastService.error('User not found')
                 } else {
@@ -552,12 +566,12 @@ export class DataService {
         return this.api.leaveGroup(currentUser.id, groupId).pipe(
             tap(() => {
                 // 2.
-                this.userGroups.update(groups => groups.filter(group => group.id !== groupId))
+                this.userGroups.update((groups) => groups.filter((group) => group.id !== groupId))
 
                 // 3.
                 this.toastService.success('You have left the group')
             }),
-            catchError(error => {
+            catchError((error) => {
                 if (error.status === 404) {
                     this.toastService.error('User or Group not found')
                 } else if (error.status === 400) {
@@ -579,12 +593,12 @@ export class DataService {
         return this.api.deleteGroup(currentUser.id, groupId).pipe(
             tap(() => {
                 // 2.
-                this.userGroups.update(groups => groups.filter(group => group.id !== groupId))
+                this.userGroups.update((groups) => groups.filter((group) => group.id !== groupId))
 
                 // 3.
                 this.toastService.success('You have deleted the group')
             }),
-            catchError(error => {
+            catchError((error) => {
                 if (error.status === 404) {
                     this.toastService.error('Group not found')
                 } else {
@@ -603,12 +617,12 @@ export class DataService {
 
         return this.api.acceptInvitation(currentUser.id, invitationId).pipe(
             tap(() => {
-                this.userInvitations.update(invitations => invitations.filter(invitation => invitation.id !== invitationId))
+                this.userInvitations.update((invitations) => invitations.filter((invitation) => invitation.id !== invitationId))
                 this.userGroups.set([])
                 this._getUserGroups(currentUser.id)
                 this.toastService.success('You have joined the group!')
             }),
-            catchError(error => {
+            catchError((error) => {
                 this.toastService.error('Error accepting invitation')
                 return throwError(() => error)
             }),
@@ -618,10 +632,10 @@ export class DataService {
     public rejectInvitation(invitationId: number) {
         return this.api.rejectInvitation(invitationId).pipe(
             tap(() => {
-                this.userInvitations.update(invitations => invitations.filter(invitation => invitation.id !== invitationId))
+                this.userInvitations.update((invitations) => invitations.filter((invitation) => invitation.id !== invitationId))
                 this.toastService.success('Invitation declined')
             }),
-            catchError(error => {
+            catchError((error) => {
                 this.toastService.error('Error declining invitation')
                 return throwError(() => error)
             }),
@@ -633,14 +647,14 @@ export class DataService {
     public deleteNotification(notificationId: number) {
         // 1.
         this.api.deleteNotification(notificationId).subscribe({
-            next: res => {
+            next: (res) => {
                 // 2.
-                this.userNotifications.update(notifications => notifications.filter(notification => notification.id !== notificationId))
+                this.userNotifications.update((notifications) => notifications.filter((notification) => notification.id !== notificationId))
 
                 // 3.
                 this.toastService.success('You have deleted the notification')
             },
-            error: error => {
+            error: (error) => {
                 if (error.status === 404) {
                     return this.toastService.error('Notification not found')
                 }
@@ -651,16 +665,16 @@ export class DataService {
 
     public updateNotification(notificationId: number) {
         this.api.updateNotification(notificationId, { isRead: true }).subscribe({
-            next: res => {
-                this.userNotifications.update(notifications =>
-                    notifications.map(notification =>
+            next: (res) => {
+                this.userNotifications.update((notifications) =>
+                    notifications.map((notification) =>
                         notification.id === notificationId ? { ...notification, isRead: true } : notification,
                     ),
                 )
 
                 this.toastService.success('Notification marked as read')
             },
-            error: error => {
+            error: (error) => {
                 if (error.status === 404) {
                     return this.toastService.error('Notification not found')
                 }
@@ -674,13 +688,13 @@ export class DataService {
     public saveGameReview(accountId: number, gameId: number, review: number) {
         // 1.
         this.api.saveGameReview(accountId, gameId, review).subscribe({
-            next: res => {
+            next: (res) => {
                 this.userReviews.set([])
                 this._getUserReviews(accountId)
 
                 this.toastService.success('Review saved')
             },
-            error: error => {
+            error: (error) => {
                 this.toastService.error('Error saving review')
             },
         })
@@ -744,7 +758,7 @@ export class DataService {
 
     public createMeetAttendee(meetId: number, accountId: number) {
         return this.api.createMeetAttendee(meetId, accountId).pipe(
-            catchError(error => {
+            catchError((error) => {
                 this.toastService.error(error.status === 404 ? 'Meet attendee not found' : 'Could not save the attendee change')
                 return throwError(() => error)
             }),
@@ -753,7 +767,7 @@ export class DataService {
 
     public deleteMeetAttendee(meetId: number, accountId: number) {
         return this.api.deleteMeetAttendee(meetId, accountId).pipe(
-            catchError(error => {
+            catchError((error) => {
                 this.toastService.error(error.status === 404 ? 'Meet attendee not found' : 'Could not save the attendee change')
                 return throwError(() => error)
             }),
@@ -762,8 +776,10 @@ export class DataService {
 
     public updateSessionAttendees(meetId: number, attendeeIds: Array<number>) {
         return this.api.updateSessionAttendees(meetId, { attendeeIds }).pipe(
-            catchError(error => {
-                this.toastService.error(error.status === 400 ? 'A session must have at least one group member' : 'Could not save the attendee changes')
+            catchError((error) => {
+                this.toastService.error(
+                    error.status === 400 ? 'A session must have at least one group member' : 'Could not save the attendee changes',
+                )
                 return throwError(() => error)
             }),
         )
@@ -771,7 +787,7 @@ export class DataService {
 
     public createMeetAccountGame(accountId: number, meetId: number, gameId: number) {
         return this.api.createMeetAccountGame(accountId, meetId, gameId).pipe(
-            catchError(error => {
+            catchError((error) => {
                 this.toastService.error(error.status === 404 ? 'Meet game not found' : 'Could not save the played-game change')
                 return throwError(() => error)
             }),
@@ -780,7 +796,7 @@ export class DataService {
 
     public deleteMeetAccountGame(accountId: number, meetId: number, gameId: number) {
         return this.api.deleteMeetAccountGame(accountId, meetId, gameId).pipe(
-            catchError(error => {
+            catchError((error) => {
                 this.toastService.error(error.status === 404 ? 'Meet game not found' : 'Could not save the played-game change')
                 return throwError(() => error)
             }),
@@ -790,33 +806,35 @@ export class DataService {
     private _getUserProposals(userId: number) {
         this.userProposalsLoading.set(true)
         this.userProposalsError.set(false)
-        this.api.getUserProposals(userId).pipe(
-            finalize(() => this.userProposalsLoading.set(false)),
-        ).subscribe({
-            next: proposals => {
-                this.userProposals.set(proposals)
-            },
-            error: () => {
-                this.userProposalsError.set(true)
-                this.toastService.error("Error retrieving user's proposals")
-            },
-        })
+        this.api
+            .getUserProposals(userId)
+            .pipe(finalize(() => this.userProposalsLoading.set(false)))
+            .subscribe({
+                next: (proposals) => {
+                    this.userProposals.set(proposals)
+                },
+                error: () => {
+                    this.userProposalsError.set(true)
+                    this.toastService.error("Error retrieving user's proposals")
+                },
+            })
     }
 
     private _getUserProposalStats(userId: number) {
         this.userProposalStatsLoading.set(true)
         this.userProposalStatsError.set(false)
-        this.api.getUserProposalStats(userId).pipe(
-            finalize(() => this.userProposalStatsLoading.set(false)),
-        ).subscribe({
-            next: stats => {
-                this.userProposalStats.set(stats)
-            },
-            error: () => {
-                this.userProposalStatsError.set(true)
-                this.toastService.error("Error retrieving user's proposal stats")
-            },
-        })
+        this.api
+            .getUserProposalStats(userId)
+            .pipe(finalize(() => this.userProposalStatsLoading.set(false)))
+            .subscribe({
+                next: (stats) => {
+                    this.userProposalStats.set(stats)
+                },
+                error: () => {
+                    this.userProposalStatsError.set(true)
+                    this.toastService.error("Error retrieving user's proposal stats")
+                },
+            })
     }
 
     public refreshUserProposals(): void {
