@@ -142,6 +142,12 @@ export class DataService {
         this.api.getUserGames(userId).subscribe({
             next: games => {
                 this.userGames.set(games)
+                this.userGroups.update(groups =>
+                    groups.map(group => ({
+                        ...group,
+                        members: group.members.map(member => (member.id === userId ? { ...member, games } : member)),
+                    })),
+                )
             },
             error: () => {
                 this.toastService.error('Error retrieving user games')
@@ -402,7 +408,7 @@ export class DataService {
         const currentUser = this.currentUser()
         if (!currentUser) return
         const gamesToAdd = gameIdsToToggle.filter(id => !userGameIds.includes(id))
-        const gamesToRemove = userGameIds.filter(id => gameIdsToToggle.includes(id))
+        const gamesToRemove = userGameIds.filter(id => !gameIdsToToggle.includes(id))
 
         // 1.
         this.api
@@ -431,9 +437,10 @@ export class DataService {
                                 const userIndex = group.members.findIndex(member => member.id === currentUser.id)
                                 if (userIndex === -1) return group
 
-                                // TODO: fix this
-                                // group.members[userIndex].games = games
-                                return group
+                                return {
+                                    ...group,
+                                    members: group.members.map(member => (member.id === currentUser.id ? { ...member, games } : member)),
+                                }
                             }),
                         )
                         // 3.
