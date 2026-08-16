@@ -76,13 +76,7 @@
     <section class="p-4 col-span-2">
         <div class="relative">
             <h2 class="text-xl font-semibold mb-4">Select the games played</h2>
-            <button
-                [title]="disableSaveGamesPlayed ? 'No changes to save' : 'Save selection'"
-                (click)="onClickMeetConfirm()"
-                class="app-btn-primary absolute top-0 right-0"
-            >
-                Confirm
-            </button>
+            <p class="text-secondary text-sm">Changes are saved automatically.</p>
         </div>
         <hr />
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pt-4">
