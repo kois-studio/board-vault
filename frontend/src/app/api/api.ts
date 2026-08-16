@@ -344,19 +344,19 @@ export class Api {
     }
 
     deleteGroup(userId: number, groupId: number) {
-        return this.http.delete<{ success: true }>(`${this.url}/dashboard/users/${userId}/groups/${groupId}`, {})
+        return this.http.delete<{ success: true }>(`${this.url}/dashboard/users/${userId}/groups/${groupId}`, {}).pipe(map(response => successSchema.parse(response)))
     }
 
     getGroupMeetings(userId: number, groupId: number) {
-        return this.http.get<Array<HistoryRecordType>>(`${this.url}/dashboard/users/${userId}/groups/${groupId}/meetings`)
+        return this.http.get<Array<HistoryRecordType>>(`${this.url}/dashboard/users/${userId}/groups/${groupId}/meetings`).pipe(map(response => userHistorySchema.parse(response)))
     }
 
     leaveGroup(userId: number, groupId: number) {
-        return this.http.delete<{ success: true }>(`${this.url}/dashboard/users/${userId}/groups/${groupId}/members`, {})
+        return this.http.delete<{ success: true }>(`${this.url}/dashboard/users/${userId}/groups/${groupId}/members`, {}).pipe(map(response => successSchema.parse(response)))
     }
 
     removeMember(userId: number, groupId: number, memberId: number) {
-        return this.http.delete<{ success: true }>(`${this.url}/dashboard/users/${userId}/groups/${groupId}/members/${memberId}`, {})
+        return this.http.delete<{ success: true }>(`${this.url}/dashboard/users/${userId}/groups/${groupId}/members/${memberId}`, {}).pipe(map(response => successSchema.parse(response)))
     }
 
     // --------------------------------------------------------------------------
