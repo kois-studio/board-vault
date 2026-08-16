@@ -1,12 +1,14 @@
 import { z } from 'zod'
 
 import type {
+    AdminGamesResultType,
     BrowseGamesResultType,
     CollectionActivityWithGameDataType,
     GameCompleteType,
     GameOwnedType,
     GameReviewWithGameData,
     GameType,
+    GameWithTagsAndTranslationsType,
     GameViewType,
     GroupType,
     GroupWithMembersAndGames,
@@ -18,11 +20,15 @@ import type {
     NotificationType,
     PublicUserType,
     RecommendationsType,
+    TagCategoryType,
+    TagType,
     ScheduledSessionCreatedType,
     SessionAttendeesUpdatedType,
     SessionCreatedType,
     SessionStatusUpdatedType,
     UserStatsType,
+    UserProposalStatsType,
+    GameProposalType,
 } from './api.types'
 
 export const authStatusSchema = z.object({
@@ -69,6 +75,38 @@ const paginationSchema = z.object({
     totalPages: z.number(),
     totalItems: z.number(),
     itemsPerPage: z.number(),
+})
+
+export const tagCategorySchema: z.ZodType<TagCategoryType> = z.object({
+    id: z.number(),
+    name: z.string(),
+    tags: z.array(z.number()),
+    gameCount: z.number(),
+})
+
+export const tagSchema: z.ZodType<TagType> = z.object({
+    id: z.number(),
+    name: z.string(),
+    categoryId: z.number(),
+    gameCount: z.number(),
+})
+
+const gameWithTagsAndTranslationsSchema: z.ZodType<GameWithTagsAndTranslationsType> = z.object({
+    id: z.number(),
+    imageUrl: z.string(),
+    gameAvgDuration: z.number(),
+    minPlayers: z.number(),
+    maxPlayers: z.number(),
+    translations: z.object({ en: z.string(), es: z.string() }),
+    tags: z.array(z.object({ id: z.number(), name: z.string(), categoryName: z.string() })),
+})
+
+export const adminTagCategoriesSchema = z.array(tagCategorySchema)
+export const adminTagsSchema = z.array(tagSchema)
+
+export const adminGamesSchema: z.ZodType<AdminGamesResultType> = z.object({
+    games: z.array(gameWithTagsAndTranslationsSchema),
+    pagination: paginationSchema,
 })
 
 export const browseGamesSchema: z.ZodType<BrowseGamesResultType> = z.object({
@@ -154,6 +192,52 @@ const collectionActivityWithGameDataSchema: z.ZodType<CollectionActivityWithGame
 })
 
 export const userCollectionActivitySchema = z.array(collectionActivityWithGameDataSchema)
+
+const gameProposalShape = z.object({
+    id: z.number(),
+    submittedBy: z.number(),
+    status: z.enum(['pending', 'approved', 'rejected', 'duplicate']),
+    title: z.string(),
+    imageUrl: z.string().nullable(),
+    gameAvgDuration: z.number().nullable(),
+    minPlayers: z.number().nullable(),
+    maxPlayers: z.number().nullable(),
+    proposedTags: z.string().nullable(),
+    notes: z.string().nullable(),
+    reviewedBy: z.number().nullable(),
+    reviewedAt: z.string().nullable(),
+    reviewNotes: z.string().nullable(),
+    createdGameId: z.number().nullable(),
+    submittedAt: z.string(),
+})
+
+export const gameProposalSchema: z.ZodType<GameProposalType> = gameProposalShape
+
+export const adminGameProposalSchema = gameProposalShape.extend({
+    submitterId: z.number(),
+    reviewerId: z.number().optional(),
+})
+
+export const userProposalsSchema = z.array(gameProposalSchema)
+export const userProposalStatsSchema: z.ZodType<UserProposalStatsType> = z.object({
+    totalProposals: z.number(),
+    approvedProposals: z.number(),
+    rejectedProposals: z.number(),
+    duplicateProposals: z.number(),
+    pendingProposals: z.number(),
+    approvalRate: z.number(),
+    reputationScore: z.number(),
+})
+
+export const adminGameProposalsSchema = z.object({
+    proposals: z.array(adminGameProposalSchema),
+    pagination: paginationSchema,
+})
+export const adminApprovalResponseSchema = z.object({
+    success: z.boolean(),
+    createdGameId: z.number().optional(),
+})
+export const adminSuccessResponseSchema = z.object({ success: z.boolean() })
 
 const groupMemberSchema: z.ZodType<GroupWithMembersAndGames['members'][number]> = z.object({
     ...publicUserSchema.shape,
