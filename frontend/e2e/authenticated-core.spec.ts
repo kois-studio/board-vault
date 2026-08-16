@@ -6,6 +6,25 @@ test.describe('authenticated core navigation', () => {
     test.skip(!authStorageState, 'Set PLAYWRIGHT_AUTH_STORAGE_STATE to a local Clerk storage-state file to run authenticated journeys.')
     test.use({ storageState: authStorageState })
 
+    test('opens the dashboard overview', async ({ page }) => {
+        await page.goto('/dashboard')
+
+        await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible()
+        await expect(page.getByRole('heading', { name: 'Your overview' })).toBeVisible()
+    })
+
+    test('opens groups and collection entry points', async ({ page }) => {
+        await page.goto('/groups')
+
+        await expect(page.getByRole('heading', { name: /My Groups/i })).toBeVisible()
+        await expect(page.getByRole('link', { name: /Create Group/i })).toBeVisible()
+
+        await page.goto('/collection')
+
+        await expect(page.getByRole('heading', { name: 'Collection' })).toBeVisible()
+        await expect(page.getByRole('link', { name: /Browse games/i }).first()).toBeVisible()
+    })
+
     test('opens the session logging wizard', async ({ page }) => {
         await page.goto('/play/log-session')
 

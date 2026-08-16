@@ -36,7 +36,7 @@ Relevant surfaces: [`app.routes.ts`](../frontend/src/app/app.routes.ts), [`meet-
 - Persist the selected date/time and IANA timezone; completed-session logging now sends both to the backend.
 - Persist the selected group, organizer, attendees, played games, and participant links atomically through `POST /sessions`.
 - Persist scheduled sessions, selected pending attendees, and optional planned games atomically through `POST /sessions/scheduled`; omission of attendees remains a documented compatibility default to all current group members.
-- Review the now-implemented `submitSession()` flow through authenticated browser coverage, including success, validation, and retryable API failure states.
+- Review the now-implemented `submitSession()` flow through authenticated browser coverage, including success, validation, and retryable API failure states; the reusable suite now covers entry/navigation surfaces but not mutation submission.
 - Define and implement transitions between scheduled, active, completed, and cancelled sessions; organizer-controlled transitions now exist for scheduled/active sessions, while completed/cancelled remain terminal.
 - Distinguish planned games from games actually played in all API responses and frontend types; scheduled creation and meet details now preserve planned, played, and skipped game IDs. When a session becomes completed or cancelled, remaining planned games are transactionally marked skipped; richer game objects and planned-game editing remain unfinished.
 - Decide how the legacy `MeetAccountGame` history relation should evolve; the completed write currently preserves it as a compatibility relation.
@@ -59,7 +59,7 @@ Relevant intent: [`todo/04-core-product-loop.md`](../todo/04-core-product-loop.m
 - Added `POST /play/recommendations/feedback` and a “Not for us” action. Feedback stores selected-attendee context after group membership and ownership validation; future scoring integration remains deferred.
 - Added the authenticated `/play/recommendations` route, Play navigation entry, selection form, result cards, and empty/error states.
 - Recommendation results now provide a direct scheduling link that carries the selected attendees and chosen game into the scheduling form.
-- Add authenticated browser coverage when a Clerk storage state is available; the test is present but skipped without that local secret-bearing state.
+- Add authenticated browser coverage when a Clerk storage state is available; the suite now covers recommendation-page entry and controls but remains skipped without that local secret-bearing state.
 - Recommendation feedback, richer preferences, complexity scoring, and history-weighted scoring remain deferred.
 - Resolve the indirect game-title contract: `Game` stores no title; titles are provided through `GameTranslation`. The recommendation query uses English with Spanish fallback.
 

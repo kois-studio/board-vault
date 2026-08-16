@@ -1134,6 +1134,24 @@ Verified: frontend build and `git diff --check` pass.
 
 Known follow-ups: Verify the navigation transition manually at mobile/tablet/desktop widths and ensure route selection closes the overlay if that remains awkward in practice.
 
+Continuation claim: EQ-003
+
+Owner: Codex
+
+Claimed: 2026-08-16
+
+Branch/worktree: main / shared workspace
+
+Scope: expand authenticated Playwright coverage across dashboard, groups, collection, and core play entry points
+
+Review continuation: EQ-003
+
+Changed: The reusable Clerk storage-state suite now asserts dashboard overview, groups, collection, session logging, upcoming sessions, completed history, and recommendation entry points. It remains opt-in and never uses production credentials by default.
+
+Verified: public Playwright coverage remains runnable by default; frontend build and `git diff --check` pass.
+
+Known follow-ups: Run the authenticated suite with a disposable Clerk state and seeded test data, then add mutation journeys for group creation, invitations, collection activation, and session submission.
+
 When claiming a task, add:
 
 ```text

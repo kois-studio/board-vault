@@ -19,7 +19,7 @@
 | `cd frontend && npm run build` | Pass with warnings | Bundle budget, Sass deprecation, and 416 selector warnings remain; current initial bundle is approximately 861 kB against the 500 kB warning budget. |
 | `cd frontend && npx biome check` | Fail | 8 findings in the form submission, log-session wizard, and propose-game page files. |
 | `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` | Pass | One generated smoke test passes. |
-| `cd frontend && npm run e2e` | Pass | Three public Playwright tests pass; four authenticated core-navigation tests are intentionally skipped unless `PLAYWRIGHT_AUTH_STORAGE_STATE` is supplied. |
+| `cd frontend && npm run e2e` | Pass | Three public Playwright tests pass; six authenticated core-navigation tests cover dashboard, groups/collection entry points, session logging, upcoming sessions, history, and recommendations, and are intentionally skipped unless `PLAYWRIGHT_AUTH_STORAGE_STATE` is supplied. |
 | `node database/scripts/verify-empty-state.mjs` | Pass | Loads the current schema snapshot into disposable SQLite, reports `PRAGMA integrity_check = ok`, and bootstraps the migration metadata at baseline 0005 without applying historical migrations. |
 | `cd backend && npm test -- --runInBand src/modules/features/sessions/sessions.service.spec.ts` | Pass | Fourteen tests cover canonical completed/scheduled creation, planned-game availability, missing groups, actor membership, selected attendee membership, group game availability, participant/attendee consistency, and lifecycle transitions. |
 | `schema.sql` plus migration 0004 in disposable SQLite | Pass | A restored pre-0004 dump accepts the lifecycle migration; integrity is `ok`, no foreign-key violations are reported, and all four lifecycle columns/indexes exist. |
@@ -46,7 +46,7 @@
 - deterministic explainable recommendation scoring, including collective attendee ownership, invalid attendee rejection, and stable ordering;
 - atomic completed/scheduled session creation, planned/played distinction, lifecycle transitions, completion, awaited detail edits, and history;
 - frontend loading, empty, failure, retry, and mobile/accessibility states.
-- frontend browser journeys for public navigation, Clerk authentication, collection activation, group invitations, session creation/completion, and history. The reusable authenticated navigation suite is present; collection, invitation, and full session submission still need a non-production Clerk test state and seeded data.
+- frontend browser journeys for public navigation, Clerk authentication, collection activation, group invitations, session creation/completion, and history. The reusable authenticated navigation suite now covers dashboard, groups, collection entry points, session logging, upcoming sessions, history, and recommendations; collection mutations, invitations, and full session submission still need a non-production Clerk test state and seeded data.
 
 ### P2 delivery quality
 
