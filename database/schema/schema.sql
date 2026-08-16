@@ -1,7 +1,7 @@
 -- Board Vault current deployed schema export.
 --
 -- Source: Turso schema inspection, supplied by the project owner and verified
--- against the live database on 2026-08-12.
+-- against the live database on 2026-08-16.
 -- This is an observed schema snapshot, not a migration. Do not apply it
 -- directly to another environment without creating and reviewing migrations.
 
@@ -18,6 +18,8 @@ CREATE TABLE Account (
     email_verified BOOLEAN DEFAULT FALSE,
     verification_token TEXT,
     password_reset_token TEXT,
+    verification_token_expires_at INTEGER,
+    password_reset_token_expires_at INTEGER,
     clerkUserId TEXT
 );
 
