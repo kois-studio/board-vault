@@ -19,10 +19,13 @@ import {
     gameViewSchema,
     groupInvitationsSchema,
     gamesSchema,
+    meetAttendeeSchema,
     meetDetailsSchema,
+    meetGameSchema,
     meetSchema,
     messageSchema,
     recommendationsSchema,
+    publicUserSchema,
     scheduledSessionCreatedSchema,
     sessionAttendeesUpdatedSchema,
     sessionCreatedSchema,
@@ -175,7 +178,7 @@ export class Api {
     }
 
     createInvitation(groupId: number, username: string) {
-        return this.http.post<PublicUserType>(`${this.url}/invitations/byUsername`, { groupId, username })
+        return this.http.post<PublicUserType>(`${this.url}/invitations/byUsername`, { groupId, username }).pipe(map(response => publicUserSchema.parse(response)))
     }
 
     // #region notifications
@@ -219,7 +222,7 @@ export class Api {
     // #region meet attendees
 
     createMeetAttendee(meetId: number, accountId: number) {
-        return this.http.post<MeetAttendeeType>(`${this.url}/meetAttendees/${meetId}/${accountId}`, {})
+        return this.http.post<MeetAttendeeType>(`${this.url}/meetAttendees/${meetId}/${accountId}`, {}).pipe(map(response => meetAttendeeSchema.parse(response)))
     }
 
     deleteMeetAttendee(meetId: number, accountId: number) {
@@ -229,7 +232,7 @@ export class Api {
     // #region meet games
 
     createMeetAccountGame(accountId: number, meetId: number, gameId: number) {
-        return this.http.post<MeetGameType>(`${this.url}/meetAccountGames/${accountId}/${meetId}/${gameId}`, {})
+        return this.http.post<MeetGameType>(`${this.url}/meetAccountGames/${accountId}/${meetId}/${gameId}`, {}).pipe(map(response => meetGameSchema.parse(response)))
     }
 
     deleteMeetAccountGame(accountId: number, meetId: number, gameId: number) {

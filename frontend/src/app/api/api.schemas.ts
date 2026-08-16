@@ -15,6 +15,8 @@ import type {
     HistoryRecordType,
     InvitationWithAccountsData,
     InvitationWithExtraData,
+    MeetAttendeeType,
+    MeetGameType,
     MeetType,
     MeetWithAttendeesAndGamesType,
     NotificationType,
@@ -152,7 +154,7 @@ const avatarSchema = z.object({
     initials: z.string(),
 })
 
-const publicUserSchema = z.object({
+export const publicUserSchema = z.object({
     id: z.number(),
     username: z.string(),
     displayName: z.string(),
@@ -307,6 +309,16 @@ export const meetDetailsSchema: z.ZodType<MeetWithAttendeesAndGamesType> = meetF
     playedGames: z.array(z.number()),
     plannedGames: z.array(z.number()),
     skippedGames: z.array(z.number()),
+})
+
+export const meetAttendeeSchema: z.ZodType<MeetAttendeeType> = z.object({
+    meetId: z.number(),
+    accountId: z.number(),
+})
+
+export const meetGameSchema: z.ZodType<MeetGameType> = z.object({
+    meetId: z.number(),
+    gameId: z.number(),
 })
 
 const historyRecordSchema: z.ZodType<HistoryRecordType> = z.object({
