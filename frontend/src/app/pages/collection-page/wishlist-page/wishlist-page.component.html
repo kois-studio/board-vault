@@ -12,6 +12,12 @@
             <app-skeleton-card-game />
             <app-skeleton-card-game />
         </section>
+    } @else if (wishlistError()) {
+        <div class="text-center text-secondary" role="alert">
+            <p>Wishlist could not be loaded.</p>
+            <p class="mt-2 text-sm">Check your connection and try again.</p>
+            <app-button class="mt-4" icon="arrow-repeat" (click)="retryWishlist()">Retry</app-button>
+        </div>
     } @else if (userWishlist$().length === 0) {
         <!-- no data -->
         <div class="text-center text-secondary">

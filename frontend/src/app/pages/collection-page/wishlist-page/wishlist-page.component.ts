@@ -37,6 +37,7 @@ export class WishlistPageComponent {
     // dataService
     public readonly currentUser$ = this.dataService.currentUser
     public readonly userWishlist$ = this.dataService.userWishlist
+    public readonly wishlistError = this.dataService.userWishlistError
     // loadingService
     public readonly isLoadingWishlist = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_WISHLIST])
 
@@ -79,5 +80,9 @@ export class WishlistPageComponent {
                 this.preventSpamIsLoadingWishlist = false
             },
         })
+    }
+
+    public retryWishlist(): void {
+        this.dataService.refreshUserWishlist()
     }
 }
