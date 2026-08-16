@@ -137,8 +137,7 @@ Relevant surfaces: [`groups`](../frontend/src/app/pages/groups/), [`group-view`]
 - Verify the complete two-account flow: create group, invite account, accept/reject invitation, refresh, and see membership; invitation and notification modals now distinguish loading, failed fetch, retry, and empty states.
 - Keep group creation awaitable and recoverable; the create form now waits for the API result before navigating and leaves failures retryable, while the backend now creates the group and owner membership in one Turso transaction.
 - Keep invitation send, pending-invitation removal, and member removal awaitable; group editing now keeps retryable selections and prevents overlapping requests.
-- Resolve the product policy for self-join versus invite-only membership.
-- Define group owner/member roles and expose only actions allowed for each role.
+- V1 group membership is now invite-only with `owner` and `member` roles; only owners manage membership and see pending-invitation details. Public groups, ownership transfer, and richer roles require a new product decision.
 - Make empty groups useful: explain the next step for members, games, and invitations; failed group loading now has an explicit retry state.
 - Ensure member visibility and private group data follow the backend authorization rules; group-history failures no longer get cached as an empty result and now expose retry.
 - Remove unnecessary reload-all behavior after group mutations where safe.

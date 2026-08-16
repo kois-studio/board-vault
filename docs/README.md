@@ -27,6 +27,7 @@ This directory is the canonical operating manual for AI developer agents working
 - [ADR 0004 — Clerk-managed authentication](adr/0004-clerk-managed-authentication.md)
 - [ADR 0005 — Verification and password-reset token lifecycle](adr/0005-auth-token-lifecycle.md)
 - [ADR 0006 — Public nested-user response boundary](adr/0006-user-response-privacy.md)
+- [ADR 0007 — Invite-only group membership policy](adr/0007-group-membership-policy.md)
 
 ### Current-state architecture and boundaries
 
