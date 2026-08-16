@@ -72,9 +72,10 @@ legacy password/JWT path remains available during rollout.
 - Frontend and backend SDKs are installed; the frontend adapter lazy-loads the
   Clerk bundle.
 - The development frontend rollout toggle is `clerkAuthEnabled: true`; the
-  production environment remains disabled until the production publishable
-  key, backend secret, authorized parties, deployment settings, and rollback
-  evidence are supplied.
+  production publishable key, backend secret, authorized parties, and
+  deployment settings are now configured in Vercel. Production sign-in and
+  local-account linking have been manually verified; rollback evidence and
+  legacy-auth retirement remain open.
 - The backend production CORS default is the Board Vault HTTPS origin only;
   localhost is limited to non-production defaults.
 - [Migration 0001](../../database/migrations/0001-add-clerk-user-id.sql) has
