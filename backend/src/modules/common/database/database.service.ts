@@ -996,6 +996,29 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    getMeetByIdForCreator(meetId: number, accountId: number) {
+        return this._tursoExecute({
+            sql: `
+                SELECT m.*
+                FROM Meet m
+                WHERE m.id = ? AND m.createdBy = ?
+            `,
+            args: [meetId, accountId],
+        })
+    }
+
+    getMeetMember(meetId: number, accountId: number) {
+        return this._tursoExecute({
+            sql: `
+                SELECT 1
+                FROM Meet m
+                LEFT JOIN GroupMembership gm ON gm.groupId = m.groupId AND gm.accountId = ?
+                WHERE m.id = ? AND (gm.accountId IS NOT NULL OR m.createdBy = ?)
+            `,
+            args: [accountId, meetId, accountId],
+        })
+    }
+
     getMeetsByGroupId(groupId: number) {
         return this._tursoExecute({
             sql: 'SELECT * FROM Meet WHERE groupId = ?',
@@ -1046,6 +1069,20 @@ export class DatabaseService implements OnModuleInit {
             WHERE gm.groupId = ?;
             `,
             args: [meetId, groupId],
+        })
+    }
+
+    createMeetAttendee(meetId: number, accountId: number) {
+        return this._tursoExecute({
+            sql: 'INSERT OR IGNORE INTO MeetAttendee (meetId, accountId) VALUES (?, ?)',
+            args: [meetId, accountId],
+        })
+    }
+
+    deleteMeetAttendee(meetId: number, accountId: number) {
+        return this._tursoExecute({
+            sql: 'DELETE FROM MeetAttendee WHERE meetId = ? AND accountId = ?',
+            args: [meetId, accountId],
         })
     }
 

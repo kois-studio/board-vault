@@ -69,7 +69,7 @@ Review: DATA-003
 
 Changed: Accepted the v1 session mapping: `Meet` remains the compatibility/session record; `MeetAttendee` stores participant RSVP/attendance state; `MeetGame` stores planned/played game state; `MeetAccountGame` remains the account-to-play relation used by historical play history. Migration 0003 backfills the additive relations, and backend detail/setup queries now use them.
 Verified: Empty-state and representative-data migration tests pass; live Turso has 63 attendee rows and 22 session-game rows from 101 historical play links, with integrity and foreign-key checks passing. Backend unit tests (101) and build pass.
-Known follow-ups: Define the attendee API authorization policy, complete session write/API contracts, and add transaction boundaries through DATA-004.
+Known follow-ups: Verify the organizer-only attendee API through production, complete session write/API contracts, and add transaction boundaries through DATA-004.
 
 Most recent claim:
 

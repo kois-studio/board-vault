@@ -390,9 +390,9 @@ compliance:
 
     - id: DATA-001
       status: partial
-      evidence: database/schema/schema.sql is the synchronized Turso export and database/drift-report.md records the repository reconciliation; migration 0003 defines and backfills MeetAttendee/MeetGame and backend detail/setup SQL is aligned, while the frontend meetAttendees route lacks a current backend controller and the indirect Game.title/GameTranslation contract remains unresolved; migrations 0002/0003 are applied but no migration runner or empty-state recreation exists
+      evidence: database/schema/schema.sql is the synchronized Turso export and database/drift-report.md records the repository reconciliation; migration 0003 defines and backfills MeetAttendee/MeetGame, backend detail/setup SQL is aligned, and the frontend meetAttendees route now has organizer-only server authorization, while the indirect Game.title/GameTranslation contract remains unresolved; migrations 0002/0003 are applied but no migration runner or empty-state recreation exists
       priority: critical
-      next_action: Complete the session API/authorization contract and establish repeatable migration execution and empty-state recreation.
+      next_action: Verify the attendee route in production, complete the session transaction contract, and establish repeatable migration execution and empty-state recreation.
     - id: DATA-002
       status: partial
       evidence: database/migrations/0001-add-clerk-user-id.sql, 0002-add-auth-token-expiry.sql, and 0003-add-session-relations.sql are applied to live Turso and tested against restored data; no migration runner or empty-state recreation exists
