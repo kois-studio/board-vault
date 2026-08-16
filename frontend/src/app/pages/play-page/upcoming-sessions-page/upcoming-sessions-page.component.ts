@@ -10,14 +10,7 @@ import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
 
 @Component({
-    imports: [
-        CommonModule,
-        RouterLink,
-        ContainerWrapperComponent,
-        CustomDatePipe,
-        PageHeaderComponent,
-        ButtonComponent,
-    ],
+    imports: [CommonModule, RouterLink, ContainerWrapperComponent, CustomDatePipe, PageHeaderComponent, ButtonComponent],
     templateUrl: 'upcoming-sessions-page.component.html',
 })
 export class UpcomingSessionsPageComponent {
@@ -42,12 +35,12 @@ export class UpcomingSessionsPageComponent {
     // --------------------------------------------------------------------------
     public readonly upcomingSessions = computed(() => {
         return [...this.userMeets$()]
-            .filter(meet => meet.status === 'scheduled' || meet.status === 'active')
+            .filter((meet) => meet.status === 'scheduled' || meet.status === 'active')
             .sort((a, b) => new Date(a.meetDate).getTime() - new Date(b.meetDate).getTime())
     })
 
     public getGroupName(groupId: number): string {
-        return this.userGroups$().find(group => group.id === groupId)?.name ?? `Group ${groupId}`
+        return this.userGroups$().find((group) => group.id === groupId)?.name ?? `Group ${groupId}`
     }
 
     // --------------------------------------------------------------------------

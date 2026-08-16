@@ -39,7 +39,7 @@ export class GroupEditComponent {
             this.invitationsGroupIndex = this.dataService.invitationsGroupIndex()
 
             const groupId = Number.parseInt(this.route.snapshot.paramMap.get('groupId') || '')
-            const groupData = this.userGroups.find(group => group.id === groupId)
+            const groupData = this.userGroups.find((group) => group.id === groupId)
 
             if (Number.isNaN(groupId) || !this.userData || !groupData) {
                 return
@@ -66,11 +66,11 @@ export class GroupEditComponent {
         if (!this.groupData || !this.usernameToInvite.value) {
             return true
         }
-        const usernames = this.groupData.members.map(member => member.username)
+        const usernames = this.groupData.members.map((member) => member.username)
 
         const isUserAlreadyInGroup = usernames.includes(this.usernameToInvite.value)
         const isUserAlreadyInvited = (this.invitationsGroupIndex[this.groupData.id] ?? []).some(
-            invitation => invitation.toAccount.username === this.usernameToInvite.value,
+            (invitation) => invitation.toAccount.username === this.usernameToInvite.value,
         )
         return this.isLoading || this.usernameToInvite.invalid || isUserAlreadyInGroup || isUserAlreadyInvited
     }
@@ -94,7 +94,7 @@ export class GroupEditComponent {
 
     markAsToRemove(accountId: number) {
         if (this.membersToRemoveFromGroup.includes(accountId)) {
-            this.membersToRemoveFromGroup = this.membersToRemoveFromGroup.filter(id => id !== accountId)
+            this.membersToRemoveFromGroup = this.membersToRemoveFromGroup.filter((id) => id !== accountId)
         } else {
             this.membersToRemoveFromGroup.push(accountId)
         }
@@ -117,14 +117,15 @@ export class GroupEditComponent {
     async onSaveChanges() {
         if (!this.isGroupOwner || !this.groupData || this.isLoading) return
         this.isLoading = true
+        const groupData = this.groupData
 
         try {
-            const invitations = this.invitationsGroupIndex[this.groupData.id] ?? []
-            const operations = this.membersToRemoveFromGroup.map(accountId => {
-                const invitation = invitations.find(invitation => invitation.toAccount.id === accountId)
+            const invitations = this.invitationsGroupIndex[groupData.id] ?? []
+            const operations = this.membersToRemoveFromGroup.map((accountId) => {
+                const invitation = invitations.find((invitation) => invitation.toAccount.id === accountId)
                 return invitation
                     ? firstValueFrom(this.dataService.removeInvitedFromGroup(invitation.id))
-                    : firstValueFrom(this.dataService.removeMemberFromGroup(this.groupData!.id, accountId))
+                    : firstValueFrom(this.dataService.removeMemberFromGroup(groupData.id, accountId))
             })
 
             await Promise.all(operations)

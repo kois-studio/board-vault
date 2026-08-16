@@ -187,42 +187,45 @@ export class GameViewPageComponent implements OnDestroy {
         }, 300)
 
         // save the wishlist status
-        this.api.toggleWishlist(currentUser.id, gameId).pipe(
-            finalize(() => {
-                this.PREVENT_SPAM.isLoadingWishlist = false
-            }),
-        ).subscribe({
-            next: (response) => {
-                this.gameView$.update((game) => {
-                    if (!game) {
-                        return null
+        this.api
+            .toggleWishlist(currentUser.id, gameId)
+            .pipe(
+                finalize(() => {
+                    this.PREVENT_SPAM.isLoadingWishlist = false
+                }),
+            )
+            .subscribe({
+                next: (response) => {
+                    this.gameView$.update((game) => {
+                        if (!game) {
+                            return null
+                        }
+
+                        return {
+                            ...game,
+                            wishlistedGameData: response.isWishlisted
+                                ? {
+                                      dateAdded: new Date().toISOString(),
+                                      notes: '',
+                                  }
+                                : null,
+                        }
+                    })
+                    if (response.isWishlisted) {
+                        this.toastService.success('Game added to wishlist')
+                    } else {
+                        this.toastService.success('Game removed from wishlist')
                     }
 
-                    return {
-                        ...game,
-                        wishlistedGameData: response.isWishlisted
-                            ? {
-                                  dateAdded: new Date().toISOString(),
-                                  notes: '',
-                              }
-                            : null,
-                    }
-                })
-                if (response.isWishlisted) {
-                    this.toastService.success('Game added to wishlist')
-                } else {
-                    this.toastService.success('Game removed from wishlist')
-                }
-
-                // Refresh the global wishlist state to keep it in sync
-                this.dataService.refreshUserWishlist()
-            },
-            error: (error) => {
-                this.toastService.error('Error saving wishlist')
-                // On error, reload the game data
-                this._loadGameData(currentUser.id, gameId)
-            },
-        })
+                    // Refresh the global wishlist state to keep it in sync
+                    this.dataService.refreshUserWishlist()
+                },
+                error: (error) => {
+                    this.toastService.error('Error saving wishlist')
+                    // On error, reload the game data
+                    this._loadGameData(currentUser.id, gameId)
+                },
+            })
     }
 
     // #region Review
@@ -237,36 +240,39 @@ export class GameViewPageComponent implements OnDestroy {
 
         this.PREVENT_SPAM.isLoadingReview = true
 
-        this.api.saveGameReview(currentUser.id, gameId, reviewValue).pipe(
-            finalize(() => {
-                this.PREVENT_SPAM.isLoadingReview = false
-            }),
-        ).subscribe({
-            next: (res) => {
-                this.gameView$.update((game) => {
-                    if (!game) {
-                        return null
-                    }
+        this.api
+            .saveGameReview(currentUser.id, gameId, reviewValue)
+            .pipe(
+                finalize(() => {
+                    this.PREVENT_SPAM.isLoadingReview = false
+                }),
+            )
+            .subscribe({
+                next: (res) => {
+                    this.gameView$.update((game) => {
+                        if (!game) {
+                            return null
+                        }
 
-                    return {
-                        ...game,
-                        ratingData: {
-                            ...game.ratingData,
-                            userRating: reviewValue,
-                        },
-                    }
-                })
-                this.toastService.success('Review saved')
-            },
-            error: (error) => {
-                this.toastService.error('Error saving review')
-                // On error, reload the game data
-                this._loadGameData(currentUser.id, gameId)
-            },
-            complete: () => {
-                this.dataService.refreshGameReviews()
-            },
-        })
+                        return {
+                            ...game,
+                            ratingData: {
+                                ...game.ratingData,
+                                userRating: reviewValue,
+                            },
+                        }
+                    })
+                    this.toastService.success('Review saved')
+                },
+                error: (error) => {
+                    this.toastService.error('Error saving review')
+                    // On error, reload the game data
+                    this._loadGameData(currentUser.id, gameId)
+                },
+                complete: () => {
+                    this.dataService.refreshGameReviews()
+                },
+            })
     }
 
     // #region Ownership
@@ -280,49 +286,52 @@ export class GameViewPageComponent implements OnDestroy {
 
         this.PREVENT_SPAM.isLoadingAddToCollection = true
 
-        this.api.addGameToUserCollection(currentUser.id, gameId).pipe(
-            finalize(() => {
-                this.PREVENT_SPAM.isLoadingAddToCollection = false
-            }),
-        ).subscribe({
-            next: (res) => {
-                this.toastService.success('Game added to collection')
+        this.api
+            .addGameToUserCollection(currentUser.id, gameId)
+            .pipe(
+                finalize(() => {
+                    this.PREVENT_SPAM.isLoadingAddToCollection = false
+                }),
+            )
+            .subscribe({
+                next: (res) => {
+                    this.toastService.success('Game added to collection')
 
-                // Check if the game was in the wishlist before adding to collection
-                const wasInWishlist = this.isWishlistedComputed()
+                    // Check if the game was in the wishlist before adding to collection
+                    const wasInWishlist = this.isWishlistedComputed()
 
-                this.gameView$.update((game) => {
-                    if (!game) {
-                        return null
+                    this.gameView$.update((game) => {
+                        if (!game) {
+                            return null
+                        }
+
+                        return {
+                            ...game,
+                            ownedGameData: {
+                                purchaseDate: null,
+                                purchasePrice: null,
+                                purchaseNotes: null,
+                            },
+                            // Automatically remove from wishlist when added to collection
+                            wishlistedGameData: null,
+                        }
+                    })
+
+                    // Show notification if the game was automatically removed from wishlist
+                    if (wasInWishlist) {
+                        this.toastService.info('Game automatically removed from wishlist')
                     }
 
-                    return {
-                        ...game,
-                        ownedGameData: {
-                            purchaseDate: null,
-                            purchasePrice: null,
-                            purchaseNotes: null,
-                        },
-                        // Automatically remove from wishlist when added to collection
-                        wishlistedGameData: null,
-                    }
-                })
-
-                // Show notification if the game was automatically removed from wishlist
-                if (wasInWishlist) {
-                    this.toastService.info('Game automatically removed from wishlist')
-                }
-
-                // Refresh the wishlist to ensure consistency with server state
-                this.dataService.refreshUserWishlist()
-                this.dataService.refreshUserGames()
-            },
-            error: (error) => {
-                this.toastService.error('Error adding game to collection')
-                // On error, reload the game data
-                this._loadGameData(currentUser.id, gameId)
-            },
-        })
+                    // Refresh the wishlist to ensure consistency with server state
+                    this.dataService.refreshUserWishlist()
+                    this.dataService.refreshUserGames()
+                },
+                error: (error) => {
+                    this.toastService.error('Error adding game to collection')
+                    // On error, reload the game data
+                    this._loadGameData(currentUser.id, gameId)
+                },
+            })
     }
 
     public removeFromCollection() {
@@ -335,28 +344,31 @@ export class GameViewPageComponent implements OnDestroy {
 
         this.PREVENT_SPAM.isLoadingRemoveFromCollection = true
 
-        this.api.removeGameFromUserCollection(currentUser.id, gameId).pipe(
-            finalize(() => {
-                this.PREVENT_SPAM.isLoadingRemoveFromCollection = false
-            }),
-        ).subscribe({
-            next: (res) => {
-                this.toastService.success('Game removed from collection')
-                this.gameView$.update((game) => {
-                    if (!game) {
-                        return null
-                    }
+        this.api
+            .removeGameFromUserCollection(currentUser.id, gameId)
+            .pipe(
+                finalize(() => {
+                    this.PREVENT_SPAM.isLoadingRemoveFromCollection = false
+                }),
+            )
+            .subscribe({
+                next: (res) => {
+                    this.toastService.success('Game removed from collection')
+                    this.gameView$.update((game) => {
+                        if (!game) {
+                            return null
+                        }
 
-                    return { ...game, ownedGameData: null }
-                })
-                this.dataService.refreshUserGames()
-            },
-            error: (error) => {
-                this.toastService.error('Error removing game from collection')
-                // On error, reload the game data
-                this._loadGameData(currentUser.id, gameId)
-            },
-        })
+                        return { ...game, ownedGameData: null }
+                    })
+                    this.dataService.refreshUserGames()
+                },
+                error: (error) => {
+                    this.toastService.error('Error removing game from collection')
+                    // On error, reload the game data
+                    this._loadGameData(currentUser.id, gameId)
+                },
+            })
     }
 
     public getGroupName(groupId: number): string {
@@ -380,27 +392,30 @@ export class GameViewPageComponent implements OnDestroy {
 
         this.PREVENT_SPAM.isLoadingUpdateOwnership = true
 
-        this.api.patchGameOwnership(currentUser.id, gameId, updatedOwnedGameData).pipe(
-            finalize(() => {
-                this.PREVENT_SPAM.isLoadingUpdateOwnership = false
-            }),
-        ).subscribe({
-            next: (res) => {
-                this.gameView$.update((game) => {
-                    if (!game) {
-                        return null
-                    }
+        this.api
+            .patchGameOwnership(currentUser.id, gameId, updatedOwnedGameData)
+            .pipe(
+                finalize(() => {
+                    this.PREVENT_SPAM.isLoadingUpdateOwnership = false
+                }),
+            )
+            .subscribe({
+                next: (res) => {
+                    this.gameView$.update((game) => {
+                        if (!game) {
+                            return null
+                        }
 
-                    return { ...game, ownedGameData: res }
-                })
-                this.toastService.success('Purchase details updated')
-            },
-            error: (error) => {
-                this.toastService.error('Error updating purchase details')
-                // On error, reload the game data
-                this._loadGameData(currentUser.id, gameId)
-            },
-        })
+                        return { ...game, ownedGameData: res }
+                    })
+                    this.toastService.success('Purchase details updated')
+                },
+                error: (error) => {
+                    this.toastService.error('Error updating purchase details')
+                    // On error, reload the game data
+                    this._loadGameData(currentUser.id, gameId)
+                },
+            })
     }
 
     ngOnDestroy(): void {

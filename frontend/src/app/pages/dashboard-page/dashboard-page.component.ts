@@ -23,9 +23,16 @@ export class DashboardPageComponent {
     public readonly userHistoryError = this.dataService.userHistoryError
     public readonly isLoadingOverview = computed(() => {
         const loading = this.loadingService.loadingStatesIndex()
-        return loading[LOADING_KEYS.USER_GAMES] || loading[LOADING_KEYS.USER_GROUPS] || loading[LOADING_KEYS.USER_STATS] || loading[LOADING_KEYS.USER_GAMES_HISTORY]
+        return (
+            loading[LOADING_KEYS.USER_GAMES] ||
+            loading[LOADING_KEYS.USER_GROUPS] ||
+            loading[LOADING_KEYS.USER_STATS] ||
+            loading[LOADING_KEYS.USER_GAMES_HISTORY]
+        )
     })
-    public readonly hasOverviewError = computed(() => this.userGamesError() || this.userGroupsError() || this.userStatsError() || this.userHistoryError())
+    public readonly hasOverviewError = computed(
+        () => this.userGamesError() || this.userGroupsError() || this.userStatsError() || this.userHistoryError(),
+    )
 
     public retryOverview() {
         this.dataService.refreshUserGames()

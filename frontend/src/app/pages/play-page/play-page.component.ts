@@ -39,11 +39,11 @@ export class PlayPageComponent {
     public readonly isLoadingHistory = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_GAMES_HISTORY])
     public readonly upcomingSessions = computed(() =>
         [...this.userMeets$()]
-            .filter(meet => meet.status === 'scheduled' || meet.status === 'active')
+            .filter((meet) => meet.status === 'scheduled' || meet.status === 'active')
             .sort((a, b) => new Date(a.meetDate).getTime() - new Date(b.meetDate).getTime()),
     )
 
     public getGroupName(groupId: number): string {
-        return this.userGroups$().find(group => group.id === groupId)?.name ?? `Group ${groupId}`
+        return this.userGroups$().find((group) => group.id === groupId)?.name ?? `Group ${groupId}`
     }
 }

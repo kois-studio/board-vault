@@ -47,7 +47,7 @@ export class HistoryPageComponent {
     })
 
     public getGroupName(groupId: number): string {
-        return this.userGroups$().find(group => group.id === groupId)?.name ?? `Group ${groupId}`
+        return this.userGroups$().find((group) => group.id === groupId)?.name ?? `Group ${groupId}`
     }
 
     public retryHistory(): void {

@@ -26,10 +26,11 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         })
     }
 
-    const clerkTokenRequest = loginService.isAuthenticated() && loginService.authProvider() !== 'clerk' ? Promise.resolve(null) : clerkService.getToken()
+    const clerkTokenRequest =
+        loginService.isAuthenticated() && loginService.authProvider() !== 'clerk' ? Promise.resolve(null) : clerkService.getToken()
 
     return from(clerkTokenRequest).pipe(
-        switchMap(clerkToken => next(requestWithToken(clerkToken ?? loginService.token))),
+        switchMap((clerkToken) => next(requestWithToken(clerkToken ?? loginService.token))),
         catchError((error: any) => {
             if (error instanceof HttpErrorResponse && error.status === 401) {
                 // Check if the 401 is from the login endpoint itself
