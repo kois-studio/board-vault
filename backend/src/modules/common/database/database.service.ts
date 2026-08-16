@@ -487,6 +487,31 @@ export class DatabaseService implements OnModuleInit {
         return resultSet.rows.map(row => Number(row[0]))
     }
 
+    getOwnedGameByAnyAccount(gameId: number, accountIds: Array<number>) {
+        const placeholders = accountIds.map(() => '?').join(', ')
+
+        return this._tursoExecute({
+            sql: `SELECT 1 FROM OwnedGame WHERE gameId = ? AND accountId IN (${placeholders}) LIMIT 1`,
+            args: [gameId, ...accountIds],
+        })
+    }
+
+    createRecommendationFeedback(input: {
+        accountId: number
+        groupId: number
+        gameId: number
+        attendeeIds: string
+        feedback: 'interested' | 'not_for_us' | 'played'
+    }) {
+        return this._tursoExecute({
+            sql: `
+                INSERT INTO RecommendationFeedback (accountId, groupId, gameId, attendeeIds, feedback)
+                VALUES (?, ?, ?, ?, ?)
+            `,
+            args: [input.accountId, input.groupId, input.gameId, input.attendeeIds, input.feedback],
+        })
+    }
+
     getRecommendationCandidates(attendeeIds: Array<number>, playerCount: number, availableMinutes?: number) {
         const attendeePlaceholders = attendeeIds.map(() => '?').join(', ')
         const durationFilter = availableMinutes === undefined ? '' : 'AND (g.gameAvgDuration IS NULL OR g.gameAvgDuration <= ?)'

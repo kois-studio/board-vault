@@ -188,6 +188,19 @@ CREATE TABLE Notification (
     FOREIGN KEY (accountId) REFERENCES Account(id) ON DELETE CASCADE
 );
 
+CREATE TABLE RecommendationFeedback (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    accountId INTEGER NOT NULL,
+    groupId INTEGER NOT NULL,
+    gameId INTEGER NOT NULL,
+    attendeeIds TEXT NOT NULL,
+    feedback TEXT NOT NULL CHECK (feedback IN ('interested', 'not_for_us', 'played')),
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (accountId) REFERENCES Account(id) ON DELETE CASCADE,
+    FOREIGN KEY (groupId) REFERENCES UserGroup(id) ON DELETE CASCADE,
+    FOREIGN KEY (gameId) REFERENCES Game(id) ON DELETE CASCADE
+);
+
 CREATE TABLE OwnedGame (
     accountId INTEGER NOT NULL,
     gameId INTEGER NOT NULL,
@@ -235,4 +248,7 @@ CREATE INDEX idx_gameproposal_status ON GameProposal(status);
 CREATE INDEX idx_gameproposal_submitted_by ON GameProposal(submittedBy);
 CREATE INDEX idx_groupmembership_accountId ON GroupMembership(accountId);
 CREATE INDEX idx_ownedgame_gameId ON OwnedGame(gameId);
+
+CREATE INDEX idx_recommendation_feedback_group_date
+    ON RecommendationFeedback(groupId, createdAt);
 CREATE UNIQUE INDEX idx_account_clerk_user_id ON Account(clerkUserId);

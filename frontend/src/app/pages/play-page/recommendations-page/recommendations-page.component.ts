@@ -25,6 +25,7 @@ export class RecommendationsPageComponent {
     public readonly recommendations = signal<RecommendationsType | null>(null)
     public readonly isLoading = signal(false)
     public readonly errorMessage = signal<string | null>(null)
+    public readonly feedbackState = signal<Record<number, 'saving' | 'saved'>>({})
     public readonly selectedGroup = computed(() => this.userGroups().find(group => group.id === this.selectedGroupId()) ?? null)
 
     constructor() {
@@ -75,6 +76,32 @@ export class RecommendationsPageComponent {
             this.errorMessage.set('Recommendations could not be loaded. Please try again.')
         } finally {
             this.isLoading.set(false)
+        }
+    }
+
+    public async markNotForUs(gameId: number): Promise<void> {
+        const groupId = this.selectedGroupId()
+        const attendeeIds = this.selectedAttendeeIds()
+        if (!groupId || attendeeIds.length === 0 || this.feedbackState()[gameId]) {
+            return
+        }
+
+        this.feedbackState.update(state => ({ ...state, [gameId]: 'saving' }))
+        try {
+            await firstValueFrom(this.api.createRecommendationFeedback({
+                groupId,
+                gameId,
+                attendeeIds,
+                feedback: 'not_for_us',
+            }))
+            this.feedbackState.update(state => ({ ...state, [gameId]: 'saved' }))
+        } catch {
+            this.feedbackState.update(state => {
+                const nextState = { ...state }
+                delete nextState[gameId]
+                return nextState
+            })
+            this.errorMessage.set('Feedback could not be saved. Please try again.')
         }
     }
 

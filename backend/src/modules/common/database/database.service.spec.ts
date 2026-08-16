@@ -50,6 +50,26 @@ describe('DatabaseService logging', () => {
         })
     })
 
+    it('stores recommendation feedback with its selected-attendee context', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const execute = jest.fn().mockResolvedValue({ rowsAffected: 1 })
+
+        ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
+
+        await service.createRecommendationFeedback({
+            accountId: 1,
+            groupId: 7,
+            gameId: 42,
+            attendeeIds: '[1,2]',
+            feedback: 'not_for_us',
+        })
+
+        expect(execute).toHaveBeenCalledWith({
+            sql: expect.stringContaining('INSERT INTO RecommendationFeedback'),
+            args: [1, 7, 42, '[1,2]', 'not_for_us'],
+        })
+    })
+
     it('writes a completed session and its relations using the captured meet id', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {

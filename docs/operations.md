@@ -63,6 +63,12 @@ Use the exact commands and current results in [AGENTS.md](AGENTS.md) and [testin
   `ALTER TABLE`; the migration was corrected to keep `updatedAt` nullable and
   the application writes it explicitly.
 
+- On 2026-08-16, migration `0005-add-recommendation-feedback.sql` was applied
+  to live Turso after a disposable SQLite check and a fresh local backup. It
+  created `RecommendationFeedback` and its group/date index; integrity and
+  foreign-key checks passed and the initial feedback row count was zero. The
+  backup remains local and uncommitted.
+
 The resulting backend deployment was promoted to production on 2026-08-16.
 Unauthenticated `GET /auth/clerk/status` returned 401, validation on
 `GET /auth/check-email` returned 400, and unauthenticated meet details returned

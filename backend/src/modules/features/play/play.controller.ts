@@ -7,7 +7,13 @@ import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
 import { MeetDto } from '../../../common/types/meet.type'
 
 import { PlayService } from './play.service'
-import { HistoryRecordDto, RecommendationRequestBody, RecommendationsDto } from './play.types'
+import {
+    HistoryRecordDto,
+    RecommendationFeedbackBody,
+    RecommendationFeedbackDto,
+    RecommendationRequestBody,
+    RecommendationsDto,
+} from './play.types'
 
 @UseGuards(JwtAuthGuard, VerifiedUserGuard)
 @ApiTags('play')
@@ -22,6 +28,17 @@ export class PlayController {
     @ApiResponse({ status: 200, type: RecommendationsDto })
     getRecommendations(@Req() request: { user: { userId: number } }, @Body() body: RecommendationRequestBody) {
         return this.playService.getRecommendations(request.user.userId, body)
+    }
+
+    @Post('/recommendations/feedback')
+    @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
+    @ApiOperation({ summary: 'Record feedback for a recommendation' })
+    @ApiResponse({ status: 201, type: RecommendationFeedbackDto })
+    createRecommendationFeedback(
+        @Req() request: { user: { userId: number } },
+        @Body() body: RecommendationFeedbackBody,
+    ) {
+        return this.playService.createRecommendationFeedback(request.user.userId, body)
     }
 
     @UseGuards(UserOwnershipGuard)
