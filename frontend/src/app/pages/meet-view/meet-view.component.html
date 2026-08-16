@@ -78,6 +78,21 @@
         </section>
     }
 
+    @if (skippedGames.length > 0) {
+        <section class="p-4">
+            <h2 class="text-xl font-semibold mb-4">Not played</h2>
+            <p class="text-secondary mb-4">These games were planned but were not played in this session.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                @for (game of skippedGames; track game.id) {
+                    <div class="flex items-center gap-3 rounded-lg border border-zinc-500/60 bg-zinc-800/50 p-3 opacity-75">
+                        <image-background [src]="game.imageUrl" class="h-14 w-14" />
+                        <span class="font-medium">{{ game.title }}</span>
+                    </div>
+                }
+            </div>
+        </section>
+    }
+
     <!-- Games played -->
     <section class="p-4 col-span-2">
         <div class="relative">

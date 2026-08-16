@@ -41,7 +41,7 @@ decisions.
 - Existing `Meet` routes remain a compatibility layer over the session concept;
   the new relations are additive and do not delete or rewrite historical play
   links.
-- Planned and actual play data can support explainable recommendations and trustworthy history.
+- Planned and actual play data can support explainable recommendations and trustworthy history. A session becoming completed or cancelled transactionally converts any remaining planned games to `skipped`; played games are preserved unchanged.
 - The v1 relation boundaries are decided, but guest identities, timezones,
   ratings, scores, and full transaction/state-transition behavior remain
   separate follow-up decisions.
