@@ -128,7 +128,7 @@ Relevant surfaces: [`collection-page`](../frontend/src/app/pages/collection-page
 - Ensure purchase metadata, wishlist priority, reviews, and tags have consistent labels and validation.
 - Game detail history now displays group names through the loaded group index; failed game-detail requests now leave the loading state and expose a retry action.
 - Review responsive card grids, image fallbacks, accessible controls, and keyboard behavior.
-- Expand the targeted frontend response schemas in [`api.schemas.ts`](../frontend/src/app/api/api.schemas.ts) across the remaining API surface; group/member/game and both invitation-feed responses are now covered.
+- Expand the targeted frontend response schemas in [`api.schemas.ts`](../frontend/src/app/api/api.schemas.ts) across the remaining API surface; group/member/game, both invitation feeds, dashboard stats, notifications, persisted meets, and completed history are now covered.
 
 ### 8. Groups and invitations — Partial / Needs review
 
