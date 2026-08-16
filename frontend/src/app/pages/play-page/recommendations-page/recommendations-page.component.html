@@ -81,6 +81,17 @@
                                         [routerLink]="['/groups', result.groupId, 'meets', 'new']"
                                         [queryParams]="{ plannedGameId: recommendation.gameData.id, attendeeIds: result.attendeeIds.join(',') }"
                                     >Schedule with this game</a>
+                                    @if (feedbackState()[recommendation.gameData.id] === 'saved') {
+                                        <span class="text-secondary text-sm ml-2">Feedback saved</span>
+                                    } @else {
+                                        <button
+                                            class="text-secondary text-sm ml-3 underline disabled:no-underline"
+                                            [disabled]="feedbackState()[recommendation.gameData.id] === 'saving'"
+                                            (click)="markNotForUs(recommendation.gameData.id)"
+                                        >
+                                            {{ feedbackState()[recommendation.gameData.id] === 'saving' ? 'Saving…' : 'Not for us' }}
+                                        </button>
+                                    }
                                 </div>
                             </article>
                         }

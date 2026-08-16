@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { ArrayMinSize, ArrayUnique, IsArray, IsInt, IsOptional, Max, Min } from 'class-validator'
+import { ArrayMinSize, ArrayUnique, IsArray, IsIn, IsInt, IsOptional, Max, Min } from 'class-validator'
 
 import { GameCompleteDto } from '../../../common/types/game.type'
 import { MeetDto } from '../../../common/types/meet.type'
@@ -86,4 +86,33 @@ export class RecommendationsDto {
 
     @ApiProperty({ example: 'No owned games match the selected attendees and filters.', nullable: true })
     noResultReason: string | null
+}
+
+export class RecommendationFeedbackBody {
+    @ApiProperty({ example: 7 })
+    @IsInt()
+    @Min(1)
+    groupId: number
+
+    @ApiProperty({ example: 42 })
+    @IsInt()
+    @Min(1)
+    gameId: number
+
+    @ApiProperty({ example: [1, 2] })
+    @IsArray()
+    @ArrayUnique()
+    @ArrayMinSize(1)
+    @IsInt({ each: true })
+    @Min(1, { each: true })
+    attendeeIds: Array<number>
+
+    @ApiProperty({ example: 'not_for_us', enum: ['interested', 'not_for_us', 'played'] })
+    @IsIn(['interested', 'not_for_us', 'played'])
+    feedback: 'interested' | 'not_for_us' | 'played'
+}
+
+export class RecommendationFeedbackDto {
+    @ApiProperty({ example: true })
+    success: true
 }

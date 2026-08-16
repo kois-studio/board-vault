@@ -348,6 +348,15 @@ export class Api {
         return this.http.post<RecommendationsType>(`${this.url}/play/recommendations`, body)
     }
 
+    createRecommendationFeedback(body: {
+        groupId: number
+        gameId: number
+        attendeeIds: Array<number>
+        feedback: 'interested' | 'not_for_us' | 'played'
+    }) {
+        return this.http.post<{ success: true }>(`${this.url}/play/recommendations/feedback`, body)
+    }
+
     // --------------------------------------------------------------------------
     // #region profile
     // --------------------------------------------------------------------------

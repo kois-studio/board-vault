@@ -116,4 +116,64 @@ describe('PlayService history', () => {
             'Every attendee must belong to the selected group',
         )
     })
+
+    it('persists recommendation feedback only for selected-attendee-owned games', async () => {
+        const database = {
+            getGroupById: jest.fn().mockResolvedValue({ rows: [[7]] }),
+            getGroupMemberIds: jest.fn().mockResolvedValue([1, 2, 3]),
+            getOwnedGameByAnyAccount: jest.fn().mockResolvedValue({ rows: [[1]] }),
+            createRecommendationFeedback: jest.fn().mockResolvedValue({ rowsAffected: 1 }),
+        }
+        const service = new PlayService(
+            {} as UsersService,
+            database as unknown as DatabaseService,
+            {} as GamesService,
+            {} as MeetsService,
+            {} as MeetAccountGamesService,
+            {} as GameTranslationService,
+        )
+
+        await expect(
+            service.createRecommendationFeedback(1, {
+                groupId: 7,
+                gameId: 42,
+                attendeeIds: [1, 2],
+                feedback: 'not_for_us',
+            }),
+        ).resolves.toEqual({ success: true })
+        expect(database.createRecommendationFeedback).toHaveBeenCalledWith({
+            accountId: 1,
+            groupId: 7,
+            gameId: 42,
+            attendeeIds: '[1,2]',
+            feedback: 'not_for_us',
+        })
+    })
+
+    it('rejects recommendation feedback for games absent from selected attendees', async () => {
+        const database = {
+            getGroupById: jest.fn().mockResolvedValue({ rows: [[7]] }),
+            getGroupMemberIds: jest.fn().mockResolvedValue([1, 2]),
+            getOwnedGameByAnyAccount: jest.fn().mockResolvedValue({ rows: [] }),
+            createRecommendationFeedback: jest.fn(),
+        }
+        const service = new PlayService(
+            {} as UsersService,
+            database as unknown as DatabaseService,
+            {} as GamesService,
+            {} as MeetsService,
+            {} as MeetAccountGamesService,
+            {} as GameTranslationService,
+        )
+
+        await expect(
+            service.createRecommendationFeedback(1, {
+                groupId: 7,
+                gameId: 42,
+                attendeeIds: [1, 2],
+                feedback: 'not_for_us',
+            }),
+        ).rejects.toThrow('The selected attendees do not own this game')
+        expect(database.createRecommendationFeedback).not.toHaveBeenCalled()
+    })
 })
