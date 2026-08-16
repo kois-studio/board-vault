@@ -74,6 +74,22 @@ Known follow-ups: Add recommendation feedback persistence and richer controls af
 Most recent claim:
 
 ```text
+Task: PROD-006
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: make session-detail attendee and played-game edits awaitable, truthful on failure, and safe for terminal sessions
+```
+
+Review: PROD-006
+
+Changed: Session-detail edits now await their API calls, revert optimistic state on failure, prevent overlapping edits, and disable attendee/game edits after a session is completed or cancelled. Played-game writes now promote an existing planned `MeetGame` row to `played` inside the same transaction.
+Verified: Pending backend tests/build and frontend build/browser verification.
+Known follow-ups: Add a clean authenticated browser journey for session-detail edits and decide whether unplayed planned games should become `skipped` on completion.
+
+Most recent claim:
+
+```text
 Task: DATA-003
 Owner: Codex
 Claimed: 2026-08-16

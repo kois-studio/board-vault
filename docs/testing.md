@@ -43,7 +43,7 @@
 - group creation/joining and invitation lifecycle;
 - collection activation with empty/error states;
 - deterministic explainable recommendation scoring, including collective attendee ownership, invalid attendee rejection, and stable ordering;
-- atomic completed/scheduled session creation, planned/played distinction, lifecycle transitions, completion, and history;
+- atomic completed/scheduled session creation, planned/played distinction, lifecycle transitions, completion, awaited detail edits, and history;
 - frontend loading, empty, failure, retry, and mobile/accessibility states.
 - frontend browser journeys for public navigation, Clerk authentication, collection activation, group invitations, session creation/completion, and history. The reusable authenticated navigation suite is present; collection, invitation, and full session submission still need a non-production Clerk test state and seeded data.
 

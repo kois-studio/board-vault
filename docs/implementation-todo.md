@@ -41,9 +41,9 @@ Relevant surfaces: [`app.routes.ts`](../frontend/src/app/app.routes.ts), [`meet-
 - Distinguish planned games from games actually played in all API responses and frontend types; scheduled creation and meet details now preserve the distinction, while the read model still needs richer game objects and planned-game editing.
 - Decide how the legacy `MeetAccountGame` history relation should evolve; the completed write currently preserves it as a compatibility relation.
 - The obsolete confirmation flow has been removed; attendee and played-game changes now state that they save automatically from the session detail page.
-- Make attendee and game changes show persisted success/error state and survive refresh.
+- Attendee and played-game changes now await the API, disable overlapping/terminal edits, show actionable errors, and revert optimistic UI state when persistence fails; refresh-survival still needs an authenticated browser journey.
 - Complete the organizer-only attendee API verification through the production UI.
-- Add transaction boundaries for scheduled-session creation, completion, cancellation, attendee changes, and played-game recording; completed-session logging now has one.
+- Add transaction boundaries for scheduled-session creation, completion, cancellation, attendee changes, and played-game recording; completed-session logging and played-game recording now have transaction boundaries, while attendee mutations remain single-row writes.
 - Ensure the upcoming sessions page reads real persisted scheduled/active sessions; the old completed-history placeholder has been removed and the page now uses `userMeets`.
 - Ensure completed sessions appear in history and cancelled sessions do not appear as completed history; lifecycle filtering now excludes cancelled sessions from upcoming, while richer history/status read models remain to be completed.
 
