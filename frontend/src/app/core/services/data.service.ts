@@ -531,51 +531,52 @@ export class DataService {
 
     public leaveGroup(groupId: number) {
         const currentUser = this.currentUser()
-        if (!currentUser) return
+        if (!currentUser) return throwError(() => new Error('No authenticated user'))
 
-        // 1.
-        this.api.leaveGroup(currentUser.id, groupId).subscribe({
-            next: res => {
+        return this.api.leaveGroup(currentUser.id, groupId).pipe(
+            tap(() => {
                 // 2.
                 this.userGroups.update(groups => groups.filter(group => group.id !== groupId))
 
                 // 3.
                 this.toastService.success('You have left the group')
-            },
-            error: error => {
+            }),
+            catchError(error => {
                 if (error.status === 404) {
-                    return this.toastService.error('User or Group not found')
+                    this.toastService.error('User or Group not found')
+                } else if (error.status === 400) {
+                    this.toastService.error('You are the group creator, you cannot leave!')
+                } else {
+                    this.toastService.error('Error leaving group')
                 }
-                if (error.status === 400) {
-                    return this.toastService.error('You are the group creator, you cannot leave!')
-                }
-                this.toastService.error('Error leaving group')
-            },
-        })
+                return throwError(() => error)
+            }),
+        )
     }
 
     // #region delete group
 
     public deleteGroup(groupId: number) {
         const currentUser = this.currentUser()
-        if (!currentUser) return
+        if (!currentUser) return throwError(() => new Error('No authenticated user'))
 
-        // 1.
-        this.api.deleteGroup(currentUser.id, groupId).subscribe({
-            next: res => {
+        return this.api.deleteGroup(currentUser.id, groupId).pipe(
+            tap(() => {
                 // 2.
                 this.userGroups.update(groups => groups.filter(group => group.id !== groupId))
 
                 // 3.
                 this.toastService.success('You have deleted the group')
-            },
-            error: error => {
+            }),
+            catchError(error => {
                 if (error.status === 404) {
-                    return this.toastService.error('Group not found')
+                    this.toastService.error('Group not found')
+                } else {
+                    this.toastService.error('Error deleting group')
                 }
-                this.toastService.error('Error deleting group')
-            },
-        })
+                return throwError(() => error)
+            }),
+        )
     }
 
     // #region invitations
