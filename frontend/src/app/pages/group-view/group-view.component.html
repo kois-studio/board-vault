@@ -173,9 +173,15 @@
         <hr class="mb-4" />
         
         <!-- Loading state -->
-        @if (isLoading) {
+        @if (isLoading()) {
             <!-- TODO: custom skeleton matching actual history structure -->
             <app-skeleton-card-group />
+        } @else if (groupHistoryError()) {
+            <div class="text-center py-8 text-secondary" role="alert">
+                <p>Group history could not be loaded.</p>
+                <p class="text-sm mt-2 mb-4">Check your connection and try again.</p>
+                <app-button icon="arrow-repeat" (click)="retryGroupHistory()">Retry</app-button>
+            </div>
         } @else if (groupHistory$().length === 0) {
             <!-- no data -->
             <div class="text-center py-8 text-secondary">
