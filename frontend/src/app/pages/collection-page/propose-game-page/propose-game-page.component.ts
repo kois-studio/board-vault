@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core'
+import { Component, OnInit, inject, signal } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { FormGameSubmissionComponent } from '../../../components/forms/form-game-submission/form-game-submission.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
@@ -18,7 +18,7 @@ export class ProposeGamePageComponent implements OnInit {
 
     ngOnInit() {
         // Get title from query params
-        this.route.queryParams.subscribe(params => {
+        this.route.queryParams.subscribe((params) => {
             this.initialTitle = params['title'] || undefined
         })
     }
