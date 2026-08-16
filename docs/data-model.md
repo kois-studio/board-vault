@@ -42,7 +42,7 @@ The schema snapshot names these tables/entities:
 - `FeatureFlags`
 - `GameProposal`
 
-The backend source also has corresponding service/type/schema areas. The current product backlog identifies schema drift, migration reproducibility, transactions, and a canonical session model as P0/P1 work.
+The backend source also has corresponding service/type/schema areas. The current product backlog identifies migration reproducibility, session transactions/API contracts, richer play events, and recommendation state as P0/P1 work.
 
 ## Ownership and consistency boundaries
 

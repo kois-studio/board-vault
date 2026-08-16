@@ -146,7 +146,7 @@ compliance:
       status: partial
       evidence: domain types exist, while session and recommendation states remain incomplete
       priority: high
-      next_action: Establish canonical session and recommendation state models before implementation.
+      next_action: Complete the session API/transaction state contract and establish the recommendation state model before implementation.
     - id: TS-005
       status: gap
       evidence: backend main.ts does not apply a global ValidationPipe; frontend api.schemas.ts is unimplemented
@@ -195,9 +195,9 @@ compliance:
       next_action: Add safe environment documentation and repository secret scanning.
     - id: SEC-003
       status: gap
-      evidence: user-scoped reads, the deprecated global user listing, legacy group listings, reviewed group routes, legacy meet reads, and every current collection route use ownership, administrator, or membership guards; legacy JWT validation rejects soft-deleted accounts; group and invitation/membership creation derives actor IDs from JWT, invitation lifecycle actions enforce sender/recipient ownership, deprecated direct joining requires a pending invitation, legacy notification and meet-account-game mutations are scoped to the authenticated account, and proposal review actions derive reviewers from the verified JWT behind `AdminGuard`; nested user responses use the explicit `UserPublicDto` boundary and omit email/account state, while self/admin response policy, the broader group-join product decision, and the session model still need review
+      evidence: user-scoped reads, the deprecated global user listing, legacy group listings, reviewed group routes, legacy meet reads, and every current collection route use ownership, administrator, or membership guards; legacy JWT validation rejects soft-deleted accounts; group and invitation/membership creation derives actor IDs from JWT, invitation lifecycle actions enforce sender/recipient ownership, deprecated direct joining requires a pending invitation, legacy notification and meet-account-game mutations are scoped to the authenticated account, and proposal review actions derive reviewers from the verified JWT behind `AdminGuard`; nested user responses use the explicit `UserPublicDto` boundary and omit email/account state, while self/admin response policy, the broader group-join product decision, and the session API/transaction policy still need review
       priority: critical
-      next_action: Complete the self-profile/admin DTO inventory, then execute the remaining authorization and session decisions in todo/06-agent-task-board.md.
+      next_action: Complete the self-profile/admin DTO inventory, then execute the remaining authorization and session API decisions in todo/06-agent-task-board.md.
     - id: SEC-004
       status: gap
       evidence: no global request validation; targeted login, registration, password-reset, availability-query, legacy-token, user-profile, user-game-update, review-score, collection ownership metadata, profile-proposal, administrator catalog/proposal-review, group, invitation, notification, and deprecated membership validation is enabled, including nested avatar, positive integer-array, database-aligned 0..10 review, non-negative integer proposal-field, purchase field, admin review, and identity/reference validation; auth endpoints now have Upstash-backed route limits, CORS is allowlisted, and the API bootstrap limits JSON/URL-encoded request bodies to 100 KB with baseline security headers; forgot-password now returns the same success behavior for missing and existing accounts; verification/reset token expiry and atomic one-time-use enforcement are implemented and migration 0002 is applied and integrity-verified in live Turso; DatabaseService no longer formats bound SQL arguments in logs; email links and notification text are HTML-escaped before interpolation
