@@ -38,7 +38,7 @@ Relevant surfaces: [`app.routes.ts`](../frontend/src/app/app.routes.ts), [`meet-
 - Persist scheduled sessions, selected pending attendees, and optional planned games atomically through `POST /sessions/scheduled`; omission of attendees remains a documented compatibility default to all current group members.
 - Replace the `submitSession()` TODO in the log-session wizard with the guarded API call and success/error navigation.
 - Define and implement transitions between scheduled, active, completed, and cancelled sessions; organizer-controlled transitions now exist for scheduled/active sessions, while completed/cancelled remain terminal.
-- Distinguish planned games from games actually played in all API responses and frontend types; scheduled creation and meet details now preserve the distinction, while the read model still needs richer game objects and planned-game editing.
+- Distinguish planned games from games actually played in all API responses and frontend types; scheduled creation and meet details now preserve planned, played, and skipped game IDs. When a session becomes completed or cancelled, remaining planned games are transactionally marked skipped; richer game objects and planned-game editing remain unfinished.
 - Decide how the legacy `MeetAccountGame` history relation should evolve; the completed write currently preserves it as a compatibility relation.
 - The obsolete confirmation flow has been removed; attendee and played-game changes now state that they save automatically from the session detail page.
 - Attendee and played-game changes now await the API, disable overlapping/terminal edits, show actionable errors, and revert optimistic UI state when persistence fails; refresh-survival still needs an authenticated browser journey.

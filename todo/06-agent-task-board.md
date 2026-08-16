@@ -885,6 +885,19 @@ Changed: Browse Games now shows a retryable load-error state instead of presenti
 Verified: `cd frontend && npm run build` passes with the documented baseline warnings; `git diff --check` passes.
 Known follow-ups: Add authenticated browser coverage for collection/search and review duplicate/add/remove feedback in the rendered UI.
 
+Continuation claim: PROD-006
+
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: make terminal session state truthful for planned games
+
+Review continuation: PROD-006
+
+Changed: Session lifecycle status changes now use one write transaction. Completing or cancelling a session marks every remaining `MeetGame.gameStatus = 'planned'` row as `skipped`, while existing played rows remain unchanged. Session detail responses and the frontend now expose and explain skipped games separately.
+Verified: Focused backend database/session tests, backend build, frontend build, and `git diff --check` pending for this slice.
+Known follow-ups: Add authenticated browser coverage for terminal planned-game state and review richer session game read models/editing.
+
 When claiming a task, add:
 
 ```text
