@@ -25,7 +25,7 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 | PROD-002 | REVIEW | Core loop | Implement a real first-five-games collection activation flow. | SEC-002, DATA-002 |
 | PROD-003 | TODO | Core loop | Finish invitation acceptance, group roles, and member visibility. | SEC-002, DATA-003 |
 | PROD-004 | REVIEW | Core loop | Implement deterministic recommendation scoring with explanations and unit tests. | PROD-001, DATA-003 |
-| PROD-005 | REVIEW | Core loop | Implement atomic session creation and replace the wizard submission TODO. | DATA-003, DATA-004 |
+| PROD-005 | REVIEW | Core loop | Maintain atomic session creation and wizard submission; authenticated browser coverage and broader session UX review remain. | DATA-003, DATA-004 |
 | PROD-006 | REVIEW | Core loop | Implement upcoming, active, completed, and cancelled session views using real data. | PROD-005 |
 | PROD-007 | REVIEW | Core loop | Implement actual play history and basic group statistics. | PROD-005, DATA-003 |
 | PROD-008 | REVIEW | Core loop | Persist recommendation feedback and feed it into future scoring. | PROD-004, PROD-007 |
@@ -37,7 +37,7 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 | EQ-001 | IN_PROGRESS | Quality | Add lockfiles, root commands, environment documentation, and reproducible local setup. | None |
 | EQ-002 | REVIEW | Quality | Add CI gates for build, tests, lint, and migrations. | EQ-001 |
 | EQ-003 | REVIEW | Quality | Replace starter tests with authorization and core journey coverage. | SEC-001, PROD-005 |
-| EQ-004 | TODO | Quality | Establish generated/shared API contracts and response validation. | DATA-003 |
+| EQ-004 | IN_PROGRESS | Quality | Establish generated/shared API contracts and response validation; targeted frontend schemas cover core session/play responses, while broader coverage remains. | DATA-003 |
 | EQ-005 | TODO | Quality | Add health checks, structured logging, error monitoring, and database operational checks. | EQ-001 |
 | EQ-006 | TODO | Quality | Fix frontend bundle, styling warnings, accessibility, responsiveness, and timezone handling. | PROD-005 |
 | TRUTH-001 | REVIEW | Launch | Remove unsupported landing claims, fake testimonials, dead links, and placeholder product states. | PROD-001, PROD-004, PROD-007 |

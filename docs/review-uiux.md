@@ -50,15 +50,15 @@ For each area, review:
 
 | Area | Routes/components | Current status | Known review scope / next action |
 |---|---|---|---|
-| Dashboard home | `/dashboard`, `dashboard-page` | Source-audited | Replace hardcoded activity/analytics, correct counts, remove dead links, and review first-login/empty states. |
-| Groups index | `/groups`, `groups-page` | Source-audited | Review create/join guidance, empty state, loading/error states, group card hierarchy, and responsive grid. |
+| Dashboard home | `/dashboard`, `dashboard-page` | Source-audited | Fabricated activity/analytics and dead links were removed; overview loading, failure, retry, and first-entry states are now explicit. Continue with rendered responsive, keyboard, focus, contrast, and visual-hierarchy review. |
+| Groups index | `/groups`, `groups-page` | Source-audited | Loading, empty, and retryable failure states now distinguish unavailable data from no groups; review create/join guidance, group card hierarchy, and responsive grid. |
 | Create group | `/create-group`, `group-create` | Source-audited | Review form labels, validation, success navigation, duplicate/error handling, and mobile form layout. |
 | Group detail | `/groups/:groupId`, `group-view` | Source-audited | Review member/game/history hierarchy, owner actions, invitation feedback, skeletons, private-data states, and mobile tables/cards. |
 | Edit/leave/delete group | `/groups/:groupId/{edit,leave,delete}` | Source-audited | Review permissions, confirmation language, destructive actions, cancellation, and failure recovery. |
 | Invitations | profile invitation modal, group edit invitation controls | Source-audited | Verify two-account journey and review pending/accepted/rejected/expired/error states. |
 | Notifications | profile notification modal | Source-audited | Review unread/read behavior, message clarity, empty state, and accessible modal announcements. |
 | Collection landing | `/collection`, `collection-page` | Partially reviewed | First-five-games activation progress and a browse CTA now exist; still needs full empty/error/refresh review and responsive/accessibility testing. |
-| My games | `/collection/games`, `my-games-page` | Source-audited | Review ownership status, sorting, duplicate/empty/loading states, and card responsiveness. |
+| My games | `/collection/games`, `my-games-page` | Source-audited | Loading, empty, and retryable failure states now distinguish unavailable data from an empty collection; review ownership status, sorting, duplicate feedback, and card responsiveness. |
 | Browse games | `/collection/browse`, `browse-page` | Source-audited | Review search, filtering, no-results, pagination/loading, add feedback, and keyboard operation. |
 | Game detail | `/games/:gameId`, `game-view` | Source-audited | Ownership mutations now refresh collection state, history resolves group names, and failed loads have a retry state; still review ownership, wishlist, reviews, tags, purchase metadata, image fallbacks, and permission states. |
 | Reviews | `/collection/reviews`, `reviews-page` | Source-audited | Review rating scale, edit/delete behavior, aggregation clarity, empty state, and validation. |
