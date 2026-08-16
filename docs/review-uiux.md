@@ -91,7 +91,7 @@ For each area, review:
 | Security settings | `/settings/security` | Partially reviewed | Uses Clerk's account-management panel for email/password/sign-in methods; local Board Vault data deletion is intentionally disabled pending a retention/deletion policy. Review loading/error states, modal accessibility, and deletion policy when defined. |
 | Contact settings | `/settings/contact` | Not reviewed | Inspect intended behavior and either finish, define scope, or remove misleading UI. |
 | Admin shell | `/admin`, admin layout/sidebar | Source-audited | Review role gating, navigation, mobile sidebar, active states, and unauthorized behavior. |
-| Admin dashboard | `/admin/panel` | Not reviewed | Review real metrics versus placeholders, loading/error states, and hierarchy. |
+| Admin dashboard | `/admin/panel` | Source-audited | The blank placeholder was replaced with a responsive hub for implemented admin tools; review hierarchy, keyboard/focus behavior, and future persisted metrics when that contract exists. |
 | Game proposals admin | `/admin/proposals` | Source-audited | Review table actions, filters, confirmations, status/error feedback, and responsive behavior. |
 | Game management | `/admin/manage-games` | Source-audited | Review search, edit/delete actions, title/translation consistency, and destructive-action safety. |
 | Tag management | `/admin/manage-tags` | Source-audited | Review category/tag hierarchy, modal forms, validation, duplicate errors, and mobile layout. |

@@ -166,6 +166,7 @@ Relevant surfaces: [`propose-game-page`](../frontend/src/app/pages/collection-pa
 - Review administrator authorization feedback and prevent confusing hidden/disabled action states.
 - Add clear confirmation and error handling for approval, rejection, and duplicate decisions.
 - Review admin tables, filters, pagination, responsive behavior, and destructive-action affordances.
+- The admin panel landing page now provides an honest responsive hub for the implemented catalogue tools; persisted operational metrics remain intentionally deferred.
 
 ## P1 — cross-cutting frontend quality
 

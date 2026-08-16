@@ -1098,6 +1098,24 @@ Verified: focused `DashboardService` test, backend build, frontend build, and `g
 
 Known follow-ups: Add transaction failure-injection coverage and authenticated browser coverage for group creation; review remaining multi-write use cases under DATA-004.
 
+Continuation claim: EQ-006
+
+Owner: Codex
+
+Claimed: 2026-08-16
+
+Branch/worktree: main / shared workspace
+
+Scope: replace the empty admin panel placeholder with an honest navigation hub
+
+Review continuation: EQ-006
+
+Changed: `/admin/panel` now presents responsive, keyboard-focusable links to the implemented proposal, game, and tag administration areas. It intentionally does not invent operational metrics without a persisted read contract.
+
+Verified: frontend build and `git diff --check` pass.
+
+Known follow-ups: Perform a rendered mobile/accessibility review of the admin shell and add persisted metrics only with an explicit API contract.
+
 When claiming a task, add:
 
 ```text
