@@ -989,6 +989,19 @@ Changed: The frontend API adapter now parses the `{ success: true }` envelope fo
 Verified: `cd frontend && npm run build` passes with the documented baseline warnings; `git diff --check` passes.
 Known follow-ups: Add response schemas for collection/group read models and remaining mutation payloads, then add malformed-response tests.
 
+Continuation claim: EQ-006
+
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: remove hard-coded timezone correction from relative-date formatting
+
+Review continuation: EQ-006
+
+Changed: `formatDate()` now compares timestamp instants directly, clamps future timestamps to zero elapsed seconds, and uses a neutral “Just now” label instead of subtracting a fixed two-hour Spain offset.
+Verified: `cd frontend && npm run build` passes with the documented baseline warnings; `git diff --check` passes.
+Known follow-ups: Add browser coverage for timezone-aware scheduled-session display and complete the broader responsive/accessibility pass.
+
 Continuation claim: PROD-005
 
 Owner: Codex

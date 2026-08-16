@@ -179,7 +179,7 @@ Relevant surfaces: [`propose-game-page`](../frontend/src/app/pages/collection-pa
 - Fix the Sass deprecation and selector warnings.
 - Reduce the initial bundle over the configured warning budget.
 - Resolve the eight current Biome findings in the form submission, log-session wizard, and proposal page.
-- Resolve the known timezone/date formatting issue in `formatDate.ts`.
+- Add timezone-focused browser coverage around scheduled-session display and keep all relative-time utilities based on instant timestamps rather than server/local offset corrections; `formatDate.ts` no longer applies a fixed Spain correction.
 - Avoid mutating nested signal state in place where it can produce stale UI.
 - Add shared UI conventions for buttons, cards, forms, modal behavior, spacing, typography, colors, and icons.
 
