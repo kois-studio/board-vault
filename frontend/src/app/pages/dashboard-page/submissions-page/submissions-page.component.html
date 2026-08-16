@@ -9,29 +9,37 @@
         <h2 class="text-lg font-semibold text-gray-900 mb-4">Your Submission Stats</h2>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div class="bg-white p-4 rounded-lg border border-gray-200">
-                <div class="text-2xl font-bold text-blue-600">{{ userProposalStats$().totalProposals }}</div>
+                <div class="text-2xl font-bold text-blue-600">{{ proposalStatsLoading() || proposalStatsError() ? '—' : userProposalStats$().totalProposals }}</div>
                 <div class="text-sm text-gray-600">Total Proposals</div>
             </div>
             <div class="bg-white p-4 rounded-lg border border-gray-200">
-                <div class="text-2xl font-bold text-green-600">{{ userProposalStats$().approvedProposals }}</div>
+                <div class="text-2xl font-bold text-green-600">{{ proposalStatsLoading() || proposalStatsError() ? '—' : userProposalStats$().approvedProposals }}</div>
                 <div class="text-sm text-gray-600">Approved</div>
             </div>
             <div class="bg-white p-4 rounded-lg border border-gray-200">
-                <div class="text-2xl font-bold text-red-600">{{ userProposalStats$().rejectedProposals }}</div>
+                <div class="text-2xl font-bold text-red-600">{{ proposalStatsLoading() || proposalStatsError() ? '—' : userProposalStats$().rejectedProposals }}</div>
                 <div class="text-sm text-gray-600">Rejected</div>
             </div>
             <div class="bg-white p-4 rounded-lg border border-gray-200">
-                <div class="text-2xl font-bold text-purple-600">{{ userProposalStats$().reputationScore }}</div>
+                <div class="text-2xl font-bold text-purple-600">{{ proposalStatsLoading() || proposalStatsError() ? '—' : userProposalStats$().reputationScore }}</div>
                 <div class="text-sm text-gray-600">Reputation Score</div>
             </div>
         </div>
     </div>
 
+    @if (proposalStatsError() || proposalsError()) {
+        <div class="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900" role="alert">
+            <p>Submission data could not be loaded.</p>
+            <app-button class="mt-3" icon="arrow-repeat" (click)="retryProposals()">Retry</app-button>
+        </div>
+    }
+
     <!-- Proposals List -->
     <div>
         <h2 class="text-lg font-semibold text-gray-900 mb-4">Your Game Proposals</h2>
-        
-        @if (userProposals$().length === 0) {
+        @if (proposalsLoading()) {
+            <div class="py-12 text-center text-gray-500" role="status">Loading your proposals…</div>
+        } @else if (!proposalsError() && userProposals$().length === 0) {
             <div class="text-center py-12">
                 <div class="text-gray-500 mb-4">
                     <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
