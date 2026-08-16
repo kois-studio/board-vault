@@ -13,6 +13,14 @@ test.describe('authenticated core navigation', () => {
         await expect(page.getByRole('heading', { name: 'Your overview' })).toBeVisible()
     })
 
+    test('exposes working dashboard destinations', async ({ page }) => {
+        await page.goto('/dashboard')
+
+        await expect(page.getByRole('link', { name: /View groups/i })).toHaveAttribute('href', '/groups')
+        await expect(page.getByRole('link', { name: /Open collection/i })).toHaveAttribute('href', '/collection/games')
+        await expect(page.getByRole('link', { name: /Browse games/i }).first()).toHaveAttribute('href', '/collection/browse')
+    })
+
     test('opens groups and collection entry points', async ({ page }) => {
         await page.goto('/groups')
 
