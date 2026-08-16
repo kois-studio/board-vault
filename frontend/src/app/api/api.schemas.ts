@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import type { GameCompleteType, MeetType, MeetWithAttendeesAndGamesType, RecommendationsType, ScheduledSessionCreatedType, SessionCreatedType, SessionStatusUpdatedType } from './api.types'
+import type { GameCompleteType, MeetType, MeetWithAttendeesAndGamesType, RecommendationsType, ScheduledSessionCreatedType, SessionAttendeesUpdatedType, SessionCreatedType, SessionStatusUpdatedType } from './api.types'
 
 export const authStatusSchema = z.object({
     isValid: z.literal(true),
@@ -61,6 +61,11 @@ export const scheduledSessionCreatedSchema: z.ZodType<ScheduledSessionCreatedTyp
 export const sessionStatusUpdatedSchema: z.ZodType<SessionStatusUpdatedType> = z.object({
     sessionId: z.number(),
     status: z.enum(['scheduled', 'active', 'completed', 'cancelled']),
+})
+
+export const sessionAttendeesUpdatedSchema: z.ZodType<SessionAttendeesUpdatedType> = z.object({
+    sessionId: z.number(),
+    attendeeIds: z.array(z.number()),
 })
 
 export const recommendationsSchema: z.ZodType<RecommendationsType> = z.object({
