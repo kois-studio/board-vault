@@ -33,6 +33,7 @@ export class HistoryPageComponent {
     // --------------------------------------------------------------------------
     // dataService
     public readonly currentUser$ = this.dataService.currentUser
+    public readonly userGroups$ = this.dataService.userGroups
     public readonly userHistory$ = this.dataService.userHistory
     // loadingService
     public readonly isLoadingHistory = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_GAMES_HISTORY])
@@ -41,6 +42,10 @@ export class HistoryPageComponent {
     //        Computed
     // --------------------------------------------------------------------------
     public readonly sortedUserHistoryComputed = computed(() => {
-        return this.userHistory$().sort((a, b) => new Date(b.meetData.meetDate).getTime() - new Date(a.meetData.meetDate).getTime())
+        return [...this.userHistory$()].sort((a, b) => new Date(b.meetData.meetDate).getTime() - new Date(a.meetData.meetDate).getTime())
     })
+
+    public getGroupName(groupId: number): string {
+        return this.userGroups$().find(group => group.id === groupId)?.name ?? `Group ${groupId}`
+    }
 }

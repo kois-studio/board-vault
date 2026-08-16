@@ -39,7 +39,7 @@
                     {{ session.meetDate | customDate }}
                 </h2>
                 <p class="text-secondary text-sm absolute top-4 right-4">
-                    Session #{{ session.id }} · Group #{{ session.groupId }}
+                    Session #{{ session.id }} · {{ getGroupName(session.groupId) }}
                 </p>
                 <span class="inline-flex rounded-full bg-zinc-700 px-3 py-1 text-sm capitalize">{{ session.status }}</span>
                 <a class="app-btn-secondary mt-4 inline-block" [routerLink]="['/meets', session.id]">Open session</a>

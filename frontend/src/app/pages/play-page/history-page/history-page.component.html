@@ -26,7 +26,7 @@
 
                 <!-- Ids -->
                 <p class="text-secondary text-sm absolute top-4 right-4">
-                    Meet #{{ historyRecord.meetData.id }} Group #{{ historyRecord.meetData.groupId }}
+                    Session #{{ historyRecord.meetData.id }} · {{ getGroupName(historyRecord.meetData.groupId) }}
                 </p>
 
                 <!-- Games played on this date -->
