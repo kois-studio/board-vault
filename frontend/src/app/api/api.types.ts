@@ -180,6 +180,7 @@ export type MeetWithAttendeesAndGamesType = MeetType & {
     attendees: Array<UserType['id']>
     playedGames: Array<GameType['id']>
     plannedGames: Array<GameType['id']>
+    skippedGames: Array<GameType['id']>
 }
 
 export type CreatePlaySessionRequest = {

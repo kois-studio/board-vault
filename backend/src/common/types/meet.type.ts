@@ -35,6 +35,9 @@ export class MeetWithAttendeesAndGames extends MeetDto {
 
     @ApiProperty({ type: [GameDto], description: 'The games planned for the meet.' })
     plannedGames: Array<GameDto['id']>
+
+    @ApiProperty({ type: [Number], description: 'The games planned but not played in the meet.' })
+    skippedGames: Array<GameDto['id']>
 }
 
 export class MeetCreatedDto {

@@ -224,4 +224,52 @@ describe('DatabaseService logging', () => {
         })
         expect(transaction.commit).toHaveBeenCalledTimes(1)
     })
+
+    it('marks remaining planned games as skipped when a session becomes terminal', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const transaction = {
+            execute: jest.fn()
+                .mockResolvedValueOnce({ rowsAffected: 1 })
+                .mockResolvedValueOnce({ rowsAffected: 2 }),
+            commit: jest.fn().mockResolvedValue(undefined),
+            rollback: jest.fn().mockResolvedValue(undefined),
+            close: jest.fn(),
+        }
+
+        ;(service as unknown as { tursoClient: unknown }).tursoClient = {
+            transaction: jest.fn().mockResolvedValue(transaction),
+        }
+
+        await expect(service.updateMeetStatus(12, 'completed')).resolves.toEqual({ rowsAffected: 1 })
+
+        expect(transaction.execute).toHaveBeenNthCalledWith(1, {
+            sql: expect.stringContaining('SET status = ?'),
+            args: ['completed', true, 12],
+        })
+        expect(transaction.execute).toHaveBeenNthCalledWith(2, {
+            sql: expect.stringContaining("SET gameStatus = 'skipped'"),
+            args: [12],
+        })
+        expect(transaction.commit).toHaveBeenCalledTimes(1)
+        expect(transaction.close).toHaveBeenCalledTimes(1)
+    })
+
+    it('does not rewrite planned games while a session remains active', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const transaction = {
+            execute: jest.fn().mockResolvedValue({ rowsAffected: 1 }),
+            commit: jest.fn().mockResolvedValue(undefined),
+            rollback: jest.fn().mockResolvedValue(undefined),
+            close: jest.fn(),
+        }
+
+        ;(service as unknown as { tursoClient: unknown }).tursoClient = {
+            transaction: jest.fn().mockResolvedValue(transaction),
+        }
+
+        await expect(service.updateMeetStatus(12, 'active')).resolves.toEqual({ rowsAffected: 1 })
+
+        expect(transaction.execute).toHaveBeenCalledTimes(1)
+        expect(transaction.commit).toHaveBeenCalledTimes(1)
+    })
 })

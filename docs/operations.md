@@ -30,7 +30,7 @@ When `NODE_ENV=production`, startup fails closed unless `CLERK_SECRET_KEY` and `
 Use the exact commands and current results in [AGENTS.md](AGENTS.md) and [testing.md](testing.md). In summary:
 
 - backend build passes;
-- frontend production build passes but reports a Sass `@import` deprecation, 410 skipped selector errors, and an initial bundle over the 500 kB warning budget;
+- frontend production build passes but reports a Sass `@import` deprecation, 411 skipped selector errors, and an initial bundle over the 500 kB warning budget;
 - backend unit tests pass focused profile-update, ownership, group/membership listing, collection route ownership, actor-identity, invitation-lifecycle, invite-only join, notification ownership, meet-read, meet-account-game membership, admin reviewer, authentication path/query validation, global-user-list, deleted-account JWT, database-log, email-log, cache-log, and auth-log suites; broader coverage is still missing;
 - backend e2e setup fails because `RESEND_API_KEY` is absent and contains a stale starter assertion;
 - backend lint fails with 17 errors and 3 warnings;

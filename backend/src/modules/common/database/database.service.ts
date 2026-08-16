@@ -1155,15 +1155,38 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
-    updateMeetStatus(meetId: number, status: 'scheduled' | 'active' | 'completed' | 'cancelled') {
-        return this._tursoExecute({
-            sql: `
-                UPDATE Meet
-                SET status = ?, isConfirmed = ?, updatedAt = CURRENT_TIMESTAMP
-                WHERE id = ?
-            `,
-            args: [status, status === 'completed' || status === 'cancelled', meetId],
-        })
+    async updateMeetStatus(meetId: number, status: 'scheduled' | 'active' | 'completed' | 'cancelled') {
+        const transaction = await this.tursoClient.transaction('write')
+
+        try {
+            const result = await transaction.execute({
+                sql: `
+                    UPDATE Meet
+                    SET status = ?, isConfirmed = ?, updatedAt = CURRENT_TIMESTAMP
+                    WHERE id = ?
+                `,
+                args: [status, status === 'completed' || status === 'cancelled', meetId],
+            })
+
+            if (status === 'completed' || status === 'cancelled') {
+                await transaction.execute({
+                    sql: `
+                        UPDATE MeetGame
+                        SET gameStatus = 'skipped'
+                        WHERE meetId = ? AND gameStatus = 'planned'
+                    `,
+                    args: [meetId],
+                })
+            }
+
+            await transaction.commit()
+            return result
+        } catch (error) {
+            await transaction.rollback()
+            throw error
+        } finally {
+            transaction.close()
+        }
     }
 
     getMeetMember(meetId: number, accountId: number) {
@@ -1209,6 +1232,11 @@ export class DatabaseService implements OnModuleInit {
                     FROM MeetGame mg
                     WHERE mg.meetId = m.id AND mg.gameStatus = 'planned'
                 ) AS plannedGames,
+                (
+                    SELECT json_group_array(mg.gameId)
+                    FROM MeetGame mg
+                    WHERE mg.meetId = m.id AND mg.gameStatus = 'skipped'
+                ) AS skippedGames,
                 m.status,
                 m.timezone
             FROM Meet m

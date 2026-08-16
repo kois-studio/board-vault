@@ -79,8 +79,9 @@ export class MeetsService {
             attendees: JSON.parse(String(row[5])) as Array<UserGetDto['id']>,
             playedGames: JSON.parse(String(row[6])) as Array<GameDto['id']>,
             plannedGames: JSON.parse(String(row[7])) as Array<GameDto['id']>,
-            status: String(row[8] ?? 'completed') as MeetWithAttendeesAndGames['status'],
-            timezone: String(row[9] ?? 'UTC'),
+            skippedGames: JSON.parse(String(row[8])) as Array<GameDto['id']>,
+            status: String(row[9] ?? 'completed') as MeetWithAttendeesAndGames['status'],
+            timezone: String(row[10] ?? 'UTC'),
         }))[0]
     }
 
