@@ -522,38 +522,33 @@ export class DataService {
 
     public acceptInvitation(invitationId: number) {
         const currentUser = this.currentUser()
-        if (!currentUser) return
+        if (!currentUser) return throwError(() => new Error('No authenticated user'))
 
-        // 1.
-        this.api.acceptInvitation(currentUser.id, invitationId).subscribe({
-            next: res => {
-                // 2.
+        return this.api.acceptInvitation(currentUser.id, invitationId).pipe(
+            tap(() => {
                 this.userInvitations.update(invitations => invitations.filter(invitation => invitation.id !== invitationId))
-
-                // refresh groups (you have a new one now)
-                // TODO: smoother way to update the groups (don't reload everything)
                 this.userGroups.set([])
                 this._getUserGroups(currentUser.id)
-
-                // 3.
                 this.toastService.success('You have joined the group!')
-            },
-            error: () => {
+            }),
+            catchError(error => {
                 this.toastService.error('Error accepting invitation')
-            },
-        })
+                return throwError(() => error)
+            }),
+        )
     }
 
     public rejectInvitation(invitationId: number) {
-        this.api.rejectInvitation(invitationId).subscribe({
-            next: () => {
+        return this.api.rejectInvitation(invitationId).pipe(
+            tap(() => {
                 this.userInvitations.update(invitations => invitations.filter(invitation => invitation.id !== invitationId))
                 this.toastService.success('Invitation declined')
-            },
-            error: () => {
+            }),
+            catchError(error => {
                 this.toastService.error('Error declining invitation')
-            },
-        })
+                return throwError(() => error)
+            }),
+        )
     }
 
     // #region notifications
