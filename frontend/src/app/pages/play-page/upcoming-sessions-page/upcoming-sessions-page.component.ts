@@ -33,6 +33,8 @@ export class UpcomingSessionsPageComponent {
     public readonly userMeets$ = this.dataService.userMeets
     // loadingService
     public readonly isLoadingGroups = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_GROUPS])
+    public readonly isLoadingMeets = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_MEETS])
+    public readonly meetsError = this.dataService.userMeetsError
 
     // --------------------------------------------------------------------------
     //        Computed
@@ -51,4 +53,8 @@ export class UpcomingSessionsPageComponent {
     //        Component props
     // --------------------------------------------------------------------------
     public readonly isSchedulingASession = signal(false)
+
+    public retrySessions(): void {
+        this.dataService.refreshUserMeets()
+    }
 }

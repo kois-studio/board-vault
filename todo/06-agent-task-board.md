@@ -898,6 +898,19 @@ Changed: Session lifecycle status changes now use one write transaction. Complet
 Verified: Focused backend database/session tests, backend build, frontend build, and `git diff --check` pending for this slice.
 Known follow-ups: Add authenticated browser coverage for terminal planned-game state and review richer session game read models/editing.
 
+Continuation claim: PROD-006 / PROD-007
+
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: make upcoming-session and personal-history loading failures distinguishable from legitimate empty states
+
+Review continuation: PROD-006 / PROD-007
+
+Changed: DataService now tracks session/history request failures, finishes loading on both success and error, and exposes explicit retry methods. Upcoming sessions now uses the session loading key rather than group loading, and both upcoming/history pages render separate loading, retryable failure, and empty states.
+Verified: `cd frontend && npm run build` passes with the documented baseline warnings; `cd frontend && npm run e2e` reports 3 public tests passed and 4 authenticated tests skipped without local Clerk storage state; `git diff --check` passes.
+Known follow-ups: Add authenticated browser coverage with seeded session/history data and review richer history details, responsive layout, and accessibility.
+
 When claiming a task, add:
 
 ```text

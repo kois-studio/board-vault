@@ -16,7 +16,7 @@
 | `cd backend && npm test -- --runInBand` | Pass | 136 focused tests cover the previously documented Clerk, validation, authorization, privacy, logging, cache, and migration-boundary areas plus canonical session validation, transaction commit/rollback behavior, planned-game validation, lifecycle transition rules, terminal planned-to-skipped transitions, completed-only play-history filtering, deterministic recommendations, constraint-specific empty states, and recommendation feedback validation; broader authorization coverage remains absent. |
 | `cd backend && npm run test:e2e -- --runInBand` | Fail | Test setup throws because `RESEND_API_KEY` is missing; the test itself expects a stale `/` Hello World route. |
 | `cd backend && npx eslint "{src,apps,libs,test}/**/*.ts"` | Fail | 17 errors and 3 warnings across schemas, database, collection, play, and profile code. |
-| `cd frontend && npm run build` | Pass with warnings | Bundle budget, Sass deprecation, and 411 selector warnings remain; current initial bundle is approximately 791 kB against the 500 kB warning budget. |
+| `cd frontend && npm run build` | Pass with warnings | Bundle budget, Sass deprecation, and 411 selector warnings remain; current initial bundle is approximately 792 kB against the 500 kB warning budget. |
 | `cd frontend && npx biome check` | Fail | 8 findings in the form submission, log-session wizard, and propose-game page files. |
 | `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` | Pass | One generated smoke test passes. |
 | `cd frontend && npm run e2e` | Pass | Three public Playwright tests pass; four authenticated core-navigation tests are intentionally skipped unless `PLAYWRIGHT_AUTH_STORAGE_STATE` is supplied. |

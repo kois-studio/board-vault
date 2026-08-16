@@ -67,7 +67,7 @@ Relevant intent: [`todo/04-core-product-loop.md`](../todo/04-core-product-loop.m
 
 Relevant surfaces: [`history-page`](../frontend/src/app/pages/play-page/history-page/), [`upcoming-sessions-page`](../frontend/src/app/pages/play-page/upcoming-sessions-page/), [`dashboard-page`](../frontend/src/app/pages/dashboard-page/), [`play-page`](../frontend/src/app/pages/play-page/).
 
-- Make personal history reflect actual persisted sessions and games played.
+- Make personal history reflect actual persisted sessions and games played; history and upcoming-session loading failures now have explicit retry states instead of being presented as empty data.
 - Add group history and basic statistics from persisted data.
 - Remove any remaining hardcoded/sample charts, counts, and analytics cards as those surfaces are implemented; the dashboard and play landing cleanup is complete for the currently identified fabricated content.
 - Create the `/play/analytics` route or remove the dashboard link to it.
@@ -111,7 +111,7 @@ Relevant surface: [`dashboard-page`](../frontend/src/app/pages/dashboard-page/).
 - Keep dashboard links limited to existing routes; the dead activity and analytics links have been removed.
 - Make dashboard cards represent the correct entity and count.
 - Define a useful first-login empty state that guides a user to create/join a group and add games.
-- Define loading, failure, and retry states for each dashboard data section.
+- Define loading, failure, and retry states for each dashboard data section; history and upcoming-session surfaces now distinguish loading, failure, and empty states.
 - Review responsive layout and visual hierarchy.
 
 ### 7. Collection — Partial / Needs review
