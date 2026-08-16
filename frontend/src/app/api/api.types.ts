@@ -162,6 +162,8 @@ export type MeetType = {
     createdBy: number
     meetDate: string
     isConfirmed: boolean
+    status: 'scheduled' | 'active' | 'completed' | 'cancelled'
+    timezone: string
 }
 
 export type MeetAttendeeType = {
@@ -177,6 +179,22 @@ export type MeetGameType = {
 export type MeetWithAttendeesAndGamesType = MeetType & {
     attendees: Array<UserType['id']>
     playedGames: Array<GameType['id']>
+}
+
+export type CreatePlaySessionRequest = {
+    groupId: number
+    sessionDate: string
+    timezone: string
+    attendeeIds: Array<number>
+    games: Array<{
+        gameId: number
+        participantIds: Array<number>
+    }>
+}
+
+export type SessionCreatedType = {
+    sessionId: number
+    status: 'completed'
 }
 
 export type UserStatsType = {

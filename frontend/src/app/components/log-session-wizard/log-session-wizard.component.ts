@@ -2,6 +2,8 @@ import { CommonModule } from '@angular/common'
 import { Component, computed, effect, inject, signal } from '@angular/core'
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router } from '@angular/router'
+import { firstValueFrom } from 'rxjs'
+import { Api } from '../../api/api'
 import type { GameCompleteType, GameReviewDto, GroupWithMembersAndGames, PublicUserType } from '../../api/api.types'
 import { ButtonComponent } from '../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
@@ -11,6 +13,7 @@ import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
 import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
 import { CardAccountComponent } from '../card-account/card-account.component'
+import { ToastService } from '../toast/toast.service'
 import { ImageBackgroundComponent } from '../ui/image-background/image-background.component'
 
 type SessionStep = 'group' | 'date' | 'attendees' | 'games' | 'matrix'
@@ -63,6 +66,8 @@ export class LogSessionWizardComponent {
     private readonly dataService = inject(DataService)
     private readonly loadingService = inject(LoadingService)
     private readonly router = inject(Router)
+    private readonly api = inject(Api)
+    private readonly toastService = inject(ToastService)
 
     public currentUser = this.dataService.currentUser
     public userGroups = this.dataService.userGroups
@@ -173,20 +178,24 @@ export class LogSessionWizardComponent {
         }
 
         switch (step) {
-            case 'group':
+            case 'group': {
                 const group = this.selectedGroup()
                 return group ? group.name : ''
+            }
             case 'date':
                 return this.sessionDate.value ? new Date(this.sessionDate.value).toLocaleDateString() : ''
-            case 'attendees':
+            case 'attendees': {
                 const selectedAttendees = this.attendees().filter(a => a.selected)
                 return selectedAttendees.length > 0 ? `${selectedAttendees.length} selected` : ''
-            case 'games':
+            }
+            case 'games': {
                 const selectedGames = this.games().filter(g => g.selected)
                 return selectedGames.length > 0 ? `${selectedGames.length} selected` : ''
-            case 'matrix':
+            }
+            case 'matrix': {
                 const selectedCells = this.matrix().filter(cell => cell.selected)
                 return selectedCells.length > 0 ? `${selectedCells.length} combinations` : ''
+            }
             default:
                 return ''
         }
@@ -484,21 +493,45 @@ export class LogSessionWizardComponent {
     //        SUBMISSION
     // --------------------------------------------------------------------------
     private async submitSession(): Promise<void> {
-        if (!this.selectedGroup() || !this.sessionDate.value) {
+        const group = this.selectedGroup()
+        const sessionDate = this.sessionDate.value
+        const selectedAttendees = this.attendees().filter(attendee => attendee.selected)
+        const selectedGames = this.games().filter(game => game.selected)
+
+        if (!group || !sessionDate || selectedAttendees.length === 0 || selectedGames.length === 0) {
+            this.toastService.error('Select a group, attendees, and at least one game before saving the session.')
+            return
+        }
+
+        const games = selectedGames.map(({ game }) => ({
+            gameId: game.id,
+            participantIds: this.matrix()
+                .filter(cell => cell.gameId === game.id && cell.selected)
+                .map(cell => cell.attendeeId),
+        }))
+
+        if (games.some(game => game.participantIds.length === 0)) {
+            this.toastService.error('Select at least one player for every game.')
             return
         }
 
         this.isLoading.set(true)
 
         try {
-            // TODO: Implement the actual API call to create the session
-            // This will involve creating a Meet record and multiple MeetAccountGame records
+            const result = await firstValueFrom(
+                this.api.createPlaySession({
+                    groupId: group.id,
+                    sessionDate: new Date(`${sessionDate}T12:00:00`).toISOString(),
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    attendeeIds: selectedAttendees.map(attendee => attendee.user.id),
+                    games,
+                }),
+            )
 
-            // For now, just redirect back to play page
-            this.router.navigate(['/play'])
-        } catch (error) {
-            console.error('Failed to submit session:', error)
-            // TODO: Show error toast
+            this.toastService.success('Session saved.')
+            await this.router.navigate(['/meets', result.sessionId])
+        } catch {
+            this.toastService.error('Could not save the session. Please review your selections and try again.')
         } finally {
             this.isLoading.set(false)
         }

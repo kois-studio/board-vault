@@ -54,6 +54,15 @@ Use the exact commands and current results in [AGENTS.md](AGENTS.md) and [testin
   `MeetAccountGame` links, and passed integrity/foreign-key checks. The backend
   detail/setup SQL was aligned and deployment boundary checks passed.
 
+- On 2026-08-16, migration `0004-add-session-lifecycle.sql` was applied to live
+  Turso after a fresh local dump and a disposable SQLite check. It added
+  `Meet.status`, `Meet.timezone`, nullable `Meet.updatedAt`, and the lifecycle
+  index. Integrity and foreign-key checks passed; preserved counts remained 16
+  accounts, 13 meets, 101 meet/game links, 63 attendees, and 22 session games.
+  The first attempt exposed SQLite's restriction on non-constant defaults in
+  `ALTER TABLE`; the migration was corrected to keep `updatedAt` nullable and
+  the application writes it explicitly.
+
 The resulting backend deployment was promoted to production on 2026-08-16.
 Unauthenticated `GET /auth/clerk/status` returned 401, validation on
 `GET /auth/check-email` returned 400, and unauthenticated meet details returned
@@ -118,7 +127,7 @@ Deployment ownership, domain configuration, environment provisioning, provider s
 1. Establish locked installation, Node/package-manager support, and a disposable test database.
 2. Monitor the production Upstash quota and keep Redis explicitly disabled only in local environments.
 3. Add health/readiness, safe structured request logs, error monitoring, and graceful shutdown checks.
-4. Add migration/deployment gates and document Turso backup/restore ownership and rehearsal.
+4. Add migration/deployment gates and document Turso backup/restore ownership and rehearsal. Migration 0004 is manually verified and live, but there is still no repeatable runner.
 5. Record Vercel/frontend deployment responsibilities and rollback behavior.
 
 ## Existing operational notes

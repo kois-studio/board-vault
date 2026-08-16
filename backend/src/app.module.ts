@@ -33,6 +33,7 @@ import { CollectionModule } from './modules/features/collection/collection.modul
 import { DashboardModule } from './modules/features/dashboard/dashboard.module'
 import { PlayModule } from './modules/features/play/play.module'
 import { ProfileModule } from './modules/features/profile/profile.module'
+import { SessionsModule } from './modules/features/sessions/sessions.module'
 
 @Module({
     imports: [
@@ -67,6 +68,7 @@ import { ProfileModule } from './modules/features/profile/profile.module'
         DashboardModule,
         PlayModule,
         ProfileModule,
+        SessionsModule,
     ],
     controllers: [],
     providers: [ClerkSessionMiddleware],
