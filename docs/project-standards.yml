@@ -642,5 +642,5 @@ deferred_work:
     next_action: Execute EQ-001 before adding CI.
   - id: DATA-MIGRATION-001
     status: deferred
-    reason: Live deployment operations and CI/recovery gates remain unresolved; the Clerk identity migration and production configuration/deployment verification are complete, and repeatable schema recreation is now available while synthetic restore evidence and legacy-auth removal remain gated.
+    reason: Live deployment operations and CI/recovery gates remain unresolved; the Clerk identity migration and production configuration/deployment verification are complete, and repeatable schema recreation is now available while synthetic restore evidence and final legacy-auth removal remain gated. Production-facing login/register routes are Clerk-first, with the old forms retained only for provider-unavailable fallback.
     next_action: Add migration checks to CI/deployment, complete the synthetic restore rehearsal, and finish Clerk recovery evidence before removing legacy auth.

@@ -150,7 +150,7 @@ Relevant surfaces: [`groups`](../frontend/src/app/pages/groups/), [`group-view`]
 Relevant surfaces: [`auth pages`](../frontend/src/app/pages/auth/), [`profile-menu`](../frontend/src/app/layout/profile-menu/), [`settings`](../frontend/src/app/pages/settings/), Clerk integration.
 
 - Keep Clerk email/password/username as the production path and preserve the legacy path only as an intentional migration fallback.
-- Remove or hide legacy registration/reset/verification UI if those flows are no longer supported for ordinary users.
+- Keep legacy registration/reset/verification UI only as a fallback when Clerk is unavailable; `/login` and `/register` are now Clerk-first in production.
 - Define the final username policy and whether it is required at account creation.
 - Keep the security settings page connected to Clerk account/security controls; local Board Vault account deletion remains disabled until the data-retention policy and deletion workflow are defined.
 - Review profile editing, avatar, display name, username, sign-out, and account error states.

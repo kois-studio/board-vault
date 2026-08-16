@@ -1015,6 +1015,19 @@ Changed: The legacy dashboard group-history service now filters to completed ses
 Verified: Focused dashboard service test and backend build pass; `git diff --check` passes.
 Known follow-ups: Replace the legacy group-history read model with the canonical session detail model when group analytics are expanded.
 
+Continuation claim: AUTH-001
+
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: prevent ordinary production users from entering the deprecated local auth forms
+
+Review continuation: AUTH-001
+
+Changed: `/login` and `/register` now open Clerk’s secure sign-in/sign-up UI whenever Clerk is available. The old local forms remain available only when Clerk is not configured or cannot initialize, preserving a deliberate local/degraded-mode fallback.
+Verified: `cd frontend && npm run build` passes with the documented baseline warnings; `git diff --check` passes.
+Known follow-ups: Verify the route behavior manually on production and decide when the legacy fallback can be removed after migration recovery evidence is complete.
+
 When claiming a task, add:
 
 ```text
