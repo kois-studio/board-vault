@@ -64,7 +64,7 @@ The source backlog still describes `/play/quick-play`, but that route is not dec
 - Session v1 now separates `Meet` compatibility/session records, `MeetAttendee` participant state, `MeetGame` planned/played state, and `MeetAccountGame` account-to-play links. Completed and scheduled creation, organizer lifecycle transitions, and the planned/played distinction are implemented transactionally; richer play events, editing, and full lifecycle read models remain unfinished.
 - Recommendations and feedback are product backlog work, not a current backend capability.
 - API routes contain deprecated and newer feature paths without a versioning/compatibility contract. The obsolete dashboard meeting-creation path has been removed; legacy meet reads and `MeetAccountGame` history writes remain as explicit compatibility boundaries around the canonical sessions API.
-- The frontend API schema file now establishes targeted runtime response validation for the core auth, private profile, collection, groups, notifications, sessions, history, recommendation, and admin/proposal paths; remaining legacy response coverage is still incomplete.
+- The frontend API schema file now establishes targeted runtime response validation for all current API adapter methods, including legacy invitation, attendee, and played-game compatibility writes; client-side negative tests and any future endpoints still require coverage.
 - The current backend e2e test expects a `/` “Hello World” response even though there is no root controller in the inspected module graph.
 
 ## Source evidence
