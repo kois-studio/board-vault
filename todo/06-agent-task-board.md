@@ -1206,6 +1206,24 @@ Verified: frontend build, focused Biome check for the changed notification modal
 
 Known follow-ups: Review focus management for profile modals and decide whether notifications need pagination or retention limits.
 
+Continuation claim: TRUTH-001
+
+Owner: Codex
+
+Claimed: 2026-08-16
+
+Branch/worktree: main / shared workspace
+
+Scope: remove the unconfigured Contact settings flow and its dead external links
+
+Review continuation: TRUTH-001
+
+Changed: Removed the Contact settings navigation and route because both actions pointed to an unconfigured `/sso/featurebase` path. The docs record the intentional removal and the requirement for a real support/feedback destination before reintroduction.
+
+Verified: frontend build and `git diff --check` pass.
+
+Known follow-ups: Select and configure a real support/feedback channel before adding Contact back to settings.
+
 Continuation claim: PROD-002
 
 Owner: Codex

@@ -154,6 +154,7 @@ Relevant surfaces: [`auth pages`](../frontend/src/app/pages/auth/), [`profile-me
 - Define the final username policy and whether it is required at account creation.
 - Keep the security settings page connected to Clerk account/security controls; local Board Vault account deletion remains disabled until the data-retention policy and deletion workflow are defined.
 - Review profile editing, avatar, display name, username, sign-out, and account error states.
+- The unconfigured Contact settings route and dead Featurebase links were removed; add the section back only after a real support/feedback destination is selected.
 - Ensure user-facing identity data follows the accepted privacy/DTO policy.
 - Verify session-expiry and revoked-session behavior in the UI.
 
