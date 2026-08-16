@@ -168,6 +168,7 @@ Relevant surfaces: [`auth pages`](../frontend/src/app/pages/auth/), [`profile-me
 Relevant surfaces: [`propose-game-page`](../frontend/src/app/pages/collection-page/propose-game-page/), [`submissions-page`](../frontend/src/app/pages/dashboard-page/submissions-page/), [`admin`](../frontend/src/app/modules/admin/).
 
 - Verify submitter, pending, approved, rejected, duplicate, and failure states.
+- Proposal stats and submission lists now distinguish loading/failure from a genuinely empty feed and expose retry; verify the full submitter/review lifecycle with seeded data.
 - Make proposal data and game-title translations consistent with the database model.
 - Review administrator authorization feedback and prevent confusing hidden/disabled action states.
 - Add clear confirmation and error handling for approval, rejection, and duplicate decisions.

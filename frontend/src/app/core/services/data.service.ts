@@ -57,6 +57,10 @@ export class DataService {
     public readonly userHistoryError = signal(false)
     public readonly userReviewsError = signal(false)
     public readonly userWishlistError = signal(false)
+    public readonly userProposalsLoading = signal(false)
+    public readonly userProposalsError = signal(false)
+    public readonly userProposalStatsLoading = signal(false)
+    public readonly userProposalStatsError = signal(false)
     public readonly userInvitationsLoading = signal(false)
     public readonly userInvitationsError = signal(false)
     public readonly userNotificationsLoading = signal(false)
@@ -133,6 +137,10 @@ export class DataService {
         this.userHistoryError.set(false)
         this.userReviewsError.set(false)
         this.userWishlistError.set(false)
+        this.userProposalsLoading.set(false)
+        this.userProposalsError.set(false)
+        this.userProposalStatsLoading.set(false)
+        this.userProposalStatsError.set(false)
         this.userInvitationsLoading.set(false)
         this.userInvitationsError.set(false)
         this.userNotificationsLoading.set(false)
@@ -780,24 +788,44 @@ export class DataService {
     }
 
     private _getUserProposals(userId: number) {
-        this.api.getUserProposals(userId).subscribe({
+        this.userProposalsLoading.set(true)
+        this.userProposalsError.set(false)
+        this.api.getUserProposals(userId).pipe(
+            finalize(() => this.userProposalsLoading.set(false)),
+        ).subscribe({
             next: proposals => {
                 this.userProposals.set(proposals)
             },
             error: () => {
+                this.userProposalsError.set(true)
                 this.toastService.error("Error retrieving user's proposals")
             },
         })
     }
 
     private _getUserProposalStats(userId: number) {
-        this.api.getUserProposalStats(userId).subscribe({
+        this.userProposalStatsLoading.set(true)
+        this.userProposalStatsError.set(false)
+        this.api.getUserProposalStats(userId).pipe(
+            finalize(() => this.userProposalStatsLoading.set(false)),
+        ).subscribe({
             next: stats => {
                 this.userProposalStats.set(stats)
             },
             error: () => {
+                this.userProposalStatsError.set(true)
                 this.toastService.error("Error retrieving user's proposal stats")
             },
         })
+    }
+
+    public refreshUserProposals(): void {
+        const currentUser = this.currentUser()
+        if (currentUser) this._getUserProposals(currentUser.id)
+    }
+
+    public refreshUserProposalStats(): void {
+        const currentUser = this.currentUser()
+        if (currentUser) this._getUserProposalStats(currentUser.id)
     }
 }

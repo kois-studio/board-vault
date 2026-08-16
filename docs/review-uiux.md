@@ -64,7 +64,7 @@ For each area, review:
 | Reviews | `/collection/reviews`, `reviews-page` | Source-audited | Failed loads now leave the skeleton state and expose retry; review rating scale, edit/delete behavior, aggregation clarity, empty state, and validation. |
 | Wishlist | `/collection/wishlist`, `wishlist-page` | Source-audited | Failed loads now leave the skeleton state and expose retry; review priority, notes, add/remove behavior, empty state, sorting, and responsive layout. |
 | Game proposal | `/collection/propose-game`, `propose-game-page` | Source-audited | Review long form, validation, image URL errors, duplicate/pending messaging, and submission feedback. |
-| Submissions | `/submissions`, `submissions-page` | Source-audited | Review proposal status presentation, empty state, detail visibility, and refresh persistence. |
+| Submissions | `/submissions`, `submissions-page` | Source-audited | Proposal stats/list loading and failure states now distinguish unavailable data from an empty feed and expose retry; review proposal status presentation, detail visibility, and refresh persistence. |
 
 ## Play and session areas
 
