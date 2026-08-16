@@ -989,6 +989,19 @@ Changed: My Groups and My Games now render retryable request-failure states inst
 Verified: `cd frontend && npm run build` passes with the documented baseline warnings; `git diff --check` passes.
 Known follow-ups: Add authenticated browser coverage for failure/retry states and review the remaining collection, wishlist, reviews, and invitation states.
 
+Continuation claim: PROD-007
+
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: make group history failures recoverable
+
+Review continuation: PROD-007
+
+Changed: Group history now keeps a failed request out of the cache instead of recording it as an empty history. The group view exposes an explicit error state and retry action, and uses a signal for loading state updates.
+Verified: `cd frontend && npm run build` passes with the documented baseline warnings; `git diff --check` passes.
+Known follow-ups: Add authenticated browser coverage for group-history retry and complete the wider group view responsive/accessibility review.
+
 When claiming a task, add:
 
 ```text

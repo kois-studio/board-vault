@@ -140,7 +140,7 @@ Relevant surfaces: [`groups`](../frontend/src/app/pages/groups/), [`group-view`]
 - Resolve the product policy for self-join versus invite-only membership.
 - Define group owner/member roles and expose only actions allowed for each role.
 - Make empty groups useful: explain the next step for members, games, and invitations; failed group loading now has an explicit retry state.
-- Ensure member visibility and private group data follow the backend authorization rules.
+- Ensure member visibility and private group data follow the backend authorization rules; group-history failures no longer get cached as an empty result and now expose retry.
 - Remove unnecessary reload-all behavior after group mutations where safe.
 - Review invitation and notification feedback, unread/read states, and failure recovery.
 - Review member cards, avatars, long usernames, and mobile layouts.
