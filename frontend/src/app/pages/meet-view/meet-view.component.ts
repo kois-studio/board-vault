@@ -39,6 +39,7 @@ export class MeetViewComponent {
     public avgReviewsIndex: Record<GameType['id'], number> = {}
     public lastMeeting: Nullable<MeetType> = null
     public isUpdatingStatus = false
+    public isPersistingChanges = false
 
     constructor(
         private readonly api: Api,
@@ -173,37 +174,53 @@ export class MeetViewComponent {
     // #region Button Clicks
     // TODO: rethink the click system, it should be done with a straightforward click(id) instead of so much logic
 
-    onClickMember(memberId: number): void {
-        if (!this.meetData) {
+    async onClickMember(memberId: number): Promise<void> {
+        if (!this.meetData || !this.canEditSession || this.isPersistingChanges) {
             return
         }
 
+        const previousAttendees = [...this.meetData.attendees]
         if (this.meetData.attendees.includes(memberId)) {
             this.meetData.attendees = this.meetData.attendees.filter((id) => id !== memberId)
         } else {
             this.meetData.attendees.push(memberId)
         }
 
-        this.#saveAttendeesSelection()
+        this.isPersistingChanges = true
+        try {
+            await this.#saveAttendeesSelection()
+        } catch {
+            this.meetData.attendees = previousAttendees
+        } finally {
+            this.isPersistingChanges = false
+        }
     }
 
-    onClickGame(gameId: number): void {
-        if (!this.meetData) {
+    async onClickGame(gameId: number): Promise<void> {
+        if (!this.meetData || !this.canEditSession || this.isPersistingChanges) {
             return
         }
 
+        const previousPlayedGames = [...this.meetData.playedGames]
         if (this.meetData.playedGames.includes(gameId)) {
             this.meetData.playedGames = this.meetData.playedGames.filter((id) => id !== gameId)
         } else {
             this.meetData.playedGames.push(gameId)
         }
 
-        this.#saveGamesPlayedSelection()
+        this.isPersistingChanges = true
+        try {
+            await this.#saveGamesPlayedSelection()
+        } catch {
+            this.meetData.playedGames = previousPlayedGames
+        } finally {
+            this.isPersistingChanges = false
+        }
     }
 
     // #region private methods
 
-    #saveAttendeesSelection(): void {
+    async #saveAttendeesSelection(): Promise<void> {
         if (!this.groupData || !this.meetData || !this.meetDataCopyOriginal) {
             return
         }
@@ -214,9 +231,9 @@ export class MeetViewComponent {
 
             if (isAttending !== isAttendingOriginal) {
                 if (isAttending) {
-                    this.dataService.createMeetAttendee(this.meetData.id, member.id)
+                    await firstValueFrom(this.dataService.createMeetAttendee(this.meetData.id, member.id))
                 } else {
-                    this.dataService.deleteMeetAttendee(this.meetData.id, member.id)
+                    await firstValueFrom(this.dataService.deleteMeetAttendee(this.meetData.id, member.id))
                 }
             }
         }
@@ -225,7 +242,7 @@ export class MeetViewComponent {
         this.meetDataCopyOriginal.attendees = [...this.meetData.attendees]
     }
 
-    #saveGamesPlayedSelection(): void {
+    async #saveGamesPlayedSelection(): Promise<void> {
         if (!this.userData || !this.groupData || !this.meetData || !this.meetDataCopyOriginal) {
             return
         }
@@ -236,9 +253,9 @@ export class MeetViewComponent {
 
             if (isPlaying !== isPlayingOriginal) {
                 if (isPlaying) {
-                    this.dataService.createMeetAccountGame(this.userData.id, this.meetData.id, game.id)
+                    await firstValueFrom(this.dataService.createMeetAccountGame(this.userData.id, this.meetData.id, game.id))
                 } else {
-                    this.dataService.deleteMeetAccountGame(this.userData.id, this.meetData.id, game.id)
+                    await firstValueFrom(this.dataService.deleteMeetAccountGame(this.userData.id, this.meetData.id, game.id))
                 }
             }
         }

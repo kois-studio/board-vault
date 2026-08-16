@@ -672,51 +672,39 @@ export class DataService {
     }
 
     public createMeetAttendee(meetId: number, accountId: number) {
-        this.api.createMeetAttendee(meetId, accountId).subscribe({
-            next: res => {},
-            error: error => {
-                if (error.status === 404) {
-                    return this.toastService.error('MeetAttendee not found')
-                }
-                this.toastService.error('Error updating meetAttendees')
-            },
-        })
+        return this.api.createMeetAttendee(meetId, accountId).pipe(
+            catchError(error => {
+                this.toastService.error(error.status === 404 ? 'Meet attendee not found' : 'Could not save the attendee change')
+                return throwError(() => error)
+            }),
+        )
     }
 
     public deleteMeetAttendee(meetId: number, accountId: number) {
-        this.api.deleteMeetAttendee(meetId, accountId).subscribe({
-            next: res => {},
-            error: error => {
-                if (error.status === 404) {
-                    return this.toastService.error('MeetAttendee not found')
-                }
-                this.toastService.error('Error updating meetAttendees')
-            },
-        })
+        return this.api.deleteMeetAttendee(meetId, accountId).pipe(
+            catchError(error => {
+                this.toastService.error(error.status === 404 ? 'Meet attendee not found' : 'Could not save the attendee change')
+                return throwError(() => error)
+            }),
+        )
     }
 
     public createMeetAccountGame(accountId: number, meetId: number, gameId: number) {
-        this.api.createMeetAccountGame(accountId, meetId, gameId).subscribe({
-            next: res => {},
-            error: error => {
-                if (error.status === 404) {
-                    return this.toastService.error('MeetGame not found')
-                }
-                this.toastService.error('Error updating meetGames')
-            },
-        })
+        return this.api.createMeetAccountGame(accountId, meetId, gameId).pipe(
+            catchError(error => {
+                this.toastService.error(error.status === 404 ? 'Meet game not found' : 'Could not save the played-game change')
+                return throwError(() => error)
+            }),
+        )
     }
 
     public deleteMeetAccountGame(accountId: number, meetId: number, gameId: number) {
-        this.api.deleteMeetAccountGame(accountId, meetId, gameId).subscribe({
-            next: res => {},
-            error: error => {
-                if (error.status === 404) {
-                    return this.toastService.error('MeetGame not found')
-                }
-                this.toastService.error('Error updating meetGames')
-            },
-        })
+        return this.api.deleteMeetAccountGame(accountId, meetId, gameId).pipe(
+            catchError(error => {
+                this.toastService.error(error.status === 404 ? 'Meet game not found' : 'Could not save the played-game change')
+                return throwError(() => error)
+            }),
+        )
     }
 
     private _getUserProposals(userId: number) {

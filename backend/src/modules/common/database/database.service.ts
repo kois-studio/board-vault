@@ -1363,6 +1363,14 @@ export class DatabaseService implements OnModuleInit {
                 `,
                 args: [meetId, gameId],
             })
+            await transaction.execute({
+                sql: `
+                    UPDATE MeetGame
+                    SET gameStatus = 'played'
+                    WHERE meetId = ? AND gameId = ?
+                `,
+                args: [meetId, gameId],
+            })
             const result = await transaction.execute({
                 sql: 'INSERT OR IGNORE INTO MeetAccountGame (accountId, meetId, gameId) VALUES (?, ?, ?)',
                 args: [accountId, meetId, gameId],
