@@ -76,22 +76,28 @@ CORS error because the generated 504 did not include the API CORS header;
 direct origin checks against the backend returned the expected allow-origin
 header. Cache operations now use a 250 ms deadline, no SDK retries, and a
 30-second failure cooldown so a Redis outage cannot consume the Vercel
-invocation. Production still needs a valid Upstash database configured before
-rate limiting can be considered operational; the current limiter intentionally
-fails open when Redis is unavailable.
+invocation. Before the replacement database was configured, the limiter
+intentionally failed open when Redis was unavailable; the fail-fast
+containment remains in place as a provider-outage safeguard.
 
 On 2026-08-16, the production authenticated browser smoke test was repeated
 after deployment `736b11f`: Board Vault loaded successfully and the collection
 data loaded without the previous 504/CORS symptom. This verifies the
-application-side Redis failure containment, but not healthy Redis-backed rate
-limiting.
+application-side Redis failure containment.
+
+Also on 2026-08-16, the production backend was redeployed with a newly
+provisioned Upstash Redis database. A read-only cache probe returned HTTP 200
+and Vercel logged `REDIS: Found 0 keys!`; the rate-limited authentication route
+also returned its expected validation response with the production CORS
+header. Production Redis connectivity and rate-limit storage are now
+operational. The old invalid endpoint is no longer used.
 
 Deployment ownership, domain configuration, environment provisioning, provider scopes, and production traffic behavior are therefore unknown and must not be inferred from the committed URLs/config alone.
 
 ## Operational risks and next steps
 
 1. Establish locked installation, Node/package-manager support, and a disposable test database.
-2. Replace the invalid production Upstash endpoint and verify a Redis-backed rate-limit request; Redis may remain explicitly disabled only in local environments.
+2. Monitor the production Upstash quota and keep Redis explicitly disabled only in local environments.
 3. Add health/readiness, safe structured request logs, error monitoring, and graceful shutdown checks.
 4. Add migration/deployment gates and document Turso backup/restore ownership and rehearsal.
 5. Record Vercel/frontend deployment responsibilities and rollback behavior.
