@@ -27,7 +27,6 @@ import { DataService } from '../../../core/services/data.service'
         TagsComponent,
         ButtonComponent,
         CardGameComponent,
-        FormsModule,
         SpinnerComponent,
         ReactiveFormsModule,
         ImageProfileComponent,
@@ -89,6 +88,7 @@ export class GameViewPageComponent implements OnDestroy {
     //        Component props
     // --------------------------------------------------------------------------
     private _routeSub: Subscription | undefined
+    private lastLoadedGameKey: string | null = null
     public wishlistAnimation = false // used for a little scale animation
     public reviewHoverValue = 0
     public isLoadingGameData = true // initial loading state
@@ -110,21 +110,31 @@ export class GameViewPageComponent implements OnDestroy {
     }
 
     constructor() {
+        this._routeSub = this.route.paramMap.subscribe((params) => {
+            const gameId = Number.parseInt(params.get('gameId') || '')
+            this._loadGameData(this.currentUser$()?.id, gameId)
+        })
+
         effect(() => {
             const currentUser = this.currentUser$()
+            const gameId = Number.parseInt(this.route.snapshot.paramMap.get('gameId') || '')
 
-            // On route change
-            this._routeSub = this.route.paramMap.subscribe((params) => {
-                const gameId = Number.parseInt(params.get('gameId') || '')
-                this._loadGameData(currentUser?.id, gameId)
-            })
+            if (currentUser?.id && !Number.isNaN(gameId)) {
+                this._loadGameData(currentUser.id, gameId)
+            }
         })
     }
 
-    private _loadGameData(userId: undefined | number, gameId: number) {
+    private _loadGameData(userId: undefined | number, gameId: number, force = false) {
         if (Number.isNaN(gameId) || !userId) {
             return
         }
+
+        const loadKey = `${userId}:${gameId}`
+        if (!force && this.lastLoadedGameKey === loadKey) {
+            return
+        }
+        this.lastLoadedGameKey = loadKey
 
         // scroll to the top of the page
         window.scrollTo(0, 0)
@@ -155,7 +165,7 @@ export class GameViewPageComponent implements OnDestroy {
     public retryGameLoad(): void {
         const currentUser = this.currentUser$()
         const gameId = Number.parseInt(this.route.snapshot.paramMap.get('gameId') || '')
-        this._loadGameData(currentUser?.id, gameId)
+        this._loadGameData(currentUser?.id, gameId, true)
     }
 
     // #region Wishlist
@@ -392,8 +402,6 @@ export class GameViewPageComponent implements OnDestroy {
             },
         })
     }
-
-    shareGame() {}
 
     ngOnDestroy(): void {
         // unsubscribe from the route params
