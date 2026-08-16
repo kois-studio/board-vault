@@ -2,6 +2,23 @@ import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { map } from 'rxjs'
 import { environment } from '../../environments/environment'
+import {
+    accessTokenSchema,
+    authStatusSchema,
+    availabilitySchema,
+    clerkAuthStatusSchema,
+    groupInvitationsSchema,
+    meetDetailsSchema,
+    meetSchema,
+    messageSchema,
+    recommendationsSchema,
+    scheduledSessionCreatedSchema,
+    sessionAttendeesUpdatedSchema,
+    sessionCreatedSchema,
+    sessionStatusUpdatedSchema,
+    successSchema,
+    userGroupsSchema,
+} from './api.schemas'
 import type {
     AdminGamesResultType,
     BrowseGamesResultType,
@@ -40,7 +57,6 @@ import type {
     UserStatsType,
     UserType,
 } from './api.types'
-import { accessTokenSchema, authStatusSchema, availabilitySchema, clerkAuthStatusSchema, meetDetailsSchema, meetSchema, messageSchema, recommendationsSchema, scheduledSessionCreatedSchema, sessionAttendeesUpdatedSchema, sessionCreatedSchema, sessionStatusUpdatedSchema, successSchema } from './api.schemas'
 
 @Injectable({ providedIn: 'root' })
 export class Api {
@@ -113,7 +129,7 @@ export class Api {
     // #region groups
 
     getGroupInvitations(groupId: number) {
-        return this.http.get<Array<InvitationWithAccountsData>>(`${this.url}/groups/${groupId}/invitations`)
+        return this.http.get<Array<InvitationWithAccountsData>>(`${this.url}/groups/${groupId}/invitations`).pipe(map(response => groupInvitationsSchema.parse(response)))
     }
 
     // #region games
@@ -307,7 +323,7 @@ export class Api {
     }
 
     getUserGroups(userId: number) {
-        return this.http.get<Array<GroupWithMembersAndGames>>(`${this.url}/dashboard/users/${userId}/groups`)
+        return this.http.get<Array<GroupWithMembersAndGames>>(`${this.url}/dashboard/users/${userId}/groups`).pipe(map(response => userGroupsSchema.parse(response)))
     }
 
     createGroup(userId: number, groupName: string) {
