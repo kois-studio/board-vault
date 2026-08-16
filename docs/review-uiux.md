@@ -60,7 +60,7 @@ For each area, review:
 | Collection landing | `/collection`, `collection-page` | Partially reviewed | First-five-games activation progress and a browse CTA now exist; still needs full empty/error/refresh review and responsive/accessibility testing. |
 | My games | `/collection/games`, `my-games-page` | Source-audited | Review ownership status, sorting, duplicate/empty/loading states, and card responsiveness. |
 | Browse games | `/collection/browse`, `browse-page` | Source-audited | Review search, filtering, no-results, pagination/loading, add feedback, and keyboard operation. |
-| Game detail | `/games/:gameId`, `game-view` | Source-audited | Ownership mutations now refresh collection state and history resolves group names; still review ownership, wishlist, reviews, tags, purchase metadata, image fallbacks, and permission states. |
+| Game detail | `/games/:gameId`, `game-view` | Source-audited | Ownership mutations now refresh collection state, history resolves group names, and failed loads have a retry state; still review ownership, wishlist, reviews, tags, purchase metadata, image fallbacks, and permission states. |
 | Reviews | `/collection/reviews`, `reviews-page` | Source-audited | Review rating scale, edit/delete behavior, aggregation clarity, empty state, and validation. |
 | Wishlist | `/collection/wishlist`, `wishlist-page` | Source-audited | Review priority, notes, add/remove behavior, empty state, sorting, and responsive layout. |
 | Game proposal | `/collection/propose-game`, `propose-game-page` | Source-audited | Review long form, validation, image URL errors, duplicate/pending messaging, and submission feedback. |

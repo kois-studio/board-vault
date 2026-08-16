@@ -911,6 +911,19 @@ Changed: DataService now tracks session/history request failures, finishes loadi
 Verified: `cd frontend && npm run build` passes with the documented baseline warnings; `cd frontend && npm run e2e` reports 3 public tests passed and 4 authenticated tests skipped without local Clerk storage state; `git diff --check` passes.
 Known follow-ups: Add authenticated browser coverage with seeded session/history data and review richer history details, responsive layout, and accessibility.
 
+Continuation claim: PROD-002
+
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: make game-detail loading failures recoverable
+
+Review continuation: PROD-002
+
+Changed: Game detail now exits its loading state on API failure, presents an explicit retry action, and preserves the existing group-name resolution for play history.
+Verified: `cd frontend && npm run build` passes with the documented baseline warnings; `git diff --check` passes. The existing public Playwright checks are unaffected; authenticated game-detail coverage remains unavailable without local Clerk storage state.
+Known follow-ups: Add authenticated game-detail/collection journey coverage and review image fallbacks, ownership, wishlist, review, purchase metadata, and mobile table behavior.
+
 When claiming a task, add:
 
 ```text

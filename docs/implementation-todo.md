@@ -126,7 +126,7 @@ Relevant surfaces: [`collection-page`](../frontend/src/app/pages/collection-page
 - Browse search now distinguishes catalog load errors from valid no-results responses and offers retry; duplicate/add feedback and broader rendered-state review remain.
 - Resolve game title/translation behavior across cards, search, proposals, history, and game detail.
 - Ensure purchase metadata, wishlist priority, reviews, and tags have consistent labels and validation.
-- Fix the game-detail TODO that displays `groupId` instead of a group name.
+- Game detail history now displays group names through the loaded group index; failed game-detail requests now leave the loading state and expose a retry action.
 - Review responsive card grids, image fallbacks, accessible controls, and keyboard behavior.
 - Add frontend response schemas in [`api.schemas.ts`](../frontend/src/app/api/api.schemas.ts).
 
