@@ -3,6 +3,12 @@
     <app-spinner size="large" />
     Loading game data...
 </p>
+} @else if (gameLoadError()) {
+<div class="flex flex-col items-center justify-center text-center text-secondary gap-3 min-h-[50vh] px-4">
+    <h1 class="text-xl font-semibold">Game data could not be loaded.</h1>
+    <p>Check your connection and try again.</p>
+    <app-button icon="arrow-repeat" (click)="retryGameLoad()">Retry</app-button>
+</div>
 } @else {
 <container-wrapper>
     <!-- Game data (image, title, etc) -->
