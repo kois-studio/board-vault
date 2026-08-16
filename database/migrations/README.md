@@ -2,7 +2,7 @@
 
 Migrations are numbered, forward-executable SQL changes from the baseline in
 [`../schema/schema.sql`](../schema/schema.sql). Their application status is
-recorded in the migration file and project handoff documentation.
+recorded in this README and the project handoff documentation.
 
 ## Current migration
 
@@ -32,12 +32,14 @@ There is no migration runner yet. Before applying a future migration to Turso:
 The live deployment must not be edited manually as a substitute for a
 versioned migration.
 
-## Pending migration 0002
+## Applied migration 0002
 
 `0002-add-auth-token-expiry.sql` adds nullable `INTEGER` columns
 `Account.verification_token_expires_at` and
 `Account.password_reset_token_expires_at`. Values are UTC epoch seconds. The
 updated backend rejects tokens when the expiry is NULL, in the past, or when a
-previous request has already cleared the token. The migration has not yet been
-applied to live Turso; apply and verify it before deploying the corresponding
-backend code. Re-export `database/schema/schema.sql` after successful rollout.
+previous request has already cleared the token. Migration 0002 was applied to
+live `board-vault` on 2026-08-16 after a fresh local dump. Live integrity and
+foreign-key checks passed, both columns were present, and no existing
+verification or password-reset rows had an expiry-bearing token at verification
+time. `database/schema/schema.sql` was re-exported after rollout.

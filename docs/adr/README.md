@@ -6,7 +6,7 @@ This directory contains durable project decisions and explicitly marked proposal
 - [0002 — Deterministic and explainable first-release recommendations](0002-deterministic-explainable-recommendations.md)
 - [0003 — Session as a first-class domain concept](0003-session-as-first-class-domain.md)
 - [0004 — Clerk-managed authentication with preserved local accounts](0004-clerk-managed-authentication.md) — Accepted; rollout in progress
-- [0005 — Verification and password-reset token lifecycle](0005-auth-token-lifecycle.md) — Accepted; migration pending deployment
+- [0005 — Verification and password-reset token lifecycle](0005-auth-token-lifecycle.md) — Accepted; migration 0002 applied to live Turso on 2026-08-16
 - [0006 — Public nested-user response boundary](0006-user-response-privacy.md) — Accepted; self/admin DTO audit remains open
 
 The project had no accepted ADRs before ADR-0004 was adopted. Proposals do not authorize implementation and must not be treated as settled decisions until accepted.

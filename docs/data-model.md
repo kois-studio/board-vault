@@ -14,12 +14,12 @@ boundary. Verified Clerk sessions can now use protected API routes and new
 identities can be provisioned into the local account model; the legacy
 JWT/password path remains active for the rollout and recovery window.
 
-Migration `0002-add-auth-token-expiry.sql` is a pending additive change. It adds
-UTC epoch-second expiry columns for legacy verification and password-reset
-tokens. The application code fails closed when those columns are absent or NULL,
-so the migration must be applied before deploying the new token issuance and
-consumption paths. The current schema snapshot remains the last confirmed live
-export until that rollout is verified.
+Migration `0002-add-auth-token-expiry.sql` is an applied additive change. It
+adds UTC epoch-second expiry columns for legacy verification and password-reset
+tokens. Live Turso was backed up, migrated, checked for integrity and foreign
+key violations, and re-exported on 2026-08-16; no existing token rows had an
+expiry-bearing token at verification time. The application still fails closed
+when those columns are NULL.
 The migration is tracked in
 [`database/migrations/0002-add-auth-token-expiry.sql`](../database/migrations/0002-add-auth-token-expiry.sql).
 

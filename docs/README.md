@@ -1,6 +1,6 @@
 # Board Vault project documentation
 
-This directory is the canonical operating manual for AI developer agents working in Board Vault. It describes the committed repository baseline as reviewed on 2026-08-15, including the Clerk session bridge, local account provisioning, the first verified account link, and the reviewed legacy group, membership, notification, meet, collection, admin reviewer, global-user-list, deleted-account JWT, database-log, email-log, cache-log, auth-log, authentication path/query validation, legacy-token lifecycle, CORS, and authentication rate-limit boundaries. The application is an existing Angular/NestJS foundation, not a launch-ready implementation.
+This directory is the canonical operating manual for AI developer agents working in Board Vault. It describes the committed repository baseline as reviewed on 2026-08-16, including the Clerk session bridge, local account provisioning, the first verified account link, the applied legacy-token lifecycle migration, and the reviewed legacy group, membership, notification, meet, collection, admin reviewer, global-user-list, deleted-account JWT, database-log, email-log, cache-log, auth-log, authentication path/query validation, CORS, and authentication rate-limit boundaries. The application is an existing Angular/NestJS foundation, not a launch-ready implementation.
 
 ## Start here
 

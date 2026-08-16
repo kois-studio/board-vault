@@ -68,8 +68,8 @@ Scope: reconcile current repository SQL and frontend meeting paths against the o
 Review: DATA-001
 
 Changed: Added `database/drift-report.md` with evidence-backed states, priorities, explicit unknowns, and an ordered follow-up. Confirmed the deployed `MeetAccountGame` baseline, stale `MeetAttendee`/`MeetGame` SQL and frontend route, the indirect `Game.title`/`GameTranslation` contract, incomplete meeting creation behavior, and pending token-expiry migration 0002. Linked the report from the database workspace and current-state documentation.
-Verified: Read-only source/schema audit and aggregate Turso probe on 2026-08-16; schema parses in SQLite; live probe found 16 accounts, 5 groups, 13 meets, 101 meet/game links, and no token-expiry columns; no live data was changed.
-Known follow-ups: DATA-003 must decide the canonical session model and historical `MeetAccountGame` meaning before stale meeting paths are retired or replaced. DATA-002 must establish repeatable migration execution; migration 0002 still requires reviewed application and schema re-export.
+Verified: Read-only source/schema audit and aggregate Turso probe on 2026-08-16; migration 0002 was then applied after a fresh local dump, integrity/foreign-key checks passed, all three identity/expiry columns are present, and `schema.sql` parses in SQLite. No existing token-bearing rows were changed.
+Known follow-ups: DATA-003 must decide the canonical session model and historical `MeetAccountGame` meaning before stale meeting paths are retired or replaced. DATA-002 must establish repeatable migration execution and empty-state recreation; migration 0002 is live and documented.
 
 Most recent claim:
 
