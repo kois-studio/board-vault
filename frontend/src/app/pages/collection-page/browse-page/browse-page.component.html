@@ -23,7 +23,12 @@
     </div>
 
     <!-- Loading state -->
-    @if (!isSearching$() && gamesListComputed().length === 0) {
+    @if (!isSearching$() && searchError()) {
+        <div class="text-center text-secondary space-y-4" role="alert">
+            <p>We couldn't load games right now.</p>
+            <app-button (click)="retrySearch()">Try again</app-button>
+        </div>
+    } @else if (!isSearching$() && gamesListComputed().length === 0) {
         <!-- no data -->
         <div class="text-center text-secondary space-y-4">
             @if (searchTermIsValid$()) {
