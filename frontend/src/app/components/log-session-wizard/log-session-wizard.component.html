@@ -60,10 +60,22 @@
                 <app-spinner size="large" />
                 <p class="text-gray-500 dark:text-gray-400 mt-4">Loading groups...</p>
             </div>
+            } @else if (userGroupsError()) {
+            <div class="py-12 text-center" role="alert">
+                <p class="text-gray-700 dark:text-gray-300">Your groups could not be loaded.</p>
+                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Check your connection and try again.</p>
+                <app-button class="mt-4" icon="arrow-repeat" (click)="retryGroups()">Retry</app-button>
+            </div>
+            } @else if (userGroups().length === 0) {
+            <div class="py-12 text-center">
+                <p class="text-gray-700 dark:text-gray-300">Create or join a group before logging a session.</p>
+                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">A group gives this session its attendees and available games.</p>
+            </div>
             } @else {
             <div class="grid gap-4">
                 @for (group of userGroups(); track group.id) {
-                <div
+                <button
+                    type="button"
                     class="p-4 border rounded-lg cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-zinc-700"
                     [class]="
                         selectedGroup()?.id === group.id
@@ -89,7 +101,7 @@
                         </div>
                         }
                     </div>
-                </div>
+                </button>
                 }
             </div>
             }

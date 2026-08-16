@@ -71,6 +71,7 @@ export class LogSessionWizardComponent {
 
     public currentUser = this.dataService.currentUser
     public userGroups = this.dataService.userGroups
+    public userGroupsError = this.dataService.userGroupsError
 
     // --------------------------------------------------------------------------
     //        LOADING STATES
@@ -556,5 +557,9 @@ export class LogSessionWizardComponent {
 
     public getSelectedGames(): GameSelection[] {
         return this.games().filter(g => g.selected)
+    }
+
+    public retryGroups(): void {
+        this.dataService.refreshUserGroups()
     }
 }
