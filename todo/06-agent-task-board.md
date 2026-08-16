@@ -711,6 +711,19 @@ Changed: Group creation now waits for the API observable before clearing the for
 Verified: `cd frontend && npm run build`; `git diff --check`; the group route inventory still contains the declared create/edit/list routes and no new route was introduced.
 Known follow-ups: Make invitation creation/removal awaitable with per-action loading/error state, complete the two-account invitation journey, and define owner/member policy for every group mutation.
 
+Continuation claim: PROD-003
+
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: make invitation send, pending-invitation removal, and member removal awaitable in the group editing UI
+
+Review continuation: PROD-003
+
+Changed: DataService invitation/member mutations now return observable results with consistent local-state updates and error propagation. Group editing awaits all selected removals, retains selections on failure, keeps the invite username retryable, and disables overlapping actions while requests are active.
+Verified: `cd frontend && npm run build` passes with the documented baseline warnings; `git diff --check` passes.
+Known follow-ups: Complete the two-account invitation journey, add authenticated browser coverage, and define owner/member policy for every group mutation.
+
 When claiming a task, add:
 
 ```text

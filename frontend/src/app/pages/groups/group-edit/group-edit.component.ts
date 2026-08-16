@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common'
 import { Component, effect } from '@angular/core'
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
+import { firstValueFrom } from 'rxjs'
 import { GameType } from '../../../api/api.types'
 import { CardAccountComponent } from '../../../components/card-account/card-account.component'
 import { ImageProfileComponent } from '../../../components/image-profile/image-profile.component'
@@ -95,37 +96,40 @@ export class GroupEditComponent {
         }
     }
 
-    onInviteUser() {
-        if (!this.groupData || !this.userData || !this.usernameToInvite.value) return
+    async onInviteUser() {
+        if (!this.groupData || !this.userData || !this.usernameToInvite.value || this.isLoading) return
         this.isLoading = true
 
-        this.dataService.addInvitedToGroup(this.groupData.id, this.usernameToInvite.value)
-
-        // clear input
-        this.usernameToInvite.reset()
-        this.isLoading = false
+        try {
+            await firstValueFrom(this.dataService.addInvitedToGroup(this.groupData.id, this.usernameToInvite.value))
+            this.usernameToInvite.reset()
+        } catch {
+            // DataService presents the request error; keep the entered username available for retry.
+        } finally {
+            this.isLoading = false
+        }
     }
 
-    onSaveChanges() {
-        if (!this.groupData || !this.userData) return
+    async onSaveChanges() {
+        if (!this.groupData || !this.userData || this.isLoading) return
         this.isLoading = true
 
-        for (const accountId of this.membersToRemoveFromGroup) {
-            // 1. its being removed from invited zone
-            const invitations = this.invitationsGroupIndex[this.groupData.id]
-            const invitation = invitations.find(invitation => invitation.toAccount.id === accountId)
-            if (invitation) {
-                this.dataService.removeInvitedFromGroup(invitation.id)
-                continue
-            }
+        try {
+            const invitations = this.invitationsGroupIndex[this.groupData.id] ?? []
+            const operations = this.membersToRemoveFromGroup.map(accountId => {
+                const invitation = invitations.find(invitation => invitation.toAccount.id === accountId)
+                return invitation
+                    ? firstValueFrom(this.dataService.removeInvitedFromGroup(invitation.id))
+                    : firstValueFrom(this.dataService.removeMemberFromGroup(this.groupData!.id, accountId))
+            })
 
-            // 2. its being removed from the group members
-            this.dataService.removeMemberFromGroup(this.groupData.id, accountId)
+            await Promise.all(operations)
+            this.membersToRemoveFromGroup = []
+        } catch {
+            // Individual services present the request error; keep selections for a retry.
+        } finally {
+            this.isLoading = false
         }
-
-        // clear selection
-        this.membersToRemoveFromGroup = []
-        this.isLoading = false
     }
 
     onDeleteGroup() {
