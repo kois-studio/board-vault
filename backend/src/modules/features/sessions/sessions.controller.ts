@@ -7,8 +7,10 @@ import {
     CreatePlaySessionBody,
     CreateScheduledSessionBody,
     ScheduledSessionCreatedDto,
+    SessionAttendeesUpdatedDto,
     SessionCreatedDto,
     SessionStatusUpdatedDto,
+    UpdateSessionAttendeesBody,
     UpdateSessionStatusBody,
 } from '../../../common/types/session.type'
 
@@ -35,6 +37,19 @@ export class SessionsController {
     @ApiResponse({ status: 201, type: ScheduledSessionCreatedDto })
     createScheduledSession(@Req() request: { user: { userId: number } }, @Body() body: CreateScheduledSessionBody) {
         return this.sessionsService.createScheduledSession(request.user.userId, body)
+    }
+
+    @Patch(':sessionId/attendees')
+    @ApiOperation({ summary: 'Replace the attendees of an editable session' })
+    @ApiResponse({ status: 200, type: SessionAttendeesUpdatedDto })
+    @ApiResponse({ status: 400, description: 'The session must retain at least one group member.' })
+    @ApiResponse({ status: 403, description: 'Only the session organizer may manage attendees.' })
+    updateSessionAttendees(
+        @Req() request: { user: { userId: number } },
+        @Param('sessionId', ParseIntPipe) sessionId: number,
+        @Body() body: UpdateSessionAttendeesBody,
+    ) {
+        return this.sessionsService.updateSessionAttendees(request.user.userId, sessionId, body)
     }
 
     @Patch(':sessionId/status')

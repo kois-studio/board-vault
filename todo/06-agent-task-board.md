@@ -1098,6 +1098,24 @@ Verified: focused `DashboardService` test, backend build, frontend build, and `g
 
 Known follow-ups: Add transaction failure-injection coverage and authenticated browser coverage for group creation; review remaining multi-write use cases under DATA-004.
 
+Continuation claim: DATA-004
+
+Owner: Codex
+
+Claimed: 2026-08-16
+
+Branch/worktree: main / shared workspace
+
+Scope: replace multi-request session attendee editing with an atomic canonical endpoint
+
+Review continuation: DATA-004
+
+Changed: Added organizer-only `PATCH /sessions/:sessionId/attendees`, validating group membership and editable lifecycle state before replacing the selected attendee set in one Turso transaction. The meeting detail page now sends one request and rolls back its optimistic state on failure; empty attendee sets are rejected by the API.
+
+Verified: 32 focused backend session/database tests, backend build, frontend build, and `git diff --check` pass.
+
+Known follow-ups: Add authenticated browser failure-path coverage and retire the deprecated per-row attendee endpoints after all clients migrate.
+
 Continuation claim: EQ-006
 
 Owner: Codex

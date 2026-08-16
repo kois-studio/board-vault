@@ -206,6 +206,55 @@ describe('DatabaseService logging', () => {
         expect(transaction.close).toHaveBeenCalledTimes(1)
     })
 
+    it('replaces session attendees in one transaction', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const transaction = {
+            execute: jest.fn().mockResolvedValue({ rowsAffected: 1 }),
+            batch: jest.fn().mockResolvedValue([]),
+            commit: jest.fn().mockResolvedValue(undefined),
+            rollback: jest.fn().mockResolvedValue(undefined),
+            close: jest.fn(),
+        }
+
+        ;(service as unknown as { tursoClient: unknown }).tursoClient = {
+            transaction: jest.fn().mockResolvedValue(transaction),
+        }
+
+        await expect(service.replaceMeetAttendees(12, [1, 3])).resolves.toBeUndefined()
+
+        expect(transaction.execute).toHaveBeenCalledWith({
+            sql: 'DELETE FROM MeetAttendee WHERE meetId = ? AND accountId NOT IN (?, ?)',
+            args: [12, 1, 3],
+        })
+        expect(transaction.batch).toHaveBeenCalledWith([
+            expect.objectContaining({ args: [12, 1] }),
+            expect.objectContaining({ args: [12, 3] }),
+        ])
+        expect(transaction.commit).toHaveBeenCalledTimes(1)
+        expect(transaction.rollback).not.toHaveBeenCalled()
+        expect(transaction.close).toHaveBeenCalledTimes(1)
+    })
+
+    it('rolls back session attendee replacement when inserts fail', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const transaction = {
+            execute: jest.fn().mockResolvedValue({ rowsAffected: 1 }),
+            batch: jest.fn().mockRejectedValue(new Error('attendee write failed')),
+            commit: jest.fn(),
+            rollback: jest.fn().mockResolvedValue(undefined),
+            close: jest.fn(),
+        }
+
+        ;(service as unknown as { tursoClient: unknown }).tursoClient = {
+            transaction: jest.fn().mockResolvedValue(transaction),
+        }
+
+        await expect(service.replaceMeetAttendees(12, [1, 3])).rejects.toThrow('attendee write failed')
+        expect(transaction.rollback).toHaveBeenCalledTimes(1)
+        expect(transaction.commit).not.toHaveBeenCalled()
+        expect(transaction.close).toHaveBeenCalledTimes(1)
+    })
+
     it('writes scheduled attendees as pending in one transaction', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {

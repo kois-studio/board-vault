@@ -400,12 +400,12 @@ compliance:
       next_action: Add migration checks to CI/deployment, complete synthetic restore evidence, and finish Clerk recovery evidence before legacy-auth removal.
     - id: DATA-003
       status: partial
-      evidence: SQLite tables, constraints, backfill counts, live integrity checks, and aligned backend queries exist for the v1 session relations; transaction guarantees and complete session API behavior are not verified
+      evidence: SQLite tables, constraints, backfill counts, live integrity checks, aligned backend queries, and focused transaction tests exist for the v1 session relations; complete session API behavior and disposable integration coverage remain incomplete
       priority: critical
       next_action: Add session API/write contracts and transaction tests on a disposable database.
     - id: DATA-004
       status: partial
-      evidence: canonical group creation now inserts UserGroup and its owner GroupMembership in one Turso transaction; canonical session and lifecycle writes are also transactional, while proposal, collection, and attendee-related multi-write policies remain incomplete
+      evidence: canonical group creation, session creation, lifecycle writes, played-game recording, and attendee replacement now use explicit Turso transactions; legacy per-row attendee endpoints and proposal/collection multi-write policies remain incomplete
       priority: critical
       next_action: Add failure-injection coverage for group creation, then define transaction/partial-failure behavior for remaining multi-record use cases.
     - id: DATA-005

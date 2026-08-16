@@ -216,9 +216,18 @@ export type UpdateSessionStatusRequest = {
     status: 'active' | 'completed' | 'cancelled'
 }
 
+export type UpdateSessionAttendeesRequest = {
+    attendeeIds: Array<number>
+}
+
 export type SessionStatusUpdatedType = {
     sessionId: number
     status: MeetType['status']
+}
+
+export type SessionAttendeesUpdatedType = {
+    sessionId: number
+    attendeeIds: Array<number>
 }
 
 export type UserStatsType = {

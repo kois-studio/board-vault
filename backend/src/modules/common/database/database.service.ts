@@ -1403,6 +1403,33 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    async replaceMeetAttendees(meetId: number, accountIds: Array<number>) {
+        const transaction = await this.tursoClient.transaction('write')
+
+        try {
+            const placeholders = accountIds.map(() => '?').join(', ')
+            await transaction.execute({
+                sql: `DELETE FROM MeetAttendee WHERE meetId = ? AND accountId NOT IN (${placeholders})`,
+                args: [meetId, ...accountIds],
+            })
+            await transaction.batch(
+                accountIds.map(accountId => ({
+                    sql: `
+                        INSERT OR IGNORE INTO MeetAttendee (meetId, accountId)
+                        VALUES (?, ?)
+                    `,
+                    args: [meetId, accountId],
+                })),
+            )
+            await transaction.commit()
+        } catch (error) {
+            await transaction.rollback()
+            throw error
+        } finally {
+            transaction.close()
+        }
+    }
+
     addGroupGamesToMeeting(meetId: number, groupId: number) {
         return this._tursoExecute({
             sql: `

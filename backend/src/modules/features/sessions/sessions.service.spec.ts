@@ -22,6 +22,7 @@ function createDatabaseMock() {
         getGroupAvailableGameIds: jest.fn().mockResolvedValue([42, 43]),
         createCompletedSession: jest.fn().mockResolvedValue({ lastInsertRowid: 12 }),
         createScheduledSession: jest.fn().mockResolvedValue({ lastInsertRowid: 13 }),
+        replaceMeetAttendees: jest.fn().mockResolvedValue(undefined),
         getMeetByIdForCreator: jest
             .fn()
             .mockResolvedValue({ rows: [[12, 7, 1, '2026-08-16T19:30:00.000Z', 0, 'scheduled', 'Europe/Madrid', null]] }),
@@ -203,5 +204,33 @@ describe('SessionsService', () => {
 
         await expect(service.updateSessionStatus(2, 12, { status: 'cancelled' })).rejects.toThrow(ForbiddenException)
         expect(database.updateMeetStatus).not.toHaveBeenCalled()
+    })
+
+    it('replaces attendees for an organizer-owned active session', async () => {
+        const database = createDatabaseMock()
+        const service = new SessionsService(database as unknown as DatabaseService)
+
+        await expect(service.updateSessionAttendees(1, 12, { attendeeIds: [1, 3] })).resolves.toEqual({
+            sessionId: 12,
+            attendeeIds: [1, 3],
+        })
+        expect(database.replaceMeetAttendees).toHaveBeenCalledWith(12, [1, 3])
+    })
+
+    it('rejects attendee replacement when a target is outside the group', async () => {
+        const database = createDatabaseMock()
+        const service = new SessionsService(database as unknown as DatabaseService)
+
+        await expect(service.updateSessionAttendees(1, 12, { attendeeIds: [1, 99] })).rejects.toThrow(BadRequestException)
+        expect(database.replaceMeetAttendees).not.toHaveBeenCalled()
+    })
+
+    it('rejects attendee replacement on a completed session', async () => {
+        const database = createDatabaseMock()
+        database.getMeetByIdForCreator.mockResolvedValue({ rows: [[12, 7, 1, '2026-08-16T19:30:00.000Z', 1, 'completed', 'UTC', null]] })
+        const service = new SessionsService(database as unknown as DatabaseService)
+
+        await expect(service.updateSessionAttendees(1, 12, { attendeeIds: [1] })).rejects.toThrow(BadRequestException)
+        expect(database.replaceMeetAttendees).not.toHaveBeenCalled()
     })
 })
