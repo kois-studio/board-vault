@@ -685,6 +685,19 @@ Changed: Scheduled-session validation now checks optional planned game IDs again
 Verified: `cd backend && npm test -- --runInBand` (124 tests passed); `cd backend && npm run build`; `cd frontend && npm run build`; the planned-game transaction and validation tests pass.
 Known follow-ups: Add planned-game editing and richer game read objects; review scheduled-session loading/error/empty states and authenticated browser coverage.
 
+Continuation claim: AUTH-002
+
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: replace dead local security-settings routes with Clerk account-management controls and make local data deletion an explicit deferred state
+
+Review continuation: AUTH-002
+
+Changed: Settings → Security now opens Clerk's account panel for email, password, and connected sign-in method management. Nonexistent local password/delete routes were removed from the UI; Board Vault data deletion is visibly disabled until retention and deletion semantics are defined.
+Verified: `cd frontend && npm run build`; route inventory confirms the removed password/delete links no longer target undeclared routes.
+Known follow-ups: Define and implement local data deletion/retention semantics separately from Clerk identity deletion; review Clerk modal loading and accessibility states in the production browser.
+
 When claiming a task, add:
 
 ```text

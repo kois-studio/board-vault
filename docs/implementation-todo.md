@@ -146,7 +146,7 @@ Relevant surfaces: [`auth pages`](../frontend/src/app/pages/auth/), [`profile-me
 - Keep Clerk email/password/username as the production path and preserve the legacy path only as an intentional migration fallback.
 - Remove or hide legacy registration/reset/verification UI if those flows are no longer supported for ordinary users.
 - Define the final username policy and whether it is required at account creation.
-- Replace the “Coming soon…” security settings page with Clerk account/security controls, or clearly mark the route as unavailable and remove misleading navigation.
+- Keep the security settings page connected to Clerk account/security controls; local Board Vault account deletion remains disabled until the data-retention policy and deletion workflow are defined.
 - Review profile editing, avatar, display name, username, sign-out, and account error states.
 - Ensure user-facing identity data follows the accepted privacy/DTO policy.
 - Verify session-expiry and revoked-session behavior in the UI.

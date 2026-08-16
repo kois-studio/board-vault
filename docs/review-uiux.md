@@ -88,7 +88,7 @@ For each area, review:
 |---|---|---|---|
 | Settings shell | `/settings`, settings navigation | Source-audited | Review navigation, active state, nested routing, mobile layout, and terminology. |
 | Account settings | `/settings/account` | Source-audited | Review profile/avatar/display-name/username editing, validation, success/error states, and privacy presentation. |
-| Security settings | `/settings/security` | Not reviewed | Currently displays “Coming soon…”. Decide whether to integrate Clerk controls or remove/hide the route. |
+| Security settings | `/settings/security` | Partially reviewed | Uses Clerk's account-management panel for email/password/sign-in methods; local Board Vault data deletion is intentionally disabled pending a retention/deletion policy. Review loading/error states, modal accessibility, and deletion policy when defined. |
 | Contact settings | `/settings/contact` | Not reviewed | Inspect intended behavior and either finish, define scope, or remove misleading UI. |
 | Admin shell | `/admin`, admin layout/sidebar | Source-audited | Review role gating, navigation, mobile sidebar, active states, and unauthorized behavior. |
 | Admin dashboard | `/admin/panel` | Not reviewed | Review real metrics versus placeholders, loading/error states, and hierarchy. |
