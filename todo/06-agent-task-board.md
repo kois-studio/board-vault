@@ -1002,6 +1002,19 @@ Changed: Group history now keeps a failed request out of the cache instead of re
 Verified: `cd frontend && npm run build` passes with the documented baseline warnings; `git diff --check` passes.
 Known follow-ups: Add authenticated browser coverage for group-history retry and complete the wider group view responsive/accessibility review.
 
+Continuation claim: PROD-007
+
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: keep scheduled and cancelled sessions out of group history
+
+Review continuation: PROD-007
+
+Changed: The legacy dashboard group-history service now filters to completed sessions, matching the group view’s “Meetings history” and played-games presentation. Added a focused service test covering completed versus scheduled records.
+Verified: Focused dashboard service test and backend build pass; `git diff --check` passes.
+Known follow-ups: Replace the legacy group-history read model with the canonical session detail model when group analytics are expanded.
+
 When claiming a task, add:
 
 ```text

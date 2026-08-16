@@ -1,0 +1,49 @@
+import { DashboardService } from './dashboard.service'
+
+describe('DashboardService group history', () => {
+    it('returns completed sessions only', async () => {
+        const meets = {
+            getMeetsByGroupId: jest.fn().mockResolvedValue([
+                {
+                    id: 10,
+                    groupId: 7,
+                    createdBy: 1,
+                    meetDate: '2026-08-10T19:30:00.000Z',
+                    isConfirmed: true,
+                    status: 'completed',
+                    timezone: 'Europe/Madrid',
+                },
+                {
+                    id: 11,
+                    groupId: 7,
+                    createdBy: 1,
+                    meetDate: '2026-08-17T19:30:00.000Z',
+                    isConfirmed: false,
+                    status: 'scheduled',
+                    timezone: 'Europe/Madrid',
+                },
+            ]),
+        }
+        const meetAccountGames = {
+            getDistinctGameIdsByMeetId: jest.fn().mockResolvedValue([]),
+        }
+
+        const service = new DashboardService(
+            {} as never,
+            {} as never,
+            {} as never,
+            {} as never,
+            {} as never,
+            {} as never,
+            meets as never,
+            {} as never,
+            meetAccountGames as never,
+            {} as never,
+            {} as never,
+        )
+
+        await expect(service.getGroupMeetings(1, 7)).resolves.toHaveLength(1)
+        expect(meetAccountGames.getDistinctGameIdsByMeetId).toHaveBeenCalledWith(10)
+        expect(meetAccountGames.getDistinctGameIdsByMeetId).not.toHaveBeenCalledWith(11)
+    })
+})
