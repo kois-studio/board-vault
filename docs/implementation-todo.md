@@ -75,6 +75,7 @@ Relevant surfaces: [`history-page`](../frontend/src/app/pages/play-page/history-
 - Replace misleading counts such as group counts displayed as session counts.
 - Show date, attendees, games actually played, and relevant session state.
 - Keep the play landing honest while its dependent reads load or fail; the upcoming/history cards now show loading and unavailable states instead of presenting zero as fact.
+- Recommendation and scheduling entry points now distinguish unavailable group data from a genuinely empty group list and expose retry.
 - Make empty history actionable and honest.
 - Add last-played context that can feed recommendations.
 - Add simple post-session ratings or feedback when the product contract is defined.

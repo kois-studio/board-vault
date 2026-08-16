@@ -30,6 +30,7 @@ export class UpcomingSessionsPageComponent {
     // dataService
     public readonly currentUser$ = this.dataService.currentUser
     public readonly userGroups$ = this.dataService.userGroups
+    public readonly groupsError = this.dataService.userGroupsError
     public readonly userMeets$ = this.dataService.userMeets
     // loadingService
     public readonly isLoadingGroups = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_GROUPS])
@@ -56,5 +57,9 @@ export class UpcomingSessionsPageComponent {
 
     public retrySessions(): void {
         this.dataService.refreshUserMeets()
+    }
+
+    public retryGroups(): void {
+        this.dataService.refreshUserGroups()
     }
 }
