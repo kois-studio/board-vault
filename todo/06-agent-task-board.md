@@ -23,7 +23,7 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 |---|---|---|---|---|
 | PROD-001 | TODO | Product | Decide and document canonical brand, nouns, persona, and ownership policy. Session semantics are accepted in ADR-0003. | None |
 | PROD-002 | REVIEW | Core loop | Implement a real first-five-games collection activation flow. | SEC-002, DATA-002 |
-| PROD-003 | TODO | Core loop | Finish invitation acceptance, group roles, and member visibility. | SEC-002, DATA-003 |
+| PROD-003 | IN_PROGRESS | Core loop | Finish invitation acceptance, group roles, and member visibility; invitation fetch now has truthful loading/error/retry states. | SEC-002, DATA-003 |
 | PROD-004 | REVIEW | Core loop | Implement deterministic recommendation scoring with explanations and unit tests. | PROD-001, DATA-003 |
 | PROD-005 | REVIEW | Core loop | Maintain atomic session creation and wizard submission; authenticated browser coverage and broader session UX review remain. | DATA-003, DATA-004 |
 | PROD-006 | REVIEW | Core loop | Implement upcoming, active, completed, and cancelled session views using real data. | PROD-005 |
@@ -1151,6 +1151,24 @@ Changed: The reusable Clerk storage-state suite now asserts dashboard overview, 
 Verified: public Playwright coverage remains runnable by default; frontend build and `git diff --check` pass.
 
 Known follow-ups: Run the authenticated suite with a disposable Clerk state and seeded test data, then add mutation journeys for group creation, invitations, collection activation, and session submission.
+
+Continuation claim: PROD-003
+
+Owner: Codex
+
+Claimed: 2026-08-16
+
+Branch/worktree: main / shared workspace
+
+Scope: make profile invitation loading and failure states truthful and retryable
+
+Review continuation: PROD-003
+
+Changed: The profile invitation modal now distinguishes loading, failed fetch, retry, and empty states. The shared data service exposes invitation request state and a retry method without clearing previously loaded invitations until a successful replacement arrives.
+
+Verified: frontend build, focused Biome check for the changed invitation modal, and `git diff --check` pass.
+
+Known follow-ups: Run the two-account invitation journey with disposable Clerk state and seeded data; complete group-role/member-visibility decisions.
 
 When claiming a task, add:
 

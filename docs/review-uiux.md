@@ -55,7 +55,7 @@ For each area, review:
 | Create group | `/create-group`, `group-create` | Source-audited | Review form labels, validation, success navigation, duplicate/error handling, and mobile form layout. |
 | Group detail | `/groups/:groupId`, `group-view` | Source-audited | Review member/game/history hierarchy, owner actions, invitation feedback, skeletons, private-data states, and mobile tables/cards. |
 | Edit/leave/delete group | `/groups/:groupId/{edit,leave,delete}` | Source-audited | Review permissions, confirmation language, destructive actions, cancellation, and failure recovery. |
-| Invitations | profile invitation modal, group edit invitation controls | Source-audited | Verify two-account journey and review pending/accepted/rejected/expired/error states. |
+| Invitations | profile invitation modal, group edit invitation controls | Partially reviewed | The profile modal now distinguishes loading, failed fetch, retry, and empty states; verify the two-account journey and review pending/accepted/rejected/expired states. |
 | Notifications | profile notification modal | Source-audited | Review unread/read behavior, message clarity, empty state, and accessible modal announcements. |
 | Collection landing | `/collection`, `collection-page` | Partially reviewed | First-five-games activation progress and a browse CTA now exist; still needs full empty/error/refresh review and responsive/accessibility testing. |
 | My games | `/collection/games`, `my-games-page` | Source-audited | Loading, empty, and retryable failure states now distinguish unavailable data from an empty collection; review ownership status, sorting, duplicate feedback, and card responsiveness. |
