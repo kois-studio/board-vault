@@ -27,7 +27,15 @@
         </section>
     }
 
-    @if (upcomingSessions().length === 0) {
+    @if (isLoadingMeets()) {
+        <div class="text-center py-8 text-secondary">Loading upcoming sessions…</div>
+    } @else if (meetsError()) {
+        <div class="text-center py-8 text-secondary">
+            <p>Upcoming sessions could not be loaded.</p>
+            <p class="text-sm mt-2 mb-4">Check your connection and try again.</p>
+            <app-button icon="arrow-repeat" (click)="retrySessions()">Retry</app-button>
+        </div>
+    } @else if (upcomingSessions().length === 0) {
         <div class="text-center py-8 text-secondary">
             <p>No upcoming sessions yet.</p>
             <p class="text-sm mt-2">Schedule a session to bring your group together.</p>
