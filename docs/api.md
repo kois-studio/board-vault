@@ -4,7 +4,7 @@
 
 The backend is an HTTP NestJS API with no global prefix. `main.ts` creates runtime Swagger at `/swagger` using `@nestjs/swagger`, bearer auth metadata, and decorated DTOs. The API is consumed by the Angular client through the `Api` service and `DataService`; the production frontend environment targets `https://backend.board-vault.com`.
 
-The runtime Swagger document is generated from source. There is no committed versioned OpenAPI artifact, generated client, consumer-driven contract, or contract-test gate.
+The runtime Swagger document is generated from source. There is no committed versioned OpenAPI artifact, generated client, consumer-driven contract, or contract-test gate. The removed dashboard meeting-creation mutation has no remaining frontend client helper.
 
 ## Route families observed
 

@@ -322,10 +322,6 @@ export class Api {
         return this.http.get<Array<HistoryRecordType>>(`${this.url}/dashboard/users/${userId}/groups/${groupId}/meetings`)
     }
 
-    createGroupMeeting(userId: number, groupId: number) {
-        return this.http.post<{ success: true }>(`${this.url}/dashboard/users/${userId}/groups/${groupId}/meetings`, {}).pipe(map(response => successSchema.parse(response)))
-    }
-
     leaveGroup(userId: number, groupId: number) {
         return this.http.delete<{ success: true }>(`${this.url}/dashboard/users/${userId}/groups/${groupId}/members`, {})
     }
