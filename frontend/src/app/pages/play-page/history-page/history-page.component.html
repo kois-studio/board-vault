@@ -1,9 +1,9 @@
 <app-page-header titleText="History" [showActionButton]="true">
-    Browse your games played in the past meetings
+    Browse games played in completed sessions
     <app-button
         class="action-button"
         icon="plus-lg"
-        routerLink="/create-group"
+        routerLink="/play/log-session"
     >Log a Session</app-button>
 </app-page-header>
 
@@ -15,7 +15,7 @@
     } @else if (userHistory$().length === 0) {
         <!-- no data -->
         <div class="text-center py-8 text-secondary">
-            <p>No games played yet</p>
+            <p>No completed sessions yet.</p>
         </div>
     } @else {
         @for (historyRecord of sortedUserHistoryComputed(); track historyRecord.meetData.id) {

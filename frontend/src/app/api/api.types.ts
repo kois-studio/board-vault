@@ -197,6 +197,17 @@ export type SessionCreatedType = {
     status: 'completed'
 }
 
+export type ScheduleSessionRequest = {
+    groupId: number
+    sessionDate: string
+    timezone: string
+}
+
+export type ScheduledSessionCreatedType = {
+    sessionId: number
+    status: 'scheduled'
+}
+
 export type UserStatsType = {
     totalGamesValue: number
 }
