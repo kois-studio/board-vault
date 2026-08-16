@@ -59,8 +59,9 @@ Unauthenticated `GET /auth/clerk/status` returned 401, validation on
 `GET /auth/check-email` returned 400, and unauthenticated meet details returned
 401; all three responses included `Access-Control-Allow-Origin:
 https://board-vault.com`. An authenticated meet-detail/selection smoke test is
-still pending because the attendee-write authorization policy is not yet
-implemented.
+still pending; the attendee-write policy is now organizer-only and covered by
+backend authorization tests, but has not yet been exercised through production
+with a preserved account.
 
 ## Deployment shape
 
