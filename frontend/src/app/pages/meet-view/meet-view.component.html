@@ -1,4 +1,17 @@
-<container-wrapper *ngIf="loaded">
+@if (isLoading()) {
+    <container-wrapper>
+        <div class="p-8 text-center text-secondary" aria-live="polite">Loading session…</div>
+    </container-wrapper>
+} @else if (loadError()) {
+    <container-wrapper>
+        <div class="p-8 text-center text-secondary" role="alert">
+            <p class="text-lg font-medium">This session could not be loaded.</p>
+            <p class="mt-2 mb-4 text-sm">Check your connection or access and try again.</p>
+            <button type="button" class="app-btn-primary" (click)="retryLoad()">Retry</button>
+        </div>
+    </container-wrapper>
+} @else if (loaded) {
+<container-wrapper>
     <title-subtitle titleText="{{ groupData?.name }} - {{ meetData?.meetDate ?? '' | customDate }}">
         <span class="capitalize">{{ meetData?.status }} session</span>
     </title-subtitle>
@@ -71,7 +84,7 @@
                 @for (game of plannedGames; track game.id) {
                     <div class="flex items-center gap-3 rounded-lg border border-indigo-400/60 bg-indigo-50/50 dark:bg-indigo-900/20 p-3">
                         <image-background [src]="game.imageUrl" class="h-14 w-14" />
-                        <span class="font-medium">{{ game.title }}</span>
+                        <span class="font-medium">{{ game.titleTranslations.en || game.title || 'Untitled game' }}</span>
                     </div>
                 }
             </div>
@@ -86,7 +99,7 @@
                 @for (game of skippedGames; track game.id) {
                     <div class="flex items-center gap-3 rounded-lg border border-zinc-500/60 bg-zinc-800/50 p-3 opacity-75">
                         <image-background [src]="game.imageUrl" class="h-14 w-14" />
-                        <span class="font-medium">{{ game.title }}</span>
+                        <span class="font-medium">{{ game.titleTranslations.en || game.title || 'Untitled game' }}</span>
                     </div>
                 }
             </div>
@@ -137,7 +150,7 @@
                         'opacity-30': !game.active
                     }"
                 >
-                    <p class="font-semibold text-white">{{ game.title }}</p>
+                    <p class="font-semibold text-white">{{ game.titleTranslations.en || game.title || 'Untitled game' }}</p>
                     <p class="text-gray-400 text-sm text-start w-full"><i class="bi bi-clock-fill"></i> {{ game.gameAvgDuration }} mins</p>
                     <p class="text-gray-400 text-sm text-start">
                         <i class="bi bi-people-fill"></i> {{ game.minPlayers }} - {{ game.maxPlayers }}
@@ -148,3 +161,4 @@
         </div>
     </section>
 </container-wrapper>
+}
