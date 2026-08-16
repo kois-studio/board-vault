@@ -58,6 +58,10 @@ export class GroupEditComponent {
         return this.usernameToInvite.valid ? 'border-green-500' : 'border-red-500'
     }
 
+    get isGroupOwner() {
+        return !!this.groupData && !!this.userData && this.groupData.createdBy === this.userData.id
+    }
+
     get disableInviteButton() {
         if (!this.groupData || !this.usernameToInvite.value) {
             return true
@@ -97,7 +101,7 @@ export class GroupEditComponent {
     }
 
     async onInviteUser() {
-        if (!this.groupData || !this.userData || !this.usernameToInvite.value || this.isLoading) return
+        if (!this.isGroupOwner || !this.groupData || !this.usernameToInvite.value || this.isLoading) return
         this.isLoading = true
 
         try {
@@ -111,7 +115,7 @@ export class GroupEditComponent {
     }
 
     async onSaveChanges() {
-        if (!this.groupData || !this.userData || this.isLoading) return
+        if (!this.isGroupOwner || !this.groupData || this.isLoading) return
         this.isLoading = true
 
         try {
@@ -133,7 +137,7 @@ export class GroupEditComponent {
     }
 
     onDeleteGroup() {
-        if (!this.groupData) return
+        if (!this.isGroupOwner || !this.groupData) return
         this.router.navigate(['/groups', this.groupData.id, 'delete'])
     }
 }
