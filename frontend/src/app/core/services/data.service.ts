@@ -761,6 +761,15 @@ export class DataService {
         )
     }
 
+    public updateSessionAttendees(meetId: number, attendeeIds: Array<number>) {
+        return this.api.updateSessionAttendees(meetId, { attendeeIds }).pipe(
+            catchError(error => {
+                this.toastService.error(error.status === 400 ? 'A session must have at least one group member' : 'Could not save the attendee changes')
+                return throwError(() => error)
+            }),
+        )
+    }
+
     public createMeetAccountGame(accountId: number, meetId: number, gameId: number) {
         return this.api.createMeetAccountGame(accountId, meetId, gameId).pipe(
             catchError(error => {

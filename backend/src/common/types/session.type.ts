@@ -115,10 +115,28 @@ export class UpdateSessionStatusBody {
     status: 'active' | 'completed' | 'cancelled'
 }
 
+export class UpdateSessionAttendeesBody {
+    @ApiProperty({ example: [1, 2] })
+    @IsArray()
+    @ArrayUnique()
+    @ArrayMinSize(1)
+    @IsInt({ each: true })
+    @Min(1, { each: true })
+    attendeeIds: Array<number>
+}
+
 export class SessionStatusUpdatedDto {
     @ApiProperty({ example: 12345 })
     sessionId: number
 
     @ApiProperty({ example: 'active', enum: ['scheduled', 'active', 'completed', 'cancelled'] })
     status: 'scheduled' | 'active' | 'completed' | 'cancelled'
+}
+
+export class SessionAttendeesUpdatedDto {
+    @ApiProperty({ example: 12345 })
+    sessionId: number
+
+    @ApiProperty({ example: [1, 2] })
+    attendeeIds: Array<number>
 }

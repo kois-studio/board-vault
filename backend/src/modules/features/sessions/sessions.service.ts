@@ -4,8 +4,10 @@ import type {
     CreatePlaySessionBody,
     CreateScheduledSessionBody,
     ScheduledSessionCreatedDto,
+    SessionAttendeesUpdatedDto,
     SessionStatusUpdatedDto,
     SessionCreatedDto,
+    UpdateSessionAttendeesBody,
     UpdateSessionStatusBody,
 } from '../../../common/types/session.type'
 import { DatabaseService } from '../../common/database/database.service'
@@ -133,5 +135,26 @@ export class SessionsService {
         }
 
         return { sessionId, status: body.status }
+    }
+
+    async updateSessionAttendees(actorAccountId: number, sessionId: number, body: UpdateSessionAttendeesBody): Promise<SessionAttendeesUpdatedDto> {
+        const session = await this.databaseService.getMeetByIdForCreator(sessionId, actorAccountId)
+        if (session.rows.length === 0) {
+            throw new ForbiddenException('Only the session organizer can manage attendees')
+        }
+
+        const status = String(session.rows[0][5] ?? 'completed') as SessionStatusUpdatedDto['status']
+        if (status !== 'scheduled' && status !== 'active') {
+            throw new BadRequestException(`Cannot edit attendees on a ${status} session`)
+        }
+
+        const groupId = Number(session.rows[0][1])
+        const memberIds = await this.databaseService.getGroupMemberIds(groupId)
+        if (body.attendeeIds.some(accountId => !memberIds.includes(accountId))) {
+            throw new BadRequestException('Every attendee must belong to the session group')
+        }
+
+        await this.databaseService.replaceMeetAttendees(sessionId, body.attendeeIds)
+        return { sessionId, attendeeIds: body.attendeeIds }
     }
 }

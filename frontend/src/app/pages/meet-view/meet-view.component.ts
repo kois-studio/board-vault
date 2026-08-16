@@ -270,18 +270,7 @@ export class MeetViewComponent {
             return
         }
 
-        for (const member of this.groupData.members) {
-            const isAttending = this.meetData.attendees.includes(member.id)
-            const isAttendingOriginal = this.meetDataCopyOriginal?.attendees.includes(member.id)
-
-            if (isAttending !== isAttendingOriginal) {
-                if (isAttending) {
-                    await firstValueFrom(this.dataService.createMeetAttendee(this.meetData.id, member.id))
-                } else {
-                    await firstValueFrom(this.dataService.deleteMeetAttendee(this.meetData.id, member.id))
-                }
-            }
-        }
+        await firstValueFrom(this.dataService.updateSessionAttendees(this.meetData.id, this.meetData.attendees))
 
         // update the original copy for future comparisons
         this.meetDataCopyOriginal.attendees = [...this.meetData.attendees]

@@ -29,7 +29,9 @@ import type {
     SessionCreatedType,
     ScheduleSessionRequest,
     ScheduledSessionCreatedType,
+    SessionAttendeesUpdatedType,
     SessionStatusUpdatedType,
+    UpdateSessionAttendeesRequest,
     TagCategoryType,
     TagType,
     UpdateGameOwnedType,
@@ -38,7 +40,7 @@ import type {
     UserStatsType,
     UserType,
 } from './api.types'
-import { accessTokenSchema, authStatusSchema, availabilitySchema, clerkAuthStatusSchema, meetDetailsSchema, meetSchema, messageSchema, recommendationsSchema, scheduledSessionCreatedSchema, sessionCreatedSchema, sessionStatusUpdatedSchema, successSchema } from './api.schemas'
+import { accessTokenSchema, authStatusSchema, availabilitySchema, clerkAuthStatusSchema, meetDetailsSchema, meetSchema, messageSchema, recommendationsSchema, scheduledSessionCreatedSchema, sessionAttendeesUpdatedSchema, sessionCreatedSchema, sessionStatusUpdatedSchema, successSchema } from './api.schemas'
 
 @Injectable({ providedIn: 'root' })
 export class Api {
@@ -173,6 +175,10 @@ export class Api {
 
     updateSessionStatus(sessionId: number, body: UpdateSessionStatusRequest) {
         return this.http.patch<SessionStatusUpdatedType>(`${this.url}/sessions/${sessionId}/status`, body).pipe(map(response => sessionStatusUpdatedSchema.parse(response)))
+    }
+
+    updateSessionAttendees(sessionId: number, body: UpdateSessionAttendeesRequest) {
+        return this.http.patch<SessionAttendeesUpdatedType>(`${this.url}/sessions/${sessionId}/attendees`, body).pipe(map(response => sessionAttendeesUpdatedSchema.parse(response)))
     }
 
     // #region meet attendees
