@@ -98,7 +98,7 @@ Relevant surfaces: [`header`](../frontend/src/app/layout/header/), [`top-bar`](.
 - Remove links to nonexistent routes, including recommendations, quick play, and analytics; the currently identified dashboard/play links are now limited to existing routes or explicit coming-soon cards.
 - Replace footer placeholder links with real routes or remove them.
 - Review authenticated versus unauthenticated navigation after the Clerk migration.
-- Review mobile navigation and the known admin sidebar mobile TODO.
+- Review mobile navigation; the admin sidebar now collapses into a mobile overlay with a backdrop and keeps keyboard focus indicators.
 - Standardize naming: meeting/session, play/history, group/member, and Board Vault terminology.
 - Centralize loading, error, and toast behavior instead of repeating inconsistent patterns in `DataService` and pages.
 - Verify keyboard access, focus visibility, labels, active states, and route transitions.

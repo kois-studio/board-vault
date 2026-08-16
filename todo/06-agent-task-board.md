@@ -1116,6 +1116,24 @@ Verified: frontend build and `git diff --check` pass.
 
 Known follow-ups: Perform a rendered mobile/accessibility review of the admin shell and add persisted metrics only with an explicit API contract.
 
+Continuation claim: EQ-006
+
+Owner: Codex
+
+Claimed: 2026-08-16
+
+Branch/worktree: main / shared workspace
+
+Scope: make the admin sidebar usable on mobile and keyboard-accessible
+
+Review continuation: EQ-006
+
+Changed: The admin sidebar now starts collapsed, overlays the page on small screens, exposes a backdrop close action, and has an accessible toggle with focus styling. The old mobile-sidebar TODO was removed.
+
+Verified: frontend build and `git diff --check` pass.
+
+Known follow-ups: Verify the navigation transition manually at mobile/tablet/desktop widths and ensure route selection closes the overlay if that remains awkward in practice.
+
 When claiming a task, add:
 
 ```text
