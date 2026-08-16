@@ -1,6 +1,6 @@
 import { Injectable, effect, inject, signal } from '@angular/core'
 import { Router } from '@angular/router'
-import { catchError, concatMap, of } from 'rxjs'
+import { catchError, concatMap, of, throwError } from 'rxjs'
 import { Api } from '../../api/api'
 import type {
     CollectionActivityWithGameDataType,
@@ -461,25 +461,24 @@ export class DataService {
 
     public createGroup(groupName: string) {
         const currentUser = this.currentUser()
-        if (!currentUser) return
+        if (!currentUser) return throwError(() => new Error('No authenticated user'))
 
-        // 1.
-        this.api.createGroup(currentUser.id, groupName).subscribe({
-            next: res => {
-                // 2.
+        return this.api.createGroup(currentUser.id, groupName).pipe(
+            concatMap(() => {
                 this.userGroups.set([])
                 this._getUserGroups(currentUser.id)
-
-                // 3.
                 this.toastService.success(`You have created the group ${groupName}`)
-            },
-            error: error => {
+                return of(true)
+            }),
+            catchError(error => {
                 if (error.status === 404) {
-                    return this.toastService.error('User not found')
+                    this.toastService.error('User not found')
+                } else {
+                    this.toastService.error('Error creating group')
                 }
-                this.toastService.error('Error creating group')
-            },
-        })
+                return throwError(() => error)
+            }),
+        )
     }
 
     // #region leave group

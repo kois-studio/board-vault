@@ -698,6 +698,19 @@ Changed: Settings → Security now opens Clerk's account panel for email, passwo
 Verified: `cd frontend && npm run build`; route inventory confirms the removed password/delete links no longer target undeclared routes.
 Known follow-ups: Define and implement local data deletion/retention semantics separately from Clerk identity deletion; review Clerk modal loading and accessibility states in the production browser.
 
+Continuation claim: PROD-003
+
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: make group creation await the API result before navigation and harden group invitation form state against missing pending-invitation data
+
+Review continuation: PROD-003
+
+Changed: Group creation now waits for the API observable before clearing the form, navigating, or releasing its loading state; request failures keep the form available for retry. Group editing now treats an uninitialized pending-invitation list as empty instead of throwing while deciding whether Invite is enabled.
+Verified: `cd frontend && npm run build`; `git diff --check`; the group route inventory still contains the declared create/edit/list routes and no new route was introduced.
+Known follow-ups: Make invitation creation/removal awaitable with per-action loading/error state, complete the two-account invitation journey, and define owner/member policy for every group mutation.
+
 When claiming a task, add:
 
 ```text

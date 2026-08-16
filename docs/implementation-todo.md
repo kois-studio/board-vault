@@ -131,6 +131,7 @@ Relevant surfaces: [`collection-page`](../frontend/src/app/pages/collection-page
 Relevant surfaces: [`groups`](../frontend/src/app/pages/groups/), [`group-view`](../frontend/src/app/pages/group-view/), group/invitation/notification components.
 
 - Verify the complete two-account flow: create group, invite account, accept/reject invitation, refresh, and see membership.
+- Keep group creation awaitable and recoverable; the create form now waits for the API result before navigating and leaves failures retryable.
 - Resolve the product policy for self-join versus invite-only membership.
 - Define group owner/member roles and expose only actions allowed for each role.
 - Make empty groups useful: explain the next step for members, games, and invitations.

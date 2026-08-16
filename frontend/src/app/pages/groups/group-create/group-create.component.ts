@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common'
 import { Component, inject } from '@angular/core'
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router, RouterLink } from '@angular/router'
+import { firstValueFrom } from 'rxjs'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { DataService } from '../../../core/services/data.service'
 
@@ -35,15 +36,18 @@ export class GroupCreateComponent {
         return this.isLoading || this.groupNameForm.invalid
     }
 
-    onCreateGroup() {
-        if (!this.groupNameForm.value) return
+    async onCreateGroup() {
+        if (!this.groupNameForm.value || this.isLoading) return
         this.isLoading = true
 
-        this.dataService.createGroup(this.groupNameForm.value)
-        // clear input
-        this.groupNameForm.reset()
-        this.isLoading = false
-
-        this.router.navigate(['/groups'])
+        try {
+            await firstValueFrom(this.dataService.createGroup(this.groupNameForm.value))
+            this.groupNameForm.reset()
+            await this.router.navigate(['/groups'])
+        } catch {
+            // DataService presents the request error; keep the form available for retry.
+        } finally {
+            this.isLoading = false
+        }
     }
 }

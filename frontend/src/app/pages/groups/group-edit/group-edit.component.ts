@@ -64,7 +64,7 @@ export class GroupEditComponent {
         const usernames = this.groupData.members.map(member => member.username)
 
         const isUserAlreadyInGroup = usernames.includes(this.usernameToInvite.value)
-        const isUserAlreadyInvited = this.invitationsGroupIndex[this.groupData.id].some(
+        const isUserAlreadyInvited = (this.invitationsGroupIndex[this.groupData.id] ?? []).some(
             invitation => invitation.toAccount.username === this.usernameToInvite.value,
         )
         return this.isLoading || this.usernameToInvite.invalid || isUserAlreadyInGroup || isUserAlreadyInvited
