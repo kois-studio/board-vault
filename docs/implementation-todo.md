@@ -118,6 +118,7 @@ Relevant surfaces: [`collection-page`](../frontend/src/app/pages/collection-page
 
 - Run a complete manual journey: browse/search, add, view ownership, review, wishlist, refresh, and remove/update.
 - Keep the first-five-games activation flow visible on the collection page; the progress prompt and browse CTA now exist and ownership changes refresh the collection signal.
+- Keep collection mutations synchronized with group availability; refreshed ownership data now updates the current member inside loaded group records as well as the personal collection signal.
 - Complete the activation journey with a success state, onboarding preferences, and authenticated browser coverage.
 - Make search, duplicate-add, loading, empty, error, and success states coherent.
 - Resolve game title/translation behavior across cards, search, proposals, history, and game detail.

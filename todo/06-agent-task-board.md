@@ -763,6 +763,19 @@ Changed: Group history sorting now works on a copy of the signal array, group hi
 Verified: `cd frontend && npm run build` passes with the documented baseline warnings; `git diff --check` passes.
 Known follow-ups: Complete the two-account invitation journey, add authenticated browser coverage, and review group member/game/history layouts responsively.
 
+Continuation claim: PROD-002
+
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: keep embedded group member collections synchronized when the current user's collection is refreshed
+
+Review continuation: PROD-002
+
+Changed: User-game refreshes now update both the personal collection signal and the current user's embedded `games` arrays in loaded groups. The bulk collection update path now correctly removes IDs that are no longer selected instead of removing selected IDs.
+Verified: `cd frontend && npm run build` passes with the documented baseline warnings; `git diff --check` passes.
+Known follow-ups: Add authenticated browser coverage for collection activation and group availability, and review duplicate/add/remove/error states in the rendered UI.
+
 When claiming a task, add:
 
 ```text
