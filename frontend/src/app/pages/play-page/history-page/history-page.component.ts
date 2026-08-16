@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { Component, computed, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { ImageProfileComponent } from '../../../components/image-profile/image-profile.component'
-import { SkeletonCardGroupComponent } from '../../../components/skeletons/skeleton-card-group/skeleton-card-group.component'
+import { SkeletonHistoryComponent } from '../../../components/skeletons/skeleton-history/skeleton-history.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
@@ -17,7 +17,7 @@ import { LoadingService } from '../../../core/services/loading.service'
         RouterLink,
         ContainerWrapperComponent,
         CustomDatePipe,
-        SkeletonCardGroupComponent,
+        SkeletonHistoryComponent,
         ImageProfileComponent,
         PageHeaderComponent,
         ButtonComponent,
