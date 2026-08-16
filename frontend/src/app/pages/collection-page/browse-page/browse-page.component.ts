@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject } from '@angular/core'
+import { Component, computed, effect, inject, signal } from '@angular/core'
 import { ReactiveFormsModule } from '@angular/forms'
 import { Router, RouterLink } from '@angular/router'
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
@@ -42,6 +42,7 @@ export class BrowsePageComponent {
     public readonly currentPage$ = this.browsePageService.currentPage
     public readonly hasMoreGames$ = this.browsePageService.hasMoreGames
     public readonly searchControl = this.browsePageService.searchControl
+    public readonly searchError = signal(false)
 
     // --------------------------------------------------------------------------
     //        Computed
@@ -67,6 +68,7 @@ export class BrowsePageComponent {
                 const trimmedValue = value?.trim() || ''
                 this.searchTerm$.set(trimmedValue)
                 this.currentPage$.set(1) // Reset page when search changes
+                this.searchError.set(false)
 
                 // Only search if the term is valid
                 if (trimmedValue.length >= 3) {
@@ -119,6 +121,11 @@ export class BrowsePageComponent {
         }
     }
 
+    public retrySearch(): void {
+        this.searchError.set(false)
+        this._searchGames()
+    }
+
     private _searchGames(isNextPage = false) {
         if (!this.searchTermIsValid$()) {
             return
@@ -136,6 +143,7 @@ export class BrowsePageComponent {
 
         // set the loading state
         this.isSearching$.set(true)
+        this.searchError.set(false)
         if (!isNextPage) {
             this.browseGamesList$.set([])
         }
@@ -158,6 +166,7 @@ export class BrowsePageComponent {
                 },
                 error: (error) => {
                     console.error(error)
+                    this.searchError.set(true)
                     this.isSearching$.set(false)
                 },
                 complete: () => {
