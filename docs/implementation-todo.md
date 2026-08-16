@@ -37,7 +37,7 @@ Relevant surfaces: [`app.routes.ts`](../frontend/src/app/app.routes.ts), [`meet-
 - Persist the selected group, organizer, attendees, played games, and participant links atomically through `POST /sessions`.
 - Persist scheduled sessions and initial pending attendees atomically through `POST /sessions/scheduled`.
 - Replace the `submitSession()` TODO in the log-session wizard with the guarded API call and success/error navigation.
-- Define and implement transitions between scheduled, active, completed, and cancelled sessions; only scheduled and completed creation currently exist.
+- Define and implement transitions between scheduled, active, completed, and cancelled sessions; organizer-controlled transitions now exist for scheduled/active sessions, while completed/cancelled remain terminal.
 - Distinguish planned games from games actually played in all API responses and frontend types; the completed write currently records played games while the detail/history read model still needs richer game objects.
 - Decide how the legacy `MeetAccountGame` history relation should evolve; the completed write currently preserves it as a compatibility relation.
 - Remove or replace the unfinished confirmation flow; `MeetConfirmComponent` already says the confirmation concept will be removed.
@@ -45,7 +45,7 @@ Relevant surfaces: [`app.routes.ts`](../frontend/src/app/app.routes.ts), [`meet-
 - Complete the organizer-only attendee API verification through the production UI.
 - Add transaction boundaries for scheduled-session creation, completion, cancellation, attendee changes, and played-game recording; completed-session logging now has one.
 - Ensure the upcoming sessions page reads real persisted scheduled/active sessions; the old completed-history placeholder has been removed and the page now uses `userMeets`.
-- Ensure completed sessions appear in history and cancelled sessions do not appear as completed history.
+- Ensure completed sessions appear in history and cancelled sessions do not appear as completed history; lifecycle filtering now excludes cancelled sessions from upcoming, while richer history/status read models remain to be completed.
 
 ### 2. Recommendations — Open / Blocked by session/product contract
 

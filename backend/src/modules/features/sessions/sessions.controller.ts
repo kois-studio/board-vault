@@ -1,9 +1,16 @@
-import { Body, Controller, Post, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
+import { Body, Controller, Param, ParseIntPipe, Patch, Post, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
 import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
-import { CreatePlaySessionBody, CreateScheduledSessionBody, ScheduledSessionCreatedDto, SessionCreatedDto } from '../../../common/types/session.type'
+import {
+    CreatePlaySessionBody,
+    CreateScheduledSessionBody,
+    ScheduledSessionCreatedDto,
+    SessionCreatedDto,
+    SessionStatusUpdatedDto,
+    UpdateSessionStatusBody,
+} from '../../../common/types/session.type'
 
 import { SessionsService } from './sessions.service'
 
@@ -28,5 +35,17 @@ export class SessionsController {
     @ApiResponse({ status: 201, type: ScheduledSessionCreatedDto })
     createScheduledSession(@Req() request: { user: { userId: number } }, @Body() body: CreateScheduledSessionBody) {
         return this.sessionsService.createScheduledSession(request.user.userId, body)
+    }
+
+    @Patch(':sessionId/status')
+    @ApiOperation({ summary: 'Transition a session lifecycle status' })
+    @ApiResponse({ status: 200, type: SessionStatusUpdatedDto })
+    @ApiResponse({ status: 400, description: 'The requested lifecycle transition is invalid.' })
+    updateSessionStatus(
+        @Req() request: { user: { userId: number } },
+        @Param('sessionId', ParseIntPipe) sessionId: number,
+        @Body() body: UpdateSessionStatusBody,
+    ) {
+        return this.sessionsService.updateSessionStatus(request.user.userId, sessionId, body)
     }
 }

@@ -135,11 +135,33 @@ describe('DatabaseService logging', () => {
             args: [7, 1, '2026-08-21T19:30:00.000Z', 'Europe/Madrid'],
         })
         expect(transaction.batch).toHaveBeenCalledWith(
-            expect.arrayContaining([
-                expect.objectContaining({ args: [43, 1] }),
-                expect.objectContaining({ args: [43, 2] }),
-            ]),
+            expect.arrayContaining([expect.objectContaining({ args: [43, 1] }), expect.objectContaining({ args: [43, 2] })]),
         )
+        expect(transaction.commit).toHaveBeenCalledTimes(1)
+    })
+
+    it('keeps legacy play links and canonical played games synchronized', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const transaction = {
+            execute: jest.fn().mockResolvedValueOnce({ rowsAffected: 1 }).mockResolvedValueOnce({ rowsAffected: 1 }),
+            commit: jest.fn().mockResolvedValue(undefined),
+            rollback: jest.fn().mockResolvedValue(undefined),
+            close: jest.fn(),
+        }
+
+        ;(service as unknown as { tursoClient: unknown }).tursoClient = {
+            transaction: jest.fn().mockResolvedValue(transaction),
+        }
+
+        await expect(service.createMeetAccountGame(1, 12, 42)).resolves.toEqual({ rowsAffected: 1 })
+        expect(transaction.execute).toHaveBeenNthCalledWith(1, {
+            sql: expect.stringContaining('INSERT OR IGNORE INTO MeetGame'),
+            args: [12, 42],
+        })
+        expect(transaction.execute).toHaveBeenNthCalledWith(2, {
+            sql: 'INSERT OR IGNORE INTO MeetAccountGame (accountId, meetId, gameId) VALUES (?, ?, ?)',
+            args: [1, 12, 42],
+        })
         expect(transaction.commit).toHaveBeenCalledTimes(1)
     })
 })

@@ -614,6 +614,19 @@ Changed: Added guarded `POST /sessions/scheduled`, which validates group members
 Verified: `cd backend && npm test -- --runInBand` (117 tests passed); `cd backend && npm run build`; `cd frontend && npm run build`; the scheduled and completed session service/database transaction suites pass.
 Known follow-ups: Implement lifecycle transitions and cancellation, add planned-game selection for scheduled sessions, show group names/member details instead of IDs, add authenticated browser coverage, and manually verify scheduling against production.
 
+Continuation claim: PROD-006
+
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: add organizer-controlled scheduled/active/completed/cancelled transitions and expose them in the session view
+
+Review continuation: PROD-006
+
+Changed: Added `PATCH /sessions/:sessionId/status` with organizer authorization and explicit lifecycle transitions: scheduled → active/completed/cancelled, active → completed/cancelled, and terminal completed/cancelled states. The session view now exposes organizer-only lifecycle controls, and legacy played-game writes now synchronize `MeetGame` with `MeetAccountGame` transactionally so active sessions remain visible after refresh.
+Verified: `cd backend && npm test -- --runInBand` (121 tests passed); targeted session, database transaction, and legacy play-link suites pass; `cd backend && npm run build`; `cd frontend && npm run build`.
+Known follow-ups: Add planned-game selection for scheduled sessions, show group names/member details instead of IDs, add authenticated browser assertions for lifecycle controls, and manually verify scheduling/transitions against production.
+
 When claiming a task, add:
 
 ```text

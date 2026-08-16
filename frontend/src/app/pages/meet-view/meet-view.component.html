@@ -1,7 +1,17 @@
 <container-wrapper *ngIf="loaded">
     <title-subtitle titleText="{{ groupData?.name }} - {{ meetData?.meetDate ?? '' | customDate }}">
-        Select who assisted and which games have been played
+        <span class="capitalize">{{ meetData?.status }} session</span>
     </title-subtitle>
+
+    @if (canManageLifecycle && canEditSession) {
+        <section class="flex flex-wrap gap-3 px-4 pt-4">
+            @if (meetData?.status === 'scheduled') {
+                <button class="app-btn-primary" [disabled]="isUpdatingStatus" (click)="updateStatus('active')">Start session</button>
+            }
+            <button class="app-btn-secondary" [disabled]="isUpdatingStatus" (click)="updateStatus('completed')">Mark completed</button>
+            <button class="app-btn-danger" [disabled]="isUpdatingStatus" (click)="updateStatus('cancelled')">Cancel session</button>
+        </section>
+    }
 
     <!-- original <br />
     {{ meetDataCopyOriginal | json }}<br /><br />

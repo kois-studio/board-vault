@@ -208,6 +208,15 @@ export type ScheduledSessionCreatedType = {
     status: 'scheduled'
 }
 
+export type UpdateSessionStatusRequest = {
+    status: 'active' | 'completed' | 'cancelled'
+}
+
+export type SessionStatusUpdatedType = {
+    sessionId: number
+    status: MeetType['status']
+}
+
 export type UserStatsType = {
     totalGamesValue: number
 }
