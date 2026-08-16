@@ -24,6 +24,7 @@ import type {
     MeetWithAttendeesAndGamesType,
     NotificationType,
     PublicUserType,
+    RecommendationsType,
     SessionCreatedType,
     ScheduleSessionRequest,
     ScheduledSessionCreatedType,
@@ -341,6 +342,10 @@ export class Api {
 
     getUserMeets(userId: number) {
         return this.http.get<Array<MeetType>>(`${this.url}/play/users/${userId}/meets`)
+    }
+
+    getRecommendations(body: { groupId: number; attendeeIds: Array<number>; availableMinutes?: number }) {
+        return this.http.post<RecommendationsType>(`${this.url}/play/recommendations`, body)
     }
 
     // --------------------------------------------------------------------------

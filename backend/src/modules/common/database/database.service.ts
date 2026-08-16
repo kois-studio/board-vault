@@ -487,6 +487,61 @@ export class DatabaseService implements OnModuleInit {
         return resultSet.rows.map(row => Number(row[0]))
     }
 
+    getRecommendationCandidates(attendeeIds: Array<number>, playerCount: number, availableMinutes?: number) {
+        const attendeePlaceholders = attendeeIds.map(() => '?').join(', ')
+        const durationFilter = availableMinutes === undefined ? '' : 'AND (g.gameAvgDuration IS NULL OR g.gameAvgDuration <= ?)'
+        const args: Array<number> = [...attendeeIds, playerCount, playerCount]
+
+        if (availableMinutes !== undefined) {
+            args.push(availableMinutes)
+        }
+
+        return this._tursoExecute({
+            sql: `
+                SELECT
+                    g.id,
+                    g.imageUrl,
+                    g.gameAvgDuration,
+                    g.minPlayers,
+                    g.maxPlayers,
+                    gt_en.title,
+                    gt_es.title,
+                    (
+                        SELECT COUNT(DISTINCT og.accountId)
+                        FROM OwnedGame og
+                        WHERE og.gameId = g.id AND og.accountId IN (${attendeePlaceholders})
+                    ) AS ownerCount,
+                    (
+                        SELECT AVG(gr.review)
+                        FROM GameReview gr
+                        WHERE gr.gameId = g.id AND gr.accountId IN (${attendeePlaceholders})
+                    ) AS averageReview,
+                    (
+                        SELECT MAX(m.meetDate)
+                        FROM MeetAccountGame mag
+                        INNER JOIN Meet m ON m.id = mag.meetId
+                        WHERE mag.gameId = g.id
+                          AND mag.accountId IN (${attendeePlaceholders})
+                          AND m.status = 'completed'
+                    ) AS lastPlayedAt
+                FROM Game g
+                INNER JOIN OwnedGame ownedByAttendee
+                    ON ownedByAttendee.gameId = g.id
+                   AND ownedByAttendee.accountId IN (${attendeePlaceholders})
+                LEFT JOIN GameTranslation gt_en
+                    ON gt_en.gameId = g.id AND gt_en.languageCode = 'en'
+                LEFT JOIN GameTranslation gt_es
+                    ON gt_es.gameId = g.id AND gt_es.languageCode = 'es'
+                WHERE (g.minPlayers IS NULL OR g.minPlayers <= ?)
+                  AND (g.maxPlayers IS NULL OR g.maxPlayers >= ?)
+                  AND COALESCE(gt_en.title, gt_es.title) IS NOT NULL
+                  ${durationFilter}
+                GROUP BY g.id
+            `,
+            args: [...args.slice(0, attendeeIds.length), ...attendeeIds, ...attendeeIds, ...attendeeIds, ...args.slice(attendeeIds.length)],
+        })
+    }
+
     async createGroupMembership(groupDto: CreateGroupMembershipBody) {
         await this._tursoExecute({
             sql: 'INSERT INTO GroupMembership (accountId, groupId) VALUES (?, ?)',

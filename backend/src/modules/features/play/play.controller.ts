@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseIntPipe, UseGuards } from '@nestjs/common'
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
@@ -7,7 +7,7 @@ import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
 import { MeetDto } from '../../../common/types/meet.type'
 
 import { PlayService } from './play.service'
-import { HistoryRecordDto } from './play.types'
+import { HistoryRecordDto, RecommendationRequestBody, RecommendationsDto } from './play.types'
 
 @UseGuards(JwtAuthGuard, VerifiedUserGuard)
 @ApiTags('play')
@@ -15,6 +15,14 @@ import { HistoryRecordDto } from './play.types'
 @Controller('play')
 export class PlayController {
     constructor(private readonly playService: PlayService) {}
+
+    @Post('/recommendations')
+    @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
+    @ApiOperation({ summary: 'Get deterministic recommendations for selected group attendees' })
+    @ApiResponse({ status: 200, type: RecommendationsDto })
+    getRecommendations(@Req() request: { user: { userId: number } }, @Body() body: RecommendationRequestBody) {
+        return this.playService.getRecommendations(request.user.userId, body)
+    }
 
     @UseGuards(UserOwnershipGuard)
     @Get('/users/:userId/history')

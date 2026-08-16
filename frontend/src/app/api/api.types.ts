@@ -268,6 +268,26 @@ export type HistoryRecordType = {
     }>
 }
 
+export type RecommendationType = {
+    gameData: GameCompleteType
+    score: number
+    explanation: {
+        reasons: Array<string>
+        attendeeOwnerCount: number
+        attendeeCount: number
+        averageReview: number | null
+        lastPlayedAt: string | null
+    }
+}
+
+export type RecommendationsType = {
+    groupId: number
+    attendeeIds: Array<number>
+    availableMinutes: number | null
+    recommendations: Array<RecommendationType>
+    noResultReason: string | null
+}
+
 // --------------------------------------------------------------------------
 // #region collection activity
 // --------------------------------------------------------------------------
