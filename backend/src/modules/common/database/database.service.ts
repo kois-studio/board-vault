@@ -369,6 +369,31 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    async createGroupWithMembership(groupDto: CreateGroupBody) {
+        const transaction = await this.tursoClient.transaction('write')
+
+        try {
+            const groupResult = await transaction.execute({
+                sql: 'INSERT INTO UserGroup (name, createdBy) VALUES (?, ?)',
+                args: [groupDto.name, groupDto.createdBy],
+            })
+            const groupId = Number(groupResult.lastInsertRowid)
+
+            await transaction.execute({
+                sql: 'INSERT INTO GroupMembership (accountId, groupId) VALUES (?, ?)',
+                args: [groupDto.createdBy, groupId],
+            })
+
+            await transaction.commit()
+            return { groupId }
+        } catch (error) {
+            await transaction.rollback()
+            throw error
+        } finally {
+            transaction.close()
+        }
+    }
+
     async updateGroup(id: number, partialGroupDto: UpdateGroupBody) {
         // Array to store fields to update
         const fields = []

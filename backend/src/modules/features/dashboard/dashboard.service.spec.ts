@@ -35,6 +35,7 @@ describe('DashboardService group history', () => {
             {} as never,
             {} as never,
             {} as never,
+            {} as never,
             meets as never,
             {} as never,
             meetAccountGames as never,
