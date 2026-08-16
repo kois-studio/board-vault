@@ -21,7 +21,7 @@ The backend reads these variable names from the environment or ignored local `.e
 
 The API accepts JSON and URL-encoded request bodies up to 100 KB. This is configured in `backend/src/main.ts`; multipart uploads are not an evidenced supported interface.
 
-The exact local values are intentionally not documented. No `.env.example`, typed configuration schema, test environment, or production environment ownership record was found. The frontend uses committed environment files containing only public API URLs, a production boolean, and the development Clerk publishable key. Production builds generate an ignored `public/runtime-config.js` from the public `CLERK_PUBLISHABLE_KEY` build variable; the production toggle/key remain disabled until the production Clerk instance is configured. These values are configuration, not secrets. The Clerk secret must remain backend-only.
+The exact local values are intentionally not documented. No `.env.example`, typed configuration schema, test environment, or production environment ownership record was found. The frontend uses committed environment files containing only public API URLs, a production boolean, and the development Clerk publishable key. Production builds generate an ignored `public/runtime-config.js` from the public `CLERK_PUBLISHABLE_KEY` build variable; the production Clerk toggle/key are configured in Vercel as documented in the deployment section below. These values are configuration, not secrets. The Clerk secret must remain backend-only.
 
 When `NODE_ENV=production`, startup fails closed unless `CLERK_SECRET_KEY` and `CLERK_AUTHORIZED_PARTIES` are present. This prevents a deployment from accepting Clerk sessions without an explicit trusted frontend-origin policy.
 
@@ -30,14 +30,14 @@ When `NODE_ENV=production`, startup fails closed unless `CLERK_SECRET_KEY` and `
 Use the exact commands and current results in [AGENTS.md](AGENTS.md) and [testing.md](testing.md). In summary:
 
 - backend build passes;
-- frontend production build passes but reports a Sass `@import` deprecation, 405 skipped selector errors, and an initial bundle over the 500 kB warning budget;
+- frontend production build passes but reports a Sass `@import` deprecation, 410 skipped selector errors, and an initial bundle over the 500 kB warning budget;
 - backend unit tests pass focused profile-update, ownership, group/membership listing, collection route ownership, actor-identity, invitation-lifecycle, invite-only join, notification ownership, meet-read, meet-account-game membership, admin reviewer, authentication path/query validation, global-user-list, deleted-account JWT, database-log, email-log, cache-log, and auth-log suites; broader coverage is still missing;
 - backend e2e setup fails because `RESEND_API_KEY` is absent and contains a stale starter assertion;
 - backend lint fails with 17 errors and 3 warnings;
 - frontend Biome fails with 8 findings;
-- frontend unit/browser baseline includes one generated Angular smoke test and three passing Playwright public-navigation tests; authenticated browser journeys are still missing.
+- frontend unit/browser baseline includes one generated Angular smoke test and three passing Playwright public-navigation tests; the authenticated Playwright journeys exist but remain opt-in and were skipped without a disposable Clerk storage state.
 - the Clerk identity migration passes a restored-backup SQLite check and was applied to live Turso with integrity `ok` and unchanged counts of 15 accounts, 13 meets, and 101 meet/game links.
-- a local Clerk Google sign-in completed through Board Vault during development; `/auth/clerk/status` verified the session and linked the matching existing live account `#1`, preserving its admin state. Production currently uses email/password/username only; live Turso now reports one linked account. Protected-route Clerk transport and new-account provisioning are covered by focused backend tests but not yet by a deployed production check.
+- a local Clerk sign-in completed through Board Vault during development; `/auth/clerk/status` verified the session and linked the matching existing live account `#1`, preserving its admin state. Production currently uses email/password/username only; Google OAuth is intentionally disabled. Protected-route Clerk transport and new-account provisioning are covered by focused backend tests but not yet by a deployed production check.
 - On 2026-08-15, a production email/password/username signup for the preserved
   account email completed through Board Vault. The backend migrated Account
   `#1` from the development Clerk identity to production identity
