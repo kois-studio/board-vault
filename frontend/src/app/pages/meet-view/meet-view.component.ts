@@ -5,6 +5,7 @@ import { firstValueFrom } from 'rxjs'
 import { Api } from '../../api/api'
 import type { GameType, GroupWithMembersAndGames, MeetType, MeetWithAttendeesAndGamesType, UserType } from '../../api/api.types'
 import { CardAccountComponent } from '../../components/card-account/card-account.component'
+import { ToastService } from '../../components/toast/toast.service'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { ImageBackgroundComponent } from '../../components/ui/image-background/image-background.component'
 import { TitleSubtitleComponent } from '../../components/ui/title-subtitle/title-subtitle.component'
@@ -37,12 +38,14 @@ export class MeetViewComponent {
     public gameReviews: Record<GameType['id'], Record<UserType['id'], number>> = {}
     public avgReviewsIndex: Record<GameType['id'], number> = {}
     public lastMeeting: Nullable<MeetType> = null
+    public isUpdatingStatus = false
 
     constructor(
         private readonly api: Api,
         private readonly router: Router,
         private readonly route: ActivatedRoute,
         private readonly dataService: DataService,
+        private readonly toastService: ToastService,
     ) {
         effect(async () => {
             this.userData = this.dataService.currentUser()
@@ -106,6 +109,31 @@ export class MeetViewComponent {
         }
 
         return JSON.stringify(this.meetData.playedGames) === JSON.stringify(this.meetDataCopyOriginal.playedGames)
+    }
+
+    get canManageLifecycle(): boolean {
+        return Boolean(this.meetData && this.userData && this.meetData.createdBy === this.userData.id)
+    }
+
+    get canEditSession(): boolean {
+        return this.meetData?.status === 'scheduled' || this.meetData?.status === 'active'
+    }
+
+    async updateStatus(status: 'active' | 'completed' | 'cancelled'): Promise<void> {
+        if (!this.meetData || !this.canManageLifecycle || !this.canEditSession) return
+
+        this.isUpdatingStatus = true
+        try {
+            const result = await firstValueFrom(this.api.updateSessionStatus(this.meetData.id, { status }))
+            this.meetData.status = result.status
+            this.meetDataCopyOriginal = JSON.parse(JSON.stringify(this.meetData))
+            this.dataService.refreshUserMeets()
+            this.toastService.success(`Session marked as ${status}.`)
+        } catch {
+            this.toastService.error('Could not update the session status.')
+        } finally {
+            this.isUpdatingStatus = false
+        }
     }
 
     get totalGames(): Array<GameType & { active: boolean }> {

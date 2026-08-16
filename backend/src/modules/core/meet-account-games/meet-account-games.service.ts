@@ -144,7 +144,7 @@ export class MeetAccountGamesService {
             throw new NotFoundException(`Meet with meetId ${meetId} not found`)
         }
 
-        return this._parseResultSet(resultSet)[0]
+        return { accountId, meetId, gameId }
     }
 
     async deleteMeetAccountGame(accountId: number, meetId: number, gameId: number): Promise<{ success: boolean }> {

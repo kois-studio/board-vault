@@ -4,7 +4,9 @@ import type {
     CreatePlaySessionBody,
     CreateScheduledSessionBody,
     ScheduledSessionCreatedDto,
+    SessionStatusUpdatedDto,
     SessionCreatedDto,
+    UpdateSessionStatusBody,
 } from '../../../common/types/session.type'
 import { DatabaseService } from '../../common/database/database.service'
 
@@ -89,5 +91,31 @@ export class SessionsService {
             sessionId: Number(result.lastInsertRowid),
             status: 'scheduled',
         }
+    }
+
+    async updateSessionStatus(actorAccountId: number, sessionId: number, body: UpdateSessionStatusBody): Promise<SessionStatusUpdatedDto> {
+        const session = await this.databaseService.getMeetByIdForCreator(sessionId, actorAccountId)
+        if (session.rows.length === 0) {
+            throw new ForbiddenException('Only the session organizer can change its status')
+        }
+
+        const currentStatus = String(session.rows[0][5] ?? 'completed') as SessionStatusUpdatedDto['status']
+        const allowedTransitions: Record<SessionStatusUpdatedDto['status'], Array<UpdateSessionStatusBody['status']>> = {
+            scheduled: ['active', 'completed', 'cancelled'],
+            active: ['completed', 'cancelled'],
+            completed: [],
+            cancelled: [],
+        }
+
+        if (!allowedTransitions[currentStatus].includes(body.status)) {
+            throw new BadRequestException(`Cannot change a ${currentStatus} session to ${body.status}`)
+        }
+
+        const result = await this.databaseService.updateMeetStatus(sessionId, body.status)
+        if (result.rowsAffected !== 1) {
+            throw new NotFoundException(`Session with id ${sessionId} not found`)
+        }
+
+        return { sessionId, status: body.status }
     }
 }
