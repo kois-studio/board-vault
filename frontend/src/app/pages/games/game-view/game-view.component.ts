@@ -92,6 +92,7 @@ export class GameViewPageComponent implements OnDestroy {
     public wishlistAnimation = false // used for a little scale animation
     public reviewHoverValue = 0
     public isLoadingGameData = true // initial loading state
+    public readonly gameLoadError = signal(false)
     // ownership form
     public ownershipFormGroup = new FormGroup({
         purchaseDate: new FormControl<string | null>(null, []),
@@ -128,6 +129,7 @@ export class GameViewPageComponent implements OnDestroy {
         // scroll to the top of the page
         window.scrollTo(0, 0)
         this.isLoadingGameData = true
+        this.gameLoadError.set(false)
 
         this.api.getGameView(userId, gameId).subscribe({
             next: (game) => {
@@ -143,9 +145,17 @@ export class GameViewPageComponent implements OnDestroy {
                 }
             },
             error: (error) => {
+                this.isLoadingGameData = false
+                this.gameLoadError.set(true)
                 this.toastService.error('Error loading game data')
             },
         })
+    }
+
+    public retryGameLoad(): void {
+        const currentUser = this.currentUser$()
+        const gameId = Number.parseInt(this.route.snapshot.paramMap.get('gameId') || '')
+        this._loadGameData(currentUser?.id, gameId)
     }
 
     // #region Wishlist
