@@ -668,6 +668,14 @@ export class DataService {
         })
     }
 
+    public refreshUserMeets() {
+        const currentUser = this.currentUser()
+        if (!currentUser) return
+
+        this.userMeets.set([])
+        this._getUserMeets(currentUser.id)
+    }
+
     public createMeetAttendee(meetId: number, accountId: number) {
         this.api.createMeetAttendee(meetId, accountId).subscribe({
             next: res => {},

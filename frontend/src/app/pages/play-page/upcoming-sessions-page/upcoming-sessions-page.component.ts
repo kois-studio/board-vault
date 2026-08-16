@@ -1,9 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { Component, computed, inject, signal } from '@angular/core'
 import { RouterLink } from '@angular/router'
-import { FormScheduleSessionComponent } from '../../../components/forms/form-schedule-session/form-schedule-session.component'
-import { ImageProfileComponent } from '../../../components/image-profile/image-profile.component'
-import { SkeletonCardGroupComponent } from '../../../components/skeletons/skeleton-card-group/skeleton-card-group.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
@@ -18,11 +15,8 @@ import { LoadingService } from '../../../core/services/loading.service'
         RouterLink,
         ContainerWrapperComponent,
         CustomDatePipe,
-        SkeletonCardGroupComponent,
-        ImageProfileComponent,
         PageHeaderComponent,
         ButtonComponent,
-        FormScheduleSessionComponent,
     ],
     templateUrl: 'upcoming-sessions-page.component.html',
 })
@@ -35,15 +29,18 @@ export class UpcomingSessionsPageComponent {
     // --------------------------------------------------------------------------
     // dataService
     public readonly currentUser$ = this.dataService.currentUser
-    public readonly userHistory$ = this.dataService.userHistory
+    public readonly userGroups$ = this.dataService.userGroups
+    public readonly userMeets$ = this.dataService.userMeets
     // loadingService
-    public readonly isLoadingHistory = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_GAMES_HISTORY])
+    public readonly isLoadingGroups = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_GROUPS])
 
     // --------------------------------------------------------------------------
     //        Computed
     // --------------------------------------------------------------------------
-    public readonly sortedUserHistoryComputed = computed(() => {
-        return this.userHistory$().sort((a, b) => new Date(b.meetData.meetDate).getTime() - new Date(a.meetData.meetDate).getTime())
+    public readonly upcomingSessions = computed(() => {
+        return [...this.userMeets$()]
+            .filter(meet => meet.status === 'scheduled' || meet.status === 'active')
+            .sort((a, b) => new Date(a.meetDate).getTime() - new Date(b.meetDate).getTime())
     })
 
     // --------------------------------------------------------------------------

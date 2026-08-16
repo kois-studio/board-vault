@@ -9,72 +9,40 @@
 </app-page-header>
 
 <container-wrapper>
-    <!-- Loading state -->
-    @if (isLoadingHistory()) {
-        <!-- TODO: custom skeleton matching actual history structure -->
-        <app-skeleton-card-group />
-    } @else if (userHistory$().length === 0) {
-        <!-- no data -->
+    @if (isSchedulingASession()) {
+        <section class="app-bg-secondary rounded-lg p-4 mb-8">
+            <h2 class="text-xl font-semibold mb-2">Choose a group</h2>
+            <p class="text-secondary mb-4">Select the group for the new scheduled session.</p>
+            @if (isLoadingGroups()) {
+                <p class="text-secondary">Loading groups…</p>
+            } @else if (userGroups$().length === 0) {
+                <p class="text-secondary">Create or join a group before scheduling a session.</p>
+            } @else {
+                <div class="grid gap-3 sm:grid-cols-2">
+                    @for (group of userGroups$(); track group.id) {
+                        <a class="app-btn-secondary" [routerLink]="['/groups', group.id, 'meets', 'new']">{{ group.name }}</a>
+                    }
+                </div>
+            }
+        </section>
+    }
+
+    @if (upcomingSessions().length === 0) {
         <div class="text-center py-8 text-secondary">
-            <p>No games played yet</p>
+            <p>No upcoming sessions yet.</p>
+            <p class="text-sm mt-2">Schedule a session to bring your group together.</p>
         </div>
     } @else {
-        <!-- Scheduling a session form -->
-        @if (isSchedulingASession()) {
-            <app-form-schedule-session [showForm]="isSchedulingASession()" />
-        }
-
-        <!-- List of upcoming sessions -->
-        @for (historyRecord of sortedUserHistoryComputed(); track historyRecord.meetData.id) {
+        @for (session of upcomingSessions(); track session.id) {
             <div class="app-bg-secondary relative p-4 mb-8">
                 <h2 class="text-xl font-semibold mb-4">
-                    {{ historyRecord.meetData.meetDate | customDate }}
+                    {{ session.meetDate | customDate }}
                 </h2>
-
-                <!-- Ids -->
                 <p class="text-secondary text-sm absolute top-4 right-4">
-                    Meet #{{ historyRecord.meetData.id }} Group #{{ historyRecord.meetData.groupId }}
+                    Session #{{ session.id }} · Group #{{ session.groupId }}
                 </p>
-
-                <!-- Games played on this date -->
-                <ul class="grid lg:grid-cols-2 gap-4">
-                    @for (gamePlayed of historyRecord.gamesPlayed; track gamePlayed.gameData.id) {
-                        <div class="app-bg-tertiary rounded-lg p-4 flex gap-4">
-                            <!-- Game image -->
-                            <a [routerLink]="['/games/', gamePlayed.gameData.id]">
-                                <img
-                                    [src]="gamePlayed.gameData.imageUrl"
-                                    [alt]="gamePlayed.gameData.titleTranslations.en"
-                                    loading="lazy"
-                                    class="w-24 h-24 object-cover rounded-lg"
-                                />
-                            </a>
-
-                            <!-- Game info -->
-                            <div class="flex flex-col justify-between flex-1">
-                                <h3 class="text-lg font-semibold mb-1">{{ gamePlayed.gameData.titleTranslations.en }}</h3>
-
-                                <div class="flex justify-between items-end">
-                                    
-                                    <!-- Players -->
-                                    <div class="relative h-8 flex items-center">
-                                        <!-- Player avatars -->
-                                        <div class="flex -space-x-2">
-                                            @for (player of gamePlayed.playedBy; track player.id) {
-                                                <app-image-profile
-                                                    [title]="player.username"
-                                                    class="border-2 rounded-full border-indigo-100 dark:border-zinc-800"
-                                                    [avatar]="player.avatar"
-                                                    [style.zIndex]="$index"
-                                                />
-                                            }
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    }
-                </ul>
+                <span class="inline-flex rounded-full bg-zinc-700 px-3 py-1 text-sm capitalize">{{ session.status }}</span>
+                <a class="app-btn-secondary mt-4 inline-block" [routerLink]="['/meets', session.id]">Open session</a>
             </div>
         }
     }

@@ -1,7 +1,10 @@
 import { CommonModule } from '@angular/common'
 import { Component, effect } from '@angular/core'
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
-import { ActivatedRoute, RouterLink } from '@angular/router'
+import { ActivatedRoute, Router, RouterLink } from '@angular/router'
+import { firstValueFrom } from 'rxjs'
+import { Api } from '../../api/api'
+import { ToastService } from '../../components/toast/toast.service'
 import { DataService } from '../../core/services/data.service'
 
 @Component({
@@ -35,6 +38,9 @@ export class MeetNewComponent {
     constructor(
         private readonly route: ActivatedRoute,
         private readonly dataService: DataService,
+        private readonly api: Api,
+        private readonly router: Router,
+        private readonly toastService: ToastService,
     ) {
         effect(() => {
             this.userData = this.dataService.currentUser()
@@ -66,12 +72,33 @@ export class MeetNewComponent {
     }
 
     onClickCreateMeeting() {
-        const accountId = this.userData?.id
         const groupId = this.groupData?.id
+        const sessionDate = this.dateForm.value
 
-        if (accountId && groupId) {
-            this.dataService.createMeeting(accountId, groupId)
+        if (!groupId || !sessionDate || this.dateForm.invalid) {
+            this.dateForm.markAsTouched()
+            return
         }
-        // DO NOTHING more, the dataService will redirect to the correct /meet/:id
+
+        this.isCreatingLoading = true
+
+        firstValueFrom(
+            this.api.scheduleSession({
+                groupId,
+                sessionDate: new Date(`${sessionDate}T12:00:00`).toISOString(),
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            }),
+        )
+            .then(() => {
+                this.dataService.refreshUserMeets()
+                this.toastService.success('Session scheduled.')
+                return this.router.navigate(['/play/upcoming-sessions'])
+            })
+            .catch(() => {
+                this.toastService.error('Could not schedule the session. Please try again.')
+            })
+            .finally(() => {
+                this.isCreatingLoading = false
+            })
     }
 }

@@ -25,6 +25,8 @@ import type {
     NotificationType,
     PublicUserType,
     SessionCreatedType,
+    ScheduleSessionRequest,
+    ScheduledSessionCreatedType,
     TagCategoryType,
     TagType,
     UpdateGameOwnedType,
@@ -158,6 +160,10 @@ export class Api {
 
     createPlaySession(body: CreatePlaySessionRequest) {
         return this.http.post<SessionCreatedType>(`${this.url}/sessions`, body)
+    }
+
+    scheduleSession(body: ScheduleSessionRequest) {
+        return this.http.post<ScheduledSessionCreatedType>(`${this.url}/sessions/scheduled`, body)
     }
 
     // #region meet attendees

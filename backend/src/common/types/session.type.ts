@@ -55,3 +55,27 @@ export class SessionCreatedDto {
     @ApiProperty({ example: 'completed' })
     status: 'completed'
 }
+
+export class CreateScheduledSessionBody {
+    @ApiProperty({ example: 7 })
+    @IsInt()
+    @Min(1)
+    groupId: number
+
+    @ApiProperty({ example: '2026-08-21T19:30:00.000Z' })
+    @IsISO8601()
+    sessionDate: string
+
+    @ApiProperty({ example: 'Europe/Madrid' })
+    @IsString()
+    @MaxLength(64)
+    timezone: string
+}
+
+export class ScheduledSessionCreatedDto {
+    @ApiProperty({ example: 12345 })
+    sessionId: number
+
+    @ApiProperty({ example: 'scheduled' })
+    status: 'scheduled'
+}
