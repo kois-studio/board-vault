@@ -103,9 +103,9 @@ compliance:
       next_action: Define disposable test data and provider fakes before adding integration coverage.
     - id: TEST-004
       status: partial
-      evidence: backend focused tests and frontend public Playwright tests assert user-visible/security behavior; the stale backend starter e2e still asserts a root Hello World response and authenticated browser tests remain opt-in
+      evidence: backend focused tests plus 2 environment-safe HTTP E2E tests and frontend public Playwright tests assert security/user-visible behavior; seeded integration and authenticated browser tests remain opt-in
       priority: high
-      next_action: Replace starter assertions with user-visible behavior and denied-path assertions.
+      next_action: Expand the HTTP contract suite with disposable authenticated/authorized journeys.
     - id: TEST-005
       status: gap
       evidence: 136 focused backend tests now cover the highest-risk unit boundaries, but the suite does not yet exercise a clean database, provider failure contract, or complete browser journey
@@ -236,12 +236,12 @@ compliance:
       next_action: Align the backend README with npm and decide whether root coordination commands are valuable.
     - id: DEP-002
       status: partial
-      evidence: `.github/workflows/ci.yml` uses npm ci and dependency caching keyed by the committed package-lock.json files
+      evidence: .github/workflows/ci.yml uses npm ci and dependency caching keyed by the committed package-lock.json files
       priority: high
       next_action: Monitor cache behavior in the first workflow runs.
     - id: DEP-003
       status: partial
-      evidence: `.nvmrc` and CI pin Node 22.20.0 and lockfiles are committed, but no root-level package-manager contract is committed
+      evidence: .nvmrc and CI pin Node 22.20.0 and lockfiles are committed, but no root-level package-manager contract is committed
       priority: high
       next_action: Pin/document Node and package-manager versions.
     - id: DEP-004
@@ -267,7 +267,7 @@ compliance:
 
     - id: CI-001
       status: partial
-      evidence: `.github/workflows/ci.yml` runs locked installs, backend tests/build, frontend build/public Playwright checks, and disposable database verification
+      evidence: .github/workflows/ci.yml runs locked installs, backend tests/build, frontend build/public Playwright checks, and disposable database verification
       priority: critical
       next_action: Observe the first workflow run and configure required checks after repository permissions are confirmed.
     - id: CI-002

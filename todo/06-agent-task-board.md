@@ -937,17 +937,17 @@ Changed: Added `database/scripts/migrate.mjs` with explicit baseline bootstrappi
 Verified: `node database/scripts/verify-empty-state.mjs` passes with SQLite integrity `ok`; live Turso metadata contains versions 0001–0005; `git diff --check` passes.
 Known follow-ups: Add the empty-state check to CI/deployment gates, add synthetic fixtures, and rehearse backup/restore before launch readiness.
 
-Continuation claim: EQ-001 / EQ-002
+Continuation claim: EQ-001 / EQ-002 / EQ-003
 
 Owner: Codex
 Claimed: 2026-08-16
 Branch/worktree: main / shared workspace
 Scope: make package installation reproducible and add safe CI validation gates
 
-Review continuation: EQ-001 / EQ-002
+Review continuation: EQ-001 / EQ-002 / EQ-003
 
-Changed: Generated and committed backend/frontend npm lockfiles, aligned the frontend Angular toolchain to a coherent pinned 19.2 release family, removed lockfile ignores, added `.nvmrc` for Node 22.20.0, and added `.github/workflows/ci.yml` for locked installs, backend tests/build, frontend build/public Playwright checks, and disposable database verification.
-Verified: Real `npm ci --ignore-scripts` passed in both packages; backend 136-test suite/build passed; frontend build and public Playwright checks passed; database empty-state verification passed; CI YAML parses as valid YAML; `git diff --check` passes.
+Changed: Generated and committed backend/frontend npm lockfiles, aligned the frontend Angular toolchain to a coherent pinned 19.2 release family, removed lockfile ignores, added `.nvmrc` for Node 22.20.0, added `.github/workflows/ci.yml`, and replaced the stale backend Hello World E2E with two environment-safe HTTP boundary tests. The full `AppModule` now compiles because `SessionsModule` imports `DatabaseModule`.
+Verified: Real `npm ci --ignore-scripts` passed in both packages; backend 136-test suite, 2-test HTTP E2E suite, and build passed; frontend build and public Playwright checks passed; database empty-state verification passed; CI YAML parses as valid YAML; `git diff --check` passes.
 Known follow-ups: Observe the first remote workflow run, align the backend README with npm, add lint/format gates after baseline failures are resolved, and add non-production authenticated E2E with disposable Clerk state.
 
 When claiming a task, add:

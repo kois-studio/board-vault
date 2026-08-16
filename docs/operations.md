@@ -32,7 +32,7 @@ Use the exact commands and current results in [AGENTS.md](AGENTS.md) and [testin
 - backend build passes;
 - frontend production build passes but reports a Sass `@import` deprecation, 411 skipped selector errors, and an initial bundle over the 500 kB warning budget;
 - backend unit tests pass focused profile-update, ownership, group/membership listing, collection route ownership, actor-identity, invitation-lifecycle, invite-only join, notification ownership, meet-read, meet-account-game membership, admin reviewer, authentication path/query validation, global-user-list, deleted-account JWT, database-log, email-log, cache-log, and auth-log suites; broader coverage is still missing;
-- backend e2e setup fails because `RESEND_API_KEY` is absent and contains a stale starter assertion;
+- backend HTTP e2e now passes two environment-safe boundary tests; broader seeded/integration coverage remains open;
 - backend lint fails with 17 errors and 3 warnings;
 - frontend Biome fails with 8 findings;
 - frontend unit/browser baseline includes one generated Angular smoke test and three passing Playwright public-navigation tests; the authenticated Playwright journeys exist but remain opt-in and were skipped without a disposable Clerk storage state.

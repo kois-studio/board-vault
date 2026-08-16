@@ -46,7 +46,7 @@ Commands run from the package directory. Dependencies are currently present in i
 | Backend install | `cd backend && npm ci --ignore-scripts` | Passes from the committed `backend/package-lock.json`; the package README still says `pnpm` and should be aligned later. |
 | Backend build | `cd backend && npm run build` | Passes. |
 | Backend unit tests | `cd backend && npm test -- --runInBand` | Passes 136 focused tests across Clerk identity provisioning, authorization, validation, token lifecycle, session transactions/lifecycle, recommendations, feedback, and provider boundaries; broader integration coverage is still missing. |
-| Backend e2e tests | `cd backend && npm run test:e2e -- --runInBand` | Fails during module setup because `RESEND_API_KEY` is missing; it also contains a stale `/` “Hello World” assertion. |
+| Backend e2e tests | `cd backend && npm run test:e2e -- --runInBand` | Passes 2 environment-safe HTTP boundary tests; the suite uses a disposable SQLite URL, disables Redis, and never calls production providers. |
 | Backend lint, no mutation | `cd backend && npx eslint "{src,apps,libs,test}/**/*.ts"` | Fails with 17 errors and 3 warnings. Do not use the package `lint` script casually because it includes `--fix`. |
 | Backend formatting, writes files | `cd backend && npm run format` | Available; run only when formatting changes are in scope. |
 | Frontend install | `cd frontend && npm ci --ignore-scripts` | Passes from the committed `frontend/package-lock.json`; Angular packages are pinned to a coherent 19.2 toolchain. |

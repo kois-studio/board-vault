@@ -14,7 +14,7 @@
 |---|---|---|
 | `cd backend && npm run build` | Pass | TypeScript/Nest build currently compiles. |
 | `cd backend && npm test -- --runInBand` | Pass | 136 focused tests cover the previously documented Clerk, validation, authorization, privacy, logging, cache, and migration-boundary areas plus canonical session validation, transaction commit/rollback behavior, planned-game validation, lifecycle transition rules, terminal planned-to-skipped transitions, completed-only play-history filtering, deterministic recommendations, constraint-specific empty states, and recommendation feedback validation; broader authorization coverage remains absent. |
-| `cd backend && npm run test:e2e -- --runInBand` | Fail | Test setup throws because `RESEND_API_KEY` is missing; the test itself expects a stale `/` Hello World route. |
+| `cd backend && npm run test:e2e -- --runInBand` | Pass | Two environment-safe HTTP tests cover unauthenticated Clerk status rejection and invalid public query validation using a disposable SQLite URL and disabled Redis. |
 | `cd backend && npx eslint "{src,apps,libs,test}/**/*.ts"` | Fail | 17 errors and 3 warnings across schemas, database, collection, play, and profile code. |
 | `cd frontend && npm run build` | Pass with warnings | Bundle budget, Sass deprecation, and 411 selector warnings remain; current initial bundle is approximately 792 kB against the 500 kB warning budget. |
 | `cd frontend && npx biome check` | Fail | 8 findings in the form submission, log-session wizard, and propose-game page files. |
