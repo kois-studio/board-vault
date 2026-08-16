@@ -76,6 +76,11 @@
                                             <li>{{ reason }}</li>
                                         }
                                     </ul>
+                                    <a
+                                        class="app-btn-secondary inline-block mt-3 text-sm"
+                                        [routerLink]="['/groups', result.groupId, 'meets', 'new']"
+                                        [queryParams]="{ plannedGameId: recommendation.gameData.id, attendeeIds: result.attendeeIds.join(',') }"
+                                    >Schedule with this game</a>
                                 </div>
                             </article>
                         }
