@@ -19,6 +19,10 @@ import {
     successSchema,
     userInvitationsSchema,
     userGroupsSchema,
+    userHistorySchema,
+    userMeetsSchema,
+    userNotificationsSchema,
+    userStatsSchema,
 } from './api.schemas'
 import type {
     AdminGamesResultType,
@@ -320,7 +324,7 @@ export class Api {
     // #region dashboard
     // --------------------------------------------------------------------------
     getUserStats(userId: number) {
-        return this.http.get<UserStatsType>(`${this.url}/dashboard/users/${userId}/stats`)
+        return this.http.get<UserStatsType>(`${this.url}/dashboard/users/${userId}/stats`).pipe(map(response => userStatsSchema.parse(response)))
     }
 
     getUserGroups(userId: number) {
@@ -351,11 +355,11 @@ export class Api {
     // #region play
     // --------------------------------------------------------------------------
     getUserGamesHistory(userId: number) {
-        return this.http.get<Array<HistoryRecordType>>(`${this.url}/play/users/${userId}/history`)
+        return this.http.get<Array<HistoryRecordType>>(`${this.url}/play/users/${userId}/history`).pipe(map(response => userHistorySchema.parse(response)))
     }
 
     getUserMeets(userId: number) {
-        return this.http.get<Array<MeetType>>(`${this.url}/play/users/${userId}/meets`)
+        return this.http.get<Array<MeetType>>(`${this.url}/play/users/${userId}/meets`).pipe(map(response => userMeetsSchema.parse(response)))
     }
 
     getRecommendations(body: { groupId: number; attendeeIds: Array<number>; availableMinutes?: number }) {
@@ -379,7 +383,7 @@ export class Api {
     }
 
     getUserNotifications(userId: number) {
-        return this.http.get<Array<NotificationType>>(`${this.url}/profile/users/${userId}/notifications`)
+        return this.http.get<Array<NotificationType>>(`${this.url}/profile/users/${userId}/notifications`).pipe(map(response => userNotificationsSchema.parse(response)))
     }
 
     getUserInvitations(userId: number) {
