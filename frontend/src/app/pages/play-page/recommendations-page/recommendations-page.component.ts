@@ -8,7 +8,9 @@ import type { GroupWithMembersAndGames, RecommendationsType } from '../../../api
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
+import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
 import { DataService } from '../../../core/services/data.service'
+import { LoadingService } from '../../../core/services/loading.service'
 
 @Component({
     imports: [CommonModule, FormsModule, RouterLink, ButtonComponent, ContainerWrapperComponent, PageHeaderComponent],
@@ -17,8 +19,11 @@ import { DataService } from '../../../core/services/data.service'
 export class RecommendationsPageComponent {
     private readonly api = inject(Api)
     private readonly dataService = inject(DataService)
+    private readonly loadingService = inject(LoadingService)
 
     public readonly userGroups = this.dataService.userGroups
+    public readonly userGroupsError = this.dataService.userGroupsError
+    public readonly isLoadingGroups = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_GROUPS])
     public readonly selectedGroupId = signal<number | null>(null)
     public readonly selectedAttendeeIds = signal<Array<number>>([])
     public readonly availableMinutes = signal<number | null>(120)
@@ -52,6 +57,10 @@ export class RecommendationsPageComponent {
 
     public isAttendeeSelected(accountId: number): boolean {
         return this.selectedAttendeeIds().includes(accountId)
+    }
+
+    public retryGroups(): void {
+        this.dataService.refreshUserGroups()
     }
 
     public async loadRecommendations(): Promise<void> {

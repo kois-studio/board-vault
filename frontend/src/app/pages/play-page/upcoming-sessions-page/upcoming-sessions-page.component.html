@@ -15,6 +15,11 @@
             <p class="text-secondary mb-4">Select the group for the new scheduled session.</p>
             @if (isLoadingGroups()) {
                 <p class="text-secondary">Loading groups…</p>
+            } @else if (groupsError()) {
+                <div class="text-secondary" role="alert">
+                    <p>Groups could not be loaded.</p>
+                    <app-button class="mt-4" icon="arrow-repeat" (click)="retryGroups()">Retry</app-button>
+                </div>
             } @else if (userGroups$().length === 0) {
                 <p class="text-secondary">Create or join a group before scheduling a session.</p>
             } @else {
