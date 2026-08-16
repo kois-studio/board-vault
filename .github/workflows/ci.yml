@@ -33,6 +33,8 @@ jobs:
               run: npm ci --ignore-scripts
             - name: Run unit tests
               run: npm test -- --runInBand
+            - name: Run HTTP E2E tests
+              run: npm run test:e2e -- --runInBand
             - name: Build backend
               run: npm run build
 
