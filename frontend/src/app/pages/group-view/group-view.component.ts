@@ -63,7 +63,8 @@ export class GroupViewComponent {
     // --------------------------------------------------------------------------
     //        Component props
     // --------------------------------------------------------------------------
-    public isLoading = false
+    public readonly isLoading = signal(false)
+    public readonly groupHistoryError = signal(false)
     public readonly groupHistory$ = signal<Array<HistoryRecordType>>([])
 
     // --------------------------------------------------------------------------
@@ -97,33 +98,41 @@ export class GroupViewComponent {
             const groupHistoryByGroupId = this.groupHistoryByGroupId$()
 
             if (groupHistoryByGroupId[groupId] !== undefined) {
+                this.groupHistoryError.set(false)
                 this.groupHistory$.set(groupHistoryByGroupId[groupId])
             } else {
-                this.isLoading = true
-                // get the group meetings
-                this.api.getGroupMeetings(currentUser.id, groupId).subscribe({
-                    next: groupMeetings => {
-                        this.groupHistory$.set(groupMeetings)
-                        this.dataService.groupHistoryByGroupId.set({
-                            ...this.dataService.groupHistoryByGroupId(),
-                            [groupId]: groupMeetings,
-                        })
-                    },
-                    error: error => {
-                        console.error(error)
-                        this.isLoading = false
-                        // Clear previous data on error
-                        this.groupHistory$.set([])
-                        this.dataService.groupHistoryByGroupId.set({
-                            ...this.dataService.groupHistoryByGroupId(),
-                            [groupId]: [],
-                        })
-                    },
-                    complete: () => {
-                        this.isLoading = false
-                    },
-                })
+                this.loadGroupHistory(currentUser.id, groupId)
             }
+        })
+    }
+
+    public retryGroupHistory(): void {
+        const currentUser = this.currentUser$()
+        const groupId = Number.parseInt(this.route.snapshot.paramMap.get('groupId') || '')
+        if (!currentUser || Number.isNaN(groupId)) return
+
+        this.loadGroupHistory(currentUser.id, groupId)
+    }
+
+    private loadGroupHistory(userId: number, groupId: number): void {
+        this.isLoading.set(true)
+        this.groupHistoryError.set(false)
+        this.api.getGroupMeetings(userId, groupId).subscribe({
+            next: groupMeetings => {
+                this.groupHistory$.set(groupMeetings)
+                this.dataService.groupHistoryByGroupId.set({
+                    ...this.dataService.groupHistoryByGroupId(),
+                    [groupId]: groupMeetings,
+                })
+            },
+            error: error => {
+                console.error(error)
+                this.isLoading.set(false)
+                this.groupHistoryError.set(true)
+                // Keep the cache unset so a retry can request the data again.
+                this.groupHistory$.set([])
+            },
+            complete: () => this.isLoading.set(false),
         })
     }
 
