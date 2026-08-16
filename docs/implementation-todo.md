@@ -40,7 +40,7 @@ Relevant surfaces: [`app.routes.ts`](../frontend/src/app/app.routes.ts), [`meet-
 - Define and implement transitions between scheduled, active, completed, and cancelled sessions; organizer-controlled transitions now exist for scheduled/active sessions, while completed/cancelled remain terminal.
 - Distinguish planned games from games actually played in all API responses and frontend types; scheduled creation and meet details now preserve the distinction, while the read model still needs richer game objects and planned-game editing.
 - Decide how the legacy `MeetAccountGame` history relation should evolve; the completed write currently preserves it as a compatibility relation.
-- Remove or replace the unfinished confirmation flow; `MeetConfirmComponent` already says the confirmation concept will be removed.
+- The obsolete confirmation flow has been removed; attendee and played-game changes now state that they save automatically from the session detail page.
 - Make attendee and game changes show persisted success/error state and survive refresh.
 - Complete the organizer-only attendee API verification through the production UI.
 - Add transaction boundaries for scheduled-session creation, completion, cancellation, attendee changes, and played-game recording; completed-session logging now has one.

@@ -737,6 +737,19 @@ Changed: Invitation cards now await accept/decline results, disable both actions
 Verified: `cd frontend && npm run build` passes with the documented baseline warnings; `git diff --check` passes.
 Known follow-ups: Complete the two-account invitation journey and add authenticated browser coverage.
 
+Continuation claim: PROD-006
+
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: remove the obsolete no-op meeting-confirmation route and make the meeting detail persistence behavior explicit
+
+Review continuation: PROD-006
+
+Changed: Removed the no-op `MeetConfirmComponent` and its route. Meeting detail now communicates that attendee and played-game changes save automatically, matching the existing API calls and local state updates.
+Verified: `cd frontend && npm run build` passes with the documented baseline warnings; route/source search finds no remaining `meet-confirm` or `/meets/:meetId/confirm` references; `git diff --check` passes.
+Known follow-ups: Review automatic-save success/error feedback and add authenticated browser coverage for session edits.
+
 When claiming a task, add:
 
 ```text
