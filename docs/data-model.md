@@ -71,7 +71,7 @@ and unresolved decisions, is maintained in the [database drift report](../databa
 
 - `database/schema/schema.sql` defines `Meet`, `MeetAttendee`, `MeetGame`, and `MeetAccountGame` after migration 0003.
 - `backend/src/modules/common/database/database.service.ts` now queries the explicit session relations for meet details and group-meeting setup; the frontend attendee route still has no current backend controller.
-- The deployed `Game` table has no `title` column. The application passes a title to `createGame()`, but the current insert path does not persist it in `Game`; titles are handled separately through translations in later code.
+- The deployed `Game` table has no `title` column. The application passes a title to `createGame()`, but the current insert path does not persist it in `Game`; titles are handled separately through translations. Frontend game contracts therefore treat the legacy `title` field as optional and use `titleTranslations` as the authoritative display source.
 - The deployed `OwnedGame.purchaseDate` is `DATE` without the documented default, and deployed indexes differ from the historical schema document.
 - Repository history shows the original `MeetAttendee` module was removed in commit `ef6e3d2`; migration 0003 deliberately reintroduced the relation as an additive, stateful session table rather than restoring the removed module unchanged.
 

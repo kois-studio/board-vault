@@ -35,7 +35,7 @@ export const messageSchema = z.object({ message: z.string().min(1) })
 
 const gameCompleteSchema: z.ZodType<GameCompleteType> = z.object({
     id: z.number(),
-    title: z.string(),
+    title: z.string().optional(),
     imageUrl: z.string(),
     gameAvgDuration: z.number(),
     minPlayers: z.number(),

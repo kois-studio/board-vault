@@ -237,8 +237,8 @@
                                         <image-background [src]="game.game.imageUrl" class="h-8 w-8" />
                                     </div>
                                     <span class="text-xs"
-                                        >{{ game.game.titleTranslations.en || game.game.title | slice : 0 : 10
-                                        }}{{ (game.game.titleTranslations.en || game.game.title).length > 10 ? '...' : '' }}</span
+                                        >{{ (game.game.titleTranslations.en || game.game.title || 'Untitled game') | slice : 0 : 10
+                                        }}{{ (game.game.titleTranslations.en || game.game.title || 'Untitled game').length > 10 ? '...' : '' }}</span
                                     >
                                     <app-button
                                         [variant]="isAllSelectedForGame(game.game.id) ? 'secondary' : 'primary'"
