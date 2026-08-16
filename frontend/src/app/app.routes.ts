@@ -32,6 +32,7 @@ import { MeetViewComponent } from './pages/meet-view/meet-view.component'
 import { HistoryPageComponent } from './pages/play-page/history-page/history-page.component'
 import { LogSessionPageComponent } from './pages/play-page/log-session-page/log-session-page.component'
 import { PlayPageComponent } from './pages/play-page/play-page.component'
+import { RecommendationsPageComponent } from './pages/play-page/recommendations-page/recommendations-page.component'
 import { UpcomingSessionsPageComponent } from './pages/play-page/upcoming-sessions-page/upcoming-sessions-page.component'
 import { SettingsAccountComponent } from './pages/settings/account/settings-account.component'
 import { SettingsContactComponent } from './pages/settings/contact/settings-contact.component'
@@ -78,6 +79,7 @@ export const routes: Routes = [
             { path: 'collection/wishlist', component: WishlistPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'games/:gameId', component: GameViewPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'play', component: PlayPageComponent, canActivate: [AuthOnlyGuard] },
+            { path: 'play/recommendations', component: RecommendationsPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'play/log-session', component: LogSessionPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'play/upcoming-sessions', component: UpcomingSessionsPageComponent, canActivate: [AuthOnlyGuard] },
             { path: 'play/history', component: HistoryPageComponent, canActivate: [AuthOnlyGuard] },

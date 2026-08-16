@@ -47,19 +47,20 @@ Relevant surfaces: [`app.routes.ts`](../frontend/src/app/app.routes.ts), [`meet-
 - Ensure the upcoming sessions page reads real persisted scheduled/active sessions; the old completed-history placeholder has been removed and the page now uses `userMeets`.
 - Ensure completed sessions appear in history and cancelled sessions do not appear as completed history; lifecycle filtering now excludes cancelled sessions from upcoming, while richer history/status read models remain to be completed.
 
-### 2. Recommendations — Open / Blocked by session/product contract
+### 2. Recommendations — Verified slice / Partial
 
 Relevant intent: [`todo/04-core-product-loop.md`](../todo/04-core-product-loop.md), [`adr/0002-deterministic-explainable-recommendations.md`](adr/0002-deterministic-explainable-recommendations.md).
 
-- Implement a backend recommendation use case and endpoint.
-- Define inputs: group, attendees, available time, player count, ownership/availability, and optional preferences.
-- Define deterministic filtering and scoring rules.
-- Return explanations with each recommendation.
+- Implemented `POST /play/recommendations` with group membership and attendee validation.
+- Defined inputs: group, selected attendees, and optional available time; player count is derived from attendees.
+- Implemented deterministic filtering and scoring using player count, collective attendee ownership, selected-attendee ratings, and optional duration fit.
+- Return explanations with each recommendation, including owner coverage, rating, and last-play context.
 - Add a useful no-results state that explains which constraint excluded candidates.
 - Add recommendation feedback and persist it for future scoring.
-- Create the missing `/play/recommendations` route or remove every link that points to it until the feature exists.
-- Keep recommendation claims explicit about their coming-soon status until a real flow is available; the landing page and play dashboard no longer present recommendations as an active capability.
-- Resolve the indirect game-title contract: `Game` stores no title; titles are provided through `GameTranslation`.
+- Added the authenticated `/play/recommendations` route, Play navigation entry, selection form, result cards, and empty/error states.
+- Add authenticated browser coverage when a Clerk storage state is available; the test is present but skipped without that local secret-bearing state.
+- Recommendation feedback, richer preferences, complexity scoring, and history-weighted scoring remain deferred.
+- Resolve the indirect game-title contract: `Game` stores no title; titles are provided through `GameTranslation`. The recommendation query uses English with Spanish fallback.
 
 ### 3. History and analytics — Partial / Open
 

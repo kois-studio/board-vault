@@ -36,6 +36,20 @@ describe('DatabaseService logging', () => {
         })
     })
 
+    it('builds recommendation candidates from selected attendee ownership', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const execute = jest.fn().mockResolvedValue({ rows: [] })
+
+        ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
+
+        await service.getRecommendationCandidates([1, 2], 2, 120)
+
+        expect(execute).toHaveBeenCalledWith({
+            sql: expect.stringContaining('INNER JOIN OwnedGame ownedByAttendee'),
+            args: [1, 2, 1, 2, 1, 2, 1, 2, 2, 2, 120],
+        })
+    })
+
     it('writes a completed session and its relations using the captured meet id', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {

@@ -74,7 +74,7 @@ Choose one brand and one vocabulary before polishing marketing or adding routes.
 
 Record a decision in this document if implementation depends on it:
 
-- Is a game recommendation based on collective ownership, organizer ownership, or either?
+- Is a game recommendation based on collective ownership, organizer ownership, or either? **Decided:** collective attendee ownership. A game is eligible when at least one selected attendee owns it; games owned only by absent group members are excluded. See [ADR-0002](../docs/adr/0002-deterministic-explainable-recommendations.md).
 - Can invited non-members attend a session?
 - Is a session private to the group or shareable?
 - Are ratings private, group-visible, or public?

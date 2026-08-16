@@ -13,13 +13,13 @@
 | Check | Result | Interpretation |
 |---|---|---|
 | `cd backend && npm run build` | Pass | TypeScript/Nest build currently compiles. |
-| `cd backend && npm test -- --runInBand` | Pass | 124 focused tests cover the previously documented Clerk, validation, authorization, privacy, logging, cache, and migration-boundary areas plus canonical session validation, transaction commit/rollback behavior, planned-game validation, lifecycle transition rules, and completed-only play-history filtering; broader authorization coverage remains absent. |
+| `cd backend && npm test -- --runInBand` | Pass | 126 focused tests cover the previously documented Clerk, validation, authorization, privacy, logging, cache, and migration-boundary areas plus canonical session validation, transaction commit/rollback behavior, planned-game validation, lifecycle transition rules, completed-only play-history filtering, and deterministic recommendations; broader authorization coverage remains absent. |
 | `cd backend && npm run test:e2e -- --runInBand` | Fail | Test setup throws because `RESEND_API_KEY` is missing; the test itself expects a stale `/` Hello World route. |
 | `cd backend && npx eslint "{src,apps,libs,test}/**/*.ts"` | Fail | 17 errors and 3 warnings across schemas, database, collection, play, and profile code. |
 | `cd frontend && npm run build` | Pass with warnings | Bundle budget, Sass deprecation, and selector warnings remain. |
 | `cd frontend && npx biome check` | Fail | 8 findings in the form submission, log-session wizard, and propose-game page files. |
 | `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` | Pass | One generated smoke test passes. |
-| `cd frontend && npm run e2e` | Pass | Three public Playwright tests pass; three authenticated core-navigation tests are intentionally skipped unless `PLAYWRIGHT_AUTH_STORAGE_STATE` is supplied. |
+| `cd frontend && npm run e2e` | Pass | Three public Playwright tests pass; four authenticated core-navigation tests are intentionally skipped unless `PLAYWRIGHT_AUTH_STORAGE_STATE` is supplied. |
 | `cd backend && npm test -- --runInBand src/modules/features/sessions/sessions.service.spec.ts` | Pass | Twelve tests cover canonical completed/scheduled creation, planned-game availability, missing groups, actor membership, attendee membership, group game availability, participant/attendee consistency, and lifecycle transitions. |
 | `schema.sql` plus migration 0004 in disposable SQLite | Pass | A restored pre-0004 dump accepts the lifecycle migration; integrity is `ok`, no foreign-key violations are reported, and all four lifecycle columns/indexes exist. |
 | `sqlite3 backup-copy < database/migrations/0001-add-clerk-user-id.sql` | Pass | SQLite integrity remains `ok`; 15 accounts, 13 meets, and 101 meet/game links are preserved; the original backup was not used as the test target. |
@@ -42,7 +42,7 @@
 
 - group creation/joining and invitation lifecycle;
 - collection activation with empty/error states;
-- deterministic explainable recommendation scoring;
+- deterministic explainable recommendation scoring, including collective attendee ownership, invalid attendee rejection, and stable ordering;
 - atomic completed/scheduled session creation, planned/played distinction, lifecycle transitions, completion, and history;
 - frontend loading, empty, failure, retry, and mobile/accessibility states.
 - frontend browser journeys for public navigation, Clerk authentication, collection activation, group invitations, session creation/completion, and history. The reusable authenticated navigation suite is present; collection, invitation, and full session submission still need a non-production Clerk test state and seeded data.

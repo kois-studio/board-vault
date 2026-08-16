@@ -6,7 +6,7 @@ This is an implementation description, not a proposed redesign. It is based on `
 
 ## Product shape
 
-The repository describes Board Vault as a tabletop-game collection, group, meeting, review, wishlist, and play-history application. The current strongest implementation area is collection management. The product brief identifies the intended flagship loop as group creation/joining → owned-game input → attendees → recommendation → session scheduling/logging → history/feedback; recommendation and robust session planning remain unfinished.
+The repository describes Board Vault as a tabletop-game collection, group, meeting, review, wishlist, and play-history application. The current strongest implementation area is collection management. The product brief identifies the intended flagship loop as group creation/joining → owned-game input → attendees → recommendation → session scheduling/logging → history/feedback; the first deterministic recommendation slice and robust session planning are now present, while feedback and richer scoring remain unfinished.
 
 ## Runtime shape
 
@@ -44,11 +44,11 @@ Important route families include:
 - authentication: legacy `/login`, `/register`, email verification, and password reset; development Clerk sign-in/sign-up controls and the isolated `/auth/clerk/status` bridge;
 - collection: `/collection`, games, browse, reviews, wishlist, proposal;
 - groups: `/groups`, creation, detail, edit, leave, delete;
-- play: `/play`, log session, upcoming sessions, history;
+- play: `/play`, recommendations, log session, upcoming sessions, history;
 - account and profile: dashboard, settings, notifications, invitations;
 - admin: lazy-loaded `/admin` management surfaces.
 
-The source backlog still describes `/play/recommendations` and `/play/quick-play`, but those routes are not declared in `app.routes.ts`; current navigation uses an explicit coming-soon recommendation card and existing session routes. The Play dashboard no longer presents fabricated sample content, and the log-session wizard writes through the canonical session API.
+The source backlog still describes `/play/quick-play`, but that route is not declared in `app.routes.ts`. `/play/recommendations` is now an authenticated route backed by a deterministic group-attendee recommendation read path; feedback, richer preference controls, and quick play remain deferred. The Play dashboard no longer presents fabricated sample content, and the log-session wizard writes through the canonical session API.
 
 ## Main request and data flow
 

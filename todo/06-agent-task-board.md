@@ -58,6 +58,22 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 Most recent claim:
 
 ```text
+Task: PROD-004
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: accept collective attendee ownership policy and implement the first deterministic, explainable recommendation read path
+```
+
+Review: PROD-004
+
+Changed: Accepted collective attendee ownership in ADR-0002 and product direction. The implementation scope is a group-member-authorized recommendation request with player-count, ownership, rating, and optional duration filters/scoring; feedback, complexity, preferences, and history-weighted scoring remain deferred.
+Verified: Pending backend tests, frontend flow verification, and production read-only smoke test.
+Known follow-ups: Add recommendation feedback persistence and richer controls after the first live recommendation flow is exercised.
+
+Most recent claim:
+
+```text
 Task: DATA-003
 Owner: Codex
 Claimed: 2026-08-16

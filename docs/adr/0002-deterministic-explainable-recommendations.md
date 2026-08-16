@@ -1,6 +1,6 @@
 # ADR: Deterministic and explainable first-release recommendations
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-08-11
 - **Supersedes:** None
 - **Superseded by:** None
@@ -11,9 +11,11 @@ The first-release product direction calls for useful recommendations based on at
 
 ## Decision
 
-For the first flagship release, recommendations should use hard eligibility filters followed by a deterministic, transparent score. Each result should include explanation fields that identify the relevant constraints or scoring factors. Machine learning is out of scope for this first release. Recommendation feedback can be persisted and used for later scoring revisions.
+For the first flagship release, recommendations use hard eligibility filters followed by a deterministic, transparent score. Each result includes explanation fields that identify the relevant constraints or scoring factors. Machine learning is out of scope for this first release.
 
-This ADR is proposed, not accepted. The precise ownership policy, minimum recommendation data, and scoring weights remain open in [todo/01-product-direction.md](../../todo/01-product-direction.md) and [todo/04-core-product-loop.md](../../todo/04-core-product-loop.md).
+The ownership policy is collective attendee ownership: a game is eligible when at least one selected attendee owns it. The request must identify the selected attendees, and every attendee must be a member of the selected group. A game owned only by an absent group member is not eligible for that recommendation request. An empty attendee list is invalid.
+
+The first score uses only data that is currently persisted and reliable: player-count eligibility, selected-attendee ownership coverage, selected-attendee ratings, and optional duration fit. Last-play information may be shown as explanation context but is not yet a score factor. Recommendation feedback, richer preferences, complexity, and history-weighted scoring remain deferred until the product has a stable feedback model.
 
 ## Consequences
 
@@ -21,6 +23,8 @@ This ADR is proposed, not accepted. The precise ownership policy, minimum recomm
 - The API needs explicit input constraints and explanation fields.
 - Product owners can inspect why a game was included or excluded.
 - Initial recommendations may be less personalized than a trained model.
+- Recommendations are group-useful without making the organizer the only source of playable games.
+- The initial score can be revised without changing eligibility semantics.
 - Future ML work, if justified, must preserve a measurable fallback and safe explanation behavior.
 
 ## Alternatives considered

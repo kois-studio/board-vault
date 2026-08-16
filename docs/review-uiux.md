@@ -78,7 +78,7 @@ For each area, review:
 | Meeting confirmation | Removed | Reviewed | Removed the no-op confirmation route because attendee and played-game changes persist immediately from meeting detail; the detail page now says so explicitly. |
 | Upcoming sessions | `/play/upcoming-sessions` | Partially reviewed | Reads scheduled/active sessions and offers real group scheduling links; review status cards, group labels, loading/error states, and mobile layout. |
 | History | `/play/history` | Partially reviewed | Reads completed-only history with actionable empty state and group labels; review richer game/session details, loading/error states, and responsive cards. |
-| Recommendations | `/play/recommendations` link only | Blocked | No route or implemented recommendation flow currently exists. |
+| Recommendations | `/play/recommendations`, recommendations page | Partially reviewed | Group/attendee selection, optional duration, loading/error/no-results states, explanation cards, and game links now exist. Run the authenticated browser journey and complete responsive, keyboard, focus, contrast, and real-data review. |
 | Quick play | `/play/quick-play` link/reference only | Blocked | No declared route or implemented flow currently exists. |
 | Analytics | `/play/analytics` link only | Blocked | No declared route or persisted analytics read model exists; create the contract before exposing analytics navigation. |
 
