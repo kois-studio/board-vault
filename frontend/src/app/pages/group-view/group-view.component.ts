@@ -5,7 +5,7 @@ import { Api } from '../../api/api'
 import type { GameType, HistoryRecordType, InvitationWithAccountsData, PublicUserType, UserType } from '../../api/api.types'
 import { CardAccountComponent } from '../../components/card-account/card-account.component'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
-import { SkeletonCardGroupComponent } from '../../components/skeletons/skeleton-card-group/skeleton-card-group.component'
+import { SkeletonHistoryComponent } from '../../components/skeletons/skeleton-history/skeleton-history.component'
 import { ButtonComponent } from '../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { ImageBackgroundComponent } from '../../components/ui/image-background/image-background.component'
@@ -27,7 +27,7 @@ import { GroupViewService } from './group-view.service'
         ImageBackgroundComponent,
         ReviewDisplayComponent,
         ButtonComponent,
-        SkeletonCardGroupComponent,
+        SkeletonHistoryComponent,
         PageHeaderComponent,
     ],
     templateUrl: 'group-view.component.html',
