@@ -55,6 +55,8 @@ export class DataService {
     public readonly userStatsError = signal(false)
     public readonly userMeetsError = signal(false)
     public readonly userHistoryError = signal(false)
+    public readonly userReviewsError = signal(false)
+    public readonly userWishlistError = signal(false)
     public readonly userInvitationsLoading = signal(false)
     public readonly userInvitationsError = signal(false)
     public readonly userNotificationsLoading = signal(false)
@@ -129,6 +131,8 @@ export class DataService {
         this.userStatsError.set(false)
         this.userMeetsError.set(false)
         this.userHistoryError.set(false)
+        this.userReviewsError.set(false)
+        this.userWishlistError.set(false)
         this.userInvitationsLoading.set(false)
         this.userInvitationsError.set(false)
         this.userNotificationsLoading.set(false)
@@ -221,15 +225,17 @@ export class DataService {
     }
 
     private _getUserReviews(accountId: number) {
-        this.api.getUserReviews(accountId).subscribe({
+        this.userReviewsError.set(false)
+        this.loadingService.start(LOADING_KEYS.USER_REVIEWS)
+        this.api.getUserReviews(accountId).pipe(
+            finalize(() => this.loadingService.finish(LOADING_KEYS.USER_REVIEWS)),
+        ).subscribe({
             next: reviews => {
                 this.userReviews.set(reviews)
             },
             error: () => {
+                this.userReviewsError.set(true)
                 this.toastService.error("Error retrieving user's reviews")
-            },
-            complete: () => {
-                this.loadingService.finish(LOADING_KEYS.USER_REVIEWS)
             },
         })
     }
@@ -298,29 +304,31 @@ export class DataService {
     }
 
     private _getUserWishlist(userId: number) {
-        this.api.getUserWishlist(userId).subscribe({
+        this.userWishlistError.set(false)
+        this.loadingService.start(LOADING_KEYS.USER_WISHLIST)
+        this.api.getUserWishlist(userId).pipe(
+            finalize(() => this.loadingService.finish(LOADING_KEYS.USER_WISHLIST)),
+        ).subscribe({
             next: wishlist => {
                 this.userWishlist.set(wishlist)
             },
             error: () => {
+                this.userWishlistError.set(true)
                 this.toastService.error("Error retrieving user's wishlist")
-            },
-            complete: () => {
-                this.loadingService.finish(LOADING_KEYS.USER_WISHLIST)
             },
         })
     }
 
     private _getUserCollectionActivity(userId: number) {
-        this.api.getUserCollectionActivity(userId).subscribe({
+        this.loadingService.start(LOADING_KEYS.USER_COLLECTION_ACTIVITY)
+        this.api.getUserCollectionActivity(userId).pipe(
+            finalize(() => this.loadingService.finish(LOADING_KEYS.USER_COLLECTION_ACTIVITY)),
+        ).subscribe({
             next: collectionActivity => {
                 this.userCollectionActivity.set(collectionActivity)
             },
             error: () => {
                 this.toastService.error("Error retrieving user's collection activity")
-            },
-            complete: () => {
-                this.loadingService.finish(LOADING_KEYS.USER_COLLECTION_ACTIVITY)
             },
         })
     }
