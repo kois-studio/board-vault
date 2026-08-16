@@ -724,6 +724,19 @@ Changed: DataService invitation/member mutations now return observable results w
 Verified: `cd frontend && npm run build` passes with the documented baseline warnings; `git diff --check` passes.
 Known follow-ups: Complete the two-account invitation journey, add authenticated browser coverage, and define owner/member policy for every group mutation.
 
+Continuation claim: PROD-003
+
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: harden recipient-side invitation accept/decline controls against duplicate submissions
+
+Review continuation: PROD-003
+
+Changed: Invitation cards now await accept/decline results, disable both actions during the request, preserve the invitation on failure, and continue to use the existing DataService toast/error behavior.
+Verified: `cd frontend && npm run build` passes with the documented baseline warnings; `git diff --check` passes.
+Known follow-ups: Complete the two-account invitation journey and add authenticated browser coverage.
+
 When claiming a task, add:
 
 ```text

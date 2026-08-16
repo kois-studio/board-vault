@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core'
+import { firstValueFrom } from 'rxjs'
 import { InvitationWithExtraData } from '../../api/api.types'
 import { DataService } from '../../core/services/data.service'
 import { CardAccountComponent } from '../card-account/card-account.component'
@@ -10,16 +11,31 @@ import { CardAccountComponent } from '../card-account/card-account.component'
 })
 export class CardInvitationComponent {
     @Input({ required: true }) invitation: null | InvitationWithExtraData = null
+    public isLoading = false
 
     constructor(private readonly dataService: DataService) {}
 
-    acceptInvitation() {
-        if (!this.invitation) return
-        this.dataService.acceptInvitation(this.invitation.id)
+    async acceptInvitation() {
+        if (!this.invitation || this.isLoading) return
+        this.isLoading = true
+        try {
+            await firstValueFrom(this.dataService.acceptInvitation(this.invitation.id))
+        } catch {
+            // DataService presents the failure and leaves the invitation available for retry.
+        } finally {
+            this.isLoading = false
+        }
     }
 
-    rejectInvitation() {
-        if (!this.invitation) return
-        this.dataService.rejectInvitation(this.invitation.id)
+    async rejectInvitation() {
+        if (!this.invitation || this.isLoading) return
+        this.isLoading = true
+        try {
+            await firstValueFrom(this.dataService.rejectInvitation(this.invitation.id))
+        } catch {
+            // DataService presents the failure and leaves the invitation available for retry.
+        } finally {
+            this.isLoading = false
+        }
     }
 }
