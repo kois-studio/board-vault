@@ -129,7 +129,7 @@ Relevant surfaces: [`collection-page`](../frontend/src/app/pages/collection-page
 - Game detail history now displays group names through the loaded group index; failed game-detail requests now leave the loading state and expose a retry action.
 - Game detail now keeps one route-parameter subscription outside the auth effect, preventing duplicate loads when the current user signal changes; the unused empty share handler was removed.
 - Review responsive card grids, image fallbacks, accessible controls, and keyboard behavior.
-- Expand the targeted frontend response schemas in [`api.schemas.ts`](../frontend/src/app/api/api.schemas.ts) across the remaining API surface; group/member/game, both invitation feeds, dashboard stats, notifications, persisted meets, and completed history are now covered.
+- Expand the targeted frontend response schemas in [`api.schemas.ts`](../frontend/src/app/api/api.schemas.ts) across the remaining API surface; catalog/owned/wishlist games, group/member/game, both invitation feeds, dashboard stats, notifications, persisted meets, and completed history are now covered.
 
 ### 8. Groups and invitations — Partial / Needs review
 

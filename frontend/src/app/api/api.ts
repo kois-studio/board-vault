@@ -8,6 +8,7 @@ import {
     availabilitySchema,
     clerkAuthStatusSchema,
     groupInvitationsSchema,
+    gamesSchema,
     meetDetailsSchema,
     meetSchema,
     messageSchema,
@@ -19,6 +20,7 @@ import {
     successSchema,
     userInvitationsSchema,
     userGroupsSchema,
+    userGamesSchema,
     userHistorySchema,
     userMeetsSchema,
     userNotificationsSchema,
@@ -140,7 +142,7 @@ export class Api {
     // #region games
 
     getGames() {
-        return this.http.get<Array<GameType>>(`${this.url}/games`)
+        return this.http.get<Array<GameType>>(`${this.url}/games`).pipe(map(response => gamesSchema.parse(response)))
     }
 
     // #region invitations
@@ -275,7 +277,7 @@ export class Api {
     // #region collection
     // --------------------------------------------------------------------------
     getUserGames(userId: number) {
-        return this.http.get<Array<GameCompleteType>>(`${this.url}/collection/users/${userId}/games`)
+        return this.http.get<Array<GameCompleteType>>(`${this.url}/collection/users/${userId}/games`).pipe(map(response => userGamesSchema.parse(response)))
     }
 
     browseGamesNotOwnedByUser(userId: number, search: string, page: number, limit: number) {
@@ -313,7 +315,7 @@ export class Api {
     }
 
     getUserWishlist(userId: number) {
-        return this.http.get<Array<GameCompleteType>>(`${this.url}/collection/users/${userId}/wishlist`)
+        return this.http.get<Array<GameCompleteType>>(`${this.url}/collection/users/${userId}/wishlist`).pipe(map(response => userGamesSchema.parse(response)))
     }
 
     getUserCollectionActivity(userId: number) {
