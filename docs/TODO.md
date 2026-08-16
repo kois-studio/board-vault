@@ -17,7 +17,7 @@ Statuses are `Planned`, `Blocked`, or `Deferred` until evidence changes them. Pr
 
 ### READINESS-002 [Critical] TS-005/NEST-004/API-002 — Activate boundary validation
 
-- **Status:** Planned
+- **Status:** In progress
 - **Affected area:** `backend/src/main.ts`, DTO/type boundaries, `frontend/src/app/api/api.schemas.ts`
 - **Evidence:** No global `ValidationPipe`; login, registration, password-reset, availability query, legacy token path, user profile-update, user game-update, review, collection ownership metadata, profile-proposal, administrator catalog/proposal-review, group, invitation, notification, and deprecated membership inputs now have targeted whitelist/forbid-extra-field validation, including nested avatar, positive integer-array, database-aligned 0..10 review, non-negative integer proposal-field, purchase field, administrator review, and identity/reference validation. Verification/reset tokens now have persisted expiry and atomic one-time-use enforcement; migration 0002 is applied and integrity-verified in live Turso. Frontend response schemas remain a TODO.
 - **Risk:** Malformed, unexpected, oversized, or unsafe values reach services, SQL, HTML, or client state.
@@ -44,31 +44,31 @@ Statuses are `Planned`, `Blocked`, or `Deferred` until evidence changes them. Pr
 
 ### READINESS-004 [Critical] DEP-001/DEP-007/CI-003 — Make installation reproducible
 
-- **Status:** Planned
+- **Status:** In progress
 - **Affected area:** `backend/.gitignore`, both package manifests, repository root
-- **Evidence:** Lockfiles are explicitly ignored; backend README says pnpm while verified commands use npm; no runtime pin.
+- **Evidence:** `backend/package-lock.json` and `frontend/package-lock.json` are committed, `.nvmrc` and CI pin Node 22.20.0, and clean `npm ci --ignore-scripts` installs pass. The backend README still says pnpm and there are no root-level coordination commands.
 - **Risk:** Agents and CI resolve different dependency graphs.
-- **Next action:** Choose npm or pnpm, commit lockfiles, pin/document Node, and add a clean-install smoke check.
+- **Next action:** Align the backend README with npm, decide whether root coordination commands are valuable, and keep the clean-install checks in CI.
 - **Dependencies:** Owner decision on package manager.
 
 ## High — establish trustworthy delivery
 
 ### READINESS-005 [High] TEST-001/002/005 — Replace starter test baseline
 
-- **Status:** Planned
+- **Status:** In progress
 - **Affected area:** `backend/test/`, backend `src`, frontend `src/**/*.spec.ts`
-- **Evidence:** Backend unit command finds no tests; e2e is a stale root assertion; frontend has one generated test.
+- **Evidence:** Backend now has 38 focused suites and 136 passing tests; frontend has one generated smoke test plus public Playwright coverage, while the backend e2e starter assertion remains stale and authenticated browser coverage is opt-in.
 - **Risk:** Security and product regressions are invisible.
 - **Next action:** Add auth/authorization/data tests first, then core-loop and frontend state tests.
 - **Dependencies:** READINESS-001, READINESS-002, READINESS-003.
 
 ### READINESS-006 [High] CI-001/002/007 — Add CI gates
 
-- **Status:** Deferred until READINESS-004
+- **Status:** In progress
 - **Affected area:** `.github/` or chosen CI provider
-- **Evidence:** No CI configuration found.
+- **Evidence:** `.github/workflows/ci.yml` now runs locked backend/frontend installs, backend tests/build, frontend build/public Playwright checks, and disposable database migration verification. Authenticated E2E and deployment smoke checks are intentionally excluded because they require secret-bearing state.
 - **Risk:** Build, test, lint, formatting, migration, and contract regressions reach integration/deployment.
-- **Next action:** Run locked install, backend/frontend builds, tests, lint/format checks, and migration validation in CI; publish results.
+- **Next action:** Observe the first GitHub Actions run, then add lint/format gates after their current baseline failures are resolved and add non-production authenticated E2E when disposable Clerk state exists.
 - **Dependencies:** READINESS-004 and a meaningful test baseline.
 
 ### READINESS-007 [High] OPS-001/002/005/009 — Document environments and recovery

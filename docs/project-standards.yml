@@ -113,9 +113,9 @@ compliance:
       next_action: Add disposable integration and contract coverage for auth, group membership, collection ownership, session transactions, and recommendation rules.
     - id: TEST-006
       status: gap
-      evidence: backend unit command passes 136 focused tests and frontend has one smoke test plus public Playwright checks; clean-install and CI enforcement remain absent
+      evidence: backend unit command passes 136 focused tests and frontend has one smoke test plus public Playwright checks; clean installs now pass and the validation workflow is committed, while CI enforcement is not yet observed remotely
       priority: high
-      next_action: Make supported test commands meaningful and required in CI.
+      next_action: Keep the supported test commands meaningful and observe their first required CI run.
     - id: TEST-007
       status: gap
       evidence: CacheService, EmailService, and Turso are instantiated through application modules without a documented test boundary
@@ -230,18 +230,18 @@ compliance:
       next_action: Add vulnerability monitoring to the delivery workflow.
 
     - id: DEP-001
-      status: gap
-      evidence: backend/.gitignore explicitly ignores npm/pnpm/yarn lockfiles; none are tracked
+      status: partial
+      evidence: backend/frontend package-lock.json files are tracked; the backend README still says pnpm and root coordination commands remain undecided
       priority: critical
-      next_action: Choose a package manager and commit one lockfile per package.
+      next_action: Align the backend README with npm and decide whether root coordination commands are valuable.
     - id: DEP-002
-      status: gap
-      evidence: no CI and no reproducible clean-install workflow
+      status: partial
+      evidence: `.github/workflows/ci.yml` uses npm ci and dependency caching keyed by the committed package-lock.json files
       priority: high
-      next_action: Add locked installation and dependency-cache policy to CI.
+      next_action: Monitor cache behavior in the first workflow runs.
     - id: DEP-003
-      status: gap
-      evidence: Node version is observed locally but no version file or supported package-manager version is committed
+      status: partial
+      evidence: `.nvmrc` and CI pin Node 22.20.0 and lockfiles are committed, but no root-level package-manager contract is committed
       priority: high
       next_action: Pin/document Node and package-manager versions.
     - id: DEP-004
@@ -261,25 +261,25 @@ compliance:
       next_action: Add dependency audit and owner/severity workflow.
     - id: DEP-007
       status: partial
-      evidence: backend README says pnpm while package files and verified commands use npm; no lockfile resolves the choice
+      evidence: backend README says pnpm while package files, lockfiles, CI, and verified commands use npm
       priority: high
-      next_action: Decide and document one package-manager policy.
+      next_action: Align the backend README with the npm policy.
 
     - id: CI-001
-      status: gap
-      evidence: no .github workflow or other CI configuration found
+      status: partial
+      evidence: `.github/workflows/ci.yml` runs locked installs, backend tests/build, frontend build/public Playwright checks, and disposable database verification
       priority: critical
-      next_action: Add CI after reproducible installation is established.
+      next_action: Observe the first workflow run and configure required checks after repository permissions are confirmed.
     - id: CI-002
-      status: gap
-      evidence: builds, tests, lint, formatting, and migration checks are not automated
+      status: partial
+      evidence: backend tests/build, frontend build/public browser checks, and migration verification are automated; lint/format and authenticated E2E remain outside the workflow because of current baseline failures and secret-bearing state
       priority: critical
-      next_action: Implement gates from todo/05-engineering-quality-and-delivery.md.
+      next_action: Add lint/format gates after current baseline findings are resolved.
     - id: CI-003
-      status: gap
-      evidence: no lockfiles, runtime pin, or clean environment definition
+      status: partial
+      evidence: backend/frontend lockfiles are committed, CI pins Node 22.20.0, and clean installs are verified
       priority: critical
-      next_action: Pin toolchain and install from committed lockfiles.
+      next_action: Keep the pinned toolchain stable and document the remaining root-level environment contract.
     - id: CI-004
       status: gap
       evidence: no protected required checks
@@ -287,9 +287,9 @@ compliance:
       next_action: Configure required checks once CI exists.
     - id: CI-005
       status: unknown
-      evidence: no workflow exists to inspect for permissions, secret handling, or untrusted PR behavior
+      evidence: the workflow uses read-only contents permissions, no repository secrets, and no authenticated state on untrusted pull requests; required-check enforcement is still unknown
       priority: medium
-      next_action: Review workflow permissions as part of CI introduction.
+      next_action: Review the first workflow run and keep permissions/secret handling read-only.
     - id: CI-006
       status: unknown
       evidence: no CI resource budget or cache policy

@@ -34,8 +34,8 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 
 | ID | Status | Workstream | Task | Dependencies |
 |---|---|---|---|---|
-| EQ-001 | TODO | Quality | Add lockfiles, root commands, environment documentation, and reproducible local setup. | None |
-| EQ-002 | TODO | Quality | Add CI gates for build, tests, lint, and migrations. | EQ-001 |
+| EQ-001 | IN_PROGRESS | Quality | Add lockfiles, root commands, environment documentation, and reproducible local setup. | None |
+| EQ-002 | REVIEW | Quality | Add CI gates for build, tests, lint, and migrations. | EQ-001 |
 | EQ-003 | REVIEW | Quality | Replace starter tests with authorization and core journey coverage. | SEC-001, PROD-005 |
 | EQ-004 | TODO | Quality | Establish generated/shared API contracts and response validation. | DATA-003 |
 | EQ-005 | TODO | Quality | Add health checks, structured logging, error monitoring, and database operational checks. | EQ-001 |
@@ -936,6 +936,19 @@ Review continuation: DATA-002
 Changed: Added `database/scripts/migrate.mjs` with explicit baseline bootstrapping, transactional pending-migration execution, and `SchemaMigrations` tracking. Added `database/scripts/verify-empty-state.mjs` and synchronized the schema snapshot/docs. Live Turso now records migrations 0001–0005 in the metadata table without replaying application migrations.
 Verified: `node database/scripts/verify-empty-state.mjs` passes with SQLite integrity `ok`; live Turso metadata contains versions 0001–0005; `git diff --check` passes.
 Known follow-ups: Add the empty-state check to CI/deployment gates, add synthetic fixtures, and rehearse backup/restore before launch readiness.
+
+Continuation claim: EQ-001 / EQ-002
+
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: make package installation reproducible and add safe CI validation gates
+
+Review continuation: EQ-001 / EQ-002
+
+Changed: Generated and committed backend/frontend npm lockfiles, aligned the frontend Angular toolchain to a coherent pinned 19.2 release family, removed lockfile ignores, added `.nvmrc` for Node 22.20.0, and added `.github/workflows/ci.yml` for locked installs, backend tests/build, frontend build/public Playwright checks, and disposable database verification.
+Verified: Real `npm ci --ignore-scripts` passed in both packages; backend 136-test suite/build passed; frontend build and public Playwright checks passed; database empty-state verification passed; CI YAML parses as valid YAML; `git diff --check` passes.
+Known follow-ups: Observe the first remote workflow run, align the backend README with npm, add lint/format gates after baseline failures are resolved, and add non-production authenticated E2E with disposable Clerk state.
 
 When claiming a task, add:
 
