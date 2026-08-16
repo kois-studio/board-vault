@@ -40,7 +40,7 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 | EQ-004 | TODO | Quality | Establish generated/shared API contracts and response validation. | DATA-003 |
 | EQ-005 | TODO | Quality | Add health checks, structured logging, error monitoring, and database operational checks. | EQ-001 |
 | EQ-006 | TODO | Quality | Fix frontend bundle, styling warnings, accessibility, responsiveness, and timezone handling. | PROD-005 |
-| TRUTH-001 | TODO | Launch | Remove unsupported landing claims, fake testimonials, dead links, and placeholder product states. | PROD-001, PROD-004, PROD-007 |
+| TRUTH-001 | REVIEW | Launch | Remove unsupported landing claims, fake testimonials, dead links, and placeholder product states. | PROD-001, PROD-004, PROD-007 |
 | TRUTH-002 | TODO | Launch | Define and pass a launch-readiness checklist using a clean database and two real accounts. | SEC-002, PROD-008, EQ-003 |
 
 ## P3 — later expansion
@@ -565,6 +565,22 @@ Review: EQ-003
 Changed: Added Playwright browser-test infrastructure with an isolated local server target and environment-driven external target support. Added public landing, signed-out protected-route, and wildcard not-found coverage; generated reports and results are ignored.
 Verified: `cd frontend && npm run e2e` (3 tests passed); `cd frontend && npm run build` remains the next affected frontend build check.
 Known follow-ups: Add authenticated Clerk journey setup without repository secrets, then cover collection activation, invitation lifecycle, canonical session creation/completion, and history.
+
+Most recent claim:
+
+```text
+Task: TRUTH-001
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: remove fabricated landing/dashboard content, unsupported claims, and dead primary links while preserving honest paths to implemented features
+```
+
+Review: TRUTH-001
+
+Changed: Replaced the public landing page with an honest Board Vault early-product surface, removed fabricated testimonials/pricing/mobile/API claims and dead anchors, and rebuilt the dashboard around persisted groups, owned games, history, collection value, and real next-step routes.
+Verified: `cd frontend && npm run build` passes with the documented Sass, selector, and bundle-budget warnings; `cd frontend && npm run e2e` passes 3 public-navigation tests, including no `BoardMeet` or `href="#"` content on the landing page.
+Known follow-ups: Complete the rendered responsive/accessibility review and replace remaining legacy product claims only when the corresponding session/recommendation features exist.
 
 When claiming a task, add:
 

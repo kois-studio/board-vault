@@ -28,7 +28,7 @@ For each area, review:
 
 | Area | Routes/components | Current status | Known review scope / next action |
 |---|---|---|---|
-| Landing page | `/`, `landing.component` | Source-audited | Review product truth, BoardMeet naming, unsupported claims, testimonials, pricing, dead links, responsive hero/sections, and accessibility. |
+| Landing page | `/`, `landing.component` | Partially reviewed | Public route/content-truth behavior is covered by Playwright; continue with rendered responsive, keyboard, focus, contrast, semantics, and visual-hierarchy review. |
 | Header and public navigation | `header`, `/login`, `/register` links | Partially reviewed | Clerk production controls work, but navigation needs a final signed-out/signed-in and mobile review. |
 | Login | `/login`, login form | Partially reviewed | Production Clerk login was manually verified; review error, loading, expired-session, keyboard, and legacy-UI behavior. |
 | Registration | `/register`, register form | Partially reviewed | Clerk signup/linking was manually verified; review username requirements, duplicate identity, errors, and whether legacy registration remains visible. |

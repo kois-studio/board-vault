@@ -76,16 +76,15 @@ Relevant surfaces: [`history-page`](../frontend/src/app/pages/play-page/history-
 
 ## P1 — make existing areas reliable and coherent
 
-### 4. Public landing page — Open
+### 4. Public landing page — Partial / Needs review
 
 Relevant surface: [`landing.component.html`](../frontend/src/app/pages/landing/landing.component.html).
 
-- Reconcile the product name: the page still uses both “BoardMeet” and “Board Vault”.
-- Remove or label unsupported claims about recommendations, statistics, notifications, mobile apps, offline behavior, API access, billing, and integrations.
-- Remove fake or unverified testimonials and social proof unless they become intentionally supported content.
-- Replace pricing/plan claims with an explicit early-product posture or remove them.
-- Replace placeholder `href="#"` links with real destinations or remove them.
+- Keep the product name consistently as “Board Vault”.
+- Keep unsupported recommendations, statistics, notifications, mobile apps, offline behavior, API access, billing, and integrations out of the public claims until implemented.
+- Keep testimonials, social proof, and pricing out of the public surface until they become intentionally supported content.
 - Ensure every primary call to action leads to an existing route and works for signed-out users.
+- Keep the Playwright public-navigation checks updated when the public information architecture changes.
 - Review responsive layout, keyboard navigation, focus states, contrast, semantics, and performance.
 
 ### 5. Application shell and navigation — Partial / Needs review
@@ -105,9 +104,8 @@ Relevant surfaces: [`header`](../frontend/src/app/layout/header/), [`top-bar`](.
 
 Relevant surface: [`dashboard-page`](../frontend/src/app/pages/dashboard-page/).
 
-- Replace hardcoded activity, statistics, charts, and session summaries with persisted data.
-- Remove the dead “View all activity” link.
-- Remove or implement the `/play/analytics` “View Full Report” link.
+- Keep activity, statistics, charts, and session summaries derived from persisted data; fabricated dashboard content has been removed.
+- Keep dashboard links limited to existing routes; the dead activity and analytics links have been removed.
 - Make dashboard cards represent the correct entity and count.
 - Define a useful first-login empty state that guides a user to create/join a group and add games.
 - Define loading, failure, and retry states for each dashboard data section.

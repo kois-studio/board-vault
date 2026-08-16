@@ -1,855 +1,124 @@
-<!-- Hero Section -->
-<section class="pt-32 pb-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-indigo-50 dark:from-zinc-900 dark:to-zinc-800">
-    <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center">
-        <div class="lg:w-1/2 lg:pr-12 mb-10 lg:mb-0">
-            <h1 class="text-4xl md:text-5xl font-bold tracking-tight text-zinc-900 dark:text-white">
-                Find the Perfect <span class="text-indigo-600 dark:text-indigo-400">Board Game</span> for Your Next Gathering
-            </h1>
-            <p class="mt-6 text-lg text-zinc-600 dark:text-zinc-300">
-                BoardMeet helps you organize game nights by tracking your collection, recommending the best games for your group, and
-                keeping a history of your gaming sessions.
-            </p>
-            <div class="mt-10 flex flex-col sm:flex-row gap-4">
-                <a
-                    href="#"
-                    class="px-6 py-3 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                >
-                    Get Started — It's Free
-                </a>
-                <a
-                    href="#how-it-works"
-                    class="px-6 py-3 rounded-lg border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
-                >
-                    Learn More
-                </a>
-            </div>
-        </div>
-        <div class="lg:w-1/2">
-            <div class="perspective-1000 transform hover:-rotate-y-2 transition-transform duration-700">
-                <div
-                    class="rounded-lg overflow-hidden shadow-2xl transform rotate-y-2 rotate-z-1"
-                >
-                    <img src="/images/test.png" alt="BoardMeet App Interface" class="w-full h-auto" />
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Features Section -->
-<section id="features" class="py-20 px-4 sm:px-6 lg:px-8 bg-white">
-    <div class="max-w-7xl mx-auto">
-        <div class="text-center mb-16">
-            <h2 class="text-3xl font-bold text-zinc-900 dark:text-white">Everything You Need for Game Night</h2>
-            <p class="mt-4 text-lg text-zinc-600 dark:text-zinc-300 max-w-3xl mx-auto">
-                Track your collection, organize your friends, and get recommendations for the perfect games to play.
-            </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <!-- Feature 1 -->
-            <div
-                class="bg-white dark:bg-zinc-900 p-8 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 hover:shadow-md transition"
-            >
-                <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center mb-5">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-6 w-6 text-indigo-600 dark:text-indigo-400"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-                        />
-                    </svg>
-                </div>
-                <h3 class="text-xl font-semibold text-zinc-900 dark:text-white">Track Your Collection</h3>
-                <p class="mt-3 text-zinc-600 dark:text-zinc-300">
-                    Add all your tabletop games to your digital shelf. Rate them, see your play history, and share with friends.
+<main>
+    <section class="bg-gradient-to-b from-white to-indigo-50 px-4 py-20 dark:from-zinc-900 dark:to-zinc-800 sm:px-6 lg:px-8 lg:py-32">
+        <div class="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
+            <div>
+                <p class="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400">Board Vault</p>
+                <h1 class="text-4xl font-bold tracking-tight text-zinc-900 dark:text-white md:text-6xl">
+                    Keep your group’s games close.
+                </h1>
+                <p class="mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
+                    Organize the games you own, bring your group together, and keep a reliable memory of the sessions you play.
                 </p>
-            </div>
-
-            <!-- Feature 2 -->
-            <div
-                class="bg-white dark:bg-zinc-900 p-8 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 hover:shadow-md transition"
-            >
-                <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center mb-5">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-6 w-6 text-indigo-600 dark:text-indigo-400"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                        />
-                    </svg>
-                </div>
-                <h3 class="text-xl font-semibold text-zinc-900 dark:text-white">Create Gaming Groups</h3>
-                <p class="mt-3 text-zinc-600 dark:text-zinc-300">
-                    Organize friends into groups. See which games your group collectively owns and track your play history together.
-                </p>
-            </div>
-
-            <!-- Feature 3 -->
-            <div
-                class="bg-white dark:bg-zinc-900 p-8 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 hover:shadow-md transition"
-            >
-                <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center mb-5">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-6 w-6 text-indigo-600 dark:text-indigo-400"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                        />
-                    </svg>
-                </div>
-                <h3 class="text-xl font-semibold text-zinc-900 dark:text-white">Plan Game Sessions</h3>
-                <p class="mt-3 text-zinc-600 dark:text-zinc-300">
-                    Schedule meetups with specific friends and let BoardMeet recommend the perfect games based on player count, time
-                    available, and preferences.
-                </p>
-            </div>
-
-            <!-- Feature 4 -->
-            <div
-                class="bg-white dark:bg-zinc-900 p-8 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 hover:shadow-md transition"
-            >
-                <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center mb-5">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-6 w-6 text-indigo-600 dark:text-indigo-400"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
-                        />
-                    </svg>
-                </div>
-                <h3 class="text-xl font-semibold text-zinc-900 dark:text-white">Smart Recommendations</h3>
-                <p class="mt-3 text-zinc-600 dark:text-zinc-300">
-                    Get personalized game suggestions based on your group's collection, ratings, and play history.
-                </p>
-            </div>
-
-            <!-- Feature 5 -->
-            <div
-                class="bg-white dark:bg-zinc-900 p-8 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 hover:shadow-md transition"
-            >
-                <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center mb-5">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-6 w-6 text-indigo-600 dark:text-indigo-400"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                        />
-                    </svg>
-                </div>
-                <h3 class="text-xl font-semibold text-zinc-900 dark:text-white">Track Statistics</h3>
-                <p class="mt-3 text-zinc-600 dark:text-zinc-300">
-                    See your most-played games, view play history, and check stats for individuals, groups, or the entire platform.
-                </p>
-            </div>
-
-            <!-- Feature 6 -->
-            <div
-                class="bg-white dark:bg-zinc-900 p-8 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 hover:shadow-md transition"
-            >
-                <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center mb-5">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-6 w-6 text-indigo-600 dark:text-indigo-400"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                        />
-                    </svg>
-                </div>
-                <h3 class="text-xl font-semibold text-zinc-900 dark:text-white">Game Night Reminders</h3>
-                <p class="mt-3 text-zinc-600 dark:text-zinc-300">
-                    Get notifications for upcoming game sessions, new group invitations, and friend activities.
-                </p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- How It Works Section -->
-<section id="how-it-works" class="py-20 px-4 sm:px-6 lg:px-8 bg-indigo-50 dark:bg-zinc-900">
-    <div class="max-w-7xl mx-auto">
-        <div class="text-center mb-16">
-            <h2 class="text-3xl font-bold text-zinc-900 dark:text-white">How BoardMeet Works</h2>
-            <p class="mt-4 text-lg text-zinc-600 dark:text-zinc-300 max-w-3xl mx-auto">
-                Our simple process helps you get the most out of your board game collection.
-            </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <!-- Step 1 -->
-            <div class="flex flex-col items-center">
-                <div class="bg-white dark:bg-zinc-800 w-16 h-16 rounded-full flex items-center justify-center mb-5 shadow-md">
-                    <span class="text-2xl font-bold text-indigo-600 dark:text-indigo-400">1</span>
-                </div>
-                <h3 class="text-xl font-semibold text-zinc-900 dark:text-white mb-3">Add Your Games</h3>
-                <p class="text-center text-zinc-600 dark:text-zinc-300">
-                    Create an account and add your board game collection. Rate each game and set your preferences.
-                </p>
-                <div class="mt-6 rounded-xl overflow-hidden shadow-lg w-full">
-                    <img src="/images/test.png" alt="Add Your Games" class="w-full h-auto" />
-                </div>
-            </div>
-
-            <!-- Step 2 -->
-            <div class="flex flex-col items-center">
-                <div class="bg-white dark:bg-zinc-800 w-16 h-16 rounded-full flex items-center justify-center mb-5 shadow-md">
-                    <span class="text-2xl font-bold text-indigo-600 dark:text-indigo-400">2</span>
-                </div>
-                <h3 class="text-xl font-semibold text-zinc-900 dark:text-white mb-3">Create Your Groups</h3>
-                <p class="text-center text-zinc-600 dark:text-zinc-300">
-                    Invite friends to join your groups. See which games are available to play among all members.
-                </p>
-                <div class="mt-6 rounded-xl overflow-hidden shadow-lg w-full">
-                    <img src="/images/test.png" alt="Create Your Groups" class="w-full h-auto" />
-                </div>
-            </div>
-
-            <!-- Step 3 -->
-            <div class="flex flex-col items-center">
-                <div class="bg-white dark:bg-zinc-800 w-16 h-16 rounded-full flex items-center justify-center mb-5 shadow-md">
-                    <span class="text-2xl font-bold text-indigo-600 dark:text-indigo-400">3</span>
-                </div>
-                <h3 class="text-xl font-semibold text-zinc-900 dark:text-white mb-3">Plan Game Nights</h3>
-                <p class="text-center text-zinc-600 dark:text-zinc-300">
-                    Schedule a session, select who's attending, and get personalized game recommendations.
-                </p>
-                <div class="mt-6 rounded-xl overflow-hidden shadow-lg w-full">
-                    <img src="/images/test.png" alt="Plan Game Nights" class="w-full h-auto" />
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Testimonials Section -->
-<section id="testimonials" class="py-20 px-4 sm:px-6 lg:px-8 bg-white">
-    <div class="max-w-7xl mx-auto">
-        <div class="text-center mb-16">
-            <h2 class="text-3xl font-bold text-zinc-900 dark:text-white">What Gamers Are Saying</h2>
-            <p class="mt-4 text-lg text-zinc-600 dark:text-zinc-300 max-w-3xl mx-auto">
-                Don't just take our word for it. Here's what the board game community thinks about BoardMeet.
-            </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <!-- Testimonial 1 -->
-            <div class="bg-white dark:bg-zinc-900 p-8 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800">
-                <div class="flex items-center mb-4">
-                    <div class="text-amber-400 flex">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path
-                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                            />
-                        </svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path
-                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                            />
-                        </svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path
-                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                            />
-                        </svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path
-                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                            />
-                        </svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path
-                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                            />
-                        </svg>
-                    </div>
-                </div>
-                <p class="text-zinc-600 dark:text-zinc-300 mb-4">
-                    "BoardMeet has completely transformed how our gaming group decides what to play. No more endless debates—just great
-                    recommendations that everyone enjoys."
-                </p>
-                <div class="flex items-center">
-                    <div>
-                        <h4 class="font-medium text-zinc-900 dark:text-white">Alex Johnson</h4>
-                        <p class="text-sm text-zinc-500 dark:text-zinc-400">Board Game Enthusiast</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Testimonial 2 -->
-            <div class="bg-white dark:bg-zinc-900 p-8 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800">
-                <div class="flex items-center mb-4">
-                    <div class="text-amber-400 flex">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path
-                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                            />
-                        </svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path
-                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                            />
-                        </svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path
-                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                            />
-                        </svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path
-                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                            />
-                        </svg>
-                    </div>
-                </div>
-                <p class="text-zinc-600 dark:text-zinc-300 mb-4">
-                    "I love being able to see stats on our most-played games. It's helped us rediscover old favorites that were sitting on
-                    the shelf collecting dust."
-                </p>
-                <div class="flex items-center">
-                    <div>
-                        <h4 class="font-medium text-zinc-900 dark:text-white">Sarah Miller</h4>
-                        <p class="text-sm text-zinc-500 dark:text-zinc-400">Game Night Host</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Testimonial 3 -->
-            <div class="bg-white dark:bg-zinc-900 p-8 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800">
-                <div class="flex items-center mb-4">
-                    <div class="text-amber-400 flex">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path
-                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                            />
-                        </svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path
-                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                            />
-                        </svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path
-                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                            />
-                        </svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path
-                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                            />
-                        </svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path
-                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                            />
-                        </svg>
-                    </div>
-                </div>
-                <p class="text-zinc-600 dark:text-zinc-300 mb-4">
-                    "As someone with over 100 board games, BoardMeet has been invaluable for keeping track of what I own and who I've played
-                    each game with. The recommendation system is spot-on!"
-                </p>
-                <div class="flex items-center">
-                    <div>
-                        <h4 class="font-medium text-zinc-900 dark:text-white">Michael Chen</h4>
-                        <p class="text-sm text-zinc-500 dark:text-zinc-400">Board Game Collector</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Pricing Section -->
-<section class="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-zinc-950">
-    <div class="max-w-7xl mx-auto">
-        <div class="text-center mb-16">
-            <h2 class="text-3xl font-bold text-zinc-900 dark:text-white">Simple, Transparent Pricing</h2>
-            <p class="mt-4 text-lg text-zinc-600 dark:text-zinc-300 max-w-3xl mx-auto">
-                Start organizing your board game collection for free, with options to unlock more features as you need them.
-            </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <!-- Free Plan -->
-            <div
-                class="bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 overflow-hidden transition hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-800"
-            >
-                <div class="p-8">
-                    <h3 class="text-xl font-bold text-zinc-900 dark:text-white mb-2">Free</h3>
-                    <p class="text-zinc-600 dark:text-zinc-300 mb-4">Perfect for casual gamers</p>
-                    <div class="flex items-baseline mb-6">
-                        <span class="text-4xl font-extrabold text-zinc-900 dark:text-white">$0</span>
-                        <span class="text-zinc-500 dark:text-zinc-400 ml-1">/month</span>
-                    </div>
-                    <ul class="space-y-3 mb-8">
-                        <li class="flex items-center">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-5 w-5 text-green-500 mr-2"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                            >
-                                <path
-                                    fill-rule="evenodd"
-                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                    clip-rule="evenodd"
-                                />
-                            </svg>
-                            <span class="text-zinc-600 dark:text-zinc-300">Up to 25 games in collection</span>
-                        </li>
-                        <li class="flex items-center">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-5 w-5 text-green-500 mr-2"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                            >
-                                <path
-                                    fill-rule="evenodd"
-                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                    clip-rule="evenodd"
-                                />
-                            </svg>
-                            <span class="text-zinc-600 dark:text-zinc-300">1 gaming group</span>
-                        </li>
-                        <li class="flex items-center">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-5 w-5 text-green-500 mr-2"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                            >
-                                <path
-                                    fill-rule="evenodd"
-                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                    clip-rule="evenodd"
-                                />
-                            </svg>
-                            <span class="text-zinc-600 dark:text-zinc-300">Basic game recommendations</span>
-                        </li>
-                        <li class="flex items-center">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-5 w-5 text-green-500 mr-2"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                            >
-                                <path
-                                    fill-rule="evenodd"
-                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                    clip-rule="evenodd"
-                                />
-                            </svg>
-                            <span class="text-zinc-600 dark:text-zinc-300">Play history (up to 3 months)</span>
-                        </li>
-                    </ul>
+                <div class="mt-10 flex flex-col gap-4 sm:flex-row">
                     <a
-                        href="#"
-                        class="block w-full py-3 px-4 rounded-lg border border-zinc-300 dark:border-zinc-700 text-center text-zinc-800 dark:text-zinc-200 font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+                        routerLink="/register"
+                        class="rounded-lg bg-indigo-600 px-6 py-3 text-center font-medium text-white shadow-lg transition hover:bg-indigo-700 hover:shadow-xl"
                     >
-                        Get Started
+                        Create an account
+                    </a>
+                    <a
+                        routerLink="/login"
+                        class="rounded-lg border border-zinc-300 px-6 py-3 text-center font-medium text-zinc-700 transition hover:bg-white dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800"
+                    >
+                        Sign in
                     </a>
                 </div>
+                <p class="mt-5 text-sm text-zinc-500 dark:text-zinc-400">
+                    Board Vault is an early product. Collection and group features are available; session planning and recommendations are still being built.
+                </p>
             </div>
 
-            <!-- Hobby Plan -->
-            <div
-                class="bg-white dark:bg-zinc-900 rounded-xl shadow-xl border border-indigo-200 dark:border-indigo-800 overflow-hidden transform scale-105 relative z-10"
-            >
-                <div class="absolute top-0 inset-x-0 bg-indigo-600 text-white text-center py-1 text-sm font-medium">MOST POPULAR</div>
-                <div class="p-8 pt-12">
-                    <h3 class="text-xl font-bold text-zinc-900 dark:text-white mb-2">Hobby</h3>
-                    <p class="text-zinc-600 dark:text-zinc-300 mb-4">For the dedicated gamer</p>
-                    <div class="flex items-baseline mb-6">
-                        <span class="text-4xl font-extrabold text-zinc-900 dark:text-white">$5</span>
-                        <span class="text-zinc-500 dark:text-zinc-400 ml-1">/month</span>
+            <div class="rounded-3xl border border-indigo-100 bg-white/80 p-8 shadow-2xl dark:border-zinc-700 dark:bg-zinc-900/80">
+                <div class="mb-8 flex items-center gap-3">
+                    <img src="/images/logo.webp" alt="Board Vault logo" class="h-12 w-12 rounded-xl" />
+                    <div>
+                        <p class="font-semibold text-zinc-900 dark:text-white">Your game shelf</p>
+                        <p class="text-sm text-zinc-500 dark:text-zinc-400">A calmer starting point for game night</p>
                     </div>
-                    <ul class="space-y-3 mb-8">
-                        <li class="flex items-center">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-5 w-5 text-green-500 mr-2"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                            >
-                                <path
-                                    fill-rule="evenodd"
-                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                    clip-rule="evenodd"
-                                />
-                            </svg>
-                            <span class="text-zinc-600 dark:text-zinc-300">Unlimited games in collection</span>
-                        </li>
-                        <li class="flex items-center">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-5 w-5 text-green-500 mr-2"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                            >
-                                <path
-                                    fill-rule="evenodd"
-                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                    clip-rule="evenodd"
-                                />
-                            </svg>
-                            <span class="text-zinc-600 dark:text-zinc-300">Up to 5 gaming groups</span>
-                        </li>
-                        <li class="flex items-center">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-5 w-5 text-green-500 mr-2"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                            >
-                                <path
-                                    fill-rule="evenodd"
-                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                    clip-rule="evenodd"
-                                />
-                            </svg>
-                            <span class="text-zinc-600 dark:text-zinc-300">Advanced game recommendations</span>
-                        </li>
-                        <li class="flex items-center">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-5 w-5 text-green-500 mr-2"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                            >
-                                <path
-                                    fill-rule="evenodd"
-                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                    clip-rule="evenodd"
-                                />
-                            </svg>
-                            <span class="text-zinc-600 dark:text-zinc-300">Complete play history</span>
-                        </li>
-                        <li class="flex items-center">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-5 w-5 text-green-500 mr-2"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                            >
-                                <path
-                                    fill-rule="evenodd"
-                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                    clip-rule="evenodd"
-                                />
-                            </svg>
-                            <span class="text-zinc-600 dark:text-zinc-300">Detailed statistics</span>
-                        </li>
-                    </ul>
-                    <a
-                        href="#"
-                        class="block w-full py-3 px-4 rounded-lg bg-indigo-600 text-center text-white font-medium hover:bg-indigo-700 transition shadow-md hover:shadow-lg"
-                    >
-                        Get Started
-                    </a>
                 </div>
-            </div>
-
-            <!-- Pro Plan -->
-            <div
-                class="bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 overflow-hidden transition hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-800"
-            >
-                <div class="p-8">
-                    <h3 class="text-xl font-bold text-zinc-900 dark:text-white mb-2">Pro</h3>
-                    <p class="text-zinc-600 dark:text-zinc-300 mb-4">For game groups and clubs</p>
-                    <div class="flex items-baseline mb-6">
-                        <span class="text-4xl font-extrabold text-zinc-900 dark:text-white">$12</span>
-                        <span class="text-zinc-500 dark:text-zinc-400 ml-1">/month</span>
+                <div class="space-y-4">
+                    <div class="rounded-2xl bg-indigo-50 p-5 dark:bg-indigo-950/40">
+                        <p class="text-sm font-medium text-indigo-700 dark:text-indigo-300">Collection</p>
+                        <p class="mt-1 text-2xl font-bold text-zinc-900 dark:text-white">Games worth remembering</p>
                     </div>
-                    <ul class="space-y-3 mb-8">
-                        <li class="flex items-center">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-5 w-5 text-green-500 mr-2"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                            >
-                                <path
-                                    fill-rule="evenodd"
-                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                    clip-rule="evenodd"
-                                />
-                            </svg>
-                            <span class="text-zinc-600 dark:text-zinc-300">Everything in Hobby</span>
-                        </li>
-                        <li class="flex items-center">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-5 w-5 text-green-500 mr-2"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                            >
-                                <path
-                                    fill-rule="evenodd"
-                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                    clip-rule="evenodd"
-                                />
-                            </svg>
-                            <span class="text-zinc-600 dark:text-zinc-300">Unlimited gaming groups</span>
-                        </li>
-                        <li class="flex items-center">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-5 w-5 text-green-500 mr-2"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                            >
-                                <path
-                                    fill-rule="evenodd"
-                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                    clip-rule="evenodd"
-                                />
-                            </svg>
-                            <span class="text-zinc-600 dark:text-zinc-300">API access</span>
-                        </li>
-                        <li class="flex items-center">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-5 w-5 text-green-500 mr-2"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                            >
-                                <path
-                                    fill-rule="evenodd"
-                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                    clip-rule="evenodd"
-                                />
-                            </svg>
-                            <span class="text-zinc-600 dark:text-zinc-300">Priority support</span>
-                        </li>
-                        <li class="flex items-center">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-5 w-5 text-green-500 mr-2"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                            >
-                                <path
-                                    fill-rule="evenodd"
-                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                    clip-rule="evenodd"
-                                />
-                            </svg>
-                            <span class="text-zinc-600 dark:text-zinc-300">Custom group analytics</span>
-                        </li>
-                    </ul>
-                    <a
-                        href="#"
-                        class="block w-full py-3 px-4 rounded-lg border border-zinc-300 dark:border-zinc-700 text-center text-zinc-800 dark:text-zinc-200 font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
-                    >
-                        Get Started
-                    </a>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="rounded-2xl bg-zinc-100 p-5 dark:bg-zinc-800">
+                            <p class="text-sm text-zinc-500 dark:text-zinc-400">Groups</p>
+                            <p class="mt-1 font-semibold text-zinc-900 dark:text-white">Play together</p>
+                        </div>
+                        <div class="rounded-2xl bg-zinc-100 p-5 dark:bg-zinc-800">
+                            <p class="text-sm text-zinc-500 dark:text-zinc-400">History</p>
+                            <p class="mt-1 font-semibold text-zinc-900 dark:text-white">Remember sessions</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- FAQ Section -->
-<section class="py-20 px-4 sm:px-6 lg:px-8 bg-white">
-    <div class="max-w-4xl mx-auto">
-        <div class="text-center mb-16">
-            <h2 class="text-3xl font-bold text-zinc-900 dark:text-white">Frequently Asked Questions</h2>
-            <p class="mt-4 text-lg text-zinc-600 dark:text-zinc-300">Everything you need to know about BoardMeet.</p>
-        </div>
-
-        <div class="space-y-6">
-            <!-- FAQ Item 1 -->
-            <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 overflow-hidden">
-                <button class="flex justify-between items-center w-full px-6 py-4 text-left">
-                    <span class="font-medium text-zinc-900 dark:text-white">How do I add games to my collection?</span>
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-5 w-5 text-indigo-600 dark:text-indigo-400"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                    >
-                        <path
-                            fill-rule="evenodd"
-                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                            clip-rule="evenodd"
-                        />
-                    </svg>
-                </button>
-                <div class="px-6 pb-4">
-                    <p class="text-zinc-600 dark:text-zinc-300">
-                        After creating an account, you can add games to your collection by searching our extensive database. Simply find the
-                        game you own and click "Add to Collection." You can also rate games, add notes, and mark them as favorites.
-                    </p>
-                </div>
+    <section id="features" class="bg-white px-4 py-20 dark:bg-zinc-950 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-6xl">
+            <div class="max-w-2xl">
+                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400">The foundation</p>
+                <h2 class="mt-3 text-3xl font-bold text-zinc-900 dark:text-white">Everything starts with trustworthy shared data.</h2>
+                <p class="mt-4 text-lg text-zinc-600 dark:text-zinc-300">
+                    Build the collection and group context that makes future session planning useful.
+                </p>
             </div>
 
-            <!-- FAQ Item 2 -->
-            <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 overflow-hidden">
-                <button class="flex justify-between items-center w-full px-6 py-4 text-left">
-                    <span class="font-medium text-zinc-900 dark:text-white">How do the game recommendations work?</span>
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-5 w-5 text-indigo-600 dark:text-indigo-400"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                    >
-                        <path
-                            fill-rule="evenodd"
-                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                            clip-rule="evenodd"
-                        />
-                    </svg>
-                </button>
-                <div class="px-6 pb-4">
-                    <p class="text-zinc-600 dark:text-zinc-300">
-                        Our recommendation algorithm takes into account the games owned by your group, individual ratings, play history,
-                        player count, available time, and other factors to suggest the best games for your specific gaming session. The more
-                        you use BoardMeet, the better the recommendations become!
-                    </p>
-                </div>
-            </div>
-
-            <!-- FAQ Item 3 -->
-            <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 overflow-hidden">
-                <button class="flex justify-between items-center w-full px-6 py-4 text-left">
-                    <span class="font-medium text-zinc-900 dark:text-white">Can I use BoardMeet on my phone?</span>
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-5 w-5 text-indigo-600 dark:text-indigo-400"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                    >
-                        <path
-                            fill-rule="evenodd"
-                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                            clip-rule="evenodd"
-                        />
-                    </svg>
-                </button>
-                <div class="px-6 pb-4">
-                    <p class="text-zinc-600 dark:text-zinc-300">
-                        Yes! BoardMeet is fully responsive and works on desktop, tablet, and mobile devices. We also have native apps for
-                        iOS and Android that provide additional features like offline access to your collection and push notifications for
-                        game night reminders.
-                    </p>
-                </div>
-            </div>
-
-            <!-- FAQ Item 4 -->
-            <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 overflow-hidden">
-                <button class="flex justify-between items-center w-full px-6 py-4 text-left">
-                    <span class="font-medium text-zinc-900 dark:text-white">Is my data safe and private?</span>
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-5 w-5 text-indigo-600 dark:text-indigo-400"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                    >
-                        <path
-                            fill-rule="evenodd"
-                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                            clip-rule="evenodd"
-                        />
-                    </svg>
-                </button>
-                <div class="px-6 pb-4">
-                    <p class="text-zinc-600 dark:text-zinc-300">
-                        Absolutely. We take data privacy seriously and never sell your personal information. Your game collection and play
-                        history are only visible to the people you choose to share them with. You can adjust your privacy settings at any
-                        time from your account dashboard.
-                    </p>
-                </div>
-            </div>
-
-            <!-- FAQ Item 5 -->
-            <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 overflow-hidden">
-                <button class="flex justify-between items-center w-full px-6 py-4 text-left">
-                    <span class="font-medium text-zinc-900 dark:text-white">Can I cancel my subscription at any time?</span>
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-5 w-5 text-indigo-600 dark:text-indigo-400"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                    >
-                        <path
-                            fill-rule="evenodd"
-                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                            clip-rule="evenodd"
-                        />
-                    </svg>
-                </button>
-                <div class="px-6 pb-4">
-                    <p class="text-zinc-600 dark:text-zinc-300">
-                        Yes, you can cancel your subscription at any time from your account settings. When you cancel, you'll maintain
-                        access to your paid features until the end of your current billing period. After that, your account will revert to
-                        the free tier.
-                    </p>
-                </div>
+            <div class="mt-12 grid gap-6 md:grid-cols-3">
+                <article class="rounded-2xl border border-zinc-200 p-6 dark:border-zinc-800">
+                    <h3 class="text-xl font-semibold text-zinc-900 dark:text-white">Your collection</h3>
+                    <p class="mt-3 leading-7 text-zinc-600 dark:text-zinc-300">Browse the catalog, track owned games, rate what you play, and keep wishlist notes in one place.</p>
+                    <a routerLink="/register" class="mt-5 inline-flex font-medium text-indigo-600 hover:underline dark:text-indigo-400">Start your shelf →</a>
+                </article>
+                <article class="rounded-2xl border border-zinc-200 p-6 dark:border-zinc-800">
+                    <h3 class="text-xl font-semibold text-zinc-900 dark:text-white">Your groups</h3>
+                    <p class="mt-3 leading-7 text-zinc-600 dark:text-zinc-300">Create a private group and invite the people you actually play with.</p>
+                    <a routerLink="/register" class="mt-5 inline-flex font-medium text-indigo-600 hover:underline dark:text-indigo-400">Create a group →</a>
+                </article>
+                <article class="rounded-2xl border border-zinc-200 p-6 dark:border-zinc-800">
+                    <h3 class="text-xl font-semibold text-zinc-900 dark:text-white">Your history</h3>
+                    <p class="mt-3 leading-7 text-zinc-600 dark:text-zinc-300">Keep the sessions and games you have played visible for the next time everyone meets.</p>
+                    <a routerLink="/register" class="mt-5 inline-flex font-medium text-indigo-600 hover:underline dark:text-indigo-400">Keep a record →</a>
+                </article>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- Call to Action -->
-<section class="py-20 px-4 sm:px-6 lg:px-8 bg-indigo-600">
-    <div class="max-w-5xl mx-auto text-center">
-        <h2 class="text-3xl font-bold text-white mb-6">Ready to Elevate Your Game Nights?</h2>
-        <p class="text-xl text-indigo-100 mb-10 max-w-3xl mx-auto">
-            Join thousands of tabletop gamers who are organizing better game nights with BoardMeet. Get started for free today!
-        </p>
-        <div class="flex flex-col sm:flex-row justify-center gap-4">
-            <a
-                href="#"
-                class="px-8 py-4 rounded-lg bg-white text-indigo-600 font-medium hover:bg-indigo-50 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-            >
-                Create Your Account
-            </a>
-            <a href="#" class="px-8 py-4 rounded-lg border-2 border-white text-white font-medium hover:bg-indigo-700 transition">
-                Learn More
-            </a>
+    <section id="how-it-works" class="bg-zinc-50 px-4 py-20 dark:bg-zinc-900 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-6xl">
+            <div class="max-w-2xl">
+                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400">How it works today</p>
+                <h2 class="mt-3 text-3xl font-bold text-zinc-900 dark:text-white">Start small and make the next game night easier.</h2>
+            </div>
+            <ol class="mt-12 grid gap-6 md:grid-cols-3">
+                <li class="rounded-2xl bg-white p-6 shadow-sm dark:bg-zinc-800">
+                    <span class="text-sm font-bold text-indigo-600 dark:text-indigo-400">01</span>
+                    <h3 class="mt-3 text-xl font-semibold text-zinc-900 dark:text-white">Create your account</h3>
+                    <p class="mt-3 leading-7 text-zinc-600 dark:text-zinc-300">Sign up with Board Vault and set up the identity your group will recognize.</p>
+                </li>
+                <li class="rounded-2xl bg-white p-6 shadow-sm dark:bg-zinc-800">
+                    <span class="text-sm font-bold text-indigo-600 dark:text-indigo-400">02</span>
+                    <h3 class="mt-3 text-xl font-semibold text-zinc-900 dark:text-white">Add the games you own</h3>
+                    <p class="mt-3 leading-7 text-zinc-600 dark:text-zinc-300">Use your collection as the shared source of truth for what is available.</p>
+                </li>
+                <li class="rounded-2xl bg-white p-6 shadow-sm dark:bg-zinc-800">
+                    <span class="text-sm font-bold text-indigo-600 dark:text-indigo-400">03</span>
+                    <h3 class="mt-3 text-xl font-semibold text-zinc-900 dark:text-white">Bring in your group</h3>
+                    <p class="mt-3 leading-7 text-zinc-600 dark:text-zinc-300">Invite friends, build the group context, and keep your past sessions available.</p>
+                </li>
+            </ol>
         </div>
-    </div>
-</section>
+    </section>
+
+    <section class="bg-indigo-700 px-4 py-20 text-white sm:px-6 lg:px-8">
+        <div class="mx-auto flex max-w-6xl flex-col items-start justify-between gap-8 md:flex-row md:items-center">
+            <div>
+                <h2 class="text-3xl font-bold">Ready to organize your shelf?</h2>
+                <p class="mt-3 max-w-xl text-indigo-100">Start with the games and people you already know. The rest of the product will grow from there.</p>
+            </div>
+            <a routerLink="/register" class="rounded-lg bg-white px-6 py-3 font-semibold text-indigo-700 transition hover:bg-indigo-50">Create an account</a>
+        </div>
+    </section>
+</main>
