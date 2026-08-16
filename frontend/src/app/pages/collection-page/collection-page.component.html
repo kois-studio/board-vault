@@ -4,6 +4,25 @@
 </app-page-header>
 
 <container-wrapper>
+    @if (!activationComplete()) {
+        <section class="app-bg-secondary rounded-xl p-6 mb-8 border border-indigo-400/40">
+            <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div>
+                    <p class="text-sm uppercase tracking-wide text-indigo-400">Start your collection</p>
+                    <h2 class="text-2xl font-semibold mt-1">Add your first five games</h2>
+                    <p class="text-secondary mt-2">A small collection gives your groups something real to play with.</p>
+                </div>
+                <div class="text-left md:text-right">
+                    <p class="font-semibold">{{ activationCount() }}/{{ activationTarget }} games</p>
+                    <div class="w-full md:w-48 h-2 rounded-full bg-zinc-700 mt-2 overflow-hidden" aria-label="Collection activation progress">
+                        <div class="h-full bg-indigo-500 transition-all" [style.width.%]="activationProgress()"></div>
+                    </div>
+                </div>
+            </div>
+            <a class="app-btn-primary inline-block mt-5" routerLink="/collection/browse">Browse games</a>
+        </section>
+    }
+
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- --------------------------
             1 - My Games Card
