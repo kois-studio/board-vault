@@ -312,7 +312,7 @@ export class Api {
     }
 
     createGroup(userId: number, groupName: string) {
-        return this.http.post<{ success: true }>(`${this.url}/dashboard/users/${userId}/groups/create/${groupName}`, {}).pipe(map(response => successSchema.parse(response)))
+        return this.http.post<{ success: true }>(`${this.url}/dashboard/users/${userId}/groups/create/${encodeURIComponent(groupName)}`, {}).pipe(map(response => successSchema.parse(response)))
     }
 
     deleteGroup(userId: number, groupId: number) {

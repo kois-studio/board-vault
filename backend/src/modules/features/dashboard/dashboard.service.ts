@@ -2,6 +2,7 @@ import { BadRequestException, ForbiddenException, Injectable, Logger } from '@ne
 
 import { LogFeature } from '../../../common/decorators/logger.decorator'
 import { CacheService } from '../../common/cache/cache.service'
+import { DatabaseService } from '../../common/database/database.service'
 import { GameProposalService } from '../../core/game-proposal/game-proposal.service'
 import { GameTranslationService } from '../../core/game-translation/game-translation.service'
 import { GamesService } from '../../core/games/games.service'
@@ -27,6 +28,7 @@ export class DashboardService {
 
     constructor(
         private readonly usersService: UsersService,
+        private readonly databaseService: DatabaseService,
         private readonly groupsService: GroupsService,
         private readonly groupMembershipsService: GroupMembershipsService,
         private readonly gamesOwnedService: GamesOwnedService,
@@ -90,19 +92,9 @@ export class DashboardService {
 
     @LogFeature(new Logger('DashboardService'))
     async createGroup(userId: number, groupName: string): Promise<SuccessDto> {
-        // Step 1: Create group
-        await this.groupsService.createGroup({
+        await this.databaseService.createGroupWithMembership({
             name: groupName,
             createdBy: userId,
-        })
-
-        // Step 2: Get groupId
-        const groupData = await this.groupsService.getGroupByName(groupName)
-
-        // Step 3: Create the owner<->group membership
-        await this.groupMembershipsService.createGroupMembership({
-            accountId: userId,
-            groupId: groupData.id,
         })
 
         return { success: true }
