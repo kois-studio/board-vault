@@ -50,6 +50,9 @@ export class DataService {
     public readonly userReviews = signal<Array<GameReviewWithGameData>>([])
     public readonly userMeets = signal<Array<MeetType>>([])
     public readonly userHistory = signal<Array<HistoryRecordType>>([])
+    public readonly userGamesError = signal(false)
+    public readonly userGroupsError = signal(false)
+    public readonly userStatsError = signal(false)
     public readonly userMeetsError = signal(false)
     public readonly userHistoryError = signal(false)
     public readonly userWishlist = signal<Array<GameCompleteType>>([])
@@ -117,6 +120,9 @@ export class DataService {
         this.userReviews.set([])
         this.userMeets.set([])
         this.userHistory.set([])
+        this.userGamesError.set(false)
+        this.userGroupsError.set(false)
+        this.userStatsError.set(false)
         this.userMeetsError.set(false)
         this.userHistoryError.set(false)
         this.userWishlist.set([])
@@ -143,7 +149,11 @@ export class DataService {
     }
 
     private _getUserGames(userId: number) {
-        this.api.getUserGames(userId).subscribe({
+        this.userGamesError.set(false)
+        this.loadingService.start(LOADING_KEYS.USER_GAMES)
+        this.api.getUserGames(userId).pipe(
+            finalize(() => this.loadingService.finish(LOADING_KEYS.USER_GAMES)),
+        ).subscribe({
             next: games => {
                 this.userGames.set(games)
                 this.userGroups.update(groups =>
@@ -154,10 +164,8 @@ export class DataService {
                 )
             },
             error: () => {
+                this.userGamesError.set(true)
                 this.toastService.error('Error retrieving user games')
-            },
-            complete: () => {
-                this.loadingService.finish(LOADING_KEYS.USER_GAMES)
             },
         })
     }
@@ -199,7 +207,11 @@ export class DataService {
     }
 
     private _getUserGroups(accountId: number) {
-        this.api.getUserGroups(accountId).subscribe({
+        this.userGroupsError.set(false)
+        this.loadingService.start(LOADING_KEYS.USER_GROUPS)
+        this.api.getUserGroups(accountId).pipe(
+            finalize(() => this.loadingService.finish(LOADING_KEYS.USER_GROUPS)),
+        ).subscribe({
             next: groups => {
                 this.userGroups.set(groups)
 
@@ -218,10 +230,8 @@ export class DataService {
                 }
             },
             error: () => {
+                this.userGroupsError.set(true)
                 this.toastService.error("Error retrieving user's groups")
-            },
-            complete: () => {
-                this.loadingService.finish(LOADING_KEYS.USER_GROUPS)
             },
         })
     }
@@ -283,11 +293,16 @@ export class DataService {
     }
 
     private _getUserStats(userId: number) {
-        this.api.getUserStats(userId).subscribe({
+        this.userStatsError.set(false)
+        this.loadingService.start(LOADING_KEYS.USER_STATS)
+        this.api.getUserStats(userId).pipe(
+            finalize(() => this.loadingService.finish(LOADING_KEYS.USER_STATS)),
+        ).subscribe({
             next: stats => {
                 this.userStats.set(stats)
             },
             error: () => {
+                this.userStatsError.set(true)
                 this.toastService.error("Error retrieving user's stats")
             },
         })
@@ -648,6 +663,20 @@ export class DataService {
 
         this.userGames.set([])
         this._getUserGames(currentUser.id)
+    }
+
+    public refreshUserGroups() {
+        const currentUser = this.currentUser()
+        if (!currentUser) return
+
+        this._getUserGroups(currentUser.id)
+    }
+
+    public refreshUserStats() {
+        const currentUser = this.currentUser()
+        if (!currentUser) return
+
+        this._getUserStats(currentUser.id)
     }
 
     // #region Meetings
