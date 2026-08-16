@@ -1272,13 +1272,6 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
-    createMeeting(groupId: number, createdBy: number) {
-        return this._tursoExecute({
-            sql: 'INSERT INTO Meet (groupId, createdBy) VALUES (?, ?)',
-            args: [groupId, createdBy],
-        })
-    }
-
     async createCompletedSession(input: CompletedSessionInput) {
         const transaction = await this.tursoClient.transaction('write')
 

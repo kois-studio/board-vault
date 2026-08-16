@@ -3,7 +3,7 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { meetsSchema } from '../../../common/schemas/db-meet.schema'
 import { GameDto } from '../../../common/types/game.type'
-import { MeetCreatedDto, MeetDto, MeetWithAttendeesAndGames } from '../../../common/types/meet.type'
+import { MeetDto, MeetWithAttendeesAndGames } from '../../../common/types/meet.type'
 import { UserGetDto } from '../../../common/types/user.type'
 import { DatabaseService } from '../../common/database/database.service'
 
@@ -85,16 +85,4 @@ export class MeetsService {
         }))[0]
     }
 
-    async createMeeting(groupId: number, createdBy: number): Promise<MeetCreatedDto> {
-        this.LOGGER.log(`Creating meeting for group ${groupId} created by ${createdBy}`)
-
-        try {
-            const resultSet = await this.databaseService.createMeeting(groupId, createdBy)
-
-            return { meetId: Number(resultSet.lastInsertRowid) }
-        } catch (error) {
-            this.LOGGER.error('Failed to create meeting', error)
-            throw new NotFoundException('Failed to create meeting')
-        }
-    }
 }
