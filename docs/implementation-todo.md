@@ -177,9 +177,9 @@ Relevant surfaces: [`propose-game-page`](../frontend/src/app/pages/collection-pa
 - Avoid mutating nested signal state in place where it can produce stale UI.
 - Add shared UI conventions for buttons, cards, forms, modal behavior, spacing, typography, colors, and icons.
 
-### 12. Frontend testing and contracts — Open
+### 12. Frontend testing and contracts — Partial
 
-- Replace the generated single frontend smoke test with route/component/state tests for critical journeys.
+- Replace the generated single frontend smoke test with route/component/state tests for critical journeys. Playwright now covers public landing, signed-out dashboard protection, and the wildcard not-found route.
 - Add browser coverage for Clerk login, collection activation, group invitation, session creation, and session completion.
 - Add frontend API response schemas and validate representative responses at the boundary.
 - Add contract tests for frontend/backend session, collection, group, and recommendation flows.

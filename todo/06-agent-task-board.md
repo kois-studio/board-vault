@@ -36,7 +36,7 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 |---|---|---|---|---|
 | EQ-001 | TODO | Quality | Add lockfiles, root commands, environment documentation, and reproducible local setup. | None |
 | EQ-002 | TODO | Quality | Add CI gates for build, tests, lint, and migrations. | EQ-001 |
-| EQ-003 | TODO | Quality | Replace starter tests with authorization and core journey coverage. | SEC-001, PROD-005 |
+| EQ-003 | REVIEW | Quality | Replace starter tests with authorization and core journey coverage. | SEC-001, PROD-005 |
 | EQ-004 | TODO | Quality | Establish generated/shared API contracts and response validation. | DATA-003 |
 | EQ-005 | TODO | Quality | Add health checks, structured logging, error monitoring, and database operational checks. | EQ-001 |
 | EQ-006 | TODO | Quality | Fix frontend bundle, styling warnings, accessibility, responsiveness, and timezone handling. | PROD-005 |
@@ -549,6 +549,22 @@ Review: AUTH-002
 Changed: Production CORS defaults now exclude localhost, Clerk identity linking/provisioning requires a verified primary email, Clerk initialization failures fall back to visible legacy controls instead of exposing unusable Clerk actions, and guest routing recognizes active Clerk sessions. Regression coverage adds CORS-default and configured-origin tests.
 Verified: `cd backend && npm test -- --runInBand` (98 tests); `cd backend && npm run build`; `cd frontend && npm run build`; affected backend lint reports no errors; affected backend Prettier check passes.
 Known follow-ups: Configure the production Clerk instance/domain and Vercel variables, deploy the current backend (the 2026-08-15 smoke check still returned 404 for `/auth/clerk/status`), verify the production origin and preserved-data routes, apply migration 0002 where required, and document rollback/recovery evidence before removing legacy auth.
+
+Most recent claim:
+
+```text
+Task: EQ-003
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: establish frontend browser E2E infrastructure and replace the generated smoke baseline with stable public and authenticated journey coverage
+```
+
+Review: EQ-003
+
+Changed: Added Playwright browser-test infrastructure with an isolated local server target and environment-driven external target support. Added public landing, signed-out protected-route, and wildcard not-found coverage; generated reports and results are ignored.
+Verified: `cd frontend && npm run e2e` (3 tests passed); `cd frontend && npm run build` remains the next affected frontend build check.
+Known follow-ups: Add authenticated Clerk journey setup without repository secrets, then cover collection activation, invitation lifecycle, canonical session creation/completion, and history.
 
 When claiming a task, add:
 

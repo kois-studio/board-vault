@@ -4,7 +4,7 @@
 
 - Backend: one stale `backend/test/app.e2e-spec.ts` plus focused profile-update and ownership-boundary suites under `backend/src/`.
 - Frontend: one `frontend/src/app/app.component.spec.ts`, a generated app-creation smoke test.
-- No browser end-to-end framework or CI workflow was found.
+- Frontend browser coverage now uses Playwright under `frontend/e2e/`; the suite is configured to run against an isolated local Angular server on port 4300 or an explicit `PLAYWRIGHT_BASE_URL`.
 - No broad contract, migration, persistence, provider-adapter, accessibility, or responsive tests were found; focused authorization boundary tests now exist.
 - A manual migration verification was run against a restored SQLite backup copy; it is not an automated migration suite.
 
@@ -19,6 +19,7 @@
 | `cd frontend && npm run build` | Pass with warnings | Bundle budget, Sass deprecation, and selector warnings remain. |
 | `cd frontend && npx biome check` | Fail | 8 findings in the form submission, log-session wizard, and propose-game page files. |
 | `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` | Pass | One generated smoke test passes. |
+| `cd frontend && npm run e2e` | Pass | Three Playwright tests cover the public landing page, signed-out protection of `/dashboard`, and the wildcard not-found route. Authenticated journeys are not yet covered. |
 | `sqlite3 backup-copy < database/migrations/0001-add-clerk-user-id.sql` | Pass | SQLite integrity remains `ok`; 15 accounts, 13 meets, and 101 meet/game links are preserved; the original backup was not used as the test target. |
 | Schema plus migration 0002 in disposable SQLite memory database | Pass | Full schema loaded with migration 0002; integrity is `ok`, both expiry columns exist, a valid token succeeds once, second use affects zero rows, and an expired token affects zero rows. No live Turso data was changed. |
 | Live Turso migration 0002 verification | Pass | Fresh local dump was taken before the additive migration; live integrity and foreign-key checks passed, both expiry columns exist, aggregate counts remain 16 accounts, 13 meets, and 101 meet/game links, and no existing token-bearing rows required backfill. |
@@ -42,6 +43,7 @@
 - deterministic explainable recommendation scoring;
 - atomic session creation, planned/played distinction, completion, and history;
 - frontend loading, empty, failure, retry, and mobile/accessibility states.
+- frontend browser journeys for public navigation, Clerk authentication, collection activation, group invitations, session creation/completion, and history.
 
 ### P2 delivery quality
 
