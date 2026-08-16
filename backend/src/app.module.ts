@@ -19,6 +19,7 @@ import { GroupMembershipsModule } from './modules/core/group-memberships/group-m
 import { GroupsModule } from './modules/core/groups/groups.module'
 import { InvitationsModule } from './modules/core/invitations/invitations.module'
 import { MeetAccountGamesModule } from './modules/core/meet-account-games/meet-account-games.module'
+import { MeetAttendeesModule } from './modules/core/meet-attendees/meet-attendees.module'
 import { MeetsModule } from './modules/core/meets/meets.module'
 import { NotificationsModule } from './modules/core/notifications/notifications.module'
 import { ReviewsModule } from './modules/core/reviews/reviews.module'
@@ -52,6 +53,7 @@ import { ProfileModule } from './modules/features/profile/profile.module'
         GroupsModule,
         InvitationsModule,
         MeetAccountGamesModule,
+        MeetAttendeesModule,
         MeetsModule,
         NotificationsModule,
         ReviewsModule,
