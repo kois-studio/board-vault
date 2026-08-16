@@ -35,7 +35,7 @@ Relevant surfaces: [`app.routes.ts`](../frontend/src/app/app.routes.ts), [`meet-
 - Replace the legacy meeting creation path with one canonical session-creation use case for all session states; scheduled and completed creation now use the sessions module, while the old route remains only as a compatibility path.
 - Persist the selected date/time and IANA timezone; completed-session logging now sends both to the backend.
 - Persist the selected group, organizer, attendees, played games, and participant links atomically through `POST /sessions`.
-- Persist scheduled sessions, initial pending attendees, and optional planned games atomically through `POST /sessions/scheduled`.
+- Persist scheduled sessions, selected pending attendees, and optional planned games atomically through `POST /sessions/scheduled`; omission of attendees remains a documented compatibility default to all current group members.
 - Replace the `submitSession()` TODO in the log-session wizard with the guarded API call and success/error navigation.
 - Define and implement transitions between scheduled, active, completed, and cancelled sessions; organizer-controlled transitions now exist for scheduled/active sessions, while completed/cancelled remain terminal.
 - Distinguish planned games from games actually played in all API responses and frontend types; scheduled creation and meet details now preserve the distinction, while the read model still needs richer game objects and planned-game editing.

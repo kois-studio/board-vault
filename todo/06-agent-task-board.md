@@ -90,6 +90,22 @@ Known follow-ups: Add a clean authenticated browser journey for session-detail e
 Most recent claim:
 
 ```text
+Task: PROD-006
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: carry selected attendees from scheduled-session UI into the canonical session write
+```
+
+Review: PROD-006
+
+Changed: Scheduled sessions now accept validated selected group attendees and the scheduling form defaults to, but allows changing, all group members. The compatibility default remains when older clients omit `attendeeIds`.
+Verified: Pending backend tests/build and frontend build/browser verification.
+Known follow-ups: Add authenticated browser coverage for scheduling with a non-default attendee subset and decide whether invitation RSVP should update the pending attendee state.
+
+Most recent claim:
+
+```text
 Task: DATA-003
 Owner: Codex
 Claimed: 2026-08-16

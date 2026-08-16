@@ -83,6 +83,15 @@ export class CreateScheduledSessionBody {
     @MaxLength(64)
     timezone: string
 
+    @ApiProperty({ example: [1, 2], required: false, description: 'Selected group members attending the session.' })
+    @IsOptional()
+    @IsArray()
+    @ArrayUnique()
+    @ArrayMinSize(1)
+    @IsInt({ each: true })
+    @Min(1, { each: true })
+    attendeeIds?: Array<number>
+
     @ApiProperty({ example: [42, 84], required: false })
     @IsOptional()
     @IsArray()
