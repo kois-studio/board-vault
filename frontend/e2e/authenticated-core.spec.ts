@@ -26,4 +26,12 @@ test.describe('authenticated core navigation', () => {
         await expect(page.getByRole('heading', { name: /History/i })).toBeVisible()
         await expect(page.getByRole('link', { name: /Log a Session/i })).toBeVisible()
     })
+
+    test('opens explainable game recommendations', async ({ page }) => {
+        await page.goto('/play/recommendations')
+
+        await expect(page.getByRole('heading', { name: /Game Recommendations/i })).toBeVisible()
+        await expect(page.getByText(/Who is attending\?/i)).toBeVisible()
+        await expect(page.getByRole('button', { name: /Recommend games/i })).toBeVisible()
+    })
 })
