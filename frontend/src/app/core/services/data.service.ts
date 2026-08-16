@@ -1,6 +1,6 @@
 import { Injectable, effect, inject, signal } from '@angular/core'
 import { Router } from '@angular/router'
-import { catchError, concatMap, of, tap, throwError } from 'rxjs'
+import { catchError, concatMap, finalize, of, tap, throwError } from 'rxjs'
 import { Api } from '../../api/api'
 import type {
     CollectionActivityWithGameDataType,
@@ -50,6 +50,8 @@ export class DataService {
     public readonly userReviews = signal<Array<GameReviewWithGameData>>([])
     public readonly userMeets = signal<Array<MeetType>>([])
     public readonly userHistory = signal<Array<HistoryRecordType>>([])
+    public readonly userMeetsError = signal(false)
+    public readonly userHistoryError = signal(false)
     public readonly userWishlist = signal<Array<GameCompleteType>>([])
     public readonly userCollectionActivity = signal<Array<CollectionActivityWithGameDataType>>([])
     public readonly userProposals = signal<Array<GameProposalType>>([])
@@ -115,6 +117,8 @@ export class DataService {
         this.userReviews.set([])
         this.userMeets.set([])
         this.userHistory.set([])
+        this.userMeetsError.set(false)
+        this.userHistoryError.set(false)
         this.userWishlist.set([])
         this.userCollectionActivity.set([])
         this.userProposals.set([])
@@ -223,26 +227,29 @@ export class DataService {
     }
 
     private _getUserMeets(userId: number) {
-        this.api.getUserMeets(userId).subscribe({
-            next: meets => {
-                this.userMeets.set(meets)
-            },
+        this.userMeetsError.set(false)
+        this.loadingService.start(LOADING_KEYS.USER_MEETS)
+        this.api.getUserMeets(userId).pipe(
+            finalize(() => this.loadingService.finish(LOADING_KEYS.USER_MEETS)),
+        ).subscribe({
+            next: meets => this.userMeets.set(meets),
             error: () => {
+                this.userMeetsError.set(true)
                 this.toastService.error("Error retrieving user's meets")
             },
         })
     }
 
     private _getUserHistory(userId: number) {
-        this.api.getUserGamesHistory(userId).subscribe({
-            next: history => {
-                this.userHistory.set(history)
-            },
+        this.userHistoryError.set(false)
+        this.loadingService.start(LOADING_KEYS.USER_GAMES_HISTORY)
+        this.api.getUserGamesHistory(userId).pipe(
+            finalize(() => this.loadingService.finish(LOADING_KEYS.USER_GAMES_HISTORY)),
+        ).subscribe({
+            next: history => this.userHistory.set(history),
             error: () => {
+                this.userHistoryError.set(true)
                 this.toastService.error("Error retrieving user's history")
-            },
-            complete: () => {
-                this.loadingService.finish(LOADING_KEYS.USER_GAMES_HISTORY)
             },
         })
     }
@@ -669,6 +676,14 @@ export class DataService {
 
         this.userMeets.set([])
         this._getUserMeets(currentUser.id)
+    }
+
+    public refreshUserHistory() {
+        const currentUser = this.currentUser()
+        if (!currentUser) return
+
+        this.userHistory.set([])
+        this._getUserHistory(currentUser.id)
     }
 
     public createMeetAttendee(meetId: number, accountId: number) {

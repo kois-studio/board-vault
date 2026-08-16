@@ -35,6 +35,7 @@ export class HistoryPageComponent {
     public readonly currentUser$ = this.dataService.currentUser
     public readonly userGroups$ = this.dataService.userGroups
     public readonly userHistory$ = this.dataService.userHistory
+    public readonly historyError = this.dataService.userHistoryError
     // loadingService
     public readonly isLoadingHistory = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_GAMES_HISTORY])
 
@@ -47,5 +48,9 @@ export class HistoryPageComponent {
 
     public getGroupName(groupId: number): string {
         return this.userGroups$().find(group => group.id === groupId)?.name ?? `Group ${groupId}`
+    }
+
+    public retryHistory(): void {
+        this.dataService.refreshUserHistory()
     }
 }
