@@ -963,6 +963,19 @@ Changed: Added Zod schemas at the Angular API boundary for meet summaries/detail
 Verified: Clean frontend `npm ci --ignore-scripts`, `npm run build`, and `npm run e2e` pass; the public Playwright checks report 3 passed and 4 authenticated checks skipped without Clerk storage state. `git diff --check` passes.
 Known follow-ups: Expand response schemas to the remaining API methods, add malformed-response tests, and generate/verify a versioned OpenAPI or consumer contract.
 
+Continuation claim: EQ-004
+
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: validate authentication responses at the frontend API boundary
+
+Review continuation: EQ-004
+
+Changed: Added Zod validation for legacy JWT/Clerk status, access-token, availability, and message-shaped verification/reset responses. This also corrected the frontend fallback contract to match the backend’s `access_token` and `{ message }` payloads.
+Verified: `cd frontend && npm run build` passes with the documented baseline warnings; `git diff --check` passes.
+Known follow-ups: Expand response schemas to collection, group, invitation, notification, and admin methods, then add malformed-response tests.
+
 Continuation claim: PROD-005
 
 Owner: Codex

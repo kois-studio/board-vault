@@ -38,7 +38,7 @@ import type {
     UserStatsType,
     UserType,
 } from './api.types'
-import { meetDetailsSchema, meetSchema, recommendationsSchema, scheduledSessionCreatedSchema, sessionCreatedSchema, sessionStatusUpdatedSchema, successSchema } from './api.schemas'
+import { accessTokenSchema, authStatusSchema, availabilitySchema, clerkAuthStatusSchema, meetDetailsSchema, meetSchema, messageSchema, recommendationsSchema, scheduledSessionCreatedSchema, sessionCreatedSchema, sessionStatusUpdatedSchema, successSchema } from './api.schemas'
 
 @Injectable({ providedIn: 'root' })
 export class Api {
@@ -51,7 +51,7 @@ export class Api {
     authStatus() {
         // there is no case where the response is `isValid: false`.
         // if token not valid, the server returns 401 error, not a valid response.
-        return this.http.get<{ isValid: true; userId: number; isAdmin: boolean }>(`${this.url}/auth/status`)
+        return this.http.get<{ isValid: true; userId: number; isAdmin: boolean }>(`${this.url}/auth/status`).pipe(map(response => authStatusSchema.parse(response)))
     }
 
     clerkAuthStatus() {
@@ -60,35 +60,35 @@ export class Api {
             userId: number
             isAdmin: boolean
             clerkUserId: string
-        }>(`${this.url}/auth/clerk/status`)
+        }>(`${this.url}/auth/clerk/status`).pipe(map(response => clerkAuthStatusSchema.parse(response)))
     }
 
     login(email: string, password: string) {
-        return this.http.post<{ access_token: string }>(`${this.url}/auth/login`, { email, password })
+        return this.http.post<{ access_token: string }>(`${this.url}/auth/login`, { email, password }).pipe(map(response => accessTokenSchema.parse(response)))
     }
 
     register(email: string, username: string, password: string) {
-        return this.http.post<{ success: true }>(`${this.url}/auth/register`, { email, username, password })
+        return this.http.post<{ success: true }>(`${this.url}/auth/register`, { email, username, password }).pipe(map(response => successSchema.parse(response)))
     }
 
     checkEmail(email: string) {
-        return this.http.get<{ isAvailable: boolean }>(`${this.url}/auth/check-email?email=${email}`)
+        return this.http.get<{ isAvailable: boolean }>(`${this.url}/auth/check-email?email=${email}`).pipe(map(response => availabilitySchema.parse(response)))
     }
 
     checkUsername(username: string) {
-        return this.http.get<{ isAvailable: boolean }>(`${this.url}/auth/check-username?username=${username}`)
+        return this.http.get<{ isAvailable: boolean }>(`${this.url}/auth/check-username?username=${username}`).pipe(map(response => availabilitySchema.parse(response)))
     }
 
     verifyEmail(token: string) {
-        return this.http.get<{ success: true }>(`${this.url}/auth/verify-email/${token}`)
+        return this.http.get<{ message: string }>(`${this.url}/auth/verify-email/${token}`).pipe(map(response => messageSchema.parse(response)))
     }
 
     forgotPassword(email: string) {
-        return this.http.post<{ success: true }>(`${this.url}/auth/forgot-password`, { email })
+        return this.http.post<{ message: string }>(`${this.url}/auth/forgot-password`, { email }).pipe(map(response => messageSchema.parse(response)))
     }
 
     resetPassword(token: string, password: string) {
-        return this.http.post<{ success: true }>(`${this.url}/auth/reset-password/${token}`, { password })
+        return this.http.post<{ message: string }>(`${this.url}/auth/reset-password/${token}`, { password }).pipe(map(response => messageSchema.parse(response)))
     }
 
     // #region users
