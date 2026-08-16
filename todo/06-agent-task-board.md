@@ -15,7 +15,7 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 | DATA-001 | REVIEW | Data model | Reconcile repository SQL and services against the owner-confirmed deployed schema and produce a code/schema drift report. | None |
 | DATA-002 | REVIEW | Data model | Add numbered migrations and make the schema reproducible from empty state. | DATA-001 |
 | DATA-003 | REVIEW | Data model | Choose and implement the canonical session schema, including attendance and planned/played games. | DATA-001 |
-| DATA-004 | TODO | Data model | Add transaction boundaries for group, session, proposal, and collection mutations. | DATA-002, DATA-003 |
+| DATA-004 | IN_PROGRESS | Data model | Add transaction boundaries for remaining group, session, proposal, and collection mutations; group creation and canonical session writes are now transactional. | DATA-002, DATA-003 |
 
 ## P1 — flagship product loop
 
@@ -1079,6 +1079,24 @@ Review continuation: AUTH-001
 Changed: `/login` and `/register` now open Clerk’s secure sign-in/sign-up UI whenever Clerk is available. The old local forms remain available only when Clerk is not configured or cannot initialize, preserving a deliberate local/degraded-mode fallback.
 Verified: `cd frontend && npm run build` passes with the documented baseline warnings; `git diff --check` passes.
 Known follow-ups: Verify the route behavior manually on production and decide when the legacy fallback can be removed after migration recovery evidence is complete.
+
+Continuation claim: DATA-004
+
+Owner: Codex
+
+Claimed: 2026-08-16
+
+Branch/worktree: main / shared workspace
+
+Scope: make group creation atomic and safely encode group names in the frontend route
+
+Review continuation: DATA-004
+
+Changed: Dashboard group creation now inserts the group and owner membership through one Turso write transaction, avoiding the previous create-then-lookup-then-membership sequence. The frontend URL-encodes the group-name path segment so names containing slashes or other reserved characters are addressed safely.
+
+Verified: focused `DashboardService` test, backend build, frontend build, and `git diff --check` pass.
+
+Known follow-ups: Add transaction failure-injection coverage and authenticated browser coverage for group creation; review remaining multi-write use cases under DATA-004.
 
 When claiming a task, add:
 

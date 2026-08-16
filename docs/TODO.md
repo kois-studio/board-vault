@@ -122,7 +122,7 @@ Statuses are `Planned`, `Blocked`, or `Deferred` until evidence changes them. Pr
 
 - **Status:** Deferred
 - **Affected area:** core services, `DatabaseService`, `CacheService`
-- **Evidence:** Concrete infrastructure is used directly; multi-write flows have no transaction policy; cache disabled mode and invalidation are untested.
+- **Evidence:** Concrete infrastructure is used directly; canonical session creation, scheduled-session creation, lifecycle transitions, played-game recording, and group creation now use explicit Turso transactions. Remaining multi-write flows lack a complete transaction policy, and cache disabled mode/invalidation are untested.
 - **Risk:** Partial writes, stale data, provider coupling, and test instability.
 - **Next action:** Define adapter interfaces, transaction boundaries, cache ownership/invalidation, and provider fakes.
 - **Dependencies:** READINESS-003 and canonical session model.

@@ -135,7 +135,7 @@ Relevant surfaces: [`collection-page`](../frontend/src/app/pages/collection-page
 Relevant surfaces: [`groups`](../frontend/src/app/pages/groups/), [`group-view`](../frontend/src/app/pages/group-view/), group/invitation/notification components.
 
 - Verify the complete two-account flow: create group, invite account, accept/reject invitation, refresh, and see membership.
-- Keep group creation awaitable and recoverable; the create form now waits for the API result before navigating and leaves failures retryable.
+- Keep group creation awaitable and recoverable; the create form now waits for the API result before navigating and leaves failures retryable, while the backend now creates the group and owner membership in one Turso transaction.
 - Keep invitation send, pending-invitation removal, and member removal awaitable; group editing now keeps retryable selections and prevents overlapping requests.
 - Resolve the product policy for self-join versus invite-only membership.
 - Define group owner/member roles and expose only actions allowed for each role.

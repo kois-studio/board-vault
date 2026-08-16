@@ -404,10 +404,10 @@ compliance:
       priority: critical
       next_action: Add session API/write contracts and transaction tests on a disposable database.
     - id: DATA-004
-      status: gap
-      evidence: DashboardService creates a group and membership in separate calls; canonical session creation is transactional, while group creation still lacks an atomic use-case boundary
+      status: partial
+      evidence: canonical group creation now inserts UserGroup and its owner GroupMembership in one Turso transaction; canonical session and lifecycle writes are also transactional, while proposal, collection, and attendee-related multi-write policies remain incomplete
       priority: critical
-      next_action: Define transaction/partial-failure behavior for multi-record use cases.
+      next_action: Add failure-injection coverage for group creation, then define transaction/partial-failure behavior for remaining multi-record use cases.
     - id: DATA-005
       status: partial
       evidence: raw SQL queries and pagination helpers exist; index ownership and query performance evidence are absent
@@ -613,10 +613,10 @@ compliance:
       priority: high
       next_action: Define adapter/module interfaces around persistence and cache.
     - id: NEST-013
-      status: gap
-      evidence: multi-step group creation is separate writes; no transaction or partial-failure policy
+      status: partial
+      evidence: group creation now uses an explicit transaction; remaining multi-step writes still lack a complete partial-failure policy
       priority: critical
-      next_action: Implement DATA-004 for core mutations.
+      next_action: Continue DATA-004 for remaining core mutations and add failure-path coverage.
     - id: NEST-014
       status: not-applicable
       evidence: no queue consumer, webhook processor, or scheduled handler was found

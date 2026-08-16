@@ -154,6 +154,58 @@ describe('DatabaseService logging', () => {
         expect(transaction.close).toHaveBeenCalledTimes(1)
     })
 
+    it('creates a group and owner membership in one transaction', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const transaction = {
+            execute: jest.fn()
+                .mockResolvedValueOnce({ lastInsertRowid: 77 })
+                .mockResolvedValueOnce({ rowsAffected: 1 }),
+            commit: jest.fn().mockResolvedValue(undefined),
+            rollback: jest.fn().mockResolvedValue(undefined),
+            close: jest.fn(),
+        }
+
+        ;(service as unknown as { tursoClient: unknown }).tursoClient = {
+            transaction: jest.fn().mockResolvedValue(transaction),
+        }
+
+        await expect(service.createGroupWithMembership({ name: 'Friends / Friday', createdBy: 7 })).resolves.toEqual({ groupId: 77 })
+
+        expect(transaction.execute).toHaveBeenNthCalledWith(1, {
+            sql: 'INSERT INTO UserGroup (name, createdBy) VALUES (?, ?)',
+            args: ['Friends / Friday', 7],
+        })
+        expect(transaction.execute).toHaveBeenNthCalledWith(2, {
+            sql: 'INSERT INTO GroupMembership (accountId, groupId) VALUES (?, ?)',
+            args: [7, 77],
+        })
+        expect(transaction.commit).toHaveBeenCalledTimes(1)
+        expect(transaction.rollback).not.toHaveBeenCalled()
+        expect(transaction.close).toHaveBeenCalledTimes(1)
+    })
+
+    it('rolls back group creation when owner membership fails', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const transaction = {
+            execute: jest.fn()
+                .mockResolvedValueOnce({ lastInsertRowid: 77 })
+                .mockRejectedValueOnce(new Error('membership write failed')),
+            commit: jest.fn(),
+            rollback: jest.fn().mockResolvedValue(undefined),
+            close: jest.fn(),
+        }
+
+        ;(service as unknown as { tursoClient: unknown }).tursoClient = {
+            transaction: jest.fn().mockResolvedValue(transaction),
+        }
+
+        await expect(service.createGroupWithMembership({ name: 'Friends', createdBy: 7 })).rejects.toThrow('membership write failed')
+
+        expect(transaction.rollback).toHaveBeenCalledTimes(1)
+        expect(transaction.commit).not.toHaveBeenCalled()
+        expect(transaction.close).toHaveBeenCalledTimes(1)
+    })
+
     it('writes scheduled attendees as pending in one transaction', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
