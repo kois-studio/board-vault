@@ -41,6 +41,7 @@ import {
     userReviewsSchema,
     userProposalStatsSchema,
     userProposalsSchema,
+    userSchema,
     userStatsSchema,
     wishlistResponseSchema,
 } from './api.schemas'
@@ -399,7 +400,7 @@ export class Api {
     // #region profile
     // --------------------------------------------------------------------------
     getUserById(id: number) {
-        return this.http.get<UserType>(`${this.url}/profile/users/${id}`)
+        return this.http.get<UserType>(`${this.url}/profile/users/${id}`).pipe(map(response => userSchema.parse(response)))
     }
 
     getUserNotifications(userId: number) {
