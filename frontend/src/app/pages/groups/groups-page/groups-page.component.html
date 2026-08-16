@@ -14,7 +14,11 @@
                 <app-skeleton-card-group />
             }
         } @else if (userGroups$().length === 0) {
-            <p class="text-secondary text-center col-span-2">You don't have any groups yet.</p>
+            <div class="text-center col-span-2 rounded-lg border border-dashed border-zinc-300 dark:border-zinc-700 p-8">
+                <p class="text-lg font-medium">You don't have any groups yet.</p>
+                <p class="text-secondary mt-2">Create a group or accept an invitation to start planning sessions together.</p>
+                <a routerLink="/create-group" class="app-btn-primary inline-block mt-4">Create your first group</a>
+            </div>
         } @else {
             @for (group of userGroups$(); track $index) {
                 <app-card-group [group]="group" [invitations]="invitationsGroupIndex$()[group.id]" />
