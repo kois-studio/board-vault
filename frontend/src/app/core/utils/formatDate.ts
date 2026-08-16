@@ -7,16 +7,12 @@ export function formatDate(dateInMiliseconds: number): string {
     const date = new Date(dateInMiliseconds)
     const now = new Date()
     const diff: number = now.getTime() - date.getTime()
-
-    // FIXME: turso creates Date.now() with -2h vs the Spain timezone
-    const twoHours = 60 * 60 * 2
-    const correctionSeconds = 80
-    const seconds = Number((diff / 1000).toFixed(0)) - twoHours + correctionSeconds
+    const seconds = Math.max(0, Math.floor(diff / 1000))
 
     const text = (divisor: number, text: string) =>
         `${Math.floor(seconds / divisor)} ${text}${Math.floor(seconds / divisor) > 1 ? 's' : ''} ago`
 
-    if (seconds < 60) return `${seconds} seconds ago`
+    if (seconds < 60) return 'Just now'
     if (seconds < 3600) return text(60, 'minute')
     if (seconds < 86400) return text(3600, 'hour')
     if (seconds < 604800) return text(86400, 'day')
