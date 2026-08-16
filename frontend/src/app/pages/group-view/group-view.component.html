@@ -174,8 +174,7 @@
         
         <!-- Loading state -->
         @if (isLoading()) {
-            <!-- TODO: custom skeleton matching actual history structure -->
-            <app-skeleton-card-group />
+            <app-skeleton-history />
         } @else if (groupHistoryError()) {
             <div class="text-center py-8 text-secondary" role="alert">
                 <p>Group history could not be loaded.</p>

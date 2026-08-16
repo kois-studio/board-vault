@@ -10,8 +10,7 @@
 <container-wrapper>
     <!-- Loading state -->
     @if (isLoadingHistory()) {
-        <!-- TODO: custom skeleton matching actual history structure -->
-        <app-skeleton-card-group />
+        <app-skeleton-history />
     } @else if (historyError()) {
         <div class="text-center py-8 text-secondary">
             <p>History could not be loaded.</p>
