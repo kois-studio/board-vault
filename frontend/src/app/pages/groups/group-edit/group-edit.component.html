@@ -7,6 +7,7 @@
             </button>
         </div>
 
+        @if (isGroupOwner) {
         <div class="absolute -top-16 right-0">
             <button
                 (click)="onSaveChanges()"
@@ -17,15 +18,23 @@
                 Save changes
             </button>
         </div>
+        }
 
+        @if (isGroupOwner) {
         <div class="absolute top-3 right-3">
             <button (click)="onDeleteGroup()" class="app-btn-danger py-1! px-2!" title="Delete group">
                 <i class="bi bi-trash"></i>
             </button>
         </div>
+        }
 
         <!-- GROUP CARD -->
         <h2 class="text-xl font-semibold mb-4">{{ groupData?.name }}</h2>
+        @if (groupData && !isGroupOwner) {
+            <p class="rounded-lg border border-amber-500/50 bg-amber-500/10 p-3 text-amber-200">
+                You can view this group, but only its owner can manage members, invitations, or delete it.
+            </p>
+        }
         <hr />
 
         <!-- MEMBERS DATA -->
@@ -36,7 +45,7 @@
                     <li class="flex justify-between items-center relative">
                         <app-card-account [member]="member" [isOwner]="groupData.createdBy === member.id" />
 
-                        @if (groupData.createdBy !== member.id) {
+                        @if (isGroupOwner && groupData.createdBy !== member.id) {
                             @if (membersToRemoveFromGroup.includes(member.id)) {
                                 <button (click)="markAsToRemove(member.id)" class="absolute top-0 right-0 left-0 bottom-0 bg-red-800/50 rounded-lg p-2 border-2 border-red-600">
                                     <span class="font-bold text-xl tracking-wider text-red-500">Cancel</span>
@@ -53,7 +62,7 @@
         </ul>
 
         <!-- INVITED MEMBERS -->
-        @if (groupData && invitationsGroupIndex[groupData.id] && invitationsGroupIndex[groupData.id].length > 0) {
+        @if (isGroupOwner && groupData && invitationsGroupIndex[groupData.id] && invitationsGroupIndex[groupData.id].length > 0) {
             <hr />
             <h3 class="pt-8 font-bold tracking-wider">Invitations pending</h3>
             <ul class="pb-8 grid lg:grid-cols-2 gap-4">
@@ -84,6 +93,7 @@
     </div>
 
     <!-- INVITE PEOPLE -->
+    @if (isGroupOwner) {
     <div class="pt-8 pb-2 grid lg:grid-cols-2">
         <span></span>
         <div class="grid md:grid-cols-2 gap-4">
@@ -114,4 +124,5 @@
             </button>
         </div>
     </div>
+    }
 </div>

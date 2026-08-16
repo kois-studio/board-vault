@@ -97,6 +97,7 @@ Relevant surfaces: [`header`](../frontend/src/app/layout/header/), [`top-bar`](.
 - Define the final information architecture for dashboard, collection, groups, and play.
 - Remove links to nonexistent routes, including recommendations, quick play, and analytics; the currently identified dashboard/play links are now limited to existing routes or explicit coming-soon cards.
 - Replace footer placeholder links with real routes or remove them.
+- The current footer now links only to implemented landing-page sections and authenticated routes; privacy, terms, and support remain explicitly deferred content.
 - Review authenticated versus unauthenticated navigation after the Clerk migration.
 - Review mobile navigation; the admin sidebar now collapses into a mobile overlay with a backdrop and keeps keyboard focus indicators.
 - Standardize naming: meeting/session, play/history, group/member, and Board Vault terminology.
@@ -139,6 +140,7 @@ Relevant surfaces: [`groups`](../frontend/src/app/pages/groups/), [`group-view`]
 - Keep group creation awaitable and recoverable; the create form now waits for the API result before navigating and leaves failures retryable, while the backend now creates the group and owner membership in one Turso transaction.
 - Keep invitation send, pending-invitation removal, and member removal awaitable; group editing now keeps retryable selections and prevents overlapping requests.
 - V1 group membership is now invite-only with `owner` and `member` roles; only owners manage membership and see pending-invitation details. Public groups, ownership transfer, and richer roles require a new product decision.
+- Group edit/delete/leave surfaces now mirror the owner/member policy: members see a read-only management explanation, owners see member/invitation controls, owners cannot leave, and destructive actions wait for successful API responses before navigating.
 - Make empty groups useful: explain the next step for members, games, and invitations; failed group loading now has an explicit retry state.
 - Ensure member visibility and private group data follow the backend authorization rules; group-history failures no longer get cached as an empty result and now expose retry.
 - Remove unnecessary reload-all behavior after group mutations where safe.
