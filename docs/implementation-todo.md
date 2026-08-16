@@ -98,7 +98,6 @@ Relevant surfaces: [`header`](../frontend/src/app/layout/header/), [`top-bar`](.
 
 - Define the final information architecture for dashboard, collection, groups, and play.
 - Remove links to nonexistent routes, including recommendations, quick play, and analytics; the currently identified dashboard/play links are now limited to existing routes or explicit coming-soon cards.
-- Replace footer placeholder links with real routes or remove them.
 - The current footer now links only to implemented landing-page sections and authenticated routes; privacy, terms, and support remain explicitly deferred content.
 - Review authenticated versus unauthenticated navigation after the Clerk migration.
 - Review mobile navigation; the admin sidebar now collapses into a mobile overlay with a backdrop and keeps keyboard focus indicators.
@@ -132,7 +131,7 @@ Relevant surfaces: [`collection-page`](../frontend/src/app/pages/collection-page
 - Game detail history now displays group names through the loaded group index; failed game-detail requests now leave the loading state and expose a retry action.
 - Game detail now keeps one route-parameter subscription outside the auth effect, preventing duplicate loads when the current user signal changes; the unused empty share handler was removed.
 - Review responsive card grids, image fallbacks, accessible controls, and keyboard behavior.
-- Expand the targeted frontend response schemas in [`api.schemas.ts`](../frontend/src/app/api/api.schemas.ts) across the remaining API surface; catalog/owned/wishlist/browse/game-detail games, ownership and wishlist mutations, group/member/game, group history, both invitation feeds, dashboard stats, notifications, reviews, collection activity, admin tags/games/proposals, user proposals, proposal stats, persisted meets, and completed history are now covered. Private-profile and remaining legacy response methods still need coverage.
+- Expand the targeted frontend response schemas in [`api.schemas.ts`](../frontend/src/app/api/api.schemas.ts) across the remaining API surface; private profile, catalog/owned/wishlist/browse/game-detail games, ownership and wishlist mutations, group/member/game, group history, both invitation feeds, dashboard stats, notifications, reviews, collection activity, admin tags/games/proposals, user proposals, proposal stats, persisted meets, and completed history are now covered. Remaining legacy response methods still need coverage.
 
 ### 8. Groups and invitations — Partial / Needs review
 

@@ -149,7 +149,7 @@ compliance:
       next_action: Complete the session API/transaction state contract and establish the recommendation state model before implementation.
     - id: TS-005
       status: gap
-      evidence: backend main.ts does not apply a global ValidationPipe; frontend api.schemas.ts validates the core auth, collection, group, notification, session, meet, recommendation, feedback, and admin/proposal response paths, while private-profile and remaining legacy paths are not covered
+      evidence: backend main.ts does not apply a global ValidationPipe; frontend api.schemas.ts validates the core auth, private-profile, collection, group, notification, session, meet, recommendation, feedback, and admin/proposal response paths, while remaining legacy paths are not covered
       priority: critical
       next_action: Activate and test boundary validation on both API and client response boundaries.
     - id: TS-006
@@ -503,7 +503,7 @@ compliance:
       next_action: Record icon convention when frontend sanitation starts.
     - id: ANGULAR-006
       status: gap
-      evidence: frontend/src/app/api/api.schemas.ts validates core auth, collection, group, notification, session, meet, recommendation, feedback, and admin/proposal responses; private-profile/legacy response coverage and client negative tests are open
+      evidence: frontend/src/app/api/api.schemas.ts validates core auth, private-profile, collection, group, notification, session, meet, recommendation, feedback, and admin/proposal responses; legacy response coverage and client negative tests are open
       priority: high
       next_action: Expand external response validation and add malformed-response tests at API/form boundaries.
     - id: ANGULAR-007
