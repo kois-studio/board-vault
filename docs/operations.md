@@ -30,11 +30,11 @@ When `NODE_ENV=production`, startup fails closed unless `CLERK_SECRET_KEY` and `
 Use the exact commands and current results in [AGENTS.md](AGENTS.md) and [testing.md](testing.md). In summary:
 
 - backend build passes;
-- frontend production build passes but reports a Sass `@import` deprecation, 411 skipped selector errors, and an initial bundle over the 500 kB warning budget;
+- frontend production build passes but reports a Sass `@import` deprecation, 412 skipped selector errors, and an initial bundle over the 500 kB warning budget;
 - backend unit tests pass focused profile-update, ownership, group/membership listing, collection route ownership, actor-identity, invitation-lifecycle, invite-only join, notification ownership, meet-read, meet-account-game membership, admin reviewer, authentication path/query validation, global-user-list, deleted-account JWT, database-log, email-log, cache-log, and auth-log suites; broader coverage is still missing;
 - backend HTTP e2e now passes two environment-safe boundary tests; broader seeded/integration coverage remains open;
 - backend lint fails with 17 errors and 3 warnings;
-- frontend Biome fails with 8 findings;
+- frontend Biome fails with 19 formatting/style diagnostics across 16 files; the previously targeted form/proposal/session-wizard files are clean;
 - frontend unit/browser baseline includes one generated Angular smoke test and three passing Playwright public-navigation tests; the authenticated Playwright journeys exist but remain opt-in and were skipped without a disposable Clerk storage state.
 - the Clerk identity migration passes a restored-backup SQLite check and was applied to live Turso with integrity `ok` and unchanged counts of 15 accounts, 13 meets, and 101 meet/game links.
 - a local Clerk sign-in completed through Board Vault during development; `/auth/clerk/status` verified the session and linked the matching existing live account `#1`, preserving its admin state. Production currently uses email/password/username only; Google OAuth is intentionally disabled. Protected-route Clerk transport and new-account provisioning are covered by focused backend tests but not yet by a deployed production check.

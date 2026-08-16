@@ -164,7 +164,7 @@ compliance:
       next_action: Keep tool configuration versioned and aligned with package scripts.
     - id: TS-008
       status: partial
-      evidence: backend lint reports 17 errors/3 warnings; frontend Biome reports 8 findings
+      evidence: backend lint reports 17 errors/3 warnings; frontend Biome reports 19 formatting/style diagnostics across 16 files
       priority: high
       next_action: Repair formatting/import/lint baseline in scoped quality work.
     - id: TS-009
