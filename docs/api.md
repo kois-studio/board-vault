@@ -32,6 +32,7 @@ The list is intentionally representative rather than a second route registry. Th
 - `POST /sessions/scheduled` derives the creator from the authenticated request. Its optional `plannedGameIds` must refer to games available to at least one member of the selected group and are persisted as `MeetGame.gameStatus = 'planned'` in the same transaction as the session and pending attendees.
 - `POST /sessions/scheduled` accepts optional `attendeeIds`; when present they must be non-empty group members and are persisted as pending attendees. Omission retains the legacy all-current-members default.
 - `POST /play/recommendations` derives the actor from the authenticated request. Its `attendeeIds` must be non-empty group members; eligibility requires ownership by at least one selected attendee. The initial score is deterministic and uses ownership coverage, selected-attendee ratings, and optional duration fit. Feedback and richer preference/history scoring are deferred.
+- Empty recommendation responses include a constraint-specific reason based on selected-attendee ownership, player-count fit, and optional duration fit.
 - Nested user response fields are intentionally narrower than self-profile/admin fields; `UserPublicDto` is the documented public identity shape. Response validation and a complete DTO inventory remain open.
 - Multiple controllers mark endpoints deprecated without a migration/versioning contract.
 

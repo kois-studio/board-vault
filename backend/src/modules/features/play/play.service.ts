@@ -51,13 +51,38 @@ export class PlayService {
             .sort((a, b) => b.score - a.score || a.gameData.id - b.gameData.id)
             .slice(0, 10)
 
+        let noResultReason: string | null = null
+        if (recommendations.length === 0) {
+            noResultReason = await this._getNoResultReason(body)
+        }
+
         return {
             groupId: body.groupId,
             attendeeIds: body.attendeeIds,
             availableMinutes: body.availableMinutes ?? null,
             recommendations,
-            noResultReason: recommendations.length === 0 ? 'No owned games match the selected attendees and filters.' : null,
+            noResultReason,
         }
+    }
+
+    private async _getNoResultReason(body: RecommendationRequestBody): Promise<string> {
+        const counts = await this.databaseService.getRecommendationCandidateCounts(body.attendeeIds, body.attendeeIds.length, body.availableMinutes)
+        const row = counts.rows[0]
+        const ownedGameCount = Number(row?.[0] ?? 0)
+        const playerFitCount = Number(row?.[1] ?? 0)
+        const durationFitCount = Number(row?.[2] ?? 0)
+
+        if (ownedGameCount === 0) {
+            return 'No games are owned by the selected attendees.'
+        }
+        if (playerFitCount === 0) {
+            return `No games owned by the selected attendees support ${body.attendeeIds.length} players.`
+        }
+        if (body.availableMinutes !== undefined && durationFitCount === 0) {
+            return `No games for ${body.attendeeIds.length} players fit within ${body.availableMinutes} minutes.`
+        }
+
+        return 'No suitable titled games were found for the selected attendees and filters.'
     }
 
     private _mapRecommendation(row: { [key: number]: unknown }, attendeeCount: number, availableMinutes?: number): RecommendationDto {

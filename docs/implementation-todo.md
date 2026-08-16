@@ -55,7 +55,7 @@ Relevant intent: [`todo/04-core-product-loop.md`](../todo/04-core-product-loop.m
 - Defined inputs: group, selected attendees, and optional available time; player count is derived from attendees.
 - Implemented deterministic filtering and scoring using player count, collective attendee ownership, selected-attendee ratings, and optional duration fit.
 - Return explanations with each recommendation, including owner coverage, rating, and last-play context.
-- Add a useful no-results state that explains which constraint excluded candidates.
+- No-results responses now identify whether selected attendees own no games, player-count constraints exclude them, or the available-time limit excludes them.
 - Added `POST /play/recommendations/feedback` and a “Not for us” action. Feedback stores selected-attendee context after group membership and ownership validation; future scoring integration remains deferred.
 - Added the authenticated `/play/recommendations` route, Play navigation entry, selection form, result cards, and empty/error states.
 - Recommendation results now provide a direct scheduling link that carries the selected attendees and chosen game into the scheduling form.

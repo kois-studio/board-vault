@@ -132,7 +132,7 @@ Scope: persist lightweight recommendation feedback with group, attendee, and own
 Review: PROD-008
 
 Changed: Added migration 0005, `POST /play/recommendations/feedback`, backend validation/tests, and a frontend “Not for us” action. Feedback stores selected attendee IDs as JSON context for future scoring work.
-Verified: Disposable SQLite migration integrity/foreign-key check passed; live Turso migration applied on 2026-08-16 with integrity/foreign-key checks passing and zero initial rows; backend 131-test suite/build, frontend build, and Playwright public suite pass.
+Verified: Disposable SQLite migration integrity/foreign-key check passed; live Turso migration applied on 2026-08-16 with integrity/foreign-key checks passing and zero initial rows; backend 134-test suite/build, frontend build, and Playwright public suite pass.
 Known follow-ups: Feed accepted feedback into future scoring only after enough real usage exists; add “interested/played” signals through the scheduling and completion flows.
 
 Most recent claim:

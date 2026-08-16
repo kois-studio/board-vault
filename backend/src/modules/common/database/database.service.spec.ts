@@ -70,6 +70,20 @@ describe('DatabaseService logging', () => {
         })
     })
 
+    it('builds recommendation diagnostics for the empty-state explanation', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const execute = jest.fn().mockResolvedValue({ rows: [[4, 2, 0]] })
+
+        ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
+
+        await service.getRecommendationCandidateCounts([1, 2], 2, 60)
+
+        expect(execute).toHaveBeenCalledWith({
+            sql: expect.stringContaining('durationFitCount'),
+            args: [2, 2, 2, 2, 60, 1, 2],
+        })
+    })
+
     it('writes a completed session and its relations using the captured meet id', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
