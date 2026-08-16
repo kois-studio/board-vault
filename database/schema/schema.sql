@@ -252,3 +252,9 @@ CREATE INDEX idx_ownedgame_gameId ON OwnedGame(gameId);
 CREATE INDEX idx_recommendation_feedback_group_date
     ON RecommendationFeedback(groupId, createdAt);
 CREATE UNIQUE INDEX idx_account_clerk_user_id ON Account(clerkUserId);
+
+CREATE TABLE SchemaMigrations (
+    version TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    appliedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
