@@ -22,7 +22,12 @@ export class GroupsPageComponent {
     // --------------------------------------------------------------------------
     // dataService
     public readonly userGroups$ = this.dataService.userGroups
+    public readonly userGroupsError = this.dataService.userGroupsError
     public readonly invitationsGroupIndex$ = this.dataService.invitationsGroupIndex
     // loadingService
     public readonly isLoadingGroups = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_GROUPS])
+
+    public retryGroups() {
+        this.dataService.refreshUserGroups()
+    }
 }

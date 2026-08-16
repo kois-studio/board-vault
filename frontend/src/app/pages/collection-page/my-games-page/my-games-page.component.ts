@@ -25,4 +25,9 @@ export class MyGamesPageComponent {
     // dataService
     public readonly currentUser$ = this.dataService.currentUser
     public readonly userGames$ = this.dataService.userGames
+    public readonly userGamesError = this.dataService.userGamesError
+
+    public retryGames() {
+        this.dataService.refreshUserGames()
+    }
 }
