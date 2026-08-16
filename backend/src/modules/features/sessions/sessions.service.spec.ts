@@ -21,6 +21,7 @@ function createDatabaseMock() {
         getGroupMemberIds: jest.fn().mockResolvedValue([1, 2, 3]),
         getGroupAvailableGameIds: jest.fn().mockResolvedValue([42, 43]),
         createCompletedSession: jest.fn().mockResolvedValue({ lastInsertRowid: 12 }),
+        createScheduledSession: jest.fn().mockResolvedValue({ lastInsertRowid: 13 }),
     }
 }
 
@@ -84,5 +85,39 @@ describe('SessionsService', () => {
             BadRequestException,
         )
         expect(database.createCompletedSession).not.toHaveBeenCalled()
+    })
+
+    it('schedules a session for every current group member', async () => {
+        const database = createDatabaseMock()
+        const service = new SessionsService(database as unknown as DatabaseService)
+        const scheduledBody = {
+            groupId: 7,
+            sessionDate: '2026-08-21T19:30:00.000Z',
+            timezone: 'Europe/Madrid',
+        }
+
+        await expect(service.createScheduledSession(1, scheduledBody)).resolves.toEqual({ sessionId: 13, status: 'scheduled' })
+        expect(database.createScheduledSession).toHaveBeenCalledWith({
+            groupId: 7,
+            createdBy: 1,
+            sessionDate: scheduledBody.sessionDate,
+            timezone: scheduledBody.timezone,
+            attendeeIds: [1, 2, 3],
+        })
+    })
+
+    it('rejects scheduling when the actor is outside the group', async () => {
+        const database = createDatabaseMock()
+        database.getGroupMemberIds.mockResolvedValue([2, 3])
+        const service = new SessionsService(database as unknown as DatabaseService)
+
+        await expect(
+            service.createScheduledSession(1, {
+                groupId: 7,
+                sessionDate: '2026-08-21T19:30:00.000Z',
+                timezone: 'Europe/Madrid',
+            }),
+        ).rejects.toThrow(ForbiddenException)
+        expect(database.createScheduledSession).not.toHaveBeenCalled()
     })
 })

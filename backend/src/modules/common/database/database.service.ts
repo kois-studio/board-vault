@@ -24,6 +24,14 @@ type CompletedSessionInput = {
     games: Array<{ gameId: number; participantIds: Array<number> }>
 }
 
+type ScheduledSessionInput = {
+    groupId: number
+    createdBy: number
+    sessionDate: string
+    timezone: string
+    attendeeIds: Array<number>
+}
+
 @Injectable()
 export class DatabaseService implements OnModuleInit {
     private readonly LOGGER: Logger = new Logger(this.constructor.name)
@@ -1137,6 +1145,38 @@ export class DatabaseService implements OnModuleInit {
                     })
                 }
             }
+
+            await transaction.batch(statements)
+            await transaction.commit()
+
+            return { lastInsertRowid: meetId }
+        } catch (error) {
+            await transaction.rollback()
+            throw error
+        } finally {
+            transaction.close()
+        }
+    }
+
+    async createScheduledSession(input: ScheduledSessionInput) {
+        const transaction = await this.tursoClient.transaction('write')
+
+        try {
+            const meetResult = await transaction.execute({
+                sql: `
+                    INSERT INTO Meet (groupId, createdBy, meetDate, isConfirmed, status, timezone, updatedAt)
+                    VALUES (?, ?, ?, FALSE, 'scheduled', ?, CURRENT_TIMESTAMP)
+                `,
+                args: [input.groupId, input.createdBy, input.sessionDate, input.timezone],
+            })
+            const meetId = Number(meetResult.lastInsertRowid)
+            const statements: Array<InStatement> = input.attendeeIds.map(accountId => ({
+                sql: `
+                    INSERT INTO MeetAttendee (meetId, accountId, rsvpStatus, attendanceStatus)
+                    VALUES (?, ?, 'pending', 'unknown')
+                `,
+                args: [meetId, accountId],
+            }))
 
             await transaction.batch(statements)
             await transaction.commit()

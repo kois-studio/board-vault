@@ -32,18 +32,19 @@ Completed-session logging now has a guarded, validated backend write and an atom
 
 Relevant surfaces: [`app.routes.ts`](../frontend/src/app/app.routes.ts), [`meet-new`](../frontend/src/app/pages/meet-new/), [`meet-view`](../frontend/src/app/pages/meet-view/), [`log-session-wizard`](../frontend/src/app/components/log-session-wizard/), [`data.service.ts`](../frontend/src/app/core/services/data.service.ts).
 
-- Replace the legacy meeting creation path with one canonical session-creation use case for all session states.
+- Replace the legacy meeting creation path with one canonical session-creation use case for all session states; scheduled and completed creation now use the sessions module, while the old route remains only as a compatibility path.
 - Persist the selected date/time and IANA timezone; completed-session logging now sends both to the backend.
 - Persist the selected group, organizer, attendees, played games, and participant links atomically through `POST /sessions`.
+- Persist scheduled sessions and initial pending attendees atomically through `POST /sessions/scheduled`.
 - Replace the `submitSession()` TODO in the log-session wizard with the guarded API call and success/error navigation.
-- Define and implement transitions between scheduled, active, completed, and cancelled sessions.
+- Define and implement transitions between scheduled, active, completed, and cancelled sessions; only scheduled and completed creation currently exist.
 - Distinguish planned games from games actually played in all API responses and frontend types; the completed write currently records played games while the detail/history read model still needs richer game objects.
 - Decide how the legacy `MeetAccountGame` history relation should evolve; the completed write currently preserves it as a compatibility relation.
 - Remove or replace the unfinished confirmation flow; `MeetConfirmComponent` already says the confirmation concept will be removed.
 - Make attendee and game changes show persisted success/error state and survive refresh.
 - Complete the organizer-only attendee API verification through the production UI.
 - Add transaction boundaries for scheduled-session creation, completion, cancellation, attendee changes, and played-game recording; completed-session logging now has one.
-- Ensure the upcoming sessions page reads real persisted upcoming sessions rather than relying on the old meeting data shape.
+- Ensure the upcoming sessions page reads real persisted scheduled/active sessions; the old completed-history placeholder has been removed and the page now uses `userMeets`.
 - Ensure completed sessions appear in history and cancelled sessions do not appear as completed history.
 
 ### 2. Recommendations — Open / Blocked by session/product contract

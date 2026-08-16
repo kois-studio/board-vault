@@ -105,4 +105,41 @@ describe('DatabaseService logging', () => {
         expect(transaction.commit).not.toHaveBeenCalled()
         expect(transaction.close).toHaveBeenCalledTimes(1)
     })
+
+    it('writes scheduled attendees as pending in one transaction', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const transaction = {
+            execute: jest.fn().mockResolvedValue({ lastInsertRowid: 43 }),
+            batch: jest.fn().mockResolvedValue([]),
+            commit: jest.fn().mockResolvedValue(undefined),
+            rollback: jest.fn().mockResolvedValue(undefined),
+            close: jest.fn(),
+        }
+
+        ;(service as unknown as { tursoClient: unknown }).tursoClient = {
+            transaction: jest.fn().mockResolvedValue(transaction),
+        }
+
+        await expect(
+            service.createScheduledSession({
+                groupId: 7,
+                createdBy: 1,
+                sessionDate: '2026-08-21T19:30:00.000Z',
+                timezone: 'Europe/Madrid',
+                attendeeIds: [1, 2],
+            }),
+        ).resolves.toEqual({ lastInsertRowid: 43 })
+
+        expect(transaction.execute).toHaveBeenCalledWith({
+            sql: expect.stringContaining("VALUES (?, ?, ?, FALSE, 'scheduled', ?, CURRENT_TIMESTAMP)"),
+            args: [7, 1, '2026-08-21T19:30:00.000Z', 'Europe/Madrid'],
+        })
+        expect(transaction.batch).toHaveBeenCalledWith(
+            expect.arrayContaining([
+                expect.objectContaining({ args: [43, 1] }),
+                expect.objectContaining({ args: [43, 2] }),
+            ]),
+        )
+        expect(transaction.commit).toHaveBeenCalledTimes(1)
+    })
 })

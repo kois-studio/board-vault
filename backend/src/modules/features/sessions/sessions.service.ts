@@ -1,6 +1,11 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
 
-import type { CreatePlaySessionBody, SessionCreatedDto } from '../../../common/types/session.type'
+import type {
+    CreatePlaySessionBody,
+    CreateScheduledSessionBody,
+    ScheduledSessionCreatedDto,
+    SessionCreatedDto,
+} from '../../../common/types/session.type'
 import { DatabaseService } from '../../common/database/database.service'
 
 @Injectable()
@@ -58,6 +63,31 @@ export class SessionsService {
         return {
             sessionId: Number(result.lastInsertRowid),
             status: 'completed',
+        }
+    }
+
+    async createScheduledSession(actorAccountId: number, body: CreateScheduledSessionBody): Promise<ScheduledSessionCreatedDto> {
+        const group = await this.databaseService.getGroupById(body.groupId)
+        if (group.rows.length === 0) {
+            throw new NotFoundException(`Group with id ${body.groupId} not found`)
+        }
+
+        const memberIds = await this.databaseService.getGroupMemberIds(body.groupId)
+        if (!memberIds.includes(actorAccountId)) {
+            throw new ForbiddenException('You must belong to the group to schedule a session')
+        }
+
+        const result = await this.databaseService.createScheduledSession({
+            groupId: body.groupId,
+            createdBy: actorAccountId,
+            sessionDate: body.sessionDate,
+            timezone: body.timezone,
+            attendeeIds: memberIds,
+        })
+
+        return {
+            sessionId: Number(result.lastInsertRowid),
+            status: 'scheduled',
         }
     }
 }
