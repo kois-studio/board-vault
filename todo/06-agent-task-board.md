@@ -672,6 +672,19 @@ Changed: Replaced the Play landing page's fabricated group, date, avatar, quick-
 Verified: `cd frontend && npm run build` passes with the documented baseline Sass, selector, and bundle-budget warnings; `cd frontend && npm run e2e` reports 3 passed and 3 skipped (the skipped tests require an opt-in Clerk storage state).
 Known follow-ups: Build the recommendation and analytics contracts before adding routes or navigation; review Play loading, error, empty, responsive, accessibility, and richer session-summary states.
 
+Continuation claim: PROD-006
+
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: persist optional planned games when scheduling a session and expose the selection in the existing group meeting form
+
+Review continuation: PROD-006
+
+Changed: Scheduled-session validation now checks optional planned game IDs against the group's available games. The scheduled write stores those games as `MeetGame.gameStatus = 'planned'` in the same transaction as the session and pending attendees. The group meeting form now offers a deduplicated, optional planned-game selector, and meet details expose planned games separately from played games.
+Verified: `cd backend && npm test -- --runInBand` (124 tests passed); `cd backend && npm run build`; `cd frontend && npm run build`; the planned-game transaction and validation tests pass.
+Known follow-ups: Add planned-game editing and richer game read objects; review scheduled-session loading/error/empty states and authenticated browser coverage.
+
 When claiming a task, add:
 
 ```text

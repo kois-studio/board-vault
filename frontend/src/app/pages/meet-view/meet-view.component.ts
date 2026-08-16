@@ -173,6 +173,12 @@ export class MeetViewComponent {
         })
     }
 
+    get plannedGames(): Array<GameType & { active: boolean }> {
+        if (!this.meetData) return []
+        const gamesById = new Map(this.totalGames.map(game => [game.id, game]))
+        return this.meetData.plannedGames.map(gameId => gamesById.get(gameId)).filter((game): game is GameType & { active: boolean } => game !== undefined)
+    }
+
     // #region Button Clicks
     // TODO: rethink the click system, it should be done with a straightforward click(id) instead of so much logic
 

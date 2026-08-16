@@ -107,7 +107,23 @@ describe('SessionsService', () => {
             sessionDate: scheduledBody.sessionDate,
             timezone: scheduledBody.timezone,
             attendeeIds: [1, 2, 3],
+            plannedGameIds: [],
         })
+    })
+
+    it('rejects planned games unavailable to the selected group', async () => {
+        const database = createDatabaseMock()
+        const service = new SessionsService(database as unknown as DatabaseService)
+
+        await expect(
+            service.createScheduledSession(1, {
+                groupId: 7,
+                sessionDate: '2026-08-21T19:30:00.000Z',
+                timezone: 'Europe/Madrid',
+                plannedGameIds: [99],
+            }),
+        ).rejects.toThrow(BadRequestException)
+        expect(database.createScheduledSession).not.toHaveBeenCalled()
     })
 
     it('rejects scheduling when the actor is outside the group', async () => {

@@ -1,6 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
-import { ArrayMinSize, ArrayUnique, IsArray, IsISO8601, IsIn, IsInt, IsString, MaxLength, Min, ValidateNested } from 'class-validator'
+import {
+    ArrayMinSize,
+    ArrayUnique,
+    IsArray,
+    IsISO8601,
+    IsIn,
+    IsInt,
+    IsOptional,
+    IsString,
+    MaxLength,
+    Min,
+    ValidateNested,
+} from 'class-validator'
 
 export class PlaySessionGameBody {
     @ApiProperty({ example: 42 })
@@ -70,6 +82,14 @@ export class CreateScheduledSessionBody {
     @IsString()
     @MaxLength(64)
     timezone: string
+
+    @ApiProperty({ example: [42, 84], required: false })
+    @IsOptional()
+    @IsArray()
+    @ArrayUnique()
+    @IsInt({ each: true })
+    @Min(1, { each: true })
+    plannedGameIds?: Array<number>
 }
 
 export class ScheduledSessionCreatedDto {

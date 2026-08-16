@@ -32,6 +32,26 @@
                         </div>
                     </div>
                 </div>
+                <fieldset class="grid gap-2">
+                    <legend class="font-medium">Planned games <span class="text-secondary font-normal">(optional)</span></legend>
+                    @if (availableGames.length === 0) {
+                        <p class="text-secondary text-sm">No games are currently available in this group.</p>
+                    } @else {
+                        <div class="grid gap-2 max-h-64 overflow-y-auto">
+                            @for (game of availableGames; track game.id) {
+                                <label class="flex items-center gap-3 rounded-lg border border-zinc-200 dark:border-zinc-700 p-3 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        [checked]="selectedPlannedGameIds.includes(game.id)"
+                                        (change)="togglePlannedGame(game.id)"
+                                    />
+                                    <img [src]="game.imageUrl" [alt]="game.titleTranslations.en || game.title" class="h-10 w-10 rounded object-cover" />
+                                    <span>{{ game.titleTranslations.en || game.title }}</span>
+                                </label>
+                            }
+                        </div>
+                    }
+                </fieldset>
                 <button class="app-btn-primary" title="Create meet" (click)="onClickCreateMeeting()" [disabled]="disableCreateButton">
                     Create
                 </button>

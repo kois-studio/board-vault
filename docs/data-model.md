@@ -57,7 +57,7 @@ The backend source also has corresponding service/type/schema areas. The current
 - User, group, collection, invitation, review, notification, meet, and proposal mutations are exposed through many service/controller paths.
 - The deprecated direct membership endpoint currently implements an invite-only join boundary: the authenticated account must have a pending invitation for the target group, and the invitation is consumed after membership creation. The broader product decision on self-join versus invite-only groups remains open in the product workstream.
 - A group creation flow in `DashboardService` creates the group, looks up its ID by name, and creates the owner membership as separate operations. The repository does not document atomicity or partial-failure behavior.
-- `Meet` remains the compatibility/session record. `MeetAttendee` stores participant RSVP/attendance state, `MeetGame` stores planned/played/skipped session-game state, and `MeetAccountGame` preserves account-to-play links for historical play lookup. The canonical completed-session write now persists the selected date, IANA timezone, attendees, played games, and participant links atomically. Scheduled-session editing, cancellation, completion transitions, and richer event history remain unfinished.
+- `Meet` remains the compatibility/session record. `MeetAttendee` stores participant RSVP/attendance state, `MeetGame` stores planned/played/skipped session-game state, and `MeetAccountGame` preserves account-to-play links for historical play lookup. The canonical completed-session write now persists the selected date, IANA timezone, attendees, played games, and participant links atomically. Scheduled-session creation now optionally persists planned games in the same transaction; editing, RSVP mutation, richer event history, and broader lifecycle read models remain unfinished.
 - Cache TTLs are declared in `cache.types.ts` and selected services invalidate keys, but cache ownership, stale-read behavior, disabled mode, and correctness tests are not documented.
 
 ## Repository reconciliation result
@@ -87,7 +87,7 @@ These findings are now split between resolved schema alignment and remaining API
 ## Required follow-up
 
 1. Resolve the remaining API findings in the [DATA-001 drift report](../database/drift-report.md), especially the frontend attendee route and game-title contract.
-2. Execute `DATA-003`: extend the session API from completed-session logging to the full scheduled/completed lifecycle.
+2. Execute `DATA-003`: extend the session API from completed-session logging to the full scheduled/completed lifecycle, including planned-game editing and richer read models.
 3. Execute `DATA-004`: apply the transaction policy to remaining multi-record mutations.
 4. Execute `DATA-002`: create migration execution tooling and prove empty-state recreation.
 5. Add disposable integration data and backup/restore rehearsal before launch claims.

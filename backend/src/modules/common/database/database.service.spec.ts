@@ -127,6 +127,7 @@ describe('DatabaseService logging', () => {
                 sessionDate: '2026-08-21T19:30:00.000Z',
                 timezone: 'Europe/Madrid',
                 attendeeIds: [1, 2],
+                plannedGameIds: [42],
             }),
         ).resolves.toEqual({ lastInsertRowid: 43 })
 
@@ -135,7 +136,11 @@ describe('DatabaseService logging', () => {
             args: [7, 1, '2026-08-21T19:30:00.000Z', 'Europe/Madrid'],
         })
         expect(transaction.batch).toHaveBeenCalledWith(
-            expect.arrayContaining([expect.objectContaining({ args: [43, 1] }), expect.objectContaining({ args: [43, 2] })]),
+            expect.arrayContaining([
+                expect.objectContaining({ args: [43, 1] }),
+                expect.objectContaining({ args: [43, 2] }),
+                expect.objectContaining({ args: [43, 42] }),
+            ]),
         )
         expect(transaction.commit).toHaveBeenCalledTimes(1)
     })
