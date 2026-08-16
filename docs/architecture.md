@@ -56,7 +56,7 @@ The source backlog still describes `/play/quick-play`, but that route is not dec
 2. The auth interceptor refreshes a Clerk session token when Clerk is the active provider, otherwise adds the stored legacy bearer token, and logs out on most 401 responses.
 3. Nest controllers apply selected JWT, verified-user, ownership, group-membership, or admin guards.
 4. Feature services orchestrate core services; core services call `DatabaseService` and selected cache methods.
-5. Database writes are individual calls; there is no migration runner or documented transaction boundary.
+5. Database migrations are tracked by `SchemaMigrations` and applied through the committed runner; multi-record session writes and terminal lifecycle transitions use transactions, while other legacy multi-record mutations still need review.
 6. Auth registration and password-reset flows call `EmailService`, which requires `RESEND_API_KEY` during module construction.
 
 ## Current gaps that affect architecture work

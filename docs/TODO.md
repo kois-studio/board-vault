@@ -28,9 +28,9 @@ Statuses are `Planned`, `Blocked`, or `Deferred` until evidence changes them. Pr
 
 - **Status:** In progress
 - **Affected area:** Turso deployment, `database/`, `backend/src/modules/common/database/`
-- **Evidence:** The DATA-001 reconciliation is recorded in [`database/drift-report.md`](../database/drift-report.md). Migration 0003 defines and backfills `MeetAttendee`/`MeetGame`, backend detail/setup SQL is aligned, and the frontend `meetAttendees` route is now backed by organizer-only server authorization; the indirect `Game.title`/`GameTranslation` contract remains. Migrations 0002 and 0003 are applied and the schema snapshot is synchronized; no migration runner exists.
+- **Evidence:** The DATA-001 reconciliation is recorded in [`database/drift-report.md`](../database/drift-report.md). Migration 0003 defines and backfills `MeetAttendee`/`MeetGame`, backend detail/setup SQL is aligned, and the frontend `meetAttendees` route is now backed by organizer-only server authorization; the indirect `Game.title`/`GameTranslation` contract remains. Migrations 0002–0005 are applied, the schema snapshot and `SchemaMigrations` metadata are synchronized, and the empty-state verification script passes.
 - **Risk:** Destructive drift, unrepeatable environments, and unsafe session-domain changes.
-- **Next action:** Verify the attendee route through production with a preserved account, finish the session write transaction boundary, then establish a repeatable migration runner and empty-state recreation from the synchronized baseline.
+- **Next action:** Verify the attendee route through production with a preserved account, add the runner to CI/deployment checks, and create a synthetic fixture/restore rehearsal.
 - **Dependencies:** Product decision on whether legacy meeting paths are retired or migrated; no deployment access required for the initial reconciliation.
 
 ### READINESS-013 [Critical] AUTH-001/AUTH-002 — Roll out and complete Clerk identity migration
@@ -135,4 +135,4 @@ Statuses are `Planned`, `Blocked`, or `Deferred` until evidence changes them. Pr
 - Supported Node/package-manager versions beyond the observed local runtime.
 - Data retention, deletion, encryption, provider scopes, and privacy/terms ownership.
 - Whether legacy route families are still consumed externally and which deprecated routes may be removed.
-- Whether the applied auth-token migration has been promoted to every future environment; rows without expiry values intentionally fail closed, and the migration runner is not yet available to make environment parity reproducible.
+- Whether the applied auth-token migration has been promoted to every future environment; rows without expiry values intentionally fail closed, and the runner now provides the mechanism for parity while CI/deployment integration remains open.

@@ -37,8 +37,9 @@ is retired:
 - Existing active legacy tokens without expiry will stop working after the new
   backend is deployed; users must request a fresh verification or reset token.
 - The migration is additive, and the live schema snapshot was re-exported after
-  application. There is no migration runner yet, so environment parity still
-  requires an explicit rollout check.
+  application. `SchemaMigrations` and the committed runner now record the
+  applied version; CI/deployment integration and a synthetic restore rehearsal
+  remain follow-up work.
 - Rate limiting, browser cookie/session design, CORS policy, and global DTO
   validation remain separate decisions.
 

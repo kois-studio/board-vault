@@ -13,7 +13,7 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 | SEC-003 | REVIEW | Security | Derive admin reviewer identity from JWT and add admin authorization tests. | SEC-002 |
 | SEC-004 | REVIEW | Security | Enable strict validation, rate limits, safe CORS, token expiry, generic reset responses, and safe logging. | None |
 | DATA-001 | REVIEW | Data model | Reconcile repository SQL and services against the owner-confirmed deployed schema and produce a code/schema drift report. | None |
-| DATA-002 | TODO | Data model | Add numbered migrations and make the schema reproducible from empty state. | DATA-001 |
+| DATA-002 | REVIEW | Data model | Add numbered migrations and make the schema reproducible from empty state. | DATA-001 |
 | DATA-003 | REVIEW | Data model | Choose and implement the canonical session schema, including attendance and planned/played games. | DATA-001 |
 | DATA-004 | TODO | Data model | Add transaction boundaries for group, session, proposal, and collection mutations. | DATA-002, DATA-003 |
 
@@ -923,6 +923,19 @@ Review continuation: PROD-002
 Changed: Game detail now exits its loading state on API failure, presents an explicit retry action, and preserves the existing group-name resolution for play history.
 Verified: `cd frontend && npm run build` passes with the documented baseline warnings; `git diff --check` passes. The existing public Playwright checks are unaffected; authenticated game-detail coverage remains unavailable without local Clerk storage state.
 Known follow-ups: Add authenticated game-detail/collection journey coverage and review image fallbacks, ownership, wishlist, review, purchase metadata, and mobile table behavior.
+
+Continuation claim: DATA-002
+
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: add repeatable migration execution and empty-state verification
+
+Review continuation: DATA-002
+
+Changed: Added `database/scripts/migrate.mjs` with explicit baseline bootstrapping, transactional pending-migration execution, and `SchemaMigrations` tracking. Added `database/scripts/verify-empty-state.mjs` and synchronized the schema snapshot/docs. Live Turso now records migrations 0001–0005 in the metadata table without replaying application migrations.
+Verified: `node database/scripts/verify-empty-state.mjs` passes with SQLite integrity `ok`; live Turso metadata contains versions 0001–0005; `git diff --check` passes.
+Known follow-ups: Add the empty-state check to CI/deployment gates, add synthetic fixtures, and rehearse backup/restore before launch readiness.
 
 When claiming a task, add:
 

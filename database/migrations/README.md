@@ -21,12 +21,31 @@ linked Clerk account.
 
 ## Execution rule
 
-There is no migration runner yet. Before applying a future migration to Turso:
+Use `node database/scripts/migrate.mjs` to apply future migrations. The runner
+creates `SchemaMigrations`, refuses to run against an empty tracking table
+without an explicit baseline, applies each pending SQL file in a transaction,
+and records the version only after the SQL succeeds.
 
-1. Restore the current backup into a disposable SQLite/libSQL database.
+For the current synchronized snapshot, initialize a fresh environment with:
+
+```shell
+MIGRATION_BASELINE=0005 node database/scripts/migrate.mjs
+```
+
+The runner does not replay `0001`–`0005`, because those changes are already part
+of the committed current snapshot. To verify that empty-state path locally:
+
+```shell
+node database/scripts/verify-empty-state.mjs
+```
+
+Before applying a future migration to Turso:
+
+1. Take a fresh backup and restore it into a disposable SQLite/libSQL database.
 2. Apply the migration and verify schema, row counts, and representative domain
    queries.
-3. Record the target database, operator, timestamp, and result in the change
+3. Run the migration runner against the authorized target and record the
+   target database, operator, timestamp, and result in the change
    handoff; do not commit a dump or credentials.
 
 The live deployment must not be edited manually as a substitute for a

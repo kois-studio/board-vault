@@ -20,6 +20,7 @@
 | `cd frontend && npx biome check` | Fail | 8 findings in the form submission, log-session wizard, and propose-game page files. |
 | `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` | Pass | One generated smoke test passes. |
 | `cd frontend && npm run e2e` | Pass | Three public Playwright tests pass; four authenticated core-navigation tests are intentionally skipped unless `PLAYWRIGHT_AUTH_STORAGE_STATE` is supplied. |
+| `node database/scripts/verify-empty-state.mjs` | Pass | Loads the current schema snapshot into disposable SQLite, reports `PRAGMA integrity_check = ok`, and bootstraps the migration metadata at baseline 0005 without applying historical migrations. |
 | `cd backend && npm test -- --runInBand src/modules/features/sessions/sessions.service.spec.ts` | Pass | Fourteen tests cover canonical completed/scheduled creation, planned-game availability, missing groups, actor membership, selected attendee membership, group game availability, participant/attendee consistency, and lifecycle transitions. |
 | `schema.sql` plus migration 0004 in disposable SQLite | Pass | A restored pre-0004 dump accepts the lifecycle migration; integrity is `ok`, no foreign-key violations are reported, and all four lifecycle columns/indexes exist. |
 | `sqlite3 backup-copy < database/migrations/0001-add-clerk-user-id.sql` | Pass | SQLite integrity remains `ok`; 15 accounts, 13 meets, and 101 meet/game links are preserved; the original backup was not used as the test target. |

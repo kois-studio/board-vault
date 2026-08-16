@@ -20,7 +20,7 @@ This is the canonical project-specific instruction file for AI developer agents.
 - Security boundaries and findings: [security.md](security.md).
 - Test inventory and verified baseline: [testing.md](testing.md).
 - Standards gaps and remediation sequencing: [TODO.md](TODO.md) and the YAML contract.
-- Durable decisions: [adr/README.md](adr/README.md). ADR-0004 is accepted for the staged Clerk rollout and protected-session bridge; ADRs 0001–0003 remain proposals.
+- Durable decisions: [adr/README.md](adr/README.md). ADR-0003 is accepted for the session domain, ADR-0004 for the staged Clerk rollout, ADR-0005 for token lifecycle, and ADR-0006 for nested-user privacy; ADRs 0001–0002 remain proposals.
 
 ## Effective standards
 
@@ -30,7 +30,7 @@ The project pins Engineering Standards `0.2.0` at revision `34e2a8ffe9e081cdf755
 
 - This project is in an intermediate sanitation/documentation session. Do not perform broad behavior refactors, dependency upgrades, migrations, CI changes, or deployment changes unless the user explicitly scopes that work.
 - Preserve unrelated changes and inspect `git diff` before editing overlapping files.
-- Do not edit the live Turso database manually for feature work. Schema changes require a versioned migration plan first; the current repository has no migration system.
+- Do not edit the live Turso database manually for feature work. Schema changes require a versioned migration plan first; use `database/scripts/migrate.mjs` and the documented baseline/recovery procedure.
 - Never commit `.env` values, tokens, passwords, or provider credentials. The ignored `backend/.env` is local-only; document variable names and safe examples, never values.
 - Treat backend authorization as the security boundary. Client guards, hidden buttons, and route access are not sufficient.
 - Do not trust client-supplied identity fields such as `userId`, `accountId`, reviewer IDs, or owner IDs for sensitive decisions. This is a backlog non-negotiable and must be enforced server-side.
@@ -45,7 +45,7 @@ Commands run from the package directory. Dependencies are currently present in i
 |---|---|---|
 | Backend install | `cd backend && npm install` | Not verified in this session; lockfile is absent and the package README still says `pnpm`. |
 | Backend build | `cd backend && npm run build` | Passes. |
-| Backend unit tests | `cd backend && npm test -- --runInBand` | Passes 106 focused tests, including Clerk identity provisioning, verified-primary-email linking, protected-session middleware, production CORS defaults, Redis failure cooldown, token lifecycle behavior, and organizer-only attendee management; broader coverage is still missing. |
+| Backend unit tests | `cd backend && npm test -- --runInBand` | Passes 136 focused tests across Clerk identity provisioning, authorization, validation, token lifecycle, session transactions/lifecycle, recommendations, feedback, and provider boundaries; broader integration coverage is still missing. |
 | Backend e2e tests | `cd backend && npm run test:e2e -- --runInBand` | Fails during module setup because `RESEND_API_KEY` is missing; it also contains a stale `/` “Hello World” assertion. |
 | Backend lint, no mutation | `cd backend && npx eslint "{src,apps,libs,test}/**/*.ts"` | Fails with 17 errors and 3 warnings. Do not use the package `lint` script casually because it includes `--fix`. |
 | Backend formatting, writes files | `cd backend && npm run format` | Available; run only when formatting changes are in scope. |
@@ -54,6 +54,7 @@ Commands run from the package directory. Dependencies are currently present in i
 | Frontend tests | `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` | Passes 1 generated smoke test. |
 | Frontend checks | `cd frontend && npx biome check` | Fails with 8 findings in 3 files. |
 | Frontend formatting, writes files | `cd frontend && npm run format` | Available; run only when formatting changes are in scope. |
+| Database empty-state verification | `node database/scripts/verify-empty-state.mjs` | Passes against disposable SQLite and records the current snapshot baseline at migration 0005. |
 
 When reporting verification, include the exact command, working directory, result, and whether the result is a known baseline failure or introduced by the change.
 

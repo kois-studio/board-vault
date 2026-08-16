@@ -68,6 +68,11 @@ Use the exact commands and current results in [AGENTS.md](AGENTS.md) and [testin
   created `RecommendationFeedback` and its group/date index; integrity and
   foreign-key checks passed and the initial feedback row count was zero. The
   backup remains local and uncommitted.
+- On 2026-08-16, the live Turso database received the additive `SchemaMigrations`
+  metadata table and markers for migrations `0001` through `0005`. The committed
+  migration runner and empty-state verification now reproduce this metadata
+  safely; CI/deployment integration and a synthetic restore rehearsal remain
+  open.
 
 The resulting backend deployment was promoted to production on 2026-08-16.
 Unauthenticated `GET /auth/clerk/status` returned 401, validation on

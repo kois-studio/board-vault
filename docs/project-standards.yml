@@ -88,14 +88,14 @@ compliance:
 
     - id: TEST-001
       status: gap
-      evidence: backend has one focused profile-update privilege-boundary suite and one stale starter e2e test; frontend has one generated smoke test
+      evidence: backend has 38 focused suites and 136 passing tests covering authentication, authorization, validation, sessions, recommendations, and provider boundaries; frontend has one generated smoke test plus three passing public Playwright checks and four opt-in authenticated checks
       priority: high
       next_action: Add layered unit, integration, and journey tests for the flagship loop.
     - id: TEST-002
       status: gap
-      evidence: no meaningful regression suite for auth, ownership, groups, collection, or sessions
+      evidence: focused backend regression coverage now exists for auth, ownership, validation, group/invitation boundaries, collection ownership, session transactions/lifecycle, and recommendation rules; integration, provider, and seeded browser coverage remain absent
       priority: critical
-      next_action: Start with privilege-boundary and object-authorization regressions.
+      next_action: Add disposable integration data and authenticated browser journeys for the flagship loop.
     - id: TEST-003
       status: unknown
       evidence: no isolated test strategy is documented; e2e module setup requires external configuration
@@ -103,17 +103,17 @@ compliance:
       next_action: Define disposable test data and provider fakes before adding integration coverage.
     - id: TEST-004
       status: partial
-      evidence: generated tests assert creation only; starter e2e asserts a stale root response
+      evidence: backend focused tests and frontend public Playwright tests assert user-visible/security behavior; the stale backend starter e2e still asserts a root Hello World response and authenticated browser tests remain opt-in
       priority: high
       next_action: Replace starter assertions with user-visible behavior and denied-path assertions.
     - id: TEST-005
       status: gap
-      evidence: current test count does not match security and core-loop risk
+      evidence: 136 focused backend tests now cover the highest-risk unit boundaries, but the suite does not yet exercise a clean database, provider failure contract, or complete browser journey
       priority: critical
-      next_action: Cover auth, identity boundaries, group membership, collection ownership, session transactions, and recommendation rules.
+      next_action: Add disposable integration and contract coverage for auth, group membership, collection ownership, session transactions, and recommendation rules.
     - id: TEST-006
       status: gap
-      evidence: backend unit command now passes two focused privilege-boundary tests; frontend command still passes only one smoke test and the overall suite is insufficient
+      evidence: backend unit command passes 136 focused tests and frontend has one smoke test plus public Playwright checks; clean-install and CI enforcement remain absent
       priority: high
       next_action: Make supported test commands meaningful and required in CI.
     - id: TEST-007
@@ -390,14 +390,14 @@ compliance:
 
     - id: DATA-001
       status: partial
-      evidence: database/schema/schema.sql is the synchronized Turso export and database/drift-report.md records the repository reconciliation; migration 0003 defines and backfills MeetAttendee/MeetGame, backend detail/setup SQL is aligned, and the frontend meetAttendees route now has organizer-only server authorization, while the indirect Game.title/GameTranslation contract remains unresolved; migrations 0002/0003 are applied but no migration runner or empty-state recreation exists
+      evidence: database/schema/schema.sql is the synchronized Turso export and database/drift-report.md records the repository reconciliation; migrations 0002–0005 define the current additive changes, `SchemaMigrations` tracks them in live Turso, `database/scripts/migrate.mjs` applies future migrations, and `verify-empty-state.mjs` passes; the indirect Game.title/GameTranslation contract remains unresolved
       priority: critical
-      next_action: Verify the attendee route in production, complete the session transaction contract, and establish repeatable migration execution and empty-state recreation.
+      next_action: Verify the attendee route in production, add migration verification to CI/deployment checks, and rehearse a synthetic restore.
     - id: DATA-002
       status: partial
-      evidence: database/migrations/0001-add-clerk-user-id.sql, 0002-add-auth-token-expiry.sql, and 0003-add-session-relations.sql are applied to live Turso and tested against restored data; no migration runner or empty-state recreation exists
+      evidence: migrations 0001–0005 are applied to live Turso and tested against restored/disposable data; `SchemaMigrations` records the versions and the committed runner refuses unsafe empty-tracking-table execution without an explicit baseline
       priority: critical
-      next_action: Add migration execution/recreation tooling and complete Clerk recovery evidence before legacy-auth removal.
+      next_action: Add migration checks to CI/deployment, complete synthetic restore evidence, and finish Clerk recovery evidence before legacy-auth removal.
     - id: DATA-003
       status: partial
       evidence: SQLite tables, constraints, backfill counts, live integrity checks, and aligned backend queries exist for the v1 session relations; transaction guarantees and complete session API behavior are not verified
@@ -642,5 +642,5 @@ deferred_work:
     next_action: Execute EQ-001 before adding CI.
   - id: DATA-MIGRATION-001
     status: deferred
-    reason: Live deployment operations and a migration runner remain unresolved; the Clerk identity migration and production configuration/deployment verification are complete, while recovery evidence, repeatable schema recreation, and legacy-auth removal remain gated.
-    next_action: Resolve DATA-003 session semantics, add migration execution/recreation tooling, and complete Clerk recovery evidence before removing legacy auth.
+    reason: Live deployment operations and CI/recovery gates remain unresolved; the Clerk identity migration and production configuration/deployment verification are complete, and repeatable schema recreation is now available while synthetic restore evidence and legacy-auth removal remain gated.
+    next_action: Add migration checks to CI/deployment, complete the synthetic restore rehearsal, and finish Clerk recovery evidence before removing legacy auth.

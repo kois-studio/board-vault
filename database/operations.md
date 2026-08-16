@@ -1,6 +1,6 @@
 # Database operations notes
 
-These are manual Turso CLI notes retained from the former backend documentation. They are not a migration system, backup schedule, or recovery runbook. Confirm the target database and obtain explicit authorization before running destructive commands.
+These are manual Turso CLI notes retained from the former backend documentation. They are not a backup schedule or complete recovery runbook; use the committed migration runner for schema changes. Confirm the target database and obtain explicit authorization before running destructive commands.
 
 Reference: [Turso database shell documentation](https://docs.turso.tech/cli/db/shell)
 

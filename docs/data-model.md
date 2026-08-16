@@ -2,7 +2,7 @@
 
 ## Current persistence
 
-The backend uses `@libsql/client` against Turso-hosted SQLite. `DatabaseService` creates the client during `OnModuleInit` from `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN`, then exposes raw SQL helper methods to the rest of the backend. The repository contains numbered migration files but no migration runner, disposable local database setup, or automated migration gate.
+The backend uses `@libsql/client` against Turso-hosted SQLite. `DatabaseService` creates the client during `OnModuleInit` from `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN`, then exposes raw SQL helper methods to the rest of the backend. Numbered migration files are applied by `database/scripts/migrate.mjs`; `database/scripts/verify-empty-state.mjs` verifies the synchronized snapshot in disposable SQLite, but no automated CI migration gate or synthetic fixture set exists yet.
 
 The current deployed baseline is captured in [database/schema/schema.sql](../database/schema/schema.sql), based on the owner-supplied Turso export and the verified 2026-08-12 identity migration. It is represented partly by Zod schemas under `backend/src/common/schemas/`. The first data task is repository reconciliation against this baseline, not deployment discovery.
 
@@ -91,7 +91,7 @@ These findings are now split between resolved schema alignment and remaining API
 1. Resolve the remaining API findings in the [DATA-001 drift report](../database/drift-report.md), especially the frontend attendee route and game-title contract.
 2. Execute `DATA-003`: extend the session API from completed-session logging to the full scheduled/completed lifecycle, including planned-game editing and richer read models.
 3. Execute `DATA-004`: apply the transaction policy to remaining multi-record mutations.
-4. Execute `DATA-002`: create migration execution tooling and prove empty-state recreation.
+4. Execute `DATA-002`: add the migration runner and empty-state verification to CI, then rehearse a synthetic restore.
 5. Add disposable integration data and backup/restore rehearsal before launch claims.
 
 ## Source evidence
