@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common'
-import { Component, EventEmitter, Input, OnInit, OnChanges, Output, SimpleChanges, inject } from '@angular/core'
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
+import { firstValueFrom } from 'rxjs'
 import { Api } from '../../../api/api'
 import type { CreateGameProposalType } from '../../../api/api.types'
 import { DataService } from '../../../core/services/data.service'
@@ -128,7 +129,7 @@ export class FormGameSubmissionComponent implements OnInit, OnChanges {
                 notes: formData.notes || undefined,
             }
 
-            await this.api.createGameProposal(currentUser.id, proposalData).toPromise()
+            await firstValueFrom(this.api.createGameProposal(currentUser.id, proposalData))
 
             this.toastService.success('Game proposal submitted successfully!')
             this.proposalSubmitted.emit()
@@ -150,11 +151,13 @@ export class FormGameSubmissionComponent implements OnInit, OnChanges {
     public validatePlayerCount() {
         const min = this.minPlayers?.value
         const max = this.maxPlayers?.value
+        const errors = this.maxPlayers?.errors ?? {}
 
         if (min && max && min > max) {
-            this.maxPlayers?.setErrors({ invalidRange: true })
-        } else {
-            this.maxPlayers?.setErrors(null)
+            this.maxPlayers?.setErrors({ ...errors, invalidRange: true })
+        } else if (errors['invalidRange']) {
+            const { invalidRange: _invalidRange, ...remainingErrors } = errors
+            this.maxPlayers?.setErrors(Object.keys(remainingErrors).length > 0 ? remainingErrors : null)
         }
     }
 
