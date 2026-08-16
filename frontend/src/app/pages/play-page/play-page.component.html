@@ -11,8 +11,12 @@
             description="View and manage your scheduled game nights"
             cardLink="/play/upcoming-sessions"
         >
-            <app-badge class="app-card-section-badge" color="indigo" [text]="upcomingSessions().length + ' sessions'" />
-            @if (upcomingSessions().length > 0) {
+            <app-badge class="app-card-section-badge" color="indigo" [text]="isLoadingMeets() ? 'Loading…' : userMeetsError() ? 'Unavailable' : upcomingSessions().length + ' sessions'" />
+            @if (isLoadingMeets()) {
+                <p class="text-secondary">Loading your scheduled sessions…</p>
+            } @else if (userMeetsError()) {
+                <p class="text-secondary">Sessions could not be loaded. Open the page to retry.</p>
+            } @else if (upcomingSessions().length > 0) {
                 <p class="text-secondary">Next: {{ getGroupName(upcomingSessions()[0].groupId) }} · {{ upcomingSessions()[0].meetDate | date }}</p>
             } @else {
                 <p class="text-secondary">No upcoming sessions yet.</p>
@@ -27,8 +31,14 @@
             description="Browse games played in completed sessions"
             cardLink="/play/history"
         >
-            <app-badge class="app-card-section-badge" color="green" [text]="userHistory$().length + ' sessions'" />
-            <p class="text-secondary">Your recorded play history.</p>
+            <app-badge class="app-card-section-badge" color="green" [text]="isLoadingHistory() ? 'Loading…' : userHistoryError() ? 'Unavailable' : userHistory$().length + ' sessions'" />
+            @if (isLoadingHistory()) {
+                <p class="text-secondary">Loading your recorded history…</p>
+            } @else if (userHistoryError()) {
+                <p class="text-secondary">History could not be loaded. Open the page to retry.</p>
+            } @else {
+                <p class="text-secondary">Your recorded play history.</p>
+            }
             <span class="text-green-600 dark:text-green-400 group-hover:underline flex items-center text-sm font-medium">View history &gt;</span>
         </app-card-section>
 
