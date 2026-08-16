@@ -126,7 +126,7 @@ export class DashboardService {
 
     @LogFeature(new Logger('DashboardService'))
     async getGroupMeetings(userId: number, groupId: number): Promise<Array<HistoryRecordDto>> {
-        const groupMeetings = await this.meetsService.getMeetsByGroupId(groupId)
+        const groupMeetings = (await this.meetsService.getMeetsByGroupId(groupId)).filter(meet => meet.status === 'completed')
 
         return await Promise.all(
             groupMeetings.map(async meetData => {
