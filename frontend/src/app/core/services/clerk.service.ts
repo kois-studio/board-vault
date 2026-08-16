@@ -63,6 +63,10 @@ export class ClerkService {
         this.clerk?.openSignUp()
     }
 
+    public openUserProfile(): void {
+        this.clerk?.openUserProfile()
+    }
+
     public async signOut(): Promise<void> {
         await this.clerk?.signOut()
     }
