@@ -101,11 +101,11 @@ export class Api {
             avatar?: UserType['avatar']
         },
     ) {
-        return this.http.put<{ success: true }>(`${this.url}/users/${userId}`, requesBody)
+        return this.http.put<{ success: true }>(`${this.url}/users/${userId}`, requesBody).pipe(map(response => successSchema.parse(response)))
     }
 
     updateUserGames(userId: number, gamesToAdd: Array<number>, gamesToRemove: Array<number>) {
-        return this.http.put<{ success: true }>(`${this.url}/users/${userId}/games`, { gamesToAdd, gamesToRemove })
+        return this.http.put<{ success: true }>(`${this.url}/users/${userId}/games`, { gamesToAdd, gamesToRemove }).pipe(map(response => successSchema.parse(response)))
     }
 
     // #region groups
@@ -123,11 +123,11 @@ export class Api {
     // #region invitations
 
     deleteInvitation(invitationId: number) {
-        return this.http.delete<{ success: true }>(`${this.url}/invitations/${invitationId}`)
+        return this.http.delete<{ success: true }>(`${this.url}/invitations/${invitationId}`).pipe(map(response => successSchema.parse(response)))
     }
 
     rejectInvitation(invitationId: number) {
-        return this.http.post<{ success: true }>(`${this.url}/invitations/${invitationId}/reject`, {})
+        return this.http.post<{ success: true }>(`${this.url}/invitations/${invitationId}/reject`, {}).pipe(map(response => successSchema.parse(response)))
     }
 
     createInvitation(groupId: number, username: string) {
@@ -137,13 +137,13 @@ export class Api {
     // #region notifications
 
     deleteNotification(notificationId: number) {
-        return this.http.delete<{ success: true }>(`${this.url}/notifications/${notificationId}`)
+        return this.http.delete<{ success: true }>(`${this.url}/notifications/${notificationId}`).pipe(map(response => successSchema.parse(response)))
     }
 
     updateNotification(notificationId: number, partialNotification: Partial<NotificationType>) {
         return this.http.put<{ success: true }>(`${this.url}/notifications/${notificationId}`, {
             isRead: partialNotification.isRead,
-        })
+        }).pipe(map(response => successSchema.parse(response)))
     }
 
     // #region meetings
@@ -182,7 +182,7 @@ export class Api {
     }
 
     deleteMeetAttendee(meetId: number, accountId: number) {
-        return this.http.delete<{ success: true }>(`${this.url}/meetAttendees/${meetId}/${accountId}`)
+        return this.http.delete<{ success: true }>(`${this.url}/meetAttendees/${meetId}/${accountId}`).pipe(map(response => successSchema.parse(response)))
     }
 
     // #region meet games
@@ -192,7 +192,7 @@ export class Api {
     }
 
     deleteMeetAccountGame(accountId: number, meetId: number, gameId: number) {
-        return this.http.delete<{ success: true }>(`${this.url}/meetAccountGames/${accountId}/${meetId}/${gameId}`)
+        return this.http.delete<{ success: true }>(`${this.url}/meetAccountGames/${accountId}/${meetId}/${gameId}`).pipe(map(response => successSchema.parse(response)))
     }
 
     // --------------------------------------------------------------------------
@@ -211,7 +211,7 @@ export class Api {
     }
 
     deleteAdminTagCategory(id: number) {
-        return this.http.delete<{ success: true }>(`${this.url}/admin/tag-categories/${id}`)
+        return this.http.delete<{ success: true }>(`${this.url}/admin/tag-categories/${id}`).pipe(map(response => successSchema.parse(response)))
     }
 
     getAdminTags() {
@@ -227,7 +227,7 @@ export class Api {
     }
 
     deleteAdminTag(id: number) {
-        return this.http.delete<{ success: true }>(`${this.url}/admin/tags/${id}`)
+        return this.http.delete<{ success: true }>(`${this.url}/admin/tags/${id}`).pipe(map(response => successSchema.parse(response)))
     }
 
     // #region Admin Games
@@ -242,11 +242,11 @@ export class Api {
     }
 
     updateAdminGameTranslations(gameId: number, translations: Record<string, string>) {
-        return this.http.put<{ success: true }>(`${this.url}/admin/games/${gameId}/translations`, translations)
+        return this.http.put<{ success: true }>(`${this.url}/admin/games/${gameId}/translations`, translations).pipe(map(response => successSchema.parse(response)))
     }
 
     updateAdminGameTags(gameId: number, tagIds: number[]) {
-        return this.http.put<{ success: true }>(`${this.url}/admin/games/${gameId}/tags`, { tagIds })
+        return this.http.put<{ success: true }>(`${this.url}/admin/games/${gameId}/tags`, { tagIds }).pipe(map(response => successSchema.parse(response)))
     }
 
     // #endregion
@@ -269,11 +269,11 @@ export class Api {
     }
 
     addGameToUserCollection(userId: number, gameId: number) {
-        return this.http.post<{ success: true }>(`${this.url}/collection/users/${userId}/games/${gameId}`, {})
+        return this.http.post<{ success: true }>(`${this.url}/collection/users/${userId}/games/${gameId}`, {}).pipe(map(response => successSchema.parse(response)))
     }
 
     removeGameFromUserCollection(userId: number, gameId: number) {
-        return this.http.delete<{ success: true }>(`${this.url}/collection/users/${userId}/games/${gameId}`)
+        return this.http.delete<{ success: true }>(`${this.url}/collection/users/${userId}/games/${gameId}`).pipe(map(response => successSchema.parse(response)))
     }
 
     patchGameOwnership(userId: number, gameId: number, ownedGameDto: UpdateGameOwnedType) {
@@ -289,7 +289,7 @@ export class Api {
     }
 
     saveGameReview(userId: number, gameId: number, review: number) {
-        return this.http.post<{ success: true }>(`${this.url}/collection/users/${userId}/reviews/${gameId}`, { review })
+        return this.http.post<{ success: true }>(`${this.url}/collection/users/${userId}/reviews/${gameId}`, { review }).pipe(map(response => successSchema.parse(response)))
     }
 
     getUserWishlist(userId: number) {
@@ -312,7 +312,7 @@ export class Api {
     }
 
     createGroup(userId: number, groupName: string) {
-        return this.http.post<{ success: true }>(`${this.url}/dashboard/users/${userId}/groups/create/${groupName}`, {})
+        return this.http.post<{ success: true }>(`${this.url}/dashboard/users/${userId}/groups/create/${groupName}`, {}).pipe(map(response => successSchema.parse(response)))
     }
 
     deleteGroup(userId: number, groupId: number) {
@@ -324,7 +324,7 @@ export class Api {
     }
 
     createGroupMeeting(userId: number, groupId: number) {
-        return this.http.post<{ success: true }>(`${this.url}/dashboard/users/${userId}/groups/${groupId}/meetings`, {})
+        return this.http.post<{ success: true }>(`${this.url}/dashboard/users/${userId}/groups/${groupId}/meetings`, {}).pipe(map(response => successSchema.parse(response)))
     }
 
     leaveGroup(userId: number, groupId: number) {
@@ -375,7 +375,7 @@ export class Api {
     }
 
     acceptInvitation(userId: number, invitationId: number) {
-        return this.http.post<{ success: true }>(`${this.url}/profile/users/${userId}/invitations/${invitationId}/accept`, {})
+        return this.http.post<{ success: true }>(`${this.url}/profile/users/${userId}/invitations/${invitationId}/accept`, {}).pipe(map(response => successSchema.parse(response)))
     }
 
     // #region Game Proposals

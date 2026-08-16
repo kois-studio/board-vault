@@ -976,6 +976,19 @@ Changed: Added Zod validation for legacy JWT/Clerk status, access-token, availab
 Verified: `cd frontend && npm run build` passes with the documented baseline warnings; `git diff --check` passes.
 Known follow-ups: Expand response schemas to collection, group, invitation, notification, and admin methods, then add malformed-response tests.
 
+Continuation claim: EQ-004
+
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: validate success envelopes for collection, group, invitation, notification, meet, and admin mutations
+
+Review continuation: EQ-004
+
+Changed: The frontend API adapter now parses the `{ success: true }` envelope for the primary profile, collection, group, invitation, notification, meet, and admin mutation methods. This makes unexpected empty or malformed mutation responses observable instead of silently treating them as successful.
+Verified: `cd frontend && npm run build` passes with the documented baseline warnings; `git diff --check` passes.
+Known follow-ups: Add response schemas for collection/group read models and remaining mutation payloads, then add malformed-response tests.
+
 Continuation claim: PROD-005
 
 Owner: Codex
