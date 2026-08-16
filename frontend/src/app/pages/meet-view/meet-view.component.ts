@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common'
-import { Component, effect } from '@angular/core'
+import { Component, effect, signal } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../api/api'
-import type { GameType, GroupWithMembersAndGames, MeetType, MeetWithAttendeesAndGamesType, UserType } from '../../api/api.types'
+import type { GameCompleteType, GameType, GroupWithMembersAndGames, MeetType, MeetWithAttendeesAndGamesType, UserType } from '../../api/api.types'
 import { CardAccountComponent } from '../../components/card-account/card-account.component'
 import { ToastService } from '../../components/toast/toast.service'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
@@ -26,6 +26,9 @@ import type { Nullable } from '../../core/types/commons.type'
 })
 export class MeetViewComponent {
     public loaded = false
+    public readonly isLoading = signal(true)
+    public readonly loadError = signal(false)
+    private requestedMeetId: number | null = null
 
     // DataService data (filled on init -> effect)
     public userData: ReturnType<typeof this.dataService.currentUser> = null
@@ -47,22 +50,53 @@ export class MeetViewComponent {
         private readonly dataService: DataService,
         private readonly toastService: ToastService,
     ) {
-        effect(async () => {
+        effect(() => {
             this.userData = this.dataService.currentUser()
             this.userGroups = this.dataService.userGroups()
 
             // Get Meet Details
             const meetId = Number.parseInt(this.route.snapshot.paramMap.get('meetId') || '')
+            if (!this.userData || this.userGroups.length === 0 || Number.isNaN(meetId) || this.requestedMeetId === meetId) {
+                return
+            }
 
+            this.requestedMeetId = meetId
+            void this.loadMeetDetails(meetId)
+        })
+    }
+
+    public retryLoad(): void {
+        const meetId = Number.parseInt(this.route.snapshot.paramMap.get('meetId') || '')
+        if (Number.isNaN(meetId)) return
+
+        this.requestedMeetId = null
+        this.loaded = false
+        this.loadError.set(false)
+        this.isLoading.set(true)
+        this.requestedMeetId = meetId
+        void this.loadMeetDetails(meetId)
+    }
+
+    private async loadMeetDetails(meetId: number): Promise<void> {
+        this.isLoading.set(true)
+        this.loadError.set(false)
+        try {
+            // Get Meet Details
             this.meetData = await firstValueFrom(this.api.getMeetDetailsById(meetId))
             this.meetDataCopyOriginal = JSON.parse(JSON.stringify(this.meetData))
 
-            if (!this.meetData) return
+            if (!this.meetData) {
+                this.loadError.set(true)
+                return
+            }
 
             // Group Data
             const groupData = this.userGroups.find((group) => group.id === this.meetData?.groupId)
 
-            if (!this.userData || !groupData) return
+            if (!this.userData || !groupData) {
+                this.loadError.set(true)
+                return
+            }
 
             this.groupData = groupData
 
@@ -70,7 +104,12 @@ export class MeetViewComponent {
             this.#indexReviews(groupData)
 
             this.loaded = true
-        })
+        } catch {
+            this.loaded = false
+            this.loadError.set(true)
+        } finally {
+            this.isLoading.set(false)
+        }
     }
 
     #indexReviews(groupData: GroupWithMembersAndGames): void {
@@ -128,8 +167,8 @@ export class MeetViewComponent {
         }
     }
 
-    get totalGames(): Array<GameType & { active: boolean }> {
-        const games: Array<GameType & { active: boolean }> = []
+    get totalGames(): Array<GameCompleteType & { active: boolean }> {
+        const games: Array<GameCompleteType & { active: boolean }> = []
 
         if (!this.groupData) {
             return []
@@ -165,16 +204,16 @@ export class MeetViewComponent {
         })
     }
 
-    get plannedGames(): Array<GameType & { active: boolean }> {
+    get plannedGames(): Array<GameCompleteType & { active: boolean }> {
         if (!this.meetData) return []
         const gamesById = new Map(this.totalGames.map(game => [game.id, game]))
-        return this.meetData.plannedGames.map(gameId => gamesById.get(gameId)).filter((game): game is GameType & { active: boolean } => game !== undefined)
+        return this.meetData.plannedGames.map(gameId => gamesById.get(gameId)).filter((game): game is GameCompleteType & { active: boolean } => game !== undefined)
     }
 
-    get skippedGames(): Array<GameType & { active: boolean }> {
+    get skippedGames(): Array<GameCompleteType & { active: boolean }> {
         if (!this.meetData) return []
         const gamesById = new Map(this.totalGames.map(game => [game.id, game]))
-        return this.meetData.skippedGames.map(gameId => gamesById.get(gameId)).filter((game): game is GameType & { active: boolean } => game !== undefined)
+        return this.meetData.skippedGames.map(gameId => gamesById.get(gameId)).filter((game): game is GameCompleteType & { active: boolean } => game !== undefined)
     }
 
     // #region Button Clicks
