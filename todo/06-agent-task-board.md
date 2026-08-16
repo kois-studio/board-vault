@@ -750,6 +750,19 @@ Changed: Removed the no-op `MeetConfirmComponent` and its route. Meeting detail 
 Verified: `cd frontend && npm run build` passes with the documented baseline warnings; route/source search finds no remaining `meet-confirm` or `/meets/:meetId/confirm` references; `git diff --check` passes.
 Known follow-ups: Review automatic-save success/error feedback and add authenticated browser coverage for session edits.
 
+Continuation claim: PROD-003
+
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: make group empty/history states truthful and avoid mutating shared group-history signal data during sorting
+
+Review continuation: PROD-003
+
+Changed: Group history sorting now works on a copy of the signal array, group history loading/error state is tracked, and the empty groups page now offers a direct Create Group action.
+Verified: `cd frontend && npm run build` passes with the documented baseline warnings; `git diff --check` passes.
+Known follow-ups: Complete the two-account invitation journey, add authenticated browser coverage, and review group member/game/history layouts responsively.
+
 When claiming a task, add:
 
 ```text
