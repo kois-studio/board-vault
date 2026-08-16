@@ -139,7 +139,7 @@ compliance:
       next_action: Stop adding undocumented any and narrow legacy boundary uses incrementally.
     - id: TS-003
       status: partial
-      evidence: shared types and Swagger DTOs exist; targeted frontend schemas cover auth, session, meet, recommendation, and feedback responses, but most routes are not contract-tested
+      evidence: shared types and Swagger DTOs exist; targeted frontend schemas cover auth, collection, group, notification, session, meet, recommendation, and feedback responses, but most routes are not contract-tested
       priority: high
       next_action: Define a machine-readable API contract and align generated/client types.
     - id: TS-004
@@ -149,7 +149,7 @@ compliance:
       next_action: Complete the session API/transaction state contract and establish the recommendation state model before implementation.
     - id: TS-005
       status: gap
-      evidence: backend main.ts does not apply a global ValidationPipe; frontend api.schemas.ts validates only the current session, meet, recommendation, and feedback response subset
+      evidence: backend main.ts does not apply a global ValidationPipe; frontend api.schemas.ts validates the core auth, collection, group, notification, session, meet, recommendation, and feedback response paths, while admin and remaining legacy paths are not covered
       priority: critical
       next_action: Activate and test boundary validation on both API and client response boundaries.
     - id: TS-006
@@ -503,7 +503,7 @@ compliance:
       next_action: Record icon convention when frontend sanitation starts.
     - id: ANGULAR-006
       status: gap
-      evidence: frontend/src/app/api/api.schemas.ts validates auth, session, meet, recommendation, and feedback responses; remaining API response coverage and client negative tests are open
+      evidence: frontend/src/app/api/api.schemas.ts validates core auth, collection, group, notification, session, meet, recommendation, and feedback responses; admin/legacy response coverage and client negative tests are open
       priority: high
       next_action: Expand external response validation and add malformed-response tests at API/form boundaries.
     - id: ANGULAR-007
