@@ -648,6 +648,14 @@ export class DataService {
         this._getUserWishlist(currentUser.id)
     }
 
+    public refreshUserGames() {
+        const currentUser = this.currentUser()
+        if (!currentUser) return
+
+        this.userGames.set([])
+        this._getUserGames(currentUser.id)
+    }
+
     // #region Meetings
 
     public createMeeting(accountId: number, groupId: number) {

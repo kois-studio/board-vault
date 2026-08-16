@@ -61,6 +61,7 @@ export class GameViewPageComponent implements OnDestroy {
     // --------------------------------------------------------------------------
     // dataService
     public readonly currentUser$ = this.dataService.currentUser
+    public readonly userGroups$ = this.dataService.userGroups
     private readonly userHistory$ = this.dataService.userHistory
 
     // --------------------------------------------------------------------------
@@ -286,6 +287,7 @@ export class GameViewPageComponent implements OnDestroy {
 
                 // Refresh the wishlist to ensure consistency with server state
                 this.dataService.refreshUserWishlist()
+                this.dataService.refreshUserGames()
             },
             error: (error) => {
                 this.toastService.error('Error adding game to collection')
@@ -318,6 +320,7 @@ export class GameViewPageComponent implements OnDestroy {
 
                     return { ...game, ownedGameData: null }
                 })
+                this.dataService.refreshUserGames()
             },
             error: (error) => {
                 this.toastService.error('Error removing game from collection')
@@ -328,6 +331,10 @@ export class GameViewPageComponent implements OnDestroy {
                 this.PREVENT_SPAM.isLoadingRemoveFromCollection = false
             },
         })
+    }
+
+    public getGroupName(groupId: number): string {
+        return this.userGroups$().find((group) => group.id === groupId)?.name ?? `Group ${groupId}`
     }
 
     public saveOwnedGameDetails() {
