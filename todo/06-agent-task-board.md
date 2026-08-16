@@ -976,6 +976,19 @@ Changed: Dashboard overview now distinguishes loading from loaded data, renders 
 Verified: `cd frontend && npm run build` passes with the documented baseline warnings; `git diff --check` passes.
 Known follow-ups: Add authenticated browser coverage for dashboard failure/retry states and continue the broader responsive/accessibility review.
 
+Continuation claim: PROD-002 / PROD-005
+
+Owner: Codex
+Claimed: 2026-08-16
+Branch/worktree: main / shared workspace
+Scope: make primary groups and collection entry points distinguish request failures from empty data
+
+Review continuation: PROD-002 / PROD-005
+
+Changed: My Groups and My Games now render retryable request-failure states instead of empty-state copy when their initial data fetch fails. Both pages reuse DataService error signals and retry methods.
+Verified: `cd frontend && npm run build` passes with the documented baseline warnings; `git diff --check` passes.
+Known follow-ups: Add authenticated browser coverage for failure/retry states and review the remaining collection, wishlist, reviews, and invitation states.
+
 When claiming a task, add:
 
 ```text

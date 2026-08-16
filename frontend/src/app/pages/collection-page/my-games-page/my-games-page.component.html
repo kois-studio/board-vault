@@ -10,6 +10,12 @@
             <app-skeleton-card-game />
             <app-skeleton-card-game />
         </section>
+    } @else if (userGamesError()) {
+        <div class="rounded-lg border border-amber-200 bg-amber-50 p-8 text-center dark:border-amber-900/50 dark:bg-amber-950/30" role="alert">
+            <p class="text-lg font-medium">Your collection could not be loaded.</p>
+            <p class="text-secondary mt-2">Try again without losing your saved games.</p>
+            <button type="button" class="app-btn-primary mt-4" (click)="retryGames()">Retry</button>
+        </div>
     } @else if (userGames$().length === 0) {
         <!-- no data -->
         <div class="text-center text-secondary">

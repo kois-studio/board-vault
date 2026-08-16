@@ -111,7 +111,7 @@ Relevant surface: [`dashboard-page`](../frontend/src/app/pages/dashboard-page/).
 - Keep dashboard links limited to existing routes; the dead activity and analytics links have been removed.
 - Make dashboard cards represent the correct entity and count.
 - Define a useful first-login empty state that guides a user to create/join a group and add games.
-- Define loading, failure, and retry states for each dashboard data section; dashboard overview, history, and upcoming-session surfaces now distinguish loading, failure, and empty states, with dashboard retry recovering the core overview requests.
+- Define loading, failure, and retry states for each dashboard data section; dashboard overview, groups, collection, history, and upcoming-session surfaces now distinguish loading, failure, and empty states, with retry recovering the core requests.
 - Review responsive layout and visual hierarchy.
 
 ### 7. Collection — Partial / Needs review
@@ -122,7 +122,7 @@ Relevant surfaces: [`collection-page`](../frontend/src/app/pages/collection-page
 - Keep the first-five-games activation flow visible on the collection page; the progress prompt and browse CTA now exist and ownership changes refresh the collection signal.
 - Keep collection mutations synchronized with group availability; refreshed ownership data now updates the current member inside loaded group records as well as the personal collection signal.
 - Complete the activation journey with a success state, onboarding preferences, and authenticated browser coverage.
-- Make search, duplicate-add, loading, empty, error, and success states coherent.
+- Make search, duplicate-add, loading, empty, error, and success states coherent; the primary collection and groups pages now distinguish request failures from empty data and expose retry actions.
 - Browse search now distinguishes catalog load errors from valid no-results responses and offers retry; duplicate/add feedback and broader rendered-state review remain.
 - Resolve game title/translation behavior across cards, search, proposals, history, and game detail.
 - Ensure purchase metadata, wishlist priority, reviews, and tags have consistent labels and validation.
@@ -139,7 +139,7 @@ Relevant surfaces: [`groups`](../frontend/src/app/pages/groups/), [`group-view`]
 - Keep invitation send, pending-invitation removal, and member removal awaitable; group editing now keeps retryable selections and prevents overlapping requests.
 - Resolve the product policy for self-join versus invite-only membership.
 - Define group owner/member roles and expose only actions allowed for each role.
-- Make empty groups useful: explain the next step for members, games, and invitations.
+- Make empty groups useful: explain the next step for members, games, and invitations; failed group loading now has an explicit retry state.
 - Ensure member visibility and private group data follow the backend authorization rules.
 - Remove unnecessary reload-all behavior after group mutations where safe.
 - Review invitation and notification feedback, unread/read states, and failure recovery.
