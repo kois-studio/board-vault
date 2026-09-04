@@ -1,11 +1,12 @@
 import { Component, Input } from '@angular/core'
 import { firstValueFrom } from 'rxjs'
 import { InvitationWithExtraData } from '../../api/api.types'
+import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { DataService } from '../../core/services/data.service'
 import { CardAccountComponent } from '../card-account/card-account.component'
 
 @Component({
-    imports: [CardAccountComponent],
+    imports: [CardAccountComponent, CustomDatePipe],
     selector: 'app-card-invitation',
     templateUrl: 'card-invitation.component.html',
 })

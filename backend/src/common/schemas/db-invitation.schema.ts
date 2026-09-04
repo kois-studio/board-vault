@@ -6,6 +6,7 @@ export const invitationSchema = z.object({
     fromAccountId: z.number().int().nonnegative(), // ref: Account
     toAccountId: z.number().int().nonnegative(), // ref: Account
     sentAt: z.string().refine(date => !isNaN(Date.parse(date)), { message: 'Invalid date format' }),
+    expiresAt: z.string().refine(date => !isNaN(Date.parse(date)), { message: 'Invalid date format' }),
 })
 
 export const invitationsSchema = z.array(invitationSchema)

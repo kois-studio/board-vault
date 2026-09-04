@@ -28,14 +28,19 @@ export class InvitationDto {
 
     @ApiProperty({ example: '2021-10-10T12:00:00Z' })
     sentAt: string
+
+    @ApiProperty({ example: '2021-11-09T12:00:00Z', description: 'The invitation stops being actionable after this UTC timestamp.' })
+    @IsString()
+    @IsNotEmpty()
+    expiresAt: string
 }
 
 /**
  * POST requests --> no db generated props
  */
-export class CreateInvitationBody extends OmitType(InvitationDto, ['id', 'sentAt']) {}
+export class CreateInvitationBody extends OmitType(InvitationDto, ['id', 'sentAt', 'expiresAt']) {}
 export class CreateInvitationRequestBody extends OmitType(CreateInvitationBody, ['fromAccountId']) {}
-export class CreateInvitationByUsernameBody extends OmitType(InvitationDto, ['id', 'toAccountId', 'sentAt']) {
+export class CreateInvitationByUsernameBody extends OmitType(InvitationDto, ['id', 'toAccountId', 'sentAt', 'expiresAt']) {
     @ApiProperty({ example: 'username', description: 'The username to invite.' })
     @IsString()
     @IsNotEmpty()

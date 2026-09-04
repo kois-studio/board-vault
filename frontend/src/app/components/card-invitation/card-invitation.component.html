@@ -2,6 +2,7 @@
 <div class="rounded-2xl border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
     <h2 class="font-bold text-lg tracking-wider">{{ invitation.group.name }}</h2>
     <p class="mt-1 text-sm text-secondary">Invited by {{ invitation.fromAccount.displayName || invitation.fromAccount.username }}</p>
+    <p class="mt-2 text-xs text-secondary">Invite expires {{ invitation.expiresAt | customDate: false }}</p>
     <div class="mt-4 flex flex-wrap justify-between items-center gap-3">
         <!-- LEFT COL: user and group data -->
         <div>
