@@ -53,7 +53,7 @@ Relevant surfaces: [`app.routes.ts`](../frontend/src/app/app.routes.ts), [`meet-
 - Session-detail participant controls now prevent removing the final participant from a played game and surface a retryable error when the participant write fails; full authenticated mutation coverage remains open.
 - Complete the organizer-only attendee API verification through the production UI.
 - Add transaction boundaries for invitation acceptance, scheduled-session creation, completion, cancellation, attendee changes, and played-game recording; legacy invitation acceptance, canonical session creation, lifecycle transitions, played-game recording, and attendee replacement now have transaction boundaries, while deprecated per-row attendee endpoints remain for compatibility.
-- Ensure the upcoming sessions page reads real persisted scheduled/active sessions; the old completed-history placeholder has been removed and the page now uses `userMeets`.
+- Ensure the upcoming sessions page reads real persisted scheduled/active sessions; the old completed-history placeholder has been removed and the page now uses `userMeets`. Its cards now lead with the group name and human-readable status, expose saved planning notes, and omit the internal session identifier from the primary context.
 - Ensure completed sessions appear in history and cancelled sessions do not appear as completed history; lifecycle filtering now excludes cancelled sessions from upcoming, while richer history/status read models remain to be completed.
 
 ### 2. Recommendations — Verified slice / Partial

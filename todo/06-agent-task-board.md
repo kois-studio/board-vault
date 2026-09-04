@@ -2288,3 +2288,19 @@ Changed: The group-scoped meet query now uses the same explicit stable projectio
 Review: DATA-003 / PROD-007 / EQ-004
 
 Verified: Backend lint, build, 206 tests across 44 suites, focused meet tests, frontend Biome, 17 frontend browser-based unit tests, frontend production build (598.39 kB initial / 137.84 kB estimated transfer), and `git diff --check` pass. No migration, production data, deployment, or provider config changed.
+
+Continuation claim: PROD-004 / PROD-005
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Scope: make the upcoming-session list useful as a social planning surface.
+
+Planned: lead with the group and human-readable session state, expose saved planning notes, and remove internal session identifiers from the primary card context.
+
+Review: PROD-004 / PROD-005
+
+Changed: Upcoming session cards now lead with the group name and date, use human-readable Planned/Live now states, expose saved planning notes when present, and remove the internal session identifier from the primary card context. Live sessions also use a clearer action label. Added frontend component coverage for the status and action labels.
+
+Verified: Frontend Biome, 18 browser-based unit tests, frontend production build (598.35 kB initial / 137.88 kB estimated transfer), and `git diff --check` pass. No migration, production data, deployment, or provider config changed.
