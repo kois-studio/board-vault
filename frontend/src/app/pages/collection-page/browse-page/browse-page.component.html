@@ -43,10 +43,10 @@
                     } @else {
                         <p class="mb-2">No games found matching "{{searchTerm$().trim()}}"</p>
                         <p class="text-sm text-gray-500 mb-4">Please review the spelling</p>
+                        <app-button (click)="navigateToProposeGame()">
+                            Propose this game
+                        </app-button>
                     }
-                    <app-button (click)="navigateToProposeGame()">
-                        Propose this game
-                    </app-button>
                 </div>
             } @else {
                 <p>Type a game name to search for!</p>
