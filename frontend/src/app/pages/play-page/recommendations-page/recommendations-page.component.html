@@ -92,6 +92,11 @@
                                         <span class="text-sm text-fuchsia-600 dark:text-fuchsia-400">{{ recommendation.score }}/100</span>
                                     </div>
                                     <p class="text-secondary text-sm mt-1">{{ recommendation.gameData.gameAvgDuration }} min · {{ recommendation.gameData.minPlayers }}–{{ recommendation.gameData.maxPlayers }} players</p>
+                                    @if (recommendation.explanation.lastPlayedAt; as lastPlayedAt) {
+                                        <p class="mt-2 text-sm text-secondary">{{ getRecommendationHistoryLabel(lastPlayedAt) }} {{ lastPlayedAt | customDate }}</p>
+                                    } @else {
+                                        <p class="mt-2 text-sm text-secondary">{{ getRecommendationHistoryLabel(null) }}</p>
+                                    }
                                     @if (getRecommendationSignal(recommendation.gameData.id); as signal) {
                                         <p class="mt-2 text-sm" aria-label="Group recommendation signal">
                                             @if (signal.interestedCount > 0) {

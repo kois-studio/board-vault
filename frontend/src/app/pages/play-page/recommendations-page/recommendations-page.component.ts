@@ -10,11 +10,12 @@ import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
 import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
+import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
 
 @Component({
-    imports: [CommonModule, FormsModule, RouterLink, ButtonComponent, ContainerWrapperComponent, PageHeaderComponent],
+    imports: [CommonModule, FormsModule, RouterLink, ButtonComponent, ContainerWrapperComponent, PageHeaderComponent, CustomDatePipe],
     templateUrl: 'recommendations-page.component.html',
 })
 export class RecommendationsPageComponent {
@@ -131,6 +132,10 @@ export class RecommendationsPageComponent {
             .slice(0, 3)
             .map((member) => member.displayName || member.username)
             .join(', ')
+    }
+
+    public getRecommendationHistoryLabel(lastPlayedAt: string | null): string {
+        return lastPlayedAt ? 'Last played by this group' : 'Not played by this group yet'
     }
 
     public async saveFeedback(gameId: number, feedback: 'interested' | 'not_for_us'): Promise<void> {
