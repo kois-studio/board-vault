@@ -4,6 +4,7 @@ import { NestFactory } from '@nestjs/core'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 
 import { AppModule } from './app.module'
+import { ApiErrorFilter } from './common/http/api-error.filter'
 import { getCorsOrigins } from './common/http/cors'
 import { applySecurityHeaders, createBodyParsers } from './common/http/http-hardening'
 import { validateEnv } from './common/validators'
@@ -26,6 +27,8 @@ async function bootstrap() {
 
     // Create the Nest application
     const app = await NestFactory.create(AppModule, { bodyParser: false })
+
+    app.useGlobalFilters(new ApiErrorFilter())
 
     // Keep every DTO boundary strict, including routes added without a local pipe.
     app.useGlobalPipes(
