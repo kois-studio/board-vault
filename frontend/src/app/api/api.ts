@@ -263,6 +263,12 @@ export class Api {
             .pipe(map((response) => meetDetailsSchema.parse(response)))
     }
 
+    getSessionDetailsById(sessionId: number) {
+        return this.http
+            .get<MeetWithAttendeesAndGamesType>(`${this.url}/sessions/${sessionId}`)
+            .pipe(map((response) => meetDetailsSchema.parse(response)))
+    }
+
     createPlaySession(body: CreatePlaySessionRequest) {
         return this.http
             .post<SessionCreatedType>(`${this.url}/sessions`, body)

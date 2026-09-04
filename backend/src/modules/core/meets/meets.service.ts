@@ -1,10 +1,9 @@
 import { ResultSet } from '@libsql/client/.'
 import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 
+import { mapMeetDetailsResult } from '../../../common/mappers/meet-details.mapper'
 import { meetsSchema } from '../../../common/schemas/db-meet.schema'
-import { GameDto } from '../../../common/types/game.type'
 import { MeetDto, MeetWithAttendeesAndGames } from '../../../common/types/meet.type'
-import { UserGetDto } from '../../../common/types/user.type'
 import { DatabaseService } from '../../common/database/database.service'
 
 @Injectable()
@@ -62,30 +61,15 @@ export class MeetsService {
         return this._parseResultSet(resultSet)
     }
 
-    // TODO: sus
     async getMeetDetailsById(id: number, accountId: number): Promise<MeetWithAttendeesAndGames> {
         this.LOGGER.log(`Getting meet details with id ${id}`)
         const resultSet = await this.databaseService.getMeetDetailsByIdForAccount(id, accountId)
+        const meet = mapMeetDetailsResult(resultSet)
 
-        if (resultSet.rows.length === 0) {
+        if (!meet) {
             throw new NotFoundException(`Meet with id ${id} not found`)
         }
 
-        return resultSet.rows.map(row => ({
-            id: Number(row[0]),
-            groupId: Number(row[1]),
-            createdBy: Number(row[2]),
-            meetDate: String(row[3]),
-            isConfirmed: Boolean(row[4]),
-            attendees: JSON.parse(String(row[5])) as Array<UserGetDto['id']>,
-            attendeeStatuses: JSON.parse(String(row[6])) as MeetWithAttendeesAndGames['attendeeStatuses'],
-            playedGames: JSON.parse(String(row[7])) as Array<GameDto['id']>,
-            plannedGames: JSON.parse(String(row[8])) as Array<GameDto['id']>,
-            skippedGames: JSON.parse(String(row[9])) as Array<GameDto['id']>,
-            playedGameParticipants: JSON.parse(String(row[10] ?? '[]')) as MeetWithAttendeesAndGames['playedGameParticipants'],
-            status: String(row[11] ?? 'completed') as MeetWithAttendeesAndGames['status'],
-            timezone: String(row[12] ?? 'UTC'),
-            notes: row[13] == null ? null : String(row[13]),
-        }))[0]
+        return meet
     }
 }
