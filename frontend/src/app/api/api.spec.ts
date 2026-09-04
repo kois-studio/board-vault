@@ -114,4 +114,31 @@ describe('Api response contracts', () => {
 
         await expectAsync(response).toBeResolvedTo({ success: true })
     })
+
+    it('rejects an invalid session lifecycle status before it reaches app state', async () => {
+        const response = firstValueFrom(api.updateSessionStatus(12, { status: 'completed' }))
+        const request = http.expectOne(`${environment.apiUrl}/sessions/12/status`)
+
+        request.flush({ sessionId: 12, status: 'archived' })
+
+        await expectAsync(response).toBeRejected()
+    })
+
+    it('rejects malformed administrator pagination before it reaches app state', async () => {
+        const response = firstValueFrom(api.getAdminGames())
+        const request = http.expectOne(`${environment.apiUrl}/admin/games?page=1&limit=10`)
+
+        request.flush({ games: [], pagination: { currentPage: 1, totalPages: 0, totalItems: 0, itemsPerPage: '10' } })
+
+        await expectAsync(response).toBeRejected()
+    })
+
+    it('rejects malformed notification records before they reach app state', async () => {
+        const response = firstValueFrom(api.getUserNotifications(7))
+        const request = http.expectOne(`${environment.apiUrl}/profile/users/7/notifications`)
+
+        request.flush([{ id: 1, accountId: 7, type: 'invitation', message: 'Join us', createdAt: '2026-09-04', isRead: 'false' }])
+
+        await expectAsync(response).toBeRejected()
+    })
 })
