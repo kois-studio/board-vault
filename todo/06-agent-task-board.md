@@ -1710,3 +1710,19 @@ Known follow-ups: Configure
 `BOARD_VAULT_CLERK_INVITATION_REDIRECT_URL` before deployment, validate one
 real invitation in a disposable Clerk instance, and add invitation revocation
 or a local audit record if group owners need to cancel provider invitations.
+
+Continuation claim: SEC-002
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Branch/worktree: main / shared workspace
+
+Scope: close the unauthenticated operational cache endpoint boundary and add regression coverage.
+
+Changed: Cache inspection, reset, and key-deletion routes now require `JwtAuthGuard` and `AdminGuard` before they can reach the provider. Added controller regression coverage and documented the maintenance-only boundary in the API and security records.
+
+Review: SEC-002
+
+Verified: The focused cache/admin tests pass (5 tests); the full backend suite passes with 42 suites and 183 tests, backend build passes, and backend ESLint passes. No production data, deployment, or cache state was changed.

@@ -1,11 +1,15 @@
-import { Controller, Delete, Get, Logger, Param } from '@nestjs/common'
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { Controller, Delete, Get, Logger, Param, UseGuards } from '@nestjs/common'
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
 
+import { AdminGuard } from '../../../common/guards/admin.guard'
+import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
 import { PrintKeysDto } from '../../../common/types/cache.type'
 
 import { CacheService } from './cache.service'
 
 @ApiTags('cache')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard, AdminGuard)
 @Controller('cache')
 export class CacheController {
     private readonly logger: Logger

@@ -88,7 +88,7 @@ compliance:
 
     - id: TEST-001
       status: gap
-      evidence: backend has 41 focused suites and 181 passing tests covering authentication, authorization, validation, sessions, per-game participation, recommendations, invitation visibility, verified-user gating, admin route validation, and provider boundaries; frontend has three browser-based unit tests plus four passing public Playwright checks and seven opt-in authenticated checks
+      evidence: backend has 42 focused suites and 183 passing tests covering authentication, authorization, validation, sessions, per-game participation, recommendations, invitation visibility, verified-user gating, admin route validation, cache endpoint protection, and provider boundaries; frontend has three browser-based unit tests plus four passing public Playwright checks and seven opt-in authenticated checks
       priority: high
       next_action: Add layered unit, integration, and journey tests for the flagship loop.
     - id: TEST-002
@@ -108,12 +108,12 @@ compliance:
       next_action: Expand the HTTP contract suite with disposable authenticated/authorized journeys.
     - id: TEST-005
       status: gap
-      evidence: 181 focused backend tests now cover the highest-risk unit boundaries, but the suite does not yet exercise a clean database, provider failure contract, or complete authenticated browser journey
+      evidence: 183 focused backend tests now cover the highest-risk unit boundaries, but the suite does not yet exercise a clean database, provider failure contract, or complete authenticated browser journey
       priority: critical
       next_action: Add disposable integration and contract coverage for auth, group membership, collection ownership, session transactions, and recommendation rules.
     - id: TEST-006
       status: gap
-      evidence: backend unit command passes 181 focused tests and frontend has three browser-based unit tests plus four public Playwright checks; clean installs now pass and the validation workflow now includes lint/Biome gates, while CI enforcement is not yet observed remotely
+      evidence: backend unit command passes 183 focused tests and frontend has three browser-based unit tests plus four public Playwright checks; clean installs now pass and the validation workflow now includes lint/Biome gates, while CI enforcement is not yet observed remotely
       priority: high
       next_action: Keep the supported test commands meaningful and observe their first required CI run.
     - id: TEST-007
