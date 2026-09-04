@@ -131,7 +131,7 @@ Relevant surface: [`dashboard-page`](../frontend/src/app/pages/dashboard-page/).
 Relevant surfaces: [`collection-page`](../frontend/src/app/pages/collection-page/), [`game-view`](../frontend/src/app/pages/games/game-view/), collection API/service code.
 
 - Run a complete manual journey: browse/search, add, view ownership, review, wishlist, refresh, and remove/update.
-- Keep the first-five-games activation flow visible on the collection page; the progress prompt, loading guard, and browse CTA now exist, and ownership changes refresh the collection signal.
+- Keep the first-five-games activation flow visible on the collection page; the progress prompt, loading guard, and browse CTA now exist, ownership changes refresh the collection signal, and the five-game target is guidance rather than a gate when a group already has usable games for a decision.
 - Keep collection mutations synchronized with group availability; refreshed ownership data now updates the current member inside loaded group records as well as the personal collection signal.
 - The activation journey now has a clear success state that hands a person into group creation/invitations or recommendations; onboarding preferences and authenticated browser coverage remain open.
 - Make search, duplicate-add, loading, empty, error, and success states coherent; the primary collection and groups pages now distinguish request failures from empty data and expose retry actions, and game-detail mutation controls recover after failed requests.

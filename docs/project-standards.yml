@@ -108,7 +108,7 @@ compliance:
       next_action: Expand the HTTP contract suite with disposable authenticated/authorized journeys.
     - id: TEST-005
       status: gap
-      evidence: 200 focused backend tests now cover the highest-risk unit boundaries, but the suite does not yet exercise a clean database, provider failure contract, or complete authenticated browser journey
+      evidence: 204 focused backend tests now cover the highest-risk unit boundaries, but the suite does not yet exercise a clean database, provider failure contract, or complete authenticated browser journey
       priority: critical
       next_action: Add disposable integration and contract coverage for auth, group membership, collection ownership, session transactions, and recommendation rules.
     - id: TEST-006
@@ -457,7 +457,7 @@ compliance:
 
     - id: WEB-001
       status: gap
-      evidence: no repeatable rendered-page accessibility/responsive audit exists; frontend has one component smoke test
+      evidence: no repeatable rendered-page accessibility/responsive audit exists; frontend has 11 browser-based unit tests and public Playwright navigation checks, but no systematic authenticated route audit
       priority: high
       next_action: Audit landing, auth, collection, group, and play routes.
     - id: WEB-002

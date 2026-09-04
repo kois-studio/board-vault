@@ -2190,3 +2190,17 @@ Changed: The group workspace now includes its selected members in the recommenda
 Review: PROD-005 / TRUTH-001
 
 Verified: Frontend Biome, 11 browser-based unit tests, production build (598.39 kB initial / 137.83 kB estimated transfer), and `git diff --check` pass. No migration, production data, deployment, or provider config changed.
+
+Continuation claim: PROD-002 / PROD-005 / EQ-006
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Scope: keep collection activation guidance from blocking the social product loop and synchronize current verification evidence.
+
+Changed: The collection page now treats five games as a helpful activation target instead of an artificial gate. When a user belongs to a group with usable games, the incomplete-activation state offers a direct group recommendation action; users without a group are guided to join or create one. The completed state also avoids sending a group with no usable games into an empty recommendation flow. CI now includes a repository whitespace check, and the canonical docs reflect the current 204 backend tests, 11 frontend unit tests, and 137.91 kB estimated frontend transfer baseline.
+
+Review: PROD-002 / PROD-005 / EQ-006 / CI-001
+
+Verified: Frontend Biome, frontend production build (598.39 kB initial / 137.91 kB estimated transfer), and `git diff --check` pass. No migration, production data, deployment, or provider config changed.
