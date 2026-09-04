@@ -2014,3 +2014,19 @@ Changed: Group-home history now links to `/play/history?groupId=...`; the histor
 Review: PROD-005 / TRUTH-001 / EQ-006
 
 Verified: Frontend Biome, six browser unit tests, production build (597.52 kB initial / 137.30 kB estimated transfer), and `git diff --check` pass. No migration, production data, deployment, or provider config changed.
+
+Continuation claim: TRUTH-001 / PROD-005 / EQ-006
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Branch/worktree: main / shared workspace
+
+Scope: make future plans and past group memories legible as different session states.
+
+Changed: Canonical session detail now uses state-specific headings and copy: Plan for game night, Game night is live, Game night memory, and Cancelled game night. Attendee, shortlist, player-count, and played-game labels now describe planning versus saved historical truth instead of reusing future-facing wording.
+
+Review: TRUTH-001 / PROD-005 / EQ-006
+
+Verified: Frontend Biome, six browser unit tests, production build (597.52 kB initial / 137.29 kB estimated transfer), and `git diff --check` pass. No migration, production data, deployment, or provider config changed.
