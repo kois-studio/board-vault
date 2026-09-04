@@ -1899,6 +1899,10 @@ Scope: keep the group-first dashboard independent from unrelated personal data r
 
 Changed: Dashboard loading, failure, and retry behavior now depends only on group and upcoming-session data rendered by the social workspace. Personal collection and history requests no longer block the dashboard or turn an unrelated outage into a dashboard-level error.
 
+Review: PROD-001 / EQ-006
+
+Verified: Frontend lint, build, browser unit tests, public Playwright checks, and `git diff --check` pass. No backend, production data, deployment, or provider configuration was changed.
+
 Continuation claim: TRUTH-001 / EQ-006
 
 Owner: Codex
@@ -1913,8 +1917,20 @@ Changed: The canonical user-facing detail route is now `/sessions/:sessionId`, c
 
 Review: TRUTH-001 / EQ-006 / PROD-005
 
-Verified: Frontend Biome, browser unit tests (5), production build (596.21 kB initial / 136.59 kB estimated transfer), and public Playwright checks (4 passed, 7 authenticated skipped without Clerk state) pass. No migration, production data, deployment, or provider configuration was changed.
+Verified: Frontend Biome, browser unit tests (5), production build (596.21 kB initial / 136.60 kB estimated transfer), and public Playwright checks (4 passed, 7 authenticated skipped without Clerk state) pass. No migration, production data, deployment, or provider configuration was changed.
 
-Review: PROD-001 / EQ-006
+Continuation claim: PROD-005 / EQ-006
 
-Verified: Frontend lint, build, browser unit tests, public Playwright checks, and `git diff --check` pass. No backend, production data, deployment, or provider configuration was changed.
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Branch/worktree: main / shared workspace
+
+Scope: make the owned group library carry social memory alongside catalog metadata.
+
+Changed: Group-library cards now expose named owners, member-rating counts, play count, duration, player range, and the timezone-aware last-played date derived from completed group history. The surrounding copy now frames the library as group context instead of global catalog ranking; the acquisition board remains the explicit “should acquire” surface.
+
+Review: PROD-005 / EQ-006
+
+Verified: Frontend no-mutation Biome, browser unit tests (5), and production build pass with no Angular warnings; public Playwright checks pass (4 passed, 7 authenticated skipped without Clerk state). No migration, production data, deployment, or provider configuration was changed.

@@ -165,7 +165,7 @@
                     <div>
                         <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Shared library</p>
                         <h2 id="library-heading" class="mt-1 text-2xl font-bold">Games this group can play</h2>
-                        <p class="mt-1 text-secondary">Ranked by the selected group members’ shared context, not by a global catalog.</p>
+                        <p class="mt-1 text-secondary">Ownership, ratings, and play memory for the selected group members—not a global catalog ranking.</p>
                     </div>
                     <div class="flex flex-wrap gap-2" aria-label="Library filters">
                         <button
@@ -218,7 +218,20 @@
                                         @if (avgReviewsIndexComputed()[game.id]; as review) {
                                             <span class="rounded-full bg-zinc-100 px-2 py-1 dark:bg-zinc-800">{{ review.voters }} rating{{ review.voters === 1 ? '' : 's' }}</span>
                                         }
+                                        @if (groupLibraryContextComputed()[game.id]; as libraryContext) {
+                                            <span class="rounded-full bg-zinc-100 px-2 py-1 dark:bg-zinc-800">{{ libraryContext.playCount }} played</span>
+                                        }
                                     </div>
+                                    @if (groupLibraryContextComputed()[game.id]; as libraryContext) {
+                                        <p class="mt-3 truncate text-xs text-secondary">Owned by {{ libraryContext.ownerNames.join(', ') }}</p>
+                                    }
+                                    @if (groupLibraryContextComputed()[game.id]; as libraryContext) {
+                                        @if (libraryContext.lastPlayedAt; as lastPlayedAt) {
+                                            <p class="mt-3 text-xs text-secondary">Last played {{ lastPlayedAt | customDate: false: libraryContext.lastPlayedTimezone ?? undefined }}</p>
+                                        } @else {
+                                            <p class="mt-3 text-xs text-secondary">Not played by this group yet</p>
+                                        }
+                                    }
                                 </div>
                             </article>
                         }

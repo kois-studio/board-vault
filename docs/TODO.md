@@ -108,7 +108,7 @@ Product execution ownership remains in `/todo/`.
 
 - **Status:** Planned
 - **Affected area:** `frontend/src/styles.css`, component SCSS/templates, route surfaces
-- **Evidence:** Tailwind global styles now use plain CSS with a PostCSS nesting pass; route-level components are lazy-loaded; production build has no Sass/selector/bundle-budget warnings and the initial raw bundle is 596.21 kB (136.59 kB estimated transfer) under the 650 kB warning budget. A full accessibility/responsive audit and all route-surface reviews remain open.
+- **Evidence:** Tailwind global styles now use plain CSS with a PostCSS nesting pass; route-level components are lazy-loaded; production build has no Sass/selector/bundle-budget warnings and the initial raw bundle is 596.21 kB (136.60 kB estimated transfer) under the 650 kB warning budget. A full accessibility/responsive audit and all route-surface reviews remain open.
 - **Risk:** Broken styles, poor mobile/accessibility behavior, and unsupported public claims.
 - **Next action:** Complete the rendered route audit matrix, resolve remaining accessibility/responsive findings, and link content-truth findings to `TRUTH-001`.
 - **Dependencies:** Product truth/brand decision where claims are involved.
@@ -171,8 +171,11 @@ as TODO items here.
   they play with.
 - [ ] Make invitation acceptance, rejection, expiry, and notification behavior
   real and understandable.
-- [ ] Show the group library as a social decision surface: owners, member
-  ratings, playable player counts, duration, last played, and interest signals.
+- [ ] Complete the group library decision surface. It now shows owners, member
+  ratings, player range, duration, play count, and timezone-aware last-played
+  context; connect or validate the acquisition interest signals alongside that
+  context so the group can move from “we can play this” to “we should acquire
+  this” without a catalog detour.
 - [ ] Make private personal collection data and shared group data visibly
   distinct.
 
