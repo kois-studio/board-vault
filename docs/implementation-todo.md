@@ -157,7 +157,7 @@ Relevant surfaces: [`groups`](../frontend/src/app/pages/groups/), [`group-view`]
 - Ensure member visibility and private group data follow the backend authorization rules; group-history failures no longer get cached as an empty result and now expose retry.
 - Remove unnecessary reload-all behavior after group mutations where safe.
 - Review invitation and notification feedback, unread/read states, and failure recovery.
-- Complete invitation expiry, provider/legacy retry behavior, and notification copy/read-state validation with real invitation data.
+- Validate the new 30-day legacy invitation expiry in a real two-account flow, then complete provider/legacy retry behavior and notification copy/read-state validation with real invitation data.
 - Review member cards, avatars, long usernames, and mobile layouts.
 - Group detail now initializes each newly opened group with all members selected, preventing shared singleton selection state from leaking between groups; member-filter interaction still needs rendered responsive/accessibility review.
 

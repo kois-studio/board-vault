@@ -103,3 +103,14 @@ changes independently.
 reason, reminder, or outcome attached to a planned or completed session. It is
 additive and safe for existing history. Apply it only with the session release
 after disposable SQLite verification and a fresh live backup.
+
+## Migration 0008 (pending deployment)
+
+`0008-add-invitation-expiry.sql` adds nullable `Invitation.expiresAt` and
+backfills existing legacy invitations to expire 30 days after `sentAt`. New
+legacy username invitations are written with a 30-day expiry; expired
+invitations are excluded from recipient and owner pending lists, and acceptance
+is rejected with a request to ask for a new invitation. The nullable shape keeps
+the migration compatible with any pre-0008 rows until the backfill completes.
+Apply it only with the invitation-lifecycle release after disposable SQLite
+verification and a fresh live backup.

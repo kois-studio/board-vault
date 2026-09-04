@@ -132,6 +132,7 @@ export type InvitationType = {
     fromAccountId: number
     toAccountId: number
     sentAt: string
+    expiresAt: string
 }
 
 export type InvitationWithExtraData = InvitationType & {

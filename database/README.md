@@ -39,6 +39,7 @@ database/
 - `SchemaMigrations` records the five already-applied migrations in live Turso. Because `schema/schema.sql` is the current snapshot rather than the pre-migration baseline, a fresh snapshot environment must use `MIGRATION_BASELINE=0005`; the runner refuses to execute anything when an empty tracking table has no explicit baseline.
 - Applied session lifecycle migration: [migrations/0004-add-session-lifecycle.sql](migrations/0004-add-session-lifecycle.sql). `updatedAt` is nullable because SQLite disallows non-constant defaults in `ALTER TABLE`; application writes set it explicitly.
 - Recommendation feedback migration: [migrations/0005-add-recommendation-feedback.sql](migrations/0005-add-recommendation-feedback.sql). This additive table stores lightweight feedback context and contains no authentication secrets.
+- Pending invitation lifecycle migration: [migrations/0008-add-invitation-expiry.sql](migrations/0008-add-invitation-expiry.sql). It adds a 30-day expiry for legacy invitations and must be released with the backend/frontend invitation contract; it has not been applied to live Turso.
 - Product/session decisions: [todo/03-data-model-and-session-domain.md](../todo/03-data-model-and-session-domain.md) and accepted [ADR-0003](../docs/adr/0003-session-as-first-class-domain.md).
 - Authentication identity decision: [ADR-0004](../docs/adr/0004-clerk-managed-authentication.md).
 - API behavior and transaction expectations: [docs/api.md](../docs/api.md).

@@ -2030,3 +2030,19 @@ Changed: Canonical session detail now uses state-specific headings and copy: Pla
 Review: TRUTH-001 / PROD-005 / EQ-006
 
 Verified: Frontend Biome, six browser unit tests, production build (597.52 kB initial / 137.29 kB estimated transfer), and `git diff --check` pass. No migration, production data, deployment, or provider config changed.
+
+Continuation claim: PROD-005 / EQ-006
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Branch/worktree: main / shared workspace
+
+Scope: make legacy invitation lifecycle bounded and truthful while preserving private-beta access control.
+
+Changed: Migration `0008-add-invitation-expiry.sql` adds a nullable expiry column and backfills existing legacy invitations to 30 days after `sentAt`. New legacy invitations receive the same expiry; expired invitations are omitted from recipient/owner pending lists and acceptance returns a clear request for a new invite. The invitation card now shows the expiry date. No live migration or deployment was performed.
+
+Review: PROD-005 / SEC-008 / DATA-002
+
+Verified: Backend lint, build, 197 tests across 44 suites, frontend lint, production build (598.41 kB initial / 137.87 kB estimated transfer), six frontend unit tests, empty-state migration verification through 0008, and `git diff --check` pass. No production data, deployment, or provider config changed.

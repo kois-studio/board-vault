@@ -88,7 +88,7 @@ compliance:
 
     - id: TEST-001
       status: gap
-      evidence: backend has 44 focused suites and 195 passing tests covering authentication, authorization, validation, sessions, service-level participation invariants, per-game participation, recommendations, invitation visibility, verified-user gating, admin route validation, cache endpoint protection, safe API errors, health/readiness probes, canonical session reads, and provider boundaries; frontend has five browser-based unit tests plus four passing public Playwright checks and seven opt-in authenticated checks
+      evidence: backend has 44 focused suites and 197 passing tests covering authentication, authorization, validation, sessions, service-level participation invariants, per-game participation, recommendations, invitation visibility/expiry, verified-user gating, admin route validation, cache endpoint protection, safe API errors, health/readiness probes, canonical session reads, and provider boundaries; frontend has six browser-based unit tests plus four passing public Playwright checks and seven opt-in authenticated checks
       priority: high
       next_action: Add layered unit, integration, and journey tests for the flagship loop.
     - id: TEST-002
@@ -108,12 +108,12 @@ compliance:
       next_action: Expand the HTTP contract suite with disposable authenticated/authorized journeys.
     - id: TEST-005
       status: gap
-      evidence: 195 focused backend tests now cover the highest-risk unit boundaries, but the suite does not yet exercise a clean database, provider failure contract, or complete authenticated browser journey
+      evidence: 197 focused backend tests now cover the highest-risk unit boundaries, but the suite does not yet exercise a clean database, provider failure contract, or complete authenticated browser journey
       priority: critical
       next_action: Add disposable integration and contract coverage for auth, group membership, collection ownership, session transactions, and recommendation rules.
     - id: TEST-006
       status: gap
-      evidence: backend unit command passes 195 focused tests and frontend has five browser-based unit tests plus four public Playwright checks; clean installs now pass and the validation workflow now includes lint/Biome gates, while CI enforcement is not yet observed remotely
+      evidence: backend unit command passes 197 focused tests and frontend has six browser-based unit tests plus four public Playwright checks; clean installs now pass and the validation workflow now includes lint/Biome gates, while CI enforcement is not yet observed remotely
       priority: high
       next_action: Keep the supported test commands meaningful and observe their first required CI run.
     - id: TEST-007
@@ -513,7 +513,7 @@ compliance:
       next_action: Document state lifecycle for auth, DataService, loading, and cache state.
     - id: ANGULAR-008
       status: gap
-      evidence: two frontend specs now pass five browser-based unit tests, including API response-contract cases, but no isolated core workflow tests exist yet
+      evidence: two frontend specs now pass six browser-based unit tests, including API response-contract cases, but no isolated core workflow tests exist yet
       priority: high
       next_action: Extract and unit-test recommendation/session/authorization rules.
     - id: ANGULAR-009
