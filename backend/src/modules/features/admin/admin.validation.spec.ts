@@ -62,3 +62,58 @@ describe('AdminController write validation', () => {
         expect(rejectGameProposal).not.toHaveBeenCalled()
     })
 })
+
+describe('AdminController list query validation', () => {
+    let app: INestApplication
+    let getAdminGames: jest.Mock
+    let getAdminGameProposals: jest.Mock
+
+    beforeEach(async () => {
+        getAdminGames = jest
+            .fn()
+            .mockResolvedValue({ games: [], pagination: { currentPage: 1, totalPages: 0, totalItems: 0, itemsPerPage: 10 } })
+        getAdminGameProposals = jest.fn().mockResolvedValue({
+            proposals: [],
+            pagination: { currentPage: 1, totalPages: 0, totalItems: 0, itemsPerPage: 10 },
+        })
+
+        const module = await Test.createTestingModule({
+            controllers: [AdminController],
+            providers: [{ provide: AdminService, useValue: { getAdminGames, getAdminGameProposals } }],
+        })
+            .overrideGuard(JwtAuthGuard)
+            .useValue({ canActivate: () => true })
+            .overrideGuard(VerifiedUserGuard)
+            .useValue({ canActivate: () => true })
+            .overrideGuard(AdminGuard)
+            .useValue({ canActivate: () => true })
+            .compile()
+
+        app = module.createNestApplication()
+        await app.init()
+    })
+
+    afterEach(async () => {
+        await app.close()
+    })
+
+    it('rejects unsafe game-list pagination before the service is called', async () => {
+        await request(app.getHttpServer()).get('/admin/games?page=0&limit=101').expect(400)
+
+        expect(getAdminGames).not.toHaveBeenCalled()
+    })
+
+    it('rejects unknown proposal statuses before the service is called', async () => {
+        await request(app.getHttpServer()).get('/admin/proposals?status=maybe').expect(400)
+
+        expect(getAdminGameProposals).not.toHaveBeenCalled()
+    })
+
+    it('transforms valid list query values and applies defaults', async () => {
+        await request(app.getHttpServer()).get('/admin/games?search=catan&page=2&limit=25').expect(200)
+        await request(app.getHttpServer()).get('/admin/proposals?status=pending&page=3&limit=20').expect(200)
+
+        expect(getAdminGames).toHaveBeenCalledWith('catan', 2, 25)
+        expect(getAdminGameProposals).toHaveBeenCalledWith('pending', 3, 20)
+    })
+})

@@ -2094,3 +2094,19 @@ Changed: The Angular API contract suite will assert that valid self-profile data
 Review: EQ-004 / SEC-002
 
 Verified: Frontend Biome, eight browser-based unit tests, production build (598.39 kB initial / 137.83 kB estimated transfer), public Playwright checks (4 passed, 7 authenticated skipped without Clerk state), and `git diff --check` pass. The new tests cover valid/malformed self-profile response contracts and confirm account-state fields are not exposed to application state. No migration, production data, deployment, or provider config changed.
+
+Continuation claim: SEC-003 / SEC-004
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Branch/worktree: main / shared workspace
+
+Scope: close the admin list-query validation gap and preserve valid zero-valued proposal metadata.
+
+Changed: Added strict query DTOs for administrator game/proposal lists: supported proposal statuses, title-search length, positive page numbers, and a maximum page size of 100 are now enforced at the controller boundary. Approval defaults now use nullish fallback so an intentional zero duration/player value is not silently replaced by a default.
+
+Review: SEC-003 / SEC-004 / API-001
+
+Verified: Backend lint, build, 203 tests across 44 suites, including HTTP rejection/transform tests for the new admin query boundary, and `git diff --check` pass. No migration, production data, deployment, or provider config changed.
