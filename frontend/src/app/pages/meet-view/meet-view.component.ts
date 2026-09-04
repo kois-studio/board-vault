@@ -184,6 +184,53 @@ export class MeetViewComponent {
         }
     }
 
+    get sessionHeading(): string {
+        switch (this.meetData?.status) {
+            case 'scheduled':
+                return 'Plan for game night'
+            case 'active':
+                return 'Game night is live'
+            case 'completed':
+                return 'Game night memory'
+            case 'cancelled':
+                return 'Cancelled game night'
+            default:
+                return 'Game night'
+        }
+    }
+
+    get attendeeHeading(): string {
+        return this.meetData?.status === 'completed' || this.meetData?.status === 'cancelled' ? 'Who was invited?' : 'Who is invited?'
+    }
+
+    get attendeeDescription(): string {
+        if (this.meetData?.status === 'completed' || this.meetData?.status === 'cancelled') {
+            return 'The saved invite list, RSVP, and recorded attendance for this session.'
+        }
+
+        return this.canEditSession
+            ? 'The organizer manages the invite list. Each person’s RSVP appears below.'
+            : 'Invited people and their RSVP for this saved session.'
+    }
+
+    get shortlistHeading(): string {
+        return this.meetData?.status === 'scheduled' || this.meetData?.status === 'active' ? 'The shortlist' : 'What was shortlisted'
+    }
+
+    get playedGamesHeading(): string {
+        return this.meetData?.status === 'scheduled' ? 'What gets played?' : 'What was actually played?'
+    }
+
+    get playedGamesDescription(): string {
+        if (this.meetData?.status === 'scheduled') {
+            return 'The organizer can record games during the night. Only games marked as played become part of group history.'
+        }
+
+        return this.canEditSession
+            ? 'Mark each game as it gets played. This becomes part of your group history.'
+            : 'Games recorded in this session.'
+    }
+
     get sessionStatusLabel(): string {
         switch (this.meetData?.status) {
             case 'scheduled':
