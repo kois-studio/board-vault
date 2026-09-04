@@ -20,6 +20,7 @@ import { PageHeaderComponent } from '../../components/ui/page-header/page-header
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { DataService } from '../../core/services/data.service'
 import { LocalStorageService } from '../../core/services/local-storage.service'
+import { formatAttendeeSummary } from '../../core/utils/formatAttendeeSummary'
 import { GroupViewService } from './group-view.service'
 
 type GroupLibraryContext = {
@@ -27,13 +28,6 @@ type GroupLibraryContext = {
     playCount: number
     lastPlayedAt: string | null
     lastPlayedTimezone: string | null
-}
-
-export function formatAttendeeSummary(attendees: Array<Pick<PublicUserType, 'displayName' | 'username'>>): string {
-    const names = attendees.map((member) => member.displayName || member.username)
-    if (names.length === 0) return 'Attendance not recorded'
-    if (names.length <= 3) return `With ${names.join(', ')}`
-    return `With ${names.slice(0, 3).join(', ')} + ${names.length - 3} more`
 }
 
 @Component({

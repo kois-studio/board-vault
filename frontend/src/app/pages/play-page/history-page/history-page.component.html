@@ -35,14 +35,20 @@
     } @else {
         @for (historyRecord of sortedUserHistoryComputed(); track historyRecord.meetData.id) {
             <div class="app-bg-secondary relative p-4 mb-8">
-                <h2 class="text-xl font-semibold mb-4">
-                    {{ historyRecord.meetData.meetDate | customDate: true: historyRecord.meetData.timezone }}
-                </h2>
+                <div class="flex flex-wrap items-start justify-between gap-3 mb-4">
+                    <div>
+                        <p class="text-secondary text-sm mb-1">{{ getGroupName(historyRecord.meetData.groupId) }}</p>
+                        <h2 class="text-xl font-semibold">
+                            {{ historyRecord.meetData.meetDate | customDate: true: historyRecord.meetData.timezone }}
+                        </h2>
+                        <p class="mt-1 text-sm text-secondary">{{ getAttendeeSummary(historyRecord.attendedBy) }}</p>
+                    </div>
+                    <a class="text-sm text-indigo-600 hover:underline dark:text-indigo-400" [routerLink]="['/sessions', historyRecord.meetData.id]">Open memory</a>
+                </div>
 
-                <!-- Ids -->
-                <p class="text-secondary text-sm absolute top-4 right-4">
-                    Session #{{ historyRecord.meetData.id }} · {{ getGroupName(historyRecord.meetData.groupId) }}
-                </p>
+                @if (historyRecord.meetData.notes) {
+                    <p class="mb-4 rounded-xl bg-zinc-50 p-3 text-sm text-secondary dark:bg-zinc-800">{{ historyRecord.meetData.notes }}</p>
+                }
 
                 <!-- Games played on this date -->
                 <ul class="grid lg:grid-cols-2 gap-4">
