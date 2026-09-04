@@ -173,9 +173,9 @@ as TODO items here.
   need real-data validation.
 - [ ] Complete the group library decision surface. It now shows owners, member
   ratings, player range, duration, play count, and timezone-aware last-played
-  context; connect or validate the acquisition interest signals alongside that
-  context so the group can move from “we can play this” to “we should acquire
-  this” without a catalog detour.
+  context; the acquisition search now excludes games already owned by any
+  member, while real-group validation is still needed so the group can move
+  from “we can play this” to “we should acquire this” without a catalog detour.
 - [ ] Make private personal collection data and shared group data visibly
   distinct.
 

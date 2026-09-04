@@ -2142,3 +2142,19 @@ Changed: Add browser-based API contract tests for malformed session lifecycle re
 Review: EQ-004 / SEC-004
 
 Verified: Frontend Biome, 11 browser-based unit tests, and production build (598.39 kB initial / 137.83 kB estimated transfer) pass with no Angular warnings; `git diff --check` passes. The new tests reject malformed session status, administrator pagination, and notification responses. No migration, production data, deployment, or provider config changed.
+
+Continuation claim: PROD-005 / EQ-006
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Branch/worktree: main / shared workspace
+
+Scope: keep group acquisition decisions distinct from personal catalog browsing.
+
+Changed: Group acquisition search now removes games already owned by any member of the selected group, and the empty state explains that all matching results are already available to the group. This prevents a social decision action from presenting a game as a purchase candidate and only rejecting it after submission.
+
+Review: PROD-005 / EQ-006
+
+Verified: Frontend Biome, 11 browser-based unit tests, production build (598.39 kB initial / 137.83 kB estimated transfer), and `git diff --check` pass. No migration, production data, deployment, or provider config changed.
