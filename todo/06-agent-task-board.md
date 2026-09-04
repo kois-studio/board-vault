@@ -1966,3 +1966,19 @@ Changed: The groups workspace now renders pending invitations with direct accept
 Review: PROD-005 / EQ-006
 
 Verified: Frontend Biome, browser unit tests, production build, public Playwright checks, and `git diff --check` pass. No migration, production data, deployment, or provider config changed.
+
+Continuation claim: PROD-005 / EQ-006
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Branch/worktree: main / shared workspace
+
+Scope: make the group workspace’s social areas findable on a long page.
+
+Changed: The group home now provides an accessible, horizontally scrollable area navigator with stable landmarks for Decide, Sessions, Group library, Games to acquire, and History & insights. The section structure is explicit without introducing catalog-detail navigation as the product’s primary path.
+
+Review: PROD-005 / EQ-006
+
+Verified: Frontend Biome, browser unit tests (5), production build (597.52 kB initial / 137.31 kB estimated transfer), and `git diff --check` pass. No migration, production data, deployment, or provider config changed.

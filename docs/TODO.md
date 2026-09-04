@@ -158,8 +158,6 @@ as TODO items here.
 
 ## Information architecture and UX
 
-- [ ] Organize group work around clear areas such as Decide, Sessions, Group
-  library, Games to acquire, and History/Insights.
 - [ ] Complete responsive, keyboard, contrast, focus, and screen-reader
   behavior for the primary journeys.
 
