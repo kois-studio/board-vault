@@ -1982,3 +1982,19 @@ Changed: The group home now provides an accessible, horizontally scrollable area
 Review: PROD-005 / EQ-006
 
 Verified: Frontend Biome, browser unit tests (5), production build (597.52 kB initial / 137.31 kB estimated transfer), and `git diff --check` pass. No migration, production data, deployment, or provider config changed.
+
+Continuation claim: PROD-005 / EQ-006
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Branch/worktree: main / shared workspace
+
+Scope: shorten the first-five-games activation loop without weakening the social distinction between owning and acquiring.
+
+Changed: Browse results now offer a direct “Add to my collection” action with saving, saved, duplicate, and failure states. The flow refreshes the persisted personal collection after success; group acquisition mode remains a separate action so a group’s purchase interest is not confused with personal ownership.
+
+Review: PROD-005 / EQ-006
+
+Verified: Frontend Biome, six browser unit tests, and `git diff --check` pass. The production build remains the previously verified 597.52 kB initial / 137.28 kB estimated transfer baseline. No migration, production data, deployment, or provider config changed.

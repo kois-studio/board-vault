@@ -74,4 +74,14 @@ describe('Api response contracts', () => {
 
         await expectAsync(response).toBeRejected()
     })
+
+    it('accepts the direct collection-add response used by browse activation', async () => {
+        const response = firstValueFrom(api.addGameToUserCollection(1, 42))
+        const request = http.expectOne(`${environment.apiUrl}/collection/users/1/games/42`)
+
+        expect(request.request.method).toBe('POST')
+        request.flush({ success: true })
+
+        await expectAsync(response).toBeResolvedTo({ success: true })
+    })
 })
