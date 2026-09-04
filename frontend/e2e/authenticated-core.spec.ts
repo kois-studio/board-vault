@@ -33,25 +33,26 @@ test.describe('authenticated core navigation', () => {
         await expect(page.getByRole('link', { name: /Browse games/i }).first()).toBeVisible()
     })
 
-    test('opens the session logging wizard', async ({ page }) => {
+    test('opens the past-session recorder', async ({ page }) => {
         await page.goto('/play/log-session')
 
-        await expect(page.getByRole('heading', { name: /Log a Session/i })).toBeVisible()
+        await expect(page.getByRole('heading', { name: /Record a past session/i })).toBeVisible()
         await expect(page.getByText(/Choose the group for this play session/i)).toBeVisible()
+        await expect(page.getByRole('link', { name: /Plan a future session/i })).toHaveAttribute('href', '/play/upcoming-sessions')
     })
 
     test('opens upcoming sessions with a scheduling action', async ({ page }) => {
         await page.goto('/play/upcoming-sessions')
 
         await expect(page.getByRole('heading', { name: /Upcoming Sessions/i })).toBeVisible()
-        await expect(page.getByRole('button', { name: /Schedule a Session/i })).toBeVisible()
+        await expect(page.getByRole('button', { name: /Plan a future session/i })).toBeVisible()
     })
 
     test('opens completed session history', async ({ page }) => {
         await page.goto('/play/history')
 
         await expect(page.getByRole('heading', { name: /History/i })).toBeVisible()
-        await expect(page.getByRole('link', { name: /Log a Session/i })).toBeVisible()
+        await expect(page.getByRole('link', { name: /Record a past session/i })).toBeVisible()
     })
 
     test('opens explainable game recommendations', async ({ page }) => {
