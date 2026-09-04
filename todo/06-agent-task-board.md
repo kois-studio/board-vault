@@ -1997,4 +1997,20 @@ Changed: Browse results now offer a direct “Add to my collection” action wit
 
 Review: PROD-005 / EQ-006
 
-Verified: Frontend Biome, six browser unit tests, and `git diff --check` pass. The production build remains the previously verified 597.52 kB initial / 137.28 kB estimated transfer baseline. No migration, production data, deployment, or provider config changed.
+Verified: Frontend Biome, six browser unit tests, and `git diff --check` pass. The production build remains the previously verified 597.52 kB initial / 137.30 kB estimated transfer baseline. No migration, production data, deployment, or provider config changed.
+
+Continuation claim: PROD-005 / TRUTH-001
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Branch/worktree: main / shared workspace
+
+Scope: preserve group context when a member opens the complete play history.
+
+Changed: Group-home history now links to `/play/history?groupId=...`; the history page derives a group-scoped title, filters completed sessions to that group, and provides a group-specific empty state with a plan-session action. Personal history remains unchanged when no filter is supplied.
+
+Review: PROD-005 / TRUTH-001 / EQ-006
+
+Verified: Frontend Biome, six browser unit tests, production build (597.52 kB initial / 137.30 kB estimated transfer), and `git diff --check` pass. No migration, production data, deployment, or provider config changed.

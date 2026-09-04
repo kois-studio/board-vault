@@ -74,7 +74,7 @@ Relevant intent: [`todo/04-core-product-loop.md`](../todo/04-core-product-loop.m
 
 Relevant surfaces: [`history-page`](../frontend/src/app/pages/play-page/history-page/), [`upcoming-sessions-page`](../frontend/src/app/pages/play-page/upcoming-sessions-page/), [`dashboard-page`](../frontend/src/app/pages/dashboard-page/), [`play-page`](../frontend/src/app/pages/play-page/).
 
-- Make personal history reflect actual persisted sessions and games played; history and upcoming-session loading failures now have explicit retry states instead of being presented as empty data, and both history surfaces use a session-shaped loading skeleton.
+- Make personal history reflect actual persisted sessions and games played; history and upcoming-session loading failures now have explicit retry states instead of being presented as empty data, and both history surfaces use a session-shaped loading skeleton. History now also accepts a group filter from the group workspace so “see all sessions” remains scoped to that group.
 - Add group history and basic statistics from persisted data.
 - Remove any remaining hardcoded/sample charts, counts, and analytics cards as those surfaces are implemented; the dashboard and play landing cleanup is complete for the currently identified fabricated content.
 - Create the `/play/analytics` route or remove the dashboard link to it.
