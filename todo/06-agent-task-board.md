@@ -1773,4 +1773,20 @@ Changed: Added public `GET /health` and `GET /health/ready` endpoints. Liveness 
 
 Review: EQ-005
 
-Verified: Health service tests pass, full backend verification passes with 44 suites and 188 tests, backend build and lint pass, and the environment template contains placeholders only. No production data, deployment, or provider configuration was changed.
+Verified: Health service tests pass, full backend verification passes with 44 suites and 189 tests, backend build and lint pass, and the environment template contains placeholders only. No production data, deployment, or provider configuration was changed.
+
+Continuation claim: EQ-005
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Branch/worktree: main / shared workspace
+
+Scope: remove the destructive Redis flush fallback from cache key inspection and test provider-failure behavior.
+
+Changed: A failed key-enumeration request now returns an empty diagnostic result and enters the existing cooldown rather than deleting unrelated cache or rate-limit state. Added regression coverage that asserts `flushdb` is never called by the diagnostic path.
+
+Review: EQ-005
+
+Verified: Cache provider-failure tests, backend lint, and full backend verification pass with 44 suites and 189 tests. No production cache state was changed.
