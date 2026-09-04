@@ -40,8 +40,15 @@ The production Vercel project must provide `CLERK_SECRET_KEY` and
 ## Project setup
 
 ```bash
+$ cp .env.example .env
 $ npm ci
 ```
+
+Fill the copied file with development-only Turso, JWT, and Resend values before
+starting the API. The Clerk and Redis entries can remain disabled/empty only
+when the corresponding local integration is not being exercised. `/health` is
+a dependency-free liveness probe; `/health/ready` reports coarse database and
+cache readiness without returning provider error details.
 
 ## Compile and run the project
 
