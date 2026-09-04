@@ -112,6 +112,25 @@ export class CacheService {
     }
 
     // #region non-endpoints
+    async checkHealth(): Promise<'up' | 'down' | 'disabled'> {
+        if (this.REDIS_DISABLED) {
+            return 'disabled'
+        }
+
+        if (this.REDIS_UNAVAILABLE_UNTIL > Date.now()) {
+            return 'down'
+        }
+
+        try {
+            await this.REDIS!.ping()
+            return 'up'
+        } catch (error) {
+            this.REDIS_UNAVAILABLE_UNTIL = Date.now() + REDIS_FAILURE_COOLDOWN_MS
+            this.LOGGER.error(`Redis health check failed (${error instanceof Error ? error.name : 'unknown error'})`)
+            return 'down'
+        }
+    }
+
     /**
      * @param ttl - recommended TTLs:
      * - short: 1 hour - for data that the user may frequently update (wishlist, reviews, etc)

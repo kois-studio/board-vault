@@ -51,6 +51,10 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    async checkHealth(): Promise<void> {
+        await this._tursoExecute('SELECT 1')
+    }
+
     /**
      * Use this instead of directly calling `tursoClient.execute` to log the parameterized SQL template before executing it.
      * Bound values are intentionally excluded because they may contain secrets or personal data.
