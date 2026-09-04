@@ -32,6 +32,7 @@ export class CollectionPageComponent {
     public readonly currentUser$ = this.dataService.currentUser
     public readonly userGroups$ = this.dataService.userGroups
     public readonly userGames$ = this.dataService.userGames
+    public readonly userGamesError = this.dataService.userGamesError
     public readonly isLoadingUserGames = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_GAMES])
     public readonly userReviews$ = this.dataService.userReviews
     public readonly userWishlist$ = this.dataService.userWishlist
@@ -40,4 +41,8 @@ export class CollectionPageComponent {
     public readonly activationCount = computed(() => Math.min(this.userGames$().length, this.activationTarget))
     public readonly activationProgress = computed(() => (this.activationCount() / this.activationTarget) * 100)
     public readonly activationComplete = computed(() => this.userGames$().length >= this.activationTarget)
+
+    public retryGames(): void {
+        this.dataService.refreshUserGames()
+    }
 }

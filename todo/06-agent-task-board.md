@@ -1934,3 +1934,19 @@ Changed: Group-library cards now expose named owners, member-rating counts, play
 Review: PROD-005 / EQ-006
 
 Verified: Frontend no-mutation Biome, browser unit tests (5), and production build pass with no Angular warnings; public Playwright checks pass (4 passed, 7 authenticated skipped without Clerk state). No migration, production data, deployment, or provider configuration was changed.
+
+Continuation claim: PROD-005 / EQ-006
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Branch/worktree: main / shared workspace
+
+Scope: make collection activation resilient to refresh failures and keep empty-state messaging truthful.
+
+Changed: `DataService.refreshUserGames()` now keeps the last known collection while a new request is loading, and the collection home shows an explicit retry state when that refresh fails instead of presenting an empty shelf as fact. This protects the first-five-games activation loop and preserves the user’s confidence in persisted data.
+
+Review: PROD-005 / EQ-006
+
+Verified: Frontend Biome, browser unit tests (5), and the production build pass with no Angular warnings (596.53 kB initial / 136.64 kB estimated transfer). No migration, production data, deployment, or provider configuration was changed.

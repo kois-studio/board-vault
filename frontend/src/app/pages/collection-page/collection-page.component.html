@@ -8,6 +8,12 @@
         <section class="app-bg-secondary rounded-xl p-6 mb-8 border border-zinc-200 dark:border-zinc-800" role="status" aria-live="polite">
             <p class="text-secondary">Loading your collection…</p>
         </section>
+    } @else if (userGamesError()) {
+        <section class="app-bg-secondary rounded-xl p-6 mb-8 border border-amber-300 bg-amber-50 dark:border-amber-900/60 dark:bg-amber-950/30" role="alert">
+            <p class="font-semibold">Your collection could not be refreshed.</p>
+            <p class="mt-2 text-secondary">Your saved games are still safe. Try again before making collection decisions.</p>
+            <button type="button" class="app-btn-primary mt-5" (click)="retryGames()">Retry collection</button>
+        </section>
     } @else if (!activationComplete()) {
         <section class="app-bg-secondary rounded-xl p-6 mb-8 border border-indigo-400/40">
             <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
