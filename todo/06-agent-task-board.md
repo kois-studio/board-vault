@@ -2046,3 +2046,19 @@ Changed: Migration `0008-add-invitation-expiry.sql` adds a nullable expiry colum
 Review: PROD-005 / SEC-008 / DATA-002
 
 Verified: Backend lint, build, 197 tests across 44 suites, frontend lint, production build (598.41 kB initial / 137.87 kB estimated transfer), six frontend unit tests, empty-state migration verification through 0008, and `git diff --check` pass. No production data, deployment, or provider config changed.
+
+Continuation claim: PROD-005 / TRUTH-001
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Branch/worktree: main / shared workspace
+
+Scope: make planning a future game night and recording a past game night visibly different jobs.
+
+Changed: The Play and History entry points will use explicit future/past session language, and the past-session form will explain its purpose and point people toward future planning separately. This keeps the social session loop clear without adding catalog-detail navigation.
+
+Review: PROD-005 / TRUTH-001 / EQ-006
+
+Verified: Frontend Biome, six browser unit tests, production build (598.46 kB initial / 137.84 kB estimated transfer), public Playwright checks (4 passed, 7 authenticated skipped without Clerk state), and `git diff --check` pass. Authenticated assertions now cover the explicit future/past session labels when a storage state is supplied. No migration, production data, deployment, or provider config changed.

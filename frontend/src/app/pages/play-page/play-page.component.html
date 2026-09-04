@@ -1,6 +1,6 @@
 <app-page-header titleText="Play Sessions" [showActionButton]="true">
-    Schedule game sessions and keep a reliable history of what your group played.
-    <app-button class="action-button" icon="plus-lg" routerLink="/play/log-session">Log a Play Session</app-button>
+    Plan the next game night or preserve what your group already played.
+    <app-button class="action-button" icon="plus-lg" routerLink="/play/upcoming-sessions">Plan a future session</app-button>
 </app-page-header>
 
 <container-wrapper>
@@ -56,11 +56,11 @@
         <app-card-section
             icon="dice-5-fill"
             color="cyan"
-            titleText="Log a Session"
-            description="Record who attended and which games were played."
+            titleText="Record a past session"
+            description="Capture who attended and what your group actually played."
             cardLink="/play/log-session"
         >
-            <span class="text-cyan-600 dark:text-cyan-400 group-hover:underline flex items-center text-sm font-medium">Start logging &gt;</span>
+            <span class="text-cyan-600 dark:text-cyan-400 group-hover:underline flex items-center text-sm font-medium">Record past play &gt;</span>
         </app-card-section>
     </div>
 </container-wrapper>

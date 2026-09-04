@@ -192,8 +192,6 @@ as TODO items here.
 
 ## Sessions and social participation
 
-- [ ] Separate “plan a future session” from “record a past session”; do not
-  force both jobs through one dense wizard.
 - [ ] Validate the complete session flow through authenticated browser coverage,
   including refresh, retryable failures, RSVP, attendance, per-game
   participants, completion, and feedback.

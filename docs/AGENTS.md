@@ -50,7 +50,7 @@ Commands can run from the repository root or package directory. Dependencies are
 | Backend lint, no mutation | `cd backend && npx eslint "{src,apps,libs,test}/**/*.ts"` | Passes with no errors or warnings. Do not use the package `lint` script casually because it includes `--fix`. |
 | Backend formatting, writes files | `cd backend && npm run format` | Available; run only when formatting changes are in scope. |
 | Frontend install | `cd frontend && npm ci --ignore-scripts` | Passes from the committed `frontend/package-lock.json`; Angular packages are pinned to a coherent 19.2 toolchain. |
-| Frontend build | `cd frontend && npm run build` | Passes without Sass/selector/bundle-budget warnings; route-level components are lazy-loaded and the initial raw bundle is 598.41 kB (137.87 kB estimated transfer) under the 650 kB warning budget. |
+| Frontend build | `cd frontend && npm run build` | Passes without Sass/selector/bundle-budget warnings; route-level components are lazy-loaded and the initial raw bundle is 598.46 kB (137.84 kB estimated transfer) under the 650 kB warning budget. |
 | Frontend tests | `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` | Passes 6 browser-based unit tests, including valid and malformed frontend API response-contract cases, the canonical session detail contract, and the direct collection-add mutation contract. |
 | Frontend checks | `cd frontend && npx biome check src/app` | Passes with no diagnostics. |
 | Frontend formatting, writes files | `cd frontend && npm run format` | Available; run only when formatting changes are in scope. |
