@@ -58,12 +58,23 @@ export class BrowsePageComponent {
     public readonly gamesListComputed = computed(() => {
         const browseGames = this.browseGamesList$()
         const userGames = this.userGames$()
+        const groupOwnedGameIds = new Set(
+            this.userGroups$()
+                .find((group) => group.id === this.acquisitionGroupId())
+                ?.members.flatMap((member) => member.games.map((game) => game.id)) ?? [],
+        )
 
-        return browseGames.map((game) => ({
-            ...game,
-            isInCollection: userGames.some((userGame) => userGame.id === game.id),
-        }))
+        return browseGames
+            .filter((game) => !this.acquisitionGroupId() || !groupOwnedGameIds.has(game.id))
+            .map((game) => ({
+                ...game,
+                isInCollection: userGames.some((userGame) => userGame.id === game.id),
+            }))
     })
+
+    public readonly allSearchResultsOwnedByGroup = computed(
+        () => this.acquisitionGroupId() !== null && this.browseGamesList$().length > 0 && this.gamesListComputed().length === 0,
+    )
 
     constructor(
         private readonly route: ActivatedRoute,
