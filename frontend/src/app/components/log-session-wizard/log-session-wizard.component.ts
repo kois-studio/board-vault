@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { Component, computed, effect, inject, signal } from '@angular/core'
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
-import { Router } from '@angular/router'
+import { Router, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../api/api'
 import type { GameCompleteType, GameReviewDto, GroupWithMembersAndGames, PublicUserType } from '../../api/api.types'
@@ -57,6 +57,7 @@ interface StepInfo {
         CardAccountComponent,
         ImageBackgroundComponent,
         ButtonComponent,
+        RouterLink,
     ],
 })
 export class LogSessionWizardComponent {
