@@ -40,4 +40,38 @@ describe('Api response contracts', () => {
 
         await expectAsync(response).toBeRejected()
     })
+
+    it('reads canonical session details from the member-scoped session endpoint', async () => {
+        const response = firstValueFrom(api.getSessionDetailsById(12))
+        const request = http.expectOne(`${environment.apiUrl}/sessions/12`)
+
+        expect(request.request.method).toBe('GET')
+        request.flush({
+            id: 12,
+            groupId: 7,
+            createdBy: 1,
+            meetDate: '2026-08-16T19:30:00.000Z',
+            isConfirmed: true,
+            status: 'completed',
+            timezone: 'Europe/Madrid',
+            notes: 'A memorable night',
+            attendees: [1, 2],
+            attendeeStatuses: [{ accountId: 1, rsvpStatus: 'accepted', attendanceStatus: 'attended' }],
+            playedGames: [42],
+            plannedGames: [],
+            skippedGames: [],
+            playedGameParticipants: [{ gameId: 42, participantIds: [1] }],
+        })
+
+        await expectAsync(response).toBeResolvedTo(jasmine.objectContaining({ id: 12, groupId: 7, playedGames: [42] }))
+    })
+
+    it('rejects a malformed canonical session response at the API boundary', async () => {
+        const response = firstValueFrom(api.getSessionDetailsById(12))
+        const request = http.expectOne(`${environment.apiUrl}/sessions/12`)
+
+        request.flush({ id: 12, groupId: 7 })
+
+        await expectAsync(response).toBeRejected()
+    })
 })
