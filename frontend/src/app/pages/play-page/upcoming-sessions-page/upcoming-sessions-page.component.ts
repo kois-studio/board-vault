@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { Component, computed, inject, signal } from '@angular/core'
 import { RouterLink } from '@angular/router'
+import type { MeetType } from '../../../api/api.types'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
@@ -41,6 +42,21 @@ export class UpcomingSessionsPageComponent {
 
     public getGroupName(groupId: number): string {
         return this.userGroups$().find((group) => group.id === groupId)?.name ?? `Group ${groupId}`
+    }
+
+    public getStatusLabel(status: MeetType['status']): string {
+        switch (status) {
+            case 'scheduled':
+                return 'Planned'
+            case 'active':
+                return 'Live now'
+            default:
+                return status
+        }
+    }
+
+    public getSessionActionLabel(status: MeetType['status']): string {
+        return status === 'active' ? 'Open live session' : 'Open session'
     }
 
     // --------------------------------------------------------------------------
