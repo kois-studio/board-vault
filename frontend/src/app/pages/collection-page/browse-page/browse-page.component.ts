@@ -50,6 +50,7 @@ export class BrowsePageComponent {
         () => this.userGroups$().find((group) => group.id === this.acquisitionGroupId())?.name ?? 'this group',
     )
     public readonly acquisitionState = signal<Record<number, 'saving' | 'saved'>>({})
+    public readonly collectionState = signal<Record<number, 'saving' | 'saved'>>({})
 
     // --------------------------------------------------------------------------
     //        Computed
@@ -158,6 +159,28 @@ export class BrowsePageComponent {
                     return nextState
                 })
                 this.toastService.error('Could not add this game to the group board.')
+            },
+        })
+    }
+
+    public addGameToCollection(gameId: number): void {
+        const userId = this.currentUser$()?.id
+        if (!userId || this.collectionState()[gameId] || this.userGames$().some((game) => game.id === gameId)) return
+
+        this.collectionState.update((state) => ({ ...state, [gameId]: 'saving' }))
+        this.api.addGameToUserCollection(userId, gameId).subscribe({
+            next: () => {
+                this.collectionState.update((state) => ({ ...state, [gameId]: 'saved' }))
+                this.dataService.refreshUserGames()
+                this.toastService.success('Game added to your collection.')
+            },
+            error: () => {
+                this.collectionState.update((state) => {
+                    const nextState = { ...state }
+                    delete nextState[gameId]
+                    return nextState
+                })
+                this.toastService.error('Could not add this game to your collection.')
             },
         })
     }
