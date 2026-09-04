@@ -567,6 +567,7 @@ export class MeetViewComponent {
             await this.#saveGamesPlayedSelection()
         } catch {
             this.meetData.playedGameParticipants = previousParticipants
+            this.toastService.error('Could not save the played game changes.')
         } finally {
             this.isPersistingChanges = false
         }
