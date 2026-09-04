@@ -51,7 +51,7 @@ Commands can run from the repository root or package directory. Dependencies are
 | Backend formatting, writes files | `cd backend && npm run format` | Available; run only when formatting changes are in scope. |
 | Frontend install | `cd frontend && npm ci --ignore-scripts` | Passes from the committed `frontend/package-lock.json`; Angular packages are pinned to a coherent 19.2 toolchain. |
 | Frontend build | `cd frontend && npm run build` | Passes without Sass/selector/bundle-budget warnings; route-level components are lazy-loaded and the initial raw bundle is 606.59 kB under the 650 kB warning budget. |
-| Frontend tests | `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` | Passes 3 browser-based unit tests, including valid and malformed frontend API response-contract cases. |
+| Frontend tests | `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` | Passes 5 browser-based unit tests, including valid and malformed frontend API response-contract cases and the canonical session detail contract. |
 | Frontend checks | `cd frontend && npx biome check src/app` | Passes with no diagnostics. |
 | Frontend formatting, writes files | `cd frontend && npm run format` | Available; run only when formatting changes are in scope. |
 

@@ -1822,3 +1822,19 @@ Changed: Added member-scoped `GET /sessions/:sessionId`, extracted the shared se
 Review: PROD-005 / SEC-008
 
 Verified: Backend lint, build, and session tests pass; the new read path returns 404 for a non-member because the underlying query is membership-scoped. Frontend build/Biome and public Playwright checks pass. No migration, production data, deployment, or provider configuration was changed.
+
+Continuation claim: EQ-004
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Branch/worktree: main / shared workspace
+
+Scope: add frontend negative/positive response-contract coverage for the canonical session detail path.
+
+Changed: The frontend API suite now verifies that `GET /sessions/:sessionId` is requested as the canonical detail endpoint, accepts a valid session payload, and rejects a malformed payload before it reaches page state.
+
+Review: EQ-004 / READINESS-002
+
+Verified: `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` passes 5 tests; frontend lint/build and public Playwright checks pass. No backend, production data, deployment, or provider configuration was changed.
