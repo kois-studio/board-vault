@@ -35,19 +35,19 @@ Browser
           └── Resend via EmailService (verification and password-reset email)
 ```
 
-The frontend production environment points at `https://backend.board-vault.com`; development points at `http://localhost:3000`. The backend includes a `vercel.json` Node build/routes configuration. A GitHub Actions CI workflow exists for locked installs, backend/frontend checks, public browser checks, and disposable database verification; there is no Docker setup, root task runner, or infrastructure-as-code configuration.
+The frontend production environment points at `https://backend.board-vault.com`; development points at `http://localhost:3000`. The backend includes a `vercel.json` Node build/routes configuration. A GitHub Actions CI workflow exists for locked installs, backend/frontend checks, public browser checks, and disposable database verification; the root `package.json` provides local workflow wrappers, but there is no Docker setup or infrastructure-as-code configuration.
 
 ## Backend boundaries
 
-- `backend/src/main.ts` validates selected environment variables, creates the Nest app with a global strict `ValidationPipe` and explicit 100 KB JSON/URL-encoded body limits, applies baseline security headers and the configured CORS allowlist, creates runtime Swagger, and listens on `PORT` or 3000.
-- `backend/src/app.module.ts` imports global configuration, common modules (`auth`, `cache`, `database`, `email`), core entity modules, and feature modules; `ClerkSessionMiddleware` resolves verified Clerk sessions into the local request identity before compatibility JWT guards.
+- `backend/src/main.ts` validates selected environment variables, creates the Nest app with a global strict `ValidationPipe` and `ApiErrorFilter`, applies explicit 100 KB JSON/URL-encoded body limits, baseline security headers and the configured CORS allowlist, creates runtime Swagger, and listens on `PORT` or 3000. `HealthModule` exposes dependency-free liveness and coarse dependency readiness probes.
+- `backend/src/app.module.ts` imports global configuration, common modules (`auth`, `cache`, `database`, `email`, `health`), core entity modules, and feature modules; `ClerkSessionMiddleware` resolves verified Clerk sessions into the local request identity before compatibility JWT guards.
 - Common modules own cross-cutting auth/cache/database/email concerns.
 - The Clerk identity bridge also creates private-beta group invitations and
   consumes their server-created group context only after the invitee has a
   verified Clerk identity; public registration remains closed independently.
 - Core modules own entity-oriented services such as users, groups, memberships, games, meets, invitations, reviews, tags, translations, notifications, and collection activity.
 - Feature modules orchestrate cross-domain flows for admin, collection, dashboard, play, and profile.
-- Controllers are mostly thin service delegators, but legacy/deprecated controllers and direct identity parameters create an inconsistent authorization surface.
+- Controllers are mostly thin service delegators, but legacy/deprecated controllers and direct identity parameters create an inconsistent authorization surface. Operational cache endpoints are retained only behind authenticated administrator guards.
 - `DatabaseService` centralizes a large raw-SQL surface over a single libSQL client. It logs parameterized SQL templates without bound values; auth/email/cache logging still needs a redaction policy.
 
 ## Frontend boundaries

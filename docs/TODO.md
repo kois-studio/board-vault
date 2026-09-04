@@ -61,7 +61,7 @@ Product execution ownership remains in `/todo/`.
 
 - **Status:** In progress
 - **Affected area:** `backend/test/`, backend `src`, frontend `src/**/*.spec.ts`
-- **Evidence:** Backend now has 43 focused suites and 185 passing unit tests plus 2 environment-safe HTTP E2E tests; frontend has 3 browser-based unit tests plus four passing public Playwright tests, while seeded/integration journeys and authenticated browser coverage remain opt-in.
+- **Evidence:** Backend now has 44 focused suites and 188 passing unit tests plus 2 environment-safe HTTP E2E tests; frontend has 3 browser-based unit tests plus four passing public Playwright tests, while seeded/integration journeys and authenticated browser coverage remain opt-in.
 - **Risk:** Security and product regressions are invisible.
 - **Next action:** Add auth/authorization/data tests first, then core-loop and frontend state tests.
 - **Dependencies:** READINESS-001, READINESS-002, READINESS-003.
@@ -70,7 +70,7 @@ Product execution ownership remains in `/todo/`.
 
 - **Status:** In progress
 - **Affected area:** `.github/` or chosen CI provider
-- **Evidence:** `.github/workflows/ci.yml` now runs locked backend/frontend installs, backend tests/build/lint, frontend build/Biome/public Playwright checks, and disposable database migration verification. The local run passes backend lint, 185 backend tests, frontend build/Biome, and four public Playwright tests; authenticated E2E and deployment smoke checks are intentionally excluded because they require secret-bearing state.
+- **Evidence:** `.github/workflows/ci.yml` now runs locked backend/frontend installs, backend tests/build/lint, frontend build/Biome/public Playwright checks, and disposable database migration verification. The local run passes backend lint, 188 backend tests, frontend build/Biome, and four public Playwright tests; authenticated E2E and deployment smoke checks are intentionally excluded because they require secret-bearing state.
 - **Risk:** Build, test, lint, formatting, migration, and contract regressions reach integration/deployment.
 - **Next action:** Observe the first GitHub Actions run and add non-production authenticated E2E when disposable Clerk state exists.
 - **Dependencies:** A meaningful test baseline and the repository’s locked-install workflow.
@@ -79,9 +79,9 @@ Product execution ownership remains in `/todo/`.
 
 - **Status:** Planned
 - **Affected area:** `backend/.env` contract, deployment configuration, Turso/Vercel/Resend/Upstash operations
-- **Evidence:** Partial environment validation exists; no `.env.example`, health/readiness, backup/restore owner, or rollback procedure. On 2026-08-15 the old production Upstash hostname failed DNS resolution and caused an authenticated collection request to hit Vercel's 10-second timeout. Deployment `736b11f` now fails fast and cools down after provider failure; the authenticated collection smoke test passed on 2026-08-16; and a newly provisioned production Upstash database was verified through the cache probe and rate-limited authentication route on 2026-08-16.
+- **Evidence:** A non-secret `backend/.env.example` now documents local/deployment variable names, and `/health` plus `/health/ready` provide dependency-free liveness and coarse Turso/Redis readiness states. Backup/restore ownership and rollback procedure remain open. On 2026-08-15 the old production Upstash hostname failed DNS resolution and caused an authenticated collection request to hit Vercel's 10-second timeout. Deployment `736b11f` now fails fast and cools down after provider failure; the authenticated collection smoke test passed on 2026-08-16; and a newly provisioned production Upstash database was verified through the cache probe and rate-limited authentication route on 2026-08-16.
 - **Risk:** Unsafe startup, provider outage ambiguity, and unrecoverable deployment/data failures.
-- **Next action:** Monitor the production Upstash quota, then add safe variable documentation, health checks, provider failure runbook, backup/restore rehearsal, and deployment ownership.
+- **Next action:** Monitor the production Upstash quota, then add the provider failure runbook, backup/restore rehearsal, deployment ownership, and deployment smoke checks for `/health` and `/health/ready`.
 - **Dependencies:** Deployment owner and access to non-production infrastructure.
 
 ### READINESS-008 [High] SEC-006/OPS-007 — Make logs safe and diagnosable

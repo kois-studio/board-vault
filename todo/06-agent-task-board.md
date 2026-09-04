@@ -1758,3 +1758,19 @@ Changed: Added a global `ApiErrorFilter` that preserves status codes and human-r
 Review: EQ-004
 
 Verified: Focused filter tests pass, backend build and lint pass, and the filter never serializes exception/provider details into a 5xx response. Representative producer/consumer contract tests and a full domain error-code policy remain open.
+
+Continuation claim: EQ-005
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Branch/worktree: main / shared workspace
+
+Scope: add safe liveness/readiness probes and document the backend environment contract without committing secrets.
+
+Changed: Added public `GET /health` and `GET /health/ready` endpoints. Liveness is dependency-free; readiness reports only coarse Turso/Redis states (`up`, `down`, or `disabled`) and never returns credentials or provider exception text. Added `backend/.env.example`, wired the probes into the module graph, and documented the local environment contract and deployment use.
+
+Review: EQ-005
+
+Verified: Health service tests pass, full backend verification passes with 44 suites and 188 tests, backend build and lint pass, and the environment template contains placeholders only. No production data, deployment, or provider configuration was changed.

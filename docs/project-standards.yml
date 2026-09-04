@@ -88,7 +88,7 @@ compliance:
 
     - id: TEST-001
       status: gap
-      evidence: backend has 43 focused suites and 185 passing tests covering authentication, authorization, validation, sessions, per-game participation, recommendations, invitation visibility, verified-user gating, admin route validation, cache endpoint protection, safe API errors, and provider boundaries; frontend has three browser-based unit tests plus four passing public Playwright checks and seven opt-in authenticated checks
+      evidence: backend has 44 focused suites and 188 passing tests covering authentication, authorization, validation, sessions, per-game participation, recommendations, invitation visibility, verified-user gating, admin route validation, cache endpoint protection, safe API errors, health/readiness probes, and provider boundaries; frontend has three browser-based unit tests plus four passing public Playwright checks and seven opt-in authenticated checks
       priority: high
       next_action: Add layered unit, integration, and journey tests for the flagship loop.
     - id: TEST-002
@@ -108,12 +108,12 @@ compliance:
       next_action: Expand the HTTP contract suite with disposable authenticated/authorized journeys.
     - id: TEST-005
       status: gap
-      evidence: 185 focused backend tests now cover the highest-risk unit boundaries, but the suite does not yet exercise a clean database, provider failure contract, or complete authenticated browser journey
+      evidence: 188 focused backend tests now cover the highest-risk unit boundaries, but the suite does not yet exercise a clean database, provider failure contract, or complete authenticated browser journey
       priority: critical
       next_action: Add disposable integration and contract coverage for auth, group membership, collection ownership, session transactions, and recommendation rules.
     - id: TEST-006
       status: gap
-      evidence: backend unit command passes 185 focused tests and frontend has three browser-based unit tests plus four public Playwright checks; clean installs now pass and the validation workflow now includes lint/Biome gates, while CI enforcement is not yet observed remotely
+      evidence: backend unit command passes 188 focused tests and frontend has three browser-based unit tests plus four public Playwright checks; clean installs now pass and the validation workflow now includes lint/Biome gates, while CI enforcement is not yet observed remotely
       priority: high
       next_action: Keep the supported test commands meaningful and observe their first required CI run.
     - id: TEST-007
@@ -322,10 +322,10 @@ compliance:
       priority: low
       next_action: Reassess if asynchronous processing is introduced.
     - id: OPS-005
-      status: gap
-      evidence: no health/readiness controller or deployment probe is configured
+      status: partial
+      evidence: public /health liveness and /health/ready coarse Turso/Redis readiness probes now exist and avoid returning provider details; deployment integration and alerting remain absent
       priority: high
-      next_action: Add API and database health signaling before launch work.
+      next_action: Add the probes to deployment smoke checks and define alert ownership.
     - id: OPS-006
       status: unknown
       evidence: Nest app starts a listener, but shutdown behavior and provider cleanup are not documented or tested
@@ -623,10 +623,10 @@ compliance:
       priority: low
       next_action: Reassess when asynchronous handlers are added.
     - id: NEST-015
-      status: gap
-      evidence: no health/readiness or graceful-shutdown verification; CacheService initializes Redis before disabled-mode check
+      status: partial
+      evidence: HealthModule exposes dependency-free liveness and coarse database/cache readiness checks; graceful-shutdown verification remains absent
       priority: high
-      next_action: Make infrastructure lifecycle explicit and testable.
+      next_action: Test graceful shutdown/provider cleanup and connect readiness to deployment checks.
     - id: NEST-016
       status: gap
       evidence: runtime Swagger exists, but no versioned contract artifact or contract compatibility checks

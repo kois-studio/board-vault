@@ -34,7 +34,7 @@ Use the exact commands and current results in [AGENTS.md](AGENTS.md) and [testin
 
 - backend build passes;
 - frontend production build passes without Sass or selector warnings; route-level components are lazy-loaded and the initial raw bundle is 606.59 kB (140.28 kB estimated transfer), below the 650 kB warning budget. Clerk remains a separate 1.55 MB lazy chunk;
-- backend unit tests pass 43 suites and 185 tests, including profile-update, ownership, group/membership listing, collection route ownership, actor-identity, invitation visibility/lifecycle, verified-user gating, deprecated-route removal, Clerk group invitations, invite-only join, notification ownership, meet-read, meet-account-game membership and per-game participation, admin reviewer and route-parameter validation, cache maintenance endpoint protection, safe API error normalization, authentication path/query validation, global-user-list, deleted-account JWT, database-log, email-log, cache-log, and auth-log suites; broader coverage is still missing;
+- backend unit tests pass 44 suites and 188 tests, including profile-update, ownership, group/membership listing, collection route ownership, actor-identity, invitation visibility/lifecycle, verified-user gating, deprecated-route removal, Clerk group invitations, invite-only join, notification ownership, meet-read, meet-account-game membership and per-game participation, admin reviewer and route-parameter validation, cache maintenance endpoint protection, safe API error normalization, health/readiness probes, authentication path/query validation, global-user-list, deleted-account JWT, database-log, email-log, cache-log, and auth-log suites; broader coverage is still missing;
 - backend HTTP e2e now passes two environment-safe boundary tests; broader seeded/integration coverage remains open;
 - the bootstrap installs a global strict `ValidationPipe` in addition to targeted controller pipes, so new DTO routes fail closed on unknown fields; client negative tests remain open;
 - backend lint passes with no errors or warnings; the CI workflow now runs the
@@ -163,13 +163,13 @@ live Turso, and no deployment was triggered. The migration and backend routes
 must be verified against a disposable database and a fresh backup before
 release.
 
-Deployment ownership, domain configuration, environment provisioning, provider scopes, and production traffic behavior are therefore unknown and must not be inferred from the committed URLs/config alone.
+Deployment ownership, domain configuration, environment provisioning, provider scopes, and production traffic behavior are therefore unknown and must not be inferred from the committed URLs/config alone. A non-secret backend variable template is available at [`backend/.env.example`](../backend/.env.example). The API now exposes dependency-free `/health` liveness and coarse `/health/ready` readiness probes; readiness reports only `up`, `down`, or `disabled` states for Turso and Redis.
 
 ## Operational risks and next steps
 
 1. Keep the root/package locked-install commands aligned and use the disposable test database verification before schema changes.
 2. Monitor the production Upstash quota and keep Redis explicitly disabled only in local environments.
-3. Add health/readiness, safe structured request logs, error monitoring, and graceful shutdown checks.
+3. Add safe structured request logs, error monitoring, and graceful shutdown checks; use `/health` and `/health/ready` in deployment checks.
 4. Add migration/deployment gates and document Turso backup/restore ownership and rehearsal. The repeatable runner and empty-state migration check exist, but synthetic restore evidence remains open.
 5. Record Vercel/frontend deployment responsibilities and rollback behavior.
 
