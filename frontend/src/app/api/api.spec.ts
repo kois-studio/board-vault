@@ -41,6 +41,36 @@ describe('Api response contracts', () => {
         await expectAsync(response).toBeRejected()
     })
 
+    it('accepts the narrowed self-profile response without account-state fields', async () => {
+        const response = firstValueFrom(api.getUserById(7))
+        const request = http.expectOne(`${environment.apiUrl}/profile/users/7`)
+
+        request.flush({
+            id: 7,
+            email: 'member@example.com',
+            username: 'member',
+            displayName: 'Member',
+            avatar: { backgroundColor: '#3B82F6', iconName: 'person-fill', emoji: null, type: 'icon', initials: 'ME' },
+            createdAt: '2026-09-04 12:00:00',
+            isAdmin: true,
+            isDeleted: false,
+            email_verified: true,
+        })
+
+        const user = await response
+        expect(user).toEqual(jasmine.objectContaining({ id: 7, email: 'member@example.com' }))
+        expect(Object.hasOwn(user, 'isAdmin')).toBeFalse()
+    })
+
+    it('rejects a malformed self-profile response at the API boundary', async () => {
+        const response = firstValueFrom(api.getUserById(7))
+        const request = http.expectOne(`${environment.apiUrl}/profile/users/7`)
+
+        request.flush({ id: 7, username: 'member', displayName: 'Member' })
+
+        await expectAsync(response).toBeRejected()
+    })
+
     it('reads canonical session details from the member-scoped session endpoint', async () => {
         const response = firstValueFrom(api.getSessionDetailsById(12))
         const request = http.expectOne(`${environment.apiUrl}/sessions/12`)
