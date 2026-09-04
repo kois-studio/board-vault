@@ -2078,3 +2078,19 @@ Changed: Add a dedicated self-profile DTO and return only id, email, username, d
 Review: SEC-002 / SEC-003 / EQ-004
 
 Verified: Backend ESLint, build, 200 tests across 44 suites, frontend Biome, build (598.39 kB initial / 137.83 kB estimated transfer), six frontend unit tests, public Playwright checks (4 passed, 7 authenticated skipped without Clerk state), and `git diff --check` pass. No migration, production data, deployment, or provider config changed.
+
+Continuation claim: EQ-004 / SEC-002
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Branch/worktree: main / shared workspace
+
+Scope: add client-side negative coverage for the narrowed self-profile response.
+
+Changed: The Angular API contract suite will assert that valid self-profile data is accepted and malformed identity/contact data is rejected before it reaches application state.
+
+Review: EQ-004 / SEC-002
+
+Verified: Frontend Biome, eight browser-based unit tests, production build (598.39 kB initial / 137.83 kB estimated transfer), public Playwright checks (4 passed, 7 authenticated skipped without Clerk state), and `git diff --check` pass. The new tests cover valid/malformed self-profile response contracts and confirm account-state fields are not exposed to application state. No migration, production data, deployment, or provider config changed.
