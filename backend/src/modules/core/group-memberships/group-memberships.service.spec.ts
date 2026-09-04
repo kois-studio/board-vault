@@ -6,29 +6,26 @@ import { GroupMembershipsService } from './group-memberships.service'
 
 describe('GroupMembershipsService join policy', () => {
     it('requires a pending invitation before joining a group', async () => {
-        const createGroupMembership = jest.fn()
+        const acceptInvitationAtomically = jest.fn()
         const databaseService = {
             getInvitationByGroupAndRecipient: jest.fn().mockResolvedValue({ rows: [] }),
-            createGroupMembership,
+            acceptInvitationAtomically,
         } as unknown as DatabaseService
         const service = new GroupMembershipsService(databaseService)
 
         await expect(service.createGroupMembershipFromInvitation(7, 12)).rejects.toThrow(ForbiddenException)
-        expect(createGroupMembership).not.toHaveBeenCalled()
+        expect(acceptInvitationAtomically).not.toHaveBeenCalled()
     })
 
     it('creates membership and consumes the pending invitation', async () => {
-        const createGroupMembership = jest.fn().mockResolvedValue(undefined)
-        const deleteInvitationById = jest.fn().mockResolvedValue(undefined)
+        const acceptInvitationAtomically = jest.fn().mockResolvedValue({ success: true })
         const databaseService = {
             getInvitationByGroupAndRecipient: jest.fn().mockResolvedValue({ rows: [[42]] }),
-            createGroupMembership,
-            deleteInvitationById,
+            acceptInvitationAtomically,
         } as unknown as DatabaseService
         const service = new GroupMembershipsService(databaseService)
 
         await expect(service.createGroupMembershipFromInvitation(7, 12)).resolves.toEqual({ success: true })
-        expect(createGroupMembership).toHaveBeenCalledWith({ accountId: 7, groupId: 12 })
-        expect(deleteInvitationById).toHaveBeenCalledWith(42)
+        expect(acceptInvitationAtomically).toHaveBeenCalledWith(42, 7, 12)
     })
 })

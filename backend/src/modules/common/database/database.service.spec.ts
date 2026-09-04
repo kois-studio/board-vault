@@ -70,6 +70,63 @@ describe('DatabaseService logging', () => {
         })
     })
 
+    it('accepts an invitation by creating membership and consuming the invitation in one transaction', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const transaction = {
+            execute: jest
+                .fn()
+                .mockResolvedValueOnce({ rows: [[42]] })
+                .mockResolvedValueOnce({ rowsAffected: 1 })
+                .mockResolvedValueOnce({ rowsAffected: 1 }),
+            commit: jest.fn().mockResolvedValue(undefined),
+            rollback: jest.fn().mockResolvedValue(undefined),
+            close: jest.fn(),
+        }
+
+        ;(service as unknown as { tursoClient: unknown }).tursoClient = {
+            transaction: jest.fn().mockResolvedValue(transaction),
+        }
+
+        await expect(service.acceptInvitationAtomically(42, 7, 12)).resolves.toEqual({ success: true })
+        expect(transaction.execute).toHaveBeenNthCalledWith(1, {
+            sql: expect.stringContaining('SELECT id'),
+            args: [42, 12, 7],
+        })
+        expect(transaction.execute).toHaveBeenNthCalledWith(2, {
+            sql: 'INSERT OR IGNORE INTO GroupMembership (accountId, groupId) VALUES (?, ?)',
+            args: [7, 12],
+        })
+        expect(transaction.execute).toHaveBeenNthCalledWith(3, {
+            sql: expect.stringContaining('DELETE FROM Invitation'),
+            args: [42, 12, 7],
+        })
+        expect(transaction.commit).toHaveBeenCalledTimes(1)
+        expect(transaction.rollback).not.toHaveBeenCalled()
+        expect(transaction.close).toHaveBeenCalledTimes(1)
+    })
+
+    it('rolls back invitation acceptance when the membership write fails', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const transaction = {
+            execute: jest
+                .fn()
+                .mockResolvedValueOnce({ rows: [[42]] })
+                .mockRejectedValueOnce(new Error('membership write failed')),
+            commit: jest.fn(),
+            rollback: jest.fn().mockResolvedValue(undefined),
+            close: jest.fn(),
+        }
+
+        ;(service as unknown as { tursoClient: unknown }).tursoClient = {
+            transaction: jest.fn().mockResolvedValue(transaction),
+        }
+
+        await expect(service.acceptInvitationAtomically(42, 7, 12)).rejects.toThrow('membership write failed')
+        expect(transaction.rollback).toHaveBeenCalledTimes(1)
+        expect(transaction.commit).not.toHaveBeenCalled()
+        expect(transaction.close).toHaveBeenCalledTimes(1)
+    })
+
     it('reads recommendation feedback with only current group-member identity fields', async () => {
         const service = new DatabaseService({} as ConfigService)
         const execute = jest.fn().mockResolvedValue({ rows: [] })

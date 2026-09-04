@@ -15,7 +15,7 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 | DATA-001 | REVIEW | Data model | Reconcile repository SQL and services against the owner-confirmed deployed schema and produce a code/schema drift report. | None |
 | DATA-002 | REVIEW | Data model | Add numbered migrations and make the schema reproducible from empty state. | DATA-001 |
 | DATA-003 | REVIEW | Data model | Choose and implement the canonical session schema, including attendance and planned/played games. | DATA-001 |
-| DATA-004 | IN_PROGRESS | Data model | Add transaction boundaries for remaining group, session, proposal, and collection mutations; group creation and canonical session writes are now transactional. | DATA-002, DATA-003 |
+| DATA-004 | IN_PROGRESS | Data model | Add transaction boundaries for remaining group, session, proposal, and collection mutations; group creation, legacy invitation acceptance, and canonical session writes are now transactional. | DATA-002, DATA-003 |
 
 ## P1 — flagship product loop
 
@@ -23,7 +23,7 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 |---|---|---|---|---|
 | PROD-001 | TODO | Product | Decide and document canonical brand, nouns, and persona; recommendation ownership is accepted as collective selected-attendee ownership in ADR-0002, and session semantics are accepted in ADR-0003. | None |
 | PROD-002 | REVIEW | Core loop | Implement a real first-five-games collection activation flow. | SEC-002, DATA-002 |
-| PROD-003 | IN_PROGRESS | Core loop | Finish invite-only invitation acceptance and owner/member visibility; pending invitation reads are owner-only and invitation fetch now has truthful loading/error/retry states. | SEC-002, DATA-003 |
+| PROD-003 | IN_PROGRESS | Core loop | Finish invite-only invitation acceptance and owner/member visibility; pending invitation reads are owner-only, acceptance atomically creates membership and consumes the legacy invitation, and invitation fetch now has truthful loading/error/retry states. | SEC-002, DATA-003 |
 | PROD-004 | REVIEW | Core loop | Implement deterministic recommendation scoring with explanations and unit tests. | PROD-001, DATA-003 |
 | PROD-005 | REVIEW | Core loop | Maintain atomic session creation and wizard submission; authenticated browser coverage and broader session UX review remain. | DATA-003, DATA-004 |
 | PROD-006 | REVIEW | Core loop | Implement upcoming, active, completed, and cancelled session views using real data. | PROD-005 |
@@ -2077,4 +2077,4 @@ Changed: Add a dedicated self-profile DTO and return only id, email, username, d
 
 Review: SEC-002 / SEC-003 / EQ-004
 
-Verified: Backend ESLint, build, 198 tests across 44 suites, frontend Biome, build (598.39 kB initial / 137.83 kB estimated transfer), six frontend unit tests, public Playwright checks (4 passed, 7 authenticated skipped without Clerk state), and `git diff --check` pass. No migration, production data, deployment, or provider config changed.
+Verified: Backend ESLint, build, 200 tests across 44 suites, frontend Biome, build (598.39 kB initial / 137.83 kB estimated transfer), six frontend unit tests, public Playwright checks (4 passed, 7 authenticated skipped without Clerk state), and `git diff --check` pass. No migration, production data, deployment, or provider config changed.
