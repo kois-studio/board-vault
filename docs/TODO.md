@@ -41,9 +41,9 @@ Product execution ownership remains in `/todo/`.
 
 - **Status:** In progress
 - **Affected area:** Turso deployment, `database/`, `backend/src/modules/common/database/`
-- **Evidence:** The DATA-001 reconciliation is recorded in [`database/drift-report.md`](../database/drift-report.md). Migration 0003 defines and backfills `MeetAttendee`/`MeetGame`, backend detail/setup SQL is aligned, and the frontend `meetAttendees` route is now backed by organizer-only server authorization; the indirect `Game.title`/`GameTranslation` contract remains. Migrations 0002–0005 are applied, the schema snapshot and `SchemaMigrations` metadata are synchronized, and the empty-state verification script passes.
+- **Evidence:** The DATA-001 reconciliation is recorded in [`database/drift-report.md`](../database/drift-report.md). Migration 0003 defines and backfills `MeetAttendee`/`MeetGame`, backend detail/setup SQL is aligned, and the frontend `meetAttendees` route is now backed by organizer-only server authorization; the indirect `Game.title`/`GameTranslation` contract remains. Migrations 0002–0005 are applied, the schema snapshot and `SchemaMigrations` metadata are synchronized, the empty-state verification script passes, and a synthetic SQLite backup/restore rehearsal preserves representative accounts, group membership, session attendance, played games, translations, and invitation history while applying migrations 0006–0008.
 - **Risk:** Destructive drift, unrepeatable environments, and unsafe session-domain changes.
-- **Next action:** Verify the attendee route through production with a preserved account, add the runner to CI/deployment checks, and create a synthetic fixture/restore rehearsal.
+- **Next action:** Verify the attendee route through production with a preserved account, observe the CI migration/restore checks remotely, and document the real Turso backup schedule, owner, recovery target, and rollback procedure.
 - **Dependencies:** Product decision on whether legacy meeting paths are retired or migrated; no deployment access required for the initial reconciliation.
 
 ### READINESS-013 [Critical] AUTH-001/AUTH-002 — Roll out and complete Clerk identity migration

@@ -30,7 +30,7 @@ Only restore into an explicitly identified disposable or recovery target after v
 turso db shell <database-name> < dump.sql
 ```
 
-These procedures need to be replaced or supplemented by versioned migrations, scheduled backups, restore tests, ownership, and rollback documentation before launch.
+These procedures need to be supplemented by a real scheduled-backup owner, recovery target, rollback procedure, and provider-level restore rehearsal before launch. The repository’s safe local check is `npm run verify:restore`; it creates a temporary synthetic SQLite snapshot, copies it, applies pending migrations, verifies representative social/session data, and deletes the temporary files. It does not prove that a Turso backup can be restored.
 
 ## Clerk migration configuration
 

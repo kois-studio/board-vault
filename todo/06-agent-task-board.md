@@ -2218,3 +2218,17 @@ Changed: The recommendation page now summarizes the selected members and duratio
 Review: PROD-004 / PROD-005 / TRUTH-001
 
 Verified: Frontend Biome, 13 frontend browser-based unit tests, frontend production build (598.39 kB initial / 137.83 kB estimated transfer), and `git diff --check` pass. No migration, production data, deployment, or provider config changed.
+
+Continuation claim: DATA-002 / EQ-002 / TRUTH-002
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Scope: make schema recovery rehearsal repeatable without touching Turso or production.
+
+Changed: Added `npm run verify:restore`, a disposable synthetic SQLite backup/copy rehearsal that preserves representative accounts, private-group membership, session attendance, played games, translations, and invitation history, applies migrations 0006–0008 to the restored copy, and verifies integrity, foreign keys, invitation expiry, session notes, and migration state. The database job now runs this rehearsal after the empty-state migration check, and operational docs distinguish this local evidence from a future provider-level Turso recovery test.
+
+Review: DATA-002 / EQ-002 / TRUTH-002
+
+Verified: `npm run verify:migrations`, `npm run verify:restore`, and `git diff --check` pass. No migration, production data, deployment, or provider config changed.
