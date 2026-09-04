@@ -7,6 +7,7 @@ import { ButtonComponent } from '../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'
 import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
+import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
 
@@ -19,6 +20,7 @@ import { LoadingService } from '../../core/services/loading.service'
         CardSectionComponent,
         BadgeComponent,
         RouterLink,
+        CustomDatePipe,
     ],
     templateUrl: 'play-page.component.html',
 })

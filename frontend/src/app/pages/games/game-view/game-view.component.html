@@ -196,7 +196,7 @@
                 <tbody class="app-bg-primary">
                     @for (session of userHistoryFilteredComputed(); track session.meetData.id) {
                     <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ session.meetData.meetDate | date }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ session.meetData.meetDate | customDate: true: session.meetData.timezone }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ getGroupName(session.meetData.groupId) }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             <div class="flex -space-x-2 overflow-hidden">

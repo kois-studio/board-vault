@@ -48,7 +48,7 @@
     <div class="bg-zinc-50 dark:bg-zinc-900/50 p-3 flex flex-col sm:flex-row gap-y-4 justify-between items-center">
         <!-- LAST ACTIVITY -->
         <div class="text-xs text-secondary">
-            <i class="bi bi-calendar-event mr-1"></i> Last meeting: {{ lastMeetingComputed()?.meetDate ?? '' | customDate }}
+            <i class="bi bi-calendar-event mr-1"></i> Last meeting: {{ lastMeetingComputed()?.meetDate ?? '' | customDate: true: lastMeetingComputed()?.timezone }}
         </div>
         <!-- CALL TO ACTION -->
         <span class="text-indigo-600 dark:text-indigo-400 font-medium text-sm flex items-center group-hover:underline">

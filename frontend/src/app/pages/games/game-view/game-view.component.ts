@@ -14,6 +14,7 @@ import { ContainerWrapperComponent } from '../../../components/ui/container-wrap
 import { ImageBackgroundComponent } from '../../../components/ui/image-background/image-background.component'
 import { ReviewDisplayComponent } from '../../../components/ui/review-display/review-display.component'
 import { SpinnerComponent } from '../../../components/ui/spinner/spinner.component'
+import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { DataService } from '../../../core/services/data.service'
 
 @Component({
@@ -30,6 +31,7 @@ import { DataService } from '../../../core/services/data.service'
         SpinnerComponent,
         ReactiveFormsModule,
         ImageProfileComponent,
+        CustomDatePipe,
     ],
     templateUrl: './game-view.component.html',
 })
