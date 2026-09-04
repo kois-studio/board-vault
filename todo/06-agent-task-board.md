@@ -2232,3 +2232,17 @@ Changed: Added `npm run verify:restore`, a disposable synthetic SQLite backup/co
 Review: DATA-002 / EQ-002 / TRUTH-002
 
 Verified: `npm run verify:migrations`, `npm run verify:restore`, and `git diff --check` pass. No migration, production data, deployment, or provider config changed.
+
+Continuation claim: PROD-005 / EQ-003
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Scope: protect the recommendation-to-session schedule handoff with local browser-based component coverage.
+
+Changed: Added component tests for the canonical session scheduling form. The suite verifies that selected attendees and a recommended game survive query-parameter handoff, that empty attendance blocks submission, that a valid plan sends group, attendee, shortlist, notes, and timezone context, and that the loading state is released after the request completes.
+
+Review: PROD-005 / EQ-003
+
+Verified: Frontend Biome, 15 frontend browser-based unit tests, frontend production build (598.39 kB initial / 137.83 kB estimated transfer), and `git diff --check` pass. No migration, production data, deployment, or provider config changed.
