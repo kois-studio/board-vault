@@ -1,9 +1,57 @@
-import { ApiProperty } from '@nestjs/swagger'
-import { IsArray, IsInt, IsNotEmpty, IsObject, IsOptional, IsString, Min } from 'class-validator'
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
+import { Type } from 'class-transformer'
+import { IsArray, IsIn, IsInt, IsNotEmpty, IsObject, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator'
 
 import { GameProposalCompleteDto } from './game-proposal.type'
 import { SupportedLanguage } from './game-translation.type'
 import { GameWithTagsAndTranslationsDto, BrowseGamesPaginationDto } from './game.type'
+
+const ADMIN_PAGE_SIZE_MAX = 100
+
+export class AdminGamesQuery {
+    @ApiPropertyOptional({ example: 'catan', description: 'Title search, across supported translations.' })
+    @IsOptional()
+    @IsString()
+    @MaxLength(100)
+    search?: string
+
+    @ApiPropertyOptional({ example: 1, default: 1, minimum: 1 })
+    @IsOptional()
+    @Type(() => Number)
+    @IsInt()
+    @Min(1)
+    page = 1
+
+    @ApiPropertyOptional({ example: 10, default: 10, minimum: 1, maximum: ADMIN_PAGE_SIZE_MAX })
+    @IsOptional()
+    @Type(() => Number)
+    @IsInt()
+    @Min(1)
+    @Max(ADMIN_PAGE_SIZE_MAX)
+    limit = 10
+}
+
+export class AdminProposalsQuery {
+    @ApiPropertyOptional({ enum: ['pending', 'approved', 'rejected', 'duplicate'] })
+    @IsOptional()
+    @IsIn(['pending', 'approved', 'rejected', 'duplicate'])
+    status?: 'pending' | 'approved' | 'rejected' | 'duplicate'
+
+    @ApiPropertyOptional({ example: 1, default: 1, minimum: 1 })
+    @IsOptional()
+    @Type(() => Number)
+    @IsInt()
+    @Min(1)
+    page = 1
+
+    @ApiPropertyOptional({ example: 10, default: 10, minimum: 1, maximum: ADMIN_PAGE_SIZE_MAX })
+    @IsOptional()
+    @Type(() => Number)
+    @IsInt()
+    @Min(1)
+    @Max(ADMIN_PAGE_SIZE_MAX)
+    limit = 10
+}
 
 export class UpdateGameTranslationsBody {
     @ApiProperty({

@@ -25,6 +25,8 @@ import {
     ApproveGameProposalBody,
     RejectGameProposalBody,
     AdminGameProposalsResponseDto,
+    AdminGamesQuery,
+    AdminProposalsQuery,
 } from '../../../common/types/admin.type'
 import { SuccessDto } from '../../../common/types/auth.type'
 import { GameProposalCompleteDto } from '../../../common/types/game-proposal.type'
@@ -114,12 +116,8 @@ export class AdminController {
         description: 'Paginated list of games with translations and tags',
         type: AdminGamesResponseDto,
     })
-    async getGames(
-        @Query('search') search: string = '',
-        @Query('page', ParseIntPipe) page: number = 1,
-        @Query('limit', ParseIntPipe) limit: number = 10,
-    ) {
-        return this.adminService.getAdminGames(search, page, limit)
+    async getGames(@Query() query: AdminGamesQuery) {
+        return this.adminService.getAdminGames(query.search ?? '', query.page, query.limit)
     }
 
     @Put('/games/:id/translations')
@@ -147,12 +145,8 @@ export class AdminController {
         description: 'Paginated list of game proposals',
         type: AdminGameProposalsResponseDto,
     })
-    async getGameProposals(
-        @Query('status') status?: 'pending' | 'approved' | 'rejected' | 'duplicate',
-        @Query('page', ParseIntPipe) page: number = 1,
-        @Query('limit', ParseIntPipe) limit: number = 10,
-    ) {
-        return this.adminService.getAdminGameProposals(status, page, limit)
+    async getGameProposals(@Query() query: AdminProposalsQuery) {
+        return this.adminService.getAdminGameProposals(query.status, query.page, query.limit)
     }
 
     @Get('/proposals/:id')
