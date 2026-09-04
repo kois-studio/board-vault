@@ -9,16 +9,16 @@ test.describe('authenticated core navigation', () => {
     test('opens the dashboard overview', async ({ page }) => {
         await page.goto('/dashboard')
 
-        await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible()
-        await expect(page.getByRole('heading', { name: 'Your overview' })).toBeVisible()
+        await expect(page.getByRole('heading', { name: 'Your game groups' })).toBeVisible()
+        await expect(page.getByRole('heading', { name: /Your social workspace/i })).toBeVisible()
     })
 
     test('exposes working dashboard destinations', async ({ page }) => {
         await page.goto('/dashboard')
 
-        await expect(page.getByRole('link', { name: /View groups/i })).toHaveAttribute('href', '/groups')
-        await expect(page.getByRole('link', { name: /Open collection/i })).toHaveAttribute('href', '/collection/games')
-        await expect(page.getByRole('link', { name: /Browse games/i }).first()).toHaveAttribute('href', '/collection/browse')
+        await expect(page.getByRole('link', { name: /Manage all groups/i })).toHaveAttribute('href', '/groups')
+        await expect(page.getByRole('link', { name: /Browse the catalog/i }).first()).toHaveAttribute('href', '/collection/browse')
+        await expect(page.getByRole('link', { name: /Open history/i }).first()).toHaveAttribute('href', '/play/history')
     })
 
     test('opens groups and collection entry points', async ({ page }) => {
