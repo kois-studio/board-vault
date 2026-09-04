@@ -324,7 +324,7 @@ export class GroupViewComponent {
     }
 
     onClickMeeting(meetId: number): void {
-        this.router.navigate(['/meets', meetId])
+        this.router.navigate(['/sessions', meetId])
     }
 
     onClickMember(memberId: number) {
@@ -345,7 +345,7 @@ export class GroupViewComponent {
     }
 
     onClickNewMeet(): void {
-        this.router.navigate(['/groups', this.groupData$()?.id, 'meets', 'new'])
+        this.router.navigate(['/groups', this.groupData$()?.id, 'sessions', 'new'])
     }
 
     onGoBack() {

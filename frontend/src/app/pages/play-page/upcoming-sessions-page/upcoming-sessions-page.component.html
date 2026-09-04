@@ -25,7 +25,7 @@
             } @else {
                 <div class="grid gap-3 sm:grid-cols-2">
                     @for (group of userGroups$(); track group.id) {
-                        <a class="app-btn-secondary" [routerLink]="['/groups', group.id, 'meets', 'new']">{{ group.name }}</a>
+                        <a class="app-btn-secondary" [routerLink]="['/groups', group.id, 'sessions', 'new']">{{ group.name }}</a>
                     }
                 </div>
             }
@@ -55,7 +55,7 @@
                     Session #{{ session.id }} · {{ getGroupName(session.groupId) }}
                 </p>
                 <span class="inline-flex rounded-full bg-zinc-700 px-3 py-1 text-sm capitalize">{{ session.status }}</span>
-                <a class="app-btn-secondary mt-4 inline-block" [routerLink]="['/meets', session.id]">Open session</a>
+                <a class="app-btn-secondary mt-4 inline-block" [routerLink]="['/sessions', session.id]">Open session</a>
             </div>
         }
     }

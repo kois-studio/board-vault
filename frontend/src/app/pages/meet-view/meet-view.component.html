@@ -21,7 +21,7 @@
                     <h1 class="text-3xl font-bold mt-1">Game night · {{ (meetData?.meetDate ?? null) | customDate:true:meetData?.timezone }}</h1>
                     <p class="text-secondary mt-3 max-w-2xl">{{ sessionStatusDescription }}</p>
                 </div>
-                <span class="inline-flex rounded-full bg-indigo-100 px-3 py-1 text-sm font-medium capitalize text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-200">{{ meetData?.status }}</span>
+                <span class="inline-flex rounded-full bg-indigo-100 px-3 py-1 text-sm font-medium text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-200">{{ sessionStatusLabel }}</span>
             </div>
 
             @if (meetData?.notes) {
