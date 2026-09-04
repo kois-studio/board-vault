@@ -18,9 +18,9 @@
         <section class="app-bg-secondary rounded-xl p-6 mb-8 border border-indigo-400/40">
             <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div>
-                    <p class="text-sm uppercase tracking-wide text-indigo-400">Start your collection</p>
+                    <p class="text-sm uppercase tracking-wide text-indigo-400">Build a useful shelf</p>
                     <h2 class="text-2xl font-semibold mt-1">Add your first five games</h2>
-                    <p class="text-secondary mt-2">A small collection gives your groups something real to play with.</p>
+                    <p class="text-secondary mt-2">Five games is a helpful starting point for better suggestions, but you can start making group decisions as soon as your group has games to play.</p>
                 </div>
                 <div class="text-left md:text-right">
                     <p class="font-semibold">{{ activationCount() }}/{{ activationTarget }} games</p>
@@ -36,7 +36,14 @@
                     </div>
                 </div>
             </div>
-            <a class="app-btn-primary inline-block mt-5" routerLink="/collection/browse">Browse games</a>
+            <div class="mt-5 flex flex-wrap gap-3">
+                <a class="app-btn-primary inline-block" routerLink="/collection/browse">Browse games</a>
+                @if (groupDecisionReady()) {
+                    <a class="app-btn-secondary inline-block" routerLink="/play/recommendations">Choose a game with your group</a>
+                } @else if (userGroups$().length === 0) {
+                    <a class="app-btn-secondary inline-block" routerLink="/groups">Join or create a group</a>
+                }
+            </div>
         </section>
     } @else {
         <section class="app-bg-secondary rounded-xl p-6 mb-8 border border-emerald-400/40" aria-labelledby="collection-ready-heading">
@@ -53,8 +60,10 @@
                     <a class="app-btn-primary inline-block" routerLink="/create-group">Create your first group</a>
                     <a class="app-btn-secondary inline-block" routerLink="/groups">View invitations</a>
                 </div>
-            } @else {
+            } @else if (groupDecisionReady()) {
                 <a class="app-btn-primary inline-block mt-5" routerLink="/play/recommendations">Choose a game for your group</a>
+            } @else {
+                <a class="app-btn-primary inline-block mt-5" routerLink="/groups">Add games to your group’s shared shelf</a>
             }
         </section>
     }

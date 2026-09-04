@@ -41,6 +41,9 @@ export class CollectionPageComponent {
     public readonly activationCount = computed(() => Math.min(this.userGames$().length, this.activationTarget))
     public readonly activationProgress = computed(() => (this.activationCount() / this.activationTarget) * 100)
     public readonly activationComplete = computed(() => this.userGames$().length >= this.activationTarget)
+    public readonly groupDecisionReady = computed(() =>
+        this.userGroups$().some((group) => group.members.some((member) => member.games.length > 0)),
+    )
 
     public retryGames(): void {
         this.dataService.refreshUserGames()
