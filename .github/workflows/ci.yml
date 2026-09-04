@@ -94,3 +94,5 @@ jobs:
               run: npm ci --ignore-scripts --prefix backend
             - name: Verify empty-state schema and migration baseline
               run: node database/scripts/verify-empty-state.mjs
+            - name: Run synthetic backup and restore rehearsal
+              run: node database/scripts/verify-restore-rehearsal.mjs

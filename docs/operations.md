@@ -90,7 +90,7 @@ with a preserved account.
 
 ## Deployment shape
 
-`backend/vercel.json` configures a Vercel Node build from `src/main.ts` and routes HTTP methods to it. `frontend/src/environments/environment.ts` targets `https://backend.board-vault.com`. The repository contains `.github/workflows/ci.yml` for locked installs, backend tests/build, frontend build/public browser checks, and disposable database verification. It does not deploy, run authenticated production checks, schedule backups, or provide rollback instructions.
+`backend/vercel.json` configures a Vercel Node build from `src/main.ts` and routes HTTP methods to it. `frontend/src/environments/environment.ts` targets `https://backend.board-vault.com`. The repository contains `.github/workflows/ci.yml` for locked installs, backend tests/build, frontend build/public browser checks, disposable database verification, and a synthetic backup/restore rehearsal. It does not deploy, run authenticated production checks, schedule backups, or provide rollback instructions.
 
 CI quality gates now include the no-mutation backend ESLint command and the
 frontend Biome check in addition to builds, tests, browser checks, and migration
@@ -175,7 +175,7 @@ Deployment ownership, domain configuration, environment provisioning, provider s
 1. Keep the root/package locked-install commands aligned and use the disposable test database verification before schema changes.
 2. Monitor the production Upstash quota and keep Redis explicitly disabled only in local environments.
 3. Add safe structured request logs, error monitoring, and graceful shutdown checks; use `/health` and `/health/ready` in deployment checks.
-4. Add migration/deployment gates and document Turso backup/restore ownership and rehearsal. The repeatable runner and empty-state migration check exist, but synthetic restore evidence remains open.
+4. Add migration/deployment gates and document Turso backup/restore ownership. The repeatable runner, empty-state migration check, and synthetic restore rehearsal exist; real backup schedule, recovery target, rollback ownership, and remote CI observation remain open.
 5. Record Vercel/frontend deployment responsibilities and rollback behavior.
 
 ## Existing operational notes
