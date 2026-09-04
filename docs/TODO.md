@@ -158,8 +158,6 @@ as TODO items here.
 
 ## Information architecture and UX
 
-- [ ] Make the authenticated home a group/social workspace rather than a
-  personal dashboard of disconnected counters.
 - [ ] Organize group work around clear areas such as Decide, Sessions, Group
   library, Games to acquire, and History/Insights.
 - [ ] Replace ambiguous or implementation-led labels with user language:

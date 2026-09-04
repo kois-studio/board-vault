@@ -24,7 +24,7 @@ The product is not launch-ready. The main unfinished value loop is:
 group → attendees → recommendation → scheduled session → games actually played → useful history
 ```
 
-Completed-session logging now has a guarded, validated backend write and an atomic Turso transaction from the frontend wizard. The first recommendation and feedback slices are implemented, including a bounded score adjustment from selected-attendee decisions, while analytics and richer scoring remain unfinished; the dashboard and play landing avoid presenting fabricated metrics or links to unavailable feature routes.
+Completed-session logging now has a guarded, validated backend write and an atomic Turso transaction from the frontend wizard. The first recommendation and feedback slices are implemented, including a bounded score adjustment from selected-attendee decisions, while analytics and richer scoring remain unfinished; the authenticated home now opens on a group/social workspace, and the dashboard and play landing avoid presenting fabricated metrics or links to unavailable feature routes.
 
 ## P0 — complete the product’s core loop
 
@@ -118,6 +118,7 @@ Relevant surface: [`dashboard-page`](../frontend/src/app/pages/dashboard-page/).
 - Dashboard quick links now import the standalone `RouterLink` directive explicitly; authenticated E2E coverage asserts that the primary destinations expose working `href` values.
 - Make dashboard cards represent the correct entity and count.
 - Define a useful first-login empty state that guides a user to create/join a group and add games.
+- The authenticated home now leads with each group’s shared game count, members, next session, and direct decision/session actions; the personal collection value card was removed because it does not serve the group decision loop.
 - Define loading, failure, and retry states for each dashboard data section; dashboard overview, groups, collection, history, and upcoming-session surfaces now distinguish loading, failure, and empty states, with retry recovering the core requests.
 - Review responsive layout and visual hierarchy.
 

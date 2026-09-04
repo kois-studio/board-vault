@@ -1790,3 +1790,19 @@ Changed: A failed key-enumeration request now returns an empty diagnostic result
 Review: EQ-005
 
 Verified: Cache provider-failure tests, backend lint, and full backend verification pass with 44 suites and 189 tests. No production cache state was changed.
+
+Continuation claim: PROD-001
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Branch/worktree: main / shared workspace
+
+Scope: redesign the authenticated home around social group work instead of personal collection counters.
+
+Changed: The dashboard now leads with each group as a workspace, showing shared game count, members, next scheduled/active session, and direct actions to open the group, plan/open a session, or find a recommendation. The first-login empty state now explains that groups are the starting point, and the personal collection-value card was removed from the primary surface. Dashboard loading/error/retry behavior now includes the session read used by the group cards.
+
+Review: PROD-001 / EQ-006
+
+Verified: Frontend production build and Biome checks pass. Authenticated navigation assertions were updated for the new information hierarchy; rendered breakpoint, keyboard, and real-data browser review remain open. No backend, production data, deployment, or provider configuration was changed.
