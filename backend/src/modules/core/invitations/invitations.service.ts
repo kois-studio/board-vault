@@ -20,6 +20,7 @@ export class InvitationsService {
             fromAccountId: Number(row[2]),
             toAccountId: Number(row[3]),
             sentAt: String(row[4]),
+            expiresAt: String(row[5]),
         }))
         const result = invitationsSchema.safeParse(invitations)
 
@@ -65,6 +66,10 @@ export class InvitationsService {
         const resultSet = await this.databaseService.getUserInvitationsReceived(accountId)
 
         return this._parseResultSet(resultSet)
+    }
+
+    isExpired(invitation: InvitationDto): boolean {
+        return Date.parse(invitation.expiresAt) <= Date.now()
     }
 
     async createInvitation(invitationDto: CreateInvitationBody) {

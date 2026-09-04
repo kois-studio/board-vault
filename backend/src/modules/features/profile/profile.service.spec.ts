@@ -13,6 +13,7 @@ describe('ProfileService invitation acceptance', () => {
     it('denies accepting an invitation addressed to another user', async () => {
         const invitationsService = {
             getInvitationById: jest.fn().mockResolvedValue({ id: 1, groupId: 12, fromAccountId: 7, toAccountId: 8 }),
+            isExpired: jest.fn().mockReturnValue(false),
         }
         const groupMembershipsService = { createGroupMembership: jest.fn() }
         const service = new ProfileService(
@@ -25,6 +26,27 @@ describe('ProfileService invitation acceptance', () => {
         )
 
         await expect(service.acceptInvitation(7, 1)).rejects.toThrow(ForbiddenException)
+        expect(groupMembershipsService.createGroupMembership).not.toHaveBeenCalled()
+    })
+
+    it('does not accept an expired invitation', async () => {
+        const invitationsService = {
+            getInvitationById: jest
+                .fn()
+                .mockResolvedValue({ id: 1, groupId: 12, fromAccountId: 7, toAccountId: 8, expiresAt: '2000-08-13 00:00:00' }),
+            isExpired: jest.fn().mockReturnValue(true),
+        }
+        const groupMembershipsService = { createGroupMembership: jest.fn() }
+        const service = new ProfileService(
+            {} as UsersService,
+            {} as NotificationsService,
+            {} as GroupsService,
+            invitationsService as unknown as InvitationsService,
+            groupMembershipsService as unknown as GroupMembershipsService,
+            {} as GameProposalService,
+        )
+
+        await expect(service.acceptInvitation(8, 1)).rejects.toThrow('This invitation has expired')
         expect(groupMembershipsService.createGroupMembership).not.toHaveBeenCalled()
     })
 })

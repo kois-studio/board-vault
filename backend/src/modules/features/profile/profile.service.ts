@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, Logger } from '@nestjs/common'
+import { BadRequestException, ForbiddenException, Injectable, Logger } from '@nestjs/common'
 
 import { LogFeature } from '../../../common/decorators/logger.decorator'
 import { InvitationWithExtraData } from '../../../common/types/invitation.type'
@@ -56,6 +56,10 @@ export class ProfileService {
 
         if (invitationData.toAccountId !== userId) {
             throw new ForbiddenException('You are not the recipient of this invitation')
+        }
+
+        if (this.invitationsService.isExpired(invitationData)) {
+            throw new BadRequestException('This invitation has expired. Ask the group owner to send a new one.')
         }
 
         // Step 2: create the membership to the group

@@ -473,7 +473,7 @@ export class DatabaseService implements OnModuleInit {
         return this._tursoExecute({
             sql: `
             SELECT 
-                i.id, i.groupId, i.fromAccountId, i.toAccountId, i.sentAt,
+                i.id, i.groupId, i.fromAccountId, i.toAccountId, i.sentAt, i.expiresAt,
                 -- Nested account responses expose public identity fields only.
                 json_object(
                     'id', fa.id,
@@ -491,7 +491,7 @@ export class DatabaseService implements OnModuleInit {
             FROM Invitation i
             JOIN Account fa ON i.fromAccountId = fa.id AND fa.isDeleted = 0
             JOIN Account ta ON i.toAccountId = ta.id AND ta.isDeleted = 0
-            WHERE i.groupId = ?
+            WHERE i.groupId = ? AND (i.expiresAt IS NULL OR i.expiresAt > CURRENT_TIMESTAMP)
             `,
             args: [groupId],
         })
@@ -1063,21 +1063,21 @@ export class DatabaseService implements OnModuleInit {
 
     getUserInvitationsReceived(accountId: number) {
         return this._tursoExecute({
-            sql: 'SELECT * FROM Invitation WHERE toAccountId = ?',
+            sql: 'SELECT * FROM Invitation WHERE toAccountId = ? AND (expiresAt IS NULL OR expiresAt > CURRENT_TIMESTAMP)',
             args: [accountId],
         })
     }
 
     getInvitationByGroupAndRecipient(groupId: number, accountId: number) {
         return this._tursoExecute({
-            sql: 'SELECT * FROM Invitation WHERE groupId = ? AND toAccountId = ?',
+            sql: 'SELECT * FROM Invitation WHERE groupId = ? AND toAccountId = ? AND (expiresAt IS NULL OR expiresAt > CURRENT_TIMESTAMP)',
             args: [groupId, accountId],
         })
     }
 
     async createInvitation(invitationDto: CreateInvitationBody) {
         await this._tursoExecute({
-            sql: 'INSERT INTO Invitation (groupId, fromAccountId, toAccountId) VALUES (?, ?, ?)',
+            sql: "INSERT INTO Invitation (groupId, fromAccountId, toAccountId, expiresAt) VALUES (?, ?, ?, datetime('now', '+30 days'))",
             args: [invitationDto.groupId, invitationDto.fromAccountId, invitationDto.toAccountId],
         })
     }
@@ -1093,7 +1093,7 @@ export class DatabaseService implements OnModuleInit {
         }
 
         await this._tursoExecute({
-            sql: 'INSERT INTO Invitation (groupId, fromAccountId, toAccountId) VALUES (?, ?, ?)',
+            sql: "INSERT INTO Invitation (groupId, fromAccountId, toAccountId, expiresAt) VALUES (?, ?, ?, datetime('now', '+30 days'))",
             args: [invitationDto.groupId, invitationDto.fromAccountId, toAccount.rows[0].id],
         })
 

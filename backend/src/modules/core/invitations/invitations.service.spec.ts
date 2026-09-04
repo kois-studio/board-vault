@@ -4,7 +4,7 @@ import { DatabaseService } from '../../common/database/database.service'
 
 import { InvitationsService } from './invitations.service'
 
-const invitationRows = [[1, 12, 7, 8, '2026-08-13 00:00:00']]
+const invitationRows = [[1, 12, 7, 8, '2026-08-13 00:00:00', '2099-08-13 00:00:00']]
 
 describe('InvitationsService lifecycle authorization', () => {
     const createService = () => {
@@ -66,5 +66,30 @@ describe('InvitationsService lifecycle authorization', () => {
 
         await expect(service.rejectInvitation(1, 7)).rejects.toThrow(ForbiddenException)
         expect(deleteInvitationById).not.toHaveBeenCalled()
+    })
+
+    it('recognizes invitations past their expiry timestamp', () => {
+        const { service } = createService()
+
+        expect(
+            service.isExpired({
+                id: 1,
+                groupId: 12,
+                fromAccountId: 7,
+                toAccountId: 8,
+                sentAt: '2026-08-13 00:00:00',
+                expiresAt: '2000-08-13 00:00:00',
+            }),
+        ).toBe(true)
+        expect(
+            service.isExpired({
+                id: 1,
+                groupId: 12,
+                fromAccountId: 7,
+                toAccountId: 8,
+                sentAt: '2026-08-13 00:00:00',
+                expiresAt: '2099-08-13 00:00:00',
+            }),
+        ).toBe(false)
     })
 })
