@@ -52,6 +52,10 @@ export class SessionsService {
             throw new ForbiddenException('You must belong to the group to create a session')
         }
 
+        if (body.attendeeIds.length === 0) {
+            throw new BadRequestException('A completed session must have at least one attendee')
+        }
+
         if (body.attendeeIds.some(accountId => !memberIdSet.has(accountId))) {
             throw new BadRequestException('Every attendee must belong to the selected group')
         }
@@ -64,6 +68,10 @@ export class SessionsService {
 
         if (new Set(gameIds).size !== gameIds.length) {
             throw new BadRequestException('Each game may only appear once in a session')
+        }
+
+        if (games.some(game => game.participantIds.length === 0)) {
+            throw new BadRequestException('Every played game must have at least one participant')
         }
 
         const availableGameIds = new Set(await this.databaseService.getGroupAvailableGameIds(body.groupId))
@@ -181,6 +189,10 @@ export class SessionsService {
             throw new ForbiddenException('Only the session organizer can manage attendees')
         }
 
+        if (body.attendeeIds.length === 0) {
+            throw new BadRequestException('A session must retain at least one attendee')
+        }
+
         const status = String(session.rows[0][5] ?? 'completed') as SessionStatusUpdatedDto['status']
 
         if (status !== 'scheduled' && status !== 'active') {
@@ -270,6 +282,10 @@ export class SessionsService {
 
         if (body.games) {
             const detailedGameIds = games.map(game => game.gameId)
+
+            if (games.some(game => game.participantIds.length === 0)) {
+                throw new BadRequestException('Every played game must have at least one participant')
+            }
 
             if (
                 new Set(detailedGameIds).size !== detailedGameIds.length ||
