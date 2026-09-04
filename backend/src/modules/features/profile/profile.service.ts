@@ -13,7 +13,7 @@ import type { SuccessDto } from '../../../common/types/auth.type'
 import type { CreateGameProposalBody, GameProposalDto } from '../../../common/types/game-proposal.type'
 import type { NotificationDto } from '../../../common/types/notification.type'
 import type { UserProposalStatsDto } from '../../../common/types/stats.type'
-import type { UserGetDto } from '../../../common/types/user.type'
+import type { UserSelfDto } from '../../../common/types/user.type'
 
 @Injectable()
 export class ProfileService {
@@ -27,8 +27,17 @@ export class ProfileService {
     ) {}
 
     @LogFeature(new Logger('ProfileService'))
-    async getUserById(id: number): Promise<UserGetDto> {
-        return this.usersService.getUserById(id)
+    async getUserById(id: number): Promise<UserSelfDto> {
+        const user = await this.usersService.getUserById(id)
+
+        return {
+            id: user.id,
+            email: user.email,
+            username: user.username,
+            displayName: user.displayName,
+            avatar: user.avatar,
+            createdAt: user.createdAt,
+        }
     }
 
     @LogFeature(new Logger('ProfileService'))

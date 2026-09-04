@@ -2062,3 +2062,19 @@ Changed: The Play and History entry points will use explicit future/past session
 Review: PROD-005 / TRUTH-001 / EQ-006
 
 Verified: Frontend Biome, six browser unit tests, production build (598.46 kB initial / 137.84 kB estimated transfer), public Playwright checks (4 passed, 7 authenticated skipped without Clerk state), and `git diff --check` pass. Authenticated assertions now cover the explicit future/past session labels when a storage state is supplied. No migration, production data, deployment, or provider config changed.
+
+Continuation claim: SEC-002 / SEC-003
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Branch/worktree: main / shared workspace
+
+Scope: narrow the authenticated self-profile response to identity data the browser actually needs.
+
+Changed: Add a dedicated self-profile DTO and return only id, email, username, display name, avatar, and creation time from the profile endpoint. Keep account-state and administrator fields in internal/admin/auth-status contracts rather than the ordinary browser profile payload, with response-schema and regression coverage.
+
+Review: SEC-002 / SEC-003 / EQ-004
+
+Verified: Backend ESLint, build, 198 tests across 44 suites, frontend Biome, build (598.39 kB initial / 137.83 kB estimated transfer), six frontend unit tests, public Playwright checks (4 passed, 7 authenticated skipped without Clerk state), and `git diff --check` pass. No migration, production data, deployment, or provider config changed.

@@ -173,9 +173,6 @@ export const userSchema: z.ZodType<UserType> = z.object({
     ...publicUserSchema.shape,
     email: z.string().email(),
     createdAt: z.string(),
-    isDeleted: z.boolean(),
-    isAdmin: z.boolean(),
-    email_verified: z.boolean(),
 })
 
 const groupSchema: z.ZodType<GroupType> = z.object({

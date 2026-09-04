@@ -7,19 +7,21 @@
 
 ## Context
 
-The legacy `UserGetDto` contains email and account-state fields because it is
-used by authenticated self-profile and administrator paths. Several older
-feature responses reused that type for nested group members, invitations, and
-play history. That made it easy to disclose private account data to another
-authenticated user and made response privacy depend on callers remembering to
-remove fields.
+The legacy `UserGetDto` contains email and account-state fields for internal
+and administrator paths. Several older feature responses reused that type for
+nested group members, invitations, and play history. That made it easy to
+disclose private account data to another authenticated user and made response
+privacy depend on callers remembering to remove fields.
 
 ## Decision
 
 Use separate response boundaries:
 
-- `UserGetDto` remains available for dedicated authenticated self-profile and
-  administrator boundaries. It excludes passwords and authentication tokens.
+- `UserSelfDto` is the authenticated self-profile boundary. It contains email
+  and identity metadata but excludes account deletion, administrator, and
+  verification state.
+- `UserGetDto` remains available for internal and administrator boundaries. It
+  excludes passwords and authentication tokens from serialized responses.
 - `UserPublicDto` is the only user shape for nested or public identity data. It
   contains `id`, `username`, `displayName`, and `avatar`.
 - Group members, played-by history, invitations, invitation-by-username
@@ -38,8 +40,8 @@ Use separate response boundaries:
   those contexts. The frontend currently uses identity/display fields for
   those views, but a response-contract review remains required before wider
   client changes.
-- Self-profile and administrator response policies remain separate and are not
-  silently broadened by this decision.
+- Self-profile, administrator, and auth-status response policies remain
+  separate and are not silently broadened by this decision.
 - Future response DTOs must choose explicitly between private/self, admin, and
   public identity boundaries.
 - This does not complete global request validation, response schema validation,
