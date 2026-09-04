@@ -281,10 +281,14 @@
                                 <div class="flex items-start justify-between gap-3">
                                     <div>
                                         <p class="font-semibold">{{ historyRecord.meetData.meetDate | customDate: true: historyRecord.meetData.timezone }}</p>
+                                        <p class="mt-1 text-sm text-secondary">{{ getAttendeeSummary(historyRecord.attendedBy) }}</p>
                                         <p class="mt-1 text-sm text-secondary">{{ historyRecord.gamesPlayed.length }} game{{ historyRecord.gamesPlayed.length === 1 ? '' : 's' }} played</p>
                                     </div>
                                     <a [routerLink]="['/sessions', historyRecord.meetData.id]" class="text-sm text-indigo-600 hover:underline dark:text-indigo-400">View</a>
                                 </div>
+                                @if (historyRecord.meetData.notes) {
+                                    <p class="mt-4 rounded-xl bg-zinc-50 p-3 text-sm text-secondary dark:bg-zinc-800">{{ historyRecord.meetData.notes }}</p>
+                                }
                                 <ul class="mt-4 space-y-3">
                                     @for (gamePlayed of historyRecord.gamesPlayed; track gamePlayed.gameData.id) {
                                         <li class="flex items-center gap-3">

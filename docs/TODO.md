@@ -204,7 +204,9 @@ as TODO items here.
   revisit, and participation insights with real group history, then decide
   whether a separate analytics route is justified.
 - [ ] Validate that history, group library, and recommendations show the same
-  last-played and participant context after refresh.
+  last-played and participant context after refresh. Group history cards now
+  expose recorded attendees and session notes; validate this context with a
+  real completed session and a zero-attendance-recorded edge case.
 
 ## Authentication, privacy, and trust
 

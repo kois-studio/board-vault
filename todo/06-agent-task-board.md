@@ -2304,3 +2304,19 @@ Review: PROD-004 / PROD-005
 Changed: Upcoming session cards now lead with the group name and date, use human-readable Planned/Live now states, expose saved planning notes when present, and remove the internal session identifier from the primary card context. Live sessions also use a clearer action label. Added frontend component coverage for the status and action labels.
 
 Verified: Frontend Biome, 18 browser-based unit tests, frontend production build (598.35 kB initial / 137.88 kB estimated transfer), and `git diff --check` pass. No migration, production data, deployment, or provider config changed.
+
+Continuation claim: PROD-005 / EQ-004
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Scope: make group history cards preserve the social memory of a game night.
+
+Planned: show recorded attendees and saved session notes alongside the games played, with honest fallback copy when attendance was not recorded.
+
+Review: PROD-005 / EQ-004
+
+Changed: Group home history cards now show recorded attendees and saved session notes alongside the date and games played, with honest “Attendance not recorded” fallback copy. Added pure formatter coverage for short, long, and missing attendee lists.
+
+Verified: Frontend Biome, 20 browser-based unit tests, frontend production build, and `git diff --check` pass. No migration, production data, deployment, or provider config changed.
