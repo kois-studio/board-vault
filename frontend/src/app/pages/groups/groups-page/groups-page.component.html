@@ -8,6 +8,30 @@
 </app-page-header>
 
 <container-wrapper>
+    @if (!isLoadingInvitations() && userInvitationsError()) {
+        <section class="mb-8 rounded-2xl border border-amber-200 bg-amber-50 p-6 dark:border-amber-900/60 dark:bg-amber-950/30" aria-labelledby="invitations-error-heading">
+            <h2 id="invitations-error-heading" class="text-lg font-bold">Invitations are temporarily unavailable</h2>
+            <p class="mt-2 text-sm text-secondary">We could not refresh your pending group invitations. Your groups are still available below.</p>
+            <button type="button" class="app-btn-secondary mt-4" (click)="retryInvitations()">Retry invitations</button>
+        </section>
+    } @else if (!isLoadingInvitations() && userInvitations$().length > 0) {
+        <section class="mb-8 rounded-2xl border border-indigo-200 bg-indigo-50 p-6 dark:border-indigo-900/60 dark:bg-indigo-950/30" aria-labelledby="pending-invitations-heading">
+            <div class="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                    <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Your next group</p>
+                    <h2 id="pending-invitations-heading" class="mt-1 text-2xl font-bold">Invitations waiting for you</h2>
+                    <p class="mt-2 text-secondary">Accept an invitation to join the group’s shared games and session history, or decline it if it is not for you.</p>
+                </div>
+                <span class="rounded-full bg-white px-3 py-1 text-sm font-semibold text-indigo-700 dark:bg-zinc-900 dark:text-indigo-300">{{ userInvitations$().length }} pending</span>
+            </div>
+            <ul class="mt-5 grid gap-4 lg:grid-cols-2">
+                @for (invitation of userInvitations$(); track invitation.id) {
+                    <li><app-card-invitation [invitation]="invitation" /></li>
+                }
+            </ul>
+        </section>
+    }
+
     <section class="grid grid-cols-1 gap-8 mb-40">
         @if (isLoadingGroups()) {
             @for (item of [1,2]; track $index) {
