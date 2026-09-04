@@ -1726,3 +1726,19 @@ Changed: Cache inspection, reset, and key-deletion routes now require `JwtAuthGu
 Review: SEC-002
 
 Verified: The focused cache/admin tests pass (5 tests); the full backend suite passes with 42 suites and 183 tests, backend build passes, and backend ESLint passes. No production data, deployment, or cache state was changed.
+
+Continuation claim: EQ-006
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Branch/worktree: main / shared workspace
+
+Scope: redesign the past-session participant step around the social question “who played each game?” and remove its mobile-hostile matrix presentation.
+
+Changed: Replaced the wide Player / Game table with per-game participant cards. Each card asks who played that game, keeps the existing default selection, offers a clear select/remove-everyone action, exposes accessible checkbox labels, and prevents advancing until every selected game has at least one participant. The existing participant payload remains unchanged.
+
+Review: EQ-006
+
+Verified: Frontend production build, Biome checks, and the public Playwright suite pass (4 passed; 7 authenticated tests skipped without Clerk storage state). The new participant step has no horizontal table dependency and remains pending authenticated browser and rendered breakpoint review.
