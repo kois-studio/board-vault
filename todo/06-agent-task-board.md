@@ -2260,3 +2260,17 @@ Changed: Session-detail participant controls now refuse to remove the last parti
 Review: PROD-005 / EQ-003
 
 Verified: Frontend Biome, 17 frontend browser-based unit tests, frontend production build (598.39 kB initial / 137.84 kB estimated transfer), and `git diff --check` pass. No migration, production data, deployment, or provider config changed.
+
+Continuation claim: DATA-003 / PROD-005 / EQ-004
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Scope: keep session list and organizer-read notes aligned with the current persisted schema.
+
+Changed: Replaced `Meet m.*` in account-scoped, member-scoped, and organizer-scoped meet reads with explicit columns. The current table includes nullable `updatedAt` before `notes`; explicit projections prevent the parser from returning `updatedAt` as notes and silently dropping the saved session context. Added a regression test for the current eight-field read contract.
+
+Review: DATA-003 / PROD-005 / EQ-004
+
+Verified: Backend lint, build, 205 tests across 44 suites, focused meet/database tests, frontend Biome, 17 frontend browser-based unit tests, frontend production build (598.39 kB initial / 137.84 kB estimated transfer), and `git diff --check` pass. No migration, production data, deployment, or provider config changed.
