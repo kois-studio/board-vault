@@ -22,6 +22,13 @@ import { DataService } from '../../core/services/data.service'
 import { LocalStorageService } from '../../core/services/local-storage.service'
 import { GroupViewService } from './group-view.service'
 
+type GroupLibraryContext = {
+    ownerNames: Array<string>
+    playCount: number
+    lastPlayedAt: string | null
+    lastPlayedTimezone: string | null
+}
+
 @Component({
     imports: [
         RouterLink,
@@ -173,6 +180,47 @@ export class GroupViewComponent {
         return this.mostPlayedGamesComputed()
             .filter((game) => !recentlyPlayedIds.has(game.gameData.id))
             .slice(0, 5)
+    })
+
+    public readonly groupLibraryContextComputed = computed<Record<number, GroupLibraryContext>>(() => {
+        const context: Record<number, GroupLibraryContext> = {}
+
+        for (const member of this.groupData$()?.members ?? []) {
+            for (const game of member.games) {
+                const existing = context[game.id] ?? {
+                    ownerNames: [],
+                    playCount: 0,
+                    lastPlayedAt: null,
+                    lastPlayedTimezone: null,
+                }
+
+                const ownerName = member.displayName || member.username
+                if (!existing.ownerNames.includes(ownerName)) {
+                    existing.ownerNames.push(ownerName)
+                }
+                context[game.id] = existing
+            }
+        }
+
+        for (const record of this.groupHistory$()) {
+            for (const playedGame of record.gamesPlayed) {
+                const existing = context[playedGame.gameData.id] ?? {
+                    ownerNames: [],
+                    playCount: 0,
+                    lastPlayedAt: null,
+                    lastPlayedTimezone: null,
+                }
+
+                existing.playCount += 1
+                if (!existing.lastPlayedAt || new Date(record.meetData.meetDate).getTime() > new Date(existing.lastPlayedAt).getTime()) {
+                    existing.lastPlayedAt = record.meetData.meetDate
+                    existing.lastPlayedTimezone = record.meetData.timezone
+                }
+                context[playedGame.gameData.id] = existing
+            }
+        }
+
+        return context
     })
 
     public readonly selectedMembersLabel = computed(() => {
