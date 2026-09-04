@@ -119,7 +119,7 @@ Relevant surface: [`dashboard-page`](../frontend/src/app/pages/dashboard-page/).
 - Make dashboard cards represent the correct entity and count.
 - Define a useful first-login empty state that guides a user to create/join a group and add games.
 - The authenticated home now leads with each group’s shared game count, members, next session, and direct decision/session actions; the personal collection value card was removed because it does not serve the group decision loop.
-- Define loading, failure, and retry states for each dashboard data section; dashboard overview, groups, collection, history, and upcoming-session surfaces now distinguish loading, failure, and empty states, with retry recovering the core requests.
+- Define loading, failure, and retry states for each dashboard data section; the group-first dashboard now waits only for groups and upcoming sessions, while collection and history keep their own independent loading/error boundaries.
 - Review responsive layout and visual hierarchy.
 
 ### 7. Collection — Partial / Needs review

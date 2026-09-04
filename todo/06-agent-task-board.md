@@ -1854,3 +1854,19 @@ Changed: The authenticated top navigation now calls the dashboard “Home” and
 Review: TRUTH-001 / EQ-006
 
 Verified: Frontend lint, build, browser unit tests, public Playwright checks, and `git diff --check` pass. No backend, production data, deployment, or provider configuration was changed.
+
+Continuation claim: PROD-001
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Branch/worktree: main / shared workspace
+
+Scope: keep the group-first dashboard independent from unrelated personal data requests.
+
+Changed: Dashboard loading, failure, and retry behavior now depends only on group and upcoming-session data rendered by the social workspace. Personal collection and history requests no longer block the dashboard or turn an unrelated outage into a dashboard-level error.
+
+Review: PROD-001 / EQ-006
+
+Verified: Frontend lint, build, browser unit tests, public Playwright checks, and `git diff --check` pass. No backend, production data, deployment, or provider configuration was changed.
