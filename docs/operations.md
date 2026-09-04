@@ -34,7 +34,7 @@ Use the exact commands and current results in [AGENTS.md](AGENTS.md) and [testin
 
 - backend build passes;
 - frontend production build passes without Sass or selector warnings; route-level components are lazy-loaded and the initial raw bundle is 606.59 kB (140.28 kB estimated transfer), below the 650 kB warning budget. Clerk remains a separate 1.55 MB lazy chunk;
-- backend unit tests pass 44 suites and 188 tests, including profile-update, ownership, group/membership listing, collection route ownership, actor-identity, invitation visibility/lifecycle, verified-user gating, deprecated-route removal, Clerk group invitations, invite-only join, notification ownership, meet-read, meet-account-game membership and per-game participation, admin reviewer and route-parameter validation, cache maintenance endpoint protection, safe API error normalization, health/readiness probes, authentication path/query validation, global-user-list, deleted-account JWT, database-log, email-log, cache-log, and auth-log suites; broader coverage is still missing;
+- backend unit tests pass 44 suites and 189 tests, including profile-update, ownership, group/membership listing, collection route ownership, actor-identity, invitation visibility/lifecycle, verified-user gating, deprecated-route removal, Clerk group invitations, invite-only join, notification ownership, meet-read, meet-account-game membership and per-game participation, admin reviewer and route-parameter validation, cache maintenance endpoint protection, safe API error normalization, health/readiness probes, authentication path/query validation, global-user-list, deleted-account JWT, database-log, email-log, cache-log, auth-log, and non-destructive cache-diagnostic suites; broader coverage is still missing;
 - backend HTTP e2e now passes two environment-safe boundary tests; broader seeded/integration coverage remains open;
 - the bootstrap installs a global strict `ValidationPipe` in addition to targeted controller pipes, so new DTO routes fail closed on unknown fields; client negative tests remain open;
 - backend lint passes with no errors or warnings; the CI workflow now runs the
@@ -143,6 +143,9 @@ header. Cache operations now use a 250 ms deadline, no SDK retries, and a
 invocation. Before the replacement database was configured, the limiter
 intentionally failed open when Redis was unavailable; the fail-fast
 containment remains in place as a provider-outage safeguard.
+Diagnostic key inspection is non-destructive: if key enumeration fails, the
+endpoint returns an empty diagnostic result and never flushes Redis or
+rate-limit state.
 
 On 2026-08-16, the production authenticated browser smoke test was repeated
 after deployment `736b11f`: Board Vault loaded successfully and the collection

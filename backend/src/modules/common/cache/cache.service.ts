@@ -80,11 +80,9 @@ export class CacheService {
             this.LOGGER.log(`REDIS: Found ${keys.length} keys!`)
             return { total: keys.length, keys }
         } catch (err) {
-            // If keys() fails, probably is because the redis keys exceeded the limit
-            // For now there is no intention to implement scan(), so just delete all keys
-            this.LOGGER.error('REDIS: Error while getting keys', err)
-            this.LOGGER.log('REDIS: Deleting all keys to avoid issues')
-            await this.REDIS!.flushdb()
+            // Key inspection is diagnostic only. Never turn a provider failure
+            // into a destructive flush of cache and rate-limit state.
+            this.LOGGER.error(`REDIS: Error while getting keys (${err instanceof Error ? err.name : 'unknown error'})`)
             return { total: 0, keys: [] }
         }
     }

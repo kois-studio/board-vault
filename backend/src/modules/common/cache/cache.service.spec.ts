@@ -1,8 +1,8 @@
 import { CacheService } from './cache.service'
 
 type CacheServiceInternals = {
-    LOGGER: { log: jest.Mock }
-    REDIS: { get: jest.Mock; set: jest.Mock; incr: jest.Mock; expire: jest.Mock }
+    LOGGER: { log: jest.Mock; error: jest.Mock }
+    REDIS: { get: jest.Mock; set: jest.Mock; incr: jest.Mock; expire: jest.Mock; keys: jest.Mock; flushdb: jest.Mock }
 }
 
 describe('CacheService logging', () => {
@@ -10,12 +10,14 @@ describe('CacheService logging', () => {
         const service = Object.create(CacheService.prototype) as CacheService
         const internals = service as unknown as CacheServiceInternals
 
-        internals.LOGGER = { log: jest.fn() }
+        internals.LOGGER = { log: jest.fn(), error: jest.fn() }
         internals.REDIS = {
             get: jest.fn().mockResolvedValue({ email: 'person@example.com' }),
             set: jest.fn().mockResolvedValue('OK'),
             incr: jest.fn().mockResolvedValue(1),
             expire: jest.fn().mockResolvedValue(1),
+            keys: jest.fn().mockResolvedValue([]),
+            flushdb: jest.fn().mockResolvedValue('OK'),
         }
         return { service, internals }
     }
@@ -53,5 +55,16 @@ describe('CacheService logging', () => {
         await expect(service.get('games:byId:8')).resolves.toBeNull()
 
         expect(internals.REDIS.get).toHaveBeenCalledTimes(1)
+    })
+
+    it('does not flush cache state when key inspection fails', async () => {
+        const { service, internals } = createService()
+
+        internals.REDIS.keys.mockRejectedValueOnce(new Error('Redis unavailable'))
+
+        await expect(service.keys()).resolves.toEqual({ total: 0, keys: [] })
+
+        expect(internals.REDIS.flushdb).not.toHaveBeenCalled()
+        expect(internals.LOGGER.error).toHaveBeenCalledWith('REDIS: Error while getting keys (Error)')
     })
 })
