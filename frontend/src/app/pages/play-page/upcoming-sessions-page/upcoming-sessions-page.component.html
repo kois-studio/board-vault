@@ -48,14 +48,19 @@
     } @else {
         @for (session of upcomingSessions(); track session.id) {
             <div class="app-bg-secondary relative p-4 mb-8">
-                <h2 class="text-xl font-semibold mb-4">
-                    {{ session.meetDate | customDate:true:session.timezone }}
-                </h2>
-                <p class="text-secondary text-sm absolute top-4 right-4">
-                    Session #{{ session.id }} · {{ getGroupName(session.groupId) }}
-                </p>
-                <span class="inline-flex rounded-full bg-zinc-700 px-3 py-1 text-sm capitalize">{{ session.status }}</span>
-                <a class="app-btn-secondary mt-4 inline-block" [routerLink]="['/sessions', session.id]">Open session</a>
+                <div class="flex flex-wrap items-start justify-between gap-3 mb-4">
+                    <div>
+                        <p class="text-secondary text-sm mb-1">{{ getGroupName(session.groupId) }}</p>
+                        <h2 class="text-xl font-semibold">
+                            {{ session.meetDate | customDate:true:session.timezone }}
+                        </h2>
+                    </div>
+                    <span class="inline-flex rounded-full bg-zinc-700 px-3 py-1 text-sm">{{ getStatusLabel(session.status) }}</span>
+                </div>
+                @if (session.notes) {
+                    <p class="text-secondary mb-4">{{ session.notes }}</p>
+                }
+                <a class="app-btn-secondary inline-block" [routerLink]="['/sessions', session.id]">{{ getSessionActionLabel(session.status) }}</a>
             </div>
         }
     }
