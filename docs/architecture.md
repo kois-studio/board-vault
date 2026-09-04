@@ -3,8 +3,8 @@
 ## Scope and confidence
 
 This is an implementation description, not a proposed redesign. It is based on
-`main` at commit `d047771` plus the uncommitted local restart work inspected on
-2026-09-03. The `/todo/` documents describe intended product work and must not
+the current local `main` commit; update the commit reference when making a
+further architecture-level change. The `/todo/` documents describe intended product work and must not
 be read as proof that those flows are complete. The current local branch has
 not been deployed yet.
 

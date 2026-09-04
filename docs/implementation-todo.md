@@ -147,7 +147,7 @@ Relevant surfaces: [`collection-page`](../frontend/src/app/pages/collection-page
 
 Relevant surfaces: [`groups`](../frontend/src/app/pages/groups/), [`group-view`](../frontend/src/app/pages/group-view/), group/invitation/notification components.
 
-- Verify the complete two-account flow: create group, invite account, accept/reject invitation, refresh, and see membership; invitation and notification modals now distinguish loading, failed fetch, retry, and empty states.
+- Verify the complete two-account flow: create group, invite account, accept/reject invitation, refresh, and see membership; the groups workspace now exposes pending invitations with direct accept/decline actions, while invitation and notification modals distinguish loading, failed fetch, retry, and empty states.
 - Group owners can now invite a person who does not yet have a local account by email through Clerk; the ticketed `/register` flow remains available while ordinary private-beta sign-up stays closed, and verified invitees are joined only after the inviter-owned group check succeeds.
 - Keep group creation awaitable and recoverable; the create form now waits for the API result before navigating and leaves failures retryable, while the backend now creates the group and owner membership in one Turso transaction.
 - Keep invitation send, pending-invitation removal, and member removal awaitable; group editing now keeps retryable selections and prevents overlapping requests.
@@ -157,6 +157,7 @@ Relevant surfaces: [`groups`](../frontend/src/app/pages/groups/), [`group-view`]
 - Ensure member visibility and private group data follow the backend authorization rules; group-history failures no longer get cached as an empty result and now expose retry.
 - Remove unnecessary reload-all behavior after group mutations where safe.
 - Review invitation and notification feedback, unread/read states, and failure recovery.
+- Complete invitation expiry, provider/legacy retry behavior, and notification copy/read-state validation with real invitation data.
 - Review member cards, avatars, long usernames, and mobile layouts.
 - Group detail now initializes each newly opened group with all members selected, preventing shared singleton selection state from leaking between groups; member-filter interaction still needs rendered responsive/accessibility review.
 

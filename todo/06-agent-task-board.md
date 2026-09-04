@@ -1950,3 +1950,19 @@ Changed: `DataService.refreshUserGames()` now keeps the last known collection wh
 Review: PROD-005 / EQ-006
 
 Verified: Frontend Biome, browser unit tests (5), and the production build pass with no Angular warnings (596.53 kB initial / 136.64 kB estimated transfer). No migration, production data, deployment, or provider configuration was changed.
+
+Continuation claim: PROD-005 / EQ-006
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Branch/worktree: main / shared workspace
+
+Scope: make pending group invitations discoverable at the social workspace boundary.
+
+Changed: The groups workspace now renders pending invitations with direct accept/decline actions and a retryable failure state, the invitation card identifies the inviter and uses a responsive action layout, and group management copy distinguishes inviting an existing Board Vault member from inviting a new person by email. Invitation expiry and notification/retry behavior remain explicitly open.
+
+Review: PROD-005 / EQ-006
+
+Verified: Frontend Biome, browser unit tests, production build, public Playwright checks, and `git diff --check` pass. No migration, production data, deployment, or provider config changed.

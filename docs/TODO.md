@@ -169,8 +169,10 @@ as TODO items here.
   search, duplicate protection, ownership state, and persisted refresh state.
 - [ ] Let an organizer create a private group and invite the actual people
   they play with.
-- [ ] Make invitation acceptance, rejection, expiry, and notification behavior
-  real and understandable.
+- [ ] Complete invitation lifecycle behavior. The groups workspace now exposes
+  pending invites with direct accept/decline actions, while invitation expiry,
+  retry behavior across provider/legacy flows, and notification clarity still
+  need real-data validation.
 - [ ] Complete the group library decision surface. It now shows owners, member
   ratings, player range, duration, play count, and timezone-aware last-played
   context; connect or validate the acquisition interest signals alongside that
