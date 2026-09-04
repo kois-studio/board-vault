@@ -1838,3 +1838,19 @@ Changed: The frontend API suite now verifies that `GET /sessions/:sessionId` is 
 Review: EQ-004 / READINESS-002
 
 Verified: `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` passes 5 tests; frontend lint/build and public Playwright checks pass. No backend, production data, deployment, or provider configuration was changed.
+
+Continuation claim: TRUTH-001
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Branch/worktree: main / shared workspace
+
+Scope: remove the final stale quick-play navigation reference and align the top-level authenticated vocabulary with the social home.
+
+Changed: The authenticated top navigation now calls the dashboard “Home” and no longer contains a `/play/quick-play` mode entry or commented placeholder subsection. The route remains intentionally unimplemented and absent from navigation.
+
+Review: TRUTH-001 / EQ-006
+
+Verified: Frontend lint, build, browser unit tests, public Playwright checks, and `git diff --check` pass. No backend, production data, deployment, or provider configuration was changed.

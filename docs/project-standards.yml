@@ -472,7 +472,7 @@ compliance:
       next_action: Define representative route matrix and browser checks.
     - id: WEB-004
       status: gap
-      evidence: the identified fabricated play UI and dead landing links were removed; quick-play remains only as a non-rendered legacy route reference and responsive/accessibility review is still absent
+      evidence: the identified fabricated play UI, dead landing links, and stale quick-play navigation reference were removed; analytics remains intentionally deferred and responsive/accessibility review is still absent
       priority: high
       next_action: Track findings through TRUTH-001 and EQ-006.
 

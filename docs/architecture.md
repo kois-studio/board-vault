@@ -64,15 +64,16 @@ Important route families include:
 - admin: lazy-loaded `/admin` management surfaces;
 - route-level page components are lazy-loaded across public, authenticated, and action flows so the public shell does not eagerly ship the whole social workspace.
 
-The source backlog still describes `/play/quick-play`, but that route is not
-declared in `app.routes.ts`. `/play/recommendations` is now an authenticated
-route backed by a deterministic group-attendee recommendation read path and a
-validated lightweight feedback write; bounded feedback-driven scoring is now
-included, while richer preference controls and quick play remain deferred. The group route is the
-current social workspace, while the Play dashboard remains a cross-group
-shortcut surface. The scheduled-session form and session detail view write and
-read through the canonical session API; the local UX redesign is being verified
-locally before the next hosting deployment.
+The product backlog may still discuss a future quick-play experience, but
+`/play/quick-play` is not declared, rendered, or included in navigation.
+`/play/recommendations` is now an authenticated route backed by a deterministic
+group-attendee recommendation read path and a validated lightweight feedback
+write; bounded feedback-driven scoring is now included, while richer preference
+controls and quick play remain deferred. The group route is the current social
+workspace, while the Play dashboard remains a cross-group shortcut surface. The
+scheduled-session form and session detail view write and read through the
+canonical session API; the local UX redesign is being verified locally before
+the next hosting deployment.
 
 ## Main request and data flow
 

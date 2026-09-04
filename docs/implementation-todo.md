@@ -101,7 +101,7 @@ Relevant surface: [`landing.component.html`](../frontend/src/app/pages/landing/l
 Relevant surfaces: [`header`](../frontend/src/app/layout/header/), [`top-bar`](../frontend/src/app/layout/top-bar/), [`profile-menu`](../frontend/src/app/layout/profile-menu/), [`footer`](../frontend/src/app/layout/footer/), [`app.routes.ts`](../frontend/src/app/app.routes.ts).
 
 - Define the final information architecture for dashboard, collection, groups, and play.
-- Remove links to nonexistent routes, including recommendations, quick play, and analytics; the currently identified dashboard/play links are now limited to existing routes or explicit coming-soon cards.
+- Remove links to nonexistent routes, including recommendations, quick play, and analytics; the currently identified dashboard/play links now resolve only to implemented routes, and the stale quick-play navigation reference has been removed. Analytics remains intentionally absent until a real group read model justifies it.
 - The current footer now links only to implemented landing-page sections and authenticated routes; privacy, terms, and support remain explicitly deferred content.
 - Review authenticated versus unauthenticated navigation after the Clerk migration.
 - Review mobile navigation; the admin sidebar now collapses into a mobile overlay with a backdrop and keeps keyboard focus indicators.
