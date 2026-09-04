@@ -1806,3 +1806,19 @@ Changed: The dashboard now leads with each group as a workspace, showing shared 
 Review: PROD-001 / EQ-006
 
 Verified: Frontend production build and Biome checks pass. Authenticated navigation assertions were updated for the new information hierarchy; rendered breakpoint, keyboard, and real-data browser review remain open. No backend, production data, deployment, or provider configuration was changed.
+
+Continuation claim: PROD-011
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Branch/worktree: main / shared workspace
+
+Scope: move the session detail read from the compatibility `/meets` surface into the canonical session API.
+
+Changed: Added member-scoped `GET /sessions/:sessionId`, extracted the shared session-detail mapper, and switched the frontend meeting-detail page to the canonical route. The legacy `/meets/:meetId/details` endpoint remains available for compatibility but is no longer the primary client path.
+
+Review: PROD-005 / SEC-008
+
+Verified: Backend lint, build, and session tests pass; the new read path returns 404 for a non-member because the underlying query is membership-scoped. Frontend build/Biome and public Playwright checks pass. No migration, production data, deployment, or provider configuration was changed.

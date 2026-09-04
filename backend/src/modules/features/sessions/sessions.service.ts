@@ -1,7 +1,9 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
 
+import { mapMeetDetailsResult } from '../../../common/mappers/meet-details.mapper'
 import { DatabaseService } from '../../common/database/database.service'
 
+import type { MeetWithAttendeesAndGames } from '../../../common/types/meet.type'
 import type {
     CreatePlaySessionBody,
     CreateScheduledSessionBody,
@@ -24,6 +26,17 @@ import type {
 @Injectable()
 export class SessionsService {
     constructor(private readonly databaseService: DatabaseService) {}
+
+    async getSessionDetails(actorAccountId: number, sessionId: number): Promise<MeetWithAttendeesAndGames> {
+        const result = await this.databaseService.getMeetDetailsByIdForAccount(sessionId, actorAccountId)
+        const session = mapMeetDetailsResult(result)
+
+        if (!session) {
+            throw new NotFoundException(`Session with id ${sessionId} not found`)
+        }
+
+        return session
+    }
 
     async createCompletedSession(actorAccountId: number, body: CreatePlaySessionBody): Promise<SessionCreatedDto> {
         const group = await this.databaseService.getGroupById(body.groupId)

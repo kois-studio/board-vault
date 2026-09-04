@@ -1,8 +1,9 @@
-import { Body, Controller, Param, ParseIntPipe, Patch, Post, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
+import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
 import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
+import { MeetWithAttendeesAndGames } from '../../../common/types/meet.type'
 import {
     CreatePlaySessionBody,
     CreateScheduledSessionBody,
@@ -31,6 +32,14 @@ import { SessionsService } from './sessions.service'
 @Controller('sessions')
 export class SessionsController {
     constructor(private readonly sessionsService: SessionsService) {}
+
+    @Get(':sessionId')
+    @ApiOperation({ summary: 'Get a session with attendees and planned/played games' })
+    @ApiResponse({ status: 200, type: MeetWithAttendeesAndGames })
+    @ApiResponse({ status: 404, description: 'Session not found or not visible to the current member.' })
+    getSessionDetails(@Req() request: { user: { userId: number } }, @Param('sessionId', ParseIntPipe) sessionId: number) {
+        return this.sessionsService.getSessionDetails(request.user.userId, sessionId)
+    }
 
     @Post()
     @ApiOperation({ summary: 'Create a completed play session from selected attendees and games' })

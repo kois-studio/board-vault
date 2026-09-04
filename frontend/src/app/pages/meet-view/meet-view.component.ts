@@ -88,7 +88,7 @@ export class MeetViewComponent {
         this.loadError.set(false)
         try {
             // Get Meet Details
-            this.meetData = await firstValueFrom(this.api.getMeetDetailsById(meetId))
+            this.meetData = await firstValueFrom(this.api.getSessionDetailsById(meetId))
             this.plannedGameIdsDraft = [...this.meetData.plannedGames]
             this.meetDataCopyOriginal = JSON.parse(JSON.stringify(this.meetData))
 

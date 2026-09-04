@@ -32,7 +32,7 @@ Completed-session logging now has a guarded, validated backend write and an atom
 
 Relevant surfaces: [`app.routes.ts`](../frontend/src/app/app.routes.ts), [`meet-new`](../frontend/src/app/pages/meet-new/), [`meet-view`](../frontend/src/app/pages/meet-view/), [`log-session-wizard`](../frontend/src/app/components/log-session-wizard/), [`data.service.ts`](../frontend/src/app/core/services/data.service.ts).
 
-- Use one canonical session-creation use case for all session states; the obsolete dashboard meeting-creation route and client helper have been removed, while legacy meet reads and `MeetAccountGame` history writes remain only for compatibility.
+- Use one canonical session API for all session states; the obsolete dashboard meeting-creation route and client helper have been removed, `GET /sessions/:sessionId` is now the member-scoped canonical detail read used by the frontend, while legacy meet reads and `MeetAccountGame` history writes remain only for compatibility.
 - Persist the selected date/time and IANA timezone; completed-session logging now sends both to the backend.
 - Persist the selected group, organizer, attendees, played games, and participant links atomically through `POST /sessions`.
 - Persist scheduled sessions, selected pending attendees, optional planned games, and optional session context atomically through `POST /sessions/scheduled`; the UI captures a local start time and IANA timezone, while omission of attendees remains a documented compatibility default to all current group members.
