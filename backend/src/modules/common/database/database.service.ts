@@ -1562,7 +1562,12 @@ export class DatabaseService implements OnModuleInit {
 
     getMeetsByGroupId(groupId: number) {
         return this._tursoExecute({
-            sql: 'SELECT * FROM Meet WHERE groupId = ?',
+            sql: `
+                SELECT id, groupId, createdBy, meetDate, isConfirmed,
+                    status, timezone, notes
+                FROM Meet
+                WHERE groupId = ?
+            `,
             args: [groupId],
         })
     }

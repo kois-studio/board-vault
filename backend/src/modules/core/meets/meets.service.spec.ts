@@ -33,4 +33,14 @@ describe('MeetsService access boundaries', () => {
             notes: 'Bring the new game',
         })
     })
+
+    it('maps group history notes from the explicit current meet projection', async () => {
+        const getMeetsByGroupId = jest.fn().mockResolvedValue({ rows: currentMeetRows })
+        const service = new MeetsService({ getMeetsByGroupId } as unknown as DatabaseService)
+
+        await expect(service.getMeetsByGroupId(5)).resolves.toEqual([
+            expect.objectContaining({ status: 'scheduled', timezone: 'Europe/Madrid', notes: 'Bring the new game' }),
+        ])
+        expect(getMeetsByGroupId).toHaveBeenCalledWith(5)
+    })
 })
