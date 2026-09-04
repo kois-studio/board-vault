@@ -37,8 +37,13 @@
         <div class="text-center text-secondary space-y-4">
             @if (searchTermIsValid$()) {
                 <div>
-                    <p class="mb-2">No games found matching "{{searchTerm$().trim()}}"</p>
-                    <p class="text-sm text-gray-500 mb-4">Please review the spelling</p>
+                    @if (allSearchResultsOwnedByGroup()) {
+                        <p class="mb-2">Your group already owns every matching game</p>
+                        <p class="text-sm text-gray-500 mb-4">Search for another game if you want to grow the group’s acquisition shortlist.</p>
+                    } @else {
+                        <p class="mb-2">No games found matching "{{searchTerm$().trim()}}"</p>
+                        <p class="text-sm text-gray-500 mb-4">Please review the spelling</p>
+                    }
                     <app-button (click)="navigateToProposeGame()">
                         Propose this game
                     </app-button>
