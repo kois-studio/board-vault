@@ -2320,3 +2320,19 @@ Review: PROD-005 / EQ-004
 Changed: Group home history cards now show recorded attendees and saved session notes alongside the date and games played, with honest “Attendance not recorded” fallback copy. Added pure formatter coverage for short, long, and missing attendee lists.
 
 Verified: Frontend Biome, 20 browser-based unit tests, frontend production build (598.35 kB initial / 137.86 kB estimated transfer), and `git diff --check` pass. No migration, production data, deployment, or provider config changed.
+
+Continuation claim: PROD-004 / PROD-007
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Scope: connect persisted group play history to recommendation decisions without changing the first-release scoring model.
+
+Planned: show each recommendation’s last-played context, including an honest not-played fallback, so the group can use history while choosing what to play.
+
+Review: PROD-004 / PROD-007
+
+Changed: Recommendation cards now show the persisted last-played date for the selected group or an honest “Not played by this group yet” fallback. The first-release scoring model remains unchanged; history-weighted ranking stays deferred until real usage provides enough evidence to tune novelty safely.
+
+Verified: Frontend Biome, 21 browser-based unit tests, frontend production build (598.35 kB initial / 137.86 kB estimated transfer), and `git diff --check` pass. No migration, production data, deployment, or provider config changed.

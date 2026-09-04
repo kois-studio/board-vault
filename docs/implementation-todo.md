@@ -86,7 +86,7 @@ Relevant surfaces: [`history-page`](../frontend/src/app/pages/play-page/history-
 - Keep the play landing honest while its dependent reads load or fail; the upcoming/history cards now show loading and unavailable states instead of presenting zero as fact.
 - Recommendation and scheduling entry points now distinguish unavailable group data from a genuinely empty group list and expose retry.
 - Make empty history actionable and honest.
-- Add last-played context that can feed recommendations.
+- Add last-played context that can feed recommendations; recommendation cards now show the persisted last-played date or an honest not-played fallback, while using that signal as a score factor remains deferred until real usage exists.
 - Add simple post-session ratings or feedback when the product contract is defined.
 
 ## P1 — make existing areas reliable and coherent
