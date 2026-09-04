@@ -2274,3 +2274,17 @@ Changed: Replaced `Meet m.*` in account-scoped, member-scoped, and organizer-sco
 Review: DATA-003 / PROD-005 / EQ-004
 
 Verified: Backend lint, build, 205 tests across 44 suites, focused meet/database tests, frontend Biome, 17 frontend browser-based unit tests, frontend production build (598.39 kB initial / 137.84 kB estimated transfer), and `git diff --check` pass. No migration, production data, deployment, or provider config changed.
+
+Continuation claim: DATA-003 / PROD-007 / EQ-004
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Scope: remove the remaining wildcard session projection from group history reads.
+
+Changed: The group-scoped meet query now uses the same explicit stable projection as account/member/organizer reads, preventing the current nullable `updatedAt` column from being misread as session notes. Added a regression test for group history note mapping.
+
+Review: DATA-003 / PROD-007 / EQ-004
+
+Verified: Backend lint, build, 206 tests across 44 suites, focused meet tests, frontend Biome, 17 frontend browser-based unit tests, frontend production build (598.39 kB initial / 137.84 kB estimated transfer), and `git diff --check` pass. No migration, production data, deployment, or provider config changed.
