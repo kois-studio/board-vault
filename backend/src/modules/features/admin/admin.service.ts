@@ -270,10 +270,10 @@ export class AdminService {
         // Create the new game
         const gameData = {
             title: proposal.title,
-            imageUrl: approvalData.imageUrl || proposal.imageUrl || 'https://via.placeholder.com/300x200?text=No+Image',
-            gameAvgDuration: approvalData.gameAvgDuration || proposal.gameAvgDuration || 60,
-            minPlayers: approvalData.minPlayers || proposal.minPlayers || 2,
-            maxPlayers: approvalData.maxPlayers || proposal.maxPlayers || 4,
+            imageUrl: approvalData.imageUrl ?? proposal.imageUrl ?? 'https://via.placeholder.com/300x200?text=No+Image',
+            gameAvgDuration: approvalData.gameAvgDuration ?? proposal.gameAvgDuration ?? 60,
+            minPlayers: approvalData.minPlayers ?? proposal.minPlayers ?? 2,
+            maxPlayers: approvalData.maxPlayers ?? proposal.maxPlayers ?? 4,
         }
 
         // Create the game
