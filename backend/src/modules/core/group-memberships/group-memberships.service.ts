@@ -90,10 +90,7 @@ export class GroupMembershipsService {
             throw new ForbiddenException('A pending invitation is required to join this group')
         }
 
-        await this.createGroupMembership({ accountId, groupId })
-        await this.databaseService.deleteInvitationById(Number(invitation.rows[0][0]))
-
-        return { success: true }
+        return this.databaseService.acceptInvitationAtomically(Number(invitation.rows[0][0]), accountId, groupId)
     }
 
     async deleteGroupMembershipById(accountId: number, groupId: number): Promise<{ success: boolean }> {

@@ -1,7 +1,7 @@
 import { ForbiddenException } from '@nestjs/common'
 
+import { DatabaseService } from '../../common/database/database.service'
 import { GameProposalService } from '../../core/game-proposal/game-proposal.service'
-import { GroupMembershipsService } from '../../core/group-memberships/group-memberships.service'
 import { GroupsService } from '../../core/groups/groups.service'
 import { InvitationsService } from '../../core/invitations/invitations.service'
 import { NotificationsService } from '../../core/notifications/notifications.service'
@@ -28,7 +28,7 @@ describe('ProfileService invitation acceptance', () => {
             {} as NotificationsService,
             {} as GroupsService,
             {} as InvitationsService,
-            {} as GroupMembershipsService,
+            {} as DatabaseService,
             {} as GameProposalService,
         )
 
@@ -47,18 +47,18 @@ describe('ProfileService invitation acceptance', () => {
             getInvitationById: jest.fn().mockResolvedValue({ id: 1, groupId: 12, fromAccountId: 7, toAccountId: 8 }),
             isExpired: jest.fn().mockReturnValue(false),
         }
-        const groupMembershipsService = { createGroupMembership: jest.fn() }
+        const databaseService = { acceptInvitationAtomically: jest.fn() }
         const service = new ProfileService(
             {} as UsersService,
             {} as NotificationsService,
             {} as GroupsService,
             invitationsService as unknown as InvitationsService,
-            groupMembershipsService as unknown as GroupMembershipsService,
+            databaseService as unknown as DatabaseService,
             {} as GameProposalService,
         )
 
         await expect(service.acceptInvitation(7, 1)).rejects.toThrow(ForbiddenException)
-        expect(groupMembershipsService.createGroupMembership).not.toHaveBeenCalled()
+        expect(databaseService.acceptInvitationAtomically).not.toHaveBeenCalled()
     })
 
     it('does not accept an expired invitation', async () => {
@@ -68,17 +68,17 @@ describe('ProfileService invitation acceptance', () => {
                 .mockResolvedValue({ id: 1, groupId: 12, fromAccountId: 7, toAccountId: 8, expiresAt: '2000-08-13 00:00:00' }),
             isExpired: jest.fn().mockReturnValue(true),
         }
-        const groupMembershipsService = { createGroupMembership: jest.fn() }
+        const databaseService = { acceptInvitationAtomically: jest.fn() }
         const service = new ProfileService(
             {} as UsersService,
             {} as NotificationsService,
             {} as GroupsService,
             invitationsService as unknown as InvitationsService,
-            groupMembershipsService as unknown as GroupMembershipsService,
+            databaseService as unknown as DatabaseService,
             {} as GameProposalService,
         )
 
         await expect(service.acceptInvitation(8, 1)).rejects.toThrow('This invitation has expired')
-        expect(groupMembershipsService.createGroupMembership).not.toHaveBeenCalled()
+        expect(databaseService.acceptInvitationAtomically).not.toHaveBeenCalled()
     })
 })
