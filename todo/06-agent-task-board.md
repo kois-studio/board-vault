@@ -1855,6 +1855,22 @@ Review: TRUTH-001 / EQ-006
 
 Verified: Frontend lint, build, browser unit tests, public Playwright checks, and `git diff --check` pass. No backend, production data, deployment, or provider configuration was changed.
 
+Continuation claim: SEC-008
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Branch/worktree: main / shared workspace
+
+Scope: enforce socially meaningful session participation invariants in the domain service, not only at the HTTP DTO boundary.
+
+Changed: Completed-session creation now rejects an empty attendee set; completed and played-game writes reject games without participants; organizer attendee replacement cannot clear the session. Added direct service regression tests for all four rules so internal callers and future transports cannot create incomplete social history.
+
+Review: SEC-008 / PROD-005
+
+Verified: Backend no-mutation lint, full unit suite (44 suites, 195 tests), and build pass. Documentation counts and session contracts were updated. No migration, production data, deployment, or provider configuration was changed.
+
 Continuation claim: EQ-006
 
 Owner: Codex
