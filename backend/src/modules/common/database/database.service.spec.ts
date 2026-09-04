@@ -170,6 +170,20 @@ describe('DatabaseService logging', () => {
         expect(execute.mock.calls[0][0].sql).toContain("ma.attendanceStatus = 'attended'")
     })
 
+    it('requires a session organizer to remain a member of the private group', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const execute = jest.fn().mockResolvedValue({ rows: [] })
+
+        ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
+
+        await service.getMeetByIdForCreator(12, 7)
+
+        expect(execute).toHaveBeenCalledWith({
+            sql: expect.stringContaining('INNER JOIN GroupMembership gm'),
+            args: [7, 12, 7],
+        })
+    })
+
     it('builds recommendation diagnostics for the empty-state explanation', async () => {
         const service = new DatabaseService({} as ConfigService)
         const execute = jest.fn().mockResolvedValue({ rows: [[4, 2, 0]] })
