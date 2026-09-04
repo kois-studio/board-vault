@@ -233,7 +233,7 @@ These are not purely frontend tasks, but they block reliable product UX completi
 - Complete the remaining authorization, response-privacy, validation, and API-contract reviews.
 - Add CI gates for builds, tests, lint, formatting, and migrations.
 - Add health/readiness checks, structured observability, backup/restore rehearsal, and rollback instructions.
-- Replace the stale backend e2e starter test with product behavior tests.
+- Expand the two environment-safe backend HTTP boundary tests into product behavior and producer/consumer contract tests.
 - Expand meaningful integration coverage; backend lint failures are resolved and the no-mutation lint command is now a CI gate.
 
 ## Recommended execution order
