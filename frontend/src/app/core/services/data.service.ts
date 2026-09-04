@@ -732,7 +732,6 @@ export class DataService {
         const currentUser = this.currentUser()
         if (!currentUser) return
 
-        this.userGames.set([])
         this._getUserGames(currentUser.id)
     }
 
