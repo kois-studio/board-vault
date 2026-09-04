@@ -50,6 +50,7 @@ Relevant surfaces: [`app.routes.ts`](../frontend/src/app/app.routes.ts), [`meet-
 - Decide how the legacy `MeetAccountGame` history relation should evolve; the completed write currently preserves it as a compatibility relation.
 - The obsolete confirmation flow has been removed; attendee and played-game changes now state that they save automatically from the session detail page.
 - Attendee and played-game changes now await the API, disable overlapping/terminal edits, show actionable errors, and revert optimistic UI state when persistence fails; refresh-survival still needs an authenticated browser journey.
+- Session-detail participant controls now prevent removing the final participant from a played game and surface a retryable error when the participant write fails; full authenticated mutation coverage remains open.
 - Complete the organizer-only attendee API verification through the production UI.
 - Add transaction boundaries for invitation acceptance, scheduled-session creation, completion, cancellation, attendee changes, and played-game recording; legacy invitation acceptance, canonical session creation, lifecycle transitions, played-game recording, and attendee replacement now have transaction boundaries, while deprecated per-row attendee endpoints remain for compatibility.
 - Ensure the upcoming sessions page reads real persisted scheduled/active sessions; the old completed-history placeholder has been removed and the page now uses `userMeets`.

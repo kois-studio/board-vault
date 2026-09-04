@@ -2246,3 +2246,17 @@ Changed: Added component tests for the canonical session scheduling form. The su
 Review: PROD-005 / EQ-003
 
 Verified: Frontend Biome, 15 frontend browser-based unit tests, frontend production build (598.39 kB initial / 137.83 kB estimated transfer), and `git diff --check` pass. No migration, production data, deployment, or provider config changed.
+
+Continuation claim: PROD-005 / EQ-003
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Scope: protect per-game social history edits in session detail.
+
+Changed: Session-detail participant controls now refuse to remove the last participant from a played game, restore optimistic state when persistence fails, and surface an actionable error. Added component coverage for both the invariant and the failure rollback.
+
+Review: PROD-005 / EQ-003
+
+Verified: Frontend Biome, 17 frontend browser-based unit tests, frontend production build (598.39 kB initial / 137.84 kB estimated transfer), and `git diff --check` pass. No migration, production data, deployment, or provider config changed.
