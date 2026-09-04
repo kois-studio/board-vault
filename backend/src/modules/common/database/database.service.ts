@@ -1356,9 +1356,10 @@ export class DatabaseService implements OnModuleInit {
             sql: `
                 SELECT m.*
                 FROM Meet m
+                INNER JOIN GroupMembership gm ON gm.groupId = m.groupId AND gm.accountId = ?
                 WHERE m.id = ? AND m.createdBy = ?
             `,
-            args: [meetId, accountId],
+            args: [accountId, meetId, accountId],
         })
     }
 

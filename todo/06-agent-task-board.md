@@ -2110,3 +2110,19 @@ Changed: Added strict query DTOs for administrator game/proposal lists: supporte
 Review: SEC-003 / SEC-004 / API-001
 
 Verified: Backend lint, build, 203 tests across 44 suites, including HTTP rejection/transform tests for the new admin query boundary, and `git diff --check` pass. No migration, production data, deployment, or provider config changed.
+
+Continuation claim: SEC-003
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Branch/worktree: main / shared workspace
+
+Scope: prevent former group members from mutating sessions they no longer belong to.
+
+Changed: The shared database lookup used by organizer-only session mutations and legacy attendee management now joins the session’s `GroupMembership` row while checking `Meet.createdBy`. This keeps session writes aligned with the private-group membership boundary after a creator leaves a group.
+
+Review: SEC-003 / DATA-003
+
+Verified: Focused session/database/attendee tests pass (61 tests across 3 suites), backend lint and build pass, and `git diff --check` pass. No migration, production data, deployment, or provider config changed.
