@@ -2,8 +2,8 @@ import { BadRequestException, ForbiddenException, Injectable, Logger } from '@ne
 
 import { LogFeature } from '../../../common/decorators/logger.decorator'
 import { InvitationWithExtraData } from '../../../common/types/invitation.type'
+import { DatabaseService } from '../../common/database/database.service'
 import { GameProposalService } from '../../core/game-proposal/game-proposal.service'
-import { GroupMembershipsService } from '../../core/group-memberships/group-memberships.service'
 import { GroupsService } from '../../core/groups/groups.service'
 import { InvitationsService } from '../../core/invitations/invitations.service'
 import { NotificationsService } from '../../core/notifications/notifications.service'
@@ -22,7 +22,7 @@ export class ProfileService {
         private readonly notificationsService: NotificationsService,
         private readonly groupsService: GroupsService,
         private readonly invitationsService: InvitationsService,
-        private readonly groupMembershipsService: GroupMembershipsService,
+        private readonly databaseService: DatabaseService,
         private readonly gameProposalService: GameProposalService,
     ) {}
 
@@ -71,13 +71,10 @@ export class ProfileService {
             throw new BadRequestException('This invitation has expired. Ask the group owner to send a new one.')
         }
 
-        // Step 2: create the membership to the group
-        await this.groupMembershipsService.createGroupMembership({ accountId: invitationData.toAccountId, groupId: invitationData.groupId })
+        // Membership creation and invitation consumption must commit together.
+        await this.databaseService.acceptInvitationAtomically(invitationId, userId, invitationData.groupId)
 
-        // Step 3: delete the invitation
-        await this.invitationsService.deleteInvitationForRecipient(invitationId, userId)
-
-        // Step 4: owner notifications are intentionally deferred until the
+        // Owner notifications are intentionally deferred until the
         // notification contract defines delivery and unread semantics.
 
         return { success: true }

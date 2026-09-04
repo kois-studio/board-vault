@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto'
 
 import { Client, createClient, type InStatement } from '@libsql/client'
-import { BadRequestException, Injectable, Logger, NotFoundException, OnModuleInit } from '@nestjs/common'
+import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundException, OnModuleInit } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import * as bcrypt from 'bcryptjs'
 
@@ -1106,6 +1106,55 @@ export class DatabaseService implements OnModuleInit {
             sql: 'DELETE FROM Invitation WHERE id = ?',
             args: [id],
         })
+    }
+
+    async acceptInvitationAtomically(invitationId: number, accountId: number, groupId: number): Promise<{ success: true }> {
+        const transaction = await this.tursoClient.transaction('write')
+
+        try {
+            const invitation = await transaction.execute({
+                sql: `
+                    SELECT id
+                    FROM Invitation
+                    WHERE id = ?
+                      AND groupId = ?
+                      AND toAccountId = ?
+                      AND (expiresAt IS NULL OR expiresAt > CURRENT_TIMESTAMP)
+                `,
+                args: [invitationId, groupId, accountId],
+            })
+
+            if (invitation.rows.length === 0) {
+                throw new ForbiddenException('A pending invitation is required to join this group')
+            }
+
+            await transaction.execute({
+                sql: 'INSERT OR IGNORE INTO GroupMembership (accountId, groupId) VALUES (?, ?)',
+                args: [accountId, groupId],
+            })
+
+            const deletedInvitation = await transaction.execute({
+                sql: `
+                    DELETE FROM Invitation
+                    WHERE id = ?
+                      AND groupId = ?
+                      AND toAccountId = ?
+                `,
+                args: [invitationId, groupId, accountId],
+            })
+
+            if (deletedInvitation.rowsAffected !== 1) {
+                throw new NotFoundException('Invitation is no longer available')
+            }
+
+            await transaction.commit()
+            return { success: true }
+        } catch (error) {
+            await transaction.rollback()
+            throw error
+        } finally {
+            transaction.close()
+        }
     }
 
     deleteAllInvitationsByGroupId(groupId: number) {
