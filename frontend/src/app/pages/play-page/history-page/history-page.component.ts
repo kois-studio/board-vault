@@ -10,6 +10,7 @@ import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
 import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
+import { formatAttendeeSummary } from '../../../core/utils/formatAttendeeSummary'
 
 @Component({
     imports: [
@@ -60,6 +61,10 @@ export class HistoryPageComponent {
 
     public getGroupName(groupId: number): string {
         return this.userGroups$().find((group) => group.id === groupId)?.name ?? `Group ${groupId}`
+    }
+
+    public getAttendeeSummary(attendees: Array<{ displayName: string; username: string }>): string {
+        return formatAttendeeSummary(attendees)
     }
 
     public retryHistory(): void {
