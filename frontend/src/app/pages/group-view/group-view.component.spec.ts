@@ -1,4 +1,4 @@
-import { formatAttendeeSummary } from './group-view.component'
+import { formatAttendeeSummary } from '../../core/utils/formatAttendeeSummary'
 
 describe('formatAttendeeSummary', () => {
     it('uses an honest fallback when no attendance was recorded', () => {
