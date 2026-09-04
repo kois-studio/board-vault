@@ -41,7 +41,6 @@ export class LayoutTopBarComponent implements OnInit {
                 '/play/upcoming-sessions': 3,
                 '/play/history': 3,
                 '/play/recommendations': 3,
-                '/play/quick-play': 3,
             }[currentUrl] ?? 0
         )
     })
@@ -49,7 +48,7 @@ export class LayoutTopBarComponent implements OnInit {
     public readonly sections = [
         {
             path: 'dashboard',
-            name: 'Dashboard',
+            name: 'Home',
         },
         {
             path: 'collection',
@@ -68,7 +67,6 @@ export class LayoutTopBarComponent implements OnInit {
                 { path: 'play/upcoming-sessions', icon: 'calendar-check-fill', name: 'Upcoming' },
                 { path: 'play/history', icon: 'clock-history', name: 'History' },
                 { path: 'play/recommendations', icon: 'hand-thumbs-up', name: 'Discover' },
-                // { path: 'play/quick-play', icon: 'play-fill', name: 'Stats' },
             ],
         },
     ]
