@@ -302,7 +302,7 @@
                         }
                     </div>
                     @if (groupHistory$().length > 3) {
-                        <a routerLink="/play/history" class="mt-5 inline-block text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400">See all your sessions →</a>
+                        <a routerLink="/play/history" [queryParams]="{ groupId: group.id }" class="mt-5 inline-block text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400">See all {{ group.name }} sessions →</a>
                     }
                 }
             </section>

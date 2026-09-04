@@ -1,5 +1,9 @@
-<app-page-header titleText="History" [showActionButton]="true">
-    Browse games played in completed sessions
+<app-page-header [titleText]="historyTitle()" [showActionButton]="true">
+    @if (groupIdFilter()) {
+        Browse games this group played in completed sessions
+    } @else {
+        Browse games played in completed sessions
+    }
     <app-button
         class="action-button"
         icon="plus-lg"
@@ -17,10 +21,16 @@
             <p class="text-sm mt-2 mb-4">Check your connection and try again.</p>
             <app-button icon="arrow-repeat" (click)="retryHistory()">Retry</app-button>
         </div>
-    } @else if (userHistory$().length === 0) {
+    } @else if (!hasFilteredHistory()) {
         <!-- no data -->
         <div class="text-center py-8 text-secondary">
-            <p>No completed sessions yet.</p>
+            @if (groupIdFilter()) {
+                <p>No completed sessions for {{ historyGroupName() }} yet.</p>
+                <p class="mt-2 text-sm">Record the next game night from the group workspace to start its shared memory.</p>
+                <a class="app-btn-primary mt-5 inline-block" [routerLink]="['/groups', groupIdFilter(), 'sessions', 'new']">Plan a session</a>
+            } @else {
+                <p>No completed sessions yet.</p>
+            }
         </div>
     } @else {
         @for (historyRecord of sortedUserHistoryComputed(); track historyRecord.meetData.id) {
