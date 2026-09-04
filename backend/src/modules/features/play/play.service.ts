@@ -14,9 +14,11 @@ import type {
     RecommendationFeedbackBody,
     RecommendationFeedbackDto,
     RecommendationRequestBody,
+    RecommendationSignalsDto,
     RecommendationsDto,
 } from './play.types'
 import type { MeetDto } from '../../../common/types/meet.type'
+import type { AvatarDto, UserPublicDto } from '../../../common/types/user.type'
 
 @Injectable()
 export class PlayService {
@@ -32,11 +34,13 @@ export class PlayService {
     @LogFeature(new Logger('PlayService'))
     async getRecommendations(actorAccountId: number, body: RecommendationRequestBody): Promise<RecommendationsDto> {
         const group = await this.databaseService.getGroupById(body.groupId)
+
         if (group.rows.length === 0) {
             throw new NotFoundException(`Group with id ${body.groupId} not found`)
         }
 
         const memberIds = await this.databaseService.getGroupMemberIds(body.groupId)
+
         if (!memberIds.includes(actorAccountId)) {
             throw new ForbiddenException('You must belong to the group to get recommendations')
         }
@@ -45,13 +49,43 @@ export class PlayService {
             throw new BadRequestException('Every attendee must belong to the selected group')
         }
 
-        const resultSet = await this.databaseService.getRecommendationCandidates(body.attendeeIds, body.attendeeIds.length, body.availableMinutes)
+        const resultSet = await this.databaseService.getRecommendationCandidates(
+            body.attendeeIds,
+            body.attendeeIds.length,
+            body.availableMinutes,
+        )
+        const feedbackByGame = new Map<number, { interestedCount: number; notForUsCount: number }>()
+
+        if (resultSet.rows.length > 0) {
+            const feedbackResult = await this.databaseService.getRecommendationFeedbackForGroup(body.groupId)
+            const latestByMemberAndGame = new Set<string>()
+            const attendeeIds = new Set(body.attendeeIds)
+
+            for (const row of feedbackResult.rows) {
+                const gameId = Number(row[1])
+                const accountId = Number(row[2])
+
+                if (!attendeeIds.has(accountId)) continue
+
+                const key = `${gameId}:${accountId}`
+
+                if (latestByMemberAndGame.has(key)) continue
+                latestByMemberAndGame.add(key)
+
+                const current = feedbackByGame.get(gameId) ?? { interestedCount: 0, notForUsCount: 0 }
+
+                if (row[3] === 'interested') current.interestedCount += 1
+                if (row[3] === 'not_for_us') current.notForUsCount += 1
+                feedbackByGame.set(gameId, current)
+            }
+        }
         const recommendations = resultSet.rows
-            .map(row => this._mapRecommendation(row, body.attendeeIds.length, body.availableMinutes))
+            .map(row => this._mapRecommendation(row, body.attendeeIds.length, body.availableMinutes, feedbackByGame.get(Number(row[0]))))
             .sort((a, b) => b.score - a.score || a.gameData.id - b.gameData.id)
             .slice(0, 10)
 
         let noResultReason: string | null = null
+
         if (recommendations.length === 0) {
             noResultReason = await this._getNoResultReason(body)
         }
@@ -66,7 +100,11 @@ export class PlayService {
     }
 
     private async _getNoResultReason(body: RecommendationRequestBody): Promise<string> {
-        const counts = await this.databaseService.getRecommendationCandidateCounts(body.attendeeIds, body.attendeeIds.length, body.availableMinutes)
+        const counts = await this.databaseService.getRecommendationCandidateCounts(
+            body.attendeeIds,
+            body.attendeeIds.length,
+            body.availableMinutes,
+        )
         const row = counts.rows[0]
         const ownedGameCount = Number(row?.[0] ?? 0)
         const playerFitCount = Number(row?.[1] ?? 0)
@@ -85,7 +123,12 @@ export class PlayService {
         return 'No suitable titled games were found for the selected attendees and filters.'
     }
 
-    private _mapRecommendation(row: { [key: number]: unknown }, attendeeCount: number, availableMinutes?: number): RecommendationDto {
+    private _mapRecommendation(
+        row: { [key: number]: unknown },
+        attendeeCount: number,
+        availableMinutes?: number,
+        feedback: { interestedCount: number; notForUsCount: number } = { interestedCount: 0, notForUsCount: 0 },
+    ): RecommendationDto {
         const gameId = Number(row[0])
         const gameAvgDuration = row[2] === null || row[2] === undefined ? 0 : Number(row[2])
         const minPlayers = row[3] === null || row[3] === undefined ? 0 : Number(row[3])
@@ -95,9 +138,11 @@ export class PlayService {
         const attendeeOwnerCount = Number(row[7])
         const averageReview = row[8] === null || row[8] === undefined ? null : Number(row[8])
         const lastPlayedAt = row[9] === null || row[9] === undefined ? null : String(row[9])
-        const durationScore = availableMinutes !== undefined && gameAvgDuration > 0
-            ? Math.round(20 * Math.max(0, 1 - Math.abs(availableMinutes - gameAvgDuration) / availableMinutes))
-            : 0
+        const durationScore =
+            availableMinutes !== undefined && gameAvgDuration > 0
+                ? Math.round(20 * Math.max(0, 1 - Math.abs(availableMinutes - gameAvgDuration) / availableMinutes))
+                : 0
+        const feedbackScore = Math.min(12, feedback.interestedCount * 4) - Math.min(12, feedback.notForUsCount * 6)
         const ownershipScore = Math.round(20 * (attendeeOwnerCount / attendeeCount))
         const ratingScore = averageReview === null ? 0 : Math.round(20 * (averageReview / 10))
         const reasons = [`Owned by ${attendeeOwnerCount} of ${attendeeCount} selected attendees`, `Fits ${attendeeCount} players`]
@@ -105,7 +150,17 @@ export class PlayService {
         if (availableMinutes !== undefined) {
             reasons.push(gameAvgDuration > 0 ? `Estimated duration: ${gameAvgDuration} minutes` : 'Duration is not available')
         }
-        reasons.push(averageReview === null ? 'No selected-attendee rating yet' : `Selected-attendee rating: ${averageReview.toFixed(1)}/10`)
+        reasons.push(
+            averageReview === null ? 'No selected-attendee rating yet' : `Selected-attendee rating: ${averageReview.toFixed(1)}/10`,
+        )
+        if (feedback.interestedCount > 0) {
+            reasons.push(
+                `${feedback.interestedCount} selected attendee${feedback.interestedCount === 1 ? '' : 's'} marked this as interesting`,
+            )
+        }
+        if (feedback.notForUsCount > 0) {
+            reasons.push(`${feedback.notForUsCount} selected attendee${feedback.notForUsCount === 1 ? '' : 's'} passed on this before`)
+        }
 
         return {
             gameData: {
@@ -117,13 +172,15 @@ export class PlayService {
                 maxPlayers,
                 titleTranslations: { en: titleEn, es: titleEs },
             },
-            score: 40 + ownershipScore + ratingScore + durationScore,
+            score: Math.max(0, Math.min(100, 40 + ownershipScore + ratingScore + durationScore + feedbackScore)),
             explanation: {
                 reasons,
                 attendeeOwnerCount,
                 attendeeCount,
                 averageReview,
                 lastPlayedAt,
+                interestedCount: feedback.interestedCount,
+                notForUsCount: feedback.notForUsCount,
             },
         }
     }
@@ -131,11 +188,13 @@ export class PlayService {
     @LogFeature(new Logger('PlayService'))
     async createRecommendationFeedback(actorAccountId: number, body: RecommendationFeedbackBody): Promise<RecommendationFeedbackDto> {
         const group = await this.databaseService.getGroupById(body.groupId)
+
         if (group.rows.length === 0) {
             throw new NotFoundException(`Group with id ${body.groupId} not found`)
         }
 
         const memberIds = await this.databaseService.getGroupMemberIds(body.groupId)
+
         if (!memberIds.includes(actorAccountId)) {
             throw new ForbiddenException('You must belong to the group to submit recommendation feedback')
         }
@@ -145,6 +204,7 @@ export class PlayService {
         }
 
         const ownedGame = await this.databaseService.getOwnedGameByAnyAccount(body.gameId, body.attendeeIds)
+
         if (ownedGame.rows.length === 0) {
             throw new BadRequestException('The selected attendees do not own this game')
         }
@@ -161,17 +221,109 @@ export class PlayService {
     }
 
     @LogFeature(new Logger('PlayService'))
+    async getRecommendationSignals(actorAccountId: number, groupId: number): Promise<RecommendationSignalsDto> {
+        const group = await this.databaseService.getGroupById(groupId)
+
+        if (group.rows.length === 0) {
+            throw new NotFoundException(`Group with id ${groupId} not found`)
+        }
+
+        const memberIds = await this.databaseService.getGroupMemberIds(groupId)
+
+        if (!memberIds.includes(actorAccountId)) {
+            throw new ForbiddenException('You must belong to the group to view recommendation signals')
+        }
+
+        const resultSet = await this.databaseService.getRecommendationFeedbackForGroup(groupId)
+        const latestByMemberAndGame = new Map<
+            string,
+            {
+                gameId: number
+                accountId: number
+                feedback: string
+                createdAt: string
+                username: string
+                displayName: string
+                avatar: AvatarDto
+            }
+        >()
+
+        for (const row of resultSet.rows) {
+            const gameId = Number(row[1])
+            const accountId = Number(row[2])
+            const key = `${gameId}:${accountId}`
+
+            if (latestByMemberAndGame.has(key)) continue
+
+            latestByMemberAndGame.set(key, {
+                gameId,
+                accountId,
+                feedback: String(row[3]),
+                createdAt: String(row[4]),
+                username: String(row[5]),
+                displayName: String(row[6]),
+                avatar: JSON.parse(String(row[7])) as AvatarDto,
+            })
+        }
+
+        const signals = new Map<number, RecommendationSignalsDto['signals'][number]>()
+
+        for (const signal of latestByMemberAndGame.values()) {
+            if (signal.feedback !== 'interested' && signal.feedback !== 'not_for_us') continue
+
+            const existing = signals.get(signal.gameId)
+            const member: UserPublicDto = {
+                id: signal.accountId,
+                username: signal.username,
+                displayName: signal.displayName,
+                avatar: signal.avatar,
+            }
+
+            if (existing) {
+                if (signal.accountId === actorAccountId) {
+                    existing.yourFeedback = signal.feedback as 'interested' | 'not_for_us'
+                }
+                if (signal.feedback === 'interested') {
+                    existing.interestedCount += 1
+                    existing.interestedBy.push(member)
+                } else {
+                    existing.notForUsCount += 1
+                }
+                continue
+            }
+
+            signals.set(signal.gameId, {
+                gameId: signal.gameId,
+                interestedCount: signal.feedback === 'interested' ? 1 : 0,
+                notForUsCount: signal.feedback === 'not_for_us' ? 1 : 0,
+                yourFeedback: signal.accountId === actorAccountId ? (signal.feedback as 'interested' | 'not_for_us') : null,
+                interestedBy: signal.feedback === 'interested' ? [member] : [],
+                lastUpdatedAt: signal.createdAt,
+            })
+        }
+
+        return {
+            groupId,
+            signals: [...signals.values()].sort(
+                (a, b) => b.interestedCount - a.interestedCount || b.lastUpdatedAt.localeCompare(a.lastUpdatedAt) || a.gameId - b.gameId,
+            ),
+        }
+    }
+
+    @LogFeature(new Logger('PlayService'))
     async getUserGamesHistory(userId: number): Promise<Array<HistoryRecordDto>> {
-        const meetsYouParticipatedIn = await this.meetAccountGamesService.getDistinctMeetIdsByAccountId(userId)
+        const meetsYouParticipatedIn = await this.databaseService.getDistinctCompletedMeetIdsForAccountHistory(userId)
 
         const history = await Promise.all(
             meetsYouParticipatedIn.map(async meetId => {
                 const meetData = await this.meetsService.getMeetById(meetId, userId)
+
                 if (meetData.status !== 'completed') {
                     return null
                 }
 
-                const gameIds = await this.meetAccountGamesService.getDistinctGameIdsByMeetId(meetId)
+                const attendedByIds = await this.databaseService.getMeetAttendedAccountIds(meetId)
+                const gameIds = await this.databaseService.getPlayedGameIdsByMeetId(meetId)
                 const gamesPlayed = await Promise.all(
                     gameIds.map(async gameId => {
                         const game = await this.gamesService.getGameById(gameId)
@@ -194,6 +346,7 @@ export class PlayService {
                 return {
                     meetData,
                     gamesPlayed,
+                    attendedBy: await Promise.all(attendedByIds.map(async accountId => this.usersService.getPublicUserById(accountId))),
                 }
             }),
         )

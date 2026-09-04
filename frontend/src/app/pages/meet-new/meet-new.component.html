@@ -1,81 +1,120 @@
-<div class="mt-24 lg:mt-48 mb-96 mx-2 max-w-sm md:mx-auto p-2 lg:p-6">
-    <div class="app-bg-secondary shadow-md rounded-lg p-6 relative">
-        <!-- TOP RIGHT BUTTONS -->
-        <div class="flex gap-4 absolute -top-16 left-0">    
-            <button routerLink="/groups/{{ groupData?.id }}" class="app-btn-danger" title="Cancel editing">
-                <i class="bi bi-arrow-left"></i> Back
-            </button>
-        </div>
+<main class="mt-16 mb-24 mx-2 md:mx-auto max-w-3xl p-2 lg:p-6">
+    <a [routerLink]="['/groups', groupData?.id]" class="app-btn-secondary inline-block mb-6">← Back to group</a>
 
-        <!-- TITLE -->
-        <h2 class="text-xl font-semibold mb-4">Create a new meet</h2>
-        <hr />
+    <div class="app-bg-secondary shadow-md rounded-lg p-6 lg:p-8">
+        <header class="mb-8">
+            <p class="text-sm font-medium text-indigo-600 dark:text-indigo-400">{{ groupData?.name }}</p>
+            <h1 class="text-3xl font-bold mt-1">Plan a game night</h1>
+            <p class="text-secondary mt-3">Pick a date, invite the people who should be there, and put a few games on the shortlist. You can adjust the session later.</p>
+        </header>
 
-        <!-- FORM -->
-        <div class="pt-8 pb-2">
-            <div class="grid gap-4">
-                <div>
-                    <input
-                        type="date"
-                        [formControl]="dateForm"
-                        [class]="dateClass"
-                        class="app-input"
-                        [min]="today"
-                        required
-                    />
-                    <div *ngIf="dateForm.invalid && (dateForm.dirty || dateForm.touched)">
-                        <div *ngIf="dateForm.hasError('required')" class="text-sm text-red-500 py-1">
-                            <i class="bi bi-exclamation-circle-fill"></i> Date is required.
-                        </div>
-                        <div *ngIf="dateForm.hasError('futureDate')" class="text-sm text-red-500 py-1">
-                            <i class="bi bi-exclamation-circle-fill"></i> Date cannot be in the past.
-                        </div>
+        <div class="grid gap-8">
+            <section aria-labelledby="session-date-heading">
+                <div class="flex items-start gap-3 mb-3">
+                    <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-sm font-semibold text-white">1</span>
+                    <div>
+                        <h2 id="session-date-heading" class="font-semibold">Choose the date</h2>
+                        <p class="text-secondary text-sm">Use the day your group expects to meet.</p>
                     </div>
                 </div>
-                <fieldset class="grid gap-2">
-                    <legend class="font-medium">Attendees</legend>
-                    <p class="text-secondary text-sm">Choose the group members expected at this session.</p>
-                    @if ((groupData?.members?.length ?? 0) === 0) {
-                        <p class="text-secondary text-sm">No group members are available.</p>
-                    } @else {
-                        <div class="grid gap-2 sm:grid-cols-2">
-                            @for (member of groupData?.members ?? []; track member.id) {
-                                <label class="flex items-center gap-3 rounded-lg border border-zinc-200 dark:border-zinc-700 p-3 cursor-pointer">
-                                    <input
-                                        type="checkbox"
-                                        [checked]="selectedAttendeeIds.includes(member.id)"
-                                        (change)="toggleAttendee(member.id)"
-                                    />
-                                    <span>{{ member.displayName || member.username }}</span>
-                                </label>
-                            }
+                <input
+                    type="date"
+                    aria-label="Game night date"
+                    [formControl]="dateForm"
+                    [class]="dateClass"
+                    class="app-input"
+                    [min]="today"
+                    required
+                />
+                <div *ngIf="dateForm.invalid && (dateForm.dirty || dateForm.touched)" role="alert">
+                    <div *ngIf="dateForm.hasError('required')" class="text-sm text-red-500 py-1">Date is required.</div>
+                    <div *ngIf="dateForm.hasError('futureDate')" class="text-sm text-red-500 py-1">Date cannot be in the past.</div>
+                </div>
+                <label for="session-time" class="block text-sm font-medium mt-4 mb-2">Start time</label>
+                <input id="session-time" type="time" aria-label="Game night start time" [formControl]="timeForm" class="app-input" required />
+                <div *ngIf="timeForm.invalid && (timeForm.dirty || timeForm.touched)" role="alert" class="text-sm text-red-500 py-1">Start time is required.</div>
+                <p class="text-secondary text-sm mt-2">Saved in your local timezone: {{ localTimezone }}.</p>
+            </section>
+
+            <section aria-labelledby="attendees-heading">
+                <div class="flex flex-wrap items-start justify-between gap-3 mb-3">
+                    <div class="flex items-start gap-3">
+                        <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-sm font-semibold text-white">2</span>
+                        <div>
+                            <h2 id="attendees-heading" class="font-semibold">Invite the group</h2>
+                            <p class="text-secondary text-sm">Who do you expect to play? This starts the shared attendance list.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-3 text-sm">
+                        <button type="button" class="text-indigo-600 underline dark:text-indigo-400" (click)="selectAllAttendees()">Everyone</button>
+                        <button type="button" class="text-secondary underline" (click)="clearAttendees()">Clear</button>
+                    </div>
+                </div>
+                @if ((groupData?.members?.length ?? 0) === 0) {
+                    <p class="text-secondary text-sm">No group members are available.</p>
+                } @else {
+                    <p class="text-secondary text-sm mb-3" aria-live="polite">{{ selectedAttendeesLabel }}</p>
+                    <div class="grid gap-2 sm:grid-cols-2">
+                        @for (member of groupData?.members ?? []; track member.id) {
+                            <label class="flex items-center gap-3 rounded-lg border border-zinc-200 dark:border-zinc-700 p-3 cursor-pointer has-[:checked]:border-indigo-500">
+                                <input type="checkbox" [checked]="selectedAttendeeIds.includes(member.id)" (change)="toggleAttendee(member.id)" />
+                                <span>{{ member.displayName || member.username }}</span>
+                                <span class="text-secondary text-sm ml-auto">{{ member.games.length }} games</span>
+                            </label>
+                        }
+                    </div>
+                }
+            </section>
+
+            <section aria-labelledby="games-heading">
+                <div class="flex flex-wrap items-start justify-between gap-3 mb-3">
+                    <div class="flex items-start gap-3">
+                        <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-sm font-semibold text-white">3</span>
+                        <div>
+                            <h2 id="games-heading" class="font-semibold">Make a shortlist <span class="text-secondary font-normal">(optional)</span></h2>
+                            <p class="text-secondary text-sm">Choose games to consider. Leave this empty if the group will decide on the night.</p>
+                        </div>
+                    </div>
+                    @if (availableGames.length > 0) {
+                        <div class="flex gap-3 text-sm">
+                            <button type="button" class="text-indigo-600 underline dark:text-indigo-400" (click)="selectAllGames()">All games</button>
+                            <button type="button" class="text-secondary underline" (click)="clearGames()">Clear</button>
                         </div>
                     }
-                </fieldset>
-                <fieldset class="grid gap-2">
-                    <legend class="font-medium">Planned games <span class="text-secondary font-normal">(optional)</span></legend>
-                    @if (availableGames.length === 0) {
-                        <p class="text-secondary text-sm">No games are currently available in this group.</p>
-                    } @else {
-                        <div class="grid gap-2 max-h-64 overflow-y-auto">
-                            @for (game of availableGames; track game.id) {
-                                <label class="flex items-center gap-3 rounded-lg border border-zinc-200 dark:border-zinc-700 p-3 cursor-pointer">
-                                    <input
-                                        type="checkbox"
-                                        [checked]="selectedPlannedGameIds.includes(game.id)"
-                                        (change)="togglePlannedGame(game.id)"
-                                    />
-                                    <img [src]="game.imageUrl" [alt]="game.titleTranslations.en || game.title" class="h-10 w-10 rounded object-cover" />
-                                    <span>{{ game.titleTranslations.en || game.title }}</span>
-                                </label>
-                            }
-                        </div>
-                    }
-                </fieldset>
-                <button class="app-btn-primary" title="Create meet" (click)="onClickCreateMeeting()" [disabled]="disableCreateButton">
-                    Create
-                </button>
-            </div>
+                </div>
+                <p class="text-secondary text-sm mb-3" aria-live="polite">{{ selectedGamesLabel }}</p>
+                @if (availableGames.length === 0) {
+                    <div class="rounded-lg border border-dashed border-zinc-300 dark:border-zinc-700 p-4 text-secondary text-sm">No games are currently available in this group. Add games to member collections first, or plan the session without a shortlist.</div>
+                } @else {
+                    <div class="grid gap-2 max-h-72 overflow-y-auto pr-1">
+                        @for (game of availableGames; track game.id) {
+                            <label class="flex items-center gap-3 rounded-lg border border-zinc-200 dark:border-zinc-700 p-3 cursor-pointer has-[:checked]:border-indigo-500">
+                                <input type="checkbox" [checked]="selectedPlannedGameIds.includes(game.id)" (change)="togglePlannedGame(game.id)" />
+                                <img [src]="game.imageUrl" [alt]="game.titleTranslations.en || game.title" class="h-12 w-12 rounded object-cover" />
+                                <span class="font-medium">{{ game.titleTranslations.en || game.title }}</span>
+                            </label>
+                        }
+                    </div>
+                }
+            </section>
+
+            <section aria-labelledby="notes-heading">
+                <div class="flex items-start gap-3 mb-3">
+                    <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-sm font-semibold text-white">4</span>
+                    <div>
+                        <h2 id="notes-heading" class="font-semibold">Add context <span class="text-secondary font-normal">(optional)</span></h2>
+                        <p class="text-secondary text-sm">A quick reason, idea, or reminder helps the group understand this plan later.</p>
+                    </div>
+                </div>
+                <textarea class="app-input min-h-24" [(ngModel)]="notes" maxlength="1000" aria-label="Session notes" placeholder="For example: Try the new co-op game or finish our campaign."></textarea>
+            </section>
         </div>
+
+        <footer class="mt-8 border-t border-zinc-200 pt-6 dark:border-zinc-700">
+            <p class="text-secondary text-sm mb-4">The session will be created as scheduled. Everyone can then open it to see the plan, update attendance, and record what was actually played.</p>
+            <button class="app-btn-primary w-full sm:w-auto" title="Plan game night" (click)="onClickCreateMeeting()" [disabled]="disableCreateButton">
+                {{ isCreatingLoading ? 'Planning…' : 'Plan game night' }}
+            </button>
+        </footer>
     </div>
-</div>
+</main>

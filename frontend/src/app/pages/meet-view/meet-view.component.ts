@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { Component, effect, signal } from '@angular/core'
-import { ActivatedRoute } from '@angular/router'
+import { ActivatedRoute, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../api/api'
 import type {
@@ -9,26 +9,19 @@ import type {
     GroupWithMembersAndGames,
     MeetType,
     MeetWithAttendeesAndGamesType,
+    PublicUserType,
     UserType,
 } from '../../api/api.types'
 import { CardAccountComponent } from '../../components/card-account/card-account.component'
 import { ToastService } from '../../components/toast/toast.service'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { ImageBackgroundComponent } from '../../components/ui/image-background/image-background.component'
-import { TitleSubtitleComponent } from '../../components/ui/title-subtitle/title-subtitle.component'
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { DataService } from '../../core/services/data.service'
 import type { Nullable } from '../../core/types/commons.type'
 
 @Component({
-    imports: [
-        CommonModule,
-        CustomDatePipe,
-        CardAccountComponent,
-        TitleSubtitleComponent,
-        ImageBackgroundComponent,
-        ContainerWrapperComponent,
-    ],
+    imports: [CommonModule, RouterLink, CustomDatePipe, CardAccountComponent, ImageBackgroundComponent, ContainerWrapperComponent],
     templateUrl: 'meet-view.component.html',
 })
 export class MeetViewComponent {
@@ -49,7 +42,13 @@ export class MeetViewComponent {
     public avgReviewsIndex: Record<GameType['id'], number> = {}
     public lastMeeting: Nullable<MeetType> = null
     public isUpdatingStatus = false
+    public isUpdatingRsvp = false
+    public isUpdatingAttendance = false
+    public isUpdatingShortlist = false
     public isPersistingChanges = false
+    public plannedGameIdsDraft: Array<number> = []
+    public postSessionRatings: Record<number, number> = {}
+    public savingPostSessionRatings: Record<number, boolean> = {}
 
     constructor(
         private readonly api: Api,
@@ -90,6 +89,7 @@ export class MeetViewComponent {
         try {
             // Get Meet Details
             this.meetData = await firstValueFrom(this.api.getMeetDetailsById(meetId))
+            this.plannedGameIdsDraft = [...this.meetData.plannedGames]
             this.meetDataCopyOriginal = JSON.parse(JSON.stringify(this.meetData))
 
             if (!this.meetData) {
@@ -157,6 +157,124 @@ export class MeetViewComponent {
         return this.meetData?.status === 'scheduled' || this.meetData?.status === 'active'
     }
 
+    get attendeeCount(): number {
+        return this.meetData?.attendees.length ?? 0
+    }
+
+    get playedGamesCount(): number {
+        return this.meetData?.playedGames.length ?? 0
+    }
+
+    get attendedCount(): number {
+        return this.meetData?.attendeeStatuses.filter((attendee) => attendee.attendanceStatus === 'attended').length ?? 0
+    }
+
+    get sessionStatusDescription(): string {
+        switch (this.meetData?.status) {
+            case 'scheduled':
+                return 'This is the plan for your next game night. Update attendees as people confirm.'
+            case 'active':
+                return 'The session is live. Mark the people and games that actually took part.'
+            case 'completed':
+                return 'This session is part of your group memory. The record is now read-only.'
+            case 'cancelled':
+                return 'This session was cancelled and is kept here for context.'
+            default:
+                return ''
+        }
+    }
+
+    get currentRsvpStatus(): 'pending' | 'accepted' | 'declined' | null {
+        const currentUserId = this.userData?.id
+        if (!currentUserId || !this.meetData) return null
+
+        return this.meetData.attendeeStatuses.find((attendee) => attendee.accountId === currentUserId)?.rsvpStatus ?? null
+    }
+
+    get canRespondToRsvp(): boolean {
+        return Boolean(this.currentRsvpStatus && this.canEditSession)
+    }
+
+    get canRecordAttendance(): boolean {
+        return Boolean(
+            this.meetData &&
+                this.userData &&
+                this.meetData.createdBy === this.userData.id &&
+                (this.meetData.status === 'active' || this.meetData.status === 'completed'),
+        )
+    }
+
+    get canLeaveFeedback(): boolean {
+        return Boolean(
+            this.meetData?.status === 'completed' &&
+                this.userData &&
+                this.meetData.attendeeStatuses.some(
+                    (attendee) => attendee.accountId === this.userData?.id && attendee.attendanceStatus === 'attended',
+                ),
+        )
+    }
+
+    get playedGameDetails(): Array<GameCompleteType & { active: boolean }> {
+        if (!this.meetData) return []
+        const gamesById = new Map(this.totalGames.map((game) => [game.id, game]))
+        return this.meetData.playedGames
+            .map((gameId) => gamesById.get(gameId))
+            .filter((game): game is GameCompleteType & { active: boolean } => game !== undefined)
+    }
+
+    getGameParticipantIds(gameId: number): Array<number> {
+        const recorded = this.meetData?.playedGameParticipants.find((game) => game.gameId === gameId)?.participantIds
+        if (recorded) return recorded
+
+        const attendedIds = this.meetData?.attendeeStatuses
+            .filter((attendee) => attendee.attendanceStatus === 'attended')
+            .map((attendee) => attendee.accountId)
+        return attendedIds && attendedIds.length > 0 ? attendedIds : [...(this.meetData?.attendees ?? [])]
+    }
+
+    getGameParticipants(gameId: number): Array<PublicUserType> {
+        const participantIds = new Set(this.getGameParticipantIds(gameId))
+        return (this.groupData?.members ?? []).filter((member) => participantIds.has(member.id))
+    }
+
+    isGameParticipant(gameId: number, memberId: number): boolean {
+        return this.getGameParticipantIds(gameId).includes(memberId)
+    }
+
+    getMyRating(gameId: number): number | null {
+        return this.postSessionRatings[gameId] ?? this.dataService.userReviews().find((review) => review.gameId === gameId)?.review ?? null
+    }
+
+    async savePostSessionRating(gameId: number, review: number): Promise<void> {
+        if (!this.userData || !this.canLeaveFeedback || this.savingPostSessionRatings[gameId]) return
+
+        this.savingPostSessionRatings[gameId] = true
+        try {
+            await firstValueFrom(this.api.saveGameReview(this.userData.id, gameId, review))
+            this.postSessionRatings[gameId] = review
+            this.dataService.refreshGameReviews()
+            this.toastService.success('Your group rating was saved.')
+        } catch {
+            this.toastService.error('Could not save your rating.')
+        } finally {
+            this.savingPostSessionRatings[gameId] = false
+        }
+    }
+
+    getMemberRsvpStatus(memberId: number): string {
+        const rsvpStatus = this.meetData?.attendeeStatuses.find((attendee) => attendee.accountId === memberId)?.rsvpStatus
+        if (rsvpStatus === 'accepted') return 'Going'
+        if (rsvpStatus === 'declined') return 'Can’t make it'
+        return 'Awaiting reply'
+    }
+
+    getMemberAttendanceStatus(memberId: number): string {
+        const attendanceStatus = this.meetData?.attendeeStatuses.find((attendee) => attendee.accountId === memberId)?.attendanceStatus
+        if (attendanceStatus === 'attended') return 'Was there'
+        if (attendanceStatus === 'absent') return 'Was absent'
+        return 'Not recorded'
+    }
+
     async updateStatus(status: 'active' | 'completed' | 'cancelled'): Promise<void> {
         if (!this.meetData || !this.canManageLifecycle || !this.canEditSession) return
 
@@ -171,6 +289,47 @@ export class MeetViewComponent {
             this.toastService.error('Could not update the session status.')
         } finally {
             this.isUpdatingStatus = false
+        }
+    }
+
+    async updateRsvp(rsvpStatus: 'accepted' | 'declined'): Promise<void> {
+        if (!this.meetData || !this.canRespondToRsvp || this.isUpdatingRsvp) return
+
+        this.isUpdatingRsvp = true
+        try {
+            const result = await firstValueFrom(this.api.updateSessionRsvp(this.meetData.id, { rsvpStatus }))
+            const attendeeStatus = this.meetData.attendeeStatuses.find((attendee) => attendee.accountId === this.userData?.id)
+            if (attendeeStatus) attendeeStatus.rsvpStatus = result.rsvpStatus
+            this.toastService.success(result.rsvpStatus === 'accepted' ? 'You are marked as going.' : 'Your RSVP was declined.')
+        } catch {
+            this.toastService.error('Could not save your RSVP.')
+        } finally {
+            this.isUpdatingRsvp = false
+        }
+    }
+
+    async toggleAttendance(memberId: number): Promise<void> {
+        if (!this.meetData || !this.canRecordAttendance || this.isUpdatingAttendance) return
+
+        const previousStatuses = this.meetData.attendeeStatuses.map((attendee) => ({ ...attendee }))
+        const attendedIds = this.meetData.attendeeStatuses
+            .filter((attendee) => attendee.attendanceStatus === 'attended')
+            .map((attendee) => attendee.accountId)
+        const nextAttendedIds = attendedIds.includes(memberId) ? attendedIds.filter((id) => id !== memberId) : [...attendedIds, memberId]
+
+        for (const attendee of this.meetData.attendeeStatuses) {
+            attendee.attendanceStatus = nextAttendedIds.includes(attendee.accountId) ? 'attended' : 'absent'
+        }
+
+        this.isUpdatingAttendance = true
+        try {
+            await firstValueFrom(this.api.updateSessionAttendance(this.meetData.id, { attendedIds: nextAttendedIds }))
+            this.toastService.success('Attendance saved.')
+        } catch {
+            this.meetData.attendeeStatuses = previousStatuses
+            this.toastService.error('Could not save attendance.')
+        } finally {
+            this.isUpdatingAttendance = false
         }
     }
 
@@ -219,6 +378,42 @@ export class MeetViewComponent {
             .filter((game): game is GameCompleteType & { active: boolean } => game !== undefined)
     }
 
+    get plannedGameIdsDraftChanged(): boolean {
+        return JSON.stringify([...this.plannedGameIdsDraft].sort()) !== JSON.stringify([...(this.meetData?.plannedGames ?? [])].sort())
+    }
+
+    isPlannedGame(gameId: number): boolean {
+        return this.plannedGameIdsDraft.includes(gameId)
+    }
+
+    togglePlannedGame(gameId: number): void {
+        if (!this.canManageLifecycle || !this.canEditSession || this.isUpdatingShortlist) return
+
+        this.plannedGameIdsDraft = this.isPlannedGame(gameId)
+            ? this.plannedGameIdsDraft.filter((id) => id !== gameId)
+            : [...this.plannedGameIdsDraft, gameId]
+    }
+
+    async savePlannedGames(): Promise<void> {
+        if (!this.meetData || !this.canManageLifecycle || !this.canEditSession || this.isUpdatingShortlist) return
+
+        const previousIds = [...this.meetData.plannedGames]
+        this.isUpdatingShortlist = true
+        try {
+            const result = await firstValueFrom(
+                this.api.updateSessionShortlist(this.meetData.id, { plannedGameIds: this.plannedGameIdsDraft }),
+            )
+            this.meetData.plannedGames = result.plannedGameIds
+            this.meetDataCopyOriginal = JSON.parse(JSON.stringify(this.meetData))
+            this.toastService.success('Shortlist saved.')
+        } catch {
+            this.plannedGameIdsDraft = previousIds
+            this.toastService.error('Could not save the shortlist.')
+        } finally {
+            this.isUpdatingShortlist = false
+        }
+    }
+
     get skippedGames(): Array<GameCompleteType & { active: boolean }> {
         if (!this.meetData) return []
         const gamesById = new Map(this.totalGames.map((game) => [game.id, game]))
@@ -258,10 +453,19 @@ export class MeetViewComponent {
         }
 
         const previousPlayedGames = [...this.meetData.playedGames]
+        const previousParticipants = this.meetData.playedGameParticipants.map((game) => ({
+            ...game,
+            participantIds: [...game.participantIds],
+        }))
         if (this.meetData.playedGames.includes(gameId)) {
             this.meetData.playedGames = this.meetData.playedGames.filter((id) => id !== gameId)
+            this.meetData.playedGameParticipants = this.meetData.playedGameParticipants.filter((game) => game.gameId !== gameId)
         } else {
             this.meetData.playedGames.push(gameId)
+            this.meetData.playedGameParticipants = [
+                ...this.meetData.playedGameParticipants,
+                { gameId, participantIds: this.getGameParticipantIds(gameId) },
+            ]
         }
 
         this.isPersistingChanges = true
@@ -269,6 +473,38 @@ export class MeetViewComponent {
             await this.#saveGamesPlayedSelection()
         } catch {
             this.meetData.playedGames = previousPlayedGames
+            this.meetData.playedGameParticipants = previousParticipants
+        } finally {
+            this.isPersistingChanges = false
+        }
+    }
+
+    async toggleGameParticipant(gameId: number, memberId: number): Promise<void> {
+        if (!this.meetData || !this.canEditSession || this.isPersistingChanges || !this.meetData.playedGames.includes(gameId)) return
+
+        const currentParticipantIds = this.getGameParticipantIds(gameId)
+        if (currentParticipantIds.includes(memberId) && currentParticipantIds.length === 1) {
+            this.toastService.error('Keep at least one participant for each played game.')
+            return
+        }
+
+        const previousParticipants = this.meetData.playedGameParticipants.map((game) => ({
+            ...game,
+            participantIds: [...game.participantIds],
+        }))
+        const nextParticipantIds = currentParticipantIds.includes(memberId)
+            ? currentParticipantIds.filter((id) => id !== memberId)
+            : [...currentParticipantIds, memberId]
+        this.meetData.playedGameParticipants = [
+            ...this.meetData.playedGameParticipants.filter((game) => game.gameId !== gameId),
+            { gameId, participantIds: nextParticipantIds },
+        ]
+
+        this.isPersistingChanges = true
+        try {
+            await this.#saveGamesPlayedSelection()
+        } catch {
+            this.meetData.playedGameParticipants = previousParticipants
         } finally {
             this.isPersistingChanges = false
         }
@@ -288,24 +524,30 @@ export class MeetViewComponent {
     }
 
     async #saveGamesPlayedSelection(): Promise<void> {
-        if (!this.userData || !this.groupData || !this.meetData || !this.meetDataCopyOriginal) {
+        if (!this.meetData || !this.meetDataCopyOriginal) {
             return
         }
 
-        for (const game of this.totalGames) {
-            const isPlaying = this.meetData.playedGames.includes(game.id)
-            const isPlayingOriginal = this.meetDataCopyOriginal?.playedGames.includes(game.id)
+        const result = await firstValueFrom(
+            this.api.updateSessionPlayedGames(this.meetData.id, {
+                playedGameIds: this.meetData.playedGames,
+                games: this.meetData.playedGameParticipants,
+            }),
+        )
+        this.meetData.playedGames = result.playedGameIds
+        this.meetData.skippedGames = result.skippedGameIds
+        this.meetData.playedGameParticipants = result.playedGameParticipants
+        this.meetData.plannedGames = this.meetData.plannedGames.filter(
+            (gameId) => !result.playedGameIds.includes(gameId) && !result.skippedGameIds.includes(gameId),
+        )
 
-            if (isPlaying !== isPlayingOriginal) {
-                if (isPlaying) {
-                    await firstValueFrom(this.dataService.createMeetAccountGame(this.userData.id, this.meetData.id, game.id))
-                } else {
-                    await firstValueFrom(this.dataService.deleteMeetAccountGame(this.userData.id, this.meetData.id, game.id))
-                }
-            }
-        }
-
-        // update the original copy for future comparisons
-        this.meetDataCopyOriginal.playedGames = [...this.meetData.playedGames]
+        // Update the original copy for future comparisons after the server confirms the canonical state.
+        this.meetDataCopyOriginal.playedGames = [...result.playedGameIds]
+        this.meetDataCopyOriginal.playedGameParticipants = result.playedGameParticipants.map((game) => ({
+            ...game,
+            participantIds: [...game.participantIds],
+        }))
+        this.meetDataCopyOriginal.plannedGames = [...this.meetData.plannedGames]
+        this.meetDataCopyOriginal.skippedGames = [...result.skippedGameIds]
     }
 }

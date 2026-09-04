@@ -1,5 +1,5 @@
-<app-page-header titleText="Game Recommendations">
-    Choose the people attending and how much time you have. Board Vault will explain why each game is suggested.
+<app-page-header titleText="Decide what to play">
+    Choose the people attending and the time you have. Use the suggestions to agree on a game, then schedule it with the group.
 </app-page-header>
 
 <container-wrapper>
@@ -81,6 +81,19 @@
                                         <span class="text-sm text-fuchsia-600 dark:text-fuchsia-400">{{ recommendation.score }}/100</span>
                                     </div>
                                     <p class="text-secondary text-sm mt-1">{{ recommendation.gameData.gameAvgDuration }} min · {{ recommendation.gameData.minPlayers }}–{{ recommendation.gameData.maxPlayers }} players</p>
+                                    @if (getRecommendationSignal(recommendation.gameData.id); as signal) {
+                                        <p class="mt-2 text-sm" aria-label="Group recommendation signal">
+                                            @if (signal.interestedCount > 0) {
+                                                <span class="text-green-600 dark:text-green-400">{{ signal.interestedCount }} group member{{ signal.interestedCount === 1 ? '' : 's' }} interested</span>
+                                            }
+                                            @if (signal.notForUsCount > 0) {
+                                                <span class="text-secondary">{{ signal.notForUsCount }} passed</span>
+                                            }
+                                            @if (signal.interestedBy.length > 0) {
+                                                <span class="text-secondary"> · {{ getInterestedMemberNames(signal) }}</span>
+                                            }
+                                        </p>
+                                    }
                                     <ul class="text-secondary text-sm mt-3 list-disc list-inside">
                                         @for (reason of recommendation.explanation.reasons; track reason) {
                                             <li>{{ reason }}</li>
@@ -91,17 +104,22 @@
                                         [routerLink]="['/groups', result.groupId, 'meets', 'new']"
                                         [queryParams]="{ plannedGameId: recommendation.gameData.id, attendeeIds: result.attendeeIds.join(',') }"
                                     >Schedule with this game</a>
-                                    @if (feedbackState()[recommendation.gameData.id] === 'saved') {
-                                        <span class="text-secondary text-sm ml-2">Feedback saved</span>
-                                    } @else {
+                                    <div class="mt-3 flex flex-wrap items-center gap-3">
                                         <button
-                                            class="text-secondary text-sm ml-3 underline disabled:no-underline"
-                                            [disabled]="feedbackState()[recommendation.gameData.id] === 'saving'"
-                                            (click)="markNotForUs(recommendation.gameData.id)"
+                                            class="app-btn-secondary text-sm disabled:opacity-60"
+                                            [disabled]="feedbackState()[recommendation.gameData.id] === 'saving' || feedbackState()[recommendation.gameData.id] === 'interested'"
+                                            (click)="saveFeedback(recommendation.gameData.id, 'interested')"
                                         >
-                                            {{ feedbackState()[recommendation.gameData.id] === 'saving' ? 'Saving…' : 'Not for us' }}
+                                            {{ feedbackState()[recommendation.gameData.id] === 'saving' ? 'Saving…' : feedbackState()[recommendation.gameData.id] === 'interested' ? 'Interested ✓' : 'Interested' }}
                                         </button>
-                                    }
+                                        <button
+                                            class="text-secondary text-sm underline disabled:no-underline"
+                                            [disabled]="feedbackState()[recommendation.gameData.id] === 'saving' || feedbackState()[recommendation.gameData.id] === 'not_for_us'"
+                                            (click)="saveFeedback(recommendation.gameData.id, 'not_for_us')"
+                                        >
+                                            {{ feedbackState()[recommendation.gameData.id] === 'not_for_us' ? 'Not for us ✓' : 'Not for us' }}
+                                        </button>
+                                    </div>
                                 </div>
                             </article>
                         }

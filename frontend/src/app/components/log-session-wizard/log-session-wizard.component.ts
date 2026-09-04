@@ -16,7 +16,7 @@ import { CardAccountComponent } from '../card-account/card-account.component'
 import { ToastService } from '../toast/toast.service'
 import { ImageBackgroundComponent } from '../ui/image-background/image-background.component'
 
-type SessionStep = 'group' | 'date' | 'attendees' | 'games' | 'matrix'
+type SessionStep = 'group' | 'date' | 'attendees' | 'games' | 'matrix' | 'notes'
 
 interface AttendeeSelection {
     user: PublicUserType & {
@@ -96,6 +96,7 @@ export class LogSessionWizardComponent {
         { key: 'attendees', label: 'Attendees', description: 'Select who attended this session' },
         { key: 'games', label: 'Games', description: 'Select which games were played' },
         { key: 'matrix', label: 'Matrix', description: 'Mark who played which games' },
+        { key: 'notes', label: 'Memory', description: 'Add a note about this session (optional)' },
     ]
 
     // --------------------------------------------------------------------------
@@ -132,6 +133,11 @@ export class LogSessionWizardComponent {
     public matrix = signal<MatrixCell[]>([])
 
     // --------------------------------------------------------------------------
+    //        STEP 6: SESSION MEMORY
+    // --------------------------------------------------------------------------
+    public sessionNotes = new FormControl('', [Validators.maxLength(1000)])
+
+    // --------------------------------------------------------------------------
     //        STEP COMPLETION TRACKING
     // --------------------------------------------------------------------------
     public isStepComplete = (step: SessionStep): boolean => {
@@ -148,6 +154,8 @@ export class LogSessionWizardComponent {
                     return this.games().some((g) => g.selected)
                 case 'matrix':
                     return this.matrix().some((cell) => cell.selected)
+                case 'notes':
+                    return true
                 default:
                     return false
             }
@@ -162,7 +170,7 @@ export class LogSessionWizardComponent {
             }
 
             // Check if user has navigated past this step
-            const stepOrder = ['group', 'date', 'attendees', 'games', 'matrix']
+            const stepOrder = ['group', 'date', 'attendees', 'games', 'matrix', 'notes']
             const currentStepIndex = stepOrder.indexOf(this.currentStep())
             const stepIndex = stepOrder.indexOf(step)
 
@@ -197,6 +205,8 @@ export class LogSessionWizardComponent {
                 const selectedCells = this.matrix().filter((cell) => cell.selected)
                 return selectedCells.length > 0 ? `${selectedCells.length} combinations` : ''
             }
+            case 'notes':
+                return this.sessionNotes.value?.trim() ? 'Added' : 'Optional'
             default:
                 return ''
         }
@@ -317,6 +327,8 @@ export class LogSessionWizardComponent {
                 return this.games().some((g) => g.selected)
             case 'matrix':
                 return this.matrix().some((cell) => cell.selected)
+            case 'notes':
+                return true
             default:
                 return false
         }
@@ -349,6 +361,10 @@ export class LogSessionWizardComponent {
                 this.markStepAsInteracted('games')
                 break
             case 'matrix':
+                this.currentStep.set('notes')
+                this.markStepAsInteracted('matrix')
+                break
+            case 'notes':
                 this.submitSession()
                 break
         }
@@ -367,6 +383,9 @@ export class LogSessionWizardComponent {
                 break
             case 'matrix':
                 this.currentStep.set('games')
+                break
+            case 'notes':
+                this.currentStep.set('matrix')
                 break
         }
     }
@@ -524,6 +543,7 @@ export class LogSessionWizardComponent {
                     groupId: group.id,
                     sessionDate: new Date(`${sessionDate}T12:00:00`).toISOString(),
                     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    notes: this.sessionNotes.value?.trim() || undefined,
                     attendeeIds: selectedAttendees.map((attendee) => attendee.user.id),
                     games,
                 }),

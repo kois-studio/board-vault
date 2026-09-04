@@ -27,6 +27,13 @@ function createDatabaseMock() {
             .fn()
             .mockResolvedValue({ rows: [[12, 7, 1, '2026-08-16T19:30:00.000Z', 0, 'scheduled', 'Europe/Madrid', null]] }),
         updateMeetStatus: jest.fn().mockResolvedValue({ rowsAffected: 1 }),
+        getMeetAttendeeForAccount: jest.fn(),
+        updateMeetAttendeeRsvp: jest.fn(),
+        getMeetAttendeeIds: jest.fn().mockResolvedValue([1, 2]),
+        updateMeetAttendance: jest.fn().mockResolvedValue(undefined),
+        replaceMeetPlannedGames: jest.fn().mockResolvedValue(undefined),
+        getMeetPlayedGameParticipants: jest.fn().mockResolvedValue([]),
+        replaceMeetPlayedGames: jest.fn().mockResolvedValue({ playedGameIds: [42], skippedGameIds: [43] }),
     }
 }
 
@@ -48,6 +55,7 @@ describe('SessionsService', () => {
 
     it('rejects a missing group', async () => {
         const database = createDatabaseMock()
+
         database.getGroupById.mockResolvedValue({ rows: [] })
         const service = new SessionsService(database as unknown as DatabaseService)
 
@@ -57,6 +65,7 @@ describe('SessionsService', () => {
 
     it('requires the actor to belong to the selected group', async () => {
         const database = createDatabaseMock()
+
         database.getGroupMemberIds.mockResolvedValue([2, 3])
         const service = new SessionsService(database as unknown as DatabaseService)
 
@@ -135,6 +144,94 @@ describe('SessionsService', () => {
         })
     })
 
+    it('lets an invited member update their RSVP without changing organizer attendance', async () => {
+        const database = createDatabaseMock()
+
+        database.getMeetAttendeeForAccount = jest.fn().mockResolvedValue({ rows: [[13, 2, 'pending', 'unknown', null, 'scheduled']] })
+        database.updateMeetAttendeeRsvp = jest.fn().mockResolvedValue({ rowsAffected: 1 })
+        const service = new SessionsService(database as unknown as DatabaseService)
+
+        await expect(service.updateSessionRsvp(2, 13, { rsvpStatus: 'accepted' })).resolves.toEqual({
+            sessionId: 13,
+            rsvpStatus: 'accepted',
+        })
+        expect(database.updateMeetAttendeeRsvp).toHaveBeenCalledWith(13, 2, 'accepted')
+    })
+
+    it('rejects RSVP changes after a session is closed', async () => {
+        const database = createDatabaseMock()
+
+        database.getMeetAttendeeForAccount = jest.fn().mockResolvedValue({ rows: [[13, 2, 'accepted', 'attended', null, 'completed']] })
+        database.updateMeetAttendeeRsvp = jest.fn()
+        const service = new SessionsService(database as unknown as DatabaseService)
+
+        await expect(service.updateSessionRsvp(2, 13, { rsvpStatus: 'declined' })).rejects.toThrow('Cannot RSVP to a completed session')
+        expect(database.updateMeetAttendeeRsvp).not.toHaveBeenCalled()
+    })
+
+    it('lets the organizer record actual attendance for an active session', async () => {
+        const database = createDatabaseMock()
+
+        database.getMeetByIdForCreator.mockResolvedValue({
+            rows: [[13, 7, 1, '2026-08-16T19:30:00.000Z', 0, 'active', 'Europe/Madrid', null]],
+        })
+        const service = new SessionsService(database as unknown as DatabaseService)
+
+        await expect(service.updateSessionAttendance(1, 13, { attendedIds: [1] })).resolves.toEqual({ sessionId: 13, attendedIds: [1] })
+        expect(database.updateMeetAttendance).toHaveBeenCalledWith(13, [1])
+    })
+
+    it('rejects attendance for members who were not invited', async () => {
+        const database = createDatabaseMock()
+
+        database.getMeetByIdForCreator.mockResolvedValue({
+            rows: [[13, 7, 1, '2026-08-16T19:30:00.000Z', 0, 'active', 'Europe/Madrid', null]],
+        })
+        const service = new SessionsService(database as unknown as DatabaseService)
+
+        await expect(service.updateSessionAttendance(1, 13, { attendedIds: [3] })).rejects.toThrow(
+            'Attendance can only be recorded for invited members',
+        )
+        expect(database.updateMeetAttendance).not.toHaveBeenCalled()
+    })
+
+    it('allows the organizer to record that nobody attended', async () => {
+        const database = createDatabaseMock()
+
+        database.getMeetByIdForCreator.mockResolvedValue({
+            rows: [[13, 7, 1, '2026-08-16T19:30:00.000Z', 1, 'completed', 'Europe/Madrid', null]],
+        })
+        const service = new SessionsService(database as unknown as DatabaseService)
+
+        await expect(service.updateSessionAttendance(1, 13, { attendedIds: [] })).resolves.toEqual({ sessionId: 13, attendedIds: [] })
+        expect(database.updateMeetAttendance).toHaveBeenCalledWith(13, [])
+    })
+
+    it('lets the organizer edit the shortlist on an active session', async () => {
+        const database = createDatabaseMock()
+
+        database.getMeetByIdForCreator.mockResolvedValue({
+            rows: [[13, 7, 1, '2026-08-16T19:30:00.000Z', 0, 'active', 'Europe/Madrid', null]],
+        })
+        const service = new SessionsService(database as unknown as DatabaseService)
+
+        await expect(service.updateSessionShortlist(1, 13, { plannedGameIds: [43, 42] })).resolves.toEqual({
+            sessionId: 13,
+            plannedGameIds: [43, 42],
+        })
+        expect(database.replaceMeetPlannedGames).toHaveBeenCalledWith(13, [43, 42])
+    })
+
+    it('rejects shortlist games that no group member owns', async () => {
+        const database = createDatabaseMock()
+        const service = new SessionsService(database as unknown as DatabaseService)
+
+        await expect(service.updateSessionShortlist(1, 13, { plannedGameIds: [99] })).rejects.toThrow(
+            'Every planned game must be owned by at least one group member',
+        )
+        expect(database.replaceMeetPlannedGames).not.toHaveBeenCalled()
+    })
+
     it('rejects selected attendees outside the group', async () => {
         const database = createDatabaseMock()
         const service = new SessionsService(database as unknown as DatabaseService)
@@ -165,8 +262,64 @@ describe('SessionsService', () => {
         expect(database.createScheduledSession).not.toHaveBeenCalled()
     })
 
+    it('records group-level played games while preserving the compatibility participant fallback', async () => {
+        const database = createDatabaseMock()
+
+        database.getMeetByIdForCreator.mockResolvedValue({
+            rows: [[13, 7, 1, '2026-08-21T19:30:00.000Z', 0, 'active', 'Europe/Madrid', null]],
+        })
+        database.getMeetPlayedGameParticipants.mockResolvedValue([{ gameId: 42, participantIds: [1, 2] }])
+        database.replaceMeetPlayedGames.mockResolvedValue({
+            playedGameIds: [42],
+            skippedGameIds: [43],
+            playedGameParticipants: [{ gameId: 42, participantIds: [1, 2] }],
+        })
+        const service = new SessionsService(database as unknown as DatabaseService)
+
+        await expect(service.updateSessionPlayedGames(1, 13, { playedGameIds: [42] })).resolves.toEqual({
+            sessionId: 13,
+            playedGameIds: [42],
+            skippedGameIds: [43],
+            playedGameParticipants: [{ gameId: 42, participantIds: [1, 2] }],
+        })
+        expect(database.getMeetPlayedGameParticipants).toHaveBeenCalledWith(13)
+        expect(database.replaceMeetPlayedGames).toHaveBeenCalledWith(13, [{ gameId: 42, participantIds: [1, 2] }])
+    })
+
+    it('validates per-game participants against the session attendees', async () => {
+        const database = createDatabaseMock()
+
+        database.getMeetByIdForCreator.mockResolvedValue({
+            rows: [[13, 7, 1, '2026-08-21T19:30:00.000Z', 0, 'active', 'Europe/Madrid', null]],
+        })
+        const service = new SessionsService(database as unknown as DatabaseService)
+
+        await expect(
+            service.updateSessionPlayedGames(1, 13, {
+                playedGameIds: [42],
+                games: [{ gameId: 42, participantIds: [3] }],
+            }),
+        ).rejects.toThrow('Game participants must be invited session attendees')
+        expect(database.replaceMeetPlayedGames).not.toHaveBeenCalled()
+    })
+
+    it('rejects played games unavailable to the session group', async () => {
+        const database = createDatabaseMock()
+
+        database.getMeetByIdForCreator.mockResolvedValue({
+            rows: [[13, 7, 1, '2026-08-21T19:30:00.000Z', 0, 'active', 'Europe/Madrid', null]],
+        })
+        const service = new SessionsService(database as unknown as DatabaseService)
+
+        await expect(service.updateSessionPlayedGames(1, 13, { playedGameIds: [99] })).rejects.toThrow(
+            'Every played game must be owned by at least one group member',
+        )
+        expect(database.replaceMeetPlayedGames).not.toHaveBeenCalled()
+    })
+
     it('rejects scheduling when the actor is outside the group', async () => {
         const database = createDatabaseMock()
+
         database.getGroupMemberIds.mockResolvedValue([2, 3])
         const service = new SessionsService(database as unknown as DatabaseService)
 
@@ -190,6 +343,7 @@ describe('SessionsService', () => {
 
     it('rejects invalid lifecycle transitions', async () => {
         const database = createDatabaseMock()
+
         database.getMeetByIdForCreator.mockResolvedValue({ rows: [[12, 7, 1, '2026-08-16T19:30:00.000Z', 1, 'completed', 'UTC', null]] })
         const service = new SessionsService(database as unknown as DatabaseService)
 
@@ -199,6 +353,7 @@ describe('SessionsService', () => {
 
     it('requires the organizer to transition a session', async () => {
         const database = createDatabaseMock()
+
         database.getMeetByIdForCreator.mockResolvedValue({ rows: [] })
         const service = new SessionsService(database as unknown as DatabaseService)
 
@@ -225,8 +380,21 @@ describe('SessionsService', () => {
         expect(database.replaceMeetAttendees).not.toHaveBeenCalled()
     })
 
+    it('does not remove a participant from the attendee list after a game is recorded', async () => {
+        const database = createDatabaseMock()
+
+        database.getMeetPlayedGameParticipants.mockResolvedValue([{ gameId: 42, participantIds: [2] }])
+        const service = new SessionsService(database as unknown as DatabaseService)
+
+        await expect(service.updateSessionAttendees(1, 12, { attendeeIds: [1] })).rejects.toThrow(
+            'A member who played a recorded game cannot be removed from the session attendees',
+        )
+        expect(database.replaceMeetAttendees).not.toHaveBeenCalled()
+    })
+
     it('rejects attendee replacement on a completed session', async () => {
         const database = createDatabaseMock()
+
         database.getMeetByIdForCreator.mockResolvedValue({ rows: [[12, 7, 1, '2026-08-16T19:30:00.000Z', 1, 'completed', 'UTC', null]] })
         const service = new SessionsService(database as unknown as DatabaseService)
 

@@ -26,4 +26,11 @@ test.describe('public navigation', () => {
 
         await expect(page.getByRole('heading', { name: /page not found|404/i })).toBeVisible()
     })
+
+    test('recognizes a Clerk invitation ticket on the registration route', async ({ page }) => {
+        await page.goto('/register?__clerk_ticket=test-ticket')
+
+        await expect(page.getByRole('heading', { name: /Join your Board Vault group/i })).toBeVisible()
+        await expect(page.getByText(/Complete the secure Clerk sign-up/i)).toBeVisible()
+    })
 })

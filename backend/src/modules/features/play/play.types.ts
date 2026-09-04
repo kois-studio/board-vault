@@ -19,6 +19,9 @@ export class HistoryRecordDto {
 
     @ApiProperty({ type: [GamePlayedDto], description: 'The games played in that meet.' })
     gamesPlayed: Array<GamePlayedDto>
+
+    @ApiProperty({ type: [UserPublicDto], description: 'The group members recorded as actually attending the session.' })
+    attendedBy: Array<UserPublicDto>
 }
 
 export class RecommendationRequestBody {
@@ -58,6 +61,12 @@ export class RecommendationExplanationDto {
 
     @ApiProperty({ example: '2026-08-01T19:30:00.000Z', nullable: true })
     lastPlayedAt: string | null
+
+    @ApiProperty({ example: 2, description: 'Selected attendees who previously marked this game as interesting.' })
+    interestedCount: number
+
+    @ApiProperty({ example: 0, description: 'Selected attendees who previously passed on this game.' })
+    notForUsCount: number
 }
 
 export class RecommendationDto {
@@ -115,4 +124,32 @@ export class RecommendationFeedbackBody {
 export class RecommendationFeedbackDto {
     @ApiProperty({ example: true })
     success: true
+}
+
+export class RecommendationSignalDto {
+    @ApiProperty({ example: 42 })
+    gameId: number
+
+    @ApiProperty({ example: 2 })
+    interestedCount: number
+
+    @ApiProperty({ example: 0 })
+    notForUsCount: number
+
+    @ApiProperty({ example: 'interested', enum: ['interested', 'not_for_us'], nullable: true })
+    yourFeedback: 'interested' | 'not_for_us' | null
+
+    @ApiProperty({ type: [UserPublicDto], description: 'Current group members who most recently marked this game as interesting.' })
+    interestedBy: Array<UserPublicDto>
+
+    @ApiProperty({ example: '2026-09-03 20:00:00' })
+    lastUpdatedAt: string
+}
+
+export class RecommendationSignalsDto {
+    @ApiProperty({ example: 7 })
+    groupId: number
+
+    @ApiProperty({ type: [RecommendationSignalDto] })
+    signals: Array<RecommendationSignalDto>
 }

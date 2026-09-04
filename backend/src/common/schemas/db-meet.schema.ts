@@ -8,6 +8,7 @@ export const meetSchema = z.object({
     isConfirmed: z.boolean(),
     status: z.enum(['scheduled', 'active', 'completed', 'cancelled']).default('completed'),
     timezone: z.string().default('UTC'),
+    notes: z.string().nullable().default(null),
 })
 
 export const meetsSchema = z.array(meetSchema)

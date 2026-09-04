@@ -4,39 +4,6 @@ import { GuestOnlyGuard } from './core/guards/auth-redirect.guard'
 import { AuthOnlyGuard } from './core/guards/auth.guard'
 import { LayoutBasicComponent } from './layout/layout-basic/layout-basic.component'
 import { LayoutCompleteComponent } from './layout/layout-complete/layout-complete.component'
-import { AdminPageComponent } from './modules/admin/components/admin-page/admin-page.component'
-import { LoginComponent } from './pages/auth/login/login.component'
-import { RegisterComponent } from './pages/auth/register/register.component'
-import { ResetPasswordRequestComponent } from './pages/auth/reset-password-request/reset-password-request.component'
-import { ResetPasswordTokenComponent } from './pages/auth/reset-password-token/reset-password-token.component'
-import { VerifyEmailComponent } from './pages/auth/verify-email/verify-email.component'
-import { BrowsePageComponent } from './pages/collection-page/browse-page/browse-page.component'
-import { CollectionPageComponent } from './pages/collection-page/collection-page.component'
-import { MyGamesPageComponent } from './pages/collection-page/my-games-page/my-games-page.component'
-import { ProposeGamePageComponent } from './pages/collection-page/propose-game-page/propose-game-page.component'
-import { ReviewsPageComponent } from './pages/collection-page/reviews-page/reviews-page.component'
-import { WishlistPageComponent } from './pages/collection-page/wishlist-page/wishlist-page.component'
-import { DashboardPageComponent } from './pages/dashboard-page/dashboard-page.component'
-import { SubmissionsPageComponent } from './pages/dashboard-page/submissions-page/submissions-page.component'
-import { PageNotFoundComponent } from './pages/errors/page-not-found/page-not-found.component'
-import { GameViewPageComponent } from './pages/games/game-view/game-view.component'
-import { GroupDeleteComponent } from './pages/group-delete/group-delete.component'
-import { GroupLeaveComponent } from './pages/group-leave/group-leave.component'
-import { GroupViewComponent } from './pages/group-view/group-view.component'
-import { GroupCreateComponent } from './pages/groups/group-create/group-create.component'
-import { GroupEditComponent } from './pages/groups/group-edit/group-edit.component'
-import { GroupsPageComponent } from './pages/groups/groups-page/groups-page.component'
-import { LandingComponent } from './pages/landing/landing.component'
-import { MeetNewComponent } from './pages/meet-new/meet-new.component'
-import { MeetViewComponent } from './pages/meet-view/meet-view.component'
-import { HistoryPageComponent } from './pages/play-page/history-page/history-page.component'
-import { LogSessionPageComponent } from './pages/play-page/log-session-page/log-session-page.component'
-import { PlayPageComponent } from './pages/play-page/play-page.component'
-import { RecommendationsPageComponent } from './pages/play-page/recommendations-page/recommendations-page.component'
-import { UpcomingSessionsPageComponent } from './pages/play-page/upcoming-sessions-page/upcoming-sessions-page.component'
-import { SettingsAccountComponent } from './pages/settings/account/settings-account.component'
-import { SettingsSecurityComponent } from './pages/settings/security/settings-security.component'
-import { SettingsPageComponent } from './pages/settings/settings.component'
 
 /**
  * Which route uses LayoutBasicComponent and which uses LayoutCompleteComponent?
@@ -63,35 +30,128 @@ export const routes: Routes = [
         component: LayoutCompleteComponent,
         children: [
             // accessible to everyone
-            { path: '', component: LandingComponent }, // cannot move it to routes[n>0] unless routes[0].path !== ''
+            { path: '', loadComponent: () => import('./pages/landing/landing.component').then((m) => m.LandingComponent) }, // cannot move it to routes[n>0] unless routes[0].path !== ''
             // accessible to unauthenticated users
-            { path: 'login', component: LoginComponent, canActivate: [GuestOnlyGuard] },
-            { path: 'register', component: RegisterComponent, canActivate: [GuestOnlyGuard] },
+            {
+                path: 'login',
+                loadComponent: () => import('./pages/auth/login/login.component').then((m) => m.LoginComponent),
+                canActivate: [GuestOnlyGuard],
+            },
+            {
+                path: 'register',
+                loadComponent: () => import('./pages/auth/register/register.component').then((m) => m.RegisterComponent),
+                canActivate: [GuestOnlyGuard],
+            },
             // accessible to authenticated users
-            { path: 'dashboard', component: DashboardPageComponent, canActivate: [AuthOnlyGuard] },
-            { path: 'groups', component: GroupsPageComponent, canActivate: [AuthOnlyGuard] },
-            { path: 'submissions', component: SubmissionsPageComponent, canActivate: [AuthOnlyGuard] },
-            { path: 'collection', component: CollectionPageComponent, canActivate: [AuthOnlyGuard] },
-            { path: 'collection/games', component: MyGamesPageComponent, canActivate: [AuthOnlyGuard] },
-            { path: 'collection/browse', component: BrowsePageComponent, canActivate: [AuthOnlyGuard] },
-            { path: 'collection/reviews', component: ReviewsPageComponent, canActivate: [AuthOnlyGuard] },
-            { path: 'collection/wishlist', component: WishlistPageComponent, canActivate: [AuthOnlyGuard] },
-            { path: 'games/:gameId', component: GameViewPageComponent, canActivate: [AuthOnlyGuard] },
-            { path: 'play', component: PlayPageComponent, canActivate: [AuthOnlyGuard] },
-            { path: 'play/recommendations', component: RecommendationsPageComponent, canActivate: [AuthOnlyGuard] },
-            { path: 'play/log-session', component: LogSessionPageComponent, canActivate: [AuthOnlyGuard] },
-            { path: 'play/upcoming-sessions', component: UpcomingSessionsPageComponent, canActivate: [AuthOnlyGuard] },
-            { path: 'play/history', component: HistoryPageComponent, canActivate: [AuthOnlyGuard] },
-            { path: 'groups/:groupId', component: GroupViewComponent, canActivate: [AuthOnlyGuard] },
-            { path: 'meets/:meetId', component: MeetViewComponent, canActivate: [AuthOnlyGuard] },
+            {
+                path: 'dashboard',
+                loadComponent: () => import('./pages/dashboard-page/dashboard-page.component').then((m) => m.DashboardPageComponent),
+                canActivate: [AuthOnlyGuard],
+            },
+            {
+                path: 'groups',
+                loadComponent: () => import('./pages/groups/groups-page/groups-page.component').then((m) => m.GroupsPageComponent),
+                canActivate: [AuthOnlyGuard],
+            },
+            {
+                path: 'submissions',
+                loadComponent: () =>
+                    import('./pages/dashboard-page/submissions-page/submissions-page.component').then((m) => m.SubmissionsPageComponent),
+                canActivate: [AuthOnlyGuard],
+            },
+            {
+                path: 'collection',
+                loadComponent: () => import('./pages/collection-page/collection-page.component').then((m) => m.CollectionPageComponent),
+                canActivate: [AuthOnlyGuard],
+            },
+            {
+                path: 'collection/games',
+                loadComponent: () =>
+                    import('./pages/collection-page/my-games-page/my-games-page.component').then((m) => m.MyGamesPageComponent),
+                canActivate: [AuthOnlyGuard],
+            },
+            {
+                path: 'collection/browse',
+                loadComponent: () => import('./pages/collection-page/browse-page/browse-page.component').then((m) => m.BrowsePageComponent),
+                canActivate: [AuthOnlyGuard],
+            },
+            {
+                path: 'collection/reviews',
+                loadComponent: () =>
+                    import('./pages/collection-page/reviews-page/reviews-page.component').then((m) => m.ReviewsPageComponent),
+                canActivate: [AuthOnlyGuard],
+            },
+            {
+                path: 'collection/wishlist',
+                loadComponent: () =>
+                    import('./pages/collection-page/wishlist-page/wishlist-page.component').then((m) => m.WishlistPageComponent),
+                canActivate: [AuthOnlyGuard],
+            },
+            {
+                path: 'games/:gameId',
+                loadComponent: () => import('./pages/games/game-view/game-view.component').then((m) => m.GameViewPageComponent),
+                canActivate: [AuthOnlyGuard],
+            },
+            {
+                path: 'play',
+                loadComponent: () => import('./pages/play-page/play-page.component').then((m) => m.PlayPageComponent),
+                canActivate: [AuthOnlyGuard],
+            },
+            {
+                path: 'play/recommendations',
+                loadComponent: () =>
+                    import('./pages/play-page/recommendations-page/recommendations-page.component').then(
+                        (m) => m.RecommendationsPageComponent,
+                    ),
+                canActivate: [AuthOnlyGuard],
+            },
+            {
+                path: 'play/log-session',
+                loadComponent: () =>
+                    import('./pages/play-page/log-session-page/log-session-page.component').then((m) => m.LogSessionPageComponent),
+                canActivate: [AuthOnlyGuard],
+            },
+            {
+                path: 'play/upcoming-sessions',
+                loadComponent: () =>
+                    import('./pages/play-page/upcoming-sessions-page/upcoming-sessions-page.component').then(
+                        (m) => m.UpcomingSessionsPageComponent,
+                    ),
+                canActivate: [AuthOnlyGuard],
+            },
+            {
+                path: 'play/history',
+                loadComponent: () => import('./pages/play-page/history-page/history-page.component').then((m) => m.HistoryPageComponent),
+                canActivate: [AuthOnlyGuard],
+            },
+            {
+                path: 'groups/:groupId',
+                loadComponent: () => import('./pages/group-view/group-view.component').then((m) => m.GroupViewComponent),
+                canActivate: [AuthOnlyGuard],
+            },
+            {
+                path: 'meets/:meetId',
+                loadComponent: () => import('./pages/meet-view/meet-view.component').then((m) => m.MeetViewComponent),
+                canActivate: [AuthOnlyGuard],
+            },
             {
                 path: 'settings',
-                component: SettingsPageComponent,
+                loadComponent: () => import('./pages/settings/settings.component').then((m) => m.SettingsPageComponent),
                 canActivate: [AuthOnlyGuard],
                 children: [
                     { path: '', redirectTo: 'account', pathMatch: 'full' },
-                    { path: 'account', component: SettingsAccountComponent, canActivate: [AuthOnlyGuard] },
-                    { path: 'security', component: SettingsSecurityComponent, canActivate: [AuthOnlyGuard] },
+                    {
+                        path: 'account',
+                        loadComponent: () =>
+                            import('./pages/settings/account/settings-account.component').then((m) => m.SettingsAccountComponent),
+                        canActivate: [AuthOnlyGuard],
+                    },
+                    {
+                        path: 'security',
+                        loadComponent: () =>
+                            import('./pages/settings/security/settings-security.component').then((m) => m.SettingsSecurityComponent),
+                        canActivate: [AuthOnlyGuard],
+                    },
                 ],
             },
         ],
@@ -101,17 +161,61 @@ export const routes: Routes = [
         component: LayoutBasicComponent,
         children: [
             // accessible to unauthenticated users
-            { path: 'verify-email/:token', component: VerifyEmailComponent, canActivate: [GuestOnlyGuard] },
-            { path: 'reset-password/request', component: ResetPasswordRequestComponent, canActivate: [GuestOnlyGuard] },
-            { path: 'reset-password/:token', component: ResetPasswordTokenComponent, canActivate: [GuestOnlyGuard] },
+            {
+                path: 'verify-email/:token',
+                loadComponent: () => import('./pages/auth/verify-email/verify-email.component').then((m) => m.VerifyEmailComponent),
+                canActivate: [GuestOnlyGuard],
+            },
+            {
+                path: 'reset-password/request',
+                loadComponent: () =>
+                    import('./pages/auth/reset-password-request/reset-password-request.component').then(
+                        (m) => m.ResetPasswordRequestComponent,
+                    ),
+                canActivate: [GuestOnlyGuard],
+            },
+            {
+                path: 'reset-password/:token',
+                loadComponent: () =>
+                    import('./pages/auth/reset-password-token/reset-password-token.component').then((m) => m.ResetPasswordTokenComponent),
+                canActivate: [GuestOnlyGuard],
+            },
             // accessible to authenticated users
-            { path: 'create-group', component: GroupCreateComponent, canActivate: [AuthOnlyGuard] }, // 'group/new' would break in 'group/:groupId'
-            { path: 'groups/:groupId/meets/new', component: MeetNewComponent, canActivate: [AuthOnlyGuard] }, // 'meets/new' would break in 'meets/:meetId'
-            { path: 'groups/:groupId/edit', component: GroupEditComponent, canActivate: [AuthOnlyGuard] },
-            { path: 'groups/:groupId/leave', component: GroupLeaveComponent, canActivate: [AuthOnlyGuard] },
-            { path: 'groups/:groupId/delete', component: GroupDeleteComponent, canActivate: [AuthOnlyGuard] },
-            { path: 'collection/propose-game', component: ProposeGamePageComponent, canActivate: [AuthOnlyGuard] },
+            {
+                path: 'create-group',
+                loadComponent: () => import('./pages/groups/group-create/group-create.component').then((m) => m.GroupCreateComponent),
+                canActivate: [AuthOnlyGuard],
+            }, // 'group/new' would break in 'group/:groupId'
+            {
+                path: 'groups/:groupId/meets/new',
+                loadComponent: () => import('./pages/meet-new/meet-new.component').then((m) => m.MeetNewComponent),
+                canActivate: [AuthOnlyGuard],
+            }, // 'meets/new' would break in 'meets/:meetId'
+            {
+                path: 'groups/:groupId/edit',
+                loadComponent: () => import('./pages/groups/group-edit/group-edit.component').then((m) => m.GroupEditComponent),
+                canActivate: [AuthOnlyGuard],
+            },
+            {
+                path: 'groups/:groupId/leave',
+                loadComponent: () => import('./pages/group-leave/group-leave.component').then((m) => m.GroupLeaveComponent),
+                canActivate: [AuthOnlyGuard],
+            },
+            {
+                path: 'groups/:groupId/delete',
+                loadComponent: () => import('./pages/group-delete/group-delete.component').then((m) => m.GroupDeleteComponent),
+                canActivate: [AuthOnlyGuard],
+            },
+            {
+                path: 'collection/propose-game',
+                loadComponent: () =>
+                    import('./pages/collection-page/propose-game-page/propose-game-page.component').then((m) => m.ProposeGamePageComponent),
+                canActivate: [AuthOnlyGuard],
+            },
         ],
     },
-    { path: '**', component: PageNotFoundComponent }, // Wildcard route for a 404 page
+    {
+        path: '**',
+        loadComponent: () => import('./pages/errors/page-not-found/page-not-found.component').then((m) => m.PageNotFoundComponent),
+    }, // Wildcard route for a 404 page
 ]

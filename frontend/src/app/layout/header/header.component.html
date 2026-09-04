@@ -15,7 +15,11 @@
                     @if (clerkIsAvailable()) {
                         @if (!clerkIsSignedIn()) {
                             <button type="button" class="cursor-pointer" (click)="openClerkSignIn()">Log In</button>
-                            <app-button type="button" (click)="openClerkSignUp()">Sign Up</app-button>
+                            @if (selfRegistrationEnabled()) {
+                                <app-button type="button" (click)="openClerkSignUp()">Sign Up</app-button>
+                            } @else {
+                                <a routerLink="/register" class="font-medium text-indigo-600 dark:text-indigo-400">Private beta</a>
+                            }
                         } @else {
                             <button type="button" class="cursor-pointer" (click)="verifyClerkLink()" [disabled]="clerkLinkInProgress()">
                                 {{ clerkLinkInProgress() ? 'Checking…' : 'Verify Clerk link' }}
@@ -27,7 +31,11 @@
                         }
                     } @else {
                         <a routerLink="/login">Log In</a>
-                        <app-button routerLink="/register">Sign Up</app-button>
+                        @if (selfRegistrationEnabled()) {
+                            <app-button routerLink="/register">Sign Up</app-button>
+                        } @else {
+                            <a routerLink="/register" class="font-medium text-indigo-600 dark:text-indigo-400">Private beta</a>
+                        }
                     }
                 } @else {
                     @if (isCurrentUserAdmin()) {

@@ -1,14 +1,58 @@
-@if (clerkIsAvailable()) {
-    <h1 class="text-4xl text-center pt-24 lg:pt-48">Create your Board Vault account</h1>
-    <p class="text-secondary text-center py-8">Set up your identity directly in Board Vault with Clerk.</p>
-    <div class="flex justify-center">
-        <button type="button" class="app-btn-primary" (click)="openClerkSignUp()">Open secure sign-up</button>
-    </div>
-} @else {
-    <h1 class="text-4xl text-center pt-24 lg:pt-48">Create an account</h1>
-    <p class="text-secondary text-center py-8">
-        Already have an account? <a routerLink="/login" class="underline">Login</a>
-    </p>
-
-    <app-form-register />
-}
+<main class="min-h-[calc(100vh-8rem)] bg-gradient-to-b from-indigo-50 to-white px-4 py-16 dark:from-zinc-900 dark:to-zinc-950 sm:px-6 lg:py-24">
+    <section class="mx-auto max-w-xl rounded-3xl border border-zinc-200 bg-white p-8 shadow-xl dark:border-zinc-800 dark:bg-zinc-900 sm:p-12">
+        @if (isInvitationFlow()) {
+            <div class="text-center">
+                <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-100 text-3xl text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-300" aria-hidden="true">
+                    <i class="bi bi-envelope-check-fill"></i>
+                </div>
+                <p class="mt-6 text-sm font-semibold uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400">You are invited</p>
+                <h1 class="mt-3 text-4xl font-bold tracking-tight text-zinc-900 dark:text-white">Join your Board Vault group</h1>
+                <p class="mt-5 text-lg leading-8 text-zinc-600 dark:text-zinc-300">Complete the secure Clerk sign-up to join the group that invited you.</p>
+                @if (clerkIsAvailable()) {
+                    <button type="button" class="app-btn-primary mt-8" (click)="openClerkSignUp()">Continue with invitation</button>
+                } @else {
+                    <p class="mt-8 rounded-lg border border-amber-400/30 bg-amber-50 p-4 text-sm text-amber-800 dark:bg-amber-950/30 dark:text-amber-200">The secure sign-up service is still loading. Refresh this page to continue.</p>
+                }
+                @if (invitationError()) {
+                    <p class="mt-4 rounded-lg border border-red-400/30 bg-red-50 p-4 text-sm text-red-800 dark:bg-red-950/30 dark:text-red-200" role="alert">{{ invitationError() }}</p>
+                }
+                <p class="mt-6 text-sm text-zinc-500 dark:text-zinc-400">This link is private and expires. Do not share it publicly.</p>
+            </div>
+        } @else if (!selfRegistrationEnabled()) {
+            <div class="text-center">
+                <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-100 text-3xl text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-300" aria-hidden="true">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+                <p class="mt-6 text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400">Private beta</p>
+                <h1 class="mt-3 text-4xl font-bold tracking-tight text-zinc-900 dark:text-white">Board Vault is still invite-only</h1>
+                <p class="mt-5 text-lg leading-8 text-zinc-600 dark:text-zinc-300">
+                    Board Vault helps a group of friends organize its games, choose what to play, and remember every session.
+                </p>
+                <p class="mt-4 text-zinc-600 dark:text-zinc-300">We are still building the core experience, so new accounts are created by invitation only.</p>
+                <div class="mt-6 rounded-2xl border border-indigo-100 bg-indigo-50 p-5 text-left dark:border-indigo-900/60 dark:bg-indigo-950/30">
+                    <p class="font-semibold text-zinc-900 dark:text-white">How to get access</p>
+                    <p class="mt-2 text-sm leading-6 text-zinc-600 dark:text-zinc-300">Ask a friend or group organizer who already uses Board Vault to invite you. Once invited, use the secure Clerk sign-up link they provide.</p>
+                </div>
+                <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+                    <a routerLink="/login" class="app-btn-primary text-center">Sign in</a>
+                    <a routerLink="/" class="app-btn-secondary text-center">Back to home</a>
+                </div>
+                <p class="mt-8 text-sm text-zinc-500 dark:text-zinc-400">Already have access? Sign in with your existing Board Vault account.</p>
+            </div>
+        } @else if (clerkIsAvailable()) {
+            <div class="text-center">
+                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400">Create your shelf</p>
+                <h1 class="mt-3 text-4xl font-bold tracking-tight text-zinc-900 dark:text-white">Create your Board Vault account</h1>
+                <p class="mt-5 text-zinc-600 dark:text-zinc-300">Set up your identity securely with Clerk.</p>
+                <button type="button" class="app-btn-primary mt-8" (click)="openClerkSignUp()">Open secure sign-up</button>
+                <p class="mt-6 text-sm text-zinc-500 dark:text-zinc-400">Already have an account? <a routerLink="/login" class="underline">Sign in</a></p>
+            </div>
+        } @else {
+            <h1 class="text-center text-4xl font-bold tracking-tight text-zinc-900 dark:text-white">Create an account</h1>
+            <p class="py-8 text-center text-zinc-600 dark:text-zinc-300">
+                Already have an account? <a routerLink="/login" class="underline">Sign in</a>
+            </p>
+            <app-form-register />
+        }
+    </section>
+</main>

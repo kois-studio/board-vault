@@ -12,7 +12,7 @@ const databasePath = join(temporaryDirectory, 'empty-state.db')
 const schemaPath = resolve(repositoryRoot, 'database/schema/schema.sql')
 const schema = await readFile(schemaPath, 'utf8')
 
-const run = (command, args, env = {}) => new Promise((resolvePromise, reject) => {
+const run = (command, args, env = {}, input = '') => new Promise((resolvePromise, reject) => {
     const child = spawn(command, args, {
         cwd: repositoryRoot,
         env: { ...process.env, ...env },
@@ -24,11 +24,11 @@ const run = (command, args, env = {}) => new Promise((resolvePromise, reject) =>
     child.stderr.on('data', chunk => { stderr += chunk })
     child.on('error', reject)
     child.on('close', code => resolvePromise({ code, stdout, stderr }))
-    child.stdin.end(schema)
+    child.stdin.end(input)
 })
 
 try {
-    const sqlite = await run('sqlite3', [databasePath, 'PRAGMA integrity_check;'])
+    const sqlite = await run('sqlite3', [databasePath], {}, `${schema}\nPRAGMA integrity_check;\n`)
     if (sqlite.code !== 0) {
         throw new Error(`sqlite3 failed. Install sqlite3 to run empty-state verification.\n${sqlite.stderr}`)
     }
@@ -43,6 +43,24 @@ try {
     })
     if (migration.code !== 0) {
         throw new Error(`Migration baseline verification failed.\n${migration.stderr}`)
+    }
+
+    const structure = await run(
+        'sqlite3',
+        [databasePath],
+        {},
+        `
+            SELECT CASE WHEN EXISTS (SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'GroupGameInterest')
+                THEN 'group-interest: ok' ELSE 'group-interest: missing' END;
+            SELECT CASE WHEN EXISTS (SELECT 1 FROM pragma_table_info('Meet') WHERE name = 'notes')
+                THEN 'meet-notes: ok' ELSE 'meet-notes: missing' END;
+            SELECT CASE WHEN (SELECT COUNT(*) FROM SchemaMigrations) = 7
+                AND (SELECT MAX(version) FROM SchemaMigrations) = '0007'
+                THEN 'migration-state: ok' ELSE 'migration-state: invalid' END;
+        `,
+    )
+    if (structure.code !== 0 || !structure.stdout.includes('group-interest: ok') || !structure.stdout.includes('meet-notes: ok') || !structure.stdout.includes('migration-state: ok')) {
+        throw new Error(`Migrated schema assertions failed.\n${structure.stdout}\n${structure.stderr}`)
     }
 
     console.log(`Empty-state schema integrity: ${sqlite.stdout.trim()}`)

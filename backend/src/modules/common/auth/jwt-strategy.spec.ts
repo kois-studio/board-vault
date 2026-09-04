@@ -1,5 +1,5 @@
-import { ConfigService } from '@nestjs/config'
 import { UnauthorizedException } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 
 import { UsersService } from '../../core/users/users.service'
 

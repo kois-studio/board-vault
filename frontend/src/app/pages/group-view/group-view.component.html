@@ -1,244 +1,366 @@
-<app-page-header [titleText]="groupData$()?.name ?? 'Group details'" [showActionButton]="true">
-    See who's in the group, the games you share, and all your meetings together. <br />
+<app-page-header [titleText]="groupData$()?.name ?? 'Group home'" [showActionButton]="true">
+    Your shared place to decide what to play, coordinate the next session, and remember the games you enjoyed.
 
     @if (isGroupOwnerComputed()) {
-        <app-button class="action-button" icon="gear-fill" (click)="onClickEditGroup()">Manage members</app-button>
+        <app-button class="action-button" icon="gear-fill" (click)="onClickEditGroup()">Manage group</app-button>
     }
 </app-page-header>
 
 <container-wrapper>
-    <!-- 2 columns - left: members list; right: games sorted -->
-    <div class="grid xl:grid-cols-3 gap-y-12">
-        <!-- left col -->
-        <section class="p-4">
-            <div class="relative">
-                <h2 class="text-xl font-semibold mb-4">Members ({{ groupData$()?.members?.length }})</h2>
-                
-                <!-- select / deselect all -->
-                <app-button
-                    size="small"
-                    class="absolute top-0 right-0 font-normal"
-                    (click)="onClickSelectAll()"
-                >
-                    {{ selectedMembers$().length === groupData$()?.members?.length ? 'Unselect all' : 'Select all' }}
-                </app-button>
-            </div>
-            <hr />
-
-            <ul class="grid gap-y-4 mt-4">
-                @for (member of groupData$()?.members ?? []; track $index) {
-                <button
-                    (click)="onClickMember(member.id)"
-                    class="rounded-lg cursor-pointer flex items-center justify-start border"
-                    [ngClass]="{
-                            'bg-zinc-200 dark:bg-zinc-800/30 border-zinc-300 dark:border-zinc-800': !selectedMembers$().includes(member.id),
-                            'bg-white dark:bg-zinc-800 border-green-400': selectedMembers$().includes(member.id),
-                        }"
-                >
-                    <!-- indicator -->
-                    <div class="pl-4 grid">
-                        <span
-                            class="h-4 w-4 rounded-full"
-                            [ngClass]="{
-                                'bg-gray-400': !selectedMembers$().includes(member.id),
-                                'bg-green-400': selectedMembers$().includes(member.id),
-                            }"
-                        ></span>
-                    </div>
-                    <div class="flex items-center justify-between w-full">
-                        <app-card-account
-                            [member]="member"
-                            [isOwner]="groupData$()?.createdBy === member.id"
-                            [ngClass]="{
-                                    'opacity-30': !selectedMembers$().includes(member.id),
-                                }"
-                        />
-                        <div class="text-gray-400 text-sm mr-4">
-                            {{ member.games.length }} {{ member.games.length === 1 ? 'game' : 'games' }}
-                        </div>
-                    </div>
-                </button>
-                }
-            </ul>
-
-            <!-- INVITED MEMBERS -->
-            @if (invitationsList.length > 0) {
-            <h2 class="text-xl font-semibold mb-4 mt-12">Invitations pending</h2>
-            <hr />
-
-            <ul class="grid gap-y-4 mt-4">
-                @for (invitation of invitationsList; track $index) {
-                <li class="bg-zinc-200 dark:bg-zinc-800/30 border-zinc-300 dark:border-zinc-800 rounded-lg flex items-center justify-start">
-                    <app-card-account class="opacity-30" [member]="invitation.toAccount" />
-                </li>
-                }
-            </ul>
-            }
-        </section>
-
-        <!-- right col -->
-        <section class="p-4 col-span-2">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-semibold">Group games ({{totalUniqueGamesComputed().length}})</h2>
-                <ul class="flex gap-2">
-                    <button
-                        title="Recalculate reviews for the selected members"
-                        class="text-gray-400 hover:text-black hover:dark:text-white px-2 py-1 rounded-lg cursor-pointer" 
-                        [ngClass]="{'text-black! dark:text-white! bg-zinc-200 dark:bg-zinc-700': isRecalculatingReviews$()}"
-                        (click)="toggleRecalculateReviews()"
-                        >
-                            <i class="bi bi-star text-xl"></i>
-                    </button>
-                    <button
-                        title="Disable games whose min/max players don't match the selected members"
-                        class="text-gray-400 hover:text-black hover:dark:text-white px-2 py-1 rounded-lg cursor-pointer" 
-                        [ngClass]="{'text-black! dark:text-white! bg-zinc-200 dark:bg-zinc-700': isHidingMaxPlayers$()}"
-                        (click)="toggleMaxPlayersFilter()"
-                        >
-                            <i class="bi bi-people text-xl"></i>
-                    </button>
-                    <button
-                        title="Hide disabled games"
-                        class="text-gray-400 hover:text-black hover:dark:text-white px-2 py-1 rounded-lg cursor-pointer" 
-                        [ngClass]="{'text-black! dark:text-white! bg-zinc-200 dark:bg-zinc-700': isFilteringGames$()}"
-                        (click)="toggleGamesFilter()"
-                    >
-                        <i class="bi bi-filter text-xl"></i>
-                    </button>
-                </ul>
-            </div>
-            <hr />
-
-            <div class="grid lg:grid-cols-2 gap-4 pt-4">
-                @if (totalUniqueGamesComputed().length === 0) {
-                <div class="lg:col-span-2 text-center py-8 text-gray-400">
-                    <p class="pb-2">
-                        <i class="bi bi-dice-3 text-4xl"></i>
-                    </p>
-                    <p>No suitable games found for the selected members.</p>
-                    <p class="text-sm mt-4">This could be because:</p>
-                    <ul class="text-sm mt-1">
-                        <li>The selected members don't have any games</li>
-                        <li>No games match the current filters</li>
-                    </ul>
-                </div>
-                }
-
-                @for (game of totalUniqueGamesComputed(); track $index) {
-                <div
-                    class="rounded bg-zinc-200 dark:bg-zinc-800 p-2 flex justify-between items-center"
-                    [ngClass]="{
-                        'opacity-30': !game.active,
-                    }"
-                >
-                    <div class="flex items-center gap-2">
-                        <div class="h-20 w-20 roundd-lg relative">
-                            <a [routerLink]="['/games/', game.id]">
-                                <image-background [src]="game.imageUrl" class="h-24" />
-                            </a>
-                            @if (game.quantity > 1) {
-                            <div class="absolute -top-2 -left-2 bg-blue-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
-                                x{{game.quantity}}
+    @if (groupData$(); as group) {
+        <div class="space-y-8 py-6">
+            <section class="grid gap-4 lg:grid-cols-3" aria-label="Group overview">
+                <article class="rounded-2xl bg-indigo-700 p-6 text-white shadow-lg lg:col-span-2">
+                    <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-200">Next game night</p>
+                    @if (nextMeetingComputed(); as nextMeeting) {
+                        <div class="mt-3 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                            <div>
+                                <h2 class="text-3xl font-bold">{{ nextMeeting.meetDate | customDate }}</h2>
+                                <p class="mt-2 text-indigo-100">{{ nextMeeting.status === 'active' ? 'This session is happening now.' : 'Your next planned session.' }}</p>
                             </div>
-                            }
+                            <a class="app-btn-secondary inline-block text-center" [routerLink]="['/meets', nextMeeting.id]">Open session</a>
                         </div>
-                        <div class="ml-3 text-nowrap overflow-hidden text-ellipsis whitespace-nowrap">
-                            <p class="font-semibold">{{ game.titleTranslations.en }}</p>
-                            <p class="text-secondary text-sm text-start w-full">
-                                <i class="bi bi-clock-fill"></i> {{ game.gameAvgDuration }} mins
-                            </p>
-                            <p class="text-secondary text-sm text-start">
-                                <i class="bi bi-people-fill"></i> {{ game.minPlayers }} - {{ game.maxPlayers }}
-                            </p>
+                    } @else {
+                        <h2 class="mt-3 text-3xl font-bold">Nothing planned yet</h2>
+                        <p class="mt-2 max-w-xl text-indigo-100">Give the group a date and let everyone know what you might play.</p>
+                        <a class="app-btn-secondary mt-5 inline-block" [routerLink]="['/groups', group.id, 'meets', 'new']">Plan a session</a>
+                    }
+                </article>
+
+                <article class="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+                    <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Group pulse</p>
+                    <dl class="mt-5 grid grid-cols-3 gap-3 text-center">
+                        <div class="rounded-xl bg-zinc-50 p-3 dark:bg-zinc-800">
+                            <dt class="text-xs text-secondary">People</dt>
+                            <dd class="mt-1 text-2xl font-bold">{{ group.members.length }}</dd>
                         </div>
+                        <div class="rounded-xl bg-zinc-50 p-3 dark:bg-zinc-800">
+                            <dt class="text-xs text-secondary">Games</dt>
+                            <dd class="mt-1 text-2xl font-bold">{{ totalUniqueGamesComputed().length }}</dd>
+                        </div>
+                        <div class="rounded-xl bg-zinc-50 p-3 dark:bg-zinc-800">
+                            <dt class="text-xs text-secondary">Sessions</dt>
+                            <dd class="mt-1 text-2xl font-bold">{{ groupHistory$().length }}</dd>
+                        </div>
+                    </dl>
+                    <p class="mt-5 text-sm text-secondary">The more sessions you record, the better the group’s memory becomes.</p>
+                </article>
+            </section>
+
+            <section class="rounded-2xl border border-indigo-100 bg-indigo-50 p-6 dark:border-indigo-900/60 dark:bg-indigo-950/30">
+                <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Make the next decision easy</p>
+                        <h2 class="mt-2 text-2xl font-bold">What should this group play?</h2>
+                        <p class="mt-2 max-w-2xl text-secondary">Use the people attending and the games they own to get a short, explainable list of suggestions.</p>
                     </div>
-                    @if (avgReviewsIndexComputed()[game.id]) {
-                    <div class="px-3 flex flex-col items-center">
-                        <review-display [review]="avgReviewsIndexComputed()[game.id].average" [flexCol]="true" />
-                        <span class="text-xs text-secondary mt-1">{{ avgReviewsIndexComputed()[game.id].voters }} voters</span>
+                    <a
+                        class="app-btn-primary shrink-0 text-center"
+                        routerLink="/play/recommendations"
+                        [queryParams]="{ groupId: group.id }"
+                    >Find a game</a>
+                </div>
+            </section>
+
+            <section aria-labelledby="acquisition-heading">
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Group decisions</p>
+                        <h2 id="acquisition-heading" class="mt-1 text-2xl font-bold">Games the group wants next</h2>
+                        <p class="mt-1 text-secondary">A shared shortlist for games nobody in the group owns yet. Interest is explicit, so purchase suggestions stay social.</p>
                     </div>
+                    <a class="app-btn-secondary shrink-0 text-center" [routerLink]="['/collection/browse']" [queryParams]="{ groupId: group.id }">Browse catalog</a>
+                </div>
+
+                @if (acquisitionBoardLoading()) {
+                    <div class="mt-5 rounded-2xl border border-dashed border-zinc-300 p-6 text-center text-secondary dark:border-zinc-700" role="status">Loading the group shortlist…</div>
+                } @else if (acquisitionBoardError()) {
+                    <div class="mt-5 rounded-2xl border border-amber-200 bg-amber-50 p-6 text-center dark:border-amber-900/50 dark:bg-amber-950/30" role="alert">
+                        <p class="font-medium">The group shortlist could not be loaded.</p>
+                        <app-button class="mt-4" icon="arrow-repeat" (click)="retryAcquisitionBoard()">Retry</app-button>
+                    </div>
+                } @else if (acquisitionBoard$().length === 0) {
+                    <div class="mt-5 rounded-2xl border border-dashed border-zinc-300 p-8 text-center dark:border-zinc-700">
+                        <i class="bi bi-bag-heart text-4xl text-indigo-500"></i>
+                        <h3 class="mt-3 text-lg font-semibold">No group acquisition ideas yet</h3>
+                        <p class="mt-2 text-secondary">Browse the catalog and add games that would make a good next group purchase.</p>
+                        <a class="app-btn-primary mt-5 inline-block" [routerLink]="['/collection/browse']" [queryParams]="{ groupId: group.id }">Find a game to add</a>
+                    </div>
+                } @else {
+                    <div class="mt-5 grid gap-4 md:grid-cols-2">
+                        @for (entry of acquisitionBoard$(); track entry.gameData.id) {
+                            <article class="flex gap-4 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+                                <a [routerLink]="['/games', entry.gameData.id]" class="shrink-0">
+                                    <image-background [src]="entry.gameData.imageUrl" class="h-20 w-20 rounded-xl" />
+                                </a>
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex items-start justify-between gap-3">
+                                        <a [routerLink]="['/games', entry.gameData.id]" class="font-semibold hover:underline">{{ entry.gameData.titleTranslations.en }}</a>
+                                        @if (isCurrentUserInterested(entry)) {
+                                            <button type="button" class="shrink-0 text-xs text-secondary underline" [disabled]="acquisitionMutationGameId() === entry.gameData.id" (click)="removeAcquisitionInterest(entry.gameData.id)">Remove my interest</button>
+                                        }
+                                    </div>
+                                    <p class="mt-2 text-sm text-secondary">{{ entry.gameData.gameAvgDuration }} min · {{ entry.gameData.minPlayers }}–{{ entry.gameData.maxPlayers }} players</p>
+                                    <div class="mt-3 flex flex-wrap gap-2 text-xs text-secondary">
+                                        <span class="rounded-full bg-indigo-50 px-2 py-1 dark:bg-indigo-950/40">{{ entry.interestCount }} interested</span>
+                                        <span class="rounded-full bg-zinc-100 px-2 py-1 dark:bg-zinc-800">{{ entry.ownerCount }} group owner{{ entry.ownerCount === 1 ? '' : 's' }}</span>
+                                    </div>
+                                    <p class="mt-3 text-xs text-secondary">Interested: {{ getInterestNames(entry) }}</p>
+                                </div>
+                            </article>
+                        }
+                    </div>
+                }
+            </section>
+
+            <section class="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900" aria-labelledby="members-heading">
+                <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Session context</p>
+                        <h2 id="members-heading" class="mt-1 text-2xl font-bold">Who is playing?</h2>
+                        <p class="mt-1 text-secondary">Select the people you are considering. This also filters the shared library below.</p>
+                    </div>
+                    <span class="text-sm font-medium text-indigo-600 dark:text-indigo-400">{{ selectedMembersLabel() }}</span>
+                </div>
+
+                <div class="mt-5 grid gap-3 md:grid-cols-2">
+                    @for (member of group.members; track member.id) {
+                        <button
+                            type="button"
+                            (click)="onClickMember(member.id)"
+                            class="flex items-center gap-3 rounded-xl border p-3 text-left transition-colors"
+                            [attr.aria-pressed]="selectedMembers$().includes(member.id)"
+                            [ngClass]="{
+                                'border-indigo-500 bg-indigo-50 dark:border-indigo-400 dark:bg-indigo-950/30': selectedMembers$().includes(member.id),
+                                'border-zinc-200 bg-zinc-50 opacity-60 dark:border-zinc-700 dark:bg-zinc-800': !selectedMembers$().includes(member.id),
+                            }"
+                        >
+                            <span
+                                class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2"
+                                [ngClass]="selectedMembers$().includes(member.id) ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-zinc-400'"
+                                aria-hidden="true"
+                            >
+                                @if (selectedMembers$().includes(member.id)) {
+                                    <i class="bi bi-check text-xs"></i>
+                                }
+                            </span>
+                            <app-card-account [member]="member" [isOwner]="group.createdBy === member.id" class="min-w-0 flex-1" />
+                            <span class="shrink-0 text-xs text-secondary">{{ member.games.length }} games</span>
+                        </button>
                     }
                 </div>
-                }
-            </div>
-        </section>
-    </div>
 
-    <!-- Meetings history -->
-    <section class="mt-12">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-semibold">Meetings history</h2>
-            <app-button (click)="onClickNewMeet()" [icon]="'plus-lg'">New meet</app-button>
-        </div>
-        <hr class="mb-4" />
-        
-        <!-- Loading state -->
-        @if (isLoading()) {
-            <app-skeleton-history />
-        } @else if (groupHistoryError()) {
-            <div class="text-center py-8 text-secondary" role="alert">
-                <p>Group history could not be loaded.</p>
-                <p class="text-sm mt-2 mb-4">Check your connection and try again.</p>
-                <app-button icon="arrow-repeat" (click)="retryGroupHistory()">Retry</app-button>
-            </div>
-        } @else if (groupHistory$().length === 0) {
-            <!-- no data -->
-            <div class="text-center py-8 text-secondary">
-                <p>No games played yet</p>
-            </div>
-        } @else {
-            @for (historyRecord of sortedGroupHistoryComputed(); track historyRecord.meetData.id) {
-                <div class="app-bg-secondary relative p-4 mb-8">
-                    <h2 class="text-xl font-semibold mb-4">
-                        {{ historyRecord.meetData.meetDate | customDate }}
-                    </h2>
+                <div class="mt-4 flex flex-wrap items-center gap-3">
+                    <app-button size="small" (click)="onClickSelectAll()">
+                        {{ selectedMembers$().length === group.members.length ? 'Clear selection' : 'Select everyone' }}
+                    </app-button>
+                    @if (invitationsList.length > 0) {
+                        <span class="text-sm text-secondary"><i class="bi bi-envelope mr-1"></i>{{ invitationsList.length }} invitation{{ invitationsList.length === 1 ? '' : 's' }} pending</span>
+                    }
+                </div>
+            </section>
 
-                    <!-- Ids -->
-                    <p class="text-secondary text-sm absolute top-4 right-4">
-                        Meet #{{ historyRecord.meetData.id }}
-                    </p>
+            <section aria-labelledby="library-heading">
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Shared library</p>
+                        <h2 id="library-heading" class="mt-1 text-2xl font-bold">Games this group can play</h2>
+                        <p class="mt-1 text-secondary">Ranked by the selected group members’ shared context, not by a global catalog.</p>
+                    </div>
+                    <div class="flex flex-wrap gap-2" aria-label="Library filters">
+                        <button
+                            type="button"
+                            class="rounded-lg border px-3 py-2 text-sm transition-colors"
+                            [ngClass]="isRecalculatingReviews$() ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30' : 'border-zinc-200 dark:border-zinc-700'"
+                            [attr.aria-pressed]="isRecalculatingReviews$()"
+                            (click)="toggleRecalculateReviews()"
+                        ><i class="bi bi-star mr-1"></i>Selected ratings</button>
+                        <button
+                            type="button"
+                            class="rounded-lg border px-3 py-2 text-sm transition-colors"
+                            [ngClass]="isHidingMaxPlayers$() ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30' : 'border-zinc-200 dark:border-zinc-700'"
+                            [attr.aria-pressed]="isHidingMaxPlayers$()"
+                            (click)="toggleMaxPlayersFilter()"
+                        ><i class="bi bi-people mr-1"></i>Fit {{ selectedMembers$().length }} players</button>
+                        <button
+                            type="button"
+                            class="rounded-lg border px-3 py-2 text-sm transition-colors"
+                            [ngClass]="isFilteringGames$() ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30' : 'border-zinc-200 dark:border-zinc-700'"
+                            [attr.aria-pressed]="isFilteringGames$()"
+                            (click)="toggleGamesFilter()"
+                        ><i class="bi bi-filter mr-1"></i>Only playable</button>
+                    </div>
+                </div>
 
-                    <!-- Games played on this date -->
-                    <ul class="grid lg:grid-cols-2 gap-4">
-                        @for (gamePlayed of historyRecord.gamesPlayed; track gamePlayed.gameData.id) {
-                            <div class="app-bg-tertiary rounded-lg p-4 flex gap-4">
-                                <!-- Game image -->
-                                <a [routerLink]="['/games/', gamePlayed.gameData.id]">
-                                    <img
-                                        [src]="gamePlayed.gameData.imageUrl"
-                                        [alt]="gamePlayed.gameData.titleTranslations.en"
-                                        loading="lazy"
-                                        class="w-24 h-24 object-cover rounded-lg"
-                                    />
+                @if (totalUniqueGamesComputed().length === 0) {
+                    <div class="mt-5 rounded-2xl border border-dashed border-zinc-300 p-8 text-center dark:border-zinc-700">
+                        <i class="bi bi-dice-3 text-4xl text-indigo-500"></i>
+                        <h3 class="mt-3 text-lg font-semibold">No games match this context yet</h3>
+                        <p class="mt-2 text-secondary">Select more members, clear a filter, or add games to a member’s collection.</p>
+                    </div>
+                } @else {
+                    <div class="mt-5 grid gap-4 md:grid-cols-2">
+                        @for (game of totalUniqueGamesComputed(); track game.id) {
+                            <article class="flex gap-4 rounded-2xl border p-3 transition-colors dark:border-zinc-800" [ngClass]="game.active ? 'border-zinc-200 bg-white dark:bg-zinc-900' : 'border-zinc-200 bg-zinc-100 opacity-50 dark:bg-zinc-800'">
+                                <a [routerLink]="['/games', game.id]" class="shrink-0">
+                                    <image-background [src]="game.imageUrl" class="h-24 w-24 rounded-xl" />
                                 </a>
-
-                                <!-- Game info -->
-                                <div class="flex flex-col justify-between flex-1">
-                                    <h3 class="text-lg font-semibold mb-1">{{ gamePlayed.gameData.titleTranslations.en }}</h3>
-
-                                    <div class="flex justify-between items-end">
-                                        
-                                        <!-- Players -->
-                                        <div class="relative h-8 flex items-center">
-                                            <!-- Player avatars -->
-                                            <div class="flex -space-x-2">
-                                                @for (player of gamePlayed.playedBy; track player.id) {
-                                                    <app-image-profile
-                                                        [title]="player.username"
-                                                        class="border-2 rounded-full border-indigo-100 dark:border-zinc-800"
-                                                        [avatar]="player.avatar"
-                                                        [style.zIndex]="$index"
-                                                    />
-                                                }
-                                            </div>
-                                        </div>
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex items-start justify-between gap-3">
+                                        <a [routerLink]="['/games', game.id]" class="font-semibold hover:underline">{{ game.titleTranslations.en }}</a>
+                                        @if (avgReviewsIndexComputed()[game.id]; as review) {
+                                            <span class="shrink-0 text-sm font-medium text-amber-600 dark:text-amber-400">★ {{ review.average }}</span>
+                                        }
+                                    </div>
+                                    <p class="mt-2 text-sm text-secondary">{{ game.gameAvgDuration }} min · {{ game.minPlayers }}–{{ game.maxPlayers }} players</p>
+                                    <div class="mt-3 flex flex-wrap gap-2 text-xs text-secondary">
+                                        <span class="rounded-full bg-zinc-100 px-2 py-1 dark:bg-zinc-800">{{ game.quantity }} owner{{ game.quantity === 1 ? '' : 's' }}</span>
+                                        @if (avgReviewsIndexComputed()[game.id]; as review) {
+                                            <span class="rounded-full bg-zinc-100 px-2 py-1 dark:bg-zinc-800">{{ review.voters }} rating{{ review.voters === 1 ? '' : 's' }}</span>
+                                        }
                                     </div>
                                 </div>
-                            </div>
+                            </article>
                         }
-                    </ul>
+                    </div>
+                }
+            </section>
+
+            <section aria-labelledby="history-heading">
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Group memory</p>
+                        <h2 id="history-heading" class="mt-1 text-2xl font-bold">Recent sessions</h2>
+                        <p class="mt-1 text-secondary">A compact record of what this group has actually played together.</p>
+                    </div>
+                    <app-button (click)="onClickNewMeet()" icon="plus-lg">Plan a session</app-button>
                 </div>
+
+                @if (isLoading()) {
+                    <div class="mt-5"><app-skeleton-history /></div>
+                } @else if (groupHistoryError()) {
+                    <div class="mt-5 rounded-2xl border border-amber-200 bg-amber-50 p-8 text-center dark:border-amber-900/50 dark:bg-amber-950/30" role="alert">
+                        <p class="font-medium">Recent sessions could not be loaded.</p>
+                        <p class="mt-2 text-sm text-secondary">Your group data is safe. Try again when the connection is ready.</p>
+                        <app-button class="mt-4" icon="arrow-repeat" (click)="retryGroupHistory()">Retry</app-button>
+                    </div>
+                } @else if (groupHistory$().length === 0) {
+                    <div class="mt-5 rounded-2xl border border-dashed border-zinc-300 p-8 text-center dark:border-zinc-700">
+                        <i class="bi bi-calendar-heart text-4xl text-indigo-500"></i>
+                        <h3 class="mt-3 text-lg font-semibold">Your group history starts here</h3>
+                        <p class="mt-2 text-secondary">Record the next game night so recommendations can learn from what you really play.</p>
+                        <app-button class="mt-5" icon="plus-lg" (click)="onClickNewMeet()">Plan a session</app-button>
+                    </div>
+                } @else {
+                    <div class="mt-5 grid gap-4 lg:grid-cols-3">
+                        @for (historyRecord of recentGroupHistoryComputed(); track historyRecord.meetData.id) {
+                            <article class="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div>
+                                        <p class="font-semibold">{{ historyRecord.meetData.meetDate | customDate }}</p>
+                                        <p class="mt-1 text-sm text-secondary">{{ historyRecord.gamesPlayed.length }} game{{ historyRecord.gamesPlayed.length === 1 ? '' : 's' }} played</p>
+                                    </div>
+                                    <a [routerLink]="['/meets', historyRecord.meetData.id]" class="text-sm text-indigo-600 hover:underline dark:text-indigo-400">View</a>
+                                </div>
+                                <ul class="mt-4 space-y-3">
+                                    @for (gamePlayed of historyRecord.gamesPlayed; track gamePlayed.gameData.id) {
+                                        <li class="flex items-center gap-3">
+                                            <img [src]="gamePlayed.gameData.imageUrl" [alt]="gamePlayed.gameData.titleTranslations.en" loading="lazy" class="h-10 w-10 rounded-lg object-cover" />
+                                            <span class="min-w-0 flex-1 truncate text-sm font-medium">{{ gamePlayed.gameData.titleTranslations.en }}</span>
+                                            @if (gamePlayed.playedBy.length > 0) {
+                                                <span class="text-xs text-secondary">{{ gamePlayed.playedBy.length }} played</span>
+                                            } @else {
+                                                <span class="text-xs text-secondary">Players not recorded</span>
+                                            }
+                                        </li>
+                                    }
+                                </ul>
+                            </article>
+                        }
+                    </div>
+                    @if (groupHistory$().length > 3) {
+                        <a routerLink="/play/history" class="mt-5 inline-block text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400">See all your sessions →</a>
+                    }
+                }
+            </section>
+
+            @if (groupHistory$().length > 0) {
+                <section aria-labelledby="insights-heading">
+                    <div>
+                        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">What your group returns to</p>
+                        <h2 id="insights-heading" class="mt-1 text-2xl font-bold">Small group insights</h2>
+                        <p class="mt-1 text-secondary">Built from completed sessions and actual participation—not global rankings.</p>
+                    </div>
+                    <div class="mt-5 grid gap-4 lg:grid-cols-2">
+                        <article class="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+                            <h3 class="font-semibold">Most played</h3>
+                            @if (mostPlayedGamesComputed().length === 0) {
+                                <p class="mt-3 text-sm text-secondary">No games have been recorded yet.</p>
+                            } @else {
+                                <ol class="mt-4 space-y-3">
+                                    @for (item of mostPlayedGamesComputed(); track item.gameData.id) {
+                                        <li class="flex items-center gap-3">
+                                            <span class="w-5 text-sm text-secondary">{{ $index + 1 }}</span>
+                                            <image-background [src]="item.gameData.imageUrl" class="h-10 w-10 rounded-lg" />
+                                            <span class="min-w-0 flex-1 truncate text-sm font-medium">{{ item.gameData.titleTranslations.en || item.gameData.title || 'Untitled game' }}</span>
+                                            <span class="text-right text-xs text-secondary">{{ item.sessionCount }} session{{ item.sessionCount === 1 ? '' : 's' }}</span>
+                                        </li>
+                                    }
+                                </ol>
+                            }
+                        </article>
+                        <article class="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+                            <h3 class="font-semibold">Participation</h3>
+                            @if (memberParticipationComputed().length === 0) {
+                                <p class="mt-3 text-sm text-secondary">Attendance will appear after the first completed session.</p>
+                            } @else {
+                                <ol class="mt-4 space-y-3">
+                                    @for (item of memberParticipationComputed(); track item.member.id) {
+                                        <li class="flex items-center gap-3">
+                                            <app-card-account [member]="item.member" class="min-w-0 flex-1" />
+                                            <span class="text-right text-xs text-secondary">{{ item.sessionCount }} night{{ item.sessionCount === 1 ? '' : 's' }} · {{ item.gameCount }} game{{ item.gameCount === 1 ? '' : 's' }}</span>
+                                        </li>
+                                    }
+                                </ol>
+                            }
+                        </article>
+                        <article class="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+                            <h3 class="font-semibold">Recently played</h3>
+                            <p class="mt-1 text-sm text-secondary">The latest game memories from this group.</p>
+                            @if (recentlyPlayedGamesComputed().length === 0) {
+                                <p class="mt-3 text-sm text-secondary">No games have been recorded yet.</p>
+                            } @else {
+                                <ul class="mt-4 space-y-3">
+                                    @for (item of recentlyPlayedGamesComputed(); track item.gameData.id) {
+                                        <li class="flex items-center gap-3">
+                                            <image-background [src]="item.gameData.imageUrl" class="h-10 w-10 rounded-lg" />
+                                            <span class="min-w-0 flex-1 truncate text-sm font-medium">{{ item.gameData.titleTranslations.en || item.gameData.title || 'Untitled game' }}</span>
+                                            <span class="text-right text-xs text-secondary">{{ item.lastPlayedAt | customDate }}<br />{{ item.participantCount || 'No' }} played</span>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                        </article>
+                        <article class="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+                            <h3 class="font-semibold">Worth revisiting</h3>
+                            <p class="mt-1 text-sm text-secondary">Games your group has enjoyed before but not in its latest three sessions.</p>
+                            @if (revisitGamesComputed().length === 0) {
+                                <p class="mt-3 text-sm text-secondary">Your recent sessions cover the group’s current favourites.</p>
+                            } @else {
+                                <ul class="mt-4 space-y-3">
+                                    @for (item of revisitGamesComputed(); track item.gameData.id) {
+                                        <li class="flex items-center gap-3">
+                                            <image-background [src]="item.gameData.imageUrl" class="h-10 w-10 rounded-lg" />
+                                            <span class="min-w-0 flex-1 truncate text-sm font-medium">{{ item.gameData.titleTranslations.en || item.gameData.title || 'Untitled game' }}</span>
+                                            <span class="text-right text-xs text-secondary">{{ item.sessionCount }} previous session{{ item.sessionCount === 1 ? '' : 's' }}</span>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                        </article>
+                    </div>
+                </section>
             }
-        }
-    </section>
+        </div>
+    }
 </container-wrapper>

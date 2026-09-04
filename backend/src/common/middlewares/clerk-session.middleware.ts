@@ -1,9 +1,10 @@
 import { verifyToken } from '@clerk/backend'
 import { Injectable, type NestMiddleware } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import type { NextFunction, Request, Response } from 'express'
 
 import { ClerkIdentityService } from '../../modules/common/auth/clerk-identity.service'
+
+import type { NextFunction, Request, Response } from 'express'
 
 type AuthenticatedRequest = Request & {
     user?: {

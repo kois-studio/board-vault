@@ -1,0 +1,48 @@
+/* Global Tailwind and shared application styles. */
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer components {
+    .app-input {
+        @apply rounded border border-zinc-400 dark:border-zinc-700 bg-white dark:bg-zinc-900 disabled:bg-zinc-200 dark:disabled:bg-zinc-800 px-4 py-2 w-full;
+    }
+
+    .app-btn {
+        @apply py-2 px-4 font-bold rounded shadow tracking-wide cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed;
+    }
+
+    .app-bg-primary {
+        @apply bg-white dark:bg-zinc-950;
+    }
+
+    .app-bg-secondary {
+        @apply bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm;
+    }
+
+    .app-bg-tertiary {
+        @apply bg-zinc-200 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 shadow-sm;
+    }
+
+    .app-btn-primary {
+        @apply py-2 px-4 font-bold rounded shadow tracking-wide cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-blue-500 bg-blue-600 hover:bg-blue-500;
+    }
+
+    .app-btn-secondary {
+        @apply py-2 px-4 font-bold rounded shadow tracking-wide cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-700 dark:hover:bg-zinc-600 text-zinc-800 dark:text-white;
+    }
+
+    .app-btn-danger {
+        @apply py-2 px-4 font-bold rounded shadow tracking-wide cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-red-500 bg-red-600 hover:bg-red-800;
+    }
+
+    .text-secondary {
+        @apply text-zinc-600 dark:text-zinc-400;
+    }
+}
+
+html,
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans",
+        "Helvetica Neue", sans-serif;
+    scroll-behavior: smooth;
+}

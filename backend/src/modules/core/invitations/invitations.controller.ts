@@ -3,6 +3,7 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
 import { UserInGroupGuard } from '../../../common/guards/user-in-group.guard'
+import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
 import { SuccessDto } from '../../../common/types/auth.type'
 import {
     CreateInvitationBody,
@@ -15,7 +16,7 @@ import { UserPublicDto } from '../../../common/types/user.type'
 
 import { InvitationsService } from './invitations.service'
 
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, VerifiedUserGuard)
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
 @ApiTags('invitations')
 @ApiBearerAuth()
@@ -26,8 +27,8 @@ export class InvitationsController {
     @Get('/')
     @ApiOperation({ summary: 'Get all invitations', deprecated: true })
     @ApiResponse({ status: 200, type: [InvitationDto], description: 'List of all invitations' })
-    async getInvitations() {
-        return this.invitationsService.getInvitations()
+    async getInvitations(@Req() request: { user: { userId: number } }) {
+        return this.invitationsService.getInvitations(request.user.userId)
     }
 
     @UseGuards(UserInGroupGuard)
@@ -45,8 +46,8 @@ export class InvitationsController {
     @ApiOperation({ summary: 'Get invitation by id', deprecated: true })
     @ApiResponse({ status: 200, type: InvitationDto, description: 'Invitation found' })
     @ApiResponse({ status: 404, description: 'Invitation not found' })
-    getInvitationById(@Param('invitationId', ParseIntPipe) invitationId: number) {
-        return this.invitationsService.getInvitationById(invitationId)
+    getInvitationById(@Req() request: { user: { userId: number } }, @Param('invitationId', ParseIntPipe) invitationId: number) {
+        return this.invitationsService.getInvitationByIdForAccount(invitationId, request.user.userId)
     }
 
     @UseGuards(UserInGroupGuard)
