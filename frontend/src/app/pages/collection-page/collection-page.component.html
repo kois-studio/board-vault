@@ -4,7 +4,11 @@
 </app-page-header>
 
 <container-wrapper>
-    @if (!activationComplete()) {
+    @if (isLoadingUserGames()) {
+        <section class="app-bg-secondary rounded-xl p-6 mb-8 border border-zinc-200 dark:border-zinc-800" role="status" aria-live="polite">
+            <p class="text-secondary">Loading your collection…</p>
+        </section>
+    } @else if (!activationComplete()) {
         <section class="app-bg-secondary rounded-xl p-6 mb-8 border border-indigo-400/40">
             <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div>
@@ -14,12 +18,38 @@
                 </div>
                 <div class="text-left md:text-right">
                     <p class="font-semibold">{{ activationCount() }}/{{ activationTarget }} games</p>
-                    <div class="w-full md:w-48 h-2 rounded-full bg-zinc-700 mt-2 overflow-hidden" aria-label="Collection activation progress">
+                    <div
+                        class="w-full md:w-48 h-2 rounded-full bg-zinc-700 mt-2 overflow-hidden"
+                        role="progressbar"
+                        aria-label="Collection activation progress"
+                        [attr.aria-valuenow]="activationCount()"
+                        [attr.aria-valuemin]="0"
+                        [attr.aria-valuemax]="activationTarget"
+                    >
                         <div class="h-full bg-indigo-500 transition-all" [style.width.%]="activationProgress()"></div>
                     </div>
                 </div>
             </div>
             <a class="app-btn-primary inline-block mt-5" routerLink="/collection/browse">Browse games</a>
+        </section>
+    } @else {
+        <section class="app-bg-secondary rounded-xl p-6 mb-8 border border-emerald-400/40" aria-labelledby="collection-ready-heading">
+            <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div>
+                    <p class="text-sm uppercase tracking-wide text-emerald-600 dark:text-emerald-400">Collection ready</p>
+                    <h2 id="collection-ready-heading" class="text-2xl font-semibold mt-1">Your games are ready for group decisions</h2>
+                    <p class="text-secondary mt-2">You have {{ userGames$().length }} games saved. Now bring your group together so Board Vault can help choose what to play.</p>
+                </div>
+                <span class="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-2xl text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" aria-label="Collection activation complete">✓</span>
+            </div>
+            @if (userGroups$().length === 0) {
+                <div class="mt-5 flex flex-wrap gap-3">
+                    <a class="app-btn-primary inline-block" routerLink="/create-group">Create your first group</a>
+                    <a class="app-btn-secondary inline-block" routerLink="/groups">View invitations</a>
+                </div>
+            } @else {
+                <a class="app-btn-primary inline-block mt-5" routerLink="/play/recommendations">Choose a game for your group</a>
+            }
         </section>
     }
 

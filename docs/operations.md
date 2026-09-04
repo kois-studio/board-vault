@@ -2,7 +2,7 @@
 
 ## Local runtime
 
-Observed local toolchain: Node `v22.20.0`, npm `10.9.3`. The repository currently has installed dependencies in ignored `backend/node_modules/` and `frontend/node_modules/`, but no tracked lockfiles. The backend README says `pnpm`; the verified commands and package metadata use npm. Package-manager choice is unresolved and tracked as EQ-001/DEP-007.
+Observed local toolchain: Node `v22.20.0`, npm `10.9.3`. The repository has tracked root, backend, and frontend package-lock files; installed dependencies are present in ignored `node_modules/` directories. Both package READMEs and verified commands use npm. The dependency-free root package exposes convenience wrappers for installation, build, unit tests, E2E tests, and migration verification; its lint wrapper calls package-local no-mutation `lint:check` scripts, while backend’s separate `lint` script still writes fixes and should not be used casually.
 
 Backend development uses Nest CLI scripts in `backend/package.json`. Frontend development uses Angular CLI scripts in `frontend/package.json`. There is no root command that installs, builds, tests, or coordinates both packages.
 
@@ -17,7 +17,10 @@ The backend reads these variable names from the environment or ignored local `.e
 - used by CORS: optional comma-separated `CORS_ORIGINS` additions; production defaults only to `https://board-vault.com`, development also allows `http://localhost:4200` and `http://127.0.0.1:4200`, and wildcard `*` is ignored.
 - used by the Clerk backend boundary: `CLERK_SECRET_KEY`; production also requires comma-separated `CLERK_AUTHORIZED_PARTIES` containing only exact frontend origins such as `https://board-vault.com`.
 - used by the frontend production build: public `CLERK_PUBLISHABLE_KEY`; optional `CLERK_AUTH_ENABLED=false` can explicitly keep the Clerk controls disabled.
-- production Clerk sign-up policy: verified email, password, and username are required; Google OAuth is currently disabled and can be re-enabled later through the Clerk instance configuration.
+- used by the registration boundary: optional `BOARD_VAULT_SELF_REGISTRATION_ENABLED`; production defaults to closed unless this is explicitly `true`, while development/test default to open.
+- used by private-beta group email invitations: `BOARD_VAULT_CLERK_INVITATION_REDIRECT_URL`; production must set this to the exact public `/register` URL that Clerk invitation emails should return to. Local development defaults to `http://localhost:4200/register`.
+- production Clerk sign-up policy: Clerk is configured with restricted sign-up mode, so public self-registration is disabled while sign-in remains available. The backend mirror policy uses `BOARD_VAULT_SELF_REGISTRATION_ENABLED`; leave it unset or false in production, and set it to true only for an intentional public-registration launch. Verified email, password, and username remain required when sign-up is enabled; Google OAuth is currently disabled.
+- unverified-account retention: the default policy is 60 days for legacy accounts that have not verified email, have no Clerk identity, and have no domain records. Run `node database/scripts/prune-unverified-accounts.mjs` for a read-only dry run; review the candidate IDs, then add `--apply` only when the soft-delete is intentional. Set `UNVERIFIED_ACCOUNT_RETENTION_DAYS` to change the threshold. The tool never hard-deletes accounts and skips any account with collection, group, invitation, session, review, notification, proposal, recommendation, owned-game, or wishlist history.
 
 The API accepts JSON and URL-encoded request bodies up to 100 KB. This is configured in `backend/src/main.ts`; multipart uploads are not an evidenced supported interface.
 
@@ -30,12 +33,14 @@ When `NODE_ENV=production`, startup fails closed unless `CLERK_SECRET_KEY` and `
 Use the exact commands and current results in [AGENTS.md](AGENTS.md) and [testing.md](testing.md). In summary:
 
 - backend build passes;
-- frontend production build passes but reports a Sass `@import` deprecation, 412 skipped selector errors, and an initial bundle over the 500 kB warning budget;
-- backend unit tests pass focused profile-update, ownership, group/membership listing, collection route ownership, actor-identity, invitation-lifecycle, invite-only join, notification ownership, meet-read, meet-account-game membership, admin reviewer, authentication path/query validation, global-user-list, deleted-account JWT, database-log, email-log, cache-log, and auth-log suites; broader coverage is still missing;
+- frontend production build passes without Sass or selector warnings; route-level components are lazy-loaded and the initial raw bundle is 606.59 kB (140.28 kB estimated transfer), below the 650 kB warning budget. Clerk remains a separate 1.55 MB lazy chunk;
+- backend unit tests pass 41 suites and 181 tests, including profile-update, ownership, group/membership listing, collection route ownership, actor-identity, invitation visibility/lifecycle, verified-user gating, deprecated-route removal, Clerk group invitations, invite-only join, notification ownership, meet-read, meet-account-game membership and per-game participation, admin reviewer and route-parameter validation, authentication path/query validation, global-user-list, deleted-account JWT, database-log, email-log, cache-log, and auth-log suites; broader coverage is still missing;
 - backend HTTP e2e now passes two environment-safe boundary tests; broader seeded/integration coverage remains open;
-- backend lint fails with 17 errors and 3 warnings;
+- the bootstrap installs a global strict `ValidationPipe` in addition to targeted controller pipes, so new DTO routes fail closed on unknown fields; client negative tests remain open;
+- backend lint passes with no errors or warnings; the CI workflow now runs the
+  no-mutation lint command explicitly;
 - frontend Biome passes for `src/app` with no diagnostics;
-- frontend unit/browser baseline includes one generated Angular smoke test and three passing Playwright public-navigation tests; the authenticated Playwright journeys exist but remain opt-in and were skipped without a disposable Clerk storage state.
+- frontend unit/browser baseline includes three passing browser-based unit tests (including API response-contract validation) and four passing Playwright public-navigation tests, including the Clerk invitation-ticket registration path; the authenticated Playwright journeys exist but remain opt-in and were skipped without a disposable Clerk storage state.
 - the Clerk identity migration passes a restored-backup SQLite check and was applied to live Turso with integrity `ok` and unchanged counts of 15 accounts, 13 meets, and 101 meet/game links.
 - a local Clerk sign-in completed through Board Vault during development; `/auth/clerk/status` verified the session and linked the matching existing live account `#1`, preserving its admin state. Production currently uses email/password/username only; Google OAuth is intentionally disabled. Protected-route Clerk transport and new-account provisioning are covered by focused backend tests but not yet by a deployed production check.
 - On 2026-08-15, a production email/password/username signup for the preserved
@@ -87,6 +92,10 @@ with a preserved account.
 
 `backend/vercel.json` configures a Vercel Node build from `src/main.ts` and routes HTTP methods to it. `frontend/src/environments/environment.ts` targets `https://backend.board-vault.com`. The repository contains `.github/workflows/ci.yml` for locked installs, backend tests/build, frontend build/public browser checks, and disposable database verification. It does not deploy, run authenticated production checks, schedule backups, or provide rollback instructions.
 
+CI quality gates now include the no-mutation backend ESLint command and the
+frontend Biome check in addition to builds, tests, browser checks, and migration
+verification. The first remote workflow execution is still pending.
+
 External smoke checks on 2026-08-15 first observed the old backend deployment
 (HTTP 404 for `/auth/clerk/status`), then observed the new fail-closed backend
 returning Vercel `FUNCTION_INVOCATION_FAILED` until its production variables
@@ -106,7 +115,23 @@ HTTP 401 with `Access-Control-Allow-Origin: https://board-vault.com` rather
 than a wildcard. An authenticated production signup/sign-in was completed
 with email, password, and username, and the matching preserved local account
 was linked to its production Clerk identity. Google OAuth remains intentionally
-disabled.
+disabled. On 2026-09-03, Clerk production was changed from public to
+restricted sign-up mode. The application code also defaults self-registration
+off in production, updates the public auth copy to private-beta language,
+preserves the legacy sign-in fallback for migration, and rejects unverified
+legacy logins. Local application code now also supports owner-created Clerk
+email invitations with a ticketed registration flow and automatic membership
+handoff after verified identity resolution. The Clerk configuration and both backend/frontend deployment
+variables must remain aligned before changing the product to public
+registration.
+
+A read-only Turso check on 2026-09-04 found three active legacy accounts that
+were not recognized as friends. Account `#14` is verified and has one owned
+game, one group membership, and collection activity; account `#15` is verified
+but has no domain history; account `#16` is unverified, has no domain history,
+and is younger than the 60-day cleanup threshold. None has a Clerk identity,
+and none was deleted or contacted. See [ADR-0008](adr/0008-private-beta-registration.md)
+for the retention and notification policy.
 
 On 2026-08-15, an authenticated request to
 `/collection/users/1/games` returned a Vercel 504 because the configured
@@ -131,14 +156,21 @@ also returned its expected validation response with the production CORS
 header. Production Redis connectivity and rate-limit storage are now
 operational. The old invalid endpoint is no longer used.
 
+On 2026-09-03, migrations `0006-add-group-game-interest.sql` and
+`0007-add-meet-notes.sql` were added to the local release work for the group
+acquisition board and session context. Neither has been applied to
+live Turso, and no deployment was triggered. The migration and backend routes
+must be verified against a disposable database and a fresh backup before
+release.
+
 Deployment ownership, domain configuration, environment provisioning, provider scopes, and production traffic behavior are therefore unknown and must not be inferred from the committed URLs/config alone.
 
 ## Operational risks and next steps
 
-1. Establish locked installation, Node/package-manager support, and a disposable test database.
+1. Keep the root/package locked-install commands aligned and use the disposable test database verification before schema changes.
 2. Monitor the production Upstash quota and keep Redis explicitly disabled only in local environments.
 3. Add health/readiness, safe structured request logs, error monitoring, and graceful shutdown checks.
-4. Add migration/deployment gates and document Turso backup/restore ownership and rehearsal. Migration 0004 is manually verified and live, but there is still no repeatable runner.
+4. Add migration/deployment gates and document Turso backup/restore ownership and rehearsal. The repeatable runner and empty-state migration check exist, but synthetic restore evidence remains open.
 5. Record Vercel/frontend deployment responsibilities and rollback behavior.
 
 ## Existing operational notes

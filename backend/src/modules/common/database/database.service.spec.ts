@@ -1,6 +1,6 @@
-import type { ConfigService } from '@nestjs/config'
-
 import { DatabaseService } from './database.service'
+
+import type { ConfigService } from '@nestjs/config'
 
 describe('DatabaseService logging', () => {
     it('logs only the parameterized SQL template, never bound values', async () => {
@@ -46,7 +46,7 @@ describe('DatabaseService logging', () => {
 
         expect(execute).toHaveBeenCalledWith({
             sql: expect.stringContaining('INNER JOIN OwnedGame ownedByAttendee'),
-            args: [1, 2, 1, 2, 1, 2, 1, 2, 2, 2, 120],
+            args: [1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 2, 2, 120],
         })
     })
 
@@ -68,6 +68,49 @@ describe('DatabaseService logging', () => {
             sql: expect.stringContaining('INSERT INTO RecommendationFeedback'),
             args: [1, 7, 42, '[1,2]', 'not_for_us'],
         })
+    })
+
+    it('reads recommendation feedback with only current group-member identity fields', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const execute = jest.fn().mockResolvedValue({ rows: [] })
+
+        ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
+
+        await service.getRecommendationFeedbackForGroup(7)
+
+        expect(execute).toHaveBeenCalledWith({
+            sql: expect.stringContaining('INNER JOIN GroupMembership'),
+            args: [7],
+        })
+        expect(execute.mock.calls[0][0].sql).toContain('a.username')
+        expect(execute.mock.calls[0][0].sql).not.toContain('a.email')
+    })
+
+    it('reads only organizer-recorded attendees for session history', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const execute = jest.fn().mockResolvedValue({ rows: [[1], [3]] })
+
+        ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
+
+        await expect(service.getMeetAttendedAccountIds(12)).resolves.toEqual([1, 3])
+        expect(execute).toHaveBeenCalledWith({
+            sql: "SELECT accountId FROM MeetAttendee WHERE meetId = ? AND attendanceStatus = 'attended'",
+            args: [12],
+        })
+    })
+
+    it('uses recorded attendance for personal history and only falls back to legacy play links without an attendee row', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const execute = jest.fn().mockResolvedValue({ rows: [[12], [10]] })
+
+        ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
+
+        await expect(service.getDistinctCompletedMeetIdsForAccountHistory(7)).resolves.toEqual([12, 10])
+        expect(execute).toHaveBeenCalledWith({
+            sql: expect.stringContaining("m.status = 'completed'"),
+            args: [7, 7, 7],
+        })
+        expect(execute.mock.calls[0][0].sql).toContain("ma.attendanceStatus = 'attended'")
     })
 
     it('builds recommendation diagnostics for the empty-state explanation', async () => {
@@ -103,13 +146,16 @@ describe('DatabaseService logging', () => {
             createdBy: 1,
             sessionDate: '2026-08-16T19:30:00.000Z',
             timezone: 'Europe/Madrid',
+            notes: 'A rematch after the campaign finale.',
             attendeeIds: [1, 2],
             games: [{ gameId: 42, participantIds: [1, 2] }],
         })
 
         expect(transaction.execute).toHaveBeenCalledWith({
-            sql: expect.stringContaining('INSERT INTO Meet (groupId, createdBy, meetDate, isConfirmed, status, timezone, updatedAt)'),
-            args: [7, 1, '2026-08-16T19:30:00.000Z', 'Europe/Madrid'],
+            sql: expect.stringContaining(
+                'INSERT INTO Meet (groupId, createdBy, meetDate, isConfirmed, status, timezone, notes, updatedAt)',
+            ),
+            args: [7, 1, '2026-08-16T19:30:00.000Z', 'Europe/Madrid', 'A rematch after the campaign finale.'],
         })
         expect(transaction.batch).toHaveBeenCalledWith(
             expect.arrayContaining([
@@ -154,12 +200,40 @@ describe('DatabaseService logging', () => {
         expect(transaction.close).toHaveBeenCalledTimes(1)
     })
 
+    it('joins a provisioned Clerk account only to the inviter-owned group', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const transaction = {
+            execute: jest
+                .fn()
+                .mockResolvedValueOnce({ rows: [[12]] })
+                .mockResolvedValueOnce({ rowsAffected: 1 }),
+            commit: jest.fn().mockResolvedValue(undefined),
+            rollback: jest.fn().mockResolvedValue(undefined),
+            close: jest.fn(),
+        }
+
+        ;(service as unknown as { tursoClient: unknown }).tursoClient = {
+            transaction: jest.fn().mockResolvedValue(transaction),
+        }
+
+        await service.joinGroupFromClerkInvitation(9, { groupId: 12, inviterAccountId: 7, version: 1 })
+
+        expect(transaction.execute).toHaveBeenNthCalledWith(1, {
+            sql: 'SELECT id FROM UserGroup WHERE id = ? AND createdBy = ?',
+            args: [12, 7],
+        })
+        expect(transaction.execute).toHaveBeenNthCalledWith(2, {
+            sql: 'INSERT OR IGNORE INTO GroupMembership (accountId, groupId) VALUES (?, ?)',
+            args: [9, 12],
+        })
+        expect(transaction.commit).toHaveBeenCalledTimes(1)
+        expect(transaction.close).toHaveBeenCalledTimes(1)
+    })
+
     it('creates a group and owner membership in one transaction', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: jest.fn()
-                .mockResolvedValueOnce({ lastInsertRowid: 77 })
-                .mockResolvedValueOnce({ rowsAffected: 1 }),
+            execute: jest.fn().mockResolvedValueOnce({ lastInsertRowid: 77 }).mockResolvedValueOnce({ rowsAffected: 1 }),
             commit: jest.fn().mockResolvedValue(undefined),
             rollback: jest.fn().mockResolvedValue(undefined),
             close: jest.fn(),
@@ -187,9 +261,7 @@ describe('DatabaseService logging', () => {
     it('rolls back group creation when owner membership fails', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: jest.fn()
-                .mockResolvedValueOnce({ lastInsertRowid: 77 })
-                .mockRejectedValueOnce(new Error('membership write failed')),
+            execute: jest.fn().mockResolvedValueOnce({ lastInsertRowid: 77 }).mockRejectedValueOnce(new Error('membership write failed')),
             commit: jest.fn(),
             rollback: jest.fn().mockResolvedValue(undefined),
             close: jest.fn(),
@@ -233,6 +305,38 @@ describe('DatabaseService logging', () => {
         expect(transaction.commit).toHaveBeenCalledTimes(1)
         expect(transaction.rollback).not.toHaveBeenCalled()
         expect(transaction.close).toHaveBeenCalledTimes(1)
+    })
+
+    it('replaces planned session games atomically and allows clearing the shortlist', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const transaction = {
+            execute: jest.fn().mockResolvedValue({ rowsAffected: 1 }),
+            batch: jest.fn().mockResolvedValue([]),
+            commit: jest.fn().mockResolvedValue(undefined),
+            rollback: jest.fn().mockResolvedValue(undefined),
+            close: jest.fn(),
+        }
+
+        ;(service as unknown as { tursoClient: unknown }).tursoClient = {
+            transaction: jest.fn().mockResolvedValue(transaction),
+        }
+
+        await expect(service.replaceMeetPlannedGames(12, [42, 43])).resolves.toBeUndefined()
+        expect(transaction.execute).toHaveBeenCalledWith({
+            sql: "DELETE FROM MeetGame WHERE meetId = ? AND gameStatus = 'planned'",
+            args: [12],
+        })
+        expect(transaction.batch).toHaveBeenCalledWith([
+            expect.objectContaining({ args: [12, 42] }),
+            expect.objectContaining({ args: [12, 43] }),
+        ])
+        expect(transaction.commit).toHaveBeenCalledTimes(1)
+
+        transaction.execute.mockClear()
+        transaction.batch.mockClear()
+        await expect(service.replaceMeetPlannedGames(12, [])).resolves.toBeUndefined()
+        expect(transaction.batch).not.toHaveBeenCalled()
+        expect(transaction.commit).toHaveBeenCalledTimes(2)
     })
 
     it('rolls back session attendee replacement when inserts fail', async () => {
@@ -281,8 +385,8 @@ describe('DatabaseService logging', () => {
         ).resolves.toEqual({ lastInsertRowid: 43 })
 
         expect(transaction.execute).toHaveBeenCalledWith({
-            sql: expect.stringContaining("VALUES (?, ?, ?, FALSE, 'scheduled', ?, CURRENT_TIMESTAMP)"),
-            args: [7, 1, '2026-08-21T19:30:00.000Z', 'Europe/Madrid'],
+            sql: expect.stringContaining("VALUES (?, ?, ?, FALSE, 'scheduled', ?, ?, CURRENT_TIMESTAMP)"),
+            args: [7, 1, '2026-08-21T19:30:00.000Z', 'Europe/Madrid', null],
         })
         expect(transaction.batch).toHaveBeenCalledWith(
             expect.arrayContaining([
@@ -297,7 +401,8 @@ describe('DatabaseService logging', () => {
     it('keeps legacy play links and canonical played games synchronized', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: jest.fn()
+            execute: jest
+                .fn()
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 }),
@@ -329,9 +434,7 @@ describe('DatabaseService logging', () => {
     it('marks remaining planned games as skipped when a session becomes terminal', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: jest.fn()
-                .mockResolvedValueOnce({ rowsAffected: 1 })
-                .mockResolvedValueOnce({ rowsAffected: 2 }),
+            execute: jest.fn().mockResolvedValueOnce({ rowsAffected: 1 }).mockResolvedValueOnce({ rowsAffected: 2 }),
             commit: jest.fn().mockResolvedValue(undefined),
             rollback: jest.fn().mockResolvedValue(undefined),
             close: jest.fn(),

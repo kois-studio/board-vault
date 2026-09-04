@@ -1,16 +1,22 @@
 import { CommonModule } from '@angular/common'
 import { Component, computed, effect, inject, signal } from '@angular/core'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
+import { firstValueFrom } from 'rxjs'
 import { Api } from '../../api/api'
-import type { GameType, HistoryRecordType, InvitationWithAccountsData, PublicUserType, UserType } from '../../api/api.types'
+import type {
+    GameCompleteType,
+    GroupAcquisitionEntryType,
+    HistoryRecordType,
+    InvitationWithAccountsData,
+    PublicUserType,
+} from '../../api/api.types'
 import { CardAccountComponent } from '../../components/card-account/card-account.component'
-import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
 import { SkeletonHistoryComponent } from '../../components/skeletons/skeleton-history/skeleton-history.component'
+import { ToastService } from '../../components/toast/toast.service'
 import { ButtonComponent } from '../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { ImageBackgroundComponent } from '../../components/ui/image-background/image-background.component'
 import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'
-import { ReviewDisplayComponent } from '../../components/ui/review-display/review-display.component'
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { DataService } from '../../core/services/data.service'
 import { LocalStorageService } from '../../core/services/local-storage.service'
@@ -23,9 +29,7 @@ import { GroupViewService } from './group-view.service'
         CardAccountComponent,
         CommonModule,
         CustomDatePipe,
-        ImageProfileComponent,
         ImageBackgroundComponent,
-        ReviewDisplayComponent,
         ButtonComponent,
         SkeletonHistoryComponent,
         PageHeaderComponent,
@@ -40,6 +44,7 @@ export class GroupViewComponent {
     private readonly dataService = inject(DataService)
     private readonly groupViewService = inject(GroupViewService)
     private readonly localStorageService = inject(LocalStorageService)
+    private readonly toastService = inject(ToastService)
 
     // --------------------------------------------------------------------------
     //        Services signals
@@ -66,13 +71,113 @@ export class GroupViewComponent {
     public readonly isLoading = signal(false)
     public readonly groupHistoryError = signal(false)
     public readonly groupHistory$ = signal<Array<HistoryRecordType>>([])
+    public readonly acquisitionBoard$ = signal<Array<GroupAcquisitionEntryType>>([])
+    public readonly acquisitionBoardLoading = signal(false)
+    public readonly acquisitionBoardError = signal(false)
+    public readonly acquisitionMutationGameId = signal<number | null>(null)
     private activeSelectionGroupId: number | null = null
+    private activeAcquisitionGroupId: number | null = null
 
     // --------------------------------------------------------------------------
     //        Computed
     // --------------------------------------------------------------------------
     public readonly sortedGroupHistoryComputed = computed(() => {
         return [...this.groupHistory$()].sort((a, b) => new Date(b.meetData.meetDate).getTime() - new Date(a.meetData.meetDate).getTime())
+    })
+
+    public readonly recentGroupHistoryComputed = computed(() => this.sortedGroupHistoryComputed().slice(0, 3))
+
+    public readonly upcomingMeetingsComputed = computed(() => {
+        const groupId = this.groupData$()?.id
+        if (!groupId) return []
+
+        return this.userMeets$()
+            .filter((meet) => meet.groupId === groupId && (meet.status === 'scheduled' || meet.status === 'active'))
+            .sort((a, b) => new Date(a.meetDate).getTime() - new Date(b.meetDate).getTime())
+    })
+
+    public readonly nextMeetingComputed = computed(() => this.upcomingMeetingsComputed()[0] ?? null)
+
+    public readonly mostPlayedGamesComputed = computed(() => {
+        const games = new Map<number, { gameData: GameCompleteType; sessionCount: number; playerCount: number }>()
+        for (const record of this.groupHistory$()) {
+            for (const playedGame of record.gamesPlayed) {
+                const existing = games.get(playedGame.gameData.id)
+                if (existing) {
+                    existing.sessionCount += 1
+                    existing.playerCount += playedGame.playedBy.length
+                } else {
+                    games.set(playedGame.gameData.id, {
+                        gameData: playedGame.gameData,
+                        sessionCount: 1,
+                        playerCount: playedGame.playedBy.length,
+                    })
+                }
+            }
+        }
+        return [...games.values()]
+            .sort((a, b) => b.sessionCount - a.sessionCount || b.playerCount - a.playerCount || a.gameData.id - b.gameData.id)
+            .slice(0, 5)
+    })
+
+    public readonly memberParticipationComputed = computed(() => {
+        const participation = new Map<number, { member: PublicUserType; sessionCount: number; gameCount: number }>()
+        for (const member of this.groupData$()?.members ?? []) {
+            participation.set(member.id, { member, sessionCount: 0, gameCount: 0 })
+        }
+
+        for (const record of this.groupHistory$()) {
+            for (const game of record.gamesPlayed) {
+                for (const member of game.playedBy) {
+                    const stats = participation.get(member.id)
+                    if (!stats) continue
+                    stats.gameCount += 1
+                }
+            }
+            for (const member of record.attendedBy) {
+                const memberId = member.id
+                const stats = participation.get(memberId)
+                if (stats) stats.sessionCount += 1
+            }
+        }
+
+        return [...participation.values()]
+            .filter((stats) => stats.sessionCount > 0)
+            .sort((a, b) => b.sessionCount - a.sessionCount || b.gameCount - a.gameCount || a.member.id - b.member.id)
+            .slice(0, 5)
+    })
+
+    public readonly recentlyPlayedGamesComputed = computed(() => {
+        const games = new Map<number, { gameData: GameCompleteType; lastPlayedAt: string; participantCount: number }>()
+        for (const record of this.sortedGroupHistoryComputed()) {
+            for (const playedGame of record.gamesPlayed) {
+                if (!games.has(playedGame.gameData.id)) {
+                    games.set(playedGame.gameData.id, {
+                        gameData: playedGame.gameData,
+                        lastPlayedAt: record.meetData.meetDate,
+                        participantCount: playedGame.playedBy.length,
+                    })
+                }
+            }
+        }
+
+        return [...games.values()].slice(0, 5)
+    })
+
+    public readonly revisitGamesComputed = computed(() => {
+        const recentlyPlayedIds = new Set(
+            this.recentlyPlayedGamesComputed()
+                .slice(0, 3)
+                .map((game) => game.gameData.id),
+        )
+        return this.mostPlayedGamesComputed()
+            .filter((game) => !recentlyPlayedIds.has(game.gameData.id))
+            .slice(0, 5)
+    })
+
+    public readonly selectedMembersLabel = computed(() => {
+        const selectedCount = this.selectedMembers$().length
+        return `${selectedCount} of ${this.groupData$()?.members.length ?? 0} selected`
     })
 
     public readonly isGroupOwnerComputed = computed(() => {
@@ -102,6 +207,11 @@ export class GroupViewComponent {
                 this.selectedMembers$.set(group.members.map((member) => member.id))
             }
 
+            if (this.activeAcquisitionGroupId !== groupId) {
+                this.activeAcquisitionGroupId = groupId
+                this.loadAcquisitionBoard(groupId)
+            }
+
             // get the group history
             const groupHistoryByGroupId = this.groupHistoryByGroupId$()
 
@@ -120,6 +230,55 @@ export class GroupViewComponent {
         if (!currentUser || Number.isNaN(groupId)) return
 
         this.loadGroupHistory(currentUser.id, groupId)
+    }
+
+    public retryAcquisitionBoard(): void {
+        const groupId = this.groupData$()?.id
+        if (!groupId) return
+
+        this.loadAcquisitionBoard(groupId)
+    }
+
+    public isCurrentUserInterested(entry: GroupAcquisitionEntryType): boolean {
+        const currentUserId = this.currentUser$()?.id
+        return currentUserId !== undefined && entry.interestedBy.some((member) => member.id === currentUserId)
+    }
+
+    public getInterestNames(entry: GroupAcquisitionEntryType): string {
+        const names = entry.interestedBy.map((member) => member.displayName || member.username)
+        if (names.length <= 3) return names.join(', ')
+        return `${names.slice(0, 3).join(', ')} + ${names.length - 3} more`
+    }
+
+    public async removeAcquisitionInterest(gameId: number): Promise<void> {
+        const groupId = this.groupData$()?.id
+        if (!groupId || this.acquisitionMutationGameId()) return
+
+        this.acquisitionMutationGameId.set(gameId)
+        try {
+            await firstValueFrom(this.api.removeGroupAcquisitionInterest(groupId, gameId))
+            this.loadAcquisitionBoard(groupId)
+        } catch {
+            // Keep the last known board visible: a failed removal is an
+            // action-level error, not evidence that the board itself vanished.
+            this.toastService.error('Could not remove your interest from the group board.')
+        } finally {
+            this.acquisitionMutationGameId.set(null)
+        }
+    }
+
+    private loadAcquisitionBoard(groupId: number): void {
+        this.acquisitionBoardLoading.set(true)
+        this.acquisitionBoardError.set(false)
+        this.api.getGroupAcquisitionBoard(groupId).subscribe({
+            next: (entries) => this.acquisitionBoard$.set(entries),
+            error: () => {
+                this.acquisitionBoardLoading.set(false)
+                this.acquisitionBoardError.set(true)
+                this.acquisitionBoard$.set([])
+            },
+            complete: () => this.acquisitionBoardLoading.set(false),
+        })
     }
 
     private loadGroupHistory(userId: number, groupId: number): void {
@@ -152,29 +311,6 @@ export class GroupViewComponent {
             return []
         }
         return this.invitationsGroupIndex$()[groupData.id] || []
-    }
-
-    // #region Parse Data
-
-    parseAttendeeIds(memberIds: Array<UserType['id']>): Array<PublicUserType> {
-        const result = memberIds
-            .map((memberId) => this.groupData$()?.members.find((member) => member.id === memberId) || null)
-            .filter((member) => member !== null)
-
-        // If > 5 members, we will show [1,2,3,4, +n] in the HTML, so we only return the first 4
-        //      if 6 -> [1,2,3,4, +2]
-        //      if 7 -> [1,2,3,4, +3]
-        if (memberIds.length > 5) {
-            return result.slice(0, 4)
-        }
-
-        return result
-    }
-
-    parseGameIds(gameIds: Array<GameType['id']>): Array<GameType> {
-        return gameIds
-            .map((gameId) => this.totalUniqueGamesComputed().find((game) => game.id === gameId))
-            .filter((game) => game !== undefined)
     }
 
     // #region Button Clicks

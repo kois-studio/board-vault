@@ -4,7 +4,7 @@ This is the current inventory of unfinished, missing, or only partially connecte
 
 This document records implementation truth, not wishes. A route, component, label, or TODO comment is not treated as evidence that a capability works. Findings below come from source inspection, the documented database reconciliation, the current test baseline, and the production verification recorded in [`operations.md`](operations.md).
 
-Reviewed: 2026-08-16
+Reviewed: 2026-09-04
 
 ## Status vocabulary
 
@@ -24,7 +24,7 @@ The product is not launch-ready. The main unfinished value loop is:
 group → attendees → recommendation → scheduled session → games actually played → useful history
 ```
 
-Completed-session logging now has a guarded, validated backend write and an atomic Turso transaction from the frontend wizard. The first recommendation and feedback slices are implemented, while analytics and richer scoring remain unfinished; the dashboard and play landing avoid presenting fabricated metrics or links to unavailable feature routes.
+Completed-session logging now has a guarded, validated backend write and an atomic Turso transaction from the frontend wizard. The first recommendation and feedback slices are implemented, including a bounded score adjustment from selected-attendee decisions, while analytics and richer scoring remain unfinished; the dashboard and play landing avoid presenting fabricated metrics or links to unavailable feature routes.
 
 ## P0 — complete the product’s core loop
 
@@ -35,11 +35,14 @@ Relevant surfaces: [`app.routes.ts`](../frontend/src/app/app.routes.ts), [`meet-
 - Use one canonical session-creation use case for all session states; the obsolete dashboard meeting-creation route and client helper have been removed, while legacy meet reads and `MeetAccountGame` history writes remain only for compatibility.
 - Persist the selected date/time and IANA timezone; completed-session logging now sends both to the backend.
 - Persist the selected group, organizer, attendees, played games, and participant links atomically through `POST /sessions`.
-- Persist scheduled sessions, selected pending attendees, and optional planned games atomically through `POST /sessions/scheduled`; omission of attendees remains a documented compatibility default to all current group members.
+- Persist scheduled sessions, selected pending attendees, optional planned games, and optional session context atomically through `POST /sessions/scheduled`; the UI captures a local start time and IANA timezone, while omission of attendees remains a documented compatibility default to all current group members.
 - Review the now-implemented `submitSession()` flow through authenticated browser coverage, including success, validation, and retryable API failure states; the reusable suite now covers entry/navigation surfaces but not mutation submission.
-- Keep the session wizard’s group step honest and recoverable; loading, failure, and no-group states are now explicit, and group choices are keyboard-operable buttons.
+- Keep the session wizard’s group step honest and recoverable; loading, failure, and no-group states are now explicit, group choices are keyboard-operable buttons, and completed-session notes can be saved as a final memory step.
 - Define and implement transitions between scheduled, active, completed, and cancelled sessions; organizer-controlled transitions now exist for scheduled/active sessions, while completed/cancelled remain terminal.
-- Distinguish planned games from games actually played in all API responses and frontend types; scheduled creation and meet details now preserve planned, played, and skipped game IDs. When a session becomes completed or cancelled, remaining planned games are transactionally marked skipped; richer game objects and planned-game editing remain unfinished.
+- Distinguish planned games from games actually played in all API responses and frontend types; scheduled creation and meet details now preserve planned, played, and skipped game IDs. When a session becomes completed or cancelled, remaining planned games are transactionally marked skipped; organizers can edit the shortlist while the session is scheduled or active, while richer game objects remain unfinished.
+- Keep planning signals separate from historical truth: invited members can submit RSVP during scheduled/active states, while the organizer records final attendance for active/completed sessions. Completed attendees can now rate games directly from the session record through the existing per-account review contract; session-specific notes/reasons are now persisted and shown, while richer attendance history remains unfinished.
+- Scheduled-session game logging now uses the canonical played-game endpoint and records the actual participants for each game through the existing compatibility relation; the UI defaults participants from recorded attendance (or invited attendees until attendance is known) and allows the organizer to correct each game independently. Older group-level clients preserve their existing participant links. A dedicated participant-level browser rehearsal remains open.
+- Group history now carries organizer-recorded attendance, and the group home derives lightweight most-played, participation, recently-played, and revisit views from completed persisted sessions. A dedicated analytics route/read model and richer insight queries remain deferred until the group has enough real history to justify them.
 - Decide how the legacy `MeetAccountGame` history relation should evolve; the completed write currently preserves it as a compatibility relation.
 - The obsolete confirmation flow has been removed; attendee and played-game changes now state that they save automatically from the session detail page.
 - Attendee and played-game changes now await the API, disable overlapping/terminal edits, show actionable errors, and revert optimistic UI state when persistence fails; refresh-survival still needs an authenticated browser journey.
@@ -57,11 +60,11 @@ Relevant intent: [`todo/04-core-product-loop.md`](../todo/04-core-product-loop.m
 - Implemented deterministic filtering and scoring using player count, collective attendee ownership, selected-attendee ratings, and optional duration fit.
 - Return explanations with each recommendation, including owner coverage, rating, and last-play context.
 - No-results responses now identify whether selected attendees own no games, player-count constraints exclude them, or the available-time limit excludes them.
-- Added `POST /play/recommendations/feedback` and a “Not for us” action. Feedback stores selected-attendee context after group membership and ownership validation; future scoring integration remains deferred.
+- Added `POST /play/recommendations/feedback` and explicit “Interested” / “Not for us” actions. Feedback stores selected-attendee context after group membership and ownership validation. `GET /play/recommendations/signals` now exposes the latest group-member decision state for the shared decision surface without leaking private account fields, and the latest decisions from selected attendees now apply a bounded, explainable score adjustment.
 - Added the authenticated `/play/recommendations` route, Play navigation entry, selection form, result cards, and empty/error states.
 - Recommendation results now provide a direct scheduling link that carries the selected attendees and chosen game into the scheduling form.
 - Add authenticated browser coverage when a Clerk storage state is available; the suite now covers recommendation-page entry and controls but remains skipped without that local secret-bearing state.
-- Recommendation feedback, richer preferences, complexity scoring, and history-weighted scoring remain deferred.
+- Richer preferences, complexity scoring, and history-weighted scoring remain deferred; the current feedback weighting is intentionally small, bounded, group-scoped, and explainable.
 - Resolve the indirect game-title contract: `Game` stores no title; titles are provided through `GameTranslation`. The recommendation query uses English with Spanish fallback.
 
 ### 3. History and analytics — Partial / Open
@@ -123,9 +126,9 @@ Relevant surface: [`dashboard-page`](../frontend/src/app/pages/dashboard-page/).
 Relevant surfaces: [`collection-page`](../frontend/src/app/pages/collection-page/), [`game-view`](../frontend/src/app/pages/games/game-view/), collection API/service code.
 
 - Run a complete manual journey: browse/search, add, view ownership, review, wishlist, refresh, and remove/update.
-- Keep the first-five-games activation flow visible on the collection page; the progress prompt and browse CTA now exist and ownership changes refresh the collection signal.
+- Keep the first-five-games activation flow visible on the collection page; the progress prompt, loading guard, and browse CTA now exist, and ownership changes refresh the collection signal.
 - Keep collection mutations synchronized with group availability; refreshed ownership data now updates the current member inside loaded group records as well as the personal collection signal.
-- Complete the activation journey with a success state, onboarding preferences, and authenticated browser coverage.
+- The activation journey now has a clear success state that hands a person into group creation/invitations or recommendations; onboarding preferences and authenticated browser coverage remain open.
 - Make search, duplicate-add, loading, empty, error, and success states coherent; the primary collection and groups pages now distinguish request failures from empty data and expose retry actions, and game-detail mutation controls recover after failed requests.
 - Review and wishlist pages now distinguish failed loads from empty collections and offer retry actions; derived collection activity also uses a finalized loading state on failure.
 - Browse search now distinguishes catalog load errors from valid no-results responses and offers retry; duplicate/add feedback and broader rendered-state review remain.
@@ -134,13 +137,14 @@ Relevant surfaces: [`collection-page`](../frontend/src/app/pages/collection-page
 - Game detail history now displays group names through the loaded group index; failed game-detail requests now leave the loading state and expose a retry action.
 - Game detail now keeps one route-parameter subscription outside the auth effect, preventing duplicate loads when the current user signal changes; the unused empty share handler was removed.
 - Review responsive card grids, image fallbacks, accessible controls, and keyboard behavior.
-- The frontend API adapter now validates every current response shape, including private profile, catalog/owned/wishlist/browse/game-detail games, ownership and wishlist mutations, group/member/game, both invitation feeds and invitation creation, dashboard stats, notifications, reviews, collection activity, admin tags/games/proposals, user proposals, proposal stats, persisted meets, completed history, and legacy attendee/played-game compatibility writes; add client negative tests and schemas alongside future endpoints.
+- The frontend API adapter now validates every current response shape, including private profile, catalog/owned/wishlist/browse/game-detail games, ownership and wishlist mutations, group/member/game, both invitation feeds and invitation creation, dashboard stats, notifications, reviews, collection activity, admin tags/games/proposals, user proposals, proposal stats, persisted meets, completed history, and legacy attendee/played-game compatibility writes; the auth-status adapter now has valid/malformed response tests, and future endpoints or broader client negative cases still need coverage.
 
 ### 8. Groups and invitations — Partial / Needs review
 
 Relevant surfaces: [`groups`](../frontend/src/app/pages/groups/), [`group-view`](../frontend/src/app/pages/group-view/), group/invitation/notification components.
 
 - Verify the complete two-account flow: create group, invite account, accept/reject invitation, refresh, and see membership; invitation and notification modals now distinguish loading, failed fetch, retry, and empty states.
+- Group owners can now invite a person who does not yet have a local account by email through Clerk; the ticketed `/register` flow remains available while ordinary private-beta sign-up stays closed, and verified invitees are joined only after the inviter-owned group check succeeds.
 - Keep group creation awaitable and recoverable; the create form now waits for the API result before navigating and leaves failures retryable, while the backend now creates the group and owner membership in one Turso transaction.
 - Keep invitation send, pending-invitation removal, and member removal awaitable; group editing now keeps retryable selections and prevents overlapping requests.
 - V1 group membership is now invite-only with `owner` and `member` roles; only owners manage membership and see pending-invitation details. Public groups, ownership transfer, and richer roles require a new product decision.
@@ -157,6 +161,7 @@ Relevant surfaces: [`groups`](../frontend/src/app/pages/groups/), [`group-view`]
 Relevant surfaces: [`auth pages`](../frontend/src/app/pages/auth/), [`profile-menu`](../frontend/src/app/layout/profile-menu/), [`settings`](../frontend/src/app/pages/settings/), Clerk integration.
 
 - Keep Clerk email/password/username as the production path and preserve the legacy path only as an intentional migration fallback.
+- Configure and verify `BOARD_VAULT_CLERK_INVITATION_REDIRECT_URL` before deployment; a Clerk invitation ticket must initialize the sign-up flow on the custom registration page.
 - Keep legacy registration/reset/verification UI only as a fallback when Clerk is unavailable; `/login` and `/register` are now Clerk-first in production.
 - Define the final username policy and whether it is required at account creation.
 - Keep the security settings page connected to Clerk account/security controls; local Board Vault account deletion remains disabled until the data-retention policy and deletion workflow are defined.
@@ -164,6 +169,10 @@ Relevant surfaces: [`auth pages`](../frontend/src/app/pages/auth/), [`profile-me
 - The unconfigured Contact settings route and dead Featurebase links were removed; add the section back only after a real support/feedback destination is selected.
 - Ensure user-facing identity data follows the accepted privacy/DTO policy.
 - Verify session-expiry and revoked-session behavior in the UI.
+- The private-beta gate and a dry-run-by-default 60-day retention tool for
+  inactive unverified legacy accounts are implemented; production cleanup is
+  intentionally not scheduled or run automatically until account-retention
+  ownership and review cadence are established.
 
 ### 10. Game proposals and administration — Partial / Needs review
 
@@ -186,9 +195,13 @@ Relevant surfaces: [`propose-game-page`](../frontend/src/app/pages/collection-pa
 - Add meaningful labels and accessible names to icon-only controls.
 - Audit semantic headings, form labels, errors, dialogs, tables, and live regions.
 - Define consistent loading, empty, error, retry, disabled, and success states.
-- Fix the Sass deprecation and selector warnings.
-- Reduce the initial bundle over the configured warning budget.
-- Keep the frontend source tree passing Biome; the current `src/app` check is clean. Backend lint findings remain tracked separately.
+- The global Sass deprecation and Tailwind selector warnings are resolved with
+  the plain-CSS entrypoint and PostCSS nesting pass; route-level page
+  components are lazy-loaded and the measured initial bundle is below its
+  configured 650 kB warning budget.
+- Complete the rendered accessibility/responsive audit and resolve any
+  remaining route-level findings.
+- Keep the frontend source tree passing Biome; the current `src/app` and global stylesheet checks are clean. Backend lint now passes with no errors or warnings and is enforced in CI.
 - Add timezone-focused browser coverage around scheduled-session display and keep all relative-time utilities based on instant timestamps rather than server/local offset corrections; `formatDate.ts` no longer applies a fixed Spain correction.
 - Avoid mutating nested signal state in place where it can produce stale UI.
 - Group member and invitation removal now update nested signal state immutably; continue auditing remaining collection and session updates for the same failure mode.
@@ -209,11 +222,10 @@ These are not purely frontend tasks, but they block reliable product UX completi
 - Extend the completed session write into the full session write/lifecycle API; see [`data-model.md`](data-model.md) and [`database/drift-report.md`](../database/drift-report.md).
 - Establish a repeatable migration runner and empty-state recreation from the synchronized schema.
 - Complete the remaining authorization, response-privacy, validation, and API-contract reviews.
-- Add lockfiles, a documented Node/package-manager choice, and root development commands.
 - Add CI gates for builds, tests, lint, formatting, and migrations.
 - Add health/readiness checks, structured observability, backup/restore rehearsal, and rollback instructions.
 - Replace the stale backend e2e starter test with product behavior tests.
-- Resolve remaining backend lint failures and expand meaningful integration coverage.
+- Expand meaningful integration coverage; backend lint failures are resolved and the no-mutation lint command is now a CI gate.
 
 ## Recommended execution order
 

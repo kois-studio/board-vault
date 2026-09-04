@@ -4,6 +4,7 @@ import { Injectable, Logger, NotFoundException, UnauthorizedException } from '@n
 import { JwtService } from '@nestjs/jwt'
 import * as bcrypt from 'bcryptjs'
 
+import { assertSelfRegistrationEnabled } from '../../../common/registration-policy'
 import { UsersService } from '../../core/users/users.service'
 import { DatabaseService } from '../database/database.service'
 import { EmailService } from '../email/email.service'
@@ -24,7 +25,7 @@ export class AuthService {
     async validateUser(email: string, password: string) {
         const user = await this.usersService.getUserByEmail(email, true)
 
-        if (!(user instanceof Error) && 'password' in user && (await bcrypt.compare(password, user.password))) {
+        if (!(user instanceof Error) && user.email_verified && 'password' in user && (await bcrypt.compare(password, user.password))) {
             return user
         }
         return null
@@ -46,6 +47,7 @@ export class AuthService {
     }
 
     async register(email: string, username: string, password: string) {
+        assertSelfRegistrationEnabled()
         this.LOGGER.log('Registration attempt received')
 
         // Generate a unique verification token
@@ -81,12 +83,14 @@ export class AuthService {
     }
 
     async checkEmail(email: string): Promise<boolean> {
+        assertSelfRegistrationEnabled()
         const result = await this.databaseService.checkEmail(email)
 
         return !result.rows.length
     }
 
     async checkUsername(username: string): Promise<boolean> {
+        assertSelfRegistrationEnabled()
         const result = await this.databaseService.checkUsername(username)
 
         return !result.rows.length

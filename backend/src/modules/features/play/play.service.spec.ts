@@ -1,3 +1,5 @@
+import { PlayService } from './play.service'
+
 import type { DatabaseService } from '../../common/database/database.service'
 import type { GameTranslationService } from '../../core/game-translation/game-translation.service'
 import type { GamesService } from '../../core/games/games.service'
@@ -5,13 +7,9 @@ import type { MeetAccountGamesService } from '../../core/meet-account-games/meet
 import type { MeetsService } from '../../core/meets/meets.service'
 import type { UsersService } from '../../core/users/users.service'
 
-import { PlayService } from './play.service'
-
 describe('PlayService history', () => {
     it('includes only completed sessions in personal history', async () => {
         const meetAccountGames = {
-            getDistinctMeetIdsByAccountId: jest.fn().mockResolvedValue([10, 11]),
-            getDistinctGameIdsByMeetId: jest.fn().mockResolvedValue([42]),
             getDistinctAccountIdsByMeetIdAndGameId: jest.fn().mockResolvedValue([1]),
         }
         const meets = {
@@ -25,7 +23,11 @@ describe('PlayService history', () => {
                 timezone: 'Europe/Madrid',
             })),
         }
-        const database = {} as DatabaseService
+        const database = {
+            getMeetAttendedAccountIds: jest.fn().mockResolvedValue([1]),
+            getDistinctCompletedMeetIdsForAccountHistory: jest.fn().mockResolvedValue([10, 11]),
+            getPlayedGameIdsByMeetId: jest.fn().mockResolvedValue([42]),
+        } as unknown as DatabaseService
         const service = new PlayService(
             { getPublicUserById: jest.fn().mockResolvedValue({ id: 1, username: 'dawichi' }) } as unknown as UsersService,
             database,
@@ -36,8 +38,8 @@ describe('PlayService history', () => {
         )
 
         await expect(service.getUserGamesHistory(1)).resolves.toHaveLength(1)
-        expect(meetAccountGames.getDistinctGameIdsByMeetId).toHaveBeenCalledTimes(1)
-        expect(meetAccountGames.getDistinctGameIdsByMeetId).toHaveBeenCalledWith(10)
+        expect(database.getPlayedGameIdsByMeetId).toHaveBeenCalledTimes(1)
+        expect(database.getPlayedGameIdsByMeetId).toHaveBeenCalledWith(10)
     })
 
     it('sorts a user meet list without mutating the database response contract', async () => {
@@ -66,6 +68,7 @@ describe('PlayService history', () => {
         const database = {
             getGroupById: jest.fn().mockResolvedValue({ rows: [[7]] }),
             getGroupMemberIds: jest.fn().mockResolvedValue([1, 2, 3]),
+            getRecommendationFeedbackForGroup: jest.fn().mockResolvedValue({ rows: [] }),
             getRecommendationCandidates: jest.fn().mockResolvedValue({
                 rows: [
                     [42, 'image-42', 90, 2, 5, 'Better Game', 'Mejor juego', 2, 8, '2026-08-01T19:30:00.000Z'],
@@ -96,6 +99,40 @@ describe('PlayService history', () => {
             noResultReason: null,
         })
         expect(database.getRecommendationCandidates).toHaveBeenCalledWith([1, 2], 2, 120)
+    })
+
+    it('uses the latest selected-attendee feedback in the recommendation score and explanation', async () => {
+        const database = {
+            getGroupById: jest.fn().mockResolvedValue({ rows: [[7]] }),
+            getGroupMemberIds: jest.fn().mockResolvedValue([1, 2]),
+            getRecommendationCandidates: jest.fn().mockResolvedValue({
+                rows: [[42, 'image-42', 90, 2, 5, 'Better Game', 'Mejor juego', 2, 8, null]],
+            }),
+            getRecommendationFeedbackForGroup: jest.fn().mockResolvedValue({
+                rows: [
+                    [8, 42, 1, 'interested', '2026-09-03 20:02:00'],
+                    [7, 42, 1, 'not_for_us', '2026-09-03 20:01:00'],
+                    [6, 42, 2, 'not_for_us', '2026-09-03 20:00:00'],
+                ],
+            }),
+        }
+        const service = new PlayService(
+            {} as UsersService,
+            database as unknown as DatabaseService,
+            {} as GamesService,
+            {} as MeetsService,
+            {} as MeetAccountGamesService,
+            {} as GameTranslationService,
+        )
+
+        await expect(service.getRecommendations(1, { groupId: 7, attendeeIds: [1, 2] })).resolves.toMatchObject({
+            recommendations: [
+                expect.objectContaining({
+                    score: 74,
+                    explanation: expect.objectContaining({ interestedCount: 1, notForUsCount: 1 }),
+                }),
+            ],
+        })
     })
 
     it('rejects attendees who are not members of the selected group', async () => {
@@ -197,5 +234,61 @@ describe('PlayService history', () => {
             }),
         ).rejects.toThrow('The selected attendees do not own this game')
         expect(database.createRecommendationFeedback).not.toHaveBeenCalled()
+    })
+
+    it('returns the latest group recommendation signals per member and game', async () => {
+        const avatar = JSON.stringify({ backgroundColor: '#000', iconName: null, emoji: '🎲', type: 'emoji', initials: 'D' })
+        const database = {
+            getGroupById: jest.fn().mockResolvedValue({ rows: [[7]] }),
+            getGroupMemberIds: jest.fn().mockResolvedValue([1, 2]),
+            getRecommendationFeedbackForGroup: jest.fn().mockResolvedValue({
+                rows: [
+                    [5, 42, 1, 'not_for_us', '2026-09-03 20:02:00', 'dawichi', 'David', avatar],
+                    [4, 42, 1, 'interested', '2026-09-03 20:01:00', 'dawichi', 'David', avatar],
+                    [3, 42, 2, 'interested', '2026-09-03 20:00:00', 'friend', 'Friend', avatar],
+                ],
+            }),
+        }
+        const service = new PlayService(
+            {} as UsersService,
+            database as unknown as DatabaseService,
+            {} as GamesService,
+            {} as MeetsService,
+            {} as MeetAccountGamesService,
+            {} as GameTranslationService,
+        )
+
+        await expect(service.getRecommendationSignals(1, 7)).resolves.toEqual({
+            groupId: 7,
+            signals: [
+                {
+                    gameId: 42,
+                    interestedCount: 1,
+                    notForUsCount: 1,
+                    yourFeedback: 'not_for_us',
+                    interestedBy: [{ id: 2, username: 'friend', displayName: 'Friend', avatar: JSON.parse(avatar) }],
+                    lastUpdatedAt: '2026-09-03 20:02:00',
+                },
+            ],
+        })
+    })
+
+    it('rejects recommendation signals for non-members', async () => {
+        const database = {
+            getGroupById: jest.fn().mockResolvedValue({ rows: [[7]] }),
+            getGroupMemberIds: jest.fn().mockResolvedValue([2]),
+            getRecommendationFeedbackForGroup: jest.fn(),
+        }
+        const service = new PlayService(
+            {} as UsersService,
+            database as unknown as DatabaseService,
+            {} as GamesService,
+            {} as MeetsService,
+            {} as MeetAccountGamesService,
+            {} as GameTranslationService,
+        )
+
+        await expect(service.getRecommendationSignals(1, 7)).rejects.toThrow('You must belong to the group to view recommendation signals')
+        expect(database.getRecommendationFeedbackForGroup).not.toHaveBeenCalled()
     })
 })

@@ -153,9 +153,10 @@ export class CollectionService {
 
         if (result.success) {
             await this.collectionActivityService.logCollectionActivity(userId, gameId, 'added', null)
-            
+
             // Automatically remove from wishlist if it exists
             const isWishlisted = await this.wishlistService.isGameWishlisted(userId, gameId)
+
             if (isWishlisted) {
                 await this.wishlistService.toggleWishlist(userId, gameId)
                 await this.collectionActivityService.logCollectionActivity(userId, gameId, 'unwishlisted', null)

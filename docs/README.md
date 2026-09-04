@@ -1,6 +1,6 @@
 # Board Vault project documentation
 
-This directory is the canonical operating manual for AI developer agents working in Board Vault. It describes the committed repository baseline as reviewed on 2026-08-16, including the Clerk session bridge, local account provisioning, the first verified account link, the applied legacy-token lifecycle migration, and the reviewed legacy group, membership, notification, meet, collection, admin reviewer, global-user-list, deleted-account JWT, database-log, email-log, cache-log, auth-log, authentication path/query validation, CORS, and authentication rate-limit boundaries. The application is an existing Angular/NestJS foundation, not a launch-ready implementation.
+This directory is the canonical operating manual for AI developer agents working in Board Vault. It describes the committed repository baseline as reviewed on 2026-09-04, including the Clerk session bridge, private-beta registration policy, local account provisioning, the first verified account link, the applied legacy-token lifecycle migration, canonical session and per-game participant recording, and the reviewed legacy group, membership, notification, meet, collection, admin reviewer, global-user-list, deleted-account JWT, database-log, email-log, cache-log, auth-log, authentication path/query validation, CORS, and authentication rate-limit boundaries. The application is an existing Angular/NestJS foundation, not a launch-ready implementation.
 
 ## Start here
 
@@ -64,6 +64,11 @@ This directory is the canonical operating manual for AI developer agents working
 ### Product backlog and agent coordination
 
 The `/todo/` package is the source of truth for the planned second development round. It is product direction and execution coordination, not proof that a feature exists.
+
+`docs/TODO.md` is an active burn-down list, not a completion archive. A TODO
+item is removed only after its acceptance criteria and verification evidence are
+complete. The implementation truth, decision records, and task-board history
+remain in the maintained documents linked above.
 
 - [TODO system](../todo/README.md)
 - [Master brief](../todo/00-master-brief.md)

@@ -8,9 +8,17 @@ import {
     CreateScheduledSessionBody,
     ScheduledSessionCreatedDto,
     SessionAttendeesUpdatedDto,
+    SessionShortlistUpdatedDto,
+    SessionPlayedGamesUpdatedDto,
     SessionCreatedDto,
+    SessionRsvpUpdatedDto,
+    SessionAttendanceUpdatedDto,
     SessionStatusUpdatedDto,
     UpdateSessionAttendeesBody,
+    UpdateSessionShortlistBody,
+    UpdateSessionPlayedGamesBody,
+    UpdateSessionRsvpBody,
+    UpdateSessionAttendanceBody,
     UpdateSessionStatusBody,
 } from '../../../common/types/session.type'
 
@@ -50,6 +58,56 @@ export class SessionsController {
         @Body() body: UpdateSessionAttendeesBody,
     ) {
         return this.sessionsService.updateSessionAttendees(request.user.userId, sessionId, body)
+    }
+
+    @Patch(':sessionId/shortlist')
+    @ApiOperation({ summary: 'Replace the planned games of an editable session' })
+    @ApiResponse({ status: 200, type: SessionShortlistUpdatedDto })
+    @ApiResponse({ status: 400, description: 'The planned games must be owned by at least one group member.' })
+    @ApiResponse({ status: 403, description: 'Only the session organizer may manage the shortlist.' })
+    updateSessionShortlist(
+        @Req() request: { user: { userId: number } },
+        @Param('sessionId', ParseIntPipe) sessionId: number,
+        @Body() body: UpdateSessionShortlistBody,
+    ) {
+        return this.sessionsService.updateSessionShortlist(request.user.userId, sessionId, body)
+    }
+
+    @Patch(':sessionId/played-games')
+    @ApiOperation({ summary: 'Replace the games actually played in an editable session' })
+    @ApiResponse({ status: 200, type: SessionPlayedGamesUpdatedDto })
+    @ApiResponse({ status: 400, description: 'Every played game must be owned by at least one group member.' })
+    @ApiResponse({ status: 403, description: 'Only the session organizer may record games played.' })
+    updateSessionPlayedGames(
+        @Req() request: { user: { userId: number } },
+        @Param('sessionId', ParseIntPipe) sessionId: number,
+        @Body() body: UpdateSessionPlayedGamesBody,
+    ) {
+        return this.sessionsService.updateSessionPlayedGames(request.user.userId, sessionId, body)
+    }
+
+    @Patch(':sessionId/rsvp')
+    @ApiOperation({ summary: 'Respond to the current user’s session invitation' })
+    @ApiResponse({ status: 200, type: SessionRsvpUpdatedDto })
+    @ApiResponse({ status: 403, description: 'The current user is not invited to this session.' })
+    updateSessionRsvp(
+        @Req() request: { user: { userId: number } },
+        @Param('sessionId', ParseIntPipe) sessionId: number,
+        @Body() body: UpdateSessionRsvpBody,
+    ) {
+        return this.sessionsService.updateSessionRsvp(request.user.userId, sessionId, body)
+    }
+
+    @Patch(':sessionId/attendance')
+    @ApiOperation({ summary: 'Record which invited members actually attended a session' })
+    @ApiResponse({ status: 200, type: SessionAttendanceUpdatedDto })
+    @ApiResponse({ status: 403, description: 'Only the session organizer can record attendance.' })
+    updateSessionAttendance(
+        @Req() request: { user: { userId: number } },
+        @Param('sessionId', ParseIntPipe) sessionId: number,
+        @Body() body: UpdateSessionAttendanceBody,
+    ) {
+        return this.sessionsService.updateSessionAttendance(request.user.userId, sessionId, body)
     }
 
     @Patch(':sessionId/status')

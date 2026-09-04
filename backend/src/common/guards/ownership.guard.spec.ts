@@ -1,11 +1,11 @@
 import { ExecutionContext, ForbiddenException } from '@nestjs/common'
 import { GUARDS_METADATA } from '@nestjs/common/constants'
 
+import { UsersController } from '../../modules/core/users/users.controller'
 import { CollectionController } from '../../modules/features/collection/collection.controller'
 import { DashboardController } from '../../modules/features/dashboard/dashboard.controller'
 import { PlayController } from '../../modules/features/play/play.controller'
 import { ProfileController } from '../../modules/features/profile/profile.controller'
-import { UsersController } from '../../modules/core/users/users.controller'
 
 import { UserOwnershipGuard } from './ownership.guard'
 

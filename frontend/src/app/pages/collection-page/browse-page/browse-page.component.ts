@@ -1,10 +1,11 @@
 import { Component, computed, effect, inject, signal } from '@angular/core'
 import { ReactiveFormsModule } from '@angular/forms'
-import { Router, RouterLink } from '@angular/router'
+import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
 import { Api } from '../../../api/api'
 import { CardGameComponent } from '../../../components/card-game/card-game.component'
 import { SkeletonCardGameComponent } from '../../../components/skeletons/skeleton-card-game/skeleton-card-game.component'
+import { ToastService } from '../../../components/toast/toast.service'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
@@ -33,6 +34,7 @@ export class BrowsePageComponent {
     // --------------------------------------------------------------------------
     // dataService
     public readonly currentUser$ = this.dataService.currentUser
+    public readonly userGroups$ = this.dataService.userGroups
     public readonly userGames$ = this.dataService.userGames
     // browsePageService
     public readonly browseGamesList$ = this.browsePageService.browseGamesList
@@ -43,6 +45,11 @@ export class BrowsePageComponent {
     public readonly hasMoreGames$ = this.browsePageService.hasMoreGames
     public readonly searchControl = this.browsePageService.searchControl
     public readonly searchError = signal(false)
+    public readonly acquisitionGroupId = signal<number | null>(null)
+    public readonly acquisitionGroupName = computed(
+        () => this.userGroups$().find((group) => group.id === this.acquisitionGroupId())?.name ?? 'this group',
+    )
+    public readonly acquisitionState = signal<Record<number, 'saving' | 'saved'>>({})
 
     // --------------------------------------------------------------------------
     //        Computed
@@ -57,7 +64,15 @@ export class BrowsePageComponent {
         }))
     })
 
-    constructor() {
+    constructor(
+        private readonly route: ActivatedRoute,
+        private readonly toastService: ToastService,
+    ) {
+        const requestedGroupId = Number(this.route.snapshot.queryParamMap.get('groupId'))
+        if (Number.isInteger(requestedGroupId) && requestedGroupId > 0) {
+            this.acquisitionGroupId.set(requestedGroupId)
+        }
+
         // Initialize search with debounce
         this.searchControl.valueChanges
             .pipe(
@@ -124,6 +139,27 @@ export class BrowsePageComponent {
     public retrySearch(): void {
         this.searchError.set(false)
         this._searchGames()
+    }
+
+    public addGameToAcquisitionBoard(gameId: number): void {
+        const groupId = this.acquisitionGroupId()
+        if (!groupId || this.acquisitionState()[gameId]) return
+
+        this.acquisitionState.update((state) => ({ ...state, [gameId]: 'saving' }))
+        this.api.addGroupAcquisitionInterest(groupId, gameId).subscribe({
+            next: () => {
+                this.acquisitionState.update((state) => ({ ...state, [gameId]: 'saved' }))
+                this.toastService.success(`Added to ${this.acquisitionGroupName()}'s acquisition board.`)
+            },
+            error: () => {
+                this.acquisitionState.update((state) => {
+                    const nextState = { ...state }
+                    delete nextState[gameId]
+                    return nextState
+                })
+                this.toastService.error('Could not add this game to the group board.')
+            },
+        })
     }
 
     private _searchGames(isNextPage = false) {

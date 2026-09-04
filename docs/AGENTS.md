@@ -28,7 +28,7 @@ The project pins Engineering Standards `0.2.0` at revision `34e2a8ffe9e081cdf755
 
 ## Safe change boundaries
 
-- This project is in an intermediate sanitation/documentation session. Do not perform broad behavior refactors, dependency upgrades, migrations, CI changes, or deployment changes unless the user explicitly scopes that work.
+- This project is in an intermediate product-restart and sanitation session. Do not perform broad behavior refactors, dependency upgrades, migrations, CI changes, or deployment changes unless the user explicitly scopes that work.
 - Preserve unrelated changes and inspect `git diff` before editing overlapping files.
 - Do not edit the live Turso database manually for feature work. Schema changes require a versioned migration plan first; use `database/scripts/migrate.mjs` and the documented baseline/recovery procedure.
 - Never commit `.env` values, tokens, passwords, or provider credentials. The ignored `backend/.env` is local-only; document variable names and safe examples, never values.
@@ -39,22 +39,29 @@ The project pins Engineering Standards `0.2.0` at revision `34e2a8ffe9e081cdf755
 
 ## Verified commands
 
-Commands run from the package directory. Dependencies are currently present in ignored `node_modules/`; no lockfile is tracked, so a clean install is not yet reproducible.
+Commands can run from the repository root or package directory. Dependencies are currently present in ignored `node_modules/`; root, backend, and frontend package lockfiles are tracked and clean installs are reproducible locally.
 
 | Purpose | Command | Current baseline |
 |---|---|---|
-| Backend install | `cd backend && npm ci --ignore-scripts` | Passes from the committed `backend/package-lock.json`; the package README still says `pnpm` and should be aligned later. |
+| Backend install | `cd backend && npm ci --ignore-scripts` | Passes from the committed `backend/package-lock.json`; the package README now uses npm consistently. |
 | Backend build | `cd backend && npm run build` | Passes. |
-| Backend unit tests | `cd backend && npm test -- --runInBand` | Passes 144 focused tests across Clerk identity provisioning, authorization, validation, token lifecycle, session transactions/lifecycle, recommendations, feedback, and provider boundaries; broader integration coverage is still missing. |
+| Backend unit tests | `cd backend && npm test -- --runInBand` | Passes 181 tests across 41 suites covering Clerk identity provisioning, authorization, validation, token lifecycle, session transactions/lifecycle, per-game participation, recommendations, feedback, invitation visibility, verified-user gating, admin route validation, and provider boundaries; broader integration coverage is still missing. |
 | Backend e2e tests | `cd backend && npm run test:e2e -- --runInBand` | Passes 2 environment-safe HTTP boundary tests; the suite uses a disposable SQLite URL, disables Redis, and never calls production providers. |
-| Backend lint, no mutation | `cd backend && npx eslint "{src,apps,libs,test}/**/*.ts"` | Fails with 17 errors and 3 warnings. Do not use the package `lint` script casually because it includes `--fix`. |
+| Backend lint, no mutation | `cd backend && npx eslint "{src,apps,libs,test}/**/*.ts"` | Passes with no errors or warnings. Do not use the package `lint` script casually because it includes `--fix`. |
 | Backend formatting, writes files | `cd backend && npm run format` | Available; run only when formatting changes are in scope. |
 | Frontend install | `cd frontend && npm ci --ignore-scripts` | Passes from the committed `frontend/package-lock.json`; Angular packages are pinned to a coherent 19.2 toolchain. |
-| Frontend build | `cd frontend && npm run build` | Passes with Sass deprecation, selector, and initial bundle-budget warnings. |
-| Frontend tests | `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` | Passes 1 generated smoke test. |
+| Frontend build | `cd frontend && npm run build` | Passes without Sass/selector/bundle-budget warnings; route-level components are lazy-loaded and the initial raw bundle is 606.59 kB under the 650 kB warning budget. |
+| Frontend tests | `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` | Passes 3 browser-based unit tests, including valid and malformed frontend API response-contract cases. |
 | Frontend checks | `cd frontend && npx biome check src/app` | Passes with no diagnostics. |
 | Frontend formatting, writes files | `cd frontend && npm run format` | Available; run only when formatting changes are in scope. |
-| Database empty-state verification | `node database/scripts/verify-empty-state.mjs` | Passes against disposable SQLite and records the current snapshot baseline at migration 0005. |
+
+The root package is dependency-free and exposes `npm run install:all`,
+`npm run build`, `npm run test:unit`, `npm run test:e2e`, `npm run lint`, and
+`npm run verify:migrations` as convenience wrappers around the package-local
+commands. Backend `lint:check` is the no-mutation lint entry point; the
+existing `lint` script remains the formatting/write command, and frontend
+`lint:check` is the no-mutation Biome entry point.
+| Database empty-state verification | `node database/scripts/verify-empty-state.mjs` | Passes against disposable SQLite, records the current snapshot baseline at migration 0005, and applies pending migrations. |
 
 When reporting verification, include the exact command, working directory, result, and whether the result is a known baseline failure or introduced by the change.
 
@@ -63,5 +70,7 @@ When reporting verification, include the exact command, working directory, resul
 - Update [docs/README.md](README.md) when adding or moving maintained documentation.
 - Update current-state docs when architecture, commands, data, integrations, or operational behavior changes.
 - Update the standards contract and [TODO.md](TODO.md) when a compliance state or remediation priority changes.
+- Keep [TODO.md](TODO.md) as an active burn-down list: remove an item after its acceptance criteria are implemented and verified; record the completed scope and evidence in the relevant current-state document and the task board instead of leaving checked-off work in the active TODO.
+- Before removing a TODO item, review every affected document under `docs/` for stale status, commands, contracts, risks, dependencies, and next actions. If the item is only partially complete, keep it with the remaining acceptance criteria explicitly narrowed.
 - Create an ADR for a durable architectural, security, data, or policy decision. Do not use an ADR for a temporary TODO, defect, or status note.
 - Never describe an unknown as compliant. Deferred work needs an explanation, dependency, and next action.

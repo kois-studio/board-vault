@@ -2,8 +2,8 @@
 
 ## Inventory at bootstrap
 
-- Backend: one stale `backend/test/app.e2e-spec.ts` plus focused profile-update and ownership-boundary suites under `backend/src/`.
-- Frontend: one `frontend/src/app/app.component.spec.ts`, a generated app-creation smoke test.
+- Backend: `backend/test/app.e2e-spec.ts` plus focused security, validation, persistence, recommendation, session, and provider-boundary suites under `backend/src/`.
+- Frontend: `frontend/src/app/app.component.spec.ts` plus `frontend/src/app/api/api.spec.ts`, covering app creation and API response-contract validation.
 - Frontend browser coverage now uses Playwright under `frontend/e2e/`; the suite is configured to run against an isolated local Angular server on port 4300 or an explicit `PLAYWRIGHT_BASE_URL`. Public tests run by default. Authenticated core-navigation tests activate only when `PLAYWRIGHT_AUTH_STORAGE_STATE` points to a local, uncommitted Clerk storage-state JSON file.
 - No broad contract, migration, persistence, provider-adapter, accessibility, or responsive tests were found; focused authorization boundary tests now exist.
 - A manual migration verification was run against a restored SQLite backup copy; it is not an automated migration suite.
@@ -13,14 +13,14 @@
 | Check | Result | Interpretation |
 |---|---|---|
 | `cd backend && npm run build` | Pass | TypeScript/Nest build currently compiles. |
-| `cd backend && npm test -- --runInBand` | Pass | 144 focused tests cover the previously documented Clerk, validation, authorization, privacy, logging, cache, and migration-boundary areas plus canonical session validation, transaction commit/rollback behavior, planned-game validation, lifecycle transition rules, terminal planned-to-skipped transitions, completed-only play-history filtering, deterministic recommendations, constraint-specific empty states, and recommendation feedback validation; broader authorization coverage remains absent. |
+| `cd backend && npm test -- --runInBand` | Pass | 181 tests across 41 suites cover the previously documented Clerk, validation, authorization, privacy, logging, cache, and migration-boundary areas plus canonical session validation, transaction commit/rollback behavior, planned-game validation, lifecycle transition rules, terminal planned-to-skipped transitions, per-game participant persistence, completed-only play-history filtering, deterministic recommendations, Clerk group invitations, account-scoped invitation visibility, verified-user gating, admin route-parameter validation, deprecated-route removal, constraint-specific empty states, and recommendation feedback validation; broader authorization coverage remains absent. |
 | `cd backend && npm run test:e2e -- --runInBand` | Pass | Two environment-safe HTTP tests cover unauthenticated Clerk status rejection and invalid public query validation using a disposable SQLite URL and disabled Redis. |
-| `cd backend && npx eslint "{src,apps,libs,test}/**/*.ts"` | Fail | 17 errors and 3 warnings across schemas, database, collection, play, and profile code. |
-| `cd frontend && npm run build` | Pass with warnings | Bundle budget, Sass deprecation, and 412 selector warnings remain; current initial bundle is approximately 878 kB against the 500 kB warning budget. |
+| `cd backend && npx eslint "{src,apps,libs,test}/**/*.ts"` | Pass | No errors or warnings; CI runs the same no-mutation command. |
+| `cd frontend && npm run build` | Pass | PostCSS flattens Tailwind’s generated nesting, route-level components are lazy-loaded, and the initial raw bundle is 606.59 kB (140.28 kB estimated transfer) under the 650 kB warning budget. |
 | `cd frontend && npx biome check src/app` | Pass | No diagnostics. |
-| `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` | Pass | One generated smoke test passes. |
-| `cd frontend && npm run e2e` | Pass | Three public Playwright tests pass; six authenticated core-navigation tests cover dashboard, groups/collection entry points, session logging, upcoming sessions, history, and recommendations, and are intentionally skipped unless `PLAYWRIGHT_AUTH_STORAGE_STATE` is supplied. |
-| `node database/scripts/verify-empty-state.mjs` | Pass | Loads the current schema snapshot into disposable SQLite, reports `PRAGMA integrity_check = ok`, and bootstraps the migration metadata at baseline 0005 without applying historical migrations. |
+| `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` | Pass | Three browser-based unit tests pass, including valid and malformed frontend API response-contract cases. |
+| `cd frontend && npm run e2e` | Pass | Four public Playwright tests pass, including the Clerk invitation-ticket registration path; six authenticated core-navigation tests cover dashboard, groups/collection entry points, session logging, upcoming sessions, history, and recommendations, and are intentionally skipped unless `PLAYWRIGHT_AUTH_STORAGE_STATE` is supplied. |
+| `node database/scripts/verify-empty-state.mjs` | Pass | Loads the current deployed schema snapshot into disposable SQLite, reports `PRAGMA integrity_check = ok`, records baseline 0005, applies pending migrations 0006 and 0007, and asserts the acquisition table, session-notes column, and seven-migration state exist. |
 | `cd backend && npm test -- --runInBand src/modules/features/sessions/sessions.service.spec.ts` | Pass | Fourteen tests cover canonical completed/scheduled creation, planned-game availability, missing groups, actor membership, selected attendee membership, group game availability, participant/attendee consistency, and lifecycle transitions. |
 | `schema.sql` plus migration 0004 in disposable SQLite | Pass | A restored pre-0004 dump accepts the lifecycle migration; integrity is `ok`, no foreign-key violations are reported, and all four lifecycle columns/indexes exist. |
 | `sqlite3 backup-copy < database/migrations/0001-add-clerk-user-id.sql` | Pass | SQLite integrity remains `ok`; 15 accounts, 13 meets, and 101 meet/game links are preserved; the original backup was not used as the test target. |

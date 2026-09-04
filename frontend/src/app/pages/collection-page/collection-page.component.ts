@@ -6,7 +6,9 @@ import { BadgeComponent } from '../../components/ui/badge/badge.component'
 import { ButtonComponent } from '../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'
+import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
 import { DataService } from '../../core/services/data.service'
+import { LoadingService } from '../../core/services/loading.service'
 
 @Component({
     imports: [
@@ -22,12 +24,15 @@ import { DataService } from '../../core/services/data.service'
 })
 export class CollectionPageComponent {
     private readonly dataService = inject(DataService)
+    private readonly loadingService = inject(LoadingService)
 
     // --------------------------------------------------------------------------
     //        signals
     // --------------------------------------------------------------------------
     public readonly currentUser$ = this.dataService.currentUser
+    public readonly userGroups$ = this.dataService.userGroups
     public readonly userGames$ = this.dataService.userGames
+    public readonly isLoadingUserGames = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_GAMES])
     public readonly userReviews$ = this.dataService.userReviews
     public readonly userWishlist$ = this.dataService.userWishlist
     public readonly userCollectionActivity$ = this.dataService.userCollectionActivity

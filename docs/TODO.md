@@ -1,8 +1,21 @@
-# Standards and AI-readiness TODOs
+# Active completion TODOs
 
-This backlog covers project sanitation and engineering readiness. It complements, but does not replace, the product execution board in [`todo/06-agent-task-board.md`](../todo/06-agent-task-board.md).
+This is the active burn-down list for Board Vault’s unfinished product,
+engineering, and launch work. It complements, but does not replace, the
+product execution board in [`todo/06-agent-task-board.md`](../todo/06-agent-task-board.md).
 
-Statuses are `Planned`, `Blocked`, or `Deferred` until evidence changes them. Product work should remain in `/todo/`.
+Process rule: keep only unfinished acceptance criteria here. When a goal is
+implemented and verified, remove it from this file in the same change, update
+all affected current-state documents under `docs/`, and record the completed
+scope and evidence in the task board. Do not turn this file into an archive of
+checked boxes. Product direction that remains true after implementation belongs
+in [`todo/01-product-direction.md`](../todo/01-product-direction.md); durable
+technical decisions belong in [`docs/adr/`](adr/README.md).
+
+Reviewed: 2026-09-04
+
+Readiness entries use `In progress`, `Planned`, `Blocked`, or `Deferred`.
+Product execution ownership remains in `/todo/`.
 
 ## Critical — unblock safe feature development
 
@@ -10,7 +23,7 @@ Statuses are `Planned`, `Blocked`, or `Deferred` until evidence changes them. Pr
 
 - **Status:** In progress
 - **Affected area:** `backend/src/common/guards/`, `backend/src/modules/core/`, `backend/src/modules/features/`
-- **Evidence:** SEC-001 has a runtime profile-update boundary and passing denied/filtered-input tests. SEC-002 protects user-scoped reads with `UserOwnershipGuard`, the deprecated global user listing with `AdminGuard`, legacy group listings with account-scoped queries, every current collection route with ownership guards, legacy JWT validation rejects soft-deleted accounts, group and invitation/membership creation derives actor IDs from JWT, reviewed group and meet reads use membership/owner boundaries, pending group-invitation reads are owner-only, invitation lifecycle actions enforce sender/recipient ownership, deprecated direct joining requires a pending invitation, legacy notification and meet-account-game mutations are scoped to the authenticated account, and SEC-003 proposal review actions derive reviewers from the verified JWT behind `AdminGuard`; nested user responses now use `UserPublicDto`, while self/admin response policy and the session API/transaction policy still need review. V1 group membership is invite-only with owner/member roles under ADR-0007.
+- **Evidence:** SEC-001 has a runtime profile-update boundary and passing denied/filtered-input tests. SEC-002 protects user-scoped reads with `UserOwnershipGuard`, the deprecated global user listing with `AdminGuard`, deprecated arbitrary account creation has been removed, legacy group listings use account-scoped queries, every current collection route has ownership guards, legacy JWT validation rejects soft-deleted accounts, group and invitation/membership creation derives actor IDs from JWT, reviewed group and meet reads use membership/owner boundaries, pending group-invitation reads are owner-only, legacy invitation list/detail reads are scoped to the authenticated sender or recipient, invitation lifecycle actions enforce sender/recipient ownership, deprecated direct joining requires a pending invitation, legacy user-data controllers now require `VerifiedUserGuard`, legacy notification and meet-account-game mutations are scoped to the authenticated account, and SEC-003 proposal review actions derive reviewers from the verified JWT behind `AdminGuard`; nested user responses now use `UserPublicDto`, while self/admin response policy and the session API/transaction policy still need review. V1 group membership is invite-only with owner/member roles under ADR-0007.
 - **Risk:** Cross-user or cross-group data access and privilege escalation.
 - **Next action:** Complete the self-profile/admin DTO inventory and response-contract review, then review the session API/transaction authorization policy. Reopen group membership only through a new ADR if public groups or richer roles become necessary.
 - **Dependencies:** None; coordinate with the canonical session/data decision.
@@ -19,9 +32,9 @@ Statuses are `Planned`, `Blocked`, or `Deferred` until evidence changes them. Pr
 
 - **Status:** In progress
 - **Affected area:** `backend/src/main.ts`, DTO/type boundaries, `frontend/src/app/api/api.schemas.ts`
-- **Evidence:** No global `ValidationPipe`; login, registration, password-reset, availability query, legacy token path, user profile-update, user game-update, review, collection ownership metadata, profile-proposal, administrator catalog/proposal-review, group, invitation, notification, and deprecated membership inputs now have targeted whitelist/forbid-extra-field validation, including nested avatar, positive integer-array, database-aligned 0..10 review, non-negative integer proposal-field, purchase field, administrator review, and identity/reference validation. Verification/reset tokens now have persisted expiry and atomic one-time-use enforcement; migration 0002 is applied and integrity-verified in live Turso. Targeted Zod response schemas now validate every current frontend API adapter response, including legacy invitation/attendee/played-game compatibility writes; client negative tests remain open.
+- **Evidence:** `backend/src/main.ts` now installs a global strict `ValidationPipe` (`whitelist`, `forbidNonWhitelisted`, and `transform`) as a safety net for DTO boundaries, while login, registration, password-reset, availability query, legacy token path, user profile-update, user game-update, review, collection ownership metadata, profile-proposal, administrator catalog/proposal-review, group, invitation, notification, and deprecated membership inputs retain targeted validation. Verification/reset tokens now have persisted expiry and atomic one-time-use enforcement; migration 0002 is applied and integrity-verified in live Turso. Targeted Zod response schemas now validate every current frontend API adapter response, including legacy invitation/attendee/played-game compatibility writes; client negative tests remain open.
 - **Risk:** Malformed, unexpected, oversized, or unsafe values reach services, SQL, HTML, or client state.
-- **Next action:** Audit remaining DTO decorators and enable server input validation incrementally, then add client negative tests beyond the authentication boundary.
+- **Next action:** Audit remaining DTO decorators against the global pipe, then add client negative tests beyond the authentication boundary.
 - **Dependencies:** API error contract and security review.
 
 ### READINESS-003 [Critical] DATA-001/DATA-002 — Reconcile schema and establish migrations
@@ -42,22 +55,13 @@ Statuses are `Planned`, `Blocked`, or `Deferred` until evidence changes them. Pr
 - **Next action:** Exercise one preserved-data route and record rollback/recovery evidence before removing legacy auth. The production email/password/username signup and identity migration for Account `#1` passed; Google OAuth is intentionally deferred.
 - **Dependencies:** Production Clerk instance/domain, Vercel environment access, authorized-party configuration, and a live deployment verification.
 
-### READINESS-004 [Critical] DEP-001/DEP-007/CI-003 — Make installation reproducible
-
-- **Status:** In progress
-- **Affected area:** `backend/.gitignore`, both package manifests, repository root
-- **Evidence:** `backend/package-lock.json` and `frontend/package-lock.json` are committed, `.nvmrc` and CI pin Node 22.20.0, and clean `npm ci --ignore-scripts` installs pass. The backend README still says pnpm and there are no root-level coordination commands.
-- **Risk:** Agents and CI resolve different dependency graphs.
-- **Next action:** Align the backend README with npm, decide whether root coordination commands are valuable, and keep the clean-install checks in CI.
-- **Dependencies:** Owner decision on package manager.
-
 ## High — establish trustworthy delivery
 
 ### READINESS-005 [High] TEST-001/002/005 — Replace starter test baseline
 
 - **Status:** In progress
 - **Affected area:** `backend/test/`, backend `src`, frontend `src/**/*.spec.ts`
-- **Evidence:** Backend now has 39 focused suites and 144 passing unit tests plus 2 environment-safe HTTP E2E tests; frontend has one generated smoke test plus public Playwright coverage, while seeded/integration journeys and authenticated browser coverage remain opt-in.
+- **Evidence:** Backend now has 41 focused suites and 181 passing unit tests plus 2 environment-safe HTTP E2E tests; frontend has 3 browser-based unit tests plus four passing public Playwright tests, while seeded/integration journeys and authenticated browser coverage remain opt-in.
 - **Risk:** Security and product regressions are invisible.
 - **Next action:** Add auth/authorization/data tests first, then core-loop and frontend state tests.
 - **Dependencies:** READINESS-001, READINESS-002, READINESS-003.
@@ -66,10 +70,10 @@ Statuses are `Planned`, `Blocked`, or `Deferred` until evidence changes them. Pr
 
 - **Status:** In progress
 - **Affected area:** `.github/` or chosen CI provider
-- **Evidence:** `.github/workflows/ci.yml` now runs locked backend/frontend installs, backend tests/build, frontend build/public Playwright checks, and disposable database migration verification. Authenticated E2E and deployment smoke checks are intentionally excluded because they require secret-bearing state.
+- **Evidence:** `.github/workflows/ci.yml` now runs locked backend/frontend installs, backend tests/build/lint, frontend build/Biome/public Playwright checks, and disposable database migration verification. The local run passes backend lint, 181 backend tests, frontend build/Biome, and four public Playwright tests; authenticated E2E and deployment smoke checks are intentionally excluded because they require secret-bearing state.
 - **Risk:** Build, test, lint, formatting, migration, and contract regressions reach integration/deployment.
-- **Next action:** Observe the first GitHub Actions run, then add lint/format gates after their current baseline failures are resolved and add non-production authenticated E2E when disposable Clerk state exists.
-- **Dependencies:** READINESS-004 and a meaningful test baseline.
+- **Next action:** Observe the first GitHub Actions run and add non-production authenticated E2E when disposable Clerk state exists.
+- **Dependencies:** A meaningful test baseline and the repository’s locked-install workflow.
 
 ### READINESS-007 [High] OPS-001/002/005/009 — Document environments and recovery
 
@@ -103,10 +107,10 @@ Statuses are `Planned`, `Blocked`, or `Deferred` until evidence changes them. Pr
 ### READINESS-010 [Medium] STYLE-004/WEB-001/WEB-003 — Sanitize frontend quality baseline
 
 - **Status:** Planned
-- **Affected area:** `frontend/src/styles.scss`, component SCSS/templates, route surfaces
-- **Evidence:** Build emits Sass deprecation and selector warnings; bundle exceeds warning budget; no accessibility/responsive audit; placeholder links remain.
+- **Affected area:** `frontend/src/styles.css`, component SCSS/templates, route surfaces
+- **Evidence:** Tailwind global styles now use plain CSS with a PostCSS nesting pass; route-level components are lazy-loaded; production build has no Sass/selector/bundle-budget warnings and the initial raw bundle is 606.59 kB under the 650 kB warning budget. A full accessibility/responsive audit and all route-surface reviews remain open.
 - **Risk:** Broken styles, poor mobile/accessibility behavior, and unsupported public claims.
-- **Next action:** Fix style integration, define route audit matrix, and link findings to `EQ-006`/`TRUTH-001`.
+- **Next action:** Complete the rendered route audit matrix, resolve remaining accessibility/responsive findings, and link content-truth findings to `TRUTH-001`.
 - **Dependencies:** Product truth/brand decision where claims are involved.
 
 ### READINESS-011 [Medium] DOC-003/007/009 — Consolidate remaining legacy documentation
@@ -136,3 +140,105 @@ Statuses are `Planned`, `Blocked`, or `Deferred` until evidence changes them. Pr
 - Data retention, deletion, encryption, provider scopes, and privacy/terms ownership.
 - Whether legacy route families are still consumed externally and which deprecated routes may be removed.
 - Whether the applied auth-token migration has been promoted to every future environment; rows without expiry values intentionally fail closed, and the runner now provides the mechanism for parity while CI/deployment integration remains open.
+
+---
+
+# Goals before calling the product “finished”
+
+This is the product completion checklist. “Finished” means the core social
+loop is useful and trustworthy for a real group of friends; it does not mean
+that Board Vault has become a complete board-game encyclopedia. Game details
+remain supporting metadata only. The product must stay focused on helping a
+group decide what to play, organize what the group owns, remember what it
+played, and make better future decisions.
+
+Product principles and out-of-scope boundaries are maintained in
+[`todo/01-product-direction.md`](../todo/01-product-direction.md), not repeated
+as TODO items here.
+
+## Information architecture and UX
+
+- [ ] Make the authenticated home a group/social workspace rather than a
+  personal dashboard of disconnected counters.
+- [ ] Organize group work around clear areas such as Decide, Sessions, Group
+  library, Games to acquire, and History/Insights.
+- [ ] Replace ambiguous or implementation-led labels with user language:
+  “session” for a planned or completed game night, and clear distinctions
+  between planned, played, cancelled, and skipped.
+- [ ] Complete responsive, keyboard, contrast, focus, and screen-reader
+  behavior for the primary journeys.
+
+## Collection and group activation
+
+- [ ] Let a person add their first five useful games quickly, with reliable
+  search, duplicate protection, ownership state, and persisted refresh state.
+- [ ] Let an organizer create a private group and invite the actual people
+  they play with.
+- [ ] Make invitation acceptance, rejection, expiry, and notification behavior
+  real and understandable.
+- [ ] Show the group library as a social decision surface: owners, member
+  ratings, playable player counts, duration, last played, and interest signals.
+- [ ] Make private personal collection data and shared group data visibly
+  distinct.
+
+## Recommendation and acquisition decisions
+
+- [ ] Add enough session context for recommendations to become meaningfully
+  better than the current first-release filters: available time plus explicit
+  novelty/mood or organizer preferences.
+- [ ] Extend the current explainable ranking with history, replay timing, and
+  complexity fit only after the group has enough persisted play data.
+- [ ] Validate the recommendation-to-acquisition decision flow with real group
+  usage; purchase suggestions must remain group decisions rather than a generic
+  catalog or affiliate-shopping surface.
+
+## Sessions and social participation
+
+- [ ] Separate “plan a future session” from “record a past session”; do not
+  force both jobs through one dense wizard.
+- [ ] Validate the complete session flow through authenticated browser coverage,
+  including refresh, retryable failures, RSVP, attendance, per-game
+  participants, completion, and feedback.
+- [ ] Remove or hide incomplete compatibility flows once the canonical session
+  journey replaces them.
+
+## History and insights
+
+- [ ] Validate the group home’s lightweight most-played, recently-played,
+  revisit, and participation insights with real group history, then decide
+  whether a separate analytics route is justified.
+- [ ] Validate that history, group library, and recommendations show the same
+  last-played and participant context after refresh.
+
+## Authentication, privacy, and trust
+
+- [ ] Provide an explicit opt-in waitlist/“notify me when ready” path if launch
+  notifications are wanted.
+- [ ] Finish the preserved-account migration and retire legacy password/JWT
+  registration only after recovery, rollback, and production verification pass.
+
+## Reliability, quality, and launch readiness
+
+- [ ] Complete the database backup/restore rehearsal and verify every pending
+  migration against a clean environment before production rollout.
+- [ ] Complete the authorization, input-validation, API-contract,
+  logging/redaction, cache, and provider-failure reviews.
+- [ ] Expand automated coverage for auth, authorization, collection activation,
+  invitations, recommendations, session lifecycle, and core frontend states.
+- [ ] Keep production configuration documented without committing secrets;
+  verify Turso, Clerk, Resend, Upstash, CORS, health checks, and rollback paths.
+- [ ] Remove remaining dead routes, placeholder links, misleading copy, stale
+  starter documentation, and naming inconsistencies.
+- [ ] Resolve remaining frontend baseline lint/format findings and complete the
+  rendered accessibility/responsive route audit; the production build warning
+  and initial bundle work is verified locally.
+- [ ] Run a two-person real-world acceptance rehearsal on a clean environment.
+
+## Definition of finished
+
+The product can be called finished for its first release when two real accounts
+can create or join a private group, add the group’s games, get an explainable
+recommendation for a concrete game night, plan and attend a session, record the
+games actually played, give lightweight feedback, and see that history improve
+the next recommendation. The flow survives refresh, respects permissions,
+works on mobile and keyboard, and can be operated and recovered safely.

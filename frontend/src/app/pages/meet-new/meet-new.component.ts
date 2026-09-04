@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { Component, effect } from '@angular/core'
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
+import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../api/api'
@@ -9,7 +9,7 @@ import { ToastService } from '../../components/toast/toast.service'
 import { DataService } from '../../core/services/data.service'
 
 @Component({
-    imports: [CommonModule, ReactiveFormsModule, RouterLink],
+    imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterLink],
     templateUrl: 'meet-new.component.html',
 })
 export class MeetNewComponent {
@@ -27,8 +27,10 @@ export class MeetNewComponent {
     public groupData: null | (typeof this.userGroups)[number] = null
     public selectedAttendeeIds: Array<number> = []
     public selectedPlannedGameIds: Array<number> = []
+    public notes = ''
     private didInitializeSelections = false
     public today = new Date().toISOString().split('T')[0] // Format: YYYY-MM-DD
+    public localTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
     public dateForm = new FormControl(this.today, [
         Validators.required,
         (control) => {
@@ -38,6 +40,7 @@ export class MeetNewComponent {
             return selectedDate >= today ? null : { futureDate: true }
         },
     ])
+    public timeForm = new FormControl('19:00', [Validators.required])
 
     constructor(
         private readonly route: ActivatedRoute,
@@ -92,6 +95,33 @@ export class MeetNewComponent {
         return [...games.values()].sort((a, b) => (a.titleTranslations.en ?? a.title).localeCompare(b.titleTranslations.en ?? b.title))
     }
 
+    get selectedAttendeesLabel(): string {
+        const total = this.groupData?.members.length ?? 0
+        return `${this.selectedAttendeeIds.length} of ${total} members invited`
+    }
+
+    get selectedGamesLabel(): string {
+        return this.selectedPlannedGameIds.length === 0
+            ? 'No games locked in yet'
+            : `${this.selectedPlannedGameIds.length} game${this.selectedPlannedGameIds.length === 1 ? '' : 's'} on the shortlist`
+    }
+
+    selectAllAttendees(): void {
+        this.selectedAttendeeIds = this.groupData?.members.map((member) => member.id) ?? []
+    }
+
+    clearAttendees(): void {
+        this.selectedAttendeeIds = []
+    }
+
+    selectAllGames(): void {
+        this.selectedPlannedGameIds = this.availableGames.map((game) => game.id)
+    }
+
+    clearGames(): void {
+        this.selectedPlannedGameIds = []
+    }
+
     togglePlannedGame(gameId: number): void {
         this.selectedPlannedGameIds = this.selectedPlannedGameIds.includes(gameId)
             ? this.selectedPlannedGameIds.filter((id) => id !== gameId)
@@ -105,19 +135,21 @@ export class MeetNewComponent {
     }
 
     get disableCreateButton() {
-        if (!this.dateForm.value) {
+        if (!this.dateForm.value || !this.timeForm.value) {
             return true
         }
 
-        return this.isCreatingLoading || this.dateForm.invalid || this.selectedAttendeeIds.length === 0
+        return this.isCreatingLoading || this.dateForm.invalid || this.timeForm.invalid || this.selectedAttendeeIds.length === 0
     }
 
     onClickCreateMeeting() {
         const groupId = this.groupData?.id
         const sessionDate = this.dateForm.value
+        const sessionTime = this.timeForm.value
 
-        if (!groupId || !sessionDate || this.dateForm.invalid) {
+        if (!groupId || !sessionDate || !sessionTime || this.dateForm.invalid || this.timeForm.invalid) {
             this.dateForm.markAsTouched()
+            this.timeForm.markAsTouched()
             return
         }
 
@@ -126,8 +158,9 @@ export class MeetNewComponent {
         firstValueFrom(
             this.api.scheduleSession({
                 groupId,
-                sessionDate: new Date(`${sessionDate}T12:00:00`).toISOString(),
+                sessionDate: new Date(`${sessionDate}T${sessionTime}`).toISOString(),
                 timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                notes: this.notes.trim() || undefined,
                 attendeeIds: this.selectedAttendeeIds,
                 plannedGameIds: this.selectedPlannedGameIds,
             }),

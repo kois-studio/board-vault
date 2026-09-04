@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common'
+import { Logger, ValidationPipe } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { NestFactory } from '@nestjs/core'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
@@ -26,6 +26,15 @@ async function bootstrap() {
 
     // Create the Nest application
     const app = await NestFactory.create(AppModule, { bodyParser: false })
+
+    // Keep every DTO boundary strict, including routes added without a local pipe.
+    app.useGlobalPipes(
+        new ValidationPipe({
+            whitelist: true,
+            forbidNonWhitelisted: true,
+            transform: true,
+        }),
+    )
 
     // Keep request bodies bounded before they reach controllers or providers.
     app.use(...createBodyParsers())

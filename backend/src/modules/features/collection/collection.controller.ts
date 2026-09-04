@@ -13,12 +13,12 @@ import {
     UsePipes,
     ValidationPipe,
 } from '@nestjs/common'
-import { LimitPipe } from '../../../common/pipes'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
 import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
+import { LimitPipe } from '../../../common/pipes'
 import { SuccessDto } from '../../../common/types/auth.type'
 import { CollectionActivityDto } from '../../../common/types/collection-activity.type'
 import { GameOwnedDto, UpdateGameOwnedDto } from '../../../common/types/game-owned.type'

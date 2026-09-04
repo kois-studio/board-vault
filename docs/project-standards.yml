@@ -88,7 +88,7 @@ compliance:
 
     - id: TEST-001
       status: gap
-      evidence: backend has 39 focused suites and 144 passing tests covering authentication, authorization, validation, sessions, recommendations, and provider boundaries; frontend has one generated smoke test plus three passing public Playwright checks and six opt-in authenticated checks
+      evidence: backend has 41 focused suites and 181 passing tests covering authentication, authorization, validation, sessions, per-game participation, recommendations, invitation visibility, verified-user gating, admin route validation, and provider boundaries; frontend has three browser-based unit tests plus four passing public Playwright checks and seven opt-in authenticated checks
       priority: high
       next_action: Add layered unit, integration, and journey tests for the flagship loop.
     - id: TEST-002
@@ -108,12 +108,12 @@ compliance:
       next_action: Expand the HTTP contract suite with disposable authenticated/authorized journeys.
     - id: TEST-005
       status: gap
-      evidence: 144 focused backend tests now cover the highest-risk unit boundaries, but the suite does not yet exercise a clean database, provider failure contract, or complete browser journey
+      evidence: 181 focused backend tests now cover the highest-risk unit boundaries, but the suite does not yet exercise a clean database, provider failure contract, or complete authenticated browser journey
       priority: critical
       next_action: Add disposable integration and contract coverage for auth, group membership, collection ownership, session transactions, and recommendation rules.
     - id: TEST-006
       status: gap
-      evidence: backend unit command passes 144 focused tests and frontend has one smoke test plus public Playwright checks; clean installs now pass and the validation workflow is committed, while CI enforcement is not yet observed remotely
+      evidence: backend unit command passes 181 focused tests and frontend has three browser-based unit tests plus four public Playwright checks; clean installs now pass and the validation workflow now includes lint/Biome gates, while CI enforcement is not yet observed remotely
       priority: high
       next_action: Keep the supported test commands meaningful and observe their first required CI run.
     - id: TEST-007
@@ -148,35 +148,35 @@ compliance:
       priority: high
       next_action: Complete the session API/transaction state contract and establish the recommendation state model before implementation.
     - id: TS-005
-      status: gap
-      evidence: backend main.ts does not apply a global ValidationPipe; frontend api.schemas.ts validates the core auth, private-profile, collection, group, notification, session, meet, recommendation, feedback, and admin/proposal response paths, while remaining legacy paths are not covered
+      status: partial
+      evidence: backend main.ts applies a global strict ValidationPipe and targeted DTO pipes cover current write paths; frontend api.schemas.ts validates the core auth, private-profile, collection, group, notification, session, meet, recommendation, feedback, and admin/proposal response paths, while remaining legacy paths and client negative tests are not covered
       priority: critical
       next_action: Activate and test boundary validation on both API and client response boundaries.
     - id: TS-006
       status: partial
-      evidence: zod schemas and class-validator dependencies exist; targeted login, registration, password-reset, availability-query, legacy-token, and core frontend response validation is enabled, but the effective global strategy is not enabled
+      evidence: zod schemas and class-validator dependencies exist; global and targeted backend request validation plus core frontend response validation are enabled, but legacy response paths and client negative tests remain open
       priority: high
-      next_action: Select one boundary-validation approach per boundary and document it.
+      next_action: Keep class-validator for backend request DTOs, Zod for frontend responses, and expand the negative-test matrix.
     - id: TS-007
       status: compliant
       evidence: backend/tsconfig*.json, frontend/tsconfig*.json, backend/.eslintrc.js, frontend/biome.json
       priority: medium
       next_action: Keep tool configuration versioned and aligned with package scripts.
     - id: TS-008
-      status: partial
-      evidence: backend lint reports 17 errors/3 warnings; frontend `npx biome check src/app` passes with no diagnostics
+      status: compliant
+      evidence: backend ESLint and frontend Biome checks pass with no diagnostics; both no-mutation checks are now included in CI
       priority: high
-      next_action: Repair formatting/import/lint baseline in scoped quality work.
+      next_action: Keep lint/format checks in CI and expand coverage without weakening the rules.
     - id: TS-009
       status: unknown
       evidence: strict configs exist, but no dedicated type-check command or full clean validation is documented
       priority: medium
       next_action: Add explicit type-check verification to the supported workflow.
     - id: TS-010
-      status: gap
-      evidence: no CI and no root quality command
+      status: partial
+      evidence: GitHub Actions and root quality commands now cover builds, tests, lint, and migration verification; remote enforcement and authenticated journey gates remain open
       priority: high
-      next_action: Add reproducible quality checks after lockfiles and install policy exist.
+      next_action: Observe the first workflow run and add authenticated gates when disposable Clerk state exists.
     - id: TS-011
       status: unknown
       evidence: exact optional-property semantics are not explicitly configured or tested
@@ -185,7 +185,7 @@ compliance:
 
     - id: SEC-001
       status: partial
-      evidence: docs/security.md; the public profile-update route strictly validates nested input and rejects privileged fields before persistence, with passing boundary tests, while JWT, ownership, admin, verified-user, and group coverage remains incomplete
+      evidence: docs/security.md; the public profile-update route strictly validates nested input and rejects privileged fields before persistence, with passing boundary tests, while JWT, ownership, admin, and group coverage remains incomplete; verified-user gating now has direct regression coverage
       priority: critical
       next_action: Complete the trust-boundary and object-authorization audit.
     - id: SEC-002
@@ -199,8 +199,8 @@ compliance:
       priority: critical
       next_action: Complete the self-profile/admin DTO inventory, then execute the remaining authorization and session API decisions in todo/06-agent-task-board.md.
     - id: SEC-004
-      status: gap
-      evidence: no global request validation; targeted login, registration, password-reset, availability-query, legacy-token, user-profile, user-game-update, review-score, collection ownership metadata, profile-proposal, administrator catalog/proposal-review, group, invitation, notification, and deprecated membership validation is enabled, including nested avatar, positive integer-array, database-aligned 0..10 review, non-negative integer proposal-field, purchase field, admin review, and identity/reference validation; auth endpoints now have Upstash-backed route limits, CORS is allowlisted, and the API bootstrap limits JSON/URL-encoded request bodies to 100 KB with baseline security headers; forgot-password now returns the same success behavior for missing and existing accounts; verification/reset token expiry and atomic one-time-use enforcement are implemented and migration 0002 is applied and integrity-verified in live Turso; DatabaseService no longer formats bound SQL arguments in logs; email links and notification text are HTML-escaped before interpolation
+      status: partial
+      evidence: global strict request validation is enabled in main.ts and targeted login, registration, password-reset, availability-query, legacy-token, user-profile, user-game-update, review-score, collection ownership metadata, profile-proposal, administrator catalog/proposal-review, group, invitation, notification, and deprecated membership validation is enabled, including nested avatar, positive integer-array, database-aligned 0..10 review, non-negative integer proposal-field, purchase field, admin review, identity/reference validation, and numeric admin route IDs; auth endpoints now have Upstash-backed route limits, CORS is allowlisted, and the API bootstrap limits JSON/URL-encoded request bodies to 100 KB with baseline security headers; forgot-password now returns the same success behavior for missing and existing accounts; verification/reset token expiry and atomic one-time-use enforcement are implemented and migration 0002 is applied and integrity-verified in live Turso; DatabaseService no longer formats bound SQL arguments in logs; email links and notification text are HTML-escaped before interpolation
       priority: critical
       next_action: Continue the global validation and provider-failure review; preserve the transport-boundary regression tests and make migration execution reproducible across environments.
     - id: SEC-005
@@ -230,10 +230,10 @@ compliance:
       next_action: Add vulnerability monitoring to the delivery workflow.
 
     - id: DEP-001
-      status: partial
-      evidence: backend/frontend package-lock.json files are tracked; the backend README still says pnpm and root coordination commands remain undecided
+      status: compliant
+      evidence: root/backend/frontend package-lock.json files are tracked and both package READMEs, package metadata, CI, and verified commands use npm; the dependency-free root package provides coordination wrappers
       priority: critical
-      next_action: Align the backend README with npm and decide whether root coordination commands are valuable.
+      next_action: Preserve the locked-install workflow and avoid adding root dependencies without a clear need.
     - id: DEP-002
       status: partial
       evidence: .github/workflows/ci.yml uses npm ci and dependency caching keyed by the committed package-lock.json files
@@ -241,7 +241,7 @@ compliance:
       next_action: Monitor cache behavior in the first workflow runs.
     - id: DEP-003
       status: partial
-      evidence: .nvmrc and CI pin Node 22.20.0 and lockfiles are committed, but no root-level package-manager contract is committed
+      evidence: .nvmrc and CI pin Node 22.20.0, npm is declared by root/package scripts and READMEs, and root/backend/frontend lockfiles are committed; the npm version is observed but not independently pinned
       priority: high
       next_action: Pin/document Node and package-manager versions.
     - id: DEP-004
@@ -260,21 +260,21 @@ compliance:
       priority: high
       next_action: Add dependency audit and owner/severity workflow.
     - id: DEP-007
-      status: partial
-      evidence: backend README says pnpm while package files, lockfiles, CI, and verified commands use npm
+      status: compliant
+      evidence: package files, lockfiles, READMEs, CI, root coordination scripts, and verified commands use npm consistently; dependency metadata may retain upstream pnpm peer-manager declarations
       priority: high
-      next_action: Align the backend README with the npm policy.
+      next_action: Preserve npm as the repository policy and review unused/duplicate packages during future lockfile work.
 
     - id: CI-001
       status: partial
-      evidence: .github/workflows/ci.yml runs locked installs, backend tests/build, frontend build/public Playwright checks, and disposable database verification
+      evidence: .github/workflows/ci.yml runs locked installs, backend tests/build/lint, frontend build/Biome/public Playwright checks, and disposable database verification
       priority: critical
       next_action: Observe the first workflow run and configure required checks after repository permissions are confirmed.
     - id: CI-002
       status: partial
-      evidence: backend tests/build, frontend build/public browser checks, and migration verification are automated; lint/format and authenticated E2E remain outside the workflow because of current baseline failures and secret-bearing state
+      evidence: backend tests/build/lint, frontend build/Biome/public browser checks, and migration verification are automated; authenticated E2E remains outside the workflow because it requires secret-bearing state
       priority: critical
-      next_action: Add lint/format gates after current baseline findings are resolved.
+      next_action: Observe the first workflow run and configure required checks after repository permissions are confirmed.
     - id: CI-003
       status: partial
       evidence: backend/frontend lockfiles are committed, CI pins Node 22.20.0, and clean installs are verified
@@ -353,10 +353,10 @@ compliance:
       priority: high
       next_action: Establish a versioned machine-readable contract.
     - id: API-002
-      status: gap
-      evidence: ParseIntPipe is used selectively, but no global body/query validation pipe is configured
+      status: partial
+      evidence: ParseIntPipe is used on selected route parameters and a global strict ValidationPipe now covers DTO boundaries; legacy response contracts and client negative tests remain incomplete
       priority: critical
-      next_action: Enable boundary validation and negative tests.
+      next_action: Expand boundary negative tests and close the remaining legacy response-contract gaps.
     - id: API-003
       status: gap
       evidence: no project-wide stable error schema or exception mapping is documented
@@ -440,10 +440,10 @@ compliance:
       priority: medium
       next_action: Document when custom SCSS is preferred and remove competing legacy patterns incrementally.
     - id: STYLE-004
-      status: gap
-      evidence: build reports Sass @import deprecation and 410 skipped selector errors
+      status: compliant
+      evidence: global Tailwind styles use plain CSS, postcss-nested flattens generated utility nesting for Angular, and the production build has no Sass or selector warnings; the 606.59 kB initial raw bundle is below the 650 kB warning budget
       priority: high
-      next_action: Repair Tailwind/Sass integration in the frontend-quality workstream.
+      next_action: Preserve the CSS/PostCSS integration and keep the rendered accessibility/responsive review in EQ-006.
     - id: STYLE-005
       status: unknown
       evidence: icon usage is present but no project-wide icon-system decision is documented
@@ -568,10 +568,10 @@ compliance:
       priority: medium
       next_action: Isolate core session/recommendation rules for unit testing.
     - id: NEST-004
-      status: gap
-      evidence: DTO classes/types exist, but global validation is not configured
+      status: partial
+      evidence: DTO classes/types exist, global strict validation is configured, and targeted boundary tests pass; complete decorator inventory and negative tests remain
       priority: critical
-      next_action: Activate boundary DTO validation and negative tests.
+      next_action: Complete the DTO decorator inventory and add negative tests for remaining client/legacy boundaries.
     - id: NEST-005
       status: gap
       evidence: Logger exists, but no consistent error mapper, correlation, or safe logging contract
@@ -637,9 +637,9 @@ exceptions: []
 
 deferred_work:
   - id: DEP-LOCK-001
-    status: deferred
-    reason: Lockfile creation changes dependency reproducibility and should be handled as the first engineering-quality task, not silently during documentation bootstrap.
-    next_action: Execute EQ-001 before adding CI.
+    status: complete
+    reason: Root, backend, and frontend lockfiles, npm policy, root coordination commands, and clean-install verification are now established under EQ-001.
+    next_action: Preserve the locked-install workflow.
   - id: DATA-MIGRATION-001
     status: deferred
     reason: Live deployment operations and CI/recovery gates remain unresolved; the Clerk identity migration and production configuration/deployment verification are complete, and repeatable schema recreation is now available while synthetic restore evidence and final legacy-auth removal remain gated. Production-facing login/register routes are Clerk-first, with the old forms retained only for provider-unavailable fallback.

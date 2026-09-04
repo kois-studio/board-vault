@@ -58,24 +58,14 @@ export class ProfileService {
             throw new ForbiddenException('You are not the recipient of this invitation')
         }
 
-        // Step 2: get group data (it may have been deleted)
-        const groupData = await this.groupsService.getGroupById(invitationData.groupId)
-
-        // Step 3: create the membership to the group
+        // Step 2: create the membership to the group
         await this.groupMembershipsService.createGroupMembership({ accountId: invitationData.toAccountId, groupId: invitationData.groupId })
 
-        // Step 4: delete the invitation
+        // Step 3: delete the invitation
         await this.invitationsService.deleteInvitationForRecipient(invitationId, userId)
 
-        // Step 5: create the notification for the group owner
-        const invited = await this.usersService.getUserById(invitationData.toAccountId)
-        const owner = await this.usersService.getUserById(groupData.createdBy)
-
-        // await this.notificationsService.createNotification({
-        //     accountId: owner.id,
-        //     type: NotificationTypeEnum.InvitationAccepted,
-        //     message: `${invited.displayName} joined your group ${groupData.name}`,
-        // })
+        // Step 4: owner notifications are intentionally deferred until the
+        // notification contract defines delivery and unread semantics.
 
         return { success: true }
     }

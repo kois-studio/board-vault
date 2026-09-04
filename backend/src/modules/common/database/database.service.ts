@@ -5,9 +5,11 @@ import { BadRequestException, Injectable, Logger, NotFoundException, OnModuleIni
 import { ConfigService } from '@nestjs/config'
 import * as bcrypt from 'bcryptjs'
 
+import type { ClerkGroupInvitationMetadata } from '../../../common/types/clerk-invitation.type'
 import type { CollectionActivityDto } from '../../../common/types/collection-activity.type'
 import type { GameOwnedDto, UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
 import type { SupportedLanguage } from '../../../common/types/game-translation.type'
+import type { GroupGameInterestBody } from '../../../common/types/group-game-interest.type'
 import type { CreateGroupMembershipBody } from '../../../common/types/group-membership.type'
 import type { CreateGroupBody, UpdateGroupBody } from '../../../common/types/group.type'
 import type { CreateInvitationBody, CreateInvitationByUsernameBody } from '../../../common/types/invitation.type'
@@ -20,6 +22,7 @@ type CompletedSessionInput = {
     createdBy: number
     sessionDate: string
     timezone: string
+    notes?: string
     attendeeIds: Array<number>
     games: Array<{ gameId: number; participantIds: Array<number> }>
 }
@@ -29,6 +32,7 @@ type ScheduledSessionInput = {
     createdBy: number
     sessionDate: string
     timezone: string
+    notes?: string
     attendeeIds: Array<number>
     plannedGameIds: Array<number>
 }
@@ -179,6 +183,33 @@ export class DatabaseService implements OnModuleInit {
             `,
             args: [user.email, unusablePassword, user.username, user.displayName, user.avatar, user.clerkUserId],
         })
+    }
+
+    async joinGroupFromClerkInvitation(accountId: number, metadata: ClerkGroupInvitationMetadata) {
+        const transaction = await this.tursoClient.transaction('write')
+
+        try {
+            const group = await transaction.execute({
+                sql: 'SELECT id FROM UserGroup WHERE id = ? AND createdBy = ?',
+                args: [metadata.groupId, metadata.inviterAccountId],
+            })
+
+            if (group.rows.length === 0) {
+                throw new NotFoundException('The group invitation is no longer valid')
+            }
+
+            await transaction.execute({
+                sql: 'INSERT OR IGNORE INTO GroupMembership (accountId, groupId) VALUES (?, ?)',
+                args: [accountId, metadata.groupId],
+            })
+
+            await transaction.commit()
+        } catch (error) {
+            await transaction.rollback()
+            throw error
+        } finally {
+            transaction.close()
+        }
     }
 
     updateUserProfile(id: number, partialUserDto: UpdateUserBody) {
@@ -512,6 +543,66 @@ export class DatabaseService implements OnModuleInit {
         return resultSet.rows.map(row => Number(row[0]))
     }
 
+    getGroupAcquisitionBoard(groupId: number) {
+        return this._tursoExecute({
+            sql: `
+                SELECT
+                    g.id,
+                    g.imageUrl,
+                    g.gameAvgDuration,
+                    g.minPlayers,
+                    g.maxPlayers,
+                    gt_en.title,
+                    gt_es.title,
+                    (
+                        SELECT MIN(ggi_first.createdAt)
+                        FROM GroupGameInterest ggi_first
+                        WHERE ggi_first.groupId = ? AND ggi_first.gameId = g.id
+                    ) AS firstInterestedAt,
+                    a.id,
+                    a.username,
+                    a.displayName,
+                    a.avatar,
+                    (
+                        SELECT COUNT(DISTINCT ggi_count.accountId)
+                        FROM GroupGameInterest ggi_count
+                        WHERE ggi_count.groupId = ? AND ggi_count.gameId = g.id
+                    ) AS interestCount,
+                    (
+                        SELECT COUNT(DISTINCT og.accountId)
+                        FROM OwnedGame og
+                        INNER JOIN GroupMembership gm ON gm.accountId = og.accountId
+                        WHERE gm.groupId = ? AND og.gameId = g.id
+                    ) AS ownerCount
+                FROM GroupGameInterest ggi
+                INNER JOIN Game g ON g.id = ggi.gameId
+                INNER JOIN Account a ON a.id = ggi.accountId
+                LEFT JOIN GameTranslation gt_en ON gt_en.gameId = g.id AND gt_en.languageCode = 'en'
+                LEFT JOIN GameTranslation gt_es ON gt_es.gameId = g.id AND gt_es.languageCode = 'es'
+                WHERE ggi.groupId = ?
+                ORDER BY firstInterestedAt ASC, g.id ASC, a.displayName ASC
+            `,
+            args: [groupId, groupId, groupId, groupId],
+        })
+    }
+
+    addGroupGameInterest(groupId: number, accountId: number, body: GroupGameInterestBody) {
+        return this._tursoExecute({
+            sql: `
+                INSERT OR IGNORE INTO GroupGameInterest (groupId, accountId, gameId)
+                VALUES (?, ?, ?)
+            `,
+            args: [groupId, accountId, body.gameId],
+        })
+    }
+
+    removeGroupGameInterest(groupId: number, accountId: number, gameId: number) {
+        return this._tursoExecute({
+            sql: 'DELETE FROM GroupGameInterest WHERE groupId = ? AND accountId = ? AND gameId = ?',
+            args: [groupId, accountId, gameId],
+        })
+    }
+
     getOwnedGameByAnyAccount(gameId: number, accountIds: Array<number>) {
         const placeholders = accountIds.map(() => '?').join(', ')
 
@@ -523,9 +614,7 @@ export class DatabaseService implements OnModuleInit {
 
     getRecommendationCandidateCounts(attendeeIds: Array<number>, playerCount: number, availableMinutes?: number) {
         const placeholders = attendeeIds.map(() => '?').join(', ')
-        const durationExpression = availableMinutes === undefined
-            ? '1'
-            : '(g.gameAvgDuration IS NULL OR g.gameAvgDuration <= ?)'
+        const durationExpression = availableMinutes === undefined ? '1' : '(g.gameAvgDuration IS NULL OR g.gameAvgDuration <= ?)'
         const args: Array<number> = [playerCount, playerCount, playerCount, playerCount]
 
         if (availableMinutes !== undefined) args.push(availableMinutes)
@@ -564,6 +653,29 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    getRecommendationFeedbackForGroup(groupId: number) {
+        return this._tursoExecute({
+            sql: `
+                SELECT
+                    rf.id,
+                    rf.gameId,
+                    rf.accountId,
+                    rf.feedback,
+                    rf.createdAt,
+                    a.username,
+                    a.displayName,
+                    a.avatar
+                FROM RecommendationFeedback rf
+                INNER JOIN GroupMembership gm
+                    ON gm.groupId = rf.groupId AND gm.accountId = rf.accountId
+                INNER JOIN Account a ON a.id = rf.accountId AND a.isDeleted = FALSE
+                WHERE rf.groupId = ?
+                ORDER BY rf.createdAt DESC, rf.id DESC
+            `,
+            args: [groupId],
+        })
+    }
+
     getRecommendationCandidates(attendeeIds: Array<number>, playerCount: number, availableMinutes?: number) {
         const attendeePlaceholders = attendeeIds.map(() => '?').join(', ')
         const durationFilter = availableMinutes === undefined ? '' : 'AND (g.gameAvgDuration IS NULL OR g.gameAvgDuration <= ?)'
@@ -595,11 +707,27 @@ export class DatabaseService implements OnModuleInit {
                     ) AS averageReview,
                     (
                         SELECT MAX(m.meetDate)
-                        FROM MeetAccountGame mag
-                        INNER JOIN Meet m ON m.id = mag.meetId
-                        WHERE mag.gameId = g.id
-                          AND mag.accountId IN (${attendeePlaceholders})
+                        FROM MeetGame mg
+                        INNER JOIN Meet m ON m.id = mg.meetId
+                        WHERE mg.gameId = g.id
+                          AND mg.gameStatus = 'played'
                           AND m.status = 'completed'
+                          AND (
+                              EXISTS (
+                                  SELECT 1
+                                  FROM MeetAttendee ma
+                                  WHERE ma.meetId = m.id
+                                    AND ma.accountId IN (${attendeePlaceholders})
+                                    AND ma.attendanceStatus = 'attended'
+                              )
+                              OR EXISTS (
+                                  SELECT 1
+                                  FROM MeetAccountGame mag
+                                  WHERE mag.meetId = m.id
+                                    AND mag.gameId = g.id
+                                    AND mag.accountId IN (${attendeePlaceholders})
+                              )
+                          )
                     ) AS lastPlayedAt
                 FROM Game g
                 INNER JOIN OwnedGame ownedByAttendee
@@ -615,7 +743,7 @@ export class DatabaseService implements OnModuleInit {
                   ${durationFilter}
                 GROUP BY g.id
             `,
-            args: [...args.slice(0, attendeeIds.length), ...attendeeIds, ...attendeeIds, ...attendeeIds, ...args.slice(attendeeIds.length)],
+            args: [...attendeeIds, ...attendeeIds, ...attendeeIds, ...attendeeIds, ...attendeeIds, ...args.slice(attendeeIds.length)],
         })
     }
 
@@ -1010,6 +1138,7 @@ export class DatabaseService implements OnModuleInit {
     createNotification(notificationDto: CreateNotificationBody) {
         // Serialize data to JSON string for storage
         const dataJson = JSON.stringify(notificationDto.data || {})
+
         return this._tursoExecute({
             sql: 'INSERT INTO Notification (accountId, type, message, data) VALUES (?, ?, ?, ?)',
             args: [notificationDto.accountId, notificationDto.type, notificationDto.message, dataJson],
@@ -1214,6 +1343,154 @@ export class DatabaseService implements OnModuleInit {
         }
     }
 
+    async replaceMeetPlannedGames(meetId: number, gameIds: Array<number>): Promise<void> {
+        const transaction = await this.tursoClient.transaction('write')
+
+        try {
+            await transaction.execute({
+                sql: "DELETE FROM MeetGame WHERE meetId = ? AND gameStatus = 'planned'",
+                args: [meetId],
+            })
+            if (gameIds.length > 0) {
+                await transaction.batch(
+                    gameIds.map(gameId => ({
+                        sql: "INSERT OR IGNORE INTO MeetGame (meetId, gameId, gameStatus) VALUES (?, ?, 'planned')",
+                        args: [meetId, gameId],
+                    })),
+                )
+            }
+            await transaction.commit()
+        } catch (error) {
+            await transaction.rollback()
+            throw error
+        } finally {
+            transaction.close()
+        }
+    }
+
+    async replaceMeetPlayedGames(
+        meetId: number,
+        games: Array<{ gameId: number; participantIds: Array<number> }>,
+    ): Promise<{
+        playedGameIds: Array<number>
+        skippedGameIds: Array<number>
+        playedGameParticipants: Array<{ gameId: number; participantIds: Array<number> }>
+    }> {
+        const transaction = await this.tursoClient.transaction('write')
+
+        try {
+            const gameIds = games.map(game => game.gameId)
+            const placeholders = gameIds.map(() => '?').join(', ')
+            const keepPlayedCondition = gameIds.length > 0 ? `AND gameId NOT IN (${placeholders})` : ''
+
+            await transaction.execute({
+                sql: `
+                    UPDATE MeetGame
+                    SET gameStatus = 'skipped'
+                    WHERE meetId = ? AND gameStatus IN ('planned', 'played') ${keepPlayedCondition}
+                `,
+                args: [meetId, ...gameIds],
+            })
+
+            if (gameIds.length > 0) {
+                await transaction.execute({
+                    sql: `UPDATE MeetGame SET gameStatus = 'played' WHERE meetId = ? AND gameId IN (${placeholders})`,
+                    args: [meetId, ...gameIds],
+                })
+                await transaction.batch(
+                    gameIds.map(gameId => ({
+                        sql: "INSERT OR IGNORE INTO MeetGame (meetId, gameId, gameStatus) VALUES (?, ?, 'played')",
+                        args: [meetId, gameId],
+                    })),
+                )
+            }
+
+            await transaction.execute({
+                sql: 'DELETE FROM MeetAccountGame WHERE meetId = ?',
+                args: [meetId],
+            })
+
+            const participantStatements: Array<InStatement> = []
+
+            for (const game of games) {
+                for (const accountId of game.participantIds) {
+                    participantStatements.push({
+                        sql: 'INSERT OR IGNORE INTO MeetAccountGame (meetId, accountId, gameId) VALUES (?, ?, ?)',
+                        args: [meetId, accountId, game.gameId],
+                    })
+                }
+            }
+            if (participantStatements.length > 0) {
+                await transaction.batch(participantStatements)
+            }
+
+            const result = await transaction.execute({
+                sql: "SELECT gameId, gameStatus FROM MeetGame WHERE meetId = ? AND gameStatus IN ('played', 'skipped')",
+                args: [meetId],
+            })
+            const participantResult = await transaction.execute({
+                sql: 'SELECT gameId, accountId FROM MeetAccountGame WHERE meetId = ? ORDER BY gameId ASC, accountId ASC',
+                args: [meetId],
+            })
+
+            await transaction.commit()
+
+            const participantMap = new Map<number, Array<number>>()
+
+            for (const row of participantResult.rows) {
+                const gameId = Number(row[0])
+                const participantIds = participantMap.get(gameId) ?? []
+
+                participantIds.push(Number(row[1]))
+                participantMap.set(gameId, participantIds)
+            }
+
+            return {
+                playedGameIds: result.rows.filter(row => String(row[1]) === 'played').map(row => Number(row[0])),
+                skippedGameIds: result.rows.filter(row => String(row[1]) === 'skipped').map(row => Number(row[0])),
+                playedGameParticipants: [...participantMap.entries()].map(([gameId, participantIds]) => ({ gameId, participantIds })),
+            }
+        } catch (error) {
+            await transaction.rollback()
+            throw error
+        } finally {
+            transaction.close()
+        }
+    }
+
+    async getPlayedGameIdsByMeetId(meetId: number): Promise<Array<number>> {
+        const resultSet = await this._tursoExecute({
+            sql: "SELECT gameId FROM MeetGame WHERE meetId = ? AND gameStatus = 'played' ORDER BY playOrder ASC, gameId ASC",
+            args: [meetId],
+        })
+
+        return resultSet.rows.map(row => Number(row[0]))
+    }
+
+    async getMeetPlayedGameParticipants(meetId: number): Promise<Array<{ gameId: number; participantIds: Array<number> }>> {
+        const resultSet = await this._tursoExecute({
+            sql: `
+                SELECT gameId, accountId
+                FROM MeetAccountGame
+                WHERE meetId = ?
+                ORDER BY gameId ASC, accountId ASC
+            `,
+            args: [meetId],
+        })
+
+        const participantMap = new Map<number, Array<number>>()
+
+        for (const row of resultSet.rows) {
+            const gameId = Number(row[0])
+            const participantIds = participantMap.get(gameId) ?? []
+
+            participantIds.push(Number(row[1]))
+            participantMap.set(gameId, participantIds)
+        }
+
+        return [...participantMap.entries()].map(([gameId, participantIds]) => ({ gameId, participantIds }))
+    }
+
     getMeetMember(meetId: number, accountId: number) {
         return this._tursoExecute({
             sql: `
@@ -1248,6 +1525,15 @@ export class DatabaseService implements OnModuleInit {
                     WHERE ma.meetId = m.id
                 ) AS attendees,
                 (
+                    SELECT json_group_array(json_object(
+                        'accountId', ma.accountId,
+                        'rsvpStatus', ma.rsvpStatus,
+                        'attendanceStatus', ma.attendanceStatus
+                    ))
+                    FROM MeetAttendee ma
+                    WHERE ma.meetId = m.id
+                ) AS attendeeStatuses,
+                (
                     SELECT json_group_array(mg.gameId)
                     FROM MeetGame mg
                     WHERE mg.meetId = m.id AND mg.gameStatus = 'played'
@@ -1262,8 +1548,21 @@ export class DatabaseService implements OnModuleInit {
                     FROM MeetGame mg
                     WHERE mg.meetId = m.id AND mg.gameStatus = 'skipped'
                 ) AS skippedGames,
+                (
+                    SELECT COALESCE(json_group_array(json_object(
+                        'gameId', mg.gameId,
+                        'participantIds', json(COALESCE((
+                            SELECT json_group_array(mag.accountId)
+                            FROM MeetAccountGame mag
+                            WHERE mag.meetId = m.id AND mag.gameId = mg.gameId
+                        ), '[]'))
+                    )), '[]')
+                    FROM MeetGame mg
+                    WHERE mg.meetId = m.id AND mg.gameStatus = 'played'
+                ) AS playedGameParticipants,
                 m.status,
-                m.timezone
+                m.timezone,
+                m.notes
             FROM Meet m
             INNER JOIN GroupMembership gm ON gm.groupId = m.groupId
             WHERE m.id = ? AND gm.accountId = ?
@@ -1272,16 +1571,116 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    getMeetAttendeeForAccount(meetId: number, accountId: number) {
+        return this._tursoExecute({
+            sql: `
+                SELECT ma.meetId, ma.accountId, ma.rsvpStatus, ma.attendanceStatus, ma.respondedAt, m.status
+                FROM MeetAttendee ma
+                INNER JOIN Meet m ON m.id = ma.meetId
+                WHERE ma.meetId = ? AND ma.accountId = ?
+            `,
+            args: [meetId, accountId],
+        })
+    }
+
+    updateMeetAttendeeRsvp(meetId: number, accountId: number, rsvpStatus: 'accepted' | 'declined') {
+        return this._tursoExecute({
+            sql: `
+                UPDATE MeetAttendee
+                SET rsvpStatus = ?, respondedAt = CURRENT_TIMESTAMP
+                WHERE meetId = ? AND accountId = ?
+            `,
+            args: [rsvpStatus, meetId, accountId],
+        })
+    }
+
+    async getMeetAttendeeIds(meetId: number): Promise<Array<number>> {
+        const resultSet = await this._tursoExecute({
+            sql: 'SELECT accountId FROM MeetAttendee WHERE meetId = ?',
+            args: [meetId],
+        })
+
+        return resultSet.rows.map(row => Number(row[0]))
+    }
+
+    async getMeetAttendedAccountIds(meetId: number): Promise<Array<number>> {
+        const resultSet = await this._tursoExecute({
+            sql: "SELECT accountId FROM MeetAttendee WHERE meetId = ? AND attendanceStatus = 'attended'",
+            args: [meetId],
+        })
+
+        return resultSet.rows.map(row => Number(row[0]))
+    }
+
+    async getDistinctCompletedMeetIdsForAccountHistory(accountId: number): Promise<Array<number>> {
+        const resultSet = await this._tursoExecute({
+            sql: `
+                SELECT DISTINCT m.id
+                FROM Meet m
+                WHERE m.status = 'completed'
+                  AND (
+                      EXISTS (
+                          SELECT 1
+                          FROM MeetAttendee ma
+                          WHERE ma.meetId = m.id AND ma.accountId = ? AND ma.attendanceStatus = 'attended'
+                      )
+                      OR (
+                          EXISTS (
+                              SELECT 1
+                              FROM MeetAccountGame mag
+                              WHERE mag.meetId = m.id AND mag.accountId = ?
+                          )
+                          AND NOT EXISTS (
+                              SELECT 1
+                              FROM MeetAttendee ma
+                              WHERE ma.meetId = m.id AND ma.accountId = ?
+                          )
+                      )
+                  )
+                ORDER BY m.meetDate DESC, m.id DESC
+            `,
+            args: [accountId, accountId, accountId],
+        })
+
+        return resultSet.rows.map(row => Number(row[0]))
+    }
+
+    async updateMeetAttendance(meetId: number, attendedIds: Array<number>): Promise<void> {
+        const transaction = await this.tursoClient.transaction('write')
+
+        try {
+            const attendanceCondition = attendedIds.length === 0 ? '0' : `accountId IN (${attendedIds.map(() => '?').join(', ')})`
+
+            await transaction.execute({
+                sql: `
+                    UPDATE MeetAttendee
+                    SET attendanceStatus = CASE
+                        WHEN ${attendanceCondition} THEN 'attended'
+                        ELSE 'absent'
+                    END
+                    WHERE meetId = ?
+                `,
+                args: [...attendedIds, meetId],
+            })
+            await transaction.commit()
+        } catch (error) {
+            await transaction.rollback()
+            throw error
+        } finally {
+            transaction.close()
+        }
+    }
+
     async createCompletedSession(input: CompletedSessionInput) {
         const transaction = await this.tursoClient.transaction('write')
 
         try {
             const meetResult = await transaction.execute({
                 sql: `
-                INSERT INTO Meet (groupId, createdBy, meetDate, isConfirmed, status, timezone, updatedAt)
-                    VALUES (?, ?, ?, TRUE, 'completed', ?, CURRENT_TIMESTAMP)
+                INSERT INTO Meet (groupId, createdBy, meetDate, isConfirmed, status, timezone, notes, updatedAt)
+                    VALUES (?, ?, ?, TRUE, 'completed', ?, ?, CURRENT_TIMESTAMP)
                 `,
-                args: [input.groupId, input.createdBy, input.sessionDate, input.timezone],
+                args: [input.groupId, input.createdBy, input.sessionDate, input.timezone, input.notes ?? null],
             })
             const meetId = Number(meetResult.lastInsertRowid)
             const statements: Array<InStatement> = []
@@ -1334,10 +1733,10 @@ export class DatabaseService implements OnModuleInit {
         try {
             const meetResult = await transaction.execute({
                 sql: `
-                    INSERT INTO Meet (groupId, createdBy, meetDate, isConfirmed, status, timezone, updatedAt)
-                    VALUES (?, ?, ?, FALSE, 'scheduled', ?, CURRENT_TIMESTAMP)
+                    INSERT INTO Meet (groupId, createdBy, meetDate, isConfirmed, status, timezone, notes, updatedAt)
+                    VALUES (?, ?, ?, FALSE, 'scheduled', ?, ?, CURRENT_TIMESTAMP)
                 `,
-                args: [input.groupId, input.createdBy, input.sessionDate, input.timezone],
+                args: [input.groupId, input.createdBy, input.sessionDate, input.timezone, input.notes ?? null],
             })
             const meetId = Number(meetResult.lastInsertRowid)
             const statements: Array<InStatement> = input.attendeeIds.map(accountId => ({
@@ -1373,8 +1772,9 @@ export class DatabaseService implements OnModuleInit {
     addGroupMembersToMeeting(meetId: number, groupId: number) {
         return this._tursoExecute({
             sql: `
-            INSERT OR IGNORE INTO MeetAttendee (meetId, accountId)
+            INSERT OR IGNORE INTO MeetAttendee (meetId, accountId, rsvpStatus, attendanceStatus)
             SELECT ?, gm.accountId
+                , 'pending', 'unknown'
             FROM GroupMembership gm
             WHERE gm.groupId = ?;
             `,
@@ -1384,7 +1784,7 @@ export class DatabaseService implements OnModuleInit {
 
     createMeetAttendee(meetId: number, accountId: number) {
         return this._tursoExecute({
-            sql: 'INSERT OR IGNORE INTO MeetAttendee (meetId, accountId) VALUES (?, ?)',
+            sql: "INSERT OR IGNORE INTO MeetAttendee (meetId, accountId, rsvpStatus, attendanceStatus) VALUES (?, ?, 'pending', 'unknown')",
             args: [meetId, accountId],
         })
     }
@@ -1401,6 +1801,7 @@ export class DatabaseService implements OnModuleInit {
 
         try {
             const placeholders = accountIds.map(() => '?').join(', ')
+
             await transaction.execute({
                 sql: `DELETE FROM MeetAttendee WHERE meetId = ? AND accountId NOT IN (${placeholders})`,
                 args: [meetId, ...accountIds],
@@ -1408,8 +1809,8 @@ export class DatabaseService implements OnModuleInit {
             await transaction.batch(
                 accountIds.map(accountId => ({
                     sql: `
-                        INSERT OR IGNORE INTO MeetAttendee (meetId, accountId)
-                        VALUES (?, ?)
+                    INSERT OR IGNORE INTO MeetAttendee (meetId, accountId, rsvpStatus, attendanceStatus)
+                    VALUES (?, ?, 'pending', 'unknown')
                     `,
                     args: [meetId, accountId],
                 })),
@@ -1500,6 +1901,7 @@ export class DatabaseService implements OnModuleInit {
                 sql: 'INSERT OR IGNORE INTO MeetAccountGame (accountId, meetId, gameId) VALUES (?, ?, ?)',
                 args: [accountId, meetId, gameId],
             })
+
             await transaction.commit()
             return result
         } catch (error) {
@@ -1518,6 +1920,7 @@ export class DatabaseService implements OnModuleInit {
                 sql: 'DELETE FROM MeetAccountGame WHERE accountId = ? AND meetId = ? AND gameId = ?',
                 args: [accountId, meetId, gameId],
             })
+
             await transaction.execute({
                 sql: `
                     DELETE FROM MeetGame

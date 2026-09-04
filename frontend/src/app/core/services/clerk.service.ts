@@ -19,6 +19,8 @@ export class ClerkService {
     private unsubscribe: (() => void) | null = null
 
     public readonly isConfigured = signal(environment.clerkAuthEnabled && environment.clerkPublishableKey.length > 0)
+    public readonly isSelfRegistrationEnabled = signal(environment.selfRegistrationEnabled)
+    public readonly isInvitationFlow = signal(this.hasInvitationTicket())
     public readonly isLoaded = signal(false)
     public readonly initializationError = signal<string | null>(null)
     public readonly isAvailable = computed(() => this.isConfigured() && this.isLoaded() && !this.initializationError())
@@ -56,11 +58,28 @@ export class ClerkService {
     }
 
     public openSignIn(): void {
-        this.clerk?.openSignIn()
+        this.clerk?.openSignIn({ withSignUp: this.isSelfRegistrationEnabled() || this.isInvitationFlow() })
     }
 
     public openSignUp(): void {
+        if (!this.isSelfRegistrationEnabled() && !this.isInvitationFlow()) {
+            return
+        }
         this.clerk?.openSignUp()
+    }
+
+    public async beginInvitationSignUp(): Promise<void> {
+        if (!this.isInvitationFlow() || !this.clerk) {
+            return
+        }
+
+        const ticket = this.getInvitationTicket()
+        if (!ticket) {
+            return
+        }
+
+        await this.clerk.client.signUp.create({ strategy: 'ticket', ticket })
+        this.clerk.openSignUp()
     }
 
     public openUserProfile(): void {
@@ -140,5 +159,13 @@ export class ClerkService {
         } catch {
             return null
         }
+    }
+
+    private hasInvitationTicket(): boolean {
+        return Boolean(this.getInvitationTicket())
+    }
+
+    private getInvitationTicket(): string | null {
+        return typeof globalThis.location !== 'undefined' ? new URLSearchParams(globalThis.location.search).get('__clerk_ticket') : null
     }
 }

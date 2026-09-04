@@ -2,11 +2,23 @@
 
 ## Scope and confidence
 
-This is an implementation description, not a proposed redesign. It is based on `main` at commit `4a84c2e` and source/configuration inspection on 2026-08-15. The `/todo/` documents describe intended product work and must not be read as proof that those flows are complete.
+This is an implementation description, not a proposed redesign. It is based on
+`main` at commit `d047771` plus the uncommitted local restart work inspected on
+2026-09-03. The `/todo/` documents describe intended product work and must not
+be read as proof that those flows are complete. The current local branch has
+not been deployed yet.
 
 ## Product shape
 
-The repository describes Board Vault as a tabletop-game collection, group, meeting, review, wishlist, and play-history application. The current strongest implementation area is collection management. The product brief identifies the intended flagship loop as group creation/joining → owned-game input → attendees → recommendation → session scheduling/logging → history/feedback; the first deterministic recommendation slice, lightweight feedback capture, and robust session planning are now present, while feedback-driven scoring remains unfinished.
+The repository describes Board Vault as a tabletop-game collection, group,
+meeting, review, wishlist, and play-history application. The product direction
+is a group-first social memory and decision layer: group creation/joining →
+owned-game input → attendees → explainable recommendation → session planning →
+actual play → history/feedback. The local restart work now provides a group
+home, lightweight recommendation decisions, group acquisition decisions,
+RSVP/attendance separation, basic post-session ratings, session notes, and
+clearer planning/session surfaces. A dedicated analytics read model remains
+unfinished.
 
 ## Runtime shape
 
@@ -23,13 +35,16 @@ Browser
           └── Resend via EmailService (verification and password-reset email)
 ```
 
-The frontend production environment points at `https://backend.board-vault.com`; development points at `http://localhost:3000`. The backend includes a `vercel.json` Node build/routes configuration. No CI workflow, Docker setup, root task runner, or infrastructure-as-code configuration was found.
+The frontend production environment points at `https://backend.board-vault.com`; development points at `http://localhost:3000`. The backend includes a `vercel.json` Node build/routes configuration. A GitHub Actions CI workflow exists for locked installs, backend/frontend checks, public browser checks, and disposable database verification; there is no Docker setup, root task runner, or infrastructure-as-code configuration.
 
 ## Backend boundaries
 
-- `backend/src/main.ts` validates selected environment variables, creates the Nest app with explicit 100 KB JSON/URL-encoded body limits, applies baseline security headers and the configured CORS allowlist, creates runtime Swagger, and listens on `PORT` or 3000.
+- `backend/src/main.ts` validates selected environment variables, creates the Nest app with a global strict `ValidationPipe` and explicit 100 KB JSON/URL-encoded body limits, applies baseline security headers and the configured CORS allowlist, creates runtime Swagger, and listens on `PORT` or 3000.
 - `backend/src/app.module.ts` imports global configuration, common modules (`auth`, `cache`, `database`, `email`), core entity modules, and feature modules; `ClerkSessionMiddleware` resolves verified Clerk sessions into the local request identity before compatibility JWT guards.
 - Common modules own cross-cutting auth/cache/database/email concerns.
+- The Clerk identity bridge also creates private-beta group invitations and
+  consumes their server-created group context only after the invitee has a
+  verified Clerk identity; public registration remains closed independently.
 - Core modules own entity-oriented services such as users, groups, memberships, games, meets, invitations, reviews, tags, translations, notifications, and collection activity.
 - Feature modules orchestrate cross-domain flows for admin, collection, dashboard, play, and profile.
 - Controllers are mostly thin service delegators, but legacy/deprecated controllers and direct identity parameters create an inconsistent authorization surface.
@@ -46,9 +61,18 @@ Important route families include:
 - groups: `/groups`, creation, detail, edit, leave, delete;
 - play: `/play`, recommendations, log session, upcoming sessions, history;
 - account and profile: dashboard, settings, notifications, invitations;
-- admin: lazy-loaded `/admin` management surfaces.
+- admin: lazy-loaded `/admin` management surfaces;
+- route-level page components are lazy-loaded across public, authenticated, and action flows so the public shell does not eagerly ship the whole social workspace.
 
-The source backlog still describes `/play/quick-play`, but that route is not declared in `app.routes.ts`. `/play/recommendations` is now an authenticated route backed by a deterministic group-attendee recommendation read path and a validated lightweight feedback write; feedback-driven scoring, richer preference controls, and quick play remain deferred. The Play dashboard no longer presents fabricated sample content, and the log-session wizard writes through the canonical session API.
+The source backlog still describes `/play/quick-play`, but that route is not
+declared in `app.routes.ts`. `/play/recommendations` is now an authenticated
+route backed by a deterministic group-attendee recommendation read path and a
+validated lightweight feedback write; bounded feedback-driven scoring is now
+included, while richer preference controls and quick play remain deferred. The group route is the
+current social workspace, while the Play dashboard remains a cross-group
+shortcut surface. The scheduled-session form and session detail view write and
+read through the canonical session API; the local UX redesign is being verified
+locally before the next hosting deployment.
 
 ## Main request and data flow
 
@@ -61,11 +85,15 @@ The source backlog still describes `/play/quick-play`, but that route is not dec
 
 ## Current gaps that affect architecture work
 
-- Session v1 now separates `Meet` compatibility/session records, `MeetAttendee` participant state, `MeetGame` planned/played state, and `MeetAccountGame` account-to-play links. Completed and scheduled creation, organizer lifecycle transitions, and the planned/played distinction are implemented transactionally; richer play events, editing, and full lifecycle read models remain unfinished.
-- Recommendations and feedback are product backlog work, not a current backend capability.
-- API routes contain deprecated and newer feature paths without a versioning/compatibility contract. The obsolete dashboard meeting-creation path has been removed; legacy meet reads and `MeetAccountGame` history writes remain as explicit compatibility boundaries around the canonical sessions API.
-- The frontend API schema file now establishes targeted runtime response validation for all current API adapter methods, including legacy invitation, attendee, and played-game compatibility writes; client-side negative tests and any future endpoints still require coverage.
-- The current backend e2e test expects a `/` “Hello World” response even though there is no root controller in the inspected module graph.
+- Session v1 now separates `Meet` compatibility/session records, `MeetAttendee` participant state, `MeetGame` planned/played state, and `MeetAccountGame` account-to-play links. Completed and scheduled creation, organizer lifecycle transitions, planned/played state, and per-game participant recording are implemented transactionally; richer play events and full lifecycle read models remain unfinished.
+- The group home’s current insight cards are intentionally a derived read surface over completed group history; they are not a global analytics model or ranking system. A dedicated analytics route remains deferred until real usage demonstrates that the extra surface is useful.
+- Recommendations and lightweight feedback are current backend capabilities,
+  and the latest selected-attendee feedback is incorporated into ranking with a
+  bounded explainable adjustment. Richer preference/history scoring remains
+  future work.
+- API routes contain deprecated and newer feature paths without a versioning/compatibility contract. The obsolete dashboard meeting-creation path has been removed; legacy meet reads and `MeetAccountGame` history writes remain as explicit compatibility boundaries around the canonical sessions API, while new scheduled-session game state uses the canonical played-games route.
+- The frontend API schema file now establishes targeted runtime response validation for all current API adapter methods, including legacy invitation, attendee, and per-game played-participant writes; client-side negative coverage now includes the auth-status adapter, while future endpoints and broader malformed-response cases still require coverage.
+- The backend bootstrap now installs a global strict `ValidationPipe` in addition to targeted controller pipes, and admin resource IDs use `ParseIntPipe` rather than arbitrary string coercion.
 
 ## Source evidence
 

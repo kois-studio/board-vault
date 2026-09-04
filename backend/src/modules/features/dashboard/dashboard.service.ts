@@ -121,7 +121,8 @@ export class DashboardService {
 
         return await Promise.all(
             groupMeetings.map(async meetData => {
-                const gameIds = await this.meetAccountGamesService.getDistinctGameIdsByMeetId(meetData.id)
+                const attendedByIds = await this.databaseService.getMeetAttendedAccountIds(meetData.id)
+                const gameIds = await this.databaseService.getPlayedGameIdsByMeetId(meetData.id)
                 const gamesPlayed = await Promise.all(
                     gameIds.map(async gameId => {
                         const game = await this.gamesService.getGameById(gameId)
@@ -144,6 +145,7 @@ export class DashboardService {
                 return {
                     meetData,
                     gamesPlayed,
+                    attendedBy: await Promise.all(attendedByIds.map(async accountId => this.usersService.getPublicUserById(accountId))),
                 }
             }),
         )

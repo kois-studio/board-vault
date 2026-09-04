@@ -30,9 +30,9 @@ as the Board Vault domain-profile and authorization record during migration.
 - Resolve a verified Clerk subject to an existing local account. If it is not
   already linked, permit a one-time exact match against Clerk's primary email
   only after Clerk reports that email as verified, and attach the Clerk subject.
-  If no local account exists, provision a local
-  domain account with an unusable legacy password, verified email state, and a
-  generated safe profile identity.
+  If no local account exists and the private-beta registration policy allows
+  it, provision a local domain account with an unusable legacy password,
+  verified email state, and a generated safe profile identity.
 - Do not delete historical accounts or copy Clerk administrative claims into
   local authorization state. Local `isAdmin` remains authoritative until a
   separate authorization decision changes it.

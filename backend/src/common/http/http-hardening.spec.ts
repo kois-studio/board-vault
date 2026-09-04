@@ -1,4 +1,4 @@
-import express = require('express')
+import * as express from 'express'
 import * as request from 'supertest'
 
 import { applySecurityHeaders, createBodyParsers } from './http-hardening'

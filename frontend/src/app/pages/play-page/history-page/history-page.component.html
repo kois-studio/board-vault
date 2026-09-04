@@ -67,6 +67,9 @@
                                                 />
                                             }
                                         </div>
+                                        @if (gamePlayed.playedBy.length === 0) {
+                                            <span class="ml-3 text-xs text-secondary">Players not recorded</span>
+                                        }
                                     </div>
                                 </div>
                             </div>

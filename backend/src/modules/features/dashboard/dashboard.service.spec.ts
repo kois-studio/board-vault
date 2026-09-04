@@ -25,12 +25,16 @@ describe('DashboardService group history', () => {
             ]),
         }
         const meetAccountGames = {
-            getDistinctGameIdsByMeetId: jest.fn().mockResolvedValue([]),
+            getDistinctAccountIdsByMeetIdAndGameId: jest.fn().mockResolvedValue([]),
+        }
+        const database = {
+            getMeetAttendedAccountIds: jest.fn().mockResolvedValue([]),
+            getPlayedGameIdsByMeetId: jest.fn().mockResolvedValue([]),
         }
 
         const service = new DashboardService(
             {} as never,
-            {} as never,
+            database as never,
             {} as never,
             {} as never,
             {} as never,
@@ -44,7 +48,7 @@ describe('DashboardService group history', () => {
         )
 
         await expect(service.getGroupMeetings(1, 7)).resolves.toHaveLength(1)
-        expect(meetAccountGames.getDistinctGameIdsByMeetId).toHaveBeenCalledWith(10)
-        expect(meetAccountGames.getDistinctGameIdsByMeetId).not.toHaveBeenCalledWith(11)
+        expect(database.getPlayedGameIdsByMeetId).toHaveBeenCalledWith(10)
+        expect(database.getPlayedGameIdsByMeetId).not.toHaveBeenCalledWith(11)
     })
 })

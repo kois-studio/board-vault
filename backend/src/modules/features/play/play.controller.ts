@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Query, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
@@ -12,6 +12,7 @@ import {
     RecommendationFeedbackBody,
     RecommendationFeedbackDto,
     RecommendationRequestBody,
+    RecommendationSignalsDto,
     RecommendationsDto,
 } from './play.types'
 
@@ -34,11 +35,16 @@ export class PlayController {
     @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
     @ApiOperation({ summary: 'Record feedback for a recommendation' })
     @ApiResponse({ status: 201, type: RecommendationFeedbackDto })
-    createRecommendationFeedback(
-        @Req() request: { user: { userId: number } },
-        @Body() body: RecommendationFeedbackBody,
-    ) {
+    createRecommendationFeedback(@Req() request: { user: { userId: number } }, @Body() body: RecommendationFeedbackBody) {
         return this.playService.createRecommendationFeedback(request.user.userId, body)
+    }
+
+    @Get('/recommendations/signals')
+    @ApiOperation({ summary: 'View the latest group-level recommendation signals' })
+    @ApiResponse({ status: 200, type: RecommendationSignalsDto })
+    @ApiResponse({ status: 403, description: 'The current user does not belong to the group.' })
+    getRecommendationSignals(@Req() request: { user: { userId: number } }, @Query('groupId', ParseIntPipe) groupId: number) {
+        return this.playService.getRecommendationSignals(request.user.userId, groupId)
     }
 
     @UseGuards(UserOwnershipGuard)

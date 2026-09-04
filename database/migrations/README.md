@@ -82,3 +82,24 @@ selected attendee IDs as JSON text, and one of `interested`, `not_for_us`, or
 `played`. It is additive and contains no authentication secrets. Apply it only
 after disposable SQLite verification and a fresh live backup; record the live
 verification in the operations handoff.
+
+## Migration 0006 (pending deployment)
+
+`0006-add-group-game-interest.sql` adds `GroupGameInterest`, an additive
+group-scoped relation that stores one explicit acquisition-interest signal per
+member and catalog game. It deliberately does not reuse `WishlistedGame`,
+because a personal wishlist and a shared group purchase decision have different
+visibility and ownership semantics.
+
+This migration has been added to the local release work but has not been
+applied to live Turso. Apply it only together with the backend release that
+uses the acquisition-board routes, after disposable SQLite verification and a
+fresh live backup. Until then, do not deploy the backend/frontend acquisition
+changes independently.
+
+## Migration 0007 (pending deployment)
+
+`0007-add-meet-notes.sql` adds nullable `Meet.notes` for a short group-facing
+reason, reminder, or outcome attached to a planned or completed session. It is
+additive and safe for existing history. Apply it only with the session release
+after disposable SQLite verification and a fresh live backup.

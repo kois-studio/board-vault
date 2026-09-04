@@ -3,6 +3,7 @@ import { z } from 'zod'
 import type {
     AdminGamesResultType,
     BrowseGamesResultType,
+    ClerkGroupInvitationType,
     CollectionActivityWithGameDataType,
     GameCompleteType,
     GameOwnedType,
@@ -11,21 +12,28 @@ import type {
     GameType,
     GameViewType,
     GameWithTagsAndTranslationsType,
+    GroupAcquisitionEntryType,
     GroupType,
     GroupWithMembersAndGames,
     HistoryRecordType,
     InvitationWithAccountsData,
     InvitationWithExtraData,
+    MeetAttendeeStatusType,
     MeetAttendeeType,
     MeetGameType,
     MeetType,
     MeetWithAttendeesAndGamesType,
     NotificationType,
     PublicUserType,
+    RecommendationSignalsType,
     RecommendationsType,
     ScheduledSessionCreatedType,
+    SessionAttendanceUpdatedType,
     SessionAttendeesUpdatedType,
     SessionCreatedType,
+    SessionPlayedGamesUpdatedType,
+    SessionRsvpUpdatedType,
+    SessionShortlistUpdatedType,
     SessionStatusUpdatedType,
     TagCategoryType,
     TagType,
@@ -177,6 +185,16 @@ const groupSchema: z.ZodType<GroupType> = z.object({
     createdAt: z.string(),
 })
 
+const groupAcquisitionEntrySchema: z.ZodType<GroupAcquisitionEntryType> = z.object({
+    gameData: gameCompleteSchema,
+    interestedBy: z.array(publicUserSchema),
+    interestCount: z.number().int().nonnegative(),
+    ownerCount: z.number().int().nonnegative(),
+    firstInterestedAt: z.string(),
+})
+
+export const groupAcquisitionBoardSchema = z.array(groupAcquisitionEntrySchema)
+
 const gameReviewSchema = z.object({
     accountId: z.number(),
     gameId: z.number(),
@@ -280,6 +298,12 @@ export const groupInvitationsSchema: z.ZodType<Array<InvitationWithAccountsData>
     }),
 )
 
+export const clerkGroupInvitationSchema: z.ZodType<ClerkGroupInvitationType> = z.object({
+    invitationId: z.string().min(1),
+    emailAddress: z.string().email(),
+    url: z.string().url(),
+})
+
 export const userInvitationsSchema: z.ZodType<Array<InvitationWithExtraData>> = z.array(
     z.object({
         id: z.number(),
@@ -300,15 +324,29 @@ const meetFields = z.object({
     isConfirmed: z.boolean(),
     status: z.enum(['scheduled', 'active', 'completed', 'cancelled']),
     timezone: z.string(),
+    notes: z.string().nullable(),
 })
 
 export const meetSchema: z.ZodType<MeetType> = meetFields
 
 export const meetDetailsSchema: z.ZodType<MeetWithAttendeesAndGamesType> = meetFields.extend({
     attendees: z.array(z.number()),
+    attendeeStatuses: z.array(
+        z.object({
+            accountId: z.number(),
+            rsvpStatus: z.enum(['pending', 'accepted', 'declined']),
+            attendanceStatus: z.enum(['unknown', 'attended', 'absent']),
+        }) satisfies z.ZodType<MeetAttendeeStatusType>,
+    ),
     playedGames: z.array(z.number()),
     plannedGames: z.array(z.number()),
     skippedGames: z.array(z.number()),
+    playedGameParticipants: z.array(
+        z.object({
+            gameId: z.number(),
+            participantIds: z.array(z.number()),
+        }),
+    ),
 })
 
 export const meetAttendeeSchema: z.ZodType<MeetAttendeeType> = z.object({
@@ -323,6 +361,7 @@ export const meetGameSchema: z.ZodType<MeetGameType> = z.object({
 
 const historyRecordSchema: z.ZodType<HistoryRecordType> = z.object({
     meetData: meetFields,
+    attendedBy: z.array(publicUserSchema),
     gamesPlayed: z.array(
         z.object({
             gameData: gameCompleteSchema,
@@ -337,6 +376,16 @@ export const userMeetsSchema = z.array(meetFields)
 
 export const userStatsSchema: z.ZodType<UserStatsType> = z.object({
     totalGamesValue: z.number(),
+})
+
+export const sessionRsvpUpdatedSchema: z.ZodType<SessionRsvpUpdatedType> = z.object({
+    sessionId: z.number(),
+    rsvpStatus: z.enum(['pending', 'accepted', 'declined']),
+})
+
+export const sessionAttendanceUpdatedSchema: z.ZodType<SessionAttendanceUpdatedType> = z.object({
+    sessionId: z.number(),
+    attendedIds: z.array(z.number()),
 })
 
 export const userNotificationsSchema: z.ZodType<Array<NotificationType>> = z.array(
@@ -370,6 +419,23 @@ export const sessionAttendeesUpdatedSchema: z.ZodType<SessionAttendeesUpdatedTyp
     attendeeIds: z.array(z.number()),
 })
 
+export const sessionShortlistUpdatedSchema: z.ZodType<SessionShortlistUpdatedType> = z.object({
+    sessionId: z.number(),
+    plannedGameIds: z.array(z.number()),
+})
+
+export const sessionPlayedGamesUpdatedSchema: z.ZodType<SessionPlayedGamesUpdatedType> = z.object({
+    sessionId: z.number(),
+    playedGameIds: z.array(z.number()),
+    skippedGameIds: z.array(z.number()),
+    playedGameParticipants: z.array(
+        z.object({
+            gameId: z.number(),
+            participantIds: z.array(z.number()),
+        }),
+    ),
+})
+
 export const recommendationsSchema: z.ZodType<RecommendationsType> = z.object({
     groupId: z.number(),
     attendeeIds: z.array(z.number()),
@@ -384,10 +450,26 @@ export const recommendationsSchema: z.ZodType<RecommendationsType> = z.object({
                 attendeeCount: z.number(),
                 averageReview: z.number().nullable(),
                 lastPlayedAt: z.string().nullable(),
+                interestedCount: z.number(),
+                notForUsCount: z.number(),
             }),
         }),
     ),
     noResultReason: z.string().nullable(),
+})
+
+export const recommendationSignalsSchema: z.ZodType<RecommendationSignalsType> = z.object({
+    groupId: z.number(),
+    signals: z.array(
+        z.object({
+            gameId: z.number(),
+            interestedCount: z.number(),
+            notForUsCount: z.number(),
+            yourFeedback: z.enum(['interested', 'not_for_us']).nullable(),
+            interestedBy: z.array(publicUserSchema),
+            lastUpdatedAt: z.string(),
+        }),
+    ),
 })
 
 export const successSchema = z.object({ success: z.literal(true) })

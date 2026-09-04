@@ -50,6 +50,7 @@ The schema snapshot names these tables/entities:
 - `FeatureFlags`
 - `GameProposal`
 - `RecommendationFeedback`
+- `GroupGameInterest`
 
 The backend source also has corresponding service/type/schema areas. The current product backlog identifies migration reproducibility, session transactions/API contracts, richer play events, and recommendation state as P0/P1 work.
 
@@ -58,9 +59,15 @@ The backend source also has corresponding service/type/schema areas. The current
 - User, group, collection, invitation, review, notification, meet, and proposal mutations are exposed through many service/controller paths.
 - The deprecated direct membership endpoint implements the accepted invite-only join boundary: the authenticated account must have a pending invitation for the target group, and the invitation is consumed after membership creation. V1 has owner/member roles; public groups, ownership transfer, and richer roles are deferred in ADR-0007.
 - `DashboardService` creates a group and its owner membership through one Turso write transaction. The old dashboard meeting-creation mutation was removed; new sessions must use the canonical sessions module, while legacy meet reads and `MeetAccountGame` history writes remain during compatibility work.
-- `Meet` remains the compatibility/session record. `MeetAttendee` stores participant RSVP/attendance state, `MeetGame` stores planned/played/skipped session-game state, and `MeetAccountGame` preserves account-to-play links for historical play lookup. The canonical completed-session write now persists the selected date, IANA timezone, attendees, played games, and participant links atomically. Scheduled-session creation now optionally persists planned games in the same transaction; completing or cancelling a session marks any remaining planned games as skipped atomically. Editing, RSVP mutation, richer event history, and broader lifecycle read models remain unfinished.
+- `Meet` remains the compatibility/session record. `MeetAttendee` stores participant RSVP/attendance state, `MeetGame` stores planned/played/skipped session-game state, and `MeetAccountGame` preserves account-to-play links for historical play lookup. The canonical completed-session write now persists the selected date, IANA timezone, attendees, played games, participant links, and optional notes atomically. Scheduled-session creation now optionally persists planned games and notes in the same transaction; organizers can replace the planned-game shortlist and actual played games while a session is scheduled or active, including the members who played each individual game; completing or cancelling a session marks remaining tracked games as skipped atomically. Invited members can update their RSVP while a session is scheduled or active, and the organizer can record final attendance independently after it is active or completed. Group and personal history now expose organizer-recorded attendance, with a narrowly scoped legacy play-link fallback for old rows that have no attendee record. Attendees can submit a simple post-session rating through the existing per-account `GameReview` relation; richer event history remains unfinished.
 - Cache TTLs are declared in `cache.types.ts` and selected services invalidate keys, but cache ownership, stale-read behavior, disabled mode, and correctness tests are not documented.
-- `RecommendationFeedback` stores the first lightweight product signal. The actor and attendee IDs are validated against group membership, and the game must be owned by at least one selected attendee before the feedback is accepted. Rich preference history and automated score weighting remain deferred.
+- `RecommendationFeedback` stores the first lightweight product signal. The actor and attendee IDs are validated against group membership, and the game must be owned by at least one selected attendee before the feedback is accepted. The latest decisions from selected attendees provide a small bounded score adjustment; richer preference history and history-weighted scoring remain deferred.
+- `GroupGameInterest` stores explicit member interest in a catalog game for a
+  group acquisition decision. It is unique per group/member/game, is visible
+  only to group members, and is intentionally separate from personal
+  `WishlistedGame` rows. The acquisition board aggregates interested members
+  and current group-owner count; it does not imply a purchase or create an
+  affiliate-shopping surface.
 
 ## Repository reconciliation result
 
@@ -89,10 +96,12 @@ These findings are now split between resolved schema alignment and remaining API
 ## Required follow-up
 
 1. Resolve the remaining API findings in the [DATA-001 drift report](../database/drift-report.md), especially the frontend attendee route and game-title contract.
-2. Execute `DATA-003`: extend the session API from completed-session logging to the full scheduled/completed lifecycle, including planned-game editing and richer read models.
+2. Execute `DATA-003`: extend the session API from completed-session logging to the full scheduled/completed lifecycle, including planned-game editing, post-session feedback, and richer read models.
 3. Execute `DATA-004`: apply the transaction policy to remaining multi-record mutations.
 4. Execute `DATA-002`: add the migration runner and empty-state verification to CI, then rehearse a synthetic restore.
 5. Add disposable integration data and backup/restore rehearsal before launch claims.
+6. Apply and verify migration `0006-add-group-game-interest.sql` before
+   deploying the acquisition-board backend/frontend slice.
 
 ## Source evidence
 

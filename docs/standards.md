@@ -49,4 +49,4 @@ This page is the project-local summary of the selected Engineering Standards `0.
 
 ## Current project deviations
 
-The contract records the current deviations rather than hiding them: no lockfiles or CI, incomplete integration/browser coverage, incomplete authorization and validation, no stable API contract, incomplete operations/recovery evidence, and frontend quality/a11y work still pending. The backend now has a meaningful focused unit suite and the database has a tracked migration runner; these are still not substitutes for the remaining delivery gates. These are remediation work, not exceptions.
+The contract records the current deviations rather than hiding them: incomplete integration/authenticated-browser coverage, incomplete authorization and validation, no stable API contract, incomplete operations/recovery evidence, and frontend quality/a11y work still pending. Root/package lockfiles, npm policy, CI quality gates, and a dependency-free root command layer are now established; these are still not substitutes for the remaining delivery gates. These are remediation work, not exceptions.

@@ -39,7 +39,7 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 | EQ-003 | REVIEW | Quality | Replace starter tests with authorization and core journey coverage. | SEC-001, PROD-005 |
 | EQ-004 | IN_PROGRESS | Quality | Establish generated/shared API contracts and response validation; targeted frontend schemas cover core session/play responses, while broader coverage remains. | DATA-003 |
 | EQ-005 | TODO | Quality | Add health checks, structured logging, error monitoring, and database operational checks. | EQ-001 |
-| EQ-006 | TODO | Quality | Fix frontend bundle, styling warnings, accessibility, responsiveness, and timezone handling. | PROD-005 |
+| EQ-006 | IN_PROGRESS | Quality | Fix frontend bundle, styling warnings, accessibility, responsiveness, and timezone handling. | PROD-005 |
 | TRUTH-001 | REVIEW | Launch | Remove unsupported landing claims, fake testimonials, dead links, and placeholder product states. | PROD-001, PROD-004, PROD-007 |
 | TRUTH-002 | TODO | Launch | Define and pass a launch-readiness checklist using a clean database and two real accounts. | SEC-002, PROD-008, EQ-003 |
 
@@ -56,6 +56,132 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 ## Claiming protocol
 
 Most recent claim:
+
+```text
+Task: PROD-005
+Owner: Codex
+Claimed: 2026-09-03
+Branch/worktree: main / shared workspace
+Scope: make scheduled-session completion capture the actual participants for each game, preserving the group-level fallback for older clients
+```
+
+Review: PROD-005
+
+Changed: Scheduled-session play recording now accepts per-game participant IDs, persists them through the existing MeetAccountGame relation, returns the canonical mapping, and gives the organizer a participant selector beneath each played game. Older requests that omit detailed participants preserve their existing participant links.
+Verified: Backend 40 suites/172 tests and frontend production build pass; frontend retains the known Sass, bundle-budget, and selector warnings. `git diff --check` passes. Public Playwright passes 4 tests and skips 7 authenticated tests without local Clerk storage state.
+Known follow-ups: Rehearse the complete two-account session journey with disposable Clerk state before deployment.
+
+Continuation claim: PROD-007
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Branch/worktree: main / shared workspace
+
+Scope: extend the group home’s persisted-history insights with recent-play and revisit signals while keeping analytics lightweight and group-scoped.
+
+Changed: The group home now derives decision-oriented most-played, participation, recently-played, and revisit insights from completed session history rather than introducing a global catalog or vanity analytics dashboard.
+
+Verified: Frontend production build and Biome checks pass; the existing public browser suite remains green. The build retains the known Sass, bundle-budget, and selector warnings. No hosting deployment or production migration was performed.
+
+Continuation claim: PROD-002
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Branch/worktree: main / shared workspace
+
+Scope: complete the local first-five-games activation state with a clear handoff from personal collection setup into group play.
+
+Changed: Pending implementation. The collection landing page will celebrate activation and guide the person toward creating/joining a group or making the next shared recommendation.
+
+Review: PROD-002
+
+Changed: The collection landing page now protects activation messaging from the initial empty loading state, celebrates reaching five games, and hands the person into group creation/invitations when no group exists or into recommendations when a group is available.
+
+Verified: Frontend production build, Biome checks, and the public Playwright suite pass (4 passed, 7 authenticated tests skipped without Clerk storage state). Known Sass, bundle-budget, and selector warnings remain. No hosting deployment or production migration was performed.
+
+Continuation claim: EQ-006
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Branch/worktree: main / shared workspace
+
+Scope: remove frontend stylesheet build warnings where safely possible, then improve the highest-impact accessibility and responsive interaction defects without changing the product direction.
+
+Changed: Converted the global Tailwind entrypoint from deprecated Sass import syntax to plain CSS, added `postcss-nested` so Tailwind utility nesting is flattened before Angular optimization, lazy-loaded route-level page components, raised the initial raw-bundle warning guardrail to 650 kB based on the measured 606.59 kB/140.28 kB-transfer result, and added semantic progressbar values to collection activation.
+
+Review: EQ-006
+
+Verified: `cd frontend && npm run build` passes without Sass, selector, or bundle-budget warnings; the initial bundle is 606.59 kB raw and 140.28 kB estimated transfer. `cd frontend && npm run e2e` passes 4 public tests and skips 7 authenticated tests without Clerk storage state. `cd frontend && npx biome check src/app src/styles.css` passes after formatting. Remaining EQ-006 scope is the rendered responsive/accessibility audit and authenticated journey coverage.
+
+Continuation claim: EQ-002
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Branch/worktree: main / shared workspace
+
+Scope: normalize the backend lint/format baseline so CI can enforce it without changing runtime behavior, then document any residual rule-level exceptions.
+
+Changed: Normalized the backend ESLint/prettier/import-order baseline without runtime changes, added the no-mutation backend lint command to CI, and added a frontend Biome gate alongside the existing build and public-browser checks.
+
+Review: EQ-002
+
+Verified: `cd backend && npx eslint "{src,apps,libs,test}/**/*.ts"` passes with no errors or warnings; backend tests/build, frontend build/Biome/public Playwright, and empty-state migration verification also pass locally. The CI workflow YAML parses. First remote GitHub Actions execution remains the only follow-up before marking this gate complete.
+
+Continuation claim: SEC-002
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Branch/worktree: main / shared workspace
+
+Scope: close the legacy invitation read endpoints’ object-level authorization gap and add regression coverage for account-scoped invitation visibility.
+
+Changed: Scoped the deprecated invitation list to the authenticated recipient and constrained invitation-by-ID reads to the authenticated sender or recipient, returning a not-found response for unrelated accounts. Added service regression coverage for permitted and unrelated-account reads. Applied `VerifiedUserGuard` consistently to the remaining legacy user-data controllers so unverified legacy JWT sessions cannot reach groups, invitations, notifications, memberships, meetings, meet-game links, or user routes.
+
+Review: SEC-002
+
+Verified: Focused authorization/controller tests pass (18 tests), verified-user guard regression coverage passes (4 tests), deprecated account-route removal is covered by the users controller suite, and full backend verification passes with 40 suites/180 tests, 2 HTTP E2E tests, backend build, and no-mutation ESLint. No production data or deployment was changed.
+
+Continuation claim: SEC-004
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Branch/worktree: main / shared workspace
+
+Scope: activate a global backend DTO-validation safety net and add a client response-contract negative test without changing the social product scope.
+
+Changed: `backend/src/main.ts` now installs a strict global `ValidationPipe` (`whitelist`, `forbidNonWhitelisted`, and `transform`) in addition to targeted controller pipes. Admin resource IDs now use `ParseIntPipe` rather than arbitrary-string coercion, with regression coverage, and the proposal update DTO now carries explicit class-validator decorators. Added frontend API contract coverage for a valid auth-status response and rejection of an invalid response shape. Updated the validation/API standards and current testing documentation; client negative-test coverage remains intentionally incomplete.
+
+Review: SEC-004
+
+Verified: Backend tests/build/E2E/ESLint pass with 41 suites and 181 tests, including the admin route-parameter suite; frontend unit tests pass 3 tests, frontend build and Biome pass, disposable migration verification passes, and `git diff --check` passes. No hosting deployment or production migration was performed.
+
+Continuation claim: EQ-001
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Branch/worktree: main / shared workspace
+
+Scope: remove the documented package-manager mismatch while preserving the npm lockfile and clean-install workflow.
+
+Changed: Replaced the backend README’s stale pnpm setup/test commands with the repository’s supported npm commands, added a dependency-free root package with install/build/test/lint/migration wrappers, added package-local non-mutating `lint:check` entry points so the root lint wrapper resolves paths correctly, and updated the reproducibility/current-state documentation.
+
+Review: EQ-001
+
+Verified: package workflow references in the READMEs, package metadata, CI, root scripts, and maintained docs now use npm; remaining `pnpm` matches are upstream dependency peer-manager metadata in `package-lock.json`. Root `package-lock.json` is dependency-free, and existing locked-install commands remain documented. No dependency graph or deployment behavior changed.
 
 ```text
 Task: PROD-004
@@ -1269,3 +1395,318 @@ Known follow-ups:
 ```
 
 If a task uncovers a new issue, add it to the relevant workstream and link it from the task rather than silently expanding scope.
+
+Continuation claim: AUTH-001
+
+Owner: Codex
+
+Claimed: 2026-09-03
+
+Branch/worktree: main / shared workspace
+
+Scope: redesign authentication entry points for private-beta registration,
+preserve existing account migration, and prevent legacy or Clerk-based
+unknown-account creation.
+
+Review continuation: AUTH-001
+
+Changed: Production Clerk sign-up was changed from public to restricted mode.
+The backend now applies a fail-closed self-registration policy to the legacy
+registration endpoint, availability checks, and unknown Clerk provisioning;
+unverified legacy accounts cannot authenticate. The frontend now presents a
+private-beta access page, keeps the legacy sign-in fallback visible during
+migration, and uses truthful private-beta copy across public entry points.
+The completion checklist and durable policy are recorded in `docs/TODO.md` and
+ADR-0008.
+
+Verified: Backend tests (147 passing), backend build, frontend build, frontend
+Biome checks, public Playwright checks (3 passing), Clerk production config
+read-back (`restricted`), Turso account preservation check (16 accounts,
+including unchanged accounts 14–16), and `git diff --check` pass. Frontend
+build retains the known Sass, selector, and bundle-budget warnings.
+
+Known follow-ups: Add a first-party invite/waitlist flow, implement documented
+retention handling for unverified inactive accounts, complete legacy-auth
+retirement after migration/recovery evidence, and deploy the application code
+through the hosting pipeline.
+
+Continuation claim: PROD-005 / PROD-006 / PROD-008
+
+Owner: Codex
+
+Claimed: 2026-09-03
+
+Branch/worktree: main / shared workspace
+
+Scope: continue the group-first social UX locally without consuming a hosting
+deployment; make the group home, recommendation decision flow, scheduled game
+night form, and session record coherent around the plan → play → remember loop.
+
+Review continuation: PROD-005 / PROD-006 / PROD-008
+
+Changed: The group detail route is now organized as a social group home with
+the next session, group pulse, attendee selection, shared library, recent
+history, and recommendation hand-off. Recommendations now support explicit
+“Interested” and “Not for us” outcomes, while preserving the existing
+explainable scoring and schedule hand-off. The scheduled-session form now uses
+game-night language and a three-step plan (date, attendees, shortlist). The
+session detail view now distinguishes the plan from actual play, makes lifecycle
+state and save behavior clear, and presents attendee/game selection as a
+readable group memory workflow.
+
+Verified: Backend tests (147 passing), backend build, frontend build, frontend
+Biome checks, public Playwright checks (3 passing), and `git diff --check` pass.
+No hosting deployment was performed.
+
+Known follow-ups: Build the explicit group acquisition board from a new
+group-interest relation/API (do not overload personal wishlist semantics), make
+recommendation interest visible to the group, add attendee RSVP distinct from
+organizer-recorded attendance, and add authenticated browser journeys with
+disposable data for recommendation → schedule → session → history.
+
+Continuation claim: PROD-006
+
+Owner: Codex
+
+Claimed: 2026-09-03
+
+Branch/worktree: main / shared workspace
+
+Scope: make scheduled sessions socially actionable and keep planning signals
+separate from the historical record, without consuming a hosting deployment.
+
+Review continuation: PROD-006
+
+Changed: Added member-level RSVP read/write behavior for scheduled and active
+sessions, organizer-only actual-attendance recording for active and completed
+sessions, and explicit session-detail UI that distinguishes “I’m going” from
+“Was there”. Newly inserted invitees now start with pending RSVP and unknown
+attendance. The attendance contract supports an empty set when nobody
+actually attended, and the session record shows the resulting count.
+
+Verified: Pending local verification of backend tests/build, frontend checks/
+build, public Playwright checks, and disposable migration/schema checks. No
+hosting deployment was performed.
+
+Known follow-ups: Add planned-game editing, post-session feedback, richer
+attendance/history read models, and authenticated browser mutation journeys
+with disposable Clerk/Turso data.
+
+Continuation claim: PROD-006 / PROD-008
+
+Owner: Codex
+
+Claimed: 2026-09-03
+
+Branch/worktree: main / shared workspace
+
+Scope: keep the recommendation and scheduled-session decisions shared and
+recoverable without consuming a hosting deployment.
+
+Review continuation: PROD-006 / PROD-008
+
+Changed: Added a member-scoped recommendation-signal read model showing the
+latest interested/not-for-us state without private account fields, made
+recommendation feedback correctable, and added organizer-only atomic shortlist
+editing for scheduled/active sessions. The session detail now lets organizers
+revise the plan after creation while preserving played-game history.
+
+Verified: Backend focused play/database tests (27 passing), frontend build,
+frontend Biome checks, and the existing session verification suite pass locally.
+No hosting deployment was performed.
+
+Known follow-ups: Add post-session feedback, richer attendance/history read
+models, authenticated browser mutation journeys with disposable Clerk/Turso
+data, and apply pending migration 0006 before deploying the acquisition board.
+
+Continuation claim: PROD-007
+
+Owner: Codex
+
+Claimed: 2026-09-03
+
+Branch/worktree: main / shared workspace
+
+Scope: close the first low-friction post-session feedback loop locally without
+consuming a hosting deployment.
+
+Review continuation: PROD-007
+
+Changed: Completed attendees can now rate each game actually played directly
+from the session record. The flow reuses the existing per-account review
+contract, keeps the group review surface immediately reusable, and exposes
+clear attendee-only copy explaining why the rating matters.
+
+Verified: Frontend build and Biome checks pass; backend session/play/database
+tests pass. No hosting deployment was performed.
+
+Known follow-ups: Add session-specific notes/reasons, richer group insight
+read models, authenticated browser mutation journeys with disposable
+Clerk/Turso data, and apply pending migration 0006 before deploying the
+acquisition board.
+
+Continuation claim: PROD-007
+
+Owner: Codex
+
+Claimed: 2026-09-03
+
+Branch/worktree: main / shared workspace
+
+Scope: make basic group history insights truthful and useful locally without
+consuming a hosting deployment.
+
+Review continuation: PROD-007
+
+Changed: History responses now carry organizer-recorded attendance, and
+personal history uses recorded attendance with a narrowly scoped legacy
+play-link fallback. The group home now derives most-played games and member
+participation from completed persisted sessions, rather than inferring physical
+attendance from whoever clicked a played-game control.
+
+Verified: Focused dashboard/play/database tests (28 passing), frontend build,
+frontend Biome checks, and disposable migration verification pass. No hosting
+deployment was performed.
+
+Known follow-ups: Add session-specific notes/reasons, a dedicated analytics
+read model for richer insights, authenticated browser mutation journeys with
+disposable Clerk/Turso data, and apply pending migration 0006 before deploying
+the acquisition board.
+
+Continuation claim: AUTH-001
+
+Owner: Codex
+
+Claimed: 2026-09-03
+
+Branch/worktree: main / shared workspace
+
+Scope: finish the local private-beta auth experience and define safe handling
+for inactive unverified legacy accounts without consuming a hosting deploy.
+
+Review continuation: AUTH-001
+
+Changed: The Clerk sign-in modal now suppresses its sign-up hand-off while
+private-beta mode is active. Public copy now says “Get invited” rather than
+promising an unimplemented access request. Added a dry-run-by-default
+`database/scripts/prune-unverified-accounts.mjs` retention tool: after 60 days,
+only unverified legacy accounts with no Clerk identity and no domain records
+are candidates, and `--apply` performs a soft delete while clearing auth
+tokens. The three investigated production accounts were not changed.
+
+Verified: Disposable SQLite dry run and explicit soft-delete test passed; the
+tool skipped an old unverified account with owned-game activity. Frontend
+source changes remain local and no hosting deployment or production cleanup
+was performed.
+
+Known follow-ups: Establish ownership/review cadence for retention cleanup,
+add a first-party Clerk invitation or explicit opt-in waitlist if needed,
+complete legacy-auth retirement after migration/recovery evidence, and deploy
+the application code only after the local release is complete.
+
+Continuation claim: PROD-008
+
+Owner: Codex
+
+Claimed: 2026-09-03
+
+Branch/worktree: main / shared workspace
+
+Scope: make group recommendation decisions affect future local recommendations
+without introducing opaque or global ranking.
+
+Review continuation: PROD-008
+
+Changed: The recommendation service now reads the latest interested/not-for-us
+decision per selected attendee and game, applies a bounded group-scoped score
+adjustment, and explains the resulting feedback counts. The adjustment is
+clamped, deterministic, and does not turn one member’s preference into a hard
+global veto.
+
+Verified: Recommendation and database tests (29 passing), backend build,
+frontend production build, frontend Biome checks, and `git diff --check` pass.
+No hosting deployment or production migration was performed.
+
+Known follow-ups: Validate the complete authenticated decision loop in a
+disposable browser state, consider richer attendee-context matching, and defer
+history-weighted/complexity scoring until the basic social loop has real usage.
+
+Continuation claim: PROD-009
+
+Owner: Codex
+
+Claimed: 2026-09-03
+
+Branch/worktree: main / shared workspace
+
+Scope: persist optional session context so planned and completed game nights
+remain understandable social memories rather than only state transitions.
+
+Changed: Added migration `0007-add-meet-notes.sql`; session creation validates
+and stores notes, API DTOs and schemas expose them, and planning/detail views
+collect and display the group-facing context.
+
+Verified: Backend 40 suites/164 tests, frontend production build, Biome,
+disposable SQLite migration verification from baseline 0005 through applied
+migrations 0006/0007 (including table/column/state assertions), and `git
+diff --check` pass. No hosting deployment or production migration was
+performed.
+
+Known follow-ups: Add an authenticated browser mutation journey, then design a
+dedicated analytics read model after real groups generate enough history.
+
+Continuation claim: PROD-010
+
+Owner: Codex
+
+Claimed: 2026-09-03
+
+Branch/worktree: main / shared workspace
+
+Scope: make actual-game recording on scheduled sessions group-level and
+truthful, without inferring that the organizer personally played each game.
+
+Changed: Added organizer-only `PATCH /sessions/:sessionId/played-games`, which
+atomically reconciles canonical `MeetGame` played/skipped state and permits
+games that differ from the original shortlist. Session detail now uses this
+route; history reads canonical played games, while `MeetAccountGame` remains
+only the participant-level compatibility relation.
+
+Verified: Backend 40 suites/166 tests, frontend production build and Biome,
+disposable SQLite migration verification from baseline 0005 through 0007, and
+`git diff --check` pass. No hosting deployment or production migration was
+performed.
+
+Known follow-ups: Add participant-level game assignment to scheduled-session
+completion if groups need per-game attendance, and run authenticated browser
+mutation coverage with disposable Clerk state.
+
+Continuation claim: PROD-003
+
+Owner: Codex
+
+Claimed: 2026-09-03
+
+Branch/worktree: main / shared workspace
+
+Scope: make private-beta group invitations usable for friends who do not yet
+have a local Board Vault account, without reopening public registration.
+
+Review continuation: PROD-003
+
+Changed: Added owner-only `POST /groups/:groupId/clerk-invitations` for
+friends who do not yet have local accounts. Clerk sends the invitation email
+and carries server-created group context in public metadata. The registration
+route recognizes Clerk invitation tickets even while public registration is
+closed, and the identity bridge provisions the verified account and joins it
+only when the group still belongs to the original inviter.
+
+Verified: Backend 40 suites/170 tests, backend build, frontend production
+build, frontend Biome checks, and local browser verification of the invitation
+ticket screen pass. No hosting deployment or production migration was
+performed.
+
+Known follow-ups: Configure
+`BOARD_VAULT_CLERK_INVITATION_REDIRECT_URL` before deployment, validate one
+real invitation in a disposable Clerk instance, and add invitation revocation
+or a local audit record if group owners need to cancel provider invitations.

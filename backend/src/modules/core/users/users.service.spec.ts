@@ -2,9 +2,10 @@ import { BadRequestException, ExecutionContext, INestApplication } from '@nestjs
 import { Test } from '@nestjs/testing'
 import * as request from 'supertest'
 
-import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
 import { AdminGuard } from '../../../common/guards/admin.guard'
+import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
+import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
 import { DatabaseService } from '../../common/database/database.service'
 
 import { UsersController } from './users.controller'
@@ -42,6 +43,8 @@ describe('UsersController profile update boundary', () => {
                     return true
                 },
             })
+            .overrideGuard(VerifiedUserGuard)
+            .useValue({ canActivate: () => true })
             .compile()
 
         app = module.createNestApplication()
@@ -121,5 +124,9 @@ describe('UsersController profile update boundary', () => {
 
     it('does not expose the deprecated global user list to a non-admin', async () => {
         await request(app.getHttpServer()).get('/users/').expect(403)
+    })
+
+    it('does not expose the deprecated account-creation route', async () => {
+        await request(app.getHttpServer()).post('/users/').send({ email: 'new@example.com' }).expect(404)
     })
 })
