@@ -135,6 +135,16 @@ describe('SessionsService', () => {
         expect(database.createCompletedSession).not.toHaveBeenCalled()
     })
 
+    it('rejects a completed session without attendees', async () => {
+        const database = createDatabaseMock()
+        const service = new SessionsService(database as unknown as DatabaseService)
+
+        await expect(service.createCompletedSession(1, { ...body, attendeeIds: [] })).rejects.toThrow(
+            'A completed session must have at least one attendee',
+        )
+        expect(database.createCompletedSession).not.toHaveBeenCalled()
+    })
+
     it('rejects games unavailable to the selected group', async () => {
         const database = createDatabaseMock()
         const service = new SessionsService(database as unknown as DatabaseService)
@@ -151,6 +161,16 @@ describe('SessionsService', () => {
 
         await expect(service.createCompletedSession(1, { ...body, games: [{ gameId: 42, participantIds: [3] }] })).rejects.toThrow(
             BadRequestException,
+        )
+        expect(database.createCompletedSession).not.toHaveBeenCalled()
+    })
+
+    it('rejects a completed game without participants', async () => {
+        const database = createDatabaseMock()
+        const service = new SessionsService(database as unknown as DatabaseService)
+
+        await expect(service.createCompletedSession(1, { ...body, games: [{ gameId: 42, participantIds: [] }] })).rejects.toThrow(
+            'Every played game must have at least one participant',
         )
         expect(database.createCompletedSession).not.toHaveBeenCalled()
     })
@@ -357,6 +377,23 @@ describe('SessionsService', () => {
         expect(database.replaceMeetPlayedGames).not.toHaveBeenCalled()
     })
 
+    it('rejects a played game without participants', async () => {
+        const database = createDatabaseMock()
+
+        database.getMeetByIdForCreator.mockResolvedValue({
+            rows: [[13, 7, 1, '2026-08-21T19:30:00.000Z', 0, 'active', 'Europe/Madrid', null]],
+        })
+        const service = new SessionsService(database as unknown as DatabaseService)
+
+        await expect(
+            service.updateSessionPlayedGames(1, 13, {
+                playedGameIds: [42],
+                games: [{ gameId: 42, participantIds: [] }],
+            }),
+        ).rejects.toThrow('Every played game must have at least one participant')
+        expect(database.replaceMeetPlayedGames).not.toHaveBeenCalled()
+    })
+
     it('rejects played games unavailable to the session group', async () => {
         const database = createDatabaseMock()
 
@@ -431,6 +468,16 @@ describe('SessionsService', () => {
         const service = new SessionsService(database as unknown as DatabaseService)
 
         await expect(service.updateSessionAttendees(1, 12, { attendeeIds: [1, 99] })).rejects.toThrow(BadRequestException)
+        expect(database.replaceMeetAttendees).not.toHaveBeenCalled()
+    })
+
+    it('rejects replacing attendees with an empty set', async () => {
+        const database = createDatabaseMock()
+        const service = new SessionsService(database as unknown as DatabaseService)
+
+        await expect(service.updateSessionAttendees(1, 12, { attendeeIds: [] })).rejects.toThrow(
+            'A session must retain at least one attendee',
+        )
         expect(database.replaceMeetAttendees).not.toHaveBeenCalled()
     })
 
