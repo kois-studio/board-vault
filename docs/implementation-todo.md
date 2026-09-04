@@ -204,6 +204,7 @@ Relevant surfaces: [`propose-game-page`](../frontend/src/app/pages/collection-pa
   remaining route-level findings.
 - Keep the frontend source tree passing Biome; the current `src/app` and global stylesheet checks are clean. Backend lint now passes with no errors or warnings and is enforced in CI.
 - Add timezone-focused browser coverage around scheduled-session display and keep all relative-time utilities based on instant timestamps rather than server/local offset corrections; `formatDate.ts` no longer applies a fixed Spain correction.
+- Session summaries on the Play landing page, group home, group cards, game history, and game detail now format stored timestamps using each session’s IANA timezone; browser coverage across representative timezones remains open.
 - Avoid mutating nested signal state in place where it can produce stale UI.
 - Group member and invitation removal now update nested signal state immutably; continue auditing remaining collection and session updates for the same failure mode.
 - Add shared UI conventions for buttons, cards, forms, modal behavior, spacing, typography, colors, and icons.

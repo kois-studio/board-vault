@@ -1855,6 +1855,22 @@ Review: TRUTH-001 / EQ-006
 
 Verified: Frontend lint, build, browser unit tests, public Playwright checks, and `git diff --check` pass. No backend, production data, deployment, or provider configuration was changed.
 
+Continuation claim: EQ-006
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Branch/worktree: main / shared workspace
+
+Scope: keep social session timestamps consistent with the stored game-night timezone.
+
+Changed: Play landing, group home, group cards, history, and game detail now format session timestamps with each record’s IANA timezone instead of the browser’s local timezone. This keeps a remote member and the organizer aligned on when a session happened or is planned.
+
+Review: EQ-006 / PROD-005
+
+Verified: Frontend lint, build, browser unit tests, public Playwright checks, and `git diff --check` pass. Representative multi-timezone browser coverage remains open. No backend, production data, deployment, or provider configuration was changed.
+
 Continuation claim: PROD-001
 
 Owner: Codex

@@ -17,7 +17,7 @@
             } @else if (userMeetsError()) {
                 <p class="text-secondary">Sessions could not be loaded. Open the page to retry.</p>
             } @else if (upcomingSessions().length > 0) {
-                <p class="text-secondary">Next: {{ getGroupName(upcomingSessions()[0].groupId) }} · {{ upcomingSessions()[0].meetDate | date }}</p>
+                <p class="text-secondary">Next: {{ getGroupName(upcomingSessions()[0].groupId) }} · {{ upcomingSessions()[0].meetDate | customDate: true: upcomingSessions()[0].timezone }}</p>
             } @else {
                 <p class="text-secondary">No upcoming sessions yet.</p>
             }

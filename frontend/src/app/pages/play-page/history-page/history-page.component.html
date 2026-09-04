@@ -26,7 +26,7 @@
         @for (historyRecord of sortedUserHistoryComputed(); track historyRecord.meetData.id) {
             <div class="app-bg-secondary relative p-4 mb-8">
                 <h2 class="text-xl font-semibold mb-4">
-                    {{ historyRecord.meetData.meetDate | customDate }}
+                    {{ historyRecord.meetData.meetDate | customDate: true: historyRecord.meetData.timezone }}
                 </h2>
 
                 <!-- Ids -->
