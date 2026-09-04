@@ -172,6 +172,12 @@ export class RecommendationsPageComponent {
         return member?.displayName || member?.username || 'Member'
     }
 
+    public selectedAttendeeNames(group: GroupWithMembersAndGames): string {
+        return this.selectedAttendeeIds()
+            .map((accountId) => this.getMemberName(group, accountId))
+            .join(', ')
+    }
+
     private readRequestedAttendeeIds(group: GroupWithMembersAndGames): Array<number> | undefined {
         const rawValue = this.route.snapshot.queryParamMap.get('attendeeIds')
         if (!rawValue) return undefined
