@@ -1330,7 +1330,8 @@ export class DatabaseService implements OnModuleInit {
     getMeetsForAccount(accountId: number) {
         return this._tursoExecute({
             sql: `
-                SELECT DISTINCT m.*
+                SELECT DISTINCT m.id, m.groupId, m.createdBy, m.meetDate, m.isConfirmed,
+                    m.status, m.timezone, m.notes
                 FROM Meet m
                 INNER JOIN GroupMembership gm ON gm.groupId = m.groupId
                 WHERE gm.accountId = ?
@@ -1342,7 +1343,8 @@ export class DatabaseService implements OnModuleInit {
     getMeetByIdForAccount(meetId: number, accountId: number) {
         return this._tursoExecute({
             sql: `
-                SELECT m.*
+                SELECT m.id, m.groupId, m.createdBy, m.meetDate, m.isConfirmed,
+                    m.status, m.timezone, m.notes
                 FROM Meet m
                 INNER JOIN GroupMembership gm ON gm.groupId = m.groupId
                 WHERE m.id = ? AND gm.accountId = ?
@@ -1354,7 +1356,8 @@ export class DatabaseService implements OnModuleInit {
     getMeetByIdForCreator(meetId: number, accountId: number) {
         return this._tursoExecute({
             sql: `
-                SELECT m.*
+                SELECT m.id, m.groupId, m.createdBy, m.meetDate, m.isConfirmed,
+                    m.status, m.timezone, m.notes
                 FROM Meet m
                 INNER JOIN GroupMembership gm ON gm.groupId = m.groupId AND gm.accountId = ?
                 WHERE m.id = ? AND m.createdBy = ?
