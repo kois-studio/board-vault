@@ -18,12 +18,12 @@
                                 <h2 class="text-3xl font-bold">{{ nextMeeting.meetDate | customDate: true: nextMeeting.timezone }}</h2>
                                 <p class="mt-2 text-indigo-100">{{ nextMeeting.status === 'active' ? 'This session is happening now.' : 'Your next planned session.' }}</p>
                             </div>
-                            <a class="app-btn-secondary inline-block text-center" [routerLink]="['/meets', nextMeeting.id]">Open session</a>
+                            <a class="app-btn-secondary inline-block text-center" [routerLink]="['/sessions', nextMeeting.id]">Open session</a>
                         </div>
                     } @else {
                         <h2 class="mt-3 text-3xl font-bold">Nothing planned yet</h2>
                         <p class="mt-2 max-w-xl text-indigo-100">Give the group a date and let everyone know what you might play.</p>
-                        <a class="app-btn-secondary mt-5 inline-block" [routerLink]="['/groups', group.id, 'meets', 'new']">Plan a session</a>
+                        <a class="app-btn-secondary mt-5 inline-block" [routerLink]="['/groups', group.id, 'sessions', 'new']">Plan a session</a>
                     }
                 </article>
 
@@ -260,7 +260,7 @@
                                         <p class="font-semibold">{{ historyRecord.meetData.meetDate | customDate: true: historyRecord.meetData.timezone }}</p>
                                         <p class="mt-1 text-sm text-secondary">{{ historyRecord.gamesPlayed.length }} game{{ historyRecord.gamesPlayed.length === 1 ? '' : 's' }} played</p>
                                     </div>
-                                    <a [routerLink]="['/meets', historyRecord.meetData.id]" class="text-sm text-indigo-600 hover:underline dark:text-indigo-400">View</a>
+                                    <a [routerLink]="['/sessions', historyRecord.meetData.id]" class="text-sm text-indigo-600 hover:underline dark:text-indigo-400">View</a>
                                 </div>
                                 <ul class="mt-4 space-y-3">
                                     @for (gamePlayed of historyRecord.gamesPlayed; track gamePlayed.gameData.id) {

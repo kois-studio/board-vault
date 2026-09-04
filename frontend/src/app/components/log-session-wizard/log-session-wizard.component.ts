@@ -564,7 +564,7 @@ export class LogSessionWizardComponent {
             )
 
             this.toastService.success('Session saved.')
-            await this.router.navigate(['/meets', result.sessionId])
+            await this.router.navigate(['/sessions', result.sessionId])
         } catch {
             this.toastService.error('Could not save the session. Please review your selections and try again.')
         } finally {

@@ -32,7 +32,7 @@ Completed-session logging now has a guarded, validated backend write and an atom
 
 Relevant surfaces: [`app.routes.ts`](../frontend/src/app/app.routes.ts), [`meet-new`](../frontend/src/app/pages/meet-new/), [`meet-view`](../frontend/src/app/pages/meet-view/), [`log-session-wizard`](../frontend/src/app/components/log-session-wizard/), [`data.service.ts`](../frontend/src/app/core/services/data.service.ts).
 
-- Use one canonical session API for all session states; the obsolete dashboard meeting-creation route and client helper have been removed, `GET /sessions/:sessionId` is now the member-scoped canonical detail read used by the frontend, while legacy meet reads and `MeetAccountGame` history writes remain only for compatibility.
+- Use one canonical session API and user-facing session vocabulary for all session states; the obsolete dashboard meeting-creation route and client helper have been removed, session detail is now reached at `/sessions/:sessionId`, and creation at `/groups/:groupId/sessions/new`. The UI uses human-readable Planned, Live now, Completed, Cancelled, and Skipped distinctions. `GET /sessions/:sessionId` is the member-scoped canonical detail read used by the frontend, while legacy meet reads and `MeetAccountGame` history writes remain only for compatibility; legacy `/meets` UI URLs redirect to the canonical session routes.
 - Persist the selected date/time and IANA timezone; completed-session logging now sends both to the backend.
 - Persist the selected group, organizer, attendees, played games, and participant links atomically through `POST /sessions`.
 - Enforce the social-history invariants in the domain service as well as the HTTP DTOs: completed sessions cannot be created without attendees, every played game must retain at least one participant, and organizer attendee replacement cannot clear the session entirely.
@@ -106,7 +106,7 @@ Relevant surfaces: [`header`](../frontend/src/app/layout/header/), [`top-bar`](.
 - The current footer now links only to implemented landing-page sections and authenticated routes; privacy, terms, and support remain explicitly deferred content.
 - Review authenticated versus unauthenticated navigation after the Clerk migration.
 - Review mobile navigation; the admin sidebar now collapses into a mobile overlay with a backdrop and keeps keyboard focus indicators.
-- Standardize naming: meeting/session, play/history, group/member, and Board Vault terminology.
+- Preserve the user-facing vocabulary: primary navigation and routes now use session terminology, with human-readable planned/live/completed/cancelled distinctions; legacy `Meet*` names remain only in compatibility code and persisted schema boundaries.
 - Centralize loading, error, and toast behavior instead of repeating inconsistent patterns in `DataService` and pages.
 - Verify keyboard access, focus visibility, labels, active states, and route transitions.
 

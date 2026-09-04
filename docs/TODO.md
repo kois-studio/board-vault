@@ -108,7 +108,7 @@ Product execution ownership remains in `/todo/`.
 
 - **Status:** Planned
 - **Affected area:** `frontend/src/styles.css`, component SCSS/templates, route surfaces
-- **Evidence:** Tailwind global styles now use plain CSS with a PostCSS nesting pass; route-level components are lazy-loaded; production build has no Sass/selector/bundle-budget warnings and the initial raw bundle is 606.59 kB under the 650 kB warning budget. A full accessibility/responsive audit and all route-surface reviews remain open.
+- **Evidence:** Tailwind global styles now use plain CSS with a PostCSS nesting pass; route-level components are lazy-loaded; production build has no Sass/selector/bundle-budget warnings and the initial raw bundle is 596.21 kB (136.59 kB estimated transfer) under the 650 kB warning budget. A full accessibility/responsive audit and all route-surface reviews remain open.
 - **Risk:** Broken styles, poor mobile/accessibility behavior, and unsupported public claims.
 - **Next action:** Complete the rendered route audit matrix, resolve remaining accessibility/responsive findings, and link content-truth findings to `TRUTH-001`.
 - **Dependencies:** Product truth/brand decision where claims are involved.
@@ -160,9 +160,6 @@ as TODO items here.
 
 - [ ] Organize group work around clear areas such as Decide, Sessions, Group
   library, Games to acquire, and History/Insights.
-- [ ] Replace ambiguous or implementation-led labels with user language:
-  “session” for a planned or completed game night, and clear distinctions
-  between planned, played, cancelled, and skipped.
 - [ ] Complete responsive, keyboard, contrast, focus, and screen-reader
   behavior for the primary journeys.
 

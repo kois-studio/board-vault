@@ -1899,6 +1899,22 @@ Scope: keep the group-first dashboard independent from unrelated personal data r
 
 Changed: Dashboard loading, failure, and retry behavior now depends only on group and upcoming-session data rendered by the social workspace. Personal collection and history requests no longer block the dashboard or turn an unrelated outage into a dashboard-level error.
 
+Continuation claim: TRUTH-001 / EQ-006
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Branch/worktree: main / shared workspace
+
+Scope: finish the visible session vocabulary migration and remove the last unused scheduling placeholder from the frontend surface.
+
+Changed: The canonical user-facing detail route is now `/sessions/:sessionId`, creation is `/groups/:groupId/sessions/new`, and all primary dashboard, group, recommendation, upcoming-session, and log-session links use those paths. Legacy `/meets/:meetId` and `/groups/:groupId/meets/new` URLs redirect to the canonical routes. Session detail now presents Planned, Live now, Completed, and Cancelled labels; scheduling copy distinguishes selecting existing attendees from inviting people to the group; the old unused fake-ID `form-schedule-session` component was removed; and the groups card now says “Last session.”
+
+Review: TRUTH-001 / EQ-006 / PROD-005
+
+Verified: Frontend Biome, browser unit tests (5), production build (596.21 kB initial / 136.59 kB estimated transfer), and public Playwright checks (4 passed, 7 authenticated skipped without Clerk state) pass. No migration, production data, deployment, or provider configuration was changed.
+
 Review: PROD-001 / EQ-006
 
 Verified: Frontend lint, build, browser unit tests, public Playwright checks, and `git diff --check` pass. No backend, production data, deployment, or provider configuration was changed.

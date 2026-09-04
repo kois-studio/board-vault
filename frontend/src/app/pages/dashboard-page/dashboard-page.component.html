@@ -89,9 +89,9 @@
                             <div class="mt-6 flex flex-col gap-2 sm:flex-row">
                                 <a class="app-btn-primary flex-1 text-center" [routerLink]="['/groups', summary.group.id]">Open group</a>
                                 @if (summary.nextMeeting; as nextMeeting) {
-                                    <a class="app-btn-secondary flex-1 text-center" [routerLink]="['/meets', nextMeeting.id]">Open session</a>
+                                    <a class="app-btn-secondary flex-1 text-center" [routerLink]="['/sessions', nextMeeting.id]">Open session</a>
                                 } @else {
-                                    <a class="app-btn-secondary flex-1 text-center" [routerLink]="['/groups', summary.group.id, 'meets', 'new']">Plan a session</a>
+                                    <a class="app-btn-secondary flex-1 text-center" [routerLink]="['/groups', summary.group.id, 'sessions', 'new']">Plan a session</a>
                                 }
                             </div>
                             <a class="mt-4 text-center text-sm font-semibold text-indigo-600 hover:underline dark:text-indigo-400" routerLink="/play/recommendations" [queryParams]="{ groupId: summary.group.id }">Find a game for this group →</a>
