@@ -9,7 +9,7 @@ import { CreateGameProposalBody, GameProposalDto } from '../../../common/types/g
 import { InvitationWithExtraData } from '../../../common/types/invitation.type'
 import { NotificationDto } from '../../../common/types/notification.type'
 import { UserProposalStatsDto } from '../../../common/types/stats.type'
-import { UserGetDto } from '../../../common/types/user.type'
+import { UserSelfDto } from '../../../common/types/user.type'
 
 import { ProfileService } from './profile.service'
 
@@ -23,7 +23,7 @@ export class ProfileController {
     @UseGuards(UserOwnershipGuard)
     @Get('/users/:userId')
     @ApiOperation({ summary: 'Get user by id', deprecated: false })
-    @ApiResponse({ status: 200, type: UserGetDto, description: 'User found' })
+    @ApiResponse({ status: 200, type: UserSelfDto, description: 'Authenticated user profile found' })
     @ApiResponse({ status: 404, description: 'User not found' })
     async getUserById(@Param('userId', ParseIntPipe) userId: number) {
         return this.profileService.getUserById(userId)

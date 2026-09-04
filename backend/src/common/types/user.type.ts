@@ -77,6 +77,12 @@ export class UserCompleteDto {
 export class UserGetDto extends OmitType(UserCompleteDto, ['password', 'verification_token', 'password_reset_token']) {}
 
 /**
+ * Authenticated self-profile response. Account state and administrator flags
+ * belong to dedicated auth/admin contracts, not the ordinary profile payload.
+ */
+export class UserSelfDto extends PickType(UserGetDto, ['id', 'email', 'username', 'displayName', 'avatar', 'createdAt']) {}
+
+/**
  * Public identity used when a user is nested in another user's response.
  * Email and account-state fields are reserved for dedicated self/admin boundaries.
  */

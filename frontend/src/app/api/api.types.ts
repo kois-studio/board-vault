@@ -21,9 +21,6 @@ export type UserType = {
         initials: string
     }
     createdAt: string
-    isDeleted: boolean
-    isAdmin: boolean
-    email_verified: boolean
 }
 
 export type PublicUserType = Pick<UserType, 'id' | 'username' | 'displayName' | 'avatar'>
