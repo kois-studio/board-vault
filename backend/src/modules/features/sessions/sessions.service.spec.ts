@@ -26,6 +26,7 @@ function createDatabaseMock() {
         getMeetByIdForCreator: jest
             .fn()
             .mockResolvedValue({ rows: [[12, 7, 1, '2026-08-16T19:30:00.000Z', 0, 'scheduled', 'Europe/Madrid', null]] }),
+        getMeetDetailsByIdForAccount: jest.fn(),
         updateMeetStatus: jest.fn().mockResolvedValue({ rowsAffected: 1 }),
         getMeetAttendeeForAccount: jest.fn(),
         updateMeetAttendeeRsvp: jest.fn(),
@@ -38,6 +39,59 @@ function createDatabaseMock() {
 }
 
 describe('SessionsService', () => {
+    it('reads session details through the member-scoped canonical query', async () => {
+        const database = createDatabaseMock()
+
+        database.getMeetDetailsByIdForAccount.mockResolvedValue({
+            rows: [
+                [
+                    12,
+                    7,
+                    1,
+                    '2026-08-16T19:30:00.000Z',
+                    1,
+                    '[1,2]',
+                    '[{"accountId":1,"rsvpStatus":"accepted","attendanceStatus":"attended"}]',
+                    '[42]',
+                    '[43]',
+                    '[]',
+                    '[{"gameId":42,"participantIds":[1]}]',
+                    'completed',
+                    'Europe/Madrid',
+                    'A memorable night',
+                ],
+            ],
+        })
+        const service = new SessionsService(database as unknown as DatabaseService)
+
+        await expect(service.getSessionDetails(2, 12)).resolves.toEqual({
+            id: 12,
+            groupId: 7,
+            createdBy: 1,
+            meetDate: '2026-08-16T19:30:00.000Z',
+            isConfirmed: true,
+            attendees: [1, 2],
+            attendeeStatuses: [{ accountId: 1, rsvpStatus: 'accepted', attendanceStatus: 'attended' }],
+            playedGames: [42],
+            plannedGames: [43],
+            skippedGames: [],
+            playedGameParticipants: [{ gameId: 42, participantIds: [1] }],
+            status: 'completed',
+            timezone: 'Europe/Madrid',
+            notes: 'A memorable night',
+        })
+        expect(database.getMeetDetailsByIdForAccount).toHaveBeenCalledWith(12, 2)
+    })
+
+    it('does not reveal a session to a non-member', async () => {
+        const database = createDatabaseMock()
+
+        database.getMeetDetailsByIdForAccount.mockResolvedValue({ rows: [] })
+        const service = new SessionsService(database as unknown as DatabaseService)
+
+        await expect(service.getSessionDetails(99, 12)).rejects.toThrow(NotFoundException)
+    })
+
     it('creates a completed session from group members and available games', async () => {
         const database = createDatabaseMock()
         const service = new SessionsService(database as unknown as DatabaseService)
