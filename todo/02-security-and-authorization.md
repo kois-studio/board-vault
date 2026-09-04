@@ -6,7 +6,7 @@
 
 ### SEC-001 — prevent self-promotion to admin
 
-The historical public user update DTO exposed privileged fields including `isAdmin`, verification state, and token fields. The current profile-update boundary is remediated with a dedicated strict DTO; continue auditing other request DTOs before enabling global validation.
+The historical public user update DTO exposed privileged fields including `isAdmin`, verification state, and token fields. The current profile-update boundary is remediated with a dedicated strict DTO, and the backend now enables global strict validation as a safety net after the highest-risk DTO audit slices were covered. Continue auditing remaining request DTOs and client negative cases.
 
 Hotspots:
 
@@ -21,7 +21,7 @@ Completed boundary:
 - internal authentication workflows use a separate account-state update path;
 - regression tests prove privileged fields and malformed nested avatar data are rejected.
 
-Continue the same audit pattern for remaining body/query DTOs before enabling a global validation policy.
+Continue the same audit pattern for remaining body/query DTOs and client negative cases under the active global validation policy.
 
 ### SEC-002 — audit object-level authorization
 

@@ -4,7 +4,7 @@
 
 The backend is an HTTP NestJS API with no global prefix. `main.ts` creates runtime Swagger at `/swagger` using `@nestjs/swagger`, installs a global strict `ValidationPipe` as a DTO safety net, and exposes bearer auth metadata and decorated DTOs. The API is consumed by the Angular client through the `Api` service and `DataService`; the production frontend environment targets `https://backend.board-vault.com`.
 
-The runtime Swagger document is generated from source. There is no committed versioned OpenAPI artifact, generated client, consumer-driven contract, or contract-test gate. The removed dashboard meeting-creation mutation has no remaining frontend client helper.
+The runtime Swagger document is generated from source. There is no committed versioned OpenAPI artifact, generated client, consumer-driven contract, or contract-test gate. HTTP failures now use the safe `{ statusCode, code, message, details?, requestId }` envelope and include `X-Request-Id`; 5xx responses intentionally collapse provider and exception details to `Request failed`. The removed dashboard meeting-creation mutation has no remaining frontend client helper.
 
 ## Route families observed
 
@@ -25,7 +25,7 @@ The list is intentionally representative rather than a second route registry. Th
 
 - `ParseIntPipe` is used on selected route parameters and `main.ts` installs a global strict `ValidationPipe` for DTO boundaries. Controllers retain targeted pipes where their request contract needs explicit local coverage. The bootstrap also applies an explicit 100 KB JSON/URL-encoded body limit; client negative tests and the remaining legacy response contracts are still open.
 - `frontend/src/app/api/api.schemas.ts` validates auth status/token, availability, private profile, catalog/owned/wishlist/browse/game-detail game responses, group/member/game/invitation responses (including invitation creation and the user invitation feed), dashboard stats, notifications, reviews, collection activity, group-history responses, admin tags/games/proposals, user proposals and proposal stats, persisted meets, completed history, attendee/played-game compatibility writes, and the translation-backed optional legacy game title, plus legacy auth messages, session creation/status, meet details, recommendations, recommendation feedback, and the success-envelope mutations at the client boundary. New endpoints and client negative tests remain open.
-- Error shape, compatibility policy, deprecation policy, pagination limits, and retry/idempotency behavior are not documented as stable contracts.
+- Compatibility policy, deprecation policy, pagination limits, and retry/idempotency behavior are not documented as stable contracts. The error envelope is now stable at the transport boundary, but representative producer/consumer contract tests remain open.
 - Pagination helpers exist (`limit.pipe.ts`, `offset.pipe.ts`) and some admin operations are paginated, but maximum bounds and expensive-query behavior are not consistently evidenced.
 - Proposal review operations derive reviewer identity from the JWT; the frontend no longer sends reviewer query parameters.
 - `POST /sessions` derives the creator from the authenticated request. Its request contract rejects unknown fields, requires at least one attendee and game, and prevents participants from being outside the selected attendees.

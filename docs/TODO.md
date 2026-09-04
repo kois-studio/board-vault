@@ -61,7 +61,7 @@ Product execution ownership remains in `/todo/`.
 
 - **Status:** In progress
 - **Affected area:** `backend/test/`, backend `src`, frontend `src/**/*.spec.ts`
-- **Evidence:** Backend now has 42 focused suites and 183 passing unit tests plus 2 environment-safe HTTP E2E tests; frontend has 3 browser-based unit tests plus four passing public Playwright tests, while seeded/integration journeys and authenticated browser coverage remain opt-in.
+- **Evidence:** Backend now has 43 focused suites and 185 passing unit tests plus 2 environment-safe HTTP E2E tests; frontend has 3 browser-based unit tests plus four passing public Playwright tests, while seeded/integration journeys and authenticated browser coverage remain opt-in.
 - **Risk:** Security and product regressions are invisible.
 - **Next action:** Add auth/authorization/data tests first, then core-loop and frontend state tests.
 - **Dependencies:** READINESS-001, READINESS-002, READINESS-003.
@@ -70,7 +70,7 @@ Product execution ownership remains in `/todo/`.
 
 - **Status:** In progress
 - **Affected area:** `.github/` or chosen CI provider
-- **Evidence:** `.github/workflows/ci.yml` now runs locked backend/frontend installs, backend tests/build/lint, frontend build/Biome/public Playwright checks, and disposable database migration verification. The local run passes backend lint, 183 backend tests, frontend build/Biome, and four public Playwright tests; authenticated E2E and deployment smoke checks are intentionally excluded because they require secret-bearing state.
+- **Evidence:** `.github/workflows/ci.yml` now runs locked backend/frontend installs, backend tests/build/lint, frontend build/Biome/public Playwright checks, and disposable database migration verification. The local run passes backend lint, 185 backend tests, frontend build/Biome, and four public Playwright tests; authenticated E2E and deployment smoke checks are intentionally excluded because they require secret-bearing state.
 - **Risk:** Build, test, lint, formatting, migration, and contract regressions reach integration/deployment.
 - **Next action:** Observe the first GitHub Actions run and add non-production authenticated E2E when disposable Clerk state exists.
 - **Dependencies:** A meaningful test baseline and the repository’s locked-install workflow.
@@ -97,7 +97,7 @@ Product execution ownership remains in `/todo/`.
 
 - **Status:** Planned
 - **Affected area:** Swagger generation, `frontend/src/app/api/`, Nest controllers/DTOs
-- **Evidence:** Runtime Swagger exists, but no versioned contract artifact, error contract, compatibility policy, or contract tests.
+- **Evidence:** Runtime Swagger exists and the backend now applies `ApiErrorFilter`, returning a stable `{ statusCode, code, message, details?, requestId }` envelope with `X-Request-Id`; no versioned contract artifact, compatibility policy, or producer/consumer contract tests exist yet.
 - **Risk:** Frontend/backend drift and unsafe breaking changes.
 - **Next action:** Publish versioned OpenAPI/contract output, standardize errors/pagination, and test representative producer/consumer compatibility.
 - **Dependencies:** READINESS-002 and canonical session/data model.

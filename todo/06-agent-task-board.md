@@ -1742,3 +1742,19 @@ Changed: Replaced the wide Player / Game table with per-game participant cards. 
 Review: EQ-006
 
 Verified: Frontend production build, Biome checks, and the public Playwright suite pass (4 passed; 7 authenticated tests skipped without Clerk storage state). The new participant step has no horizontal table dependency and remains pending authenticated browser and rendered breakpoint review.
+
+Continuation claim: EQ-004
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Branch/worktree: main / shared workspace
+
+Scope: establish a stable safe HTTP error envelope for backend failures without leaking provider, SQL, or stack details.
+
+Changed: Added a global `ApiErrorFilter` that preserves status codes and human-readable messages, normalizes validation details, adds a stable `code`/`requestId` envelope plus `X-Request-Id`, and collapses unexpected 5xx/provider details to a generic message. Added regression coverage for validation and unexpected exceptions and documented the transport contract.
+
+Review: EQ-004
+
+Verified: Focused filter tests pass, backend build and lint pass, and the filter never serializes exception/provider details into a 5xx response. Representative producer/consumer contract tests and a full domain error-code policy remain open.

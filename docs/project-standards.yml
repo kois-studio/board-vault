@@ -88,7 +88,7 @@ compliance:
 
     - id: TEST-001
       status: gap
-      evidence: backend has 42 focused suites and 183 passing tests covering authentication, authorization, validation, sessions, per-game participation, recommendations, invitation visibility, verified-user gating, admin route validation, cache endpoint protection, and provider boundaries; frontend has three browser-based unit tests plus four passing public Playwright checks and seven opt-in authenticated checks
+      evidence: backend has 43 focused suites and 185 passing tests covering authentication, authorization, validation, sessions, per-game participation, recommendations, invitation visibility, verified-user gating, admin route validation, cache endpoint protection, safe API errors, and provider boundaries; frontend has three browser-based unit tests plus four passing public Playwright checks and seven opt-in authenticated checks
       priority: high
       next_action: Add layered unit, integration, and journey tests for the flagship loop.
     - id: TEST-002
@@ -108,12 +108,12 @@ compliance:
       next_action: Expand the HTTP contract suite with disposable authenticated/authorized journeys.
     - id: TEST-005
       status: gap
-      evidence: 183 focused backend tests now cover the highest-risk unit boundaries, but the suite does not yet exercise a clean database, provider failure contract, or complete authenticated browser journey
+      evidence: 185 focused backend tests now cover the highest-risk unit boundaries, but the suite does not yet exercise a clean database, provider failure contract, or complete authenticated browser journey
       priority: critical
       next_action: Add disposable integration and contract coverage for auth, group membership, collection ownership, session transactions, and recommendation rules.
     - id: TEST-006
       status: gap
-      evidence: backend unit command passes 183 focused tests and frontend has three browser-based unit tests plus four public Playwright checks; clean installs now pass and the validation workflow now includes lint/Biome gates, while CI enforcement is not yet observed remotely
+      evidence: backend unit command passes 185 focused tests and frontend has three browser-based unit tests plus four public Playwright checks; clean installs now pass and the validation workflow now includes lint/Biome gates, while CI enforcement is not yet observed remotely
       priority: high
       next_action: Keep the supported test commands meaningful and observe their first required CI run.
     - id: TEST-007
@@ -358,10 +358,10 @@ compliance:
       priority: critical
       next_action: Expand boundary negative tests and close the remaining legacy response-contract gaps.
     - id: API-003
-      status: gap
-      evidence: no project-wide stable error schema or exception mapping is documented
+      status: partial
+      evidence: ApiErrorFilter returns a stable statusCode/code/message/details/requestId envelope, adds X-Request-Id, preserves safe validation details, and collapses 5xx exception/provider details; producer/consumer contract tests and documented mapping for every domain error remain open
       priority: high
-      next_action: Define safe machine-readable validation/auth/conflict/internal errors.
+      next_action: Add representative contract tests and document compatibility/error-code policy.
     - id: API-004
       status: gap
       evidence: controllers mark multiple routes deprecated, but no compatibility/deprecation policy exists
@@ -593,15 +593,15 @@ compliance:
       priority: critical
       next_action: Audit defense beyond controllers.
     - id: NEST-009
-      status: gap
-      evidence: external inputs enter many controllers without a global validation pipe
+      status: partial
+      evidence: main.ts enables a global strict ValidationPipe with whitelist, forbidNonWhitelisted, and transform; controller-local pipes remain on sensitive routes and remaining decorator/negative-test coverage is open
       priority: critical
-      next_action: Enable validation before application logic.
+      next_action: Complete the DTO decorator inventory and client negative tests.
     - id: NEST-010
-      status: gap
-      evidence: no stable safe error contract or exception filter
+      status: partial
+      evidence: ApiErrorFilter is installed globally, normalizes HttpException responses, hides unexpected 5xx details, and correlates responses with X-Request-Id; broader structured logging and domain-error mapping remain open
       priority: high
-      next_action: Define and test the API error envelope.
+      next_action: Add representative integration/contract tests and align provider/domain errors with stable codes.
     - id: NEST-011
       status: partial
       evidence: validateEnv checks three variables and `.env` is ignored; Email/Redis requirements are not centralized
