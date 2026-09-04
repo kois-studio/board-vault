@@ -59,7 +59,7 @@ Relevant surfaces: [`app.routes.ts`](../frontend/src/app/app.routes.ts), [`meet-
 
 Relevant intent: [`todo/04-core-product-loop.md`](../todo/04-core-product-loop.md), [`adr/0002-deterministic-explainable-recommendations.md`](adr/0002-deterministic-explainable-recommendations.md).
 
-- Implemented `POST /play/recommendations` with group membership and attendee validation.
+- Implemented `POST /play/recommendations` with group membership and attendee validation; the group workspace carries its selected attendee context into the recommendation route and the page safely restores only current group members.
 - Defined inputs: group, selected attendees, and optional available time; player count is derived from attendees.
 - Implemented deterministic filtering and scoring using player count, collective attendee ownership, selected-attendee ratings, and optional duration fit.
 - Return explanations with each recommendation, including owner coverage, rating, and last-play context.

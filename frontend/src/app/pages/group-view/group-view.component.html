@@ -67,7 +67,7 @@
                     <a
                         class="app-btn-primary shrink-0 text-center"
                         routerLink="/play/recommendations"
-                        [queryParams]="{ groupId: group.id }"
+                        [queryParams]="{ groupId: group.id, attendeeIds: selectedMembers$().join(',') }"
                     >Find a game</a>
                 </div>
             </section>

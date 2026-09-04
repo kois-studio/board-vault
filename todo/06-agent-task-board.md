@@ -2158,3 +2158,19 @@ Changed: Group acquisition search now removes games already owned by any member 
 Review: PROD-005 / EQ-006
 
 Verified: Frontend Biome, 11 browser-based unit tests, production build (598.39 kB initial / 137.83 kB estimated transfer), and `git diff --check` pass. No migration, production data, deployment, or provider config changed.
+
+Continuation claim: PROD-005 / TRUTH-001
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Branch/worktree: main / shared workspace
+
+Scope: preserve the group’s selected attendee context when requesting recommendations.
+
+Changed: The group workspace now includes its selected members in the recommendation link, and the recommendation page validates and restores those member IDs for the selected group. Manual group changes still default to all members, while an invalid or stale query falls back safely.
+
+Review: PROD-005 / TRUTH-001
+
+Verified: Frontend Biome, 11 browser-based unit tests, production build (598.39 kB initial / 137.83 kB estimated transfer), and `git diff --check` pass. No migration, production data, deployment, or provider config changed.

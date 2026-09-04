@@ -42,15 +42,18 @@ export class RecommendationsPageComponent {
             if (groups.length > 0 && this.selectedGroupId() === null) {
                 const requestedGroupId = Number(this.route.snapshot.queryParamMap.get('groupId'))
                 const requestedGroup = groups.find((group) => group.id === requestedGroupId)
-                this.selectGroup((requestedGroup ?? groups[0]).id)
+                const requestedAttendeeIds = this.readRequestedAttendeeIds(requestedGroup ?? groups[0])
+                this.selectGroup((requestedGroup ?? groups[0]).id, requestedAttendeeIds)
             }
         })
     }
 
-    public selectGroup(groupId: number): void {
+    public selectGroup(groupId: number, requestedAttendeeIds?: Array<number>): void {
         const group = this.userGroups().find((candidate) => candidate.id === groupId)
         this.selectedGroupId.set(group?.id ?? null)
-        this.selectedAttendeeIds.set(group?.members.map((member) => member.id) ?? [])
+        const memberIds = new Set(group?.members.map((member) => member.id) ?? [])
+        const attendeeIds = requestedAttendeeIds?.filter((accountId) => memberIds.has(accountId)) ?? [...memberIds]
+        this.selectedAttendeeIds.set([...new Set(attendeeIds)])
         this.recommendations.set(null)
         this.recommendationSignals.set(null)
         this.feedbackState.set({})
@@ -167,5 +170,18 @@ export class RecommendationsPageComponent {
     public getMemberName(group: GroupWithMembersAndGames, accountId: number): string {
         const member = group.members.find((candidate) => candidate.id === accountId)
         return member?.displayName || member?.username || 'Member'
+    }
+
+    private readRequestedAttendeeIds(group: GroupWithMembersAndGames): Array<number> | undefined {
+        const rawValue = this.route.snapshot.queryParamMap.get('attendeeIds')
+        if (!rawValue) return undefined
+
+        const memberIds = new Set(group.members.map((member) => member.id))
+        const requestedIds = rawValue
+            .split(',')
+            .map((value) => Number(value))
+            .filter((accountId) => Number.isInteger(accountId) && memberIds.has(accountId))
+
+        return requestedIds.length > 0 ? [...new Set(requestedIds)] : undefined
     }
 }
