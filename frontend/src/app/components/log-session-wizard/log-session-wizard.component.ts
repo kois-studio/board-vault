@@ -95,8 +95,8 @@ export class LogSessionWizardComponent {
         { key: 'date', label: 'Date', description: 'When did this session take place?' },
         { key: 'attendees', label: 'Attendees', description: 'Select who attended this session' },
         { key: 'games', label: 'Games', description: 'Select which games were played' },
-        { key: 'matrix', label: 'Matrix', description: 'Mark who played which games' },
-        { key: 'notes', label: 'Memory', description: 'Add a note about this session (optional)' },
+        { key: 'matrix', label: 'Who played what?', description: 'Tell the group who played each game' },
+        { key: 'notes', label: 'Notes', description: 'Add a note about this session (optional)' },
     ]
 
     // --------------------------------------------------------------------------
@@ -153,7 +153,7 @@ export class LogSessionWizardComponent {
                 case 'games':
                     return this.games().some((g) => g.selected)
                 case 'matrix':
-                    return this.matrix().some((cell) => cell.selected)
+                    return this.hasParticipantsForEveryGame()
                 case 'notes':
                     return true
                 default:
@@ -202,8 +202,12 @@ export class LogSessionWizardComponent {
                 return selectedGames.length > 0 ? `${selectedGames.length} selected` : ''
             }
             case 'matrix': {
-                const selectedCells = this.matrix().filter((cell) => cell.selected)
-                return selectedCells.length > 0 ? `${selectedCells.length} combinations` : ''
+                const selectedGames = this.getSelectedGames()
+                const selectedParticipants = selectedGames.reduce(
+                    (total, game) => total + this.getSelectedParticipantCount(game.game.id),
+                    0,
+                )
+                return selectedGames.length > 0 ? `${selectedParticipants} player choices` : ''
             }
             case 'notes':
                 return this.sessionNotes.value?.trim() ? 'Added' : 'Optional'
@@ -326,7 +330,7 @@ export class LogSessionWizardComponent {
             case 'games':
                 return this.games().some((g) => g.selected)
             case 'matrix':
-                return this.matrix().some((cell) => cell.selected)
+                return this.hasParticipantsForEveryGame()
             case 'notes':
                 return true
             default:
@@ -507,6 +511,16 @@ export class LogSessionWizardComponent {
     public isAllSelectedForGame(gameId: number): boolean {
         const gameCells = this.matrix().filter((cell) => cell.gameId === gameId)
         return gameCells.length > 0 && gameCells.every((cell) => cell.selected)
+    }
+
+    public getSelectedParticipantCount(gameId: number): number {
+        return this.matrix().filter((cell) => cell.gameId === gameId && cell.selected).length
+    }
+
+    public hasParticipantsForEveryGame(): boolean {
+        const selectedGames = this.getSelectedGames()
+
+        return selectedGames.length > 0 && selectedGames.every((game) => this.getSelectedParticipantCount(game.game.id) > 0)
     }
 
     // --------------------------------------------------------------------------
