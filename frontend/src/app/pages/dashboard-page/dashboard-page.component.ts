@@ -17,12 +17,8 @@ export class DashboardPageComponent {
 
     public readonly userGroups$ = this.dataService.userGroups
     public readonly userMeets$ = this.dataService.userMeets
-    public readonly userGames$ = this.dataService.userGames
-    public readonly userHistory$ = this.dataService.userHistory
-    public readonly userGamesError = this.dataService.userGamesError
     public readonly userGroupsError = this.dataService.userGroupsError
     public readonly userMeetsError = this.dataService.userMeetsError
-    public readonly userHistoryError = this.dataService.userHistoryError
     public readonly groupSummaries = computed(() => {
         return this.userGroups$().map((group) => {
             const nextMeeting =
@@ -39,21 +35,12 @@ export class DashboardPageComponent {
     })
     public readonly isLoadingOverview = computed(() => {
         const loading = this.loadingService.loadingStatesIndex()
-        return (
-            loading[LOADING_KEYS.USER_GAMES] ||
-            loading[LOADING_KEYS.USER_GROUPS] ||
-            loading[LOADING_KEYS.USER_MEETS] ||
-            loading[LOADING_KEYS.USER_GAMES_HISTORY]
-        )
+        return loading[LOADING_KEYS.USER_GROUPS] || loading[LOADING_KEYS.USER_MEETS]
     })
-    public readonly hasOverviewError = computed(
-        () => this.userGamesError() || this.userGroupsError() || this.userMeetsError() || this.userHistoryError(),
-    )
+    public readonly hasOverviewError = computed(() => this.userGroupsError() || this.userMeetsError())
 
     public retryOverview() {
-        this.dataService.refreshUserGames()
         this.dataService.refreshUserGroups()
         this.dataService.refreshUserMeets()
-        this.dataService.refreshUserHistory()
     }
 }
