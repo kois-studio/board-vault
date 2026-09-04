@@ -4,7 +4,7 @@ import { Pipe, PipeTransform } from '@angular/core'
     name: 'customDate',
 })
 export class CustomDatePipe implements PipeTransform {
-    transform(value: null | string | Date): string {
+    transform(value: null | string | Date, includeTime = false, timezone?: string): string {
         if (!value) {
             return ''
         }
@@ -29,6 +29,8 @@ export class CustomDatePipe implements PipeTransform {
             day: 'numeric',
             month: 'long',
             year: 'numeric',
+            ...(includeTime ? { hour: 'numeric', minute: '2-digit' } : {}),
+            ...(timezone ? { timeZone: timezone } : {}),
         }).format(date)
     }
 }

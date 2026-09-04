@@ -2,11 +2,12 @@ import { Controller, Get, Param, ParseIntPipe, Req, UseGuards } from '@nestjs/co
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
+import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
 import { MeetDto, MeetWithAttendeesAndGames } from '../../../common/types/meet.type'
 
 import { MeetsService } from './meets.service'
 
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, VerifiedUserGuard)
 @ApiTags('meets')
 @ApiBearerAuth()
 @Controller('meets')

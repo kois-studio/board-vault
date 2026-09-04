@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common'
 import { Component, computed, effect, inject, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
+import { ActivatedRoute } from '@angular/router'
 import { RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../../api/api'
-import type { GroupWithMembersAndGames, RecommendationsType } from '../../../api/api.types'
+import type { GroupWithMembersAndGames, RecommendationSignalsType, RecommendationsType } from '../../../api/api.types'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
@@ -18,6 +19,7 @@ import { LoadingService } from '../../../core/services/loading.service'
 })
 export class RecommendationsPageComponent {
     private readonly api = inject(Api)
+    private readonly route = inject(ActivatedRoute)
     private readonly dataService = inject(DataService)
     private readonly loadingService = inject(LoadingService)
 
@@ -28,16 +30,19 @@ export class RecommendationsPageComponent {
     public readonly selectedAttendeeIds = signal<Array<number>>([])
     public readonly availableMinutes = signal<number | null>(120)
     public readonly recommendations = signal<RecommendationsType | null>(null)
+    public readonly recommendationSignals = signal<RecommendationSignalsType | null>(null)
     public readonly isLoading = signal(false)
     public readonly errorMessage = signal<string | null>(null)
-    public readonly feedbackState = signal<Record<number, 'saving' | 'saved'>>({})
+    public readonly feedbackState = signal<Record<number, 'saving' | 'interested' | 'not_for_us'>>({})
     public readonly selectedGroup = computed(() => this.userGroups().find((group) => group.id === this.selectedGroupId()) ?? null)
 
     constructor() {
         effect(() => {
-            const firstGroup = this.userGroups()[0]
-            if (firstGroup && this.selectedGroupId() === null) {
-                this.selectGroup(firstGroup.id)
+            const groups = this.userGroups()
+            if (groups.length > 0 && this.selectedGroupId() === null) {
+                const requestedGroupId = Number(this.route.snapshot.queryParamMap.get('groupId'))
+                const requestedGroup = groups.find((group) => group.id === requestedGroupId)
+                this.selectGroup((requestedGroup ?? groups[0]).id)
             }
         })
     }
@@ -47,12 +52,16 @@ export class RecommendationsPageComponent {
         this.selectedGroupId.set(group?.id ?? null)
         this.selectedAttendeeIds.set(group?.members.map((member) => member.id) ?? [])
         this.recommendations.set(null)
+        this.recommendationSignals.set(null)
+        this.feedbackState.set({})
         this.errorMessage.set(null)
     }
 
     public toggleAttendee(accountId: number): void {
         this.selectedAttendeeIds.update((ids) => (ids.includes(accountId) ? ids.filter((id) => id !== accountId) : [...ids, accountId]))
         this.recommendations.set(null)
+        this.recommendationSignals.set(null)
+        this.feedbackState.set({})
     }
 
     public isAttendeeSelected(accountId: number): boolean {
@@ -84,6 +93,7 @@ export class RecommendationsPageComponent {
                     }),
                 ),
             )
+            void this.loadRecommendationSignals(groupId)
         } catch {
             this.recommendations.set(null)
             this.errorMessage.set('Recommendations could not be loaded. Please try again.')
@@ -92,10 +102,43 @@ export class RecommendationsPageComponent {
         }
     }
 
-    public async markNotForUs(gameId: number): Promise<void> {
+    public async loadRecommendationSignals(groupId: number): Promise<void> {
+        try {
+            const signals = await firstValueFrom(this.api.getRecommendationSignals(groupId))
+            this.recommendationSignals.set(signals)
+            this.feedbackState.set(
+                Object.fromEntries(
+                    signals.signals
+                        .filter((signal) => signal.yourFeedback === 'interested' || signal.yourFeedback === 'not_for_us')
+                        .map((signal) => [signal.gameId, signal.yourFeedback]),
+                ) as Record<number, 'interested' | 'not_for_us'>,
+            )
+        } catch {
+            // Group signals enrich the decision surface; they should not hide usable recommendations.
+            this.recommendationSignals.set(null)
+        }
+    }
+
+    public getRecommendationSignal(gameId: number): RecommendationSignalsType['signals'][number] | null {
+        return this.recommendationSignals()?.signals.find((signal) => signal.gameId === gameId) ?? null
+    }
+
+    public getInterestedMemberNames(signal: RecommendationSignalsType['signals'][number]): string {
+        return signal.interestedBy
+            .slice(0, 3)
+            .map((member) => member.displayName || member.username)
+            .join(', ')
+    }
+
+    public async saveFeedback(gameId: number, feedback: 'interested' | 'not_for_us'): Promise<void> {
         const groupId = this.selectedGroupId()
         const attendeeIds = this.selectedAttendeeIds()
-        if (!groupId || attendeeIds.length === 0 || this.feedbackState()[gameId]) {
+        if (
+            !groupId ||
+            attendeeIds.length === 0 ||
+            this.feedbackState()[gameId] === 'saving' ||
+            this.feedbackState()[gameId] === feedback
+        ) {
             return
         }
 
@@ -106,10 +149,11 @@ export class RecommendationsPageComponent {
                     groupId,
                     gameId,
                     attendeeIds,
-                    feedback: 'not_for_us',
+                    feedback,
                 }),
             )
-            this.feedbackState.update((state) => ({ ...state, [gameId]: 'saved' }))
+            this.feedbackState.update((state) => ({ ...state, [gameId]: feedback }))
+            void this.loadRecommendationSignals(groupId)
         } catch {
             this.feedbackState.update((state) => {
                 const nextState = { ...state }

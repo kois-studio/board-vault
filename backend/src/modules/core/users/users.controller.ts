@@ -1,15 +1,16 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Put, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
-import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
 import { AdminGuard } from '../../../common/guards/admin.guard'
+import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
+import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
 import { SuccessDto } from '../../../common/types/auth.type'
-import { CreateUserBody, UpdateUserBody, UserGetDto, UserUpdateGamesBody } from '../../../common/types/user.type'
+import { UpdateUserBody, UserGetDto, UserUpdateGamesBody } from '../../../common/types/user.type'
 
 import { UsersService } from './users.service'
 
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, VerifiedUserGuard)
 @ApiTags('users')
 @ApiBearerAuth()
 @Controller('users')
@@ -23,13 +24,6 @@ export class UsersController {
     @ApiResponse({ status: 403, description: 'Administrator access required' })
     async getUsers() {
         return this.usersService.getUsers()
-    }
-
-    @Post('/')
-    @ApiOperation({ summary: 'Create a new user', deprecated: true })
-    @ApiResponse({ status: 201, description: 'The user has been succesfully created' })
-    async createUser(@Body() userDto: CreateUserBody) {
-        return this.usersService.createUser(userDto, 'do-not-use-this-token')
     }
 
     @UseGuards(UserOwnershipGuard)

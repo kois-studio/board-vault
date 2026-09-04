@@ -483,6 +483,18 @@ export class DataService {
         )
     }
 
+    public inviteNewPersonToGroup(groupId: number, emailAddress: string) {
+        return this.api.createClerkGroupInvitation(groupId, emailAddress).pipe(
+            tap(() => this.toastService.success('Clerk invitation sent')),
+            catchError((error) => {
+                this.toastService.error(
+                    error.status === 409 ? 'This email already has a pending invitation' : 'Error sending email invitation',
+                )
+                return throwError(() => error)
+            }),
+        )
+    }
+
     // #region games
 
     public updateUserGames(userGameIds: Array<number>, gameIdsToToggle: Array<number>) {

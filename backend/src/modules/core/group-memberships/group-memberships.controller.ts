@@ -3,11 +3,12 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
+import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
 import { CreateGroupMembershipRequestBody, GroupMembershipDto } from '../../../common/types/group-membership.type'
 
 import { GroupMembershipsService } from './group-memberships.service'
 
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, VerifiedUserGuard)
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
 @ApiTags('memberships')
 @ApiBearerAuth()

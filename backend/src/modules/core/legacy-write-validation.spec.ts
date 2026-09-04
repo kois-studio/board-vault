@@ -4,9 +4,12 @@ import * as request from 'supertest'
 
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
 import { UserInGroupGuard } from '../../common/guards/user-in-group.guard'
+import { VerifiedUserGuard } from '../../common/guards/verified-user.guard'
+import { ClerkIdentityService } from '../common/auth/clerk-identity.service'
 
 import { GroupMembershipsController } from './group-memberships/group-memberships.controller'
 import { GroupMembershipsService } from './group-memberships/group-memberships.service'
+import { GroupAcquisitionService } from './groups/group-acquisition.service'
 import { GroupsController } from './groups/groups.controller'
 import { GroupsService } from './groups/groups.service'
 import { InvitationsController } from './invitations/invitations.controller'
@@ -26,6 +29,8 @@ describe('Legacy write DTO validation', () => {
             controllers: [GroupsController, InvitationsController, NotificationsController, GroupMembershipsController],
             providers: [
                 { provide: GroupsService, useValue: { createGroup } },
+                { provide: GroupAcquisitionService, useValue: {} },
+                { provide: ClerkIdentityService, useValue: {} },
                 { provide: InvitationsService, useValue: { createInvitation } },
                 { provide: NotificationsService, useValue: { createNotification } },
                 { provide: GroupMembershipsService, useValue: { createGroupMembershipFromInvitation } },
@@ -38,6 +43,8 @@ describe('Legacy write DTO validation', () => {
                     return true
                 },
             })
+            .overrideGuard(VerifiedUserGuard)
+            .useValue({ canActivate: () => true })
             .overrideGuard(UserInGroupGuard)
             .useValue({ canActivate: () => true })
             .compile()

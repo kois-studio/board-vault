@@ -110,6 +110,20 @@ export type GroupWithMembersAndGames = GroupType & {
     >
 }
 
+export type GroupAcquisitionEntryType = {
+    gameData: GameCompleteType
+    interestedBy: Array<PublicUserType>
+    interestCount: number
+    ownerCount: number
+    firstInterestedAt: string
+}
+
+export type ClerkGroupInvitationType = {
+    invitationId: string
+    emailAddress: string
+    url: string
+}
+
 // #region Invitation
 
 export type InvitationType = {
@@ -164,6 +178,7 @@ export type MeetType = {
     isConfirmed: boolean
     status: 'scheduled' | 'active' | 'completed' | 'cancelled'
     timezone: string
+    notes: string | null
 }
 
 export type MeetAttendeeType = {
@@ -176,17 +191,31 @@ export type MeetGameType = {
     gameId: number
 }
 
+export type MeetAttendeeStatusType = {
+    accountId: number
+    rsvpStatus: 'pending' | 'accepted' | 'declined'
+    attendanceStatus: 'unknown' | 'attended' | 'absent'
+}
+
+export type MeetPlayedGameParticipantsType = {
+    gameId: number
+    participantIds: Array<number>
+}
+
 export type MeetWithAttendeesAndGamesType = MeetType & {
     attendees: Array<UserType['id']>
+    attendeeStatuses: Array<MeetAttendeeStatusType>
     playedGames: Array<GameType['id']>
     plannedGames: Array<GameType['id']>
     skippedGames: Array<GameType['id']>
+    playedGameParticipants: Array<MeetPlayedGameParticipantsType>
 }
 
 export type CreatePlaySessionRequest = {
     groupId: number
     sessionDate: string
     timezone: string
+    notes?: string
     attendeeIds: Array<number>
     games: Array<{
         gameId: number
@@ -203,6 +232,7 @@ export type ScheduleSessionRequest = {
     groupId: number
     sessionDate: string
     timezone: string
+    notes?: string
     attendeeIds: Array<number>
     plannedGameIds: Array<number>
 }
@@ -228,6 +258,48 @@ export type SessionStatusUpdatedType = {
 export type SessionAttendeesUpdatedType = {
     sessionId: number
     attendeeIds: Array<number>
+}
+
+export type UpdateSessionShortlistRequest = {
+    plannedGameIds: Array<number>
+}
+
+export type SessionShortlistUpdatedType = {
+    sessionId: number
+    plannedGameIds: Array<number>
+}
+
+export type UpdateSessionPlayedGamesRequest = {
+    playedGameIds: Array<number>
+    games: Array<{
+        gameId: number
+        participantIds: Array<number>
+    }>
+}
+
+export type SessionPlayedGamesUpdatedType = {
+    sessionId: number
+    playedGameIds: Array<number>
+    skippedGameIds: Array<number>
+    playedGameParticipants: Array<MeetPlayedGameParticipantsType>
+}
+
+export type UpdateSessionRsvpRequest = {
+    rsvpStatus: 'accepted' | 'declined'
+}
+
+export type SessionRsvpUpdatedType = {
+    sessionId: number
+    rsvpStatus: 'pending' | 'accepted' | 'declined'
+}
+
+export type UpdateSessionAttendanceRequest = {
+    attendedIds: Array<number>
+}
+
+export type SessionAttendanceUpdatedType = {
+    sessionId: number
+    attendedIds: Array<number>
 }
 
 export type UserStatsType = {
@@ -273,6 +345,7 @@ export type AdminGamesResultType = {
 // --------------------------------------------------------------------------
 export type HistoryRecordType = {
     meetData: MeetType
+    attendedBy: Array<PublicUserType>
     gamesPlayed: Array<{
         gameData: GameCompleteType
         playedBy: Array<PublicUserType>
@@ -288,7 +361,23 @@ export type RecommendationType = {
         attendeeCount: number
         averageReview: number | null
         lastPlayedAt: string | null
+        interestedCount: number
+        notForUsCount: number
     }
+}
+
+export type RecommendationSignalType = {
+    gameId: number
+    interestedCount: number
+    notForUsCount: number
+    yourFeedback: 'interested' | 'not_for_us' | null
+    interestedBy: Array<PublicUserType>
+    lastUpdatedAt: string
+}
+
+export type RecommendationSignalsType = {
+    groupId: number
+    signals: Array<RecommendationSignalType>
 }
 
 export type RecommendationsType = {

@@ -11,6 +11,7 @@
         "build": "ng build",
         "watch": "ng build --watch --configuration development",
         "test": "ng test",
+        "lint:check": "biome check src/app src/styles.css",
         "format": "biome check --write",
         "format-fix-unsafe": "biome check --fix --unsafe"
     },
@@ -28,8 +29,8 @@
         "@tailwindcss/postcss": "^4.0.6",
         "rxjs": "~7.8.1",
         "tslib": "^2.7.0",
-        "zone.js": "~0.15.0",
-        "zod": "3.23.8"
+        "zod": "3.23.8",
+        "zone.js": "~0.15.0"
     },
     "devDependencies": {
         "@angular-devkit/build-angular": "19.2.19",
@@ -47,6 +48,7 @@
         "karma-jasmine": "~5.1.0",
         "karma-jasmine-html-reporter": "~2.1.0",
         "postcss": "^8.4.47",
+        "postcss-nested": "^7.0.2",
         "tailwindcss": "^4.0.0",
         "typescript": "~5.5.4"
     }

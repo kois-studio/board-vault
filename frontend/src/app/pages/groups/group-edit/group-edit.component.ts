@@ -3,7 +3,7 @@ import { Component, effect } from '@angular/core'
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
-import { GameType } from '../../../api/api.types'
+import { ClerkGroupInvitationType, GameType } from '../../../api/api.types'
 import { CardAccountComponent } from '../../../components/card-account/card-account.component'
 import { ImageProfileComponent } from '../../../components/image-profile/image-profile.component'
 import { DataService } from '../../../core/services/data.service'
@@ -26,6 +26,8 @@ export class GroupEditComponent {
     public groupData: null | (typeof this.userGroups)[number] = null
     public membersToRemoveFromGroup: Array<number> = []
     public usernameToInvite = new FormControl('', [Validators.required, Validators.minLength(4), Validators.maxLength(20)])
+    public emailToInvite = new FormControl('', [Validators.required, Validators.email, Validators.maxLength(320)])
+    public clerkInvitation: ClerkGroupInvitationType | null = null
     public isLoading = false
 
     constructor(
@@ -112,6 +114,29 @@ export class GroupEditComponent {
         } finally {
             this.isLoading = false
         }
+    }
+
+    async onInviteNewPerson() {
+        if (!this.isGroupOwner || !this.groupData || !this.emailToInvite.value || this.emailToInvite.invalid || this.isLoading) return
+        this.isLoading = true
+        this.clerkInvitation = null
+
+        try {
+            this.clerkInvitation = await firstValueFrom(
+                this.dataService.inviteNewPersonToGroup(this.groupData.id, this.emailToInvite.value),
+            )
+            this.emailToInvite.reset()
+        } catch {
+            // DataService presents the request error; keep the entered email available for retry.
+        } finally {
+            this.isLoading = false
+        }
+    }
+
+    async copyClerkInvitationLink() {
+        if (!this.clerkInvitation?.url || !navigator.clipboard) return
+
+        await navigator.clipboard.writeText(this.clerkInvitation.url)
     }
 
     async onSaveChanges() {

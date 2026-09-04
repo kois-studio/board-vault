@@ -13,6 +13,7 @@ describe('EmailService logging', () => {
     const createService = (result: { data?: { id: string }; error?: unknown }) => {
         const service = Object.create(EmailService.prototype) as EmailService
         const internals = service as unknown as EmailServiceInternals
+
         internals.resend = { emails: { send: jest.fn().mockResolvedValue(result) } }
         internals.noReplyEmail = 'noreply@example.com'
         internals.appBaseUrl = 'https://example.com'

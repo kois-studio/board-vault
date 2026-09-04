@@ -60,15 +60,15 @@ export class AdminController {
     @Put('/tag-categories/:id')
     @ApiOperation({ summary: 'Update a tag category', deprecated: false })
     @ApiResponse({ status: 200, type: CreateTagCategoryDto, description: 'Tag category updated' })
-    async updateTagCategory(@Param('id') id: string, @Body() tagCategoryDto: CreateTagCategoryDto) {
-        return this.adminService.updateTagCategory(Number(id), tagCategoryDto.name)
+    async updateTagCategory(@Param('id', ParseIntPipe) id: number, @Body() tagCategoryDto: CreateTagCategoryDto) {
+        return this.adminService.updateTagCategory(id, tagCategoryDto.name)
     }
 
     @Delete('/tag-categories/:id')
     @ApiOperation({ summary: 'Delete a tag category', deprecated: false })
     @ApiResponse({ status: 200, description: 'Tag category deleted' })
-    async deleteTagCategory(@Param('id') id: string) {
-        return this.adminService.deleteTagCategory(Number(id))
+    async deleteTagCategory(@Param('id', ParseIntPipe) id: number) {
+        return this.adminService.deleteTagCategory(id)
     }
 
     // #endregion
@@ -92,15 +92,15 @@ export class AdminController {
     @Put('/tags/:id')
     @ApiOperation({ summary: 'Update a tag', deprecated: false })
     @ApiResponse({ status: 200, type: CreateTagDto, description: 'Tag updated' })
-    async updateTag(@Param('id') id: string, @Body() tagDto: CreateTagDto) {
-        return this.adminService.updateTag(Number(id), tagDto.name, tagDto.categoryId)
+    async updateTag(@Param('id', ParseIntPipe) id: number, @Body() tagDto: CreateTagDto) {
+        return this.adminService.updateTag(id, tagDto.name, tagDto.categoryId)
     }
 
     @Delete('/tags/:id')
     @ApiOperation({ summary: 'Delete a tag', deprecated: false })
     @ApiResponse({ status: 200, description: 'Tag deleted' })
-    async deleteTag(@Param('id') id: string) {
-        return this.adminService.deleteTag(Number(id))
+    async deleteTag(@Param('id', ParseIntPipe) id: number) {
+        return this.adminService.deleteTag(id)
     }
 
     // #endregion
@@ -125,15 +125,15 @@ export class AdminController {
     @Put('/games/:id/translations')
     @ApiOperation({ summary: 'Update game translations', deprecated: false })
     @ApiResponse({ status: 200, type: SuccessDto, description: 'Game translations updated' })
-    async updateGameTranslations(@Param('id') id: string, @Body() translations: UpdateGameTranslationsBody) {
-        return this.adminService.updateGameTranslations(Number(id), translations)
+    async updateGameTranslations(@Param('id', ParseIntPipe) id: number, @Body() translations: UpdateGameTranslationsBody) {
+        return this.adminService.updateGameTranslations(id, translations)
     }
 
     @Put('/games/:id/tags')
     @ApiOperation({ summary: 'Update game tags', deprecated: false })
     @ApiResponse({ status: 200, type: SuccessDto, description: 'Game tags updated' })
-    async updateGameTags(@Param('id') id: string, @Body() payload: UpdateGameTagsBody) {
-        return this.adminService.updateGameTags(Number(id), payload)
+    async updateGameTags(@Param('id', ParseIntPipe) id: number, @Body() payload: UpdateGameTagsBody) {
+        return this.adminService.updateGameTags(id, payload)
     }
 
     // #endregion
@@ -162,8 +162,8 @@ export class AdminController {
         description: 'Game proposal details',
         type: GameProposalCompleteDto,
     })
-    async getGameProposal(@Param('id') id: string) {
-        return this.adminService.getAdminGameProposalById(Number(id))
+    async getGameProposal(@Param('id', ParseIntPipe) id: number) {
+        return this.adminService.getAdminGameProposalById(id)
     }
 
     @Post('/proposals/:id/approve')
@@ -181,10 +181,10 @@ export class AdminController {
     })
     async approveGameProposal(
         @Req() request: { user: { userId: number } },
-        @Param('id') id: string,
+        @Param('id', ParseIntPipe) id: number,
         @Body() approvalData: ApproveGameProposalBody,
     ) {
-        return this.adminService.approveGameProposal(Number(id), request.user.userId, approvalData)
+        return this.adminService.approveGameProposal(id, request.user.userId, approvalData)
     }
 
     @Post('/proposals/:id/reject')
@@ -196,10 +196,10 @@ export class AdminController {
     })
     async rejectGameProposal(
         @Req() request: { user: { userId: number } },
-        @Param('id') id: string,
+        @Param('id', ParseIntPipe) id: number,
         @Body() rejectionData: RejectGameProposalBody,
     ) {
-        return this.adminService.rejectGameProposal(Number(id), request.user.userId, rejectionData)
+        return this.adminService.rejectGameProposal(id, request.user.userId, rejectionData)
     }
 
     @Post('/proposals/:id/duplicate')
@@ -211,10 +211,10 @@ export class AdminController {
     })
     async markGameProposalAsDuplicate(
         @Req() request: { user: { userId: number } },
-        @Param('id') id: string,
+        @Param('id', ParseIntPipe) id: number,
         @Query('reviewNotes') reviewNotes?: string,
     ) {
-        return this.adminService.markGameProposalAsDuplicate(Number(id), request.user.userId, reviewNotes)
+        return this.adminService.markGameProposalAsDuplicate(id, request.user.userId, reviewNotes)
     }
 
     @Delete('/proposals/:id')
@@ -224,8 +224,8 @@ export class AdminController {
         description: 'Game proposal deleted',
         type: SuccessDto,
     })
-    async deleteGameProposal(@Param('id') id: string) {
-        return this.adminService.deleteGameProposal(Number(id))
+    async deleteGameProposal(@Param('id', ParseIntPipe) id: number) {
+        return this.adminService.deleteGameProposal(id)
     }
 
     // #endregion

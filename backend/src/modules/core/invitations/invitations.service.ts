@@ -32,9 +32,9 @@ export class InvitationsService {
         return result.data
     }
 
-    async getInvitations(): Promise<Array<InvitationDto>> {
-        this.LOGGER.log('Getting all invitations')
-        const resultSet = await this.databaseService.getInvitations()
+    async getInvitations(accountId: number): Promise<Array<InvitationDto>> {
+        this.LOGGER.log('Getting invitations for the authenticated account')
+        const resultSet = await this.databaseService.getUserInvitationsReceived(accountId)
 
         return this._parseResultSet(resultSet)
     }
@@ -48,6 +48,16 @@ export class InvitationsService {
             throw new NotFoundException(`Invitation with id ${id} not found`)
         }
         return invitations[0]
+    }
+
+    async getInvitationByIdForAccount(id: number, accountId: number): Promise<InvitationDto> {
+        const invitation = await this.getInvitationById(id)
+
+        if (invitation.fromAccountId !== accountId && invitation.toAccountId !== accountId) {
+            throw new NotFoundException(`Invitation with id ${id} not found`)
+        }
+
+        return invitation
     }
 
     async getUserInvitationsReceived(accountId: number): Promise<Array<InvitationDto>> {

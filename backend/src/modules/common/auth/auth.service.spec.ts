@@ -1,4 +1,4 @@
-import { NotFoundException } from '@nestjs/common'
+import { ForbiddenException, NotFoundException } from '@nestjs/common'
 
 import { AuthService } from './auth.service'
 
@@ -7,6 +7,8 @@ describe('AuthService password reset', () => {
         updateUserRecord: jest.fn(),
         resetPasswordWithToken: jest.fn(),
         verifyEmailToken: jest.fn(),
+        checkEmail: jest.fn(),
+        checkUsername: jest.fn(),
     }
     const usersService = {
         getUserByEmail: jest.fn(),
@@ -77,5 +79,37 @@ describe('AuthService password reset', () => {
         expect(usersService.createUser).toHaveBeenCalledWith(expect.any(Object), expect.any(String), expect.any(Number))
         expect(log).not.toHaveBeenCalledWith(expect.stringContaining('known@example.com'))
         expect(log).not.toHaveBeenCalledWith(expect.stringContaining('known-user'))
+    })
+
+    it('does not authenticate an unverified legacy account', async () => {
+        usersService.getUserByEmail.mockResolvedValue({
+            email: 'pending@example.com',
+            email_verified: false,
+            password: 'password',
+        })
+
+        await expect(createService().validateUser('pending@example.com', 'password')).resolves.toBeNull()
+    })
+
+    it('blocks legacy registration when production self-registration is disabled', async () => {
+        const previousNodeEnvironment = process.env.NODE_ENV
+        const previousRegistrationSetting = process.env.BOARD_VAULT_SELF_REGISTRATION_ENABLED
+
+        process.env.NODE_ENV = 'production'
+        delete process.env.BOARD_VAULT_SELF_REGISTRATION_ENABLED
+
+        try {
+            await expect(createService().register('new@example.com', 'new-user', 'password')).rejects.toBeInstanceOf(ForbiddenException)
+            await expect(createService().checkEmail('new@example.com')).rejects.toBeInstanceOf(ForbiddenException)
+            await expect(createService().checkUsername('new-user')).rejects.toBeInstanceOf(ForbiddenException)
+            expect(usersService.createUser).not.toHaveBeenCalled()
+            expect(databaseService.checkEmail).not.toHaveBeenCalled()
+            expect(databaseService.checkUsername).not.toHaveBeenCalled()
+        } finally {
+            if (previousNodeEnvironment === undefined) delete process.env.NODE_ENV
+            else process.env.NODE_ENV = previousNodeEnvironment
+            if (previousRegistrationSetting === undefined) delete process.env.BOARD_VAULT_SELF_REGISTRATION_ENABLED
+            else process.env.BOARD_VAULT_SELF_REGISTRATION_ENABLED = previousRegistrationSetting
+        }
     })
 })

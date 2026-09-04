@@ -37,6 +37,15 @@ export function validateEnv(): void {
             err.push('Missing in production environment: CLERK_AUTHORIZED_PARTIES')
             err.push('Example value: "https://board-vault.com"\n')
         }
+
+        if (!process.env.BOARD_VAULT_CLERK_INVITATION_REDIRECT_URL) {
+            err.push('Missing in production environment: BOARD_VAULT_CLERK_INVITATION_REDIRECT_URL')
+            err.push('Example value: "https://board-vault.com/register"\n')
+        }
+
+        if (process.env.BOARD_VAULT_SELF_REGISTRATION_ENABLED?.trim().toLowerCase() === 'true') {
+            logger.warn('Public self-registration is enabled in production. Confirm this is intentional before launch.')
+        }
     }
 
     const redisDisabled = process.env.UPSTASH_REDIS_REST_DISABLE === 'true'

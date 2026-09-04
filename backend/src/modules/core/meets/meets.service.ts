@@ -22,6 +22,7 @@ export class MeetsService {
             isConfirmed: Boolean(row[4]),
             status: String(row[5] ?? 'completed') as MeetDto['status'],
             timezone: String(row[6] ?? 'UTC'),
+            notes: row[7] == null ? null : String(row[7]),
         }))
 
         const result = meetsSchema.safeParse(meets)
@@ -77,12 +78,14 @@ export class MeetsService {
             meetDate: String(row[3]),
             isConfirmed: Boolean(row[4]),
             attendees: JSON.parse(String(row[5])) as Array<UserGetDto['id']>,
-            playedGames: JSON.parse(String(row[6])) as Array<GameDto['id']>,
-            plannedGames: JSON.parse(String(row[7])) as Array<GameDto['id']>,
-            skippedGames: JSON.parse(String(row[8])) as Array<GameDto['id']>,
-            status: String(row[9] ?? 'completed') as MeetWithAttendeesAndGames['status'],
-            timezone: String(row[10] ?? 'UTC'),
+            attendeeStatuses: JSON.parse(String(row[6])) as MeetWithAttendeesAndGames['attendeeStatuses'],
+            playedGames: JSON.parse(String(row[7])) as Array<GameDto['id']>,
+            plannedGames: JSON.parse(String(row[8])) as Array<GameDto['id']>,
+            skippedGames: JSON.parse(String(row[9])) as Array<GameDto['id']>,
+            playedGameParticipants: JSON.parse(String(row[10] ?? '[]')) as MeetWithAttendeesAndGames['playedGameParticipants'],
+            status: String(row[11] ?? 'completed') as MeetWithAttendeesAndGames['status'],
+            timezone: String(row[12] ?? 'UTC'),
+            notes: row[13] == null ? null : String(row[13]),
         }))[0]
     }
-
 }

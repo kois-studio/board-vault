@@ -55,4 +55,10 @@ describe('AdminController write validation', () => {
 
         expect(rejectGameProposal).toHaveBeenCalledWith(12, 7, { reviewNotes: 'duplicate' })
     })
+
+    it('rejects a non-numeric proposal id before the service is called', async () => {
+        await request(app.getHttpServer()).post('/admin/proposals/not-a-number/reject').send({ reviewNotes: 'duplicate' }).expect(400)
+
+        expect(rejectGameProposal).not.toHaveBeenCalled()
+    })
 })

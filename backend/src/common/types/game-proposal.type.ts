@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsInt, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator'
+import { IsIn, IsInt, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator'
 
 import { UserPublicDto } from './user.type'
 
@@ -177,6 +177,8 @@ export class UpdateGameProposalBody {
         required: false,
         description: 'New status for the proposal',
     })
+    @IsOptional()
+    @IsIn(['pending', 'approved', 'rejected', 'duplicate'])
     status?: 'pending' | 'approved' | 'rejected' | 'duplicate'
 
     @ApiProperty({
@@ -184,6 +186,8 @@ export class UpdateGameProposalBody {
         required: false,
         description: 'Admin review notes',
     })
+    @IsOptional()
+    @IsString()
     reviewNotes?: string
 
     @ApiProperty({
@@ -191,6 +195,9 @@ export class UpdateGameProposalBody {
         required: false,
         description: 'ID of the created game if approved',
     })
+    @IsOptional()
+    @IsInt()
+    @Min(1)
     createdGameId?: number
 }
 

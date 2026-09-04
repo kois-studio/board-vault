@@ -1,5 +1,5 @@
+import { ApiProperty, OmitType, PickType } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
-import { ApiProperty, OmitType, PartialType, PickType } from '@nestjs/swagger'
 import { IsArray, IsEmail, IsIn, IsInt, IsNotEmpty, IsOptional, IsString, Min, ValidateNested } from 'class-validator'
 
 import { GameCompleteDto } from './game.type'

@@ -14,7 +14,7 @@
                         routerLink="/register"
                         class="rounded-lg bg-indigo-600 px-6 py-3 text-center font-medium text-white shadow-lg transition hover:bg-indigo-700 hover:shadow-xl"
                     >
-                        Create an account
+                        {{ registrationCta() }}
                     </a>
                     <a
                         routerLink="/login"
@@ -70,17 +70,17 @@
                 <article class="rounded-2xl border border-zinc-200 p-6 dark:border-zinc-800">
                     <h3 class="text-xl font-semibold text-zinc-900 dark:text-white">Your collection</h3>
                     <p class="mt-3 leading-7 text-zinc-600 dark:text-zinc-300">Browse the catalog, track owned games, rate what you play, and keep wishlist notes in one place.</p>
-                    <a routerLink="/register" class="mt-5 inline-flex font-medium text-indigo-600 hover:underline dark:text-indigo-400">Start your shelf →</a>
+                    <a routerLink="/register" class="mt-5 inline-flex font-medium text-indigo-600 hover:underline dark:text-indigo-400">{{ registrationCta() }} →</a>
                 </article>
                 <article class="rounded-2xl border border-zinc-200 p-6 dark:border-zinc-800">
                     <h3 class="text-xl font-semibold text-zinc-900 dark:text-white">Your groups</h3>
                     <p class="mt-3 leading-7 text-zinc-600 dark:text-zinc-300">Create a private group and invite the people you actually play with.</p>
-                    <a routerLink="/register" class="mt-5 inline-flex font-medium text-indigo-600 hover:underline dark:text-indigo-400">Create a group →</a>
+                    <a routerLink="/register" class="mt-5 inline-flex font-medium text-indigo-600 hover:underline dark:text-indigo-400">{{ registrationCta() }} →</a>
                 </article>
                 <article class="rounded-2xl border border-zinc-200 p-6 dark:border-zinc-800">
                     <h3 class="text-xl font-semibold text-zinc-900 dark:text-white">Your history</h3>
                     <p class="mt-3 leading-7 text-zinc-600 dark:text-zinc-300">Keep the sessions and games you have played visible for the next time everyone meets.</p>
-                    <a routerLink="/register" class="mt-5 inline-flex font-medium text-indigo-600 hover:underline dark:text-indigo-400">Keep a record →</a>
+                    <a routerLink="/register" class="mt-5 inline-flex font-medium text-indigo-600 hover:underline dark:text-indigo-400">{{ registrationCta() }} →</a>
                 </article>
             </div>
         </div>
@@ -95,8 +95,8 @@
             <ol class="mt-12 grid gap-6 md:grid-cols-3">
                 <li class="rounded-2xl bg-white p-6 shadow-sm dark:bg-zinc-800">
                     <span class="text-sm font-bold text-indigo-600 dark:text-indigo-400">01</span>
-                    <h3 class="mt-3 text-xl font-semibold text-zinc-900 dark:text-white">Create your account</h3>
-                    <p class="mt-3 leading-7 text-zinc-600 dark:text-zinc-300">Sign up with Board Vault and set up the identity your group will recognize.</p>
+                    <h3 class="mt-3 text-xl font-semibold text-zinc-900 dark:text-white">{{ selfRegistrationEnabled() ? 'Create your account' : 'Get invited' }}</h3>
+                    <p class="mt-3 leading-7 text-zinc-600 dark:text-zinc-300">{{ selfRegistrationEnabled() ? 'Sign up with Board Vault and set up the identity your group will recognize.' : 'Board Vault is currently invite-only while we finish the core group experience.' }}</p>
                 </li>
                 <li class="rounded-2xl bg-white p-6 shadow-sm dark:bg-zinc-800">
                     <span class="text-sm font-bold text-indigo-600 dark:text-indigo-400">02</span>
@@ -118,7 +118,7 @@
                 <h2 class="text-3xl font-bold">Ready to organize your shelf?</h2>
                 <p class="mt-3 max-w-xl text-indigo-100">Start with the games and people you already know. The rest of the product will grow from there.</p>
             </div>
-            <a routerLink="/register" class="rounded-lg bg-white px-6 py-3 font-semibold text-indigo-700 transition hover:bg-indigo-50">Create an account</a>
+            <a routerLink="/register" class="rounded-lg bg-white px-6 py-3 font-semibold text-indigo-700 transition hover:bg-indigo-50">{{ registrationCta() }}</a>
         </div>
     </section>
 </main>

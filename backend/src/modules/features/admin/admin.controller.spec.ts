@@ -13,7 +13,7 @@ describe('AdminController reviewer identity', () => {
         const controller = new AdminController({ approveGameProposal } as unknown as AdminService)
         const body = { reviewNotes: 'approved' }
 
-        await controller.approveGameProposal(request, '12', body)
+        await controller.approveGameProposal(request, 12, body)
 
         expect(approveGameProposal).toHaveBeenCalledWith(12, 7, body)
     })
@@ -23,8 +23,8 @@ describe('AdminController reviewer identity', () => {
         const markGameProposalAsDuplicate = jest.fn().mockResolvedValue({ success: true })
         const controller = new AdminController({ rejectGameProposal, markGameProposalAsDuplicate } as unknown as AdminService)
 
-        await controller.rejectGameProposal(request, '12', { reviewNotes: 'duplicate' })
-        await controller.markGameProposalAsDuplicate(request, '12', 'duplicate')
+        await controller.rejectGameProposal(request, 12, { reviewNotes: 'duplicate' })
+        await controller.markGameProposalAsDuplicate(request, 12, 'duplicate')
 
         expect(rejectGameProposal).toHaveBeenCalledWith(12, 7, { reviewNotes: 'duplicate' })
         expect(markGameProposalAsDuplicate).toHaveBeenCalledWith(12, 7, 'duplicate')

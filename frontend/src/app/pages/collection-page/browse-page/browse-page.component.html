@@ -1,5 +1,9 @@
 <app-page-header titleText="Browse Games">
-    Browse games to add to your collection
+    @if (acquisitionGroupId()) {
+        Find a game for {{ acquisitionGroupName() }} to consider acquiring.
+    } @else {
+        Browse games to add to your collection
+    }
 </app-page-header>
 <container-wrapper>
     <!-- Search Bar -->
@@ -59,6 +63,22 @@
                         <div title="In my Collection" class="absolute -top-1 right-1 text-blue-500 text-4xl">
                             <i class="bi bi-bookmark-check-fill"></i>
                         </div>
+                    }
+                    @if (acquisitionGroupId()) {
+                        <button
+                            type="button"
+                            class="app-btn-secondary mt-2 w-full text-sm"
+                            [disabled]="!!acquisitionState()[game.id]"
+                            (click)="addGameToAcquisitionBoard(game.id)"
+                        >
+                            @if (acquisitionState()[game.id] === 'saved') {
+                                Added to group board
+                            } @else if (acquisitionState()[game.id] === 'saving') {
+                                Adding…
+                            } @else {
+                                Add for {{ acquisitionGroupName() }}
+                            }
+                        </button>
                     }
                 </div>
             }

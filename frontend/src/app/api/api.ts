@@ -15,10 +15,12 @@ import {
     availabilitySchema,
     browseGamesSchema,
     clerkAuthStatusSchema,
+    clerkGroupInvitationSchema,
     gameOwnedSchema,
     gameProposalSchema,
     gameViewSchema,
     gamesSchema,
+    groupAcquisitionBoardSchema,
     groupInvitationsSchema,
     meetAttendeeSchema,
     meetDetailsSchema,
@@ -26,10 +28,15 @@ import {
     meetSchema,
     messageSchema,
     publicUserSchema,
+    recommendationSignalsSchema,
     recommendationsSchema,
     scheduledSessionCreatedSchema,
+    sessionAttendanceUpdatedSchema,
     sessionAttendeesUpdatedSchema,
     sessionCreatedSchema,
+    sessionPlayedGamesUpdatedSchema,
+    sessionRsvpUpdatedSchema,
+    sessionShortlistUpdatedSchema,
     sessionStatusUpdatedSchema,
     successSchema,
     tagCategorySchema,
@@ -51,6 +58,7 @@ import {
 import type {
     AdminGamesResultType,
     BrowseGamesResultType,
+    ClerkGroupInvitationType,
     CollectionActivityWithGameDataType,
     CreateGameProposalType,
     CreatePlaySessionRequest,
@@ -61,6 +69,7 @@ import type {
     GameType,
     GameViewType,
     GameWithTagsAndTranslationsType,
+    GroupAcquisitionEntryType,
     GroupWithMembersAndGames,
     HistoryRecordType,
     InvitationWithAccountsData,
@@ -71,16 +80,25 @@ import type {
     MeetWithAttendeesAndGamesType,
     NotificationType,
     PublicUserType,
+    RecommendationSignalsType,
     RecommendationsType,
     ScheduleSessionRequest,
     ScheduledSessionCreatedType,
+    SessionAttendanceUpdatedType,
     SessionAttendeesUpdatedType,
     SessionCreatedType,
+    SessionPlayedGamesUpdatedType,
+    SessionRsvpUpdatedType,
+    SessionShortlistUpdatedType,
     SessionStatusUpdatedType,
     TagCategoryType,
     TagType,
     UpdateGameOwnedType,
+    UpdateSessionAttendanceRequest,
     UpdateSessionAttendeesRequest,
+    UpdateSessionPlayedGamesRequest,
+    UpdateSessionRsvpRequest,
+    UpdateSessionShortlistRequest,
     UpdateSessionStatusRequest,
     UserProposalStatsType,
     UserStatsType,
@@ -185,6 +203,12 @@ export class Api {
             .pipe(map((response) => groupInvitationsSchema.parse(response)))
     }
 
+    createClerkGroupInvitation(groupId: number, emailAddress: string) {
+        return this.http
+            .post<ClerkGroupInvitationType>(`${this.url}/groups/${groupId}/clerk-invitations`, { emailAddress })
+            .pipe(map((response) => clerkGroupInvitationSchema.parse(response)))
+    }
+
     // #region games
 
     getGames() {
@@ -261,6 +285,30 @@ export class Api {
         return this.http
             .patch<SessionAttendeesUpdatedType>(`${this.url}/sessions/${sessionId}/attendees`, body)
             .pipe(map((response) => sessionAttendeesUpdatedSchema.parse(response)))
+    }
+
+    updateSessionShortlist(sessionId: number, body: UpdateSessionShortlistRequest) {
+        return this.http
+            .patch<SessionShortlistUpdatedType>(`${this.url}/sessions/${sessionId}/shortlist`, body)
+            .pipe(map((response) => sessionShortlistUpdatedSchema.parse(response)))
+    }
+
+    updateSessionPlayedGames(sessionId: number, body: UpdateSessionPlayedGamesRequest) {
+        return this.http
+            .patch<SessionPlayedGamesUpdatedType>(`${this.url}/sessions/${sessionId}/played-games`, body)
+            .pipe(map((response) => sessionPlayedGamesUpdatedSchema.parse(response)))
+    }
+
+    updateSessionRsvp(sessionId: number, body: UpdateSessionRsvpRequest) {
+        return this.http
+            .patch<SessionRsvpUpdatedType>(`${this.url}/sessions/${sessionId}/rsvp`, body)
+            .pipe(map((response) => sessionRsvpUpdatedSchema.parse(response)))
+    }
+
+    updateSessionAttendance(sessionId: number, body: UpdateSessionAttendanceRequest) {
+        return this.http
+            .patch<SessionAttendanceUpdatedType>(`${this.url}/sessions/${sessionId}/attendance`, body)
+            .pipe(map((response) => sessionAttendanceUpdatedSchema.parse(response)))
     }
 
     // #region meet attendees
@@ -464,6 +512,24 @@ export class Api {
             .pipe(map((response) => userHistorySchema.parse(response)))
     }
 
+    getGroupAcquisitionBoard(groupId: number) {
+        return this.http
+            .get<Array<GroupAcquisitionEntryType>>(`${this.url}/groups/${groupId}/acquisition-board`)
+            .pipe(map((response) => groupAcquisitionBoardSchema.parse(response)))
+    }
+
+    addGroupAcquisitionInterest(groupId: number, gameId: number) {
+        return this.http
+            .post<{ success: true }>(`${this.url}/groups/${groupId}/acquisition-board`, { gameId })
+            .pipe(map((response) => successSchema.parse(response)))
+    }
+
+    removeGroupAcquisitionInterest(groupId: number, gameId: number) {
+        return this.http
+            .delete<{ success: true }>(`${this.url}/groups/${groupId}/acquisition-board/${gameId}`)
+            .pipe(map((response) => successSchema.parse(response)))
+    }
+
     leaveGroup(userId: number, groupId: number) {
         return this.http
             .delete<{ success: true }>(`${this.url}/dashboard/users/${userId}/groups/${groupId}/members`, {})
@@ -506,6 +572,12 @@ export class Api {
         return this.http
             .post<{ success: true }>(`${this.url}/play/recommendations/feedback`, body)
             .pipe(map((response) => successSchema.parse(response)))
+    }
+
+    getRecommendationSignals(groupId: number) {
+        return this.http
+            .get<RecommendationSignalsType>(`${this.url}/play/recommendations/signals?groupId=${groupId}`)
+            .pipe(map((response) => recommendationSignalsSchema.parse(response)))
     }
 
     // --------------------------------------------------------------------------

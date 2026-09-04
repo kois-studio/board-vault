@@ -24,11 +24,36 @@ export class MeetDto {
 
     @ApiProperty({ example: 'UTC' })
     timezone: string
+
+    @ApiProperty({ example: 'Tried the new co-op expansion.', required: false, nullable: true })
+    notes: string | null
+}
+
+export class MeetAttendeeStatusDto {
+    @ApiProperty({ example: 12345 })
+    accountId: number
+
+    @ApiProperty({ example: 'accepted', enum: ['pending', 'accepted', 'declined'] })
+    rsvpStatus: 'pending' | 'accepted' | 'declined'
+
+    @ApiProperty({ example: 'unknown', enum: ['unknown', 'attended', 'absent'] })
+    attendanceStatus: 'unknown' | 'attended' | 'absent'
+}
+
+export class MeetPlayedGameParticipantsDto {
+    @ApiProperty({ example: 42 })
+    gameId: number
+
+    @ApiProperty({ example: [1, 2] })
+    participantIds: Array<number>
 }
 
 export class MeetWithAttendeesAndGames extends MeetDto {
     @ApiProperty({ type: [UserGetDto], description: 'The attendees of the meet.' })
     attendees: Array<UserGetDto['id']>
+
+    @ApiProperty({ type: [MeetAttendeeStatusDto], description: 'RSVP and final attendance state for each invited member.' })
+    attendeeStatuses: Array<MeetAttendeeStatusDto>
 
     @ApiProperty({ type: [GameDto], description: 'The games played at the meet.' })
     playedGames: Array<GameDto['id']>
@@ -38,4 +63,7 @@ export class MeetWithAttendeesAndGames extends MeetDto {
 
     @ApiProperty({ type: [Number], description: 'The games planned but not played in the meet.' })
     skippedGames: Array<GameDto['id']>
+
+    @ApiProperty({ type: [MeetPlayedGameParticipantsDto], description: 'The members recorded as participants for each played game.' })
+    playedGameParticipants: Array<MeetPlayedGameParticipantsDto>
 }
