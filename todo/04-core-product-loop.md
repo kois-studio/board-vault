@@ -76,7 +76,7 @@ Tasks:
 - implement one backend use case for session creation;
 - persist date, time, timezone, group, organizer, attendees, and planned games;
 - support scheduled, active, completed, and cancelled states;
-- replace the wizard TODO submission;
+- review the canonical session submission with authenticated success, validation, and retry coverage;
 - remove or hide the incomplete confirmation flow;
 - ensure the upcoming page reads real data;
 - allow completion with the games actually played.

@@ -67,6 +67,7 @@ Relevant intent: [`todo/04-core-product-loop.md`](../todo/04-core-product-loop.m
 - Added `POST /play/recommendations/feedback` and explicit “Interested” / “Not for us” actions. Feedback stores selected-attendee context after group membership and ownership validation. `GET /play/recommendations/signals` now exposes the latest group-member decision state for the shared decision surface without leaking private account fields, and the latest decisions from selected attendees now apply a bounded, explainable score adjustment.
 - Added the authenticated `/play/recommendations` route, Play navigation entry, selection form, result cards, and empty/error states.
 - Recommendation results now provide a direct scheduling link that carries the selected attendees and chosen game into the scheduling form.
+- The recommendation page now summarizes the selected members and time constraint before results, and no-result states offer a group-scoped browse path for the next acquisition/collection decision.
 - Add authenticated browser coverage when a Clerk storage state is available; the suite now covers recommendation-page entry and controls but remains skipped without that local secret-bearing state.
 - Richer preferences, complexity scoring, and history-weighted scoring remain deferred; the current feedback weighting is intentionally small, bounded, group-scoped, and explainable.
 - Resolve the indirect game-title contract: `Game` stores no title; titles are provided through `GameTranslation`. The recommendation query uses English with Spanish fallback.

@@ -2204,3 +2204,17 @@ Changed: The collection page now treats five games as a helpful activation targe
 Review: PROD-002 / PROD-005 / EQ-006 / CI-001
 
 Verified: Frontend Biome, 13 frontend browser-based unit tests, frontend production build (598.39 kB initial / 137.91 kB estimated transfer), and `git diff --check` pass. No migration, production data, deployment, or provider config changed.
+
+Continuation claim: PROD-004 / PROD-005 / TRUTH-001
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Scope: make recommendation context and no-result recovery legible in the social decision flow.
+
+Changed: The recommendation page now summarizes the selected members and duration constraint before results, explains that ranking uses group-scoped ownership, ratings, and feedback, and offers a group-scoped catalog path when no game satisfies the current constraints. The core-product-loop documentation now describes authenticated session submission coverage as the remaining work instead of the already-replaced wizard TODO.
+
+Review: PROD-004 / PROD-005 / TRUTH-001
+
+Verified: Frontend Biome, 13 frontend browser-based unit tests, frontend production build (598.39 kB initial / 137.83 kB estimated transfer), and `git diff --check` pass. No migration, production data, deployment, or provider config changed.
