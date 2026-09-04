@@ -61,26 +61,26 @@ export class MeetViewComponent {
             this.userGroups = this.dataService.userGroups()
 
             // Get Meet Details
-            const meetId = Number.parseInt(this.route.snapshot.paramMap.get('meetId') || '')
-            if (!this.userData || this.userGroups.length === 0 || Number.isNaN(meetId) || this.requestedMeetId === meetId) {
+            const sessionId = Number.parseInt(this.route.snapshot.paramMap.get('sessionId') || '')
+            if (!this.userData || this.userGroups.length === 0 || Number.isNaN(sessionId) || this.requestedMeetId === sessionId) {
                 return
             }
 
-            this.requestedMeetId = meetId
-            void this.loadMeetDetails(meetId)
+            this.requestedMeetId = sessionId
+            void this.loadMeetDetails(sessionId)
         })
     }
 
     public retryLoad(): void {
-        const meetId = Number.parseInt(this.route.snapshot.paramMap.get('meetId') || '')
-        if (Number.isNaN(meetId)) return
+        const sessionId = Number.parseInt(this.route.snapshot.paramMap.get('sessionId') || '')
+        if (Number.isNaN(sessionId)) return
 
         this.requestedMeetId = null
         this.loaded = false
         this.loadError.set(false)
         this.isLoading.set(true)
-        this.requestedMeetId = meetId
-        void this.loadMeetDetails(meetId)
+        this.requestedMeetId = sessionId
+        void this.loadMeetDetails(sessionId)
     }
 
     private async loadMeetDetails(meetId: number): Promise<void> {
@@ -179,6 +179,21 @@ export class MeetViewComponent {
                 return 'This session is part of your group memory. The record is now read-only.'
             case 'cancelled':
                 return 'This session was cancelled and is kept here for context.'
+            default:
+                return ''
+        }
+    }
+
+    get sessionStatusLabel(): string {
+        switch (this.meetData?.status) {
+            case 'scheduled':
+                return 'Planned'
+            case 'active':
+                return 'Live now'
+            case 'completed':
+                return 'Completed'
+            case 'cancelled':
+                return 'Cancelled'
             default:
                 return ''
         }

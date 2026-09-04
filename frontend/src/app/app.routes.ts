@@ -130,9 +130,14 @@ export const routes: Routes = [
                 canActivate: [AuthOnlyGuard],
             },
             {
-                path: 'meets/:meetId',
+                path: 'sessions/:sessionId',
                 loadComponent: () => import('./pages/meet-view/meet-view.component').then((m) => m.MeetViewComponent),
                 canActivate: [AuthOnlyGuard],
+            },
+            {
+                path: 'meets/:meetId',
+                redirectTo: 'sessions/:meetId',
+                pathMatch: 'full',
             },
             {
                 path: 'settings',
@@ -187,10 +192,15 @@ export const routes: Routes = [
                 canActivate: [AuthOnlyGuard],
             }, // 'group/new' would break in 'group/:groupId'
             {
-                path: 'groups/:groupId/meets/new',
+                path: 'groups/:groupId/sessions/new',
                 loadComponent: () => import('./pages/meet-new/meet-new.component').then((m) => m.MeetNewComponent),
                 canActivate: [AuthOnlyGuard],
-            }, // 'meets/new' would break in 'meets/:meetId'
+            },
+            {
+                path: 'groups/:groupId/meets/new',
+                redirectTo: 'groups/:groupId/sessions/new',
+                pathMatch: 'full',
+            },
             {
                 path: 'groups/:groupId/edit',
                 loadComponent: () => import('./pages/groups/group-edit/group-edit.component').then((m) => m.GroupEditComponent),
