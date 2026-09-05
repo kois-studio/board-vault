@@ -115,6 +115,33 @@ describe('Api response contracts', () => {
         await expectAsync(response).toBeResolvedTo({ success: true })
     })
 
+    it('accepts an empty group acquisition board as a valid social decision state', async () => {
+        const response = firstValueFrom(api.getGroupAcquisitionBoard(7))
+        const request = http.expectOne(`${environment.apiUrl}/groups/7/acquisition-board`)
+
+        expect(request.request.method).toBe('GET')
+        request.flush([])
+
+        await expectAsync(response).toBeResolvedTo([])
+    })
+
+    it('rejects malformed recommendation lens responses at the API boundary', async () => {
+        const response = firstValueFrom(api.getRecommendations({ groupId: 7, attendeeIds: [1], decisionLens: 'fresh' }))
+        const request = http.expectOne(`${environment.apiUrl}/play/recommendations`)
+
+        expect(request.request.body).toEqual({ groupId: 7, attendeeIds: [1], decisionLens: 'fresh' })
+        request.flush({
+            groupId: 7,
+            attendeeIds: [1],
+            availableMinutes: null,
+            decisionLens: 'surprise',
+            recommendations: [],
+            noResultReason: null,
+        })
+
+        await expectAsync(response).toBeRejected()
+    })
+
     it('rejects an invalid session lifecycle status before it reaches app state', async () => {
         const response = firstValueFrom(api.updateSessionStatus(12, { status: 'completed' }))
         const request = http.expectOne(`${environment.apiUrl}/sessions/12/status`)
