@@ -21,13 +21,12 @@
                                 <a routerLink="/register" class="font-medium text-indigo-600 dark:text-indigo-400">Private beta</a>
                             }
                         } @else {
-                            <button type="button" class="cursor-pointer" (click)="verifyClerkLink()" [disabled]="clerkLinkInProgress()">
-                                {{ clerkLinkInProgress() ? 'Checking…' : 'Verify Clerk link' }}
-                            </button>
-                            <button type="button" class="cursor-pointer" (click)="signOutClerk()">Sign Out</button>
-                        }
-                        @if (clerkLinkStatus()) {
-                            <span class="max-w-64 text-xs text-right" role="status">{{ clerkLinkStatus() }}</span>
+                            <span class="max-w-64 text-right text-xs text-zinc-600 dark:text-zinc-300" role="status">
+                                {{ clerkLinkInProgress() ? 'Connecting your secure sign-in…' : clerkLinkStatus() || 'Finishing your secure sign-in…' }}
+                            </span>
+                            @if (clerkLinkStatus()) {
+                                <button type="button" class="cursor-pointer" (click)="signOutClerk()">Sign out</button>
+                            }
                         }
                     } @else {
                         <a routerLink="/login">Log In</a>

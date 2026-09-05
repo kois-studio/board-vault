@@ -2363,6 +2363,22 @@ Planned: make the fallback form responsive, label its fields for assistive techn
 
 Review: AUTH-001 / EQ-006
 
+Changed: The unauthenticated header no longer exposes the migration-only “Verify Clerk link” control, raw local account identifiers, or provider error details. Automatic Clerk-to-local linking remains in place; unresolved sessions now show user-facing progress/recovery copy and a sign-out action.
+
+Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (22 tests), `cd frontend && npm run build` (599.05 kB initial / 137.88 kB estimated transfer), and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.
+
 Changed: The preserved-account login and degraded-mode registration forms now use responsive `w-full`/`max-w-md` layouts instead of a fixed mobile-overflowing width. Their fields have explicit labels, stable IDs, password-manager autocomplete metadata, and clearer placeholders; the legacy login and registration actions are named as compatibility flows, and registration now keeps its loading state until the API settles.
 
 Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (22 tests), `cd frontend && npm run build` (599.41 kB initial / 138.00 kB estimated transfer), and `git diff --check` pass. Local preview server started without deployment; the new form source compiles, while a second rendered snapshot attempt timed out in the preview automation. No migration, production data, provider configuration, or deployment changed.
+
+Continuation claim: AUTH-001 / EQ-006
+
+Owner: Codex
+
+Claimed: 2026-09-05
+
+Scope: remove migration/debug terminology from the signed-out header when a Clerk session still needs local account resolution.
+
+Planned: preserve automatic session linking, expose only user-facing progress/recovery copy, and avoid rendering local account identifiers or provider error details.
+
+Review: AUTH-001 / EQ-006

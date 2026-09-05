@@ -26,7 +26,6 @@ export class LayoutHeaderComponent {
     public readonly selfRegistrationEnabled = this.clerkService.isSelfRegistrationEnabled
     public readonly clerkIsSignedIn = this.clerkService.isSignedIn
     public readonly clerkLinkStatus = signal<string | null>(null)
-    public readonly clerkLinkedAccountId = signal<number | null>(null)
     public readonly clerkLinkInProgress = signal(false)
 
     private checkedClerkUserId: string | null = null
@@ -67,25 +66,13 @@ export class LayoutHeaderComponent {
             const isAuthenticated = await firstValueFrom(this.loginService.verifyClerkSession())
 
             if (!isAuthenticated) {
-                this.clerkLinkStatus.set('The Clerk session could not be linked to a Board Vault account.')
+                this.clerkLinkStatus.set('We could not connect this sign-in to Board Vault. Sign out and try again, or use an invitation.')
                 return
             }
 
-            const userId = this.loginService.currentUserId()
-            this.clerkLinkedAccountId.set(userId)
-            this.clerkLinkStatus.set(`Linked to local Board Vault account #${userId}.`)
-        } catch (error: unknown) {
-            const message =
-                error &&
-                typeof error === 'object' &&
-                'error' in error &&
-                error.error &&
-                typeof error.error === 'object' &&
-                'message' in error.error &&
-                typeof error.error.message === 'string'
-                    ? error.error.message
-                    : null
-            this.clerkLinkStatus.set(message || 'The Clerk session could not be linked to a local account.')
+            this.clerkLinkStatus.set(null)
+        } catch {
+            this.clerkLinkStatus.set('We could not connect this sign-in to Board Vault. Sign out and try again, or use an invitation.')
         } finally {
             this.clerkLinkInProgress.set(false)
         }
@@ -96,6 +83,5 @@ export class LayoutHeaderComponent {
         this.loginService.handleAuthErrorAndLogout()
         this.checkedClerkUserId = null
         this.clerkLinkStatus.set(null)
-        this.clerkLinkedAccountId.set(null)
     }
 }
