@@ -70,6 +70,20 @@ describe('DatabaseService logging', () => {
         })
     })
 
+    it('guards group acquisition interest against games already owned by a member', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const execute = jest.fn().mockResolvedValue({ rowsAffected: 1 })
+
+        ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
+
+        await service.addGroupGameInterest(7, 1, { gameId: 42 })
+
+        expect(execute).toHaveBeenCalledWith({
+            sql: expect.stringContaining('WHERE NOT EXISTS'),
+            args: [7, 1, 42, 7, 42],
+        })
+    })
+
     it('accepts an invitation by creating membership and consuming the invitation in one transaction', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
