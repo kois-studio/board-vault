@@ -11,14 +11,16 @@
 <form
     [formGroup]="registerFormGroup"
     (ngSubmit)="handleRegister()"
-    class="flex flex-col gap-4 rounded bg-purple-100 dark:bg-zinc-800 p-8 w-96 mx-auto"
+    class="mx-auto flex w-full max-w-md flex-col gap-4 rounded bg-purple-100 p-6 dark:bg-zinc-800 sm:p-8"
 >
-    <!-- 1. EMAIL -->
     <div>
+        <label for="register-email" class="mb-1 block text-sm font-medium text-zinc-800 dark:text-zinc-200">Email</label>
         <input
+            id="register-email"
             type="email"
             formControlName="email"
-            placeholder="Email ..."
+            autocomplete="email"
+            placeholder="you@example.com"
             class="app-input"
             [class]="emailClass"
             required
@@ -44,12 +46,14 @@
         </div>
     </div>
 
-    <!-- 2. Username -->
     <div>
+        <label for="register-username" class="mb-1 block text-sm font-medium text-zinc-800 dark:text-zinc-200">Username</label>
         <input
+            id="register-username"
             type="text"
             formControlName="username"
-            placeholder="username ..."
+            autocomplete="username"
+            placeholder="How friends will find you"
             class="app-input"
             [class]="usernameClass"
             required
@@ -75,12 +79,14 @@
         </div>
     </div>
 
-    <!-- 3. PASSWORD -->
     <div>
+        <label for="register-password" class="mb-1 block text-sm font-medium text-zinc-800 dark:text-zinc-200">Password</label>
         <input
+            id="register-password"
             type="password"
             formControlName="password"
-            placeholder="Password ..."
+            autocomplete="new-password"
+            placeholder="At least 8 characters"
             class="app-input"
             [class]="passwordClass"
             required
@@ -98,12 +104,14 @@
         </div>
     </div>
 
-    <!-- 4. CONFIRM PASSWORD -->
     <div>
+        <label for="register-confirm-password" class="mb-1 block text-sm font-medium text-zinc-800 dark:text-zinc-200">Confirm password</label>
         <input
+            id="register-confirm-password"
             type="password"
             formControlName="confirmPassword"
-            placeholder="Confirm password ..."
+            autocomplete="new-password"
+            placeholder="Repeat your password"
             class="app-input"
             [class]="confirmPasswordClass"
             required
@@ -115,16 +123,14 @@
         </div>
     </div>
 
-    <!-- 5. SUBMIT -->
     <app-button
         type="submit"
         [disabled]="disableSubmit"
         [loading]="isLoading"
         size="large"
         [wide]="true"
-        required
     >
-        Register
+        Create older account
     </app-button>
 </form>
 }
