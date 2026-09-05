@@ -2,7 +2,7 @@
 
 This document tracks whether each frontend area has received a deliberate UI/UX review. It is a review register, not a claim that a route works. A source audit can identify risks, but an area is not considered fully reviewed until its states, interaction model, responsive behavior, accessibility basics, visual hierarchy, and real API behavior have been exercised.
 
-Reviewed: 2026-09-04
+Reviewed: 2026-09-05
 
 ## Review status
 
@@ -30,8 +30,8 @@ For each area, review:
 |---|---|---|---|
 | Landing page | `/`, `landing.component` | Partially reviewed | Public route/content-truth behavior is covered by Playwright; continue with rendered responsive, keyboard, focus, contrast, semantics, and visual-hierarchy review. |
 | Header and public navigation | `header`, `/login`, `/register` links | Partially reviewed | Clerk production controls work, and public section links now route through the landing page from any shell location; navigation still needs a final signed-out/signed-in and mobile review. |
-| Login | `/login`, login form | Partially reviewed | Production Clerk login was manually verified; review error, loading, expired-session, keyboard, and legacy-UI behavior. |
-| Registration | `/register`, register form | Partially reviewed | Clerk signup/linking was manually verified; review username requirements, duplicate identity, errors, and whether legacy registration remains visible. |
+| Login | `/login`, login form | Partially reviewed | Production Clerk login was manually verified; the preserved-account fallback now has responsive sizing, labels, autocomplete, and an honest submit state. Review error, loading, expired-session, keyboard, and legacy-UI behavior. |
+| Registration | `/register`, register form | Partially reviewed | Clerk signup/linking was manually verified; the degraded-mode fallback now has responsive sizing, labels, and password-manager metadata. Review username requirements, duplicate identity, errors, and whether legacy registration remains visible. |
 | Email verification/reset | `/verify-email/:token`, `/reset-password/*` | Source-audited | Decide whether these legacy pages remain reachable after Clerk; review only if retained. |
 | Footer | `footer.component` | Source-audited | Replace or remove placeholder links and review hierarchy, contrast, and mobile layout. |
 

@@ -1,14 +1,16 @@
 <form
     [formGroup]="loginFormGroup"
     (ngSubmit)="handleLogin()"
-    class="flex flex-col gap-4 rounded bg-purple-100 dark:bg-zinc-800 p-8 w-96 mx-auto"
+    class="mx-auto flex w-full max-w-md flex-col gap-4 rounded bg-purple-100 p-6 dark:bg-zinc-800 sm:p-8"
 >
-    <!-- 1. EMAIL -->
     <div>
+        <label for="login-email" class="mb-1 block text-sm font-medium text-zinc-800 dark:text-zinc-200">Email</label>
         <input
+            id="login-email"
             type="email"
             formControlName="email"
-            placeholder="Email ..."
+            autocomplete="email"
+            placeholder="you@example.com"
             class="app-input"
             [class]="emailClass"
             autofocus
@@ -27,12 +29,14 @@
         </div>
     </div>
 
-    <!-- 2. PASSWORD -->
     <div>
+        <label for="login-password" class="mb-1 block text-sm font-medium text-zinc-800 dark:text-zinc-200">Password</label>
         <input
+            id="login-password"
             type="password"
             formControlName="password"
-            placeholder="Password ..."
+            autocomplete="current-password"
+            placeholder="Your password"
             class="app-input"
             [class]="passwordClass"
             (keydown.enter)="handleLogin()"
@@ -51,22 +55,19 @@
         </div>
     </div>
 
-    <!-- 3. SUBMIT -->
     <app-button
         type="submit"
         [disabled]="disableSubmit"
         [loading]="isLoading"
         size="large"
         [wide]="true"
-        required
     >
-        Access
+        Sign in with older account
     </app-button>
 </form>
 
-<!-- 4. RESET PASSWORD LINK -->
-<div class="text-center mt-4">
+<div class="mt-4 text-center">
     <a routerLink="/reset-password/request" class="text-blue-500 underline">
-        Forgot Password?
+        Forgot your older-account password?
     </a>
 </div>

@@ -2350,3 +2350,19 @@ Planned: provide a state-aware accessible name, pressed state, button type, and 
 Review: EQ-006 / TRUTH-001
 
 Changed: The dark-mode toggle now exposes “Use dark mode” or “Use light mode”, reports its pressed state, is explicitly a button, and has a visible focus ring. Added component coverage for the state-aware labels.
+
+Continuation claim: AUTH-001 / EQ-006
+
+Owner: Codex
+
+Claimed: 2026-09-05
+
+Scope: keep the preserved-account sign-in fallback usable without competing with the primary Clerk flow on small screens.
+
+Planned: make the fallback form responsive, label its fields for assistive technology and password managers, and keep its loading state truthful.
+
+Review: AUTH-001 / EQ-006
+
+Changed: The preserved-account login and degraded-mode registration forms now use responsive `w-full`/`max-w-md` layouts instead of a fixed mobile-overflowing width. Their fields have explicit labels, stable IDs, password-manager autocomplete metadata, and clearer placeholders; the legacy login and registration actions are named as compatibility flows, and registration now keeps its loading state until the API settles.
+
+Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (22 tests), `cd frontend && npm run build` (599.41 kB initial / 138.00 kB estimated transfer), and `git diff --check` pass. Local preview server started without deployment; the new form source compiles, while a second rendered snapshot attempt timed out in the preview automation. No migration, production data, provider configuration, or deployment changed.
