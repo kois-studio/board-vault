@@ -6,7 +6,13 @@ describe('getCorsOrigins', () => {
     })
 
     it('includes local development origins outside production', () => {
-        expect(getCorsOrigins('development')).toEqual(['https://board-vault.com', 'http://localhost:4200', 'http://127.0.0.1:4200'])
+        expect(getCorsOrigins('development')).toEqual([
+            'https://board-vault.com',
+            'http://localhost:4200',
+            'http://127.0.0.1:4200',
+            'http://localhost:4300',
+            'http://127.0.0.1:4300',
+        ])
     })
 
     it('deduplicates configured origins and ignores wildcard configuration', () => {

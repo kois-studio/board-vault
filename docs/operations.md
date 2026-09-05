@@ -14,7 +14,7 @@ The backend reads these variable names from the environment or ignored local `.e
 - required by provider construction: `RESEND_API_KEY`;
 - used by email links/defaults: `NO_REPLY_EMAIL`, `APP_BASE_URL`;
 - used by cache and authentication rate limiting: `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, `UPSTASH_REDIS_REST_DISABLE`; Redis credentials are required unless the disable flag is exactly `true`.
-- used by CORS: optional comma-separated `CORS_ORIGINS` additions; production defaults only to `https://board-vault.com`, development also allows `http://localhost:4200` and `http://127.0.0.1:4200`, and wildcard `*` is ignored.
+- used by CORS: optional comma-separated `CORS_ORIGINS` additions; production defaults only to `https://board-vault.com`, development also allows Angular's `4200` origin and the isolated Playwright/frontend `4300` origin on localhost and `127.0.0.1`, and wildcard `*` is ignored.
 - used by the Clerk backend boundary: `CLERK_SECRET_KEY`; production also requires comma-separated `CLERK_AUTHORIZED_PARTIES` containing only exact frontend origins such as `https://board-vault.com`.
 - used by the frontend production build: public `CLERK_PUBLISHABLE_KEY`; optional `CLERK_AUTH_ENABLED=false` can explicitly keep the Clerk controls disabled.
 - development authenticated browser testing: the linked Clerk CLI may use `clerk impersonate <development-user-id> --instance dev --print --yes` to create a temporary developer-issued sign-in URL; this is for disposable development identities only and must never target production users or be committed as a token. The complete storage-state workflow is documented in [`docs/testing.md`](testing.md).
