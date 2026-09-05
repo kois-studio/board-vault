@@ -2664,3 +2664,19 @@ Review: PROD-002 / TRUTH-001 / EQ-006
 Changed: The personal collection route now explains that games are private member-owned input to group decisions. Its empty state links to adding the first game or opening the group workspace, and a populated state points back to shared group context.
 
 Verified: `cd frontend && npm run lint:check` and `cd frontend && npm run build` (599.15 kB initial / 137.98 kB estimated transfer) pass. No migration, production data, provider configuration, or deployment changed.
+
+Continuation claim: SEC-002 / PROD-003
+
+Owner: Codex
+
+Claimed: 2026-09-05
+
+Scope: align deprecated username-invitation compatibility endpoints with the V1 owner-only membership policy.
+
+Planned: require group ownership for creating legacy invitations and add regression coverage for both invitation entry points.
+
+Review: SEC-002 / PROD-003
+
+Changed: The deprecated generic and username invitation creation endpoints now require `GroupOwnerGuard`, and the guard accepts the legacy body-based `groupId` as well as canonical URL parameters. This keeps member-level acquisition/session participation separate from owner-level membership management.
+
+Verified: `cd backend && npm run lint:check`, `cd backend && npm test -- --runInBand` (44 suites / 209 tests), `cd backend && npm run build`, and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.

@@ -2,6 +2,7 @@ import { ExecutionContext, INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
 import * as request from 'supertest'
 
+import { GroupOwnerGuard } from '../../common/guards/group-owner.guard'
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
 import { UserInGroupGuard } from '../../common/guards/user-in-group.guard'
 import { VerifiedUserGuard } from '../../common/guards/verified-user.guard'
@@ -46,6 +47,8 @@ describe('Legacy write DTO validation', () => {
             .overrideGuard(VerifiedUserGuard)
             .useValue({ canActivate: () => true })
             .overrideGuard(UserInGroupGuard)
+            .useValue({ canActivate: () => true })
+            .overrideGuard(GroupOwnerGuard)
             .useValue({ canActivate: () => true })
             .compile()
 

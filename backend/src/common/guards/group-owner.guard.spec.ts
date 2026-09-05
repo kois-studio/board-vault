@@ -29,6 +29,14 @@ describe('GroupOwnerGuard', () => {
         )
     })
 
+    it('reads the group identifier from a legacy invitation body', async () => {
+        const groupsService = { getGroupById: jest.fn().mockResolvedValue({ id: 12, createdBy: 7 }) } as unknown as GroupsService
+        const guard = new GroupOwnerGuard(groupsService)
+
+        await expect(guard.canActivate(createContext({ user: { userId: 7 }, params: {}, body: { groupId: 12 } }))).resolves.toBe(true)
+        expect(groupsService.getGroupById).toHaveBeenCalledWith(12)
+    })
+
     it('is attached to legacy group mutations', () => {
         const controller = GroupsController.prototype as unknown as Record<string, unknown>
         const getGuards = (method: string) => Reflect.getMetadata(GUARDS_METADATA, controller[method] as object) as Array<unknown>

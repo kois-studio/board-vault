@@ -88,7 +88,7 @@ compliance:
 
     - id: TEST-001
       status: gap
-      evidence: backend has 44 focused suites and 208 passing tests covering authentication, authorization, validation, sessions, service-level participation invariants, organizer/current-membership enforcement, per-game participation, recommendations, invitation visibility/expiry/atomic acceptance, verified-user gating, admin route and bounded list-query validation, self-profile response privacy, cache endpoint protection, safe API errors, health/readiness probes, canonical session reads, and provider boundaries; frontend has 25 browser-based unit tests plus four passing public Playwright checks and seven opt-in authenticated checks
+      evidence: backend has 44 focused suites and 209 passing tests covering authentication, authorization, validation, sessions, service-level participation invariants, organizer/current-membership enforcement, per-game participation, recommendations, invitation visibility/expiry/atomic acceptance, owner-only legacy invitation creation, verified-user gating, admin route and bounded list-query validation, self-profile response privacy, cache endpoint protection, safe API errors, health/readiness probes, canonical session reads, and provider boundaries; frontend has 25 browser-based unit tests plus four passing public Playwright checks and seven opt-in authenticated checks
       priority: high
       next_action: Add layered unit, integration, and journey tests for the flagship loop.
     - id: TEST-002
@@ -108,12 +108,12 @@ compliance:
       next_action: Expand the HTTP contract suite with disposable authenticated/authorized journeys.
     - id: TEST-005
       status: gap
-      evidence: 208 focused backend tests now cover the highest-risk unit boundaries, but the suite does not yet exercise a clean database, provider failure contract, or complete authenticated browser journey
+      evidence: 209 focused backend tests now cover the highest-risk unit boundaries, but the suite does not yet exercise a clean database, provider failure contract, or complete authenticated browser journey
       priority: critical
       next_action: Add disposable integration and contract coverage for auth, group membership, collection ownership, session transactions, and recommendation rules.
     - id: TEST-006
       status: gap
-      evidence: backend unit command passes 208 focused tests and frontend has 25 browser-based unit tests plus four public Playwright checks; clean installs now pass and the validation workflow now includes repository whitespace, lint/Biome, build, test, and migration gates, while CI enforcement is not yet observed remotely
+      evidence: backend unit command passes 209 focused tests and frontend has 25 browser-based unit tests plus four public Playwright checks; clean installs now pass and the validation workflow now includes repository whitespace, lint/Biome, build, test, and migration gates, while CI enforcement is not yet observed remotely
       priority: high
       next_action: Keep the supported test commands meaningful and observe their first required CI run.
     - id: TEST-007
@@ -195,7 +195,7 @@ compliance:
       next_action: Add safe environment documentation and repository secret scanning.
     - id: SEC-003
       status: gap
-      evidence: user-scoped reads, the deprecated global user listing, legacy group listings, reviewed group routes, legacy meet reads, and every current collection route use ownership, administrator, or membership guards; legacy JWT validation rejects soft-deleted accounts; group and invitation/membership creation derives actor IDs from JWT, invitation lifecycle actions enforce sender/recipient ownership, and invitation acceptance atomically consumes the invitation with membership creation; deprecated direct joining requires a pending invitation, legacy notification and meet-account-game mutations are scoped to the authenticated account, proposal review actions derive reviewers from the verified JWT behind `AdminGuard`, while admin list queries enforce status/search/page-size bounds and organizer session mutations enforce current group membership; nested user responses use the explicit `UserPublicDto` boundary and omit email/account state, while `/profile/users/:userId` uses the narrower `UserSelfDto`; remaining admin response policy, the broader group-join product decision, and the session transaction policy still need review
+      evidence: user-scoped reads, the deprecated global user listing, legacy group listings, reviewed group routes, legacy meet reads, and every current collection route use ownership, administrator, or membership guards; legacy JWT validation rejects soft-deleted accounts; group and invitation/membership creation derives actor IDs from JWT, deprecated invitation creation requires group ownership even when the group ID is body-based, invitation lifecycle actions enforce sender/recipient ownership, and invitation acceptance atomically consumes the invitation with membership creation; deprecated direct joining requires a pending invitation, legacy notification and meet-account-game mutations are scoped to the authenticated account, proposal review actions derive reviewers from the verified JWT behind `AdminGuard`, while admin list queries enforce status/search/page-size bounds and organizer session mutations enforce current group membership; nested user responses use the explicit `UserPublicDto` boundary and omit email/account state, while `/profile/users/:userId` uses the narrower `UserSelfDto`; remaining admin response policy, the broader group-join product decision, and the session transaction policy still need review
       priority: critical
       next_action: Review remaining admin response shapes, then execute the remaining authorization and session transaction decisions in todo/06-agent-task-board.md.
     - id: SEC-004
@@ -441,7 +441,7 @@ compliance:
       next_action: Document when custom SCSS is preferred and remove competing legacy patterns incrementally.
     - id: STYLE-004
       status: compliant
-      evidence: global Tailwind styles use plain CSS, postcss-nested flattens generated utility nesting for Angular, and the production build has no Sass or selector warnings; the 599.13 kB initial raw bundle (137.91 kB estimated transfer) is below the 650 kB warning budget
+      evidence: global Tailwind styles use plain CSS, postcss-nested flattens generated utility nesting for Angular, and the production build has no Sass or selector warnings; the 599.15 kB initial raw bundle (137.98 kB estimated transfer) is below the 650 kB warning budget
       priority: high
       next_action: Preserve the CSS/PostCSS integration and keep the rendered accessibility/responsive review in EQ-006.
     - id: STYLE-005
