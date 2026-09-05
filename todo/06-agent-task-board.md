@@ -2464,3 +2464,19 @@ Review: PROD-005 / EQ-006 / AUTH-001
 Changed: Group edit now shows invitation mutation controls only to the owner, matching the backend membership boundary. The existing-account username field now points at its actual control, so required/length validation feedback is rendered correctly; the email invitation field also has an explicit accessible label.
 
 Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (22 tests), `cd frontend && npm run build` (599.05 kB initial / 137.89 kB estimated transfer), and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.
+
+Continuation claim: EQ-006 / PROD-001
+
+Owner: Codex
+
+Claimed: 2026-09-05
+
+Scope: make the collection search entry point accessible without making catalog browsing the product’s primary action.
+
+Planned: give the search field a persistent accessible name and preserve its group-acquisition context.
+
+Review: EQ-006 / PROD-001
+
+Changed: The catalog search input now has a persistent accessible label, stable ID, and browser-autocomplete behavior while preserving the separate “add to my collection” versus “add for this group” context.
+
+Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (22 tests), `cd frontend && npm run build` (599.05 kB initial / 137.89 kB estimated transfer), and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.
