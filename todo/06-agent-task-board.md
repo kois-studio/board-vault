@@ -2584,3 +2584,19 @@ Review: PROD-004 / EQ-006
 Changed: Group-scoped browse now loads the persisted acquisition shortlist before enabling add actions, shows games already on the shortlist after refresh, exposes a reversible “Remove my interest” action, and preserves the prior saved state when removal fails. A failed shortlist read is explicit and blocks ambiguous mutations.
 
 Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (23 tests), `cd frontend && npm run build` (599.11 kB initial / 137.88 kB estimated transfer), and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.
+
+Continuation claim: PROD-005 / SEC-003
+
+Owner: Codex
+
+Claimed: 2026-09-05
+
+Scope: align session lifecycle UX and backend policy so scheduled planning cannot be closed as completed without an active game night.
+
+Planned: require the organizer to start a scheduled session before finishing it, and make the available session actions explain that lifecycle.
+
+Review: PROD-005 / SEC-003
+
+Changed: Scheduled sessions can now transition only to active or cancelled; completion requires the active state. The session view shows “Start game night” and planning guidance while scheduled, and exposes “Finish and save memory” only once active.
+
+Verified: `cd backend && npm run lint:check`, `cd backend && npm run build`, `cd backend && npm test -- --runInBand` (44 suites / 208 tests), `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (23 tests), `cd frontend && npm run build` (599.11 kB initial / 137.88 kB estimated transfer), and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.
