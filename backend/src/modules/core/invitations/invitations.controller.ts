@@ -1,8 +1,8 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
+import { GroupOwnerGuard } from '../../../common/guards/group-owner.guard'
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
-import { UserInGroupGuard } from '../../../common/guards/user-in-group.guard'
 import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
 import { SuccessDto } from '../../../common/types/auth.type'
 import {
@@ -31,7 +31,7 @@ export class InvitationsController {
         return this.invitationsService.getInvitations(request.user.userId)
     }
 
-    @UseGuards(UserInGroupGuard)
+    @UseGuards(GroupOwnerGuard)
     @Post('/')
     @ApiOperation({ summary: 'Create a new invitation', deprecated: true })
     @ApiResponse({ status: 201, type: SuccessDto, description: 'The invitation has been succesfully created' })
@@ -50,7 +50,7 @@ export class InvitationsController {
         return this.invitationsService.getInvitationByIdForAccount(invitationId, request.user.userId)
     }
 
-    @UseGuards(UserInGroupGuard)
+    @UseGuards(GroupOwnerGuard)
     @Post('/byUsername')
     @ApiOperation({ summary: 'Create a new invitation' })
     @ApiResponse({ status: 201, type: UserPublicDto, description: 'The invitation has been succesfully created' })
