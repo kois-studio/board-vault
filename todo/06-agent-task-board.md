@@ -2679,4 +2679,4 @@ Review: SEC-002 / PROD-003
 
 Changed: The deprecated generic and username invitation creation endpoints now require `GroupOwnerGuard`, and the guard accepts the legacy body-based `groupId` as well as canonical URL parameters. This keeps member-level acquisition/session participation separate from owner-level membership management.
 
-Verified: `cd backend && npm run lint:check`, `cd backend && npm test -- --runInBand` (44 suites / 209 tests), `cd backend && npm run build`, and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.
+Verified: `cd backend && npm run lint:check`, `cd backend && npm test -- --runInBand` (44 suites / 210 tests), `cd backend && npm run build`, and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.

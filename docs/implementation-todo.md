@@ -162,6 +162,7 @@ Relevant surfaces: [`groups`](../frontend/src/app/pages/groups/), [`group-view`]
 - Remove unnecessary reload-all behavior after group mutations where safe.
 - Review invitation and notification feedback, unread/read states, and failure recovery.
 - Validate the new 30-day legacy invitation expiry in a real two-account flow, then complete provider/legacy retry behavior and notification copy/read-state validation with real invitation data.
+- Legacy username invitation lookup now excludes soft-deleted accounts; duplicate-invitation behavior and the provider-managed Clerk invitation lifecycle still need real-data validation.
 - Review member cards, avatars, long usernames, and mobile layouts.
 - Group detail now initializes each newly opened group with all members selected, preventing shared singleton selection state from leaking between groups; member-filter interaction still needs rendered responsive/accessibility review.
 
