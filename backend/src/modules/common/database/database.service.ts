@@ -577,12 +577,20 @@ export class DatabaseService implements OnModuleInit {
                         FROM OwnedGame og
                         INNER JOIN GroupMembership gm ON gm.accountId = og.accountId
                         WHERE gm.groupId = ? AND og.gameId = g.id
-                    ) AS ownerCount
+                    ) AS ownerCount,
+                    gad.status,
+                    gad.decidedAt,
+                    decisionAccount.id,
+                    decisionAccount.username,
+                    decisionAccount.displayName,
+                    decisionAccount.avatar
                 FROM GroupGameInterest ggi
                 INNER JOIN Game g ON g.id = ggi.gameId
                 INNER JOIN Account a ON a.id = ggi.accountId
                 LEFT JOIN GameTranslation gt_en ON gt_en.gameId = g.id AND gt_en.languageCode = 'en'
                 LEFT JOIN GameTranslation gt_es ON gt_es.gameId = g.id AND gt_es.languageCode = 'es'
+                LEFT JOIN GroupAcquisitionDecision gad ON gad.groupId = ggi.groupId AND gad.gameId = ggi.gameId
+                LEFT JOIN Account decisionAccount ON decisionAccount.id = gad.decidedBy AND decisionAccount.isDeleted = 0
                 WHERE ggi.groupId = ?
                     AND NOT EXISTS (
                         SELECT 1
@@ -609,6 +617,38 @@ export class DatabaseService implements OnModuleInit {
                 )
             `,
             args: [groupId, accountId, body.gameId, groupId, body.gameId],
+        })
+    }
+
+    upsertGroupAcquisitionDecision(
+        groupId: number,
+        gameId: number,
+        decidedBy: number,
+        status: 'open' | 'planned' | 'not_now',
+        note: string | null,
+    ) {
+        return this._tursoExecute({
+            sql: `
+                INSERT INTO GroupAcquisitionDecision (groupId, gameId, status, decidedBy, note)
+                VALUES (?, ?, ?, ?, ?)
+                ON CONFLICT(groupId, gameId) DO UPDATE SET
+                    status = excluded.status,
+                    decidedBy = excluded.decidedBy,
+                    decidedAt = CURRENT_TIMESTAMP,
+                    note = excluded.note
+            `,
+            args: [groupId, gameId, status, decidedBy, note],
+        })
+    }
+
+    reopenGroupAcquisitionDecision(groupId: number, gameId: number) {
+        return this._tursoExecute({
+            sql: `
+                UPDATE GroupAcquisitionDecision
+                SET status = 'open', decidedBy = NULL, decidedAt = NULL, note = NULL
+                WHERE groupId = ? AND gameId = ? AND status = 'not_now'
+            `,
+            args: [groupId, gameId],
         })
     }
 

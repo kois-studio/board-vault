@@ -113,6 +113,9 @@ export type GroupAcquisitionEntryType = {
     interestCount: number
     ownerCount: number
     firstInterestedAt: string
+    decisionStatus: 'open' | 'planned' | 'not_now'
+    decisionAt: string | null
+    decisionBy: PublicUserType | null
 }
 
 export type ClerkGroupInvitationType = {
