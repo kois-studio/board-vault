@@ -158,6 +158,17 @@
                     <button type="button" class="app-btn-secondary py-2!" (click)="copyClerkInvitationLink()">Copy secure link</button>
                     <a class="app-btn-secondary py-2!" [href]="clerkInvitation.url" target="_blank" rel="noreferrer">Open link</a>
                 </div>
+                @if (copyLinkStatus !== 'idle') {
+                    <p class="mt-2 text-xs text-secondary" role="status" aria-live="polite">
+                        @if (copyLinkStatus === 'copied') {
+                            Secure link copied.
+                        } @else if (copyLinkStatus === 'unavailable') {
+                            Your browser does not allow clipboard access. Use Open link to share it manually.
+                        } @else {
+                            The link could not be copied. Try again or use Open link to share it manually.
+                        }
+                    </p>
+                }
             </div>
         }
     </div>

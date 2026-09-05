@@ -28,6 +28,7 @@ export class GroupEditComponent {
     public usernameToInvite = new FormControl('', [Validators.required, Validators.minLength(4), Validators.maxLength(20)])
     public emailToInvite = new FormControl('', [Validators.required, Validators.email, Validators.maxLength(320)])
     public clerkInvitation: ClerkGroupInvitationType | null = null
+    public copyLinkStatus: 'idle' | 'copied' | 'unavailable' | 'failed' = 'idle'
     public isLoading = false
 
     constructor(
@@ -120,6 +121,7 @@ export class GroupEditComponent {
         if (!this.isGroupOwner || !this.groupData || !this.emailToInvite.value || this.emailToInvite.invalid || this.isLoading) return
         this.isLoading = true
         this.clerkInvitation = null
+        this.copyLinkStatus = 'idle'
 
         try {
             this.clerkInvitation = await firstValueFrom(
@@ -134,9 +136,18 @@ export class GroupEditComponent {
     }
 
     async copyClerkInvitationLink() {
-        if (!this.clerkInvitation?.url || !navigator.clipboard) return
+        if (!this.clerkInvitation?.url) return
+        if (!navigator.clipboard) {
+            this.copyLinkStatus = 'unavailable'
+            return
+        }
 
-        await navigator.clipboard.writeText(this.clerkInvitation.url)
+        try {
+            await navigator.clipboard.writeText(this.clerkInvitation.url)
+            this.copyLinkStatus = 'copied'
+        } catch {
+            this.copyLinkStatus = 'failed'
+        }
     }
 
     async onSaveChanges() {

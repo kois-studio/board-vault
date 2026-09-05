@@ -2632,3 +2632,19 @@ Review: PROD-001
 Changed: Product direction now explicitly accepts Board Vault as the brand and Session as the user-facing event noun. The core-loop, launch-readiness, implementation, and task-board docs now preserve that boundary; PROD-001 is marked DONE.
 
 Verified: `rg` review found no active BoardMeet product naming claim; current routes and product copy use Board Vault/Session terminology, while remaining `Meet*` references are compatibility/database implementation references. `git diff --check` passes. No code, migration, production data, provider configuration, or deployment changed.
+
+Continuation claim: PROD-003 / EQ-006
+
+Owner: Codex
+
+Claimed: 2026-09-05
+
+Scope: make private-beta Clerk invitation sharing provide explicit copy feedback.
+
+Planned: report whether the secure invitation link was copied, unavailable, or failed, with accessible status semantics.
+
+Review: PROD-003 / EQ-006
+
+Changed: Clerk invitation sharing now reports copied, unavailable, and failed clipboard states in an announced status message, while preserving the secure link and manual-open fallback.
+
+Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (25 tests), `cd frontend && npm run build` (599.13 kB initial / 137.91 kB estimated transfer), and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.
