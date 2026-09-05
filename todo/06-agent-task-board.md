@@ -2872,6 +2872,30 @@ Review: PROD-003 / DATA-001 / EQ-003 / TRUTH-001
 Changed: Added accepted ADR-0009 and migration 0009 for `GroupAcquisitionDecision`. The group board now exposes open/planned/not-now state and decision attribution; only the group owner can update it, renewed member interest reopens not-now, and ownership continues to hide the candidate. Added strict DTO/API boundaries, owner UI actions, response-schema coverage, backend regression tests, and `frontend/e2e/acquisition-decision-flow.spec.ts` covering plan, postpone, reopen, and refresh persistence.
 
 Verified: `node database/scripts/verify-empty-state.mjs` passes through migration 0009; backend full suite passes 44 suites / 217 tests, frontend unit suite passes 26 tests, frontend lint/build passes (600.42 kB initial / 137.63 kB estimated transfer), and the full local Playwright run passes 13 tests with 3 fixture-gated skips when owner/recommendation/acquisition fixtures are supplied. No live Turso migration, production data, provider configuration, deployment, or push was performed.
+
+Continuation claim: EQ-003 / PROD-005 / TRUTH-002
+
+Scope: make the flagship two-account session rehearsal repeatable against a
+clean disposable fixture.
+
+Changed: Added the non-destructive `database/scripts/seed-social-fixture.mjs`
+script and root `npm run seed:social-fixture` wrapper. The fixture validates
+active accounts, an existing game, and migration state before atomically
+creating a private group, two memberships, shared game ownership, a review, and
+a scheduled session. Updated the social-session Playwright spec to accept
+generated group/game names, tolerate an already-completed RSVP mutation, and
+use a 120-second integration budget with bounded action/navigation diagnostics.
+
+Verified: A fresh fixture (`groupId=7`, `sessionId=8`, Cascadia) passed the full
+two-account RSVP → active → attendance → per-game participant → completed →
+feedback → history journey in 6.5 seconds. The initial failures were traced to
+expired Clerk storage state and a partially mutated disposable session, then
+resolved by regenerating dev-only owner/member state and reseeding. No live
+Turso data, production Clerk identity, deployment, or push was used.
+
+Known follow-ups: Real-group usefulness and a clean multi-journey acceptance
+rehearsal remain launch gates; provider failure and broader integration
+coverage remain open.
 Continuation claim: SEC-003 / TS-005 / API-002
 
 Scope: close concrete request-boundary gaps found during the P0 authorization and

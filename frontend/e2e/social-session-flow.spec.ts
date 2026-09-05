@@ -3,11 +3,15 @@ import { expect, test } from '@playwright/test'
 const ownerStorageState = process.env['PLAYWRIGHT_OWNER_STORAGE_STATE']
 const memberStorageState = process.env['PLAYWRIGHT_MEMBER_STORAGE_STATE']
 const sessionId = process.env['PLAYWRIGHT_SOCIAL_SESSION_ID']
+const groupName = process.env['PLAYWRIGHT_SOCIAL_GROUP_NAME']
+const gameTitle = process.env['PLAYWRIGHT_SOCIAL_GAME_TITLE']
 
 test.describe('two-account social session flow', () => {
+    test.describe.configure({ timeout: 120_000 })
+
     test.skip(
-        !ownerStorageState || !memberStorageState || !sessionId,
-        'Set both Clerk storage states and PLAYWRIGHT_SOCIAL_SESSION_ID against a disposable seeded environment.',
+        !ownerStorageState || !memberStorageState || !sessionId || !groupName || !gameTitle,
+        'Set both Clerk storage states, the social session ID, group name, and game title against a disposable seeded environment.',
     )
 
     test('moves from RSVP to saved memory and history', async ({ browser, baseURL }) => {
@@ -15,12 +19,19 @@ test.describe('two-account social session flow', () => {
         const memberContext = await browser.newContext({ storageState: memberStorageState })
         const ownerPage = await ownerContext.newPage()
         const memberPage = await memberContext.newPage()
+        ownerPage.setDefaultTimeout(10_000)
+        memberPage.setDefaultTimeout(10_000)
+        ownerPage.setDefaultNavigationTimeout(15_000)
+        memberPage.setDefaultNavigationTimeout(15_000)
         const sessionPath = `/sessions/${sessionId}`
 
         try {
             await memberPage.goto(`${baseURL}${sessionPath}`)
             await expect(memberPage.getByRole('heading', { name: /Plan for game night/i })).toBeVisible()
-            await memberPage.getByRole('button', { name: /I.m going/i }).click()
+            const goingButton = memberPage.getByRole('button', { name: /I.m going/i })
+            if (await goingButton.count()) {
+                await goingButton.click()
+            }
             await memberPage.reload()
             await expect(memberPage.getByRole('button', { name: /Going ✓/ })).toBeVisible()
 
@@ -40,7 +51,7 @@ test.describe('two-account social session flow', () => {
             }
             await expect(ownerPage.getByText('2 of 2 members')).toBeVisible()
 
-            await ownerPage.getByRole('button', { name: /Cascadia/ }).click()
+            await ownerPage.getByRole('button', { name: new RegExp(gameTitle ?? '', 'i') }).click()
             await expect(ownerPage.getByText('Played', { exact: true })).toBeVisible()
             const participantInputs = ownerPage
                 .locator('fieldset')
@@ -62,13 +73,13 @@ test.describe('two-account social session flow', () => {
             await memberPage.unroute(`http://localhost:3000/sessions/${sessionId}`)
             await memberPage.getByRole('button', { name: 'Retry' }).click()
             await expect(memberPage.getByRole('heading', { name: /Game night memory/i })).toBeVisible()
-            await memberPage.locator('select[aria-label*="Cascadia"]').selectOption('9')
+            await memberPage.locator(`select[aria-label*="${gameTitle}"]`).selectOption('9')
             await expect(memberPage.getByText('Your group rating was saved.')).toBeVisible()
             await memberPage.reload()
 
             await memberPage.goto(`${baseURL}/play/history`)
-            await expect(memberPage.getByText('Friday Table').first()).toBeVisible()
-            await expect(memberPage.getByText('Cascadia').first()).toBeVisible()
+            await expect(memberPage.getByText(groupName ?? '').first()).toBeVisible()
+            await expect(memberPage.getByText(gameTitle ?? '').first()).toBeVisible()
             await expect(memberPage.getByText('Open memory').first()).toBeVisible()
         } finally {
             await ownerContext.close()

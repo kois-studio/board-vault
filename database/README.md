@@ -44,6 +44,27 @@ database/
 - Authentication identity decision: [ADR-0004](../docs/adr/0004-clerk-managed-authentication.md).
 - API behavior and transaction expectations: [docs/api.md](../docs/api.md).
 
+## Disposable social-loop fixture
+
+`scripts/seed-social-fixture.mjs` creates a fresh group, two memberships, shared
+game ownership, one review, and a scheduled session for two already-provisioned
+development accounts. It is additive and never deletes or resets data. The
+target database must already be migrated through `0009`.
+
+```shell
+TURSO_DATABASE_URL=file:/tmp/board-vault-dev.db \
+TURSO_AUTH_TOKEN=local-test-token \
+FIXTURE_OWNER_ACCOUNT_ID=1 \
+FIXTURE_MEMBER_ACCOUNT_ID=2 \
+FIXTURE_GAME_ID=1 \
+FIXTURE_GROUP_NAME="Clean social loop rehearsal" \
+npm run seed:social-fixture
+```
+
+The command prints the generated `groupId` and `sessionId` for the authenticated
+browser rehearsal. Use only a disposable local database and development Clerk
+identities; never point it at production Turso.
+
 ## Rules for future database work
 
 - Never commit real credentials, production dumps, or personal data. Fixtures MUST be synthetic and reviewable.

@@ -140,7 +140,7 @@ group loop demonstrates repeat use.
 
 - **Status:** Planned
 - **Affected area:** `frontend/src/styles.css`, component SCSS/templates, route surfaces
-- **Evidence:** Tailwind global styles now use plain CSS with a PostCSS nesting pass; route-level components are lazy-loaded; production build has no Sass/selector/bundle-budget warnings and the initial raw bundle is 600.42 kB (137.63 kB estimated transfer) under the 650 kB warning budget. Shared theme-control semantics, the preserved-account auth fallback, migration-state copy, group/session empty states, owner-only invitation controls, mobile session-progress behavior, attendee-selection handoff, recommendation attendee controls, explainable recommendation lenses, reversible group acquisition interest, invitation-link copy feedback, and the personal/private collection boundary have been improved, but a full accessibility/responsive audit and all route-surface reviews remain open.
+- **Evidence:** Tailwind global styles now use plain CSS with a PostCSS nesting pass; route-level components are lazy-loaded; production build has no Sass/selector/bundle-budget warnings and the initial raw bundle is 600.42 kB (137.64 kB estimated transfer) under the 650 kB warning budget. Shared theme-control semantics, the preserved-account auth fallback, migration-state copy, group/session empty states, owner-only invitation controls, mobile session-progress behavior, attendee-selection handoff, recommendation attendee controls, explainable recommendation lenses, reversible group acquisition interest, invitation-link copy feedback, and the personal/private collection boundary have been improved, but a full accessibility/responsive audit and all route-surface reviews remain open.
 - **Risk:** Broken styles, poor mobile/accessibility behavior, and unsupported public claims.
 - **Next action:** Complete the rendered route audit matrix, resolve remaining accessibility/responsive findings, and link content-truth findings to `TRUTH-001`.
 - **Dependencies:** Product truth/brand decision where claims are involved.
@@ -235,9 +235,9 @@ as TODO items here.
 
 - [ ] Validate the complete session flow through authenticated browser coverage,
   including refresh, retryable failures, RSVP, attendance, per-game
-  participants, active-to-completed lifecycle, and feedback. A disposable
-  two-account journey now passes all of these behaviors; repeat the rehearsal
-  with a clean, documented fixture before treating the criterion as complete.
+  participants, active-to-completed lifecycle, and feedback. A fresh,
+  repeatable two-account fixture now passes all of these behaviors; real-group
+  usefulness remains part of the separate two-person acceptance rehearsal.
 - [ ] Remove or hide incomplete compatibility flows once the canonical session
   journey replaces them.
 
@@ -269,8 +269,9 @@ as TODO items here.
 - [ ] Expand automated coverage for auth, authorization, collection activation,
   invitations, recommendations, session lifecycle, and core frontend states.
   Disposable browser journeys now cover collection activation, invitations,
-  recommendations, and the two-account session loop; repeatable fixture setup,
-  negative authorization/contract cases, and provider failure coverage remain.
+  recommendations, and the two-account session loop; repeatable fixture setup
+  and negative request-boundary cases are in place, while provider failure and
+  broader authorized integration coverage remain.
 - [ ] Keep production configuration documented without committing secrets;
   verify Turso, Clerk, Resend, Upstash, CORS, health checks, and rollback paths.
 - [ ] Remove remaining dead routes, placeholder links, misleading copy, stale

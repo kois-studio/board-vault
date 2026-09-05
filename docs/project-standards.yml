@@ -93,9 +93,9 @@ compliance:
       next_action: Add layered unit, integration, and journey tests for the flagship loop.
     - id: TEST-002
       status: gap
-      evidence: focused backend regression coverage now exists for auth, ownership, validation, group/invitation boundaries, collection ownership, session transactions/lifecycle, and recommendation rules; disposable authenticated browser journeys now cover collection activation, invitation acceptance, and the two-account session loop, while provider failure, remote integration, and repeatable fixture setup remain open
+      evidence: focused backend regression coverage now exists for auth, ownership, validation, group/invitation boundaries, collection ownership, session transactions/lifecycle, and recommendation rules; disposable authenticated browser journeys now cover collection activation, invitation acceptance, and the two-account session loop, with a repeatable additive social fixture seeder now available, while provider failure and remote integration remain open
       priority: critical
-      next_action: Preserve the local journeys as regression gates, add repeatable fixture setup, and add provider/remote integration coverage when the CI environment can supply disposable identities safely.
+      next_action: Preserve the local journeys as regression gates, use the repeatable fixture seeder for clean rehearsals, and add provider/remote integration coverage when the CI environment can supply disposable identities safely.
     - id: TEST-003
       status: unknown
       evidence: no isolated test strategy is documented; e2e module setup requires external configuration
@@ -441,7 +441,7 @@ compliance:
       next_action: Document when custom SCSS is preferred and remove competing legacy patterns incrementally.
     - id: STYLE-004
       status: compliant
-      evidence: global Tailwind styles use plain CSS, postcss-nested flattens generated utility nesting for Angular, and the production build has no Sass or selector warnings; the 600.42 kB initial raw bundle (137.63 kB estimated transfer) is below the 650 kB warning budget
+      evidence: global Tailwind styles use plain CSS, postcss-nested flattens generated utility nesting for Angular, and the production build has no Sass or selector warnings; the 600.42 kB initial raw bundle (137.64 kB estimated transfer) is below the 650 kB warning budget
       priority: high
       next_action: Preserve the CSS/PostCSS integration and keep the rendered accessibility/responsive review in EQ-006.
     - id: STYLE-005
