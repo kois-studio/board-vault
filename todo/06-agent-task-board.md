@@ -2552,3 +2552,19 @@ Review: PROD-004 / PROD-005 / EQ-006
 Changed: The recommendation chooser now offers Everyone and Clear controls, announces the selected-member count, labels each attendee checkbox, and resets stale results and feedback whenever attendance context changes.
 
 Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (23 tests), `cd frontend && npm run build` (599.05 kB initial / 137.89 kB estimated transfer), and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.
+
+Continuation claim: PROD-004 / PROD-005
+
+Owner: Codex
+
+Claimed: 2026-09-05
+
+Scope: add an explainable group preference to recommendation decisions.
+
+Planned: let a group choose between a balanced result, something new, or a group favorite, and include that context in the ranking explanation without introducing catalog-style global scoring.
+
+Review: PROD-004 / PROD-005
+
+Changed: Recommendations now accept and return an explicit decision lens. Balanced preserves the existing ranking, Something new boosts never-played games and explains the history trade-off, and Group favorite rewards strong group ratings and previously played games. The chooser exposes the lens next to attendees and available time, and changing it clears stale results and feedback.
+
+Verified: `cd backend && npm run lint:check`, `cd backend && npm run build`, `cd backend && npm test -- --runInBand` (44 suites / 207 tests), `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (23 tests), `cd frontend && npm run build` (599.11 kB initial / 137.88 kB estimated transfer), and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.

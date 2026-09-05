@@ -5,6 +5,8 @@ import { GameCompleteDto } from '../../../common/types/game.type'
 import { MeetDto } from '../../../common/types/meet.type'
 import { UserPublicDto } from '../../../common/types/user.type'
 
+export type RecommendationDecisionLens = 'balanced' | 'fresh' | 'favorite'
+
 class GamePlayedDto {
     @ApiProperty({ type: GameCompleteDto, description: 'The game data.' })
     gameData: GameCompleteDto
@@ -44,6 +46,11 @@ export class RecommendationRequestBody {
     @Min(1)
     @Max(1440)
     availableMinutes?: number
+
+    @ApiProperty({ example: 'balanced', enum: ['balanced', 'fresh', 'favorite'], required: false })
+    @IsOptional()
+    @IsIn(['balanced', 'fresh', 'favorite'])
+    decisionLens?: RecommendationDecisionLens
 }
 
 export class RecommendationExplanationDto {
@@ -89,6 +96,9 @@ export class RecommendationsDto {
 
     @ApiProperty({ example: 120, nullable: true })
     availableMinutes: number | null
+
+    @ApiProperty({ example: 'balanced', enum: ['balanced', 'fresh', 'favorite'] })
+    decisionLens: RecommendationDecisionLens
 
     @ApiProperty({ type: [RecommendationDto] })
     recommendations: Array<RecommendationDto>

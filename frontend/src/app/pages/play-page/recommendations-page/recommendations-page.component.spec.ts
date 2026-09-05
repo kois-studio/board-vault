@@ -16,6 +16,7 @@ describe('RecommendationsPageComponent history context', () => {
         const recommendationSignals = signal({ signals: [] } as never)
         const feedbackState = signal({ 42: 'interested' } as never)
         const errorMessage = signal('stale error')
+        const decisionLens = signal<'balanced' | 'fresh' | 'favorite'>('balanced')
         const group = { members: [{ id: 1 }, { id: 2 }, { id: 3 }] }
 
         Object.assign(component, {
@@ -24,6 +25,7 @@ describe('RecommendationsPageComponent history context', () => {
             recommendationSignals,
             feedbackState,
             errorMessage,
+            decisionLens,
             selectedGroup: signal(group),
         })
 
@@ -33,6 +35,10 @@ describe('RecommendationsPageComponent history context', () => {
         expect(recommendationSignals()).toBeNull()
         expect(feedbackState()).toEqual({})
         expect(errorMessage()).toBeNull()
+
+        component.setDecisionLens('fresh')
+        expect(decisionLens()).toBe('fresh')
+        expect(component.decisionLensLabel).toBe('Something new')
 
         component.clearAttendees()
         expect(selectedAttendeeIds()).toEqual([])

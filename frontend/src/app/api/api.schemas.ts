@@ -439,6 +439,7 @@ export const recommendationsSchema: z.ZodType<RecommendationsType> = z.object({
     groupId: z.number(),
     attendeeIds: z.array(z.number()),
     availableMinutes: z.number().nullable(),
+    decisionLens: z.enum(['balanced', 'fresh', 'favorite']),
     recommendations: z.array(
         z.object({
             gameData: gameCompleteSchema,

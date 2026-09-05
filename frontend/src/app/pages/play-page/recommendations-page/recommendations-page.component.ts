@@ -14,6 +14,8 @@ import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
 
+type RecommendationDecisionLens = 'balanced' | 'fresh' | 'favorite'
+
 @Component({
     imports: [CommonModule, FormsModule, RouterLink, ButtonComponent, ContainerWrapperComponent, PageHeaderComponent, CustomDatePipe],
     templateUrl: 'recommendations-page.component.html',
@@ -30,6 +32,7 @@ export class RecommendationsPageComponent {
     public readonly selectedGroupId = signal<number | null>(null)
     public readonly selectedAttendeeIds = signal<Array<number>>([])
     public readonly availableMinutes = signal<number | null>(120)
+    public readonly decisionLens = signal<RecommendationDecisionLens>('balanced')
     public readonly recommendations = signal<RecommendationsType | null>(null)
     public readonly recommendationSignals = signal<RecommendationSignalsType | null>(null)
     public readonly isLoading = signal(false)
@@ -81,6 +84,24 @@ export class RecommendationsPageComponent {
         this.resetRecommendationState()
     }
 
+    public setDecisionLens(value: string): void {
+        if (value !== 'balanced' && value !== 'fresh' && value !== 'favorite') return
+
+        this.decisionLens.set(value)
+        this.resetRecommendationState()
+    }
+
+    public get decisionLensLabel(): string {
+        switch (this.decisionLens()) {
+            case 'fresh':
+                return 'Something new'
+            case 'favorite':
+                return 'Group favorite'
+            default:
+                return 'Balanced'
+        }
+    }
+
     public isAttendeeSelected(accountId: number): boolean {
         return this.selectedAttendeeIds().includes(accountId)
     }
@@ -114,6 +135,7 @@ export class RecommendationsPageComponent {
                         groupId,
                         attendeeIds,
                         ...(availableMinutes ? { availableMinutes } : {}),
+                        decisionLens: this.decisionLens(),
                     }),
                 ),
             )
