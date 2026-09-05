@@ -9,6 +9,10 @@ import { Component, OnInit } from '@angular/core'
 export class DarkModeToggleComponent implements OnInit {
     public isDarkMode = false
 
+    public get modeLabel(): string {
+        return this.isDarkMode ? 'Use light mode' : 'Use dark mode'
+    }
+
     ngOnInit(): void {
         if (document.documentElement.classList.contains('dark')) {
             this.isDarkMode = true
