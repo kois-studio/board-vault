@@ -95,7 +95,7 @@ Relevant surfaces: [`history-page`](../frontend/src/app/pages/play-page/history-
 
 Relevant surface: [`landing.component.html`](../frontend/src/app/pages/landing/landing.component.html).
 
-- Keep the product name consistently as “Board Vault”.
+- Keep the product name consistently as “Board Vault” and the user-facing event noun as “Session”; legacy `Meet*` names remain only in compatibility code and persisted schema boundaries.
 - Keep unsupported recommendations, statistics, notifications, mobile apps, offline behavior, API access, billing, and integrations out of the public claims until implemented.
 - Keep testimonials, social proof, and pricing out of the public surface until they become intentionally supported content.
 - Ensure every primary call to action leads to an existing route and works for signed-out users.
@@ -111,7 +111,7 @@ Relevant surfaces: [`header`](../frontend/src/app/layout/header/), [`top-bar`](.
 - The current footer now links only to implemented landing-page sections and authenticated routes; privacy, terms, and support remain explicitly deferred content.
 - Review authenticated versus unauthenticated navigation after the Clerk migration.
 - Review mobile navigation; the admin sidebar now collapses into a mobile overlay with a backdrop and keeps keyboard focus indicators.
-- Preserve the user-facing vocabulary: primary navigation and routes now use session terminology, with human-readable planned/live/completed/cancelled distinctions; legacy `Meet*` names remain only in compatibility code and persisted schema boundaries.
+- Preserve the user-facing vocabulary: primary navigation and routes use Board Vault and Session terminology, with human-readable planned/live/completed/cancelled distinctions; legacy `Meet*` names remain only in compatibility code and persisted schema boundaries.
 - Centralize loading, error, and toast behavior instead of repeating inconsistent patterns in `DataService` and pages.
 - Verify keyboard access, focus visibility, labels, active states, and route transitions.
 

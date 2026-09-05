@@ -48,7 +48,7 @@ Use hard constraints followed by a transparent score. Do not require machine lea
 
 ### Sessions are first-class
 
-Use one consistent term in the UI and API. “Session” is recommended because it can cover both scheduled events and completed plays. If “Meet” remains in the database temporarily, expose a stable session-oriented API.
+Use one consistent term in the UI and API. “Session” covers both scheduled events and completed plays. `Meet` remains only as a compatibility/database term and must not reappear in user-facing product copy, routes, or new API concepts.
 
 ### Ratings are lightweight initially
 
@@ -66,9 +66,9 @@ Start with a simple post-session rating and feedback reason. Avoid building a fu
 - complete internationalization;
 - a large social feed.
 
-## Naming decision required
+## Naming decision
 
-Choose one brand and one vocabulary before polishing marketing or adding routes. The current repository mixes “Board Vault” and “BoardMeet.” The selected name must be used consistently in product copy, metadata, emails, and documentation.
+The canonical brand is **Board Vault**. The canonical user-facing event noun is **Session**. New product copy, metadata, emails, routes, and API concepts must use those terms; legacy `Meet*` names are allowed only at compatibility and persistence boundaries while they remain necessary.
 
 ## Product questions that must not be silently assumed
 

@@ -6,7 +6,7 @@ The public landing page currently describes capabilities that are not implemente
 
 Known areas requiring review:
 
-- Board Vault versus BoardMeet naming;
+- Board Vault brand and Session vocabulary are now canonical; legacy `Meet*` names remain only at compatibility/database boundaries;
 - recommendations;
 - statistics;
 - native mobile applications;

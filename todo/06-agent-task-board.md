@@ -21,7 +21,7 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 
 | ID | Status | Workstream | Task | Dependencies |
 |---|---|---|---|---|
-| PROD-001 | TODO | Product | Decide and document canonical brand, nouns, and persona; recommendation ownership is accepted as collective selected-attendee ownership in ADR-0002, and session semantics are accepted in ADR-0003. | None |
+| PROD-001 | DONE | Product | Decide and document canonical brand, nouns, and persona; Board Vault, Session, and the organizer/host persona are now explicit. Recommendation ownership is accepted as collective selected-attendee ownership in ADR-0002, and session semantics are accepted in ADR-0003. | None |
 | PROD-002 | REVIEW | Core loop | Implement a real first-five-games collection activation flow. | SEC-002, DATA-002 |
 | PROD-003 | IN_PROGRESS | Core loop | Finish invite-only invitation acceptance and owner/member visibility; pending invitation reads are owner-only, acceptance atomically creates membership and consumes the legacy invitation, and invitation fetch now has truthful loading/error/retry states. | SEC-002, DATA-003 |
 | PROD-004 | REVIEW | Core loop | Implement deterministic recommendation scoring with explanations and unit tests. | PROD-001, DATA-003 |
@@ -2616,3 +2616,19 @@ Review: EQ-004 / PROD-004
 Changed: Client contract coverage now accepts an empty group acquisition board and rejects a malformed recommendation decision lens; the request body is also asserted to carry the selected lens.
 
 Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (25 tests), `cd frontend && npm run build` (599.13 kB initial / 137.94 kB estimated transfer), and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.
+
+Continuation claim: PROD-001
+
+Owner: Codex
+
+Claimed: 2026-09-05
+
+Scope: close the remaining brand and user-facing vocabulary ambiguity before further product work.
+
+Planned: make Board Vault and Session canonical in product direction and mark legacy Meet terminology as compatibility/database-only.
+
+Review: PROD-001
+
+Changed: Product direction now explicitly accepts Board Vault as the brand and Session as the user-facing event noun. The core-loop, launch-readiness, implementation, and task-board docs now preserve that boundary; PROD-001 is marked DONE.
+
+Verified: `rg` review found no active BoardMeet product naming claim; current routes and product copy use Board Vault/Session terminology, while remaining `Meet*` references are compatibility/database implementation references. `git diff --check` passes. No code, migration, production data, provider configuration, or deployment changed.

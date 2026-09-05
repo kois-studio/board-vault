@@ -114,7 +114,7 @@ Tasks:
 
 - remove links to nonexistent recommendation and security routes;
 - replace `href="#"` placeholders with real links or remove them;
-- eliminate BoardMeet/Board Vault naming inconsistency;
+- keep Board Vault as the canonical brand and Session as the user-facing event noun; legacy `Meet*` names remain only at compatibility/database boundaries;
 - reduce eager global data loading;
 - avoid mutating nested signal state in place;
 - centralize API loading, error, and toast behavior.
