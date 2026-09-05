@@ -2645,6 +2645,22 @@ Planned: report whether the secure invitation link was copied, unavailable, or f
 
 Review: PROD-003 / EQ-006
 
-Changed: Clerk invitation sharing now reports copied, unavailable, and failed clipboard states in an announced status message, while preserving the secure link and manual-open fallback.
+Changed: Clerk invitation sharing now reports copied, unavailable, and failed clipboard states in an announced status message, while preserving the secure link and manual-open fallback. The personal collection route now describes the shelf as private input to group decisions and gives an empty shelf actionable activation paths.
 
-Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (25 tests), `cd frontend && npm run build` (599.13 kB initial / 137.91 kB estimated transfer), and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.
+Verified: `cd frontend && npm run lint:check`, `cd frontend && npm run build` (599.15 kB initial / 137.98 kB estimated transfer), and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.
+
+Continuation claim: PROD-002 / TRUTH-001
+
+Owner: Codex
+
+Claimed: 2026-09-05
+
+Scope: clarify the boundary between a member’s private collection and the group’s shared decision workspace.
+
+Planned: make the personal collection page explain what its games mean, and make its empty state lead into useful collection activation instead of presenting “no games” as a dead end.
+
+Review: PROD-002 / TRUTH-001 / EQ-006
+
+Changed: The personal collection route now explains that games are private member-owned input to group decisions. Its empty state links to adding the first game or opening the group workspace, and a populated state points back to shared group context.
+
+Verified: `cd frontend && npm run lint:check` and `cd frontend && npm run build` (599.15 kB initial / 137.98 kB estimated transfer) pass. No migration, production data, provider configuration, or deployment changed.
