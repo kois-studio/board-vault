@@ -27,6 +27,7 @@ import {
     AdminGameProposalsResponseDto,
     AdminGamesQuery,
     AdminProposalsQuery,
+    AdminDuplicateProposalQuery,
 } from '../../../common/types/admin.type'
 import { SuccessDto } from '../../../common/types/auth.type'
 import { GameProposalCompleteDto } from '../../../common/types/game-proposal.type'
@@ -206,9 +207,9 @@ export class AdminController {
     async markGameProposalAsDuplicate(
         @Req() request: { user: { userId: number } },
         @Param('id', ParseIntPipe) id: number,
-        @Query('reviewNotes') reviewNotes?: string,
+        @Query() query: AdminDuplicateProposalQuery,
     ) {
-        return this.adminService.markGameProposalAsDuplicate(id, request.user.userId, reviewNotes)
+        return this.adminService.markGameProposalAsDuplicate(id, request.user.userId, query.reviewNotes)
     }
 
     @Delete('/proposals/:id')

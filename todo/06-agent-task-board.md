@@ -2872,3 +2872,22 @@ Review: PROD-003 / DATA-001 / EQ-003 / TRUTH-001
 Changed: Added accepted ADR-0009 and migration 0009 for `GroupAcquisitionDecision`. The group board now exposes open/planned/not-now state and decision attribution; only the group owner can update it, renewed member interest reopens not-now, and ownership continues to hide the candidate. Added strict DTO/API boundaries, owner UI actions, response-schema coverage, backend regression tests, and `frontend/e2e/acquisition-decision-flow.spec.ts` covering plan, postpone, reopen, and refresh persistence.
 
 Verified: `node database/scripts/verify-empty-state.mjs` passes through migration 0009; backend full suite passes 44 suites / 217 tests, frontend unit suite passes 26 tests, frontend lint/build passes (600.42 kB initial / 137.63 kB estimated transfer), and the full local Playwright run passes 13 tests with 3 fixture-gated skips when owner/recommendation/acquisition fixtures are supplied. No live Turso migration, production data, provider configuration, deployment, or push was performed.
+Continuation claim: SEC-003 / TS-005 / API-002
+
+Scope: close concrete request-boundary gaps found during the P0 authorization and
+validation audit without expanding the product beyond the social loop.
+
+Changed: Added typed, transformed, and bounded query DTOs for collection browse
+and admin duplicate-review notes. Group names are now capped at 100 characters;
+the existing session timezone and note limits remain part of the canonical social
+session contract. Added negative/positive controller coverage proving oversized
+inputs are rejected before service access and valid query values reach services in
+typed form.
+
+Verified: Backend full suite passes 44 suites / 222 tests; focused validation,
+lint, TypeScript, and `git diff --check` pass. No migration, production data,
+provider configuration, deployment, or push was performed.
+
+Known follow-ups: Continue the complete DTO decorator inventory, especially
+legacy proposal/notification free text and array-size policies; complete the
+broader object-authorization and API response-shape review.
