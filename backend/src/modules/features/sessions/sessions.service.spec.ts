@@ -22,7 +22,7 @@ function createDatabaseMock() {
         getGroupAvailableGameIds: jest.fn().mockResolvedValue([42, 43]),
         createCompletedSession: jest.fn().mockResolvedValue({ lastInsertRowid: 12 }),
         createScheduledSession: jest.fn().mockResolvedValue({ lastInsertRowid: 13 }),
-        replaceMeetAttendees: jest.fn().mockResolvedValue(undefined),
+        replaceMeetAttendees: jest.fn().mockResolvedValue(true),
         getMeetByIdForCreator: jest
             .fn()
             .mockResolvedValue({ rows: [[12, 7, 1, '2026-08-16T19:30:00.000Z', 0, 'scheduled', 'Europe/Madrid', null]] }),
@@ -32,9 +32,9 @@ function createDatabaseMock() {
         updateMeetAttendeeRsvp: jest.fn(),
         getMeetAttendeeIds: jest.fn().mockResolvedValue([1, 2]),
         updateMeetAttendance: jest.fn().mockResolvedValue(undefined),
-        replaceMeetPlannedGames: jest.fn().mockResolvedValue(undefined),
+        replaceMeetPlannedGames: jest.fn().mockResolvedValue(true),
         getMeetPlayedGameParticipants: jest.fn().mockResolvedValue([]),
-        replaceMeetPlayedGames: jest.fn().mockResolvedValue({ playedGameIds: [42], skippedGameIds: [43] }),
+        replaceMeetPlayedGames: jest.fn().mockResolvedValue({ applied: true, playedGameIds: [42], skippedGameIds: [43] }),
     }
 }
 
@@ -293,7 +293,7 @@ describe('SessionsService', () => {
             sessionId: 13,
             plannedGameIds: [43, 42],
         })
-        expect(database.replaceMeetPlannedGames).toHaveBeenCalledWith(13, [43, 42])
+        expect(database.replaceMeetPlannedGames).toHaveBeenCalledWith(13, [43, 42], 'active')
     })
 
     it('rejects shortlist games that no group member owns', async () => {
@@ -357,7 +357,7 @@ describe('SessionsService', () => {
             playedGameParticipants: [{ gameId: 42, participantIds: [1, 2] }],
         })
         expect(database.getMeetPlayedGameParticipants).toHaveBeenCalledWith(13)
-        expect(database.replaceMeetPlayedGames).toHaveBeenCalledWith(13, [{ gameId: 42, participantIds: [1, 2] }])
+        expect(database.replaceMeetPlayedGames).toHaveBeenCalledWith(13, [{ gameId: 42, participantIds: [1, 2] }], 'active')
     })
 
     it('validates per-game participants against the session attendees', async () => {
@@ -470,7 +470,7 @@ describe('SessionsService', () => {
             sessionId: 12,
             attendeeIds: [1, 3],
         })
-        expect(database.replaceMeetAttendees).toHaveBeenCalledWith(12, [1, 3])
+        expect(database.replaceMeetAttendees).toHaveBeenCalledWith(12, [1, 3], 'scheduled')
     })
 
     it('rejects attendee replacement when a target is outside the group', async () => {
