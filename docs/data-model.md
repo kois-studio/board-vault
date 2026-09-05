@@ -66,8 +66,9 @@ The backend source also has corresponding service/type/schema areas. The current
   group acquisition decision. It is unique per group/member/game, is visible
   only to group members, and is intentionally separate from personal
   `WishlistedGame` rows. The acquisition board aggregates interested members
-  and current group-owner count; it does not imply a purchase or create an
-  affiliate-shopping surface.
+  and current group-owner count, excludes games owned by any current group
+  member, and guards the insert against an ownership race. It does not imply a
+  purchase or create an affiliate-shopping surface.
 
 ## Repository reconciliation result
 

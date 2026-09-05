@@ -77,4 +77,16 @@ describe('GroupAcquisitionService', () => {
         await expect(service.addInterest(7, 1, { gameId: 42 })).resolves.toEqual({ success: true })
         expect(database.addGroupGameInterest).toHaveBeenCalledWith(7, 1, { gameId: 42 })
     })
+
+    it('reports ownership when the atomic insert loses a race to a group purchase', async () => {
+        const database = {
+            getGameById: jest.fn().mockResolvedValue({ rows: [[42]] }),
+            getGroupAvailableGameIds: jest.fn().mockResolvedValueOnce([]).mockResolvedValueOnce([42]),
+            addGroupGameInterest: jest.fn().mockResolvedValue({ rowsAffected: 0 }),
+        }
+        const service = new GroupAcquisitionService(database as unknown as DatabaseService)
+
+        await expect(service.addInterest(7, 1, { gameId: 42 })).rejects.toThrow('This group already owns the selected game')
+        expect(database.getGroupAvailableGameIds).toHaveBeenCalledTimes(2)
+    })
 })

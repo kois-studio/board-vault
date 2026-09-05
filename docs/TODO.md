@@ -93,7 +93,7 @@ group loop demonstrates repeat use.
 
 - **Status:** In progress
 - **Affected area:** `backend/test/`, backend `src`, frontend `src/**/*.spec.ts`
-- **Evidence:** Backend now has 44 focused suites and 211 passing unit tests plus 2 environment-safe HTTP E2E tests; frontend has 26 browser-based unit tests plus four passing public Playwright tests, while seeded/integration journeys and authenticated browser coverage remain opt-in. The opt-in authenticated collection, invitation, and session journeys each pass against disposable Clerk development identities and data; the full local Playwright run passes 11 tests with 2 guarded skips when the optional fixtures are not supplied.
+- **Evidence:** Backend now has 44 focused suites and 213 passing unit tests plus 2 environment-safe HTTP E2E tests; frontend has 26 browser-based unit tests plus four passing public Playwright tests, while seeded/integration journeys and authenticated browser coverage remain opt-in. The opt-in authenticated collection, invitation, session, and recommendation journeys pass against disposable Clerk development identities and data; the full local Playwright run passes 12 tests with 3 guarded skips when the owner/recommendation fixtures are supplied.
 - **Risk:** Security and product regressions are invisible.
 - **Next action:** Add negative authorization/contract cases, repeatable disposable fixture setup, and recommendation/acquisition browser evidence; preserve the existing authenticated core-loop journeys as launch regression gates.
 - **Dependencies:** READINESS-001, READINESS-002, READINESS-003.
@@ -140,7 +140,7 @@ group loop demonstrates repeat use.
 
 - **Status:** Planned
 - **Affected area:** `frontend/src/styles.css`, component SCSS/templates, route surfaces
-- **Evidence:** Tailwind global styles now use plain CSS with a PostCSS nesting pass; route-level components are lazy-loaded; production build has no Sass/selector/bundle-budget warnings and the initial raw bundle is 599.15 kB (137.98 kB estimated transfer) under the 650 kB warning budget. Shared theme-control semantics, the preserved-account auth fallback, migration-state copy, group/session empty states, owner-only invitation controls, mobile session-progress behavior, attendee-selection handoff, recommendation attendee controls, explainable recommendation lenses, reversible group acquisition interest, invitation-link copy feedback, and the personal/private collection boundary have been improved, but a full accessibility/responsive audit and all route-surface reviews remain open.
+- **Evidence:** Tailwind global styles now use plain CSS with a PostCSS nesting pass; route-level components are lazy-loaded; production build has no Sass/selector/bundle-budget warnings and the initial raw bundle is 599.48 kB (137.53 kB estimated transfer) under the 650 kB warning budget. Shared theme-control semantics, the preserved-account auth fallback, migration-state copy, group/session empty states, owner-only invitation controls, mobile session-progress behavior, attendee-selection handoff, recommendation attendee controls, explainable recommendation lenses, reversible group acquisition interest, invitation-link copy feedback, and the personal/private collection boundary have been improved, but a full accessibility/responsive audit and all route-surface reviews remain open.
 - **Risk:** Broken styles, poor mobile/accessibility behavior, and unsupported public claims.
 - **Next action:** Complete the rendered route audit matrix, resolve remaining accessibility/responsive findings, and link content-truth findings to `TRUTH-001`.
 - **Dependencies:** Product truth/brand decision where claims are involved.
@@ -208,21 +208,27 @@ as TODO items here.
   need real-data validation.
 - [ ] Complete the group library decision surface. It now shows owners, member
   ratings, player range, duration, play count, and timezone-aware last-played
-  context; the acquisition search now excludes games already owned by any
-  member, while real-group validation is still needed so the group can move
-  from “we can play this” to “we should acquire this” without a catalog detour.
+  context; the acquisition search and board now exclude games already owned by
+  any member, including after an ownership race. Real-group validation is still
+  needed so the group can move from “we can play this” to “we should acquire
+  this” without a catalog detour.
 - [ ] Make private personal collection data and shared group data visibly
   distinct.
 
 ## Recommendation and acquisition decisions
 
 - [ ] Validate the current recommendation decision lenses with real group
-  usage; expand context only when it improves a concrete group decision.
+  usage; expand context only when it improves a concrete group decision. The
+  backend rules and explainable result contract are covered, and a disposable
+  authenticated browser journey now proves the lens, explanation, persisted
+  feedback, and planning handoff; real-group usefulness is still unvalidated.
 - [ ] Extend the current explainable ranking with history, replay timing, and
   complexity fit only after the group has enough persisted play data.
 - [ ] Validate the recommendation-to-acquisition decision flow with real group
   usage; purchase suggestions must remain group decisions rather than a generic
-  catalog or affiliate-shopping surface.
+  catalog or affiliate-shopping surface. The current acquisition board is an
+  explicit shared-interest shortlist, not a purchase workflow; its browser
+  journey and the decision-resolution behavior still need validation.
 
 ## Sessions and social participation
 
@@ -261,6 +267,9 @@ as TODO items here.
   logging/redaction, cache, and provider-failure reviews.
 - [ ] Expand automated coverage for auth, authorization, collection activation,
   invitations, recommendations, session lifecycle, and core frontend states.
+  Disposable browser journeys now cover collection activation, invitations,
+  recommendations, and the two-account session loop; repeatable fixture setup,
+  negative authorization/contract cases, and provider failure coverage remain.
 - [ ] Keep production configuration documented without committing secrets;
   verify Turso, Clerk, Resend, Upstash, CORS, health checks, and rollback paths.
 - [ ] Remove remaining dead routes, placeholder links, misleading copy, stale

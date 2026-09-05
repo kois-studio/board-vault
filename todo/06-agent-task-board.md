@@ -2824,3 +2824,35 @@ Review: SEC-003 / DATA-004 / PROD-005
 Changed: Attendee, shortlist, and played-game replacement transactions now perform an in-transaction status gate and return an explicit no-op when the session has changed. The session service maps that outcome to a conflict response telling the organizer to reload; the played-game response keeps its public contract free of the internal gate marker. Regression coverage preserves transaction behavior and the existing session response shape. Same-status stale overwrites remain open for a future versioned-write decision.
 
 Verified: `cd backend && npm test -- --runInBand` passes (44 suites / 211 tests), `cd backend && npm run lint:check`, `cd backend && npm run build`, and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.
+
+Continuation claim: DATA-004 / PROD-003 / TRUTH-001
+
+Owner: Codex
+
+Claimed: 2026-09-05
+
+Scope: keep the group acquisition board truthful when a member already owns or concurrently acquires a game.
+
+Planned: exclude currently group-owned games from board reads and make interest insertion atomic with the ownership check, while preserving idempotent duplicate interest behavior.
+
+Review: DATA-004 / PROD-003 / TRUTH-001
+
+Changed: Acquisition board reads now hide interest rows for games owned by any current group member. The insert uses `INSERT ... SELECT ... WHERE NOT EXISTS` so a group ownership race cannot create a stale interest row; the service rechecks ownership when an ignored insert loses that race. Regression coverage protects the SQL boundary, race response, and existing aggregation contract.
+
+Verified: `cd backend && npm test -- --runInBand src/modules/core/groups/group-acquisition.service.spec.ts src/modules/common/database/database.service.spec.ts` passes (30 tests), `cd backend && npm run lint:check`, and `cd backend && npm run build` pass. No migration, production data, provider configuration, or deployment changed.
+
+Continuation claim: PROD-002 / PROD-003 / TRUTH-001 / EQ-003
+
+Owner: Codex
+
+Claimed: 2026-09-05
+
+Scope: prove the explainable recommendation decision loop in an authenticated browser journey.
+
+Planned: select a decision lens, load a group-aware recommendation, save member feedback, recover that signal after refresh, and carry the selected game and attendees into session planning.
+
+Review: PROD-002 / PROD-003 / TRUTH-001 / EQ-003
+
+Changed: Added `frontend/e2e/recommendation-decision-flow.spec.ts` with explicit disposable fixture inputs. It verifies the explanation and history context, the interested signal, persistence after a fresh page load, and the planning handoff without turning the recommendation page into a catalog surface.
+
+Verified: The focused journey passes with the local Angular/API runtime and disposable SQLite/Clerk development state. The full local Playwright run passes 12 tests with 3 fixture-gated skips when the owner/recommendation fixtures are supplied. No production data, provider configuration, deployment, or storage token was changed.
