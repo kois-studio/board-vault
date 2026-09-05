@@ -142,16 +142,16 @@ export class FormRegisterComponent implements OnInit {
             return
         }
 
-        this.api.register(this.email?.value, this.username?.value, this.password?.value).subscribe({
-            next: (data) => {
+        this.api.register(this.email.value, this.username.value, this.password.value).subscribe({
+            next: () => {
                 this.toastService.success('User registered successfully!')
                 this.isFinished = true
+                this.isLoading = false
             },
-            error: (error) => {
+            error: () => {
                 this.toastService.error('Error registering user')
+                this.isLoading = false
             },
         })
-
-        this.isLoading = false
     }
 }
