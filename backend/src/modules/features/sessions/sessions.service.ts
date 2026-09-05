@@ -169,7 +169,7 @@ export class SessionsService {
             throw new BadRequestException(`Cannot change a ${currentStatus} session to ${body.status}`)
         }
 
-        const result = await this.databaseService.updateMeetStatus(sessionId, body.status)
+        const result = await this.databaseService.updateMeetStatus(sessionId, currentStatus, body.status)
 
         if (result.rowsAffected !== 1) {
             throw new NotFoundException(`Session with id ${sessionId} not found`)

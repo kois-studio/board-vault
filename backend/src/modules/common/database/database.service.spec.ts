@@ -532,11 +532,11 @@ describe('DatabaseService logging', () => {
             transaction: jest.fn().mockResolvedValue(transaction),
         }
 
-        await expect(service.updateMeetStatus(12, 'completed')).resolves.toEqual({ rowsAffected: 1 })
+        await expect(service.updateMeetStatus(12, 'active', 'completed')).resolves.toEqual({ rowsAffected: 1 })
 
         expect(transaction.execute).toHaveBeenNthCalledWith(1, {
             sql: expect.stringContaining('SET status = ?'),
-            args: ['completed', true, 12],
+            args: ['completed', true, 12, 'active'],
         })
         expect(transaction.execute).toHaveBeenNthCalledWith(2, {
             sql: expect.stringContaining("SET gameStatus = 'skipped'"),
@@ -559,9 +559,29 @@ describe('DatabaseService logging', () => {
             transaction: jest.fn().mockResolvedValue(transaction),
         }
 
-        await expect(service.updateMeetStatus(12, 'active')).resolves.toEqual({ rowsAffected: 1 })
+        await expect(service.updateMeetStatus(12, 'scheduled', 'active')).resolves.toEqual({ rowsAffected: 1 })
 
         expect(transaction.execute).toHaveBeenCalledTimes(1)
         expect(transaction.commit).toHaveBeenCalledTimes(1)
+    })
+
+    it('does not mark planned games skipped when a concurrent status change wins', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const transaction = {
+            execute: jest.fn().mockResolvedValue({ rowsAffected: 0 }),
+            commit: jest.fn().mockResolvedValue(undefined),
+            rollback: jest.fn().mockResolvedValue(undefined),
+            close: jest.fn(),
+        }
+
+        ;(service as unknown as { tursoClient: unknown }).tursoClient = {
+            transaction: jest.fn().mockResolvedValue(transaction),
+        }
+
+        await expect(service.updateMeetStatus(12, 'scheduled', 'cancelled')).resolves.toEqual({ rowsAffected: 0 })
+
+        expect(transaction.execute).toHaveBeenCalledTimes(1)
+        expect(transaction.commit).toHaveBeenCalledTimes(1)
+        expect(transaction.rollback).not.toHaveBeenCalled()
     })
 })
