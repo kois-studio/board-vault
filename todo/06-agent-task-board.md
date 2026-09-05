@@ -2465,6 +2465,22 @@ Changed: Group edit now shows invitation mutation controls only to the owner, ma
 
 Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (22 tests), `cd frontend && npm run build` (599.05 kB initial / 137.89 kB estimated transfer), and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.
 
+Continuation claim: PROD-005 / EQ-006
+
+Owner: Codex
+
+Claimed: 2026-09-05
+
+Scope: keep the past-session recorder usable on narrow screens and keyboard-driven flows.
+
+Planned: contain the multi-step progress sequence on mobile and give the date/control elements explicit semantics.
+
+Review: PROD-005 / EQ-006
+
+Changed: The six-step past-session progress strip now scrolls within its own row on narrow screens instead of widening the page. The date field has an explicit label/ID, and attendee/game selection cards explicitly declare their button type.
+
+Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (22 tests), `cd frontend && npm run build` (599.05 kB initial / 137.87 kB estimated transfer), and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.
+
 Continuation claim: EQ-006 / PROD-001
 
 Owner: Codex
@@ -2479,4 +2495,4 @@ Review: EQ-006 / PROD-001
 
 Changed: The catalog search input now has a persistent accessible label, stable ID, and browser-autocomplete behavior while preserving the separate “add to my collection” versus “add for this group” context.
 
-Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (22 tests), `cd frontend && npm run build` (599.05 kB initial / 137.89 kB estimated transfer), and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.
+Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (22 tests), `cd frontend && npm run build` (599.05 kB initial / 137.87 kB estimated transfer), and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.
