@@ -1933,6 +1933,10 @@ Changed: Group-library cards now expose named owners, member-rating counts, play
 
 Review: PROD-005 / EQ-006
 
+Changed: Upcoming Sessions now gives people without groups direct paths to create a group or review invitations. When there are no upcoming sessions, the empty state exposes the scheduling action instead of requiring the user to find the header control.
+
+Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (22 tests), `cd frontend && npm run build` (599.05 kB initial / 137.90 kB estimated transfer), and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.
+
 Verified: Frontend no-mutation Biome, browser unit tests (5), and production build pass with no Angular warnings; public Playwright checks pass (4 passed, 7 authenticated skipped without Clerk state). No migration, production data, deployment, or provider configuration was changed.
 
 Continuation claim: PROD-005 / EQ-006
@@ -2016,6 +2020,18 @@ Review: PROD-005 / TRUTH-001 / EQ-006
 Changed: Group cards now use completed sessions only for “Last session”, so planned or cancelled records cannot be presented as past group activity. Groups with no completed history now show an explicit “No sessions recorded yet” state.
 
 Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (22 tests), `cd frontend && npm run build` (599.05 kB initial / 137.88 kB estimated transfer), and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.
+
+Continuation claim: PROD-005 / EQ-006
+
+Owner: Codex
+
+Claimed: 2026-09-05
+
+Scope: remove the dead end from the upcoming-session entry point for people who have not joined a group yet.
+
+Planned: provide direct create-group and invitation-management actions when scheduling has no available groups, and a clear action from the empty upcoming state.
+
+Review: PROD-005 / EQ-006
 
 Verified: Frontend Biome, six browser unit tests, production build (597.52 kB initial / 137.30 kB estimated transfer), and `git diff --check` pass. No migration, production data, deployment, or provider config changed.
 
