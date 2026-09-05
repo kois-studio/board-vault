@@ -109,11 +109,11 @@ group loop demonstrates repeat use.
 
 ### READINESS-007 [High] OPS-001/002/005/009 — Document environments and recovery
 
-- **Status:** Planned
+- **Status:** In progress
 - **Affected area:** `backend/.env` contract, deployment configuration, Turso/Vercel/Resend/Upstash operations
 - **Evidence:** A non-secret `backend/.env.example` now documents local/deployment variable names, and `/health` plus `/health/ready` provide dependency-free liveness and coarse Turso/Redis readiness states. Backup/restore ownership and rollback procedure remain open. On 2026-08-15 the old production Upstash hostname failed DNS resolution and caused an authenticated collection request to hit Vercel's 10-second timeout. Deployment `736b11f` now fails fast and cools down after provider failure; the authenticated collection smoke test passed on 2026-08-16; and a newly provisioned production Upstash database was verified through the cache probe and rate-limited authentication route on 2026-08-16.
 - **Risk:** Unsafe startup, provider outage ambiguity, and unrecoverable deployment/data failures.
-- **Next action:** Monitor the production Upstash quota, then add the provider failure runbook, backup/restore rehearsal, deployment ownership, and deployment smoke checks for `/health` and `/health/ready`.
+- **Next action:** Monitor the production Upstash quota, then document the real Turso backup schedule/owner/recovery target/rollback, provider-failure runbook, deployment ownership, and smoke checks for `/health` and `/health/ready`.
 - **Dependencies:** Deployment owner and access to non-production infrastructure.
 
 ### READINESS-008 [High] SEC-006/OPS-007 — Make logs safe and diagnosable
@@ -248,8 +248,10 @@ as TODO items here.
 
 ## Reliability, quality, and launch readiness
 
-- [ ] Complete the database backup/restore rehearsal and verify every pending
-  migration against a clean environment before production rollout.
+- [ ] Document the real Turso backup/restore schedule, owner, recovery target,
+  rollback procedure, and verify every pending migration against a clean
+  environment before production rollout. The synthetic restore rehearsal is
+  already passing locally.
 - [ ] Complete the authorization, input-validation, API-contract,
   logging/redaction, cache, and provider-failure reviews.
 - [ ] Expand automated coverage for auth, authorization, collection activation,

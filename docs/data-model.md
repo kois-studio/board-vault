@@ -82,7 +82,7 @@ and unresolved decisions, is maintained in the [database drift report](../databa
 - The deployed `OwnedGame.purchaseDate` is `DATE` without the documented default, and deployed indexes differ from the historical schema document.
 - Repository history shows the original `MeetAttendee` module was removed in commit `ef6e3d2`; migration 0003 deliberately reintroduced the relation as an additive, stateful session table rather than restoring the removed module unchanged.
 
-These findings are now split between resolved schema alignment and remaining API/product work. The unresolved frontend attendee route, game-title contract, transaction boundaries, and session lifecycle rules must be handled before claiming the session domain complete.
+These findings are now split between resolved schema alignment and remaining API/product work. The indirect game-title contract, broader transaction policy, disposable integration coverage, and richer session read models remain open; the canonical attendee route and v1 session lifecycle rules are implemented and tested.
 
 ## Data safety rules for future agents
 
@@ -95,11 +95,11 @@ These findings are now split between resolved schema alignment and remaining API
 
 ## Required follow-up
 
-1. Resolve the remaining API findings in the [DATA-001 drift report](../database/drift-report.md), especially the frontend attendee route and game-title contract.
-2. Execute `DATA-003`: extend the session API from completed-session logging to the full scheduled/completed lifecycle, including planned-game editing, post-session feedback, and richer read models.
+1. Resolve the remaining API findings in the [DATA-001 drift report](../database/drift-report.md), especially the indirect game-title contract and production attendee-route verification.
+2. Execute `DATA-003`: add disposable integration coverage for the scheduled/active/completed lifecycle, planned-game editing, post-session feedback, and participant history; richer read models remain deferred until real usage.
 3. Execute `DATA-004`: apply the transaction policy to remaining multi-record mutations.
-4. Execute `DATA-002`: add the migration runner and empty-state verification to CI, then rehearse a synthetic restore.
-5. Add disposable integration data and backup/restore rehearsal before launch claims.
+4. Execute `DATA-002`: observe the migration/empty-state checks in CI and document the real Turso backup/restore schedule, owner, recovery target, and rollback.
+5. Keep disposable integration data and the backup/restore rehearsal as launch gates.
 6. Apply and verify migration `0006-add-group-game-interest.sql` before
    deploying the acquisition-board backend/frontend slice.
 

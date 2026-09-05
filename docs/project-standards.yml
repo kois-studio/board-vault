@@ -392,12 +392,12 @@ compliance:
       status: partial
       evidence: database/schema/schema.sql is the synchronized Turso export and database/drift-report.md records the repository reconciliation; migrations 0002–0005 define the current additive changes, `SchemaMigrations` tracks them in live Turso, `database/scripts/migrate.mjs` applies future migrations, and `verify-empty-state.mjs` passes; the indirect Game.title/GameTranslation contract remains unresolved
       priority: critical
-      next_action: Verify the attendee route in production, add migration verification to CI/deployment checks, and rehearse a synthetic restore.
+      next_action: Verify the attendee route in production and observe the migration/restore checks in CI; keep the indirect game-title contract tracked until resolved.
     - id: DATA-002
       status: partial
       evidence: migrations 0001–0005 are applied to live Turso and tested against restored/disposable data; `SchemaMigrations` records the versions and the committed runner refuses unsafe empty-tracking-table execution without an explicit baseline
       priority: critical
-      next_action: Add migration checks to CI/deployment, complete synthetic restore evidence, and finish Clerk recovery evidence before legacy-auth removal.
+      next_action: Observe migration/restore checks in CI, document real Turso backup ownership and rollback, and finish Clerk recovery evidence before legacy-auth removal.
     - id: DATA-003
       status: partial
       evidence: SQLite tables, constraints, backfill counts, live integrity checks, aligned backend queries, and focused transaction tests exist for the v1 session relations; complete session API behavior and disposable integration coverage remain incomplete
@@ -643,4 +643,4 @@ deferred_work:
   - id: DATA-MIGRATION-001
     status: deferred
     reason: Live deployment operations and CI/recovery gates remain unresolved; the Clerk identity migration and production configuration/deployment verification are complete, and repeatable schema recreation is now available while synthetic restore evidence and final legacy-auth removal remain gated. Production-facing login/register routes are Clerk-first, with the old forms retained only for provider-unavailable fallback.
-    next_action: Add migration checks to CI/deployment, complete the synthetic restore rehearsal, and finish Clerk recovery evidence before removing legacy auth.
+    next_action: Observe migration checks in CI, document real Turso backup ownership and rollback, and finish Clerk recovery evidence before removing legacy auth.
