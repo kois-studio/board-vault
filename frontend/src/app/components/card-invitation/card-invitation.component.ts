@@ -13,11 +13,13 @@ import { CardAccountComponent } from '../card-account/card-account.component'
 export class CardInvitationComponent {
     @Input({ required: true }) invitation: null | InvitationWithExtraData = null
     public isLoading = false
+    public isConfirmingDecline = false
 
     constructor(private readonly dataService: DataService) {}
 
     async acceptInvitation() {
         if (!this.invitation || this.isLoading) return
+        this.isConfirmingDecline = false
         this.isLoading = true
         try {
             await firstValueFrom(this.dataService.acceptInvitation(this.invitation.id))
@@ -30,6 +32,12 @@ export class CardInvitationComponent {
 
     async rejectInvitation() {
         if (!this.invitation || this.isLoading) return
+
+        if (!this.isConfirmingDecline) {
+            this.isConfirmingDecline = true
+            return
+        }
+
         this.isLoading = true
         try {
             await firstValueFrom(this.dataService.rejectInvitation(this.invitation.id))
