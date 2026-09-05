@@ -2712,3 +2712,19 @@ Review: EQ-003 / EQ-006
 Changed: Confirmed `clerk whoami` resolves the `board-vault` development instance, `clerk impersonate ... --instance dev --print --yes` returns a short-lived URL, and the backend/frontend can run against a disposable SQLite database with Redis disabled. Documented that an instance without a home URL can initially land on Clerk's development account page and may need an explicit URL-encoded local `redirect_url`.
 
 Verified: The temporary actor session was accepted by the development Clerk frontend and reached the local Board Vault dashboard on port 4300 after the backend development CORS contract was aligned with the Playwright server. The backend accepted the Clerk session and provisioned the identity into disposable SQLite. No production user, database, provider configuration, deployment, or committed token was changed. `git diff --check` passes.
+
+Continuation claim: AUTH-001 / PROD-003 / EQ-006
+
+Owner: Codex
+
+Claimed: 2026-09-05
+
+Scope: keep the private-beta registration boundary fail-closed during a configured Clerk outage.
+
+Planned: prevent the register route from exposing the legacy public registration form when Clerk is configured but unavailable, while preserving the legacy form only for explicit legacy-mode environments.
+
+Review: AUTH-001 / PROD-003 / EQ-006
+
+Changed: The register route now distinguishes “Clerk configured but unavailable” from “Clerk not configured”. The former shows a secure sign-up recovery state and never exposes the legacy registration form; the latter remains available only for explicit compatibility environments. Local development CORS now covers both supported Angular and Playwright origins.
+
+Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (26 tests), `cd frontend && npm run build`, `cd backend && npm test -- --runInBand` (44 suites / 210 tests), `cd backend && npm run lint:check`, `cd backend && npm run build`, `cd backend && npm run test:e2e -- --runInBand` (2 tests), and `git diff --check` pass. No production user, database, provider configuration, or deployment changed.
