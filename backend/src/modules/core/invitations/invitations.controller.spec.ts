@@ -1,6 +1,6 @@
 import { GUARDS_METADATA } from '@nestjs/common/constants'
 
-import { UserInGroupGuard } from '../../../common/guards/user-in-group.guard'
+import { GroupOwnerGuard } from '../../../common/guards/group-owner.guard'
 import { CreateInvitationByUsernameRequestBody, CreateInvitationRequestBody } from '../../../common/types/invitation.type'
 
 import { InvitationsController } from './invitations.controller'
@@ -27,11 +27,11 @@ describe('InvitationsController actor identity', () => {
         expect(createInvitationByUsername).toHaveBeenCalledWith({ groupId: 12, username: 'target-user', fromAccountId: 7 })
     })
 
-    it('requires group membership for invitation creation', () => {
+    it('requires group ownership for invitation creation', () => {
         const controller = InvitationsController.prototype as unknown as Record<string, unknown>
         const getGuards = (method: string) => Reflect.getMetadata(GUARDS_METADATA, controller[method] as object) as Array<unknown>
 
-        expect(getGuards('createInvitation')).toContain(UserInGroupGuard)
-        expect(getGuards('createInvitationByUsername')).toContain(UserInGroupGuard)
+        expect(getGuards('createInvitation')).toContain(GroupOwnerGuard)
+        expect(getGuards('createInvitationByUsername')).toContain(GroupOwnerGuard)
     })
 })

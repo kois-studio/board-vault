@@ -11,7 +11,10 @@ export class GroupOwnerGuard implements CanActivate {
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const request = context.switchToHttp().getRequest()
         const userId = Number(request.user?.userId)
-        const groupId = Number(request.params.groupId)
+        // Canonical group routes carry the identifier in the URL. Deprecated
+        // invitation creation keeps it in the request body, so ownership must
+        // be enforced consistently at both boundaries.
+        const groupId = Number(request.params.groupId ?? request.body?.groupId)
 
         if (!userId || !groupId) {
             throw new ForbiddenException('Missing user or group information')
