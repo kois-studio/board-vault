@@ -52,7 +52,7 @@ export class GroupEditComponent {
     }
 
     get username() {
-        return this.usernameToInvite.get('username')
+        return this.usernameToInvite
     }
 
     get usernameClass() {
