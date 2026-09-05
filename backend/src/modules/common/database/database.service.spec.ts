@@ -105,6 +105,23 @@ describe('DatabaseService logging', () => {
         expect(transaction.close).toHaveBeenCalledTimes(1)
     })
 
+    it('does not resolve soft-deleted accounts for username invitations', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const execute = jest.fn().mockResolvedValue({ rows: [] })
+
+        ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
+
+        await expect(service.createInvitationByUsername({ groupId: 12, fromAccountId: 7, username: 'former-member' })).rejects.toThrow(
+            'User not found',
+        )
+
+        expect(execute).toHaveBeenCalledWith({
+            sql: 'SELECT * FROM Account WHERE username = ? AND isDeleted = 0',
+            args: ['former-member'],
+        })
+        expect(execute).toHaveBeenCalledTimes(1)
+    })
+
     it('rolls back invitation acceptance when the membership write fails', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
