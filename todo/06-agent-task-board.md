@@ -2489,6 +2489,22 @@ Changed: Group, attendee, and game selection cards in the past-session recorder 
 
 Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (22 tests), `cd frontend && npm run build` (599.05 kB initial / 137.89 kB estimated transfer), and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.
 
+Continuation claim: PROD-004 / PROD-005 / EQ-006
+
+Owner: Codex
+
+Claimed: 2026-09-05
+
+Scope: keep an intentionally empty attendee selection from silently becoming “everyone” during recommendation handoff.
+
+Planned: require at least one selected group member before offering the recommendation route, while preserving empty selection for library exploration.
+
+Review: PROD-004 / PROD-005 / EQ-006
+
+Changed: The group decision handoff now offers “Find a game” only when at least one member is selected. With an empty selection, it points back to the attendee section instead of silently letting the recommendation page fall back to everyone.
+
+Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (22 tests), `cd frontend && npm run build` (599.05 kB initial / 137.88 kB estimated transfer), and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.
+
 Continuation claim: EQ-006 / PROD-001
 
 Owner: Codex
