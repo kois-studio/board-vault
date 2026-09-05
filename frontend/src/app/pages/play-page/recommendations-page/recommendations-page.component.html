@@ -21,7 +21,7 @@
         </section>
     } @else {
         <section class="app-bg-secondary rounded-lg p-6 mb-8">
-            <div class="grid gap-6 lg:grid-cols-2">
+            <div class="grid gap-6 lg:grid-cols-3">
                 <label class="grid gap-2">
                     <span class="font-medium">Group</span>
                     <select class="app-input" [value]="selectedGroupId() ?? ''" (change)="selectGroup(+$any($event.target).value)">
@@ -33,6 +33,15 @@
                 <label class="grid gap-2">
                     <span class="font-medium">Available time <span class="text-secondary font-normal">(optional, minutes)</span></span>
                     <input class="app-input" type="number" min="1" max="1440" [ngModel]="availableMinutes()" (ngModelChange)="availableMinutes.set($event ? +$event : null)" />
+                </label>
+                <label class="grid gap-2">
+                    <span class="font-medium">Decision lens</span>
+                    <select class="app-input" [value]="decisionLens()" (change)="setDecisionLens($any($event.target).value)">
+                        <option value="balanced">Balanced</option>
+                        <option value="fresh">Something new</option>
+                        <option value="favorite">Group favorite</option>
+                    </select>
+                    <span class="text-xs text-secondary">Tune the shortlist for discovery or a proven hit.</span>
                 </label>
             </div>
 
@@ -63,7 +72,7 @@
             @if (selectedGroup(); as group) {
                 <div class="mt-5 rounded-lg border border-indigo-200 bg-indigo-50 p-4 dark:border-indigo-900/60 dark:bg-indigo-950/30" aria-label="Recommendation decision context">
                     <p class="text-sm font-semibold text-indigo-700 dark:text-indigo-300">Decision context</p>
-                    <p class="mt-1 text-sm text-secondary">{{ selectedAttendeeNames(group) || 'No attendees selected yet' }} · {{ availableMinutes() ? 'up to ' + availableMinutes() + ' minutes' : 'any duration' }}</p>
+                    <p class="mt-1 text-sm text-secondary">{{ selectedAttendeeNames(group) || 'No attendees selected yet' }} · {{ availableMinutes() ? 'up to ' + availableMinutes() + ' minutes' : 'any duration' }} · {{ decisionLensLabel }}</p>
                     <p class="mt-2 text-xs text-secondary">Suggestions use only the selected people’s shared availability, ownership, ratings, and group feedback.</p>
                 </div>
             }

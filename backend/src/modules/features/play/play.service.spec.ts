@@ -101,6 +101,51 @@ describe('PlayService history', () => {
         expect(database.getRecommendationCandidates).toHaveBeenCalledWith([1, 2], 2, 120)
     })
 
+    it('applies the selected decision lens and explains its effect', async () => {
+        const database = {
+            getGroupById: jest.fn().mockResolvedValue({ rows: [[7]] }),
+            getGroupMemberIds: jest.fn().mockResolvedValue([1, 2]),
+            getRecommendationFeedbackForGroup: jest.fn().mockResolvedValue({ rows: [] }),
+            getRecommendationCandidates: jest.fn().mockResolvedValue({
+                rows: [
+                    [42, 'image-42', 90, 2, 5, 'Played Game', 'Juego jugado', 2, 8, '2026-08-01T19:30:00.000Z'],
+                    [21, 'image-21', 120, 2, 5, 'Fresh Game', 'Juego nuevo', 1, null, null],
+                ],
+            }),
+        }
+        const service = new PlayService(
+            {} as UsersService,
+            database as unknown as DatabaseService,
+            {} as GamesService,
+            {} as MeetsService,
+            {} as MeetAccountGamesService,
+            {} as GameTranslationService,
+        )
+
+        await expect(
+            service.getRecommendations(1, {
+                groupId: 7,
+                attendeeIds: [1, 2],
+                availableMinutes: 120,
+                decisionLens: 'fresh',
+            }),
+        ).resolves.toMatchObject({
+            decisionLens: 'fresh',
+            recommendations: [
+                expect.objectContaining({
+                    gameData: expect.objectContaining({ id: 21 }),
+                    score: 90,
+                    explanation: expect.objectContaining({ reasons: expect.arrayContaining(['Not played by this group yet']) }),
+                }),
+                expect.objectContaining({
+                    gameData: expect.objectContaining({ id: 42 }),
+                    score: 79,
+                    explanation: expect.objectContaining({ reasons: expect.arrayContaining(['Previously played by this group']) }),
+                }),
+            ],
+        })
+    })
+
     it('uses the latest selected-attendee feedback in the recommendation score and explanation', async () => {
         const database = {
             getGroupById: jest.fn().mockResolvedValue({ rows: [[7]] }),
