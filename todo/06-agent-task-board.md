@@ -1937,6 +1937,18 @@ Changed: Upcoming Sessions now gives people without groups direct paths to creat
 
 Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (22 tests), `cd frontend && npm run build` (599.05 kB initial / 137.90 kB estimated transfer), and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.
 
+Continuation claim: PROD-005 / EQ-006 / AUTH-001
+
+Owner: Codex
+
+Claimed: 2026-09-05
+
+Scope: make group invitation controls match the owner/member boundary.
+
+Planned: hide invite mutations from non-owners and restore validation feedback for existing-member username invitations.
+
+Review: PROD-005 / EQ-006 / AUTH-001
+
 Verified: Frontend no-mutation Biome, browser unit tests (5), and production build pass with no Angular warnings; public Playwright checks pass (4 passed, 7 authenticated skipped without Clerk state). No migration, production data, deployment, or provider configuration was changed.
 
 Continuation claim: PROD-005 / EQ-006
@@ -2019,7 +2031,7 @@ Review: PROD-005 / TRUTH-001 / EQ-006
 
 Changed: Group cards now use completed sessions only for “Last session”, so planned or cancelled records cannot be presented as past group activity. Groups with no completed history now show an explicit “No sessions recorded yet” state.
 
-Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (22 tests), `cd frontend && npm run build` (599.05 kB initial / 137.88 kB estimated transfer), and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.
+Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (22 tests), `cd frontend && npm run build` (599.05 kB initial / 137.90 kB estimated transfer), and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.
 
 Continuation claim: PROD-005 / EQ-006
 
@@ -2371,6 +2383,8 @@ Review: EQ-006 / TRUTH-001
 
 Changed: The dark-mode toggle now exposes “Use dark mode” or “Use light mode”, reports its pressed state, is explicitly a button, and has a visible focus ring. Added component coverage for the state-aware labels.
 
+Verified: Frontend Biome, 22 browser-based unit tests, frontend production build (599.35 kB initial / 138.00 kB estimated transfer), rendered mobile and desktop public-auth snapshots, and `git diff --check` pass. No migration, production data, deployment, or provider config changed.
+
 Continuation claim: AUTH-001 / EQ-006
 
 Owner: Codex
@@ -2380,6 +2394,22 @@ Claimed: 2026-09-05
 Scope: keep the preserved-account sign-in fallback usable without competing with the primary Clerk flow on small screens.
 
 Planned: make the fallback form responsive, label its fields for assistive technology and password managers, and keep its loading state truthful.
+
+Review: AUTH-001 / EQ-006
+
+Changed: The preserved-account login and degraded-mode registration forms now use responsive `w-full`/`max-w-md` layouts instead of a fixed mobile-overflowing width. Their fields have explicit labels, stable IDs, password-manager autocomplete metadata, and clearer placeholders; the legacy login and registration actions are named as compatibility flows, and registration now keeps its loading state until the API settles.
+
+Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (22 tests), `cd frontend && npm run build` (599.41 kB initial / 138.00 kB estimated transfer), and `git diff --check` pass. Local preview server started without deployment; the new form source compiles, while a second rendered snapshot attempt timed out in the preview automation. No migration, production data, provider configuration, or deployment changed.
+
+Continuation claim: AUTH-001 / EQ-006
+
+Owner: Codex
+
+Claimed: 2026-09-05
+
+Scope: remove migration/debug terminology from the signed-out header when a Clerk session still needs local account resolution.
+
+Planned: preserve automatic session linking, expose only user-facing progress/recovery copy, and avoid rendering local account identifiers or provider error details.
 
 Review: AUTH-001 / EQ-006
 
@@ -2399,18 +2429,38 @@ Planned: prevent upcoming or cancelled records from appearing as a group’s las
 
 Review: PROD-005 / TRUTH-001 / EQ-006
 
-Changed: The preserved-account login and degraded-mode registration forms now use responsive `w-full`/`max-w-md` layouts instead of a fixed mobile-overflowing width. Their fields have explicit labels, stable IDs, password-manager autocomplete metadata, and clearer placeholders; the legacy login and registration actions are named as compatibility flows, and registration now keeps its loading state until the API settles.
+Changed: Group cards now use completed sessions only for “Last session”, so planned or cancelled records cannot be presented as past group activity. Groups with no completed history now show an explicit “No sessions recorded yet” state.
 
-Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (22 tests), `cd frontend && npm run build` (599.41 kB initial / 138.00 kB estimated transfer), and `git diff --check` pass. Local preview server started without deployment; the new form source compiles, while a second rendered snapshot attempt timed out in the preview automation. No migration, production data, provider configuration, or deployment changed.
+Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (22 tests), `cd frontend && npm run build` (599.05 kB initial / 137.88 kB estimated transfer), and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.
 
-Continuation claim: AUTH-001 / EQ-006
+Continuation claim: PROD-005 / EQ-006
 
 Owner: Codex
 
 Claimed: 2026-09-05
 
-Scope: remove migration/debug terminology from the signed-out header when a Clerk session still needs local account resolution.
+Scope: remove the dead end from the upcoming-session entry point for people who have not joined a group yet.
 
-Planned: preserve automatic session linking, expose only user-facing progress/recovery copy, and avoid rendering local account identifiers or provider error details.
+Planned: provide direct create-group and invitation-management actions when scheduling has no available groups, and a clear action from the empty upcoming state.
 
-Review: AUTH-001 / EQ-006
+Review: PROD-005 / EQ-006
+
+Changed: Upcoming Sessions now gives people without groups direct paths to create a group or review invitations. When there are no upcoming sessions, the empty state exposes the scheduling action instead of requiring the user to find the header control.
+
+Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (22 tests), `cd frontend && npm run build` (599.05 kB initial / 137.90 kB estimated transfer), and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.
+
+Continuation claim: PROD-005 / EQ-006 / AUTH-001
+
+Owner: Codex
+
+Claimed: 2026-09-05
+
+Scope: make group invitation controls match the owner/member boundary.
+
+Planned: hide invite mutations from non-owners and restore validation feedback for existing-member username invitations.
+
+Review: PROD-005 / EQ-006 / AUTH-001
+
+Changed: Group edit now shows invitation mutation controls only to the owner, matching the backend membership boundary. The existing-account username field now points at its actual control, so required/length validation feedback is rendered correctly; the email invitation field also has an explicit accessible label.
+
+Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (22 tests), `cd frontend && npm run build` (599.05 kB initial / 137.89 kB estimated transfer), and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.
