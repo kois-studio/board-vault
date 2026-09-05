@@ -536,6 +536,12 @@ export class Api {
             .pipe(map((response) => successSchema.parse(response)))
     }
 
+    updateGroupAcquisitionDecision(groupId: number, gameId: number, status: 'open' | 'planned' | 'not_now') {
+        return this.http
+            .put<{ success: true }>(`${this.url}/groups/${groupId}/acquisition-board/${gameId}/decision`, { status })
+            .pipe(map((response) => successSchema.parse(response)))
+    }
+
     leaveGroup(userId: number, groupId: number) {
         return this.http
             .delete<{ success: true }>(`${this.url}/dashboard/users/${userId}/groups/${groupId}/members`, {})

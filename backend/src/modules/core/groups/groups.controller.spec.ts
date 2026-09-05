@@ -1,3 +1,4 @@
+import { UpdateGroupAcquisitionDecisionBody } from '../../../common/types/group-game-interest.type'
 import { CreateGroupRequestBody } from '../../../common/types/group.type'
 import { ClerkIdentityService } from '../../common/auth/clerk-identity.service'
 
@@ -46,5 +47,19 @@ describe('GroupsController actor and listing boundaries', () => {
         await controller.createClerkInvitation(12, request, { emailAddress: 'friend@example.com' })
 
         expect(createGroupInvitation).toHaveBeenCalledWith(12, 7, 'friend@example.com')
+    })
+
+    it('derives the acquisition decision owner from the authenticated account', async () => {
+        const updateDecision = jest.fn().mockResolvedValue({ success: true })
+        const controller = new GroupsController(
+            {} as GroupsService,
+            { updateDecision } as unknown as GroupAcquisitionService,
+            {} as ClerkIdentityService,
+        )
+        const body = { status: 'planned' } as UpdateGroupAcquisitionDecisionBody
+
+        await controller.updateAcquisitionDecision(12, 42, request, body)
+
+        expect(updateDecision).toHaveBeenCalledWith(12, 7, 42, body)
     })
 })

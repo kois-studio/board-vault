@@ -83,6 +83,7 @@ export class GroupViewComponent {
     public readonly acquisitionBoardLoading = signal(false)
     public readonly acquisitionBoardError = signal(false)
     public readonly acquisitionMutationGameId = signal<number | null>(null)
+    public readonly acquisitionDecisionMutationGameId = signal<number | null>(null)
     private activeSelectionGroupId: number | null = null
     private activeAcquisitionGroupId: number | null = null
 
@@ -301,6 +302,33 @@ export class GroupViewComponent {
         const names = entry.interestedBy.map((member) => member.displayName || member.username)
         if (names.length <= 3) return names.join(', ')
         return `${names.slice(0, 3).join(', ')} + ${names.length - 3} more`
+    }
+
+    public getAcquisitionDecisionLabel(status: GroupAcquisitionEntryType['decisionStatus']): string {
+        switch (status) {
+            case 'planned':
+                return 'Plan to acquire'
+            case 'not_now':
+                return 'Not now'
+            default:
+                return 'Open for discussion'
+        }
+    }
+
+    public async updateAcquisitionDecision(gameId: number, status: GroupAcquisitionEntryType['decisionStatus']): Promise<void> {
+        const groupId = this.groupData$()?.id
+        if (!groupId || !this.isGroupOwnerComputed() || this.acquisitionDecisionMutationGameId()) return
+
+        this.acquisitionDecisionMutationGameId.set(gameId)
+        try {
+            await firstValueFrom(this.api.updateGroupAcquisitionDecision(groupId, gameId, status))
+            this.toastService.success(`Acquisition decision updated: ${this.getAcquisitionDecisionLabel(status)}.`)
+            this.loadAcquisitionBoard(groupId)
+        } catch {
+            this.toastService.error('Could not update the group acquisition decision.')
+        } finally {
+            this.acquisitionDecisionMutationGameId.set(null)
+        }
     }
 
     public async removeAcquisitionInterest(gameId: number): Promise<void> {

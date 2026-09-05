@@ -2,7 +2,12 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 
 import { DatabaseService } from '../../common/database/database.service'
 
-import type { GroupAcquisitionEntryDto, GroupGameInterestBody } from '../../../common/types/group-game-interest.type'
+import type {
+    GroupAcquisitionDecisionStatus,
+    GroupAcquisitionEntryDto,
+    GroupGameInterestBody,
+    UpdateGroupAcquisitionDecisionBody,
+} from '../../../common/types/group-game-interest.type'
 import type { AvatarDto, UserPublicDto } from '../../../common/types/user.type'
 
 @Injectable()
@@ -45,6 +50,17 @@ export class GroupAcquisitionService {
                 interestCount: Number(row[12] ?? 0),
                 ownerCount: Number(row[13] ?? 0),
                 firstInterestedAt: String(row[7]),
+                decisionStatus: this.getDecisionStatus(row[14]),
+                decisionAt: row[15] === null || row[15] === undefined ? null : String(row[15]),
+                decisionBy:
+                    row[16] === null || row[16] === undefined
+                        ? null
+                        : {
+                              id: Number(row[16]),
+                              username: String(row[17]),
+                              displayName: String(row[18]),
+                              avatar: JSON.parse(String(row[19])) as AvatarDto,
+                          },
             })
         }
 
@@ -74,7 +90,35 @@ export class GroupAcquisitionService {
             }
         }
 
+        await this.databaseService.reopenGroupAcquisitionDecision(groupId, body.gameId)
+
         return { success: true }
+    }
+
+    async updateDecision(
+        groupId: number,
+        accountId: number,
+        gameId: number,
+        body: UpdateGroupAcquisitionDecisionBody,
+    ): Promise<{ success: true }> {
+        const game = await this.databaseService.getGameById(gameId)
+
+        if (game.rows.length === 0) {
+            throw new NotFoundException(`Game with id ${gameId} not found`)
+        }
+
+        const availableGameIds = await this.databaseService.getGroupAvailableGameIds(groupId)
+
+        if (availableGameIds.includes(gameId)) {
+            throw new BadRequestException('This group already owns the selected game')
+        }
+
+        await this.databaseService.upsertGroupAcquisitionDecision(groupId, gameId, accountId, body.status, body.note ?? null)
+        return { success: true }
+    }
+
+    private getDecisionStatus(value: unknown): GroupAcquisitionDecisionStatus {
+        return value === 'planned' || value === 'not_now' ? value : 'open'
     }
 
     async removeInterest(groupId: number, accountId: number, gameId: number): Promise<{ success: true }> {

@@ -6,7 +6,11 @@ import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
 import { UserInGroupGuard } from '../../../common/guards/user-in-group.guard'
 import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
 import { ClerkGroupInvitationDto, CreateClerkGroupInvitationBody } from '../../../common/types/clerk-invitation.type'
-import { GroupAcquisitionEntryDto, GroupGameInterestBody } from '../../../common/types/group-game-interest.type'
+import {
+    GroupAcquisitionEntryDto,
+    GroupGameInterestBody,
+    UpdateGroupAcquisitionDecisionBody,
+} from '../../../common/types/group-game-interest.type'
 import { CreateGroupRequestBody, GroupDto, UpdateGroupBody } from '../../../common/types/group.type'
 import { InvitationWithAccountsData } from '../../../common/types/invitation.type'
 import { ClerkIdentityService } from '../../common/auth/clerk-identity.service'
@@ -116,5 +120,18 @@ export class GroupsController {
         @Req() request: { user: { userId: number } },
     ) {
         return this.groupAcquisitionService.removeInterest(groupId, request.user.userId, gameId)
+    }
+
+    @UseGuards(GroupOwnerGuard)
+    @Put('/:groupId/acquisition-board/:gameId/decision')
+    @ApiOperation({ summary: 'Update the group acquisition decision (owner only)' })
+    @ApiResponse({ status: 200, description: 'Group acquisition decision updated' })
+    updateAcquisitionDecision(
+        @Param('groupId', ParseIntPipe) groupId: number,
+        @Param('gameId', ParseIntPipe) gameId: number,
+        @Req() request: { user: { userId: number } },
+        @Body() body: UpdateGroupAcquisitionDecisionBody,
+    ) {
+        return this.groupAcquisitionService.updateDecision(groupId, request.user.userId, gameId, body)
     }
 }
