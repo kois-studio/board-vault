@@ -93,7 +93,7 @@ group loop demonstrates repeat use.
 
 - **Status:** In progress
 - **Affected area:** `backend/test/`, backend `src`, frontend `src/**/*.spec.ts`
-- **Evidence:** Backend now has 44 focused suites and 208 passing unit tests plus 2 environment-safe HTTP E2E tests; frontend has 23 browser-based unit tests plus four passing public Playwright tests, while seeded/integration journeys and authenticated browser coverage remain opt-in.
+- **Evidence:** Backend now has 44 focused suites and 208 passing unit tests plus 2 environment-safe HTTP E2E tests; frontend has 25 browser-based unit tests plus four passing public Playwright tests, while seeded/integration journeys and authenticated browser coverage remain opt-in.
 - **Risk:** Security and product regressions are invisible.
 - **Next action:** Add auth/authorization/data tests first, then core-loop and frontend state tests.
 - **Dependencies:** READINESS-001, READINESS-002, READINESS-003.
@@ -140,7 +140,7 @@ group loop demonstrates repeat use.
 
 - **Status:** Planned
 - **Affected area:** `frontend/src/styles.css`, component SCSS/templates, route surfaces
-- **Evidence:** Tailwind global styles now use plain CSS with a PostCSS nesting pass; route-level components are lazy-loaded; production build has no Sass/selector/bundle-budget warnings and the initial raw bundle is 599.11 kB (137.88 kB estimated transfer) under the 650 kB warning budget. Shared theme-control semantics, the preserved-account auth fallback, migration-state copy, group/session empty states, owner-only invitation controls, mobile session-progress behavior, attendee-selection handoff, recommendation attendee controls, and explainable recommendation lenses have been improved, but a full accessibility/responsive audit and all route-surface reviews remain open.
+- **Evidence:** Tailwind global styles now use plain CSS with a PostCSS nesting pass; route-level components are lazy-loaded; production build has no Sass/selector/bundle-budget warnings and the initial raw bundle is 599.13 kB (137.94 kB estimated transfer) under the 650 kB warning budget. Shared theme-control semantics, the preserved-account auth fallback, migration-state copy, group/session empty states, owner-only invitation controls, mobile session-progress behavior, attendee-selection handoff, recommendation attendee controls, explainable recommendation lenses, and reversible group acquisition interest have been improved, but a full accessibility/responsive audit and all route-surface reviews remain open.
 - **Risk:** Broken styles, poor mobile/accessibility behavior, and unsupported public claims.
 - **Next action:** Complete the rendered route audit matrix, resolve remaining accessibility/responsive findings, and link content-truth findings to `TRUTH-001`.
 - **Dependencies:** Product truth/brand decision where claims are involved.
