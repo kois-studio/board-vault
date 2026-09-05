@@ -53,6 +53,14 @@ export class AdminProposalsQuery {
     limit = 10
 }
 
+export class AdminDuplicateProposalQuery {
+    @ApiPropertyOptional({ example: 'Already present in the catalog.' })
+    @IsOptional()
+    @IsString()
+    @MaxLength(280)
+    reviewNotes?: string
+}
+
 export class UpdateGameTranslationsBody {
     @ApiProperty({
         description: 'English translation of the game title',

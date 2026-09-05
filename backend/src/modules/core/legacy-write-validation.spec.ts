@@ -67,6 +67,15 @@ describe('Legacy write DTO validation', () => {
         expect(createGroup).not.toHaveBeenCalled()
     })
 
+    it('rejects oversized group names before persistence', async () => {
+        await request(app.getHttpServer())
+            .post('/groups')
+            .send({ name: 'a'.repeat(101) })
+            .expect(400)
+
+        expect(createGroup).not.toHaveBeenCalled()
+    })
+
     it('rejects malformed invitation fields before persistence', async () => {
         await request(app.getHttpServer()).post('/invitations').send({ groupId: '12', toAccountId: 8 }).expect(400)
 

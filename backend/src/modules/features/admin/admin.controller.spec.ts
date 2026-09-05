@@ -24,7 +24,7 @@ describe('AdminController reviewer identity', () => {
         const controller = new AdminController({ rejectGameProposal, markGameProposalAsDuplicate } as unknown as AdminService)
 
         await controller.rejectGameProposal(request, 12, { reviewNotes: 'duplicate' })
-        await controller.markGameProposalAsDuplicate(request, 12, 'duplicate')
+        await controller.markGameProposalAsDuplicate(request, 12, { reviewNotes: 'duplicate' })
 
         expect(rejectGameProposal).toHaveBeenCalledWith(12, 7, { reviewNotes: 'duplicate' })
         expect(markGameProposalAsDuplicate).toHaveBeenCalledWith(12, 7, 'duplicate')
