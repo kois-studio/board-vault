@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
+import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
 
 import { mapMeetDetailsResult } from '../../../common/mappers/meet-details.mapper'
 import { DatabaseService } from '../../common/database/database.service'
@@ -213,7 +213,11 @@ export class SessionsService {
             throw new BadRequestException('A member who played a recorded game cannot be removed from the session attendees')
         }
 
-        await this.databaseService.replaceMeetAttendees(sessionId, body.attendeeIds)
+        const applied = await this.databaseService.replaceMeetAttendees(sessionId, body.attendeeIds, status)
+
+        if (applied === false) {
+            throw new ConflictException('The session changed while attendees were being updated. Reload and try again.')
+        }
         return { sessionId, attendeeIds: body.attendeeIds }
     }
 
@@ -242,7 +246,11 @@ export class SessionsService {
             throw new BadRequestException('Every planned game must be owned by at least one group member')
         }
 
-        await this.databaseService.replaceMeetPlannedGames(sessionId, plannedGameIds)
+        const applied = await this.databaseService.replaceMeetPlannedGames(sessionId, plannedGameIds, status)
+
+        if (applied === false) {
+            throw new ConflictException('The session changed while the shortlist was being updated. Reload and try again.')
+        }
         return { sessionId, plannedGameIds }
     }
 
@@ -303,9 +311,21 @@ export class SessionsService {
             }
         }
 
+        const result = await this.databaseService.replaceMeetPlayedGames(sessionId, games, status)
+
+        if (result.applied === false) {
+            throw new ConflictException('The session changed while played games were being updated. Reload and try again.')
+        }
+
+        const updatedSession = {
+            playedGameIds: result.playedGameIds,
+            skippedGameIds: result.skippedGameIds,
+            playedGameParticipants: result.playedGameParticipants,
+        }
+
         return {
             sessionId,
-            ...(await this.databaseService.replaceMeetPlayedGames(sessionId, games)),
+            ...updatedSession,
         }
     }
 

@@ -1404,10 +1404,20 @@ export class DatabaseService implements OnModuleInit {
         }
     }
 
-    async replaceMeetPlannedGames(meetId: number, gameIds: Array<number>): Promise<void> {
+    async replaceMeetPlannedGames(meetId: number, gameIds: Array<number>, expectedStatus: 'scheduled' | 'active'): Promise<boolean> {
         const transaction = await this.tursoClient.transaction('write')
 
         try {
+            const statusGuard = await transaction.execute({
+                sql: 'UPDATE Meet SET updatedAt = CURRENT_TIMESTAMP WHERE id = ? AND status = ?',
+                args: [meetId, expectedStatus],
+            })
+
+            if (statusGuard.rowsAffected !== 1) {
+                await transaction.commit()
+                return false
+            }
+
             await transaction.execute({
                 sql: "DELETE FROM MeetGame WHERE meetId = ? AND gameStatus = 'planned'",
                 args: [meetId],
@@ -1421,6 +1431,7 @@ export class DatabaseService implements OnModuleInit {
                 )
             }
             await transaction.commit()
+            return true
         } catch (error) {
             await transaction.rollback()
             throw error
@@ -1432,7 +1443,9 @@ export class DatabaseService implements OnModuleInit {
     async replaceMeetPlayedGames(
         meetId: number,
         games: Array<{ gameId: number; participantIds: Array<number> }>,
+        expectedStatus: 'scheduled' | 'active',
     ): Promise<{
+        applied: boolean
         playedGameIds: Array<number>
         skippedGameIds: Array<number>
         playedGameParticipants: Array<{ gameId: number; participantIds: Array<number> }>
@@ -1440,6 +1453,16 @@ export class DatabaseService implements OnModuleInit {
         const transaction = await this.tursoClient.transaction('write')
 
         try {
+            const statusGuard = await transaction.execute({
+                sql: 'UPDATE Meet SET updatedAt = CURRENT_TIMESTAMP WHERE id = ? AND status = ?',
+                args: [meetId, expectedStatus],
+            })
+
+            if (statusGuard.rowsAffected !== 1) {
+                await transaction.commit()
+                return { applied: false, playedGameIds: [], skippedGameIds: [], playedGameParticipants: [] }
+            }
+
             const gameIds = games.map(game => game.gameId)
             const placeholders = gameIds.map(() => '?').join(', ')
             const keepPlayedCondition = gameIds.length > 0 ? `AND gameId NOT IN (${placeholders})` : ''
@@ -1507,6 +1530,7 @@ export class DatabaseService implements OnModuleInit {
             }
 
             return {
+                applied: true,
                 playedGameIds: result.rows.filter(row => String(row[1]) === 'played').map(row => Number(row[0])),
                 skippedGameIds: result.rows.filter(row => String(row[1]) === 'skipped').map(row => Number(row[0])),
                 playedGameParticipants: [...participantMap.entries()].map(([gameId, participantIds]) => ({ gameId, participantIds })),
@@ -1862,10 +1886,20 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
-    async replaceMeetAttendees(meetId: number, accountIds: Array<number>) {
+    async replaceMeetAttendees(meetId: number, accountIds: Array<number>, expectedStatus: 'scheduled' | 'active'): Promise<boolean> {
         const transaction = await this.tursoClient.transaction('write')
 
         try {
+            const statusGuard = await transaction.execute({
+                sql: 'UPDATE Meet SET updatedAt = CURRENT_TIMESTAMP WHERE id = ? AND status = ?',
+                args: [meetId, expectedStatus],
+            })
+
+            if (statusGuard.rowsAffected !== 1) {
+                await transaction.commit()
+                return false
+            }
+
             const placeholders = accountIds.map(() => '?').join(', ')
 
             await transaction.execute({
@@ -1882,6 +1916,7 @@ export class DatabaseService implements OnModuleInit {
                 })),
             )
             await transaction.commit()
+            return true
         } catch (error) {
             await transaction.rollback()
             throw error
