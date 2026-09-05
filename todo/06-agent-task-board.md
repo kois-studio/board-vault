@@ -2792,3 +2792,19 @@ Review: EQ-003 / PROD-002 / TRUTH-001
 Changed: Added `frontend/e2e/collection-activation-flow.spec.ts`, guarded by an explicit disposable Clerk storage state and selected game fixture. The journey verifies private-shelf activation guidance, catalog search, first-game addition, persisted refresh state, duplicate protection, and return to the private shelf. `docs/TODO.md` now records that this is first-game evidence only; the five-game and real-group usefulness goal remains open.
 
 Verified: `PLAYWRIGHT_BASE_URL=http://localhost:4300 PLAYWRIGHT_COLLECTION_STORAGE_STATE=/tmp/board-vault-clerk-collection.json PLAYWRIGHT_COLLECTION_GAME_SEARCH=Cascadia PLAYWRIGHT_COLLECTION_GAME_TITLE=Cascadia npx playwright test e2e/collection-activation-flow.spec.ts` passes (1 test). The run used only disposable SQLite and a development Clerk identity; no production user, database, provider configuration, deployment, or storage token was changed.
+
+Continuation claim: SEC-003 / DATA-004 / PROD-005
+
+Owner: Codex
+
+Claimed: 2026-09-05
+
+Scope: close the canonical session lifecycle’s stale-transition race.
+
+Planned: make organizer status transitions conditional on the status observed during authorization, and ensure a losing concurrent terminal transition cannot rewrite planned games.
+
+Review: SEC-003 / DATA-004 / PROD-005
+
+Changed: `DatabaseService.updateMeetStatus` now updates only when the expected current status still matches inside the write transaction. Terminal planned-game cleanup runs only when that status update affects the session row. `SessionsService` passes the status it authorized, and regression coverage protects both the conditional arguments and the no-op losing-race path. The session ADR, architecture, data-model, security, and active TODO now record the lifecycle concurrency policy and the remaining non-lifecycle replacement-write gap.
+
+Verified: `cd backend && npm test -- --runInBand src/modules/features/sessions/sessions.service.spec.ts src/modules/common/database/database.service.spec.ts` passes (60 tests), `cd backend && npm run lint:check`, `cd backend && npm run build`, and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.

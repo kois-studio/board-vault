@@ -36,15 +36,15 @@ decisions.
 
 ## Consequences
 
-- Session creation and completion become explicit multi-record use cases with transaction or compensation requirements.
+- Session creation and completion become explicit multi-record use cases with transaction or compensation requirements. Organizer lifecycle transitions use a conditional status update inside the write transaction, so a stale concurrent transition cannot overwrite a newer state or skip planned games incorrectly.
 - API, frontend, database, and history work can converge on one vocabulary.
 - Existing `Meet` routes remain a compatibility layer over the session concept;
   the new relations are additive and do not delete or rewrite historical play
   links.
 - Planned and actual play data can support explainable recommendations and trustworthy history. A session becoming completed or cancelled transactionally converts any remaining planned games to `skipped`; played games are preserved unchanged.
 - The v1 relation boundaries are decided, but guest identities, timezones,
-  ratings, scores, and full transaction/state-transition behavior remain
-  separate follow-up decisions.
+  ratings, scores, and optimistic concurrency for non-lifecycle replacement
+  writes remain separate follow-up decisions.
 
 ## Alternatives considered
 
