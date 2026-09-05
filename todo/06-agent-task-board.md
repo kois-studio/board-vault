@@ -2744,3 +2744,19 @@ Review: EQ-003 / PROD-001
 Changed: Added a dedicated verified development Clerk test member, created `/tmp/board-vault-clerk-member.json` through an isolated headless browser context, advanced disposable SQLite through migrations 0006–0008, and corrected authenticated E2E expectations to assert the truthful empty-group states and current button semantics. The shared `app-button` primitive now honors `routerLink`, repairing previously inert action controls.
 
 Verified: `PLAYWRIGHT_BASE_URL=http://localhost:4300 PLAYWRIGHT_AUTH_STORAGE_STATE=/tmp/board-vault-clerk-member.json npm run e2e` passes all 11 public and authenticated tests. No production user, database, provider configuration, deployment, or storage token was changed; the storage state remains outside the repository.
+
+Continuation claim: EQ-003 / PROD-005 / TRUTH-001
+
+Owner: Codex
+
+Claimed: 2026-09-05
+
+Scope: make the authenticated social session rehearsal repeatable and exercise the flagship loop beyond navigation.
+
+Planned: add an opt-in two-account browser journey for a disposable seeded session, including RSVP, refresh, owner lifecycle, attendance, per-game participants, retryable loading, feedback, and history.
+
+Review: EQ-003 / PROD-005 / TRUTH-001
+
+Changed: Added `frontend/e2e/social-session-flow.spec.ts`, guarded by explicit owner/member Clerk storage states and a disposable session ID. The journey now verifies member RSVP persistence, scheduled-to-active-to-completed lifecycle, organizer attendance, game-specific participant editing, retry after a failed session-detail request, post-session rating, and history refresh. The testing documentation records the fixture requirements and mutation boundary.
+
+Verified: `PLAYWRIGHT_BASE_URL=http://localhost:4300 PLAYWRIGHT_OWNER_STORAGE_STATE=/tmp/board-vault-clerk-owner.json PLAYWRIGHT_MEMBER_STORAGE_STATE=/tmp/board-vault-clerk-member.json PLAYWRIGHT_SOCIAL_SESSION_ID=6 npx playwright test e2e/social-session-flow.spec.ts` passes (1 test). `cd frontend && npm run lint:check` and `git diff --check` pass. The run used only disposable SQLite and development Clerk identities; no production user, database, provider configuration, deployment, or storage token was changed.
