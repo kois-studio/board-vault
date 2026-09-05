@@ -584,6 +584,12 @@ export class DatabaseService implements OnModuleInit {
                 LEFT JOIN GameTranslation gt_en ON gt_en.gameId = g.id AND gt_en.languageCode = 'en'
                 LEFT JOIN GameTranslation gt_es ON gt_es.gameId = g.id AND gt_es.languageCode = 'es'
                 WHERE ggi.groupId = ?
+                    AND NOT EXISTS (
+                        SELECT 1
+                        FROM OwnedGame ownedByGroupMember
+                        INNER JOIN GroupMembership groupMember ON groupMember.accountId = ownedByGroupMember.accountId
+                        WHERE groupMember.groupId = ggi.groupId AND ownedByGroupMember.gameId = ggi.gameId
+                    )
                 ORDER BY firstInterestedAt ASC, g.id ASC, a.displayName ASC
             `,
             args: [groupId, groupId, groupId, groupId],
@@ -594,9 +600,15 @@ export class DatabaseService implements OnModuleInit {
         return this._tursoExecute({
             sql: `
                 INSERT OR IGNORE INTO GroupGameInterest (groupId, accountId, gameId)
-                VALUES (?, ?, ?)
+                SELECT ?, ?, ?
+                WHERE NOT EXISTS (
+                    SELECT 1
+                    FROM OwnedGame ownedByGroupMember
+                    INNER JOIN GroupMembership groupMember ON groupMember.accountId = ownedByGroupMember.accountId
+                    WHERE groupMember.groupId = ? AND ownedByGroupMember.gameId = ?
+                )
             `,
-            args: [groupId, accountId, body.gameId],
+            args: [groupId, accountId, body.gameId, groupId, body.gameId],
         })
     }
 
