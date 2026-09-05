@@ -2915,3 +2915,28 @@ provider configuration, deployment, or push was performed.
 Known follow-ups: Continue the complete DTO decorator inventory, especially
 legacy proposal/notification free text and array-size policies; complete the
 broader object-authorization and API response-shape review.
+
+Continuation claim: EQ-003 / PROD-005
+
+Owner: Codex
+
+Claimed: 2026-09-05
+
+Scope: make recipient-side invitation decline an intentional, explainable action
+across the groups workspace and profile invitation modal.
+
+Changed: The shared invitation card now explains that acceptance adds the
+recipient to the private group’s shared games and future session plans, uses
+explicit action semantics, and requires a reversible inline confirmation before
+declining. Added component coverage for the confirmation boundary and confirmed
+the existing failure path leaves the invitation available for retry.
+
+Verified: `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless`
+passes 28 tests; `cd frontend && npx biome check src/app src/styles.css` and
+`cd frontend && npm run build` pass with a 602.11 kB initial raw / 138.00 kB
+estimated-transfer bundle. No migration, production data, provider
+configuration, deployment, or push was performed.
+
+Known follow-ups: Validate pending/accepted/rejected/expired and provider email
+invitation states with real two-person data, including the secondary profile
+modal and mobile/keyboard behavior.

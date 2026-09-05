@@ -151,7 +151,7 @@ Relevant surfaces: [`collection-page`](../frontend/src/app/pages/collection-page
 
 Relevant surfaces: [`groups`](../frontend/src/app/pages/groups/), [`group-view`](../frontend/src/app/pages/group-view/), group/invitation/notification components.
 
-- Verify the complete two-account flow: create group, invite account, accept/reject invitation, refresh, and see membership; the groups workspace now exposes pending invitations with direct accept/decline actions, while invitation and notification modals distinguish loading, failed fetch, retry, and empty states.
+- Verify the complete two-account flow: create group, invite account, accept/reject invitation, refresh, and see membership; the groups workspace now exposes pending invitations with direct actions, the shared card explains the membership consequence and confirms a decline before mutation, while invitation and notification modals distinguish loading, failed fetch, retry, and empty states.
 - Group owners can now invite a person who does not yet have a local account by email through Clerk; the ticketed `/register` flow remains available while ordinary private-beta sign-up stays closed, and verified invitees are joined only after the inviter-owned group check succeeds.
 - Keep group creation awaitable and recoverable; the create form now waits for the API result before navigating and leaves failures retryable, while the backend now creates the group and owner membership in one Turso transaction.
 - Keep invitation send, pending-invitation removal, and member removal awaitable; group editing now keeps retryable selections and prevents overlapping requests.
