@@ -2520,3 +2520,19 @@ Review: EQ-006 / PROD-001
 Changed: The catalog search input now has a persistent accessible label, stable ID, and browser-autocomplete behavior while preserving the separate “add to my collection” versus “add for this group” context.
 
 Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (22 tests), `cd frontend && npm run build` (599.05 kB initial / 137.87 kB estimated transfer), and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.
+
+Continuation claim: PROD-005 / EQ-006
+
+Owner: Codex
+
+Claimed: 2026-09-05
+
+Scope: remove the dead end from the past-session recorder when a user has no group yet.
+
+Planned: provide direct create-group and invitation-management actions from the recorder’s empty group state.
+
+Review: PROD-005 / EQ-006
+
+Changed: The past-session recorder’s no-group state now links directly to Create a group and View invitations, so users can satisfy the social prerequisite without navigating away blindly.
+
+Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (22 tests), `cd frontend && npm run build` (599.05 kB initial / 137.88 kB estimated transfer), and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.
