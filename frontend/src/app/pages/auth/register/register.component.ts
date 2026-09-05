@@ -10,6 +10,7 @@ import { FormRegisterComponent } from './form-register/form-register.component'
 export class RegisterComponent {
     private readonly clerkService = inject(ClerkService)
 
+    public readonly clerkIsConfigured = this.clerkService.isConfigured
     public readonly clerkIsAvailable = this.clerkService.isAvailable
     public readonly selfRegistrationEnabled = this.clerkService.isSelfRegistrationEnabled
     public readonly isInvitationFlow = this.clerkService.isInvitationFlow
