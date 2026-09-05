@@ -22,6 +22,10 @@
                 </div>
             } @else if (userGroups$().length === 0) {
                 <p class="text-secondary">Create or join a group before scheduling a session.</p>
+                <div class="mt-4 flex flex-wrap justify-center gap-3">
+                    <a class="app-btn-primary" routerLink="/create-group">Create a group</a>
+                    <a class="app-btn-secondary" routerLink="/groups">View invitations</a>
+                </div>
             } @else {
                 <div class="grid gap-3 sm:grid-cols-2">
                     @for (group of userGroups$(); track group.id) {
@@ -44,6 +48,7 @@
         <div class="text-center py-8 text-secondary">
             <p>No upcoming sessions yet.</p>
             <p class="text-sm mt-2">Schedule a session to bring your group together.</p>
+            <app-button class="mt-5" icon="plus-lg" (click)="isSchedulingASession.set(true)">Plan a future session</app-button>
         </div>
     } @else {
         @for (session of upcomingSessions(); track session.id) {
