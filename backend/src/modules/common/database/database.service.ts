@@ -1084,7 +1084,7 @@ export class DatabaseService implements OnModuleInit {
 
     async createInvitationByUsername(invitationDto: CreateInvitationByUsernameBody) {
         const toAccount = await this._tursoExecute({
-            sql: 'SELECT * FROM Account WHERE username = ?',
+            sql: 'SELECT * FROM Account WHERE username = ? AND isDeleted = 0',
             args: [invitationDto.username],
         })
 
