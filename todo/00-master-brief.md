@@ -21,7 +21,7 @@ The repository currently contains:
 - a substantial NestJS API and Angular application;
 - authentication, collection, groups, reviews, wishlist, proposals, and admin surfaces;
 - partial meeting and play-history flows;
-- placeholder recommendation and statistics experiences;
+- first-release explainable recommendation and lightweight insight experiences; richer analytics remain unfinished;
 - inconsistent API authorization;
 - no reliable migration system;
 - almost no meaningful automated coverage;

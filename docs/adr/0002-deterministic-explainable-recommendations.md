@@ -15,7 +15,9 @@ For the first flagship release, recommendations use hard eligibility filters fol
 
 The ownership policy is collective attendee ownership: a game is eligible when at least one selected attendee owns it. The request must identify the selected attendees, and every attendee must be a member of the selected group. A game owned only by an absent group member is not eligible for that recommendation request. An empty attendee list is invalid.
 
-The first score uses only data that is currently persisted and reliable: player-count eligibility, selected-attendee ownership coverage, selected-attendee ratings, and optional duration fit. Last-play information may be shown as explanation context but is not yet a score factor. Recommendation feedback, richer preferences, complexity, and history-weighted scoring remain deferred until the product has a stable feedback model.
+The first score uses only data that is currently persisted and reliable: player-count eligibility, selected-attendee ownership coverage, selected-attendee ratings, optional duration fit, and an optional bounded decision lens. `balanced` preserves the baseline ranking. `fresh` rewards games never played by the selected group and discounts games previously played by that group. `favorite` rewards strong group ratings and games the group has played before. These are deterministic preference modifiers, not global popularity signals.
+
+Recommendation feedback remains bounded and explainable. Complexity scoring and more granular history-weighted or replay-frequency scoring remain deferred until real groups generate enough usage data to justify them.
 
 ## Consequences
 

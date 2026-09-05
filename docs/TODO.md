@@ -17,6 +17,38 @@ Reviewed: 2026-09-05
 Readiness entries use `In progress`, `Planned`, `Blocked`, or `Deferred`.
 Product execution ownership remains in `/todo/`.
 
+## Restart checkpoint — 2026-09-05
+
+The product direction is now explicit and accepted: Board Vault is the social
+decision-and-memory layer for recurring game groups. The shared group
+workspace, collection context, recommendations, sessions, play history, and
+lightweight insights are the product center. Game details are supporting
+metadata only; catalog breadth, imports, public discovery, and a standalone
+analytics platform are not restart priorities.
+
+Priority order for the next iterations:
+
+1. **P0 — Prove the flagship loop with two real accounts and clean data:**
+   invite/accept, add games, select attendees, choose a recommendation lens,
+   schedule, RSVP, start/complete, record attendance and per-game
+   participants, give feedback, and confirm history survives refresh.
+2. **P0 — Close safety and recovery gates:** finish object authorization and
+   boundary-validation audits, preserve migration/backup/rollback evidence,
+   and keep the private-beta registration policy closed by default.
+3. **P1 — Remove product friction exposed by real use:** invitation lifecycle,
+   first-five-games activation, acquisition decisions, privacy distinctions,
+   compatibility-flow retirement, and refresh/permission truth.
+4. **P1 — Make the evidence trustworthy:** authenticated browser journeys,
+   contract/integration tests, CI remote observation, idempotency/error
+   behavior, and provider-failure diagnostics.
+5. **P2 — Finish quality after the loop is stable:** systematic responsive,
+   keyboard, contrast, focus, screen-reader, content, and rendered-route
+   review.
+
+Do not expand catalog detail, global discovery, social feeds, mobile apps,
+separate analytics routes, or complex recommendation scoring until the core
+group loop demonstrates repeat use.
+
 ## Critical — unblock safe feature development
 
 ### READINESS-001 [Critical] SEC-003/SEC-008 — Complete object-level authorization audit
@@ -70,7 +102,7 @@ Product execution ownership remains in `/todo/`.
 
 - **Status:** In progress
 - **Affected area:** `.github/` or chosen CI provider
-- **Evidence:** `.github/workflows/ci.yml` now runs a repository whitespace check, locked backend/frontend installs, backend tests/build/lint, frontend build/Biome/public Playwright checks, and disposable database migration verification. The local run passes backend lint, 206 backend tests, frontend build/Biome, and four public Playwright tests; authenticated E2E and deployment smoke checks are intentionally excluded because they require secret-bearing state.
+- **Evidence:** `.github/workflows/ci.yml` now runs a repository whitespace check, locked backend/frontend installs, backend tests/build/lint, frontend build/Biome/public Playwright checks, and disposable database migration verification. The local run passes backend lint, 207 backend tests, frontend build/Biome, and four public Playwright tests; authenticated E2E and deployment smoke checks are intentionally excluded because they require secret-bearing state.
 - **Risk:** Build, test, lint, formatting, migration, and contract regressions reach integration/deployment.
 - **Next action:** Observe the first GitHub Actions run and add non-production authenticated E2E when disposable Clerk state exists.
 - **Dependencies:** A meaningful test baseline and the repository’s locked-install workflow.
@@ -181,9 +213,8 @@ as TODO items here.
 
 ## Recommendation and acquisition decisions
 
-- [ ] Add enough session context for recommendations to become meaningfully
-  better than the current first-release filters: available time plus explicit
-  novelty/mood or organizer preferences.
+- [ ] Validate the current recommendation decision lenses with real group
+  usage; expand context only when it improves a concrete group decision.
 - [ ] Extend the current explainable ranking with history, replay timing, and
   complexity fit only after the group has enough persisted play data.
 - [ ] Validate the recommendation-to-acquisition decision flow with real group

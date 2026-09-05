@@ -2568,3 +2568,19 @@ Review: PROD-004 / PROD-005
 Changed: Recommendations now accept and return an explicit decision lens. Balanced preserves the existing ranking, Something new boosts never-played games and explains the history trade-off, and Group favorite rewards strong group ratings and previously played games. The chooser exposes the lens next to attendees and available time, and changing it clears stale results and feedback.
 
 Verified: `cd backend && npm run lint:check`, `cd backend && npm run build`, `cd backend && npm test -- --runInBand` (44 suites / 207 tests), `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (23 tests), `cd frontend && npm run build` (599.11 kB initial / 137.88 kB estimated transfer), and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.
+
+Continuation claim: PROD-004 / EQ-006
+
+Owner: Codex
+
+Claimed: 2026-09-05
+
+Scope: keep the group acquisition decision surface truthful after refresh and reversible from browse results.
+
+Planned: load the existing group acquisition board when entering group-scoped browse, expose saved interest consistently, and allow removing that interest without leaving the decision flow.
+
+Review: PROD-004 / EQ-006
+
+Changed: Group-scoped browse now loads the persisted acquisition shortlist before enabling add actions, shows games already on the shortlist after refresh, exposes a reversible “Remove my interest” action, and preserves the prior saved state when removal fails. A failed shortlist read is explicit and blocks ambiguous mutations.
+
+Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (23 tests), `cd frontend && npm run build` (599.11 kB initial / 137.88 kB estimated transfer), and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.

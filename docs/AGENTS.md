@@ -20,7 +20,7 @@ This is the canonical project-specific instruction file for AI developer agents.
 - Security boundaries and findings: [security.md](security.md).
 - Test inventory and verified baseline: [testing.md](testing.md).
 - Standards gaps and remediation sequencing: [TODO.md](TODO.md) and the YAML contract.
-- Durable decisions: [adr/README.md](adr/README.md). ADR-0002 is accepted for recommendation eligibility/scoring, ADR-0003 for the session domain, ADR-0004 for the staged Clerk rollout, ADR-0005 for token lifecycle, ADR-0006 for nested-user privacy, and ADR-0007 for invite-only group membership; ADR-0001 remains a proposal.
+- Durable decisions: [adr/README.md](adr/README.md). ADR-0001 is accepted for group-first product context, ADR-0002 for recommendation eligibility/scoring, ADR-0003 for the session domain, ADR-0004 for the staged Clerk rollout, ADR-0005 for token lifecycle, ADR-0006 for nested-user privacy, and ADR-0007 for invite-only group membership.
 
 ## Effective standards
 
@@ -45,7 +45,7 @@ Commands can run from the repository root or package directory. Dependencies are
 |---|---|---|
 | Backend install | `cd backend && npm ci --ignore-scripts` | Passes from the committed `backend/package-lock.json`; the package README now uses npm consistently. |
 | Backend build | `cd backend && npm run build` | Passes. |
-| Backend unit tests | `cd backend && npm test -- --runInBand` | Passes 206 tests across 44 suites covering Clerk identity provisioning, authorization, validation, token lifecycle, session transactions/lifecycle, organizer/current-membership enforcement, domain-level session participation invariants, per-game participation, recommendations, feedback, invitation visibility/expiry/atomic acceptance, verified-user gating, admin route/list-query validation, cache endpoint protection, safe API errors, health/readiness probes, canonical session reads, self-profile response privacy, and provider boundaries; broader integration coverage is still missing. |
+| Backend unit tests | `cd backend && npm test -- --runInBand` | Passes 207 tests across 44 suites covering Clerk identity provisioning, authorization, validation, token lifecycle, session transactions/lifecycle, organizer/current-membership enforcement, domain-level session participation invariants, per-game participation, recommendations, feedback, invitation visibility/expiry/atomic acceptance, verified-user gating, admin route/list-query validation, cache endpoint protection, safe API errors, health/readiness probes, canonical session reads, self-profile response privacy, and provider boundaries; broader integration coverage is still missing. |
 | Backend e2e tests | `cd backend && npm run test:e2e -- --runInBand` | Passes 2 environment-safe HTTP boundary tests; the suite uses a disposable SQLite URL, disables Redis, and never calls production providers. |
 | Backend lint, no mutation | `cd backend && npx eslint "{src,apps,libs,test}/**/*.ts"` | Passes with no errors or warnings. Do not use the package `lint` script casually because it includes `--fix`. |
 | Backend formatting, writes files | `cd backend && npm run format` | Available; run only when formatting changes are in scope. |

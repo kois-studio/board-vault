@@ -4,7 +4,7 @@ This is the current inventory of unfinished, missing, or only partially connecte
 
 This document records implementation truth, not wishes. A route, component, label, or TODO comment is not treated as evidence that a capability works. Findings below come from source inspection, the documented database reconciliation, the current test baseline, and the production verification recorded in [`operations.md`](operations.md).
 
-Reviewed: 2026-09-04
+Reviewed: 2026-09-05
 
 ## Status vocabulary
 
@@ -24,7 +24,7 @@ The product is not launch-ready. The main unfinished value loop is:
 group → attendees → recommendation → scheduled session → games actually played → useful history
 ```
 
-Completed-session logging now has a guarded, validated backend write and an atomic Turso transaction from the frontend wizard. The first recommendation and feedback slices are implemented, including a bounded score adjustment from selected-attendee decisions, while analytics and richer scoring remain unfinished; the authenticated home now opens on a group/social workspace, and the dashboard and play landing avoid presenting fabricated metrics or links to unavailable feature routes.
+Completed-session logging now has a guarded, validated backend write and an atomic Turso transaction from the frontend wizard. The first recommendation and feedback slices are implemented, including bounded balanced/fresh/favorite decision lenses and selected-attendee decisions, while analytics and richer scoring remain unfinished; the authenticated home now opens on a group/social workspace, and the dashboard and play landing avoid presenting fabricated metrics or links to unavailable feature routes.
 
 ## P0 — complete the product’s core loop
 
@@ -45,7 +45,7 @@ Relevant surfaces: [`app.routes.ts`](../frontend/src/app/app.routes.ts), [`meet-
 - Keep planning signals separate from historical truth: invited members can submit RSVP during scheduled/active states, while the organizer records final attendance for active/completed sessions. Completed attendees can now rate games directly from the session record through the existing per-account review contract; session-specific notes/reasons are now persisted and shown, while richer attendance history remains unfinished.
 - Scheduled-session game logging now uses the canonical played-game endpoint and records the actual participants for each game through the existing compatibility relation; the UI defaults participants from recorded attendance (or invited attendees until attendance is known) and allows the organizer to correct each game independently. Older group-level clients preserve their existing participant links. A dedicated participant-level browser rehearsal remains open.
 - Group history now carries organizer-recorded attendance, and the group home derives lightweight most-played, participation, recently-played, and revisit views from completed persisted sessions. Recent group-memory cards now show who attended and the saved session note when present. A dedicated analytics route/read model and richer insight queries remain deferred until the group has enough real history to justify them.
-- The shared group library now makes social context visible on each card: named owners, member-rating counts, player range, duration, play count, and timezone-aware last-played memory. Acquisition interest remains a separate group decision board; group acquisition search excludes games already owned by any member and still needs validation beside owned-library context.
+- The shared group library now makes social context visible on each card: named owners, member-rating counts, player range, duration, play count, and timezone-aware last-played memory. Acquisition interest remains a separate group decision board; group-scoped browse now restores persisted shortlist state and supports reversible member interest, while real-group validation is still needed beside owned-library context.
 - Collection activation now preserves the last known collection while a refresh is in flight or fails, and the collection home exposes a retry state instead of presenting a provider failure as an empty shelf.
 - Decide how the legacy `MeetAccountGame` history relation should evolve; the completed write currently preserves it as a compatibility relation.
 - The obsolete confirmation flow has been removed; attendee and played-game changes now state that they save automatically from the session detail page.
@@ -70,7 +70,7 @@ Relevant intent: [`todo/04-core-product-loop.md`](../todo/04-core-product-loop.m
 - Recommendation results now provide a direct scheduling link that carries the selected attendees and chosen game into the scheduling form.
 - The recommendation page now summarizes the selected members and time constraint before results, and no-result states offer a group-scoped browse path for the next acquisition/collection decision.
 - Add authenticated browser coverage when a Clerk storage state is available; the suite now covers recommendation-page entry and controls but remains skipped without that local secret-bearing state.
-- Richer preferences, complexity scoring, and history-weighted scoring remain deferred; the current feedback weighting is intentionally small, bounded, group-scoped, and explainable.
+- Validate the balanced/fresh/favorite decision lenses with real groups; complexity scoring and more granular history/replay weighting remain deferred until real usage exists.
 - Resolve the indirect game-title contract: `Game` stores no title; titles are provided through `GameTranslation`. The recommendation query uses English with Spanish fallback.
 
 ### 3. History and analytics — Partial / Open
@@ -86,7 +86,7 @@ Relevant surfaces: [`history-page`](../frontend/src/app/pages/play-page/history-
 - Keep the play landing honest while its dependent reads load or fail; the upcoming/history cards now show loading and unavailable states instead of presenting zero as fact.
 - Recommendation and scheduling entry points now distinguish unavailable group data from a genuinely empty group list and expose retry.
 - Make empty history actionable and honest.
-- Add last-played context that can feed recommendations; recommendation cards now show the persisted last-played date or an honest not-played fallback, while using that signal as a score factor remains deferred until real usage exists.
+- Validate the decision lenses with real groups; recommendation cards now show persisted last-played context and the chooser exposes balanced, fresh, and favorite lenses. Complexity scoring and more granular history/replay weighting remain deferred until real usage exists.
 - Add simple post-session ratings or feedback when the product contract is defined.
 
 ## P1 — make existing areas reliable and coherent

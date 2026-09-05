@@ -1,6 +1,6 @@
 # Architecture decision records
 
-This directory contains durable project decisions and explicitly marked proposals. ADR-0001 remains a proposal derived from existing product direction. ADR-0002 is accepted for the first-release recommendation eligibility and scoring policy. ADR-0003 is accepted for the session domain and ADR-0004 is accepted for staged authentication rollout:
+This directory contains durable project decisions and explicitly marked proposals. ADR-0001 is accepted as the group-first product context. ADR-0002 is accepted for the first-release recommendation eligibility and scoring policy. ADR-0003 is accepted for the session domain and ADR-0004 is accepted for staged authentication rollout:
 
 - [0001 — Group-first product context](0001-group-first-product-context.md)
 - [0002 — Deterministic and explainable first-release recommendations](0002-deterministic-explainable-recommendations.md) — Accepted; collective selected-attendee ownership is the v1 eligibility rule
@@ -11,7 +11,7 @@ This directory contains durable project decisions and explicitly marked proposal
 - [0007 — Invite-only group membership with owner/member roles](0007-group-membership-policy.md) — Accepted; public groups and richer roles are deferred
 - [0008 — Private-beta registration with preserved account access](0008-private-beta-registration.md) — Accepted; production sign-up is restricted until first-release completion criteria are met
 
-ADR-0001 remains a proposal and does not authorize implementation. Accepted ADRs are durable constraints unless a later ADR explicitly supersedes them.
+Accepted ADRs are durable constraints unless a later ADR explicitly supersedes them.
 
 Create an ADR when a decision changes architecture, persistence, security policy, API compatibility, deployment responsibility, or another durable project constraint. Do not use ADRs for TODOs, bugs, status updates, or temporary investigations.
 
