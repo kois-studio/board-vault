@@ -14,6 +14,7 @@ import type {
     RecommendationFeedbackBody,
     RecommendationFeedbackDto,
     RecommendationRequestBody,
+    RecommendationDecisionLens,
     RecommendationSignalsDto,
     RecommendationsDto,
 } from './play.types'
@@ -54,6 +55,7 @@ export class PlayService {
             body.attendeeIds.length,
             body.availableMinutes,
         )
+        const decisionLens = body.decisionLens ?? 'balanced'
         const feedbackByGame = new Map<number, { interestedCount: number; notForUsCount: number }>()
 
         if (resultSet.rows.length > 0) {
@@ -80,7 +82,15 @@ export class PlayService {
             }
         }
         const recommendations = resultSet.rows
-            .map(row => this._mapRecommendation(row, body.attendeeIds.length, body.availableMinutes, feedbackByGame.get(Number(row[0]))))
+            .map(row =>
+                this._mapRecommendation(
+                    row,
+                    body.attendeeIds.length,
+                    body.availableMinutes,
+                    feedbackByGame.get(Number(row[0])),
+                    decisionLens,
+                ),
+            )
             .sort((a, b) => b.score - a.score || a.gameData.id - b.gameData.id)
             .slice(0, 10)
 
@@ -94,6 +104,7 @@ export class PlayService {
             groupId: body.groupId,
             attendeeIds: body.attendeeIds,
             availableMinutes: body.availableMinutes ?? null,
+            decisionLens,
             recommendations,
             noResultReason,
         }
@@ -128,6 +139,7 @@ export class PlayService {
         attendeeCount: number,
         availableMinutes?: number,
         feedback: { interestedCount: number; notForUsCount: number } = { interestedCount: 0, notForUsCount: 0 },
+        decisionLens: RecommendationDecisionLens = 'balanced',
     ): RecommendationDto {
         const gameId = Number(row[0])
         const gameAvgDuration = row[2] === null || row[2] === undefined ? 0 : Number(row[2])
@@ -143,6 +155,14 @@ export class PlayService {
                 ? Math.round(20 * Math.max(0, 1 - Math.abs(availableMinutes - gameAvgDuration) / availableMinutes))
                 : 0
         const feedbackScore = Math.min(12, feedback.interestedCount * 4) - Math.min(12, feedback.notForUsCount * 6)
+        const decisionLensScore =
+            decisionLens === 'fresh'
+                ? lastPlayedAt === null
+                    ? 20
+                    : -12
+                : decisionLens === 'favorite'
+                  ? (averageReview !== null && averageReview >= 7 ? 8 : 0) + (lastPlayedAt !== null ? 3 : 0)
+                  : 0
         const ownershipScore = Math.round(20 * (attendeeOwnerCount / attendeeCount))
         const ratingScore = averageReview === null ? 0 : Math.round(20 * (averageReview / 10))
         const reasons = [`Owned by ${attendeeOwnerCount} of ${attendeeCount} selected attendees`, `Fits ${attendeeCount} players`]
@@ -161,6 +181,11 @@ export class PlayService {
         if (feedback.notForUsCount > 0) {
             reasons.push(`${feedback.notForUsCount} selected attendee${feedback.notForUsCount === 1 ? '' : 's'} passed on this before`)
         }
+        if (decisionLens === 'fresh') {
+            reasons.push(lastPlayedAt === null ? 'Not played by this group yet' : 'Previously played by this group')
+        } else if (decisionLens === 'favorite') {
+            reasons.push(averageReview !== null && averageReview >= 7 ? 'Strong group rating' : 'Builds on the group’s shared shelf')
+        }
 
         return {
             gameData: {
@@ -172,7 +197,7 @@ export class PlayService {
                 maxPlayers,
                 titleTranslations: { en: titleEn, es: titleEs },
             },
-            score: Math.max(0, Math.min(100, 40 + ownershipScore + ratingScore + durationScore + feedbackScore)),
+            score: Math.max(0, Math.min(100, 40 + ownershipScore + ratingScore + durationScore + feedbackScore + decisionLensScore)),
             explanation: {
                 reasons,
                 attendeeOwnerCount,

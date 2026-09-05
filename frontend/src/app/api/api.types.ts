@@ -382,6 +382,7 @@ export type RecommendationsType = {
     groupId: number
     attendeeIds: Array<number>
     availableMinutes: number | null
+    decisionLens: 'balanced' | 'fresh' | 'favorite'
     recommendations: Array<RecommendationType>
     noResultReason: string | null
 }

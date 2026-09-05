@@ -563,7 +563,12 @@ export class Api {
             .pipe(map((response) => userMeetsSchema.parse(response)))
     }
 
-    getRecommendations(body: { groupId: number; attendeeIds: Array<number>; availableMinutes?: number }) {
+    getRecommendations(body: {
+        groupId: number
+        attendeeIds: Array<number>
+        availableMinutes?: number
+        decisionLens?: 'balanced' | 'fresh' | 'favorite'
+    }) {
         return this.http
             .post<RecommendationsType>(`${this.url}/play/recommendations`, body)
             .pipe(map((response) => recommendationsSchema.parse(response)))
