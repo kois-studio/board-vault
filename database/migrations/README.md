@@ -114,3 +114,13 @@ is rejected with a request to ask for a new invitation. The nullable shape keeps
 the migration compatible with any pre-0008 rows until the backfill completes.
 Apply it only with the invitation-lifecycle release after disposable SQLite
 verification and a fresh live backup.
+
+## Migration 0009 (pending deployment)
+
+`0009-add-group-acquisition-decisions.sql` adds `GroupAcquisitionDecision`, a
+group-scoped owner decision for an acquisition candidate. It stores `open`,
+`planned`, or `not_now` plus the deciding owner, timestamp, and optional note.
+It does not represent a purchase; when any group member owns the game, the
+acquisition board hides it from the group because ownership is the terminal
+truth. Apply it only with the group-acquisition decision release after
+disposable SQLite verification and a fresh live backup.

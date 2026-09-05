@@ -84,6 +84,20 @@ describe('DatabaseService logging', () => {
         })
     })
 
+    it('upserts a group acquisition decision without creating purchase semantics', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const execute = jest.fn().mockResolvedValue({ rowsAffected: 1 })
+
+        ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
+
+        await service.upsertGroupAcquisitionDecision(7, 42, 1, 'planned', 'Buy before autumn')
+
+        expect(execute).toHaveBeenCalledWith({
+            sql: expect.stringContaining('ON CONFLICT(groupId, gameId) DO UPDATE SET'),
+            args: [7, 42, 'planned', 1, 'Buy before autumn'],
+        })
+    })
+
     it('accepts an invitation by creating membership and consuming the invitation in one transaction', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {

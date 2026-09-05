@@ -69,6 +69,12 @@ The backend source also has corresponding service/type/schema areas. The current
   and current group-owner count, excludes games owned by any current group
   member, and guards the insert against an ownership race. It does not imply a
   purchase or create an affiliate-shopping surface.
+- `GroupAcquisitionDecision` stores one owner-controlled group outcome per
+  candidate: `open`, `planned`, or `not_now`, with the deciding owner, timestamp,
+  and optional note. A new interest reopens `not_now` to `open`; if any current
+  group member owns the game, board reads hide it because ownership is the
+  terminal truth. The decision relation is separate from both member interest
+  and personal wishlist rows.
 
 ## Repository reconciliation result
 

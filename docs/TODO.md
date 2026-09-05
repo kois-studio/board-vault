@@ -73,7 +73,7 @@ group loop demonstrates repeat use.
 
 - **Status:** In progress
 - **Affected area:** Turso deployment, `database/`, `backend/src/modules/common/database/`
-- **Evidence:** The DATA-001 reconciliation is recorded in [`database/drift-report.md`](../database/drift-report.md). Migration 0003 defines and backfills `MeetAttendee`/`MeetGame`, backend detail/setup SQL is aligned, and the frontend `meetAttendees` route is now backed by organizer-only server authorization; the indirect `Game.title`/`GameTranslation` contract remains. Migrations 0002–0005 are applied, the schema snapshot and `SchemaMigrations` metadata are synchronized, the empty-state verification script passes, and a synthetic SQLite backup/restore rehearsal preserves representative accounts, group membership, session attendance, played games, translations, and invitation history while applying migrations 0006–0008.
+- **Evidence:** The DATA-001 reconciliation is recorded in [`database/drift-report.md`](../database/drift-report.md). Migration 0003 defines and backfills `MeetAttendee`/`MeetGame`, backend detail/setup SQL is aligned, and the frontend `meetAttendees` route is now backed by organizer-only server authorization; the indirect `Game.title`/`GameTranslation` contract remains. Migrations 0002–0005 are applied, the schema snapshot and `SchemaMigrations` metadata are synchronized, the empty-state verification script passes through pending migration 0009, and a synthetic SQLite backup/restore rehearsal preserves representative accounts, group membership, session attendance, played games, translations, invitation history, and acquisition decisions while applying migrations 0006–0009. Migrations 0006–0009 remain pending for live Turso.
 - **Risk:** Destructive drift, unrepeatable environments, and unsafe session-domain changes.
 - **Next action:** Verify the attendee route through production with a preserved account, observe the CI migration/restore checks remotely, and document the real Turso backup schedule, owner, recovery target, and rollback procedure.
 - **Dependencies:** Product decision on whether legacy meeting paths are retired or migrated; no deployment access required for the initial reconciliation.
@@ -93,16 +93,16 @@ group loop demonstrates repeat use.
 
 - **Status:** In progress
 - **Affected area:** `backend/test/`, backend `src`, frontend `src/**/*.spec.ts`
-- **Evidence:** Backend now has 44 focused suites and 213 passing unit tests plus 2 environment-safe HTTP E2E tests; frontend has 26 browser-based unit tests plus four passing public Playwright tests, while seeded/integration journeys and authenticated browser coverage remain opt-in. The opt-in authenticated collection, invitation, session, and recommendation journeys pass against disposable Clerk development identities and data; the full local Playwright run passes 12 tests with 3 guarded skips when the owner/recommendation fixtures are supplied.
+- **Evidence:** Backend now has 44 focused suites and 217 passing unit tests plus 2 environment-safe HTTP E2E tests; frontend has 26 browser-based unit tests plus four passing public Playwright tests, while seeded/integration journeys and authenticated browser coverage remain opt-in. The opt-in authenticated collection, invitation, session, recommendation, and acquisition-decision journeys pass against disposable Clerk development identities and data; the full local Playwright run passes 13 tests with 3 guarded skips when the owner/recommendation/acquisition fixtures are supplied.
 - **Risk:** Security and product regressions are invisible.
-- **Next action:** Add negative authorization/contract cases, repeatable disposable fixture setup, and recommendation/acquisition browser evidence; preserve the existing authenticated core-loop journeys as launch regression gates.
+- **Next action:** Add negative authorization/contract cases, repeatable disposable fixture setup, and provider/remote integration evidence; preserve the existing authenticated core-loop journeys as launch regression gates.
 - **Dependencies:** READINESS-001, READINESS-002, READINESS-003.
 
 ### READINESS-006 [High] CI-001/002/007 — Add CI gates
 
 - **Status:** In progress
 - **Affected area:** `.github/` or chosen CI provider
-- **Evidence:** `.github/workflows/ci.yml` now runs a repository whitespace check, locked backend/frontend installs, backend tests/build/lint, frontend build/Biome/public Playwright checks, and disposable database migration verification. The local run passes backend lint, 209 backend tests, frontend build/Biome, and four public Playwright tests; authenticated E2E and deployment smoke checks are intentionally excluded because they require secret-bearing state.
+- **Evidence:** `.github/workflows/ci.yml` now runs a repository whitespace check, locked backend/frontend installs, backend tests/build/lint, frontend build/Biome/public Playwright checks, and disposable database migration verification. The local run passes backend lint, 217 backend tests, frontend build/Biome, and four public Playwright tests; authenticated E2E and deployment smoke checks are intentionally excluded because they require secret-bearing state.
 - **Risk:** Build, test, lint, formatting, migration, and contract regressions reach integration/deployment.
 - **Next action:** Observe the first GitHub Actions run and add non-production authenticated E2E when disposable Clerk state exists.
 - **Dependencies:** A meaningful test baseline and the repository’s locked-install workflow.
@@ -140,7 +140,7 @@ group loop demonstrates repeat use.
 
 - **Status:** Planned
 - **Affected area:** `frontend/src/styles.css`, component SCSS/templates, route surfaces
-- **Evidence:** Tailwind global styles now use plain CSS with a PostCSS nesting pass; route-level components are lazy-loaded; production build has no Sass/selector/bundle-budget warnings and the initial raw bundle is 599.48 kB (137.53 kB estimated transfer) under the 650 kB warning budget. Shared theme-control semantics, the preserved-account auth fallback, migration-state copy, group/session empty states, owner-only invitation controls, mobile session-progress behavior, attendee-selection handoff, recommendation attendee controls, explainable recommendation lenses, reversible group acquisition interest, invitation-link copy feedback, and the personal/private collection boundary have been improved, but a full accessibility/responsive audit and all route-surface reviews remain open.
+- **Evidence:** Tailwind global styles now use plain CSS with a PostCSS nesting pass; route-level components are lazy-loaded; production build has no Sass/selector/bundle-budget warnings and the initial raw bundle is 600.42 kB (137.63 kB estimated transfer) under the 650 kB warning budget. Shared theme-control semantics, the preserved-account auth fallback, migration-state copy, group/session empty states, owner-only invitation controls, mobile session-progress behavior, attendee-selection handoff, recommendation attendee controls, explainable recommendation lenses, reversible group acquisition interest, invitation-link copy feedback, and the personal/private collection boundary have been improved, but a full accessibility/responsive audit and all route-surface reviews remain open.
 - **Risk:** Broken styles, poor mobile/accessibility behavior, and unsupported public claims.
 - **Next action:** Complete the rendered route audit matrix, resolve remaining accessibility/responsive findings, and link content-truth findings to `TRUTH-001`.
 - **Dependencies:** Product truth/brand decision where claims are involved.
@@ -227,8 +227,9 @@ as TODO items here.
 - [ ] Validate the recommendation-to-acquisition decision flow with real group
   usage; purchase suggestions must remain group decisions rather than a generic
   catalog or affiliate-shopping surface. The current acquisition board is an
-  explicit shared-interest shortlist, not a purchase workflow; its browser
-  journey and the decision-resolution behavior still need validation.
+  explicit shared-interest shortlist with owner-controlled open/planned/not-now
+  resolution, not a purchase workflow; disposable browser coverage passes, but
+  real-group usefulness and decision language still need validation.
 
 ## Sessions and social participation
 

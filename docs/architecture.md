@@ -88,6 +88,7 @@ the next hosting deployment.
 
 - Session v1 now separates `Meet` compatibility/session records, `MeetAttendee` participant state, `MeetGame` planned/played state, and `MeetAccountGame` account-to-play links. Completed and scheduled creation, organizer lifecycle transitions, planned/played state, and per-game participant recording are implemented transactionally; richer play events and full lifecycle read models remain unfinished.
 - The group home’s current insight cards are intentionally a derived read surface over completed group history; they are not a global analytics model or ranking system. A dedicated analytics route remains deferred until real usage demonstrates that the extra surface is useful.
+- Group acquisition uses separate member-interest and owner-decision relations. The group board can resolve a candidate as open, planned, or not-now, while ownership remains the terminal truth; purchase, vendor, payment, and affiliate concerns are intentionally outside the architecture.
 - Recommendations and lightweight feedback are current backend capabilities,
   and the latest selected-attendee feedback is incorporated into ranking with a
   bounded explainable adjustment. Richer preference/history scoring remains

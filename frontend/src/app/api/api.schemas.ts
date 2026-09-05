@@ -188,6 +188,9 @@ const groupAcquisitionEntrySchema: z.ZodType<GroupAcquisitionEntryType> = z.obje
     interestCount: z.number().int().nonnegative(),
     ownerCount: z.number().int().nonnegative(),
     firstInterestedAt: z.string(),
+    decisionStatus: z.enum(['open', 'planned', 'not_now']),
+    decisionAt: z.string().nullable(),
+    decisionBy: publicUserSchema.nullable(),
 })
 
 export const groupAcquisitionBoardSchema = z.array(groupAcquisitionEntrySchema)

@@ -2856,3 +2856,19 @@ Review: PROD-002 / PROD-003 / TRUTH-001 / EQ-003
 Changed: Added `frontend/e2e/recommendation-decision-flow.spec.ts` with explicit disposable fixture inputs. It verifies the explanation and history context, the interested signal, persistence after a fresh page load, and the planning handoff without turning the recommendation page into a catalog surface.
 
 Verified: The focused journey passes with the local Angular/API runtime and disposable SQLite/Clerk development state. The full local Playwright run passes 12 tests with 3 fixture-gated skips when the owner/recommendation fixtures are supplied. No production data, provider configuration, deployment, or storage token was changed.
+
+Continuation claim: PROD-003 / DATA-001 / EQ-003 / TRUTH-001
+
+Owner: Codex
+
+Claimed: 2026-09-05
+
+Scope: give the group acquisition shortlist a lightweight owner-controlled resolution state without turning Board Vault into a shopping catalog.
+
+Planned: distinguish open, planned, and not-now acquisition conversations, retain member interest context, hide owned games as terminal truth, and prove the UX through a disposable browser journey.
+
+Review: PROD-003 / DATA-001 / EQ-003 / TRUTH-001
+
+Changed: Added accepted ADR-0009 and migration 0009 for `GroupAcquisitionDecision`. The group board now exposes open/planned/not-now state and decision attribution; only the group owner can update it, renewed member interest reopens not-now, and ownership continues to hide the candidate. Added strict DTO/API boundaries, owner UI actions, response-schema coverage, backend regression tests, and `frontend/e2e/acquisition-decision-flow.spec.ts` covering plan, postpone, reopen, and refresh persistence.
+
+Verified: `node database/scripts/verify-empty-state.mjs` passes through migration 0009; backend full suite passes 44 suites / 217 tests, frontend unit suite passes 26 tests, frontend lint/build passes (600.42 kB initial / 137.63 kB estimated transfer), and the full local Playwright run passes 13 tests with 3 fixture-gated skips when owner/recommendation/acquisition fixtures are supplied. No live Turso migration, production data, provider configuration, deployment, or push was performed.
