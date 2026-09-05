@@ -1,6 +1,7 @@
 <button
     [type]="type"
     [disabled]="disabled || loading"
+    [routerLink]="routerLink"
     class="rounded shadow tracking-wide transition-colors disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
     [ngClass]="{
         'px-2 py-1 font-semibold text-sm': size === 'small',

@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { Component, Input } from '@angular/core'
+import { RouterLink } from '@angular/router'
 
 /**
  * @description
@@ -19,7 +20,7 @@ import { Component, Input } from '@angular/core'
 @Component({
     selector: 'app-button',
     templateUrl: './button.component.html',
-    imports: [CommonModule],
+    imports: [CommonModule, RouterLink],
 })
 export class ButtonComponent {
     @Input() variant: 'primary' | 'secondary' | 'danger' | 'success' = 'primary'
@@ -29,4 +30,5 @@ export class ButtonComponent {
     @Input() disabled = false
     @Input() loading = false
     @Input() wide = false
+    @Input() routerLink: string | Array<string | number> | null = null
 }

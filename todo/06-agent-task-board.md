@@ -2728,3 +2728,19 @@ Review: AUTH-001 / PROD-003 / EQ-006
 Changed: The register route now distinguishes “Clerk configured but unavailable” from “Clerk not configured”. The former shows a secure sign-up recovery state and never exposes the legacy registration form; the latter remains available only for explicit compatibility environments. Local development CORS now covers both supported Angular and Playwright origins.
 
 Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (26 tests), `cd frontend && npm run build`, `cd backend && npm test -- --runInBand` (44 suites / 210 tests), `cd backend && npm run lint:check`, `cd backend && npm run build`, `cd backend && npm run test:e2e -- --runInBand` (2 tests), and `git diff --check` pass. No production user, database, provider configuration, or deployment changed.
+
+Continuation claim: EQ-003 / PROD-001
+
+Owner: Codex
+
+Claimed: 2026-09-05
+
+Scope: activate the authenticated navigation browser suite with a disposable development Clerk identity and current migrated SQLite schema.
+
+Planned: create no production state, save a local-only Clerk storage state through the documented impersonation flow, apply pending migrations to disposable SQLite, and run the authenticated and public browser journeys together.
+
+Review: EQ-003 / PROD-001
+
+Changed: Added a dedicated verified development Clerk test member, created `/tmp/board-vault-clerk-member.json` through an isolated headless browser context, advanced disposable SQLite through migrations 0006–0008, and corrected authenticated E2E expectations to assert the truthful empty-group states and current button semantics. The shared `app-button` primitive now honors `routerLink`, repairing previously inert action controls.
+
+Verified: `PLAYWRIGHT_BASE_URL=http://localhost:4300 PLAYWRIGHT_AUTH_STORAGE_STATE=/tmp/board-vault-clerk-member.json npm run e2e` passes all 11 public and authenticated tests. No production user, database, provider configuration, deployment, or storage token was changed; the storage state remains outside the repository.
