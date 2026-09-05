@@ -2013,6 +2013,10 @@ Changed: Group-home history now links to `/play/history?groupId=...`; the histor
 
 Review: PROD-005 / TRUTH-001 / EQ-006
 
+Changed: Group cards now use completed sessions only for “Last session”, so planned or cancelled records cannot be presented as past group activity. Groups with no completed history now show an explicit “No sessions recorded yet” state.
+
+Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (22 tests), `cd frontend && npm run build` (599.05 kB initial / 137.88 kB estimated transfer), and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.
+
 Verified: Frontend Biome, six browser unit tests, production build (597.52 kB initial / 137.30 kB estimated transfer), and `git diff --check` pass. No migration, production data, deployment, or provider config changed.
 
 Continuation claim: TRUTH-001 / PROD-005 / EQ-006
@@ -2366,6 +2370,18 @@ Review: AUTH-001 / EQ-006
 Changed: The unauthenticated header no longer exposes the migration-only “Verify Clerk link” control, raw local account identifiers, or provider error details. Automatic Clerk-to-local linking remains in place; unresolved sessions now show user-facing progress/recovery copy and a sign-out action.
 
 Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (22 tests), `cd frontend && npm run build` (599.05 kB initial / 137.88 kB estimated transfer), and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.
+
+Continuation claim: PROD-005 / TRUTH-001 / EQ-006
+
+Owner: Codex
+
+Claimed: 2026-09-05
+
+Scope: keep group cards truthful as a social activity entry point.
+
+Planned: prevent upcoming or cancelled records from appearing as a group’s last session and provide an explicit zero-history state.
+
+Review: PROD-005 / TRUTH-001 / EQ-006
 
 Changed: The preserved-account login and degraded-mode registration forms now use responsive `w-full`/`max-w-md` layouts instead of a fixed mobile-overflowing width. Their fields have explicit labels, stable IDs, password-manager autocomplete metadata, and clearer placeholders; the legacy login and registration actions are named as compatibility flows, and registration now keeps its loading state until the API settles.
 

@@ -26,7 +26,7 @@ export class CardGroupComponent {
     // --------------------------------------------------------------------------
     public readonly lastMeetingComputed = computed(() => {
         const sortedMeets = this.userMeets$()
-            .filter((meet) => meet.groupId === this.group.id)
+            .filter((meet) => meet.groupId === this.group.id && meet.status === 'completed')
             .sort((a, b) => new Date(b.meetDate).getTime() - new Date(a.meetDate).getTime())
 
         return sortedMeets.length >= 1 ? sortedMeets[0] : null
