@@ -82,6 +82,13 @@ npx playwright codegen \
   '<paste-the-impersonation-url-here>'
 ```
 
+If the development Clerk instance has no application home URL configured, the
+first redirect may land on Clerk's development account page instead of the
+local app. In that case, add a URL-encoded `redirect_url` query parameter to
+the printed URL before opening it, for example
+`redirect_url=http%3A%2F%2Flocalhost%3A4300%2F`. Keep the temporary URL private;
+it contains a short-lived actor token.
+
 Use a dedicated development/test user. Never run impersonation with a
 production instance, and never use a production user for local mutation tests.
 The backend must also be running with a configured, non-production

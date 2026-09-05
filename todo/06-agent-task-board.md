@@ -2696,3 +2696,19 @@ Review: EQ-003 / EQ-006
 Changed: `docs/testing.md` now documents the complete development-only workflow: inspect the linked instance, impersonate a development user with Clerk CLI, save the redirected browser state with Playwright Codegen, run the authenticated suite, and repeat for a second user when testing invitations. `docs/operations.md` links the same workflow and records that production impersonation and committed storage tokens are prohibited.
 
 Verified: `git diff --check` passes. The local backend watch attempt was stopped because `backend/.env` currently lacks required Turso, JWT, and Redis values; no provider, database, or deployment state was changed.
+
+Continuation claim: EQ-003 / EQ-006
+
+Owner: Codex
+
+Claimed: 2026-09-05
+
+Scope: verify the documented Clerk impersonation workflow against the linked development instance and record its local redirect behavior.
+
+Planned: confirm the CLI is linked to the intended development instance, issue a temporary actor URL without exposing it, and validate the local test-server prerequisites without touching production.
+
+Review: EQ-003 / EQ-006
+
+Changed: Confirmed `clerk whoami` resolves the `board-vault` development instance, `clerk impersonate ... --instance dev --print --yes` returns a short-lived URL, and the backend/frontend can run against a disposable SQLite database with Redis disabled. Documented that an instance without a home URL can initially land on Clerk's development account page and may need an explicit URL-encoded local `redirect_url`.
+
+Verified: The temporary actor session was accepted by the development Clerk frontend; the local Board Vault handshake remains dependent on a matching disposable backend session setup. No production user, database, provider configuration, deployment, or committed token was changed. `git diff --check` passes.
