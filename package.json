@@ -9,6 +9,7 @@
         "test:e2e": "npm --prefix backend run test:e2e -- --runInBand && npm --prefix frontend run e2e",
         "lint": "npm --prefix backend run lint:check && npm --prefix frontend run lint:check",
         "verify:migrations": "node database/scripts/verify-empty-state.mjs",
-        "verify:restore": "node database/scripts/verify-restore-rehearsal.mjs"
+        "verify:restore": "node database/scripts/verify-restore-rehearsal.mjs",
+        "seed:social-fixture": "node database/scripts/seed-social-fixture.mjs"
     }
 }
