@@ -64,11 +64,15 @@
                         <h2 id="decide-heading" class="mt-2 text-2xl font-bold">What should this group play?</h2>
                         <p class="mt-2 max-w-2xl text-secondary">Use the people attending and the games they own to get a short, explainable list of suggestions.</p>
                     </div>
-                    <a
-                        class="app-btn-primary shrink-0 text-center"
-                        routerLink="/play/recommendations"
-                        [queryParams]="{ groupId: group.id, attendeeIds: selectedMembers$().join(',') }"
-                    >Find a game</a>
+                    @if (selectedMembers$().length > 0) {
+                        <a
+                            class="app-btn-primary shrink-0 text-center"
+                            routerLink="/play/recommendations"
+                            [queryParams]="{ groupId: group.id, attendeeIds: selectedMembers$().join(',') }"
+                        >Find a game</a>
+                    } @else {
+                        <a class="app-btn-secondary shrink-0 text-center" href="#sessions">Choose attendees first</a>
+                    }
                 </div>
             </section>
 
