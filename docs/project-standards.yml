@@ -88,7 +88,7 @@ compliance:
 
     - id: TEST-001
       status: gap
-      evidence: backend has 44 focused suites and 206 passing tests covering authentication, authorization, validation, sessions, service-level participation invariants, organizer/current-membership enforcement, per-game participation, recommendations, invitation visibility/expiry/atomic acceptance, verified-user gating, admin route and bounded list-query validation, self-profile response privacy, cache endpoint protection, safe API errors, health/readiness probes, canonical session reads, and provider boundaries; frontend has 21 browser-based unit tests plus four passing public Playwright checks and seven opt-in authenticated checks
+      evidence: backend has 44 focused suites and 206 passing tests covering authentication, authorization, validation, sessions, service-level participation invariants, organizer/current-membership enforcement, per-game participation, recommendations, invitation visibility/expiry/atomic acceptance, verified-user gating, admin route and bounded list-query validation, self-profile response privacy, cache endpoint protection, safe API errors, health/readiness probes, canonical session reads, and provider boundaries; frontend has 22 browser-based unit tests plus four passing public Playwright checks and seven opt-in authenticated checks
       priority: high
       next_action: Add layered unit, integration, and journey tests for the flagship loop.
     - id: TEST-002
@@ -113,7 +113,7 @@ compliance:
       next_action: Add disposable integration and contract coverage for auth, group membership, collection ownership, session transactions, and recommendation rules.
     - id: TEST-006
       status: gap
-      evidence: backend unit command passes 206 focused tests and frontend has 21 browser-based unit tests plus four public Playwright checks; clean installs now pass and the validation workflow now includes repository whitespace, lint/Biome, build, test, and migration gates, while CI enforcement is not yet observed remotely
+      evidence: backend unit command passes 206 focused tests and frontend has 22 browser-based unit tests plus four public Playwright checks; clean installs now pass and the validation workflow now includes repository whitespace, lint/Biome, build, test, and migration gates, while CI enforcement is not yet observed remotely
       priority: high
       next_action: Keep the supported test commands meaningful and observe their first required CI run.
     - id: TEST-007
@@ -441,7 +441,7 @@ compliance:
       next_action: Document when custom SCSS is preferred and remove competing legacy patterns incrementally.
     - id: STYLE-004
       status: compliant
-      evidence: global Tailwind styles use plain CSS, postcss-nested flattens generated utility nesting for Angular, and the production build has no Sass or selector warnings; the 598.35 kB initial raw bundle (137.86 kB estimated transfer) is below the 650 kB warning budget
+      evidence: global Tailwind styles use plain CSS, postcss-nested flattens generated utility nesting for Angular, and the production build has no Sass or selector warnings; the 599.35 kB initial raw bundle (138.00 kB estimated transfer) is below the 650 kB warning budget
       priority: high
       next_action: Preserve the CSS/PostCSS integration and keep the rendered accessibility/responsive review in EQ-006.
     - id: STYLE-005
@@ -457,7 +457,7 @@ compliance:
 
     - id: WEB-001
       status: gap
-      evidence: no repeatable rendered-page accessibility/responsive audit exists; frontend has 21 browser-based unit tests and public Playwright navigation checks, but no systematic authenticated route audit
+      evidence: no repeatable rendered-page accessibility/responsive audit exists; frontend has 22 browser-based unit tests and public Playwright navigation checks, but no systematic authenticated route audit
       priority: high
       next_action: Audit landing, auth, collection, group, and play routes.
     - id: WEB-002
@@ -513,7 +513,7 @@ compliance:
       next_action: Document state lifecycle for auth, DataService, loading, and cache state.
     - id: ANGULAR-008
       status: gap
-      evidence: eight frontend specs now pass 21 browser-based unit tests, including collection activation guidance, schedule handoff/submission, session participant safeguards, group-history attendee summaries, upcoming-session social context labels, recommendation history context, self-profile, session lifecycle, admin pagination, notification, and API response-contract cases, but no isolated core workflow tests exist yet
+      evidence: nine frontend specs now pass 22 browser-based unit tests, including collection activation guidance, schedule handoff/submission, session participant safeguards, group-history attendee summaries, upcoming-session social context labels, recommendation history context, accessible theme-control labels, self-profile, session lifecycle, admin pagination, notification, and API response-contract cases, but no isolated core workflow tests exist yet
       priority: high
       next_action: Extract and unit-test recommendation/session/authorization rules.
     - id: ANGULAR-009

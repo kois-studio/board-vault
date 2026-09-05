@@ -1,6 +1,10 @@
 <button
+    type="button"
     (click)="toggleDarkMode()"
-    class="h-[34px] w-[58px] cursor-pointer rounded-full border-2 border-orange-100 bg-orange-50 focus:outline-none dark:border-transparent dark:bg-zinc-900"
+    class="h-[34px] w-[58px] cursor-pointer rounded-full border-2 border-orange-100 bg-orange-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 dark:border-transparent dark:bg-zinc-900 dark:focus-visible:ring-offset-zinc-800"
+    [attr.aria-label]="modeLabel"
+    [attr.aria-pressed]="isDarkMode"
+    [title]="modeLabel"
 >
     <span
         class="pointer-events-none flex h-[30px] w-[30px] translate-x-[0px] transform items-center justify-center rounded-full bg-orange-200 ring-0 transition duration-700 ease-in-out"

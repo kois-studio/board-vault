@@ -42,7 +42,7 @@ For each area, review:
 | Authenticated header | `header`, `top-bar` | Source-audited | Review information architecture, active states, mobile navigation, focus, and terminology. |
 | Profile menu | `profile-menu`, invitation/notification modals | Source-audited | Review account identity, unread states, modal behavior, errors, and small-screen usability. |
 | Basic/complete layouts | `layout-basic`, `layout-complete` | Source-audited | Validate distraction-free action pages versus browsing pages; review spacing, scroll, and responsive behavior. |
-| Shared controls | button, badge, page header, container, spinner, tooltip, image background | Source-audited | Establish shared component conventions and accessibility; test loading and icon-only variants. |
+| Shared controls | button, badge, page header, container, spinner, tooltip, image background | Source-audited | The theme toggle now has a state-aware accessible name, pressed state, and visible keyboard focus. Establish the remaining shared component conventions and accessibility; test loading and icon-only variants. |
 | Cards and sections | account, game, group, invitation, notification, card section | Source-audited | Review density, hierarchy, long content, actions, empty states, and mobile wrapping. |
 | Toasts and global loading | `toast`, `loading.service`, `DataService` patterns | Source-audited | Standardize timing, severity, focus/announcement behavior, and failure recovery. |
 

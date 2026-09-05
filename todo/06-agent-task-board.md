@@ -2336,3 +2336,17 @@ Review: PROD-004 / PROD-007
 Changed: Recommendation cards now show the persisted last-played date for the selected group or an honest “Not played by this group yet” fallback. The first-release scoring model remains unchanged; history-weighted ranking stays deferred until real usage provides enough evidence to tune novelty safely.
 
 Verified: Frontend Biome, 21 browser-based unit tests, frontend production build (598.35 kB initial / 137.86 kB estimated transfer), and `git diff --check` pass. No migration, production data, deployment, or provider config changed.
+
+Continuation claim: EQ-006 / TRUTH-001
+
+Owner: Codex
+
+Claimed: 2026-09-04
+
+Scope: make the shared theme control keyboard- and screen-reader-legible on public and authenticated shells.
+
+Planned: provide a state-aware accessible name, pressed state, button type, and visible keyboard focus treatment.
+
+Review: EQ-006 / TRUTH-001
+
+Changed: The dark-mode toggle now exposes “Use dark mode” or “Use light mode”, reports its pressed state, is explicitly a button, and has a visible focus ring. Added component coverage for the state-aware labels.
