@@ -1,4 +1,6 @@
-import { ApiProperty } from '@nestjs/swagger'
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
+import { Type } from 'class-transformer'
+import { IsInt, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator'
 
 import { GameTagWithCategoryDto } from './tag.type'
 
@@ -66,6 +68,29 @@ export class BrowseGamesResultDto {
 
     @ApiProperty({ type: BrowseGamesPaginationDto })
     pagination: BrowseGamesPaginationDto
+}
+
+export class BrowseGamesQuery {
+    @ApiPropertyOptional({ example: 'catan', description: 'Title search across supported translations.' })
+    @IsOptional()
+    @IsString()
+    @MaxLength(100)
+    search = ''
+
+    @ApiPropertyOptional({ example: 1, default: 1, minimum: 1 })
+    @IsOptional()
+    @Type(() => Number)
+    @IsInt()
+    @Min(1)
+    page = 1
+
+    @ApiPropertyOptional({ example: 20, default: 20, minimum: 1, maximum: 20 })
+    @IsOptional()
+    @Type(() => Number)
+    @IsInt()
+    @Min(1)
+    @Max(20)
+    limit = 20
 }
 
 /**

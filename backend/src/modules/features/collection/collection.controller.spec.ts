@@ -13,14 +13,16 @@ describe('CollectionController review validation', () => {
     let app: INestApplication
     let saveGameReview: jest.Mock
     let updateGameOwnership: jest.Mock
+    let getGamesNotOwnedByUser: jest.Mock
 
     beforeEach(async () => {
         saveGameReview = jest.fn().mockResolvedValue({ success: true })
         updateGameOwnership = jest.fn().mockResolvedValue({ success: true })
+        getGamesNotOwnedByUser = jest.fn().mockResolvedValue({ games: [], pagination: {} })
 
         const module = await Test.createTestingModule({
             controllers: [CollectionController],
-            providers: [{ provide: CollectionService, useValue: { saveGameReview, updateGameOwnership } }],
+            providers: [{ provide: CollectionService, useValue: { saveGameReview, updateGameOwnership, getGamesNotOwnedByUser } }],
         })
             .overrideGuard(JwtAuthGuard)
             .useValue({ canActivate: () => true })
@@ -57,5 +59,19 @@ describe('CollectionController review validation', () => {
             .expect(400)
 
         expect(updateGameOwnership).not.toHaveBeenCalled()
+    })
+
+    it('rejects an oversized browse search before the service is called', async () => {
+        await request(app.getHttpServer())
+            .get(`/collection/users/1/browse/games?search=${'a'.repeat(101)}`)
+            .expect(400)
+
+        expect(getGamesNotOwnedByUser).not.toHaveBeenCalled()
+    })
+
+    it('transforms browse query values and applies safe defaults', async () => {
+        await request(app.getHttpServer()).get('/collection/users/1/browse/games?search=catan&page=2&limit=20').expect(200)
+
+        expect(getGamesNotOwnedByUser).toHaveBeenCalledWith(1, 'catan', 2, 20)
     })
 })

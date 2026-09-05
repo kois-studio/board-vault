@@ -12,13 +12,15 @@ import { AdminService } from './admin.service'
 describe('AdminController write validation', () => {
     let app: INestApplication
     let rejectGameProposal: jest.Mock
+    let markGameProposalAsDuplicate: jest.Mock
 
     beforeEach(async () => {
         rejectGameProposal = jest.fn().mockResolvedValue({ success: true })
+        markGameProposalAsDuplicate = jest.fn().mockResolvedValue({ success: true })
 
         const module = await Test.createTestingModule({
             controllers: [AdminController],
-            providers: [{ provide: AdminService, useValue: { rejectGameProposal } }],
+            providers: [{ provide: AdminService, useValue: { rejectGameProposal, markGameProposalAsDuplicate } }],
         })
             .overrideGuard(JwtAuthGuard)
             .useValue({
@@ -60,6 +62,20 @@ describe('AdminController write validation', () => {
         await request(app.getHttpServer()).post('/admin/proposals/not-a-number/reject').send({ reviewNotes: 'duplicate' }).expect(400)
 
         expect(rejectGameProposal).not.toHaveBeenCalled()
+    })
+
+    it('rejects oversized duplicate-review notes before the service is called', async () => {
+        await request(app.getHttpServer())
+            .post('/admin/proposals/12/duplicate?reviewNotes=' + 'a'.repeat(281))
+            .expect(400)
+
+        expect(markGameProposalAsDuplicate).not.toHaveBeenCalled()
+    })
+
+    it('accepts bounded duplicate-review notes and passes them to the service', async () => {
+        await request(app.getHttpServer()).post('/admin/proposals/12/duplicate?reviewNotes=already-present').expect(201)
+
+        expect(markGameProposalAsDuplicate).toHaveBeenCalledWith(12, 7, 'already-present')
     })
 })
 

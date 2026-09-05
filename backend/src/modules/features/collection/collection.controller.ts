@@ -18,12 +18,11 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
 import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
-import { LimitPipe } from '../../../common/pipes'
 import { SuccessDto } from '../../../common/types/auth.type'
 import { CollectionActivityDto } from '../../../common/types/collection-activity.type'
 import { GameOwnedDto, UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
 import { CreateGameReviewBody, GameReviewWithGameDataDto } from '../../../common/types/game-review.type'
-import { BrowseGamesResultDto, GameCompleteDto, GameDto, GameViewDto } from '../../../common/types/game.type'
+import { BrowseGamesQuery, BrowseGamesResultDto, GameCompleteDto, GameDto, GameViewDto } from '../../../common/types/game.type'
 import { WishlistResponseDto } from '../../../common/types/wishlisted-game.type'
 
 import { CollectionService } from './collection.service'
@@ -97,13 +96,8 @@ export class CollectionController {
     @Get('/users/:userId/browse/games')
     @ApiOperation({ summary: 'Browse games not owned by a user', deprecated: false })
     @ApiResponse({ status: 200, type: [BrowseGamesResultDto], description: 'List of all games not owned by the user' })
-    async getGamesNotOwnedByUser(
-        @Param('userId', ParseIntPipe) userId: number,
-        @Query('search') search: string = '',
-        @Query('page', ParseIntPipe) page: number = 1,
-        @Query('limit', LimitPipe) limit: number = 20,
-    ) {
-        return this.collectionService.getGamesNotOwnedByUser(userId, search, page, limit)
+    async getGamesNotOwnedByUser(@Param('userId', ParseIntPipe) userId: number, @Query() query: BrowseGamesQuery) {
+        return this.collectionService.getGamesNotOwnedByUser(userId, query.search, query.page, query.limit)
     }
 
     @UseGuards(UserOwnershipGuard)
