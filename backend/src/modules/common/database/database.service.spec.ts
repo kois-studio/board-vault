@@ -380,8 +380,12 @@ describe('DatabaseService logging', () => {
             transaction: jest.fn().mockResolvedValue(transaction),
         }
 
-        await expect(service.replaceMeetAttendees(12, [1, 3])).resolves.toBeUndefined()
+        await expect(service.replaceMeetAttendees(12, [1, 3], 'scheduled')).resolves.toBe(true)
 
+        expect(transaction.execute).toHaveBeenCalledWith({
+            sql: 'UPDATE Meet SET updatedAt = CURRENT_TIMESTAMP WHERE id = ? AND status = ?',
+            args: [12, 'scheduled'],
+        })
         expect(transaction.execute).toHaveBeenCalledWith({
             sql: 'DELETE FROM MeetAttendee WHERE meetId = ? AND accountId NOT IN (?, ?)',
             args: [12, 1, 3],
@@ -409,7 +413,11 @@ describe('DatabaseService logging', () => {
             transaction: jest.fn().mockResolvedValue(transaction),
         }
 
-        await expect(service.replaceMeetPlannedGames(12, [42, 43])).resolves.toBeUndefined()
+        await expect(service.replaceMeetPlannedGames(12, [42, 43], 'active')).resolves.toBe(true)
+        expect(transaction.execute).toHaveBeenCalledWith({
+            sql: 'UPDATE Meet SET updatedAt = CURRENT_TIMESTAMP WHERE id = ? AND status = ?',
+            args: [12, 'active'],
+        })
         expect(transaction.execute).toHaveBeenCalledWith({
             sql: "DELETE FROM MeetGame WHERE meetId = ? AND gameStatus = 'planned'",
             args: [12],
@@ -422,7 +430,7 @@ describe('DatabaseService logging', () => {
 
         transaction.execute.mockClear()
         transaction.batch.mockClear()
-        await expect(service.replaceMeetPlannedGames(12, [])).resolves.toBeUndefined()
+        await expect(service.replaceMeetPlannedGames(12, [], 'active')).resolves.toBe(true)
         expect(transaction.batch).not.toHaveBeenCalled()
         expect(transaction.commit).toHaveBeenCalledTimes(2)
     })
@@ -441,7 +449,7 @@ describe('DatabaseService logging', () => {
             transaction: jest.fn().mockResolvedValue(transaction),
         }
 
-        await expect(service.replaceMeetAttendees(12, [1, 3])).rejects.toThrow('attendee write failed')
+        await expect(service.replaceMeetAttendees(12, [1, 3], 'active')).rejects.toThrow('attendee write failed')
         expect(transaction.rollback).toHaveBeenCalledTimes(1)
         expect(transaction.commit).not.toHaveBeenCalled()
         expect(transaction.close).toHaveBeenCalledTimes(1)

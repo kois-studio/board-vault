@@ -2808,3 +2808,19 @@ Review: SEC-003 / DATA-004 / PROD-005
 Changed: `DatabaseService.updateMeetStatus` now updates only when the expected current status still matches inside the write transaction. Terminal planned-game cleanup runs only when that status update affects the session row. `SessionsService` passes the status it authorized, and regression coverage protects both the conditional arguments and the no-op losing-race path. The session ADR, architecture, data-model, security, and active TODO now record the lifecycle concurrency policy and the remaining non-lifecycle replacement-write gap.
 
 Verified: `cd backend && npm test -- --runInBand src/modules/features/sessions/sessions.service.spec.ts src/modules/common/database/database.service.spec.ts` passes (60 tests), `cd backend && npm run lint:check`, `cd backend && npm run build`, and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.
+
+Continuation claim: SEC-003 / DATA-004 / PROD-005
+
+Owner: Codex
+
+Claimed: 2026-09-05
+
+Scope: prevent scheduled/active session replacement writes from mutating a session after a concurrent terminal transition.
+
+Planned: pass the authorized editable status into attendee, shortlist, and played-game replacement transactions, reject the write when the status no longer matches, and surface a recoverable conflict to the client.
+
+Review: SEC-003 / DATA-004 / PROD-005
+
+Changed: Attendee, shortlist, and played-game replacement transactions now perform an in-transaction status gate and return an explicit no-op when the session has changed. The session service maps that outcome to a conflict response telling the organizer to reload; the played-game response keeps its public contract free of the internal gate marker. Regression coverage preserves transaction behavior and the existing session response shape. Same-status stale overwrites remain open for a future versioned-write decision.
+
+Verified: `cd backend && npm test -- --runInBand` passes (44 suites / 211 tests), `cd backend && npm run lint:check`, `cd backend && npm run build`, and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.

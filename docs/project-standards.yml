@@ -88,14 +88,14 @@ compliance:
 
     - id: TEST-001
       status: gap
-      evidence: backend has 44 focused suites and 210 passing tests covering authentication, authorization, validation, sessions, service-level participation invariants, organizer/current-membership enforcement, per-game participation, recommendations, invitation visibility/expiry/atomic acceptance, owner-only legacy invitation creation, soft-deleted account exclusion, verified-user gating, admin route and bounded list-query validation, self-profile response privacy, cache endpoint protection, safe API errors, health/readiness probes, canonical session reads, and provider boundaries; frontend has 26 browser-based unit tests plus four passing public Playwright checks and seven opt-in authenticated checks
+      evidence: backend has 44 focused suites and 211 passing tests covering authentication, authorization, validation, sessions, service-level participation invariants, organizer/current-membership enforcement, per-game participation, recommendations, invitation visibility/expiry/atomic acceptance, owner-only legacy invitation creation, soft-deleted account exclusion, verified-user gating, admin route and bounded list-query validation, self-profile response privacy, cache endpoint protection, safe API errors, health/readiness probes, canonical session reads, and provider boundaries; frontend has 26 browser-based unit tests, four passing public Playwright checks, and three opt-in authenticated journey specs with 11 passing checks and two guarded skips in the full local run
       priority: high
       next_action: Add layered unit, integration, and journey tests for the flagship loop.
     - id: TEST-002
       status: gap
-      evidence: focused backend regression coverage now exists for auth, ownership, validation, group/invitation boundaries, collection ownership, session transactions/lifecycle, and recommendation rules; integration, provider, and seeded browser coverage remain absent
+      evidence: focused backend regression coverage now exists for auth, ownership, validation, group/invitation boundaries, collection ownership, session transactions/lifecycle, and recommendation rules; disposable authenticated browser journeys now cover collection activation, invitation acceptance, and the two-account session loop, while provider failure, remote integration, and repeatable fixture setup remain open
       priority: critical
-      next_action: Add disposable integration data and authenticated browser journeys for the flagship loop.
+      next_action: Preserve the local journeys as regression gates, add repeatable fixture setup, and add provider/remote integration coverage when the CI environment can supply disposable identities safely.
     - id: TEST-003
       status: unknown
       evidence: no isolated test strategy is documented; e2e module setup requires external configuration

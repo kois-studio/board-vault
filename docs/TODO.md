@@ -55,9 +55,9 @@ group loop demonstrates repeat use.
 
 - **Status:** In progress
 - **Affected area:** `backend/src/common/guards/`, `backend/src/modules/core/`, `backend/src/modules/features/`
-- **Evidence:** SEC-001 has a runtime profile-update boundary and passing denied/filtered-input tests. SEC-002 protects user-scoped reads with `UserOwnershipGuard`, the deprecated global user listing with `AdminGuard`, deprecated arbitrary account creation has been removed, legacy group listings use account-scoped queries, every current collection route has ownership guards, legacy JWT validation rejects soft-deleted accounts, group and invitation/membership creation derives actor IDs from JWT, deprecated invitation creation now requires `GroupOwnerGuard` with URL/body group-ID support, reviewed group and meet reads use membership/owner boundaries, pending group-invitation reads are owner-only, legacy invitation list/detail reads are scoped to the authenticated sender or recipient, invitation lifecycle actions enforce sender/recipient ownership and atomically consume legacy invitations with membership creation, deprecated direct joining requires a pending invitation, legacy user-data controllers now require `VerifiedUserGuard`, legacy notification and meet-account-game mutations are scoped to the authenticated account, cache maintenance endpoints now require `JwtAuthGuard` and `AdminGuard`, and SEC-003 proposal review actions derive reviewers from the verified JWT behind `AdminGuard`; admin list queries now validate status, bounds, and search length; nested user responses use `UserPublicDto`, the authenticated self-profile uses `UserSelfDto`, and the session API/transaction policy still needs review. V1 group membership is invite-only with owner/member roles under ADR-0007.
+- **Evidence:** SEC-001 has a runtime profile-update boundary and passing denied/filtered-input tests. SEC-002 protects user-scoped reads with `UserOwnershipGuard`, the deprecated global user listing with `AdminGuard`, deprecated arbitrary account creation has been removed, legacy group listings use account-scoped queries, every current collection route has ownership guards, legacy JWT validation rejects soft-deleted accounts, group and invitation/membership creation derives actor IDs from JWT, deprecated invitation creation now requires `GroupOwnerGuard` with URL/body group-ID support, reviewed group and meet reads use membership/owner boundaries, pending group-invitation reads are owner-only, legacy invitation list/detail reads are scoped to the authenticated sender or recipient, invitation lifecycle actions enforce sender/recipient ownership and atomically consume legacy invitations with membership creation, deprecated direct joining requires a pending invitation, legacy user-data controllers now require `VerifiedUserGuard`, legacy notification and meet-account-game mutations are scoped to the authenticated account, cache maintenance endpoints now require `JwtAuthGuard` and `AdminGuard`, and SEC-003 proposal review actions derive reviewers from the verified JWT behind `AdminGuard`; admin list queries now validate status, bounds, and search length; nested user responses use `UserPublicDto`, the authenticated self-profile uses `UserSelfDto`, and session lifecycle plus editable replacement writes now reject stale status races transactionally. The full session API/response-shape review remains open. V1 group membership is invite-only with owner/member roles under ADR-0007.
 - **Risk:** Cross-user or cross-group data access and privilege escalation.
-- **Next action:** Review remaining admin response shapes and non-lifecycle session replacement-write concurrency policy. Lifecycle transitions now use a conditional transactional status update. Reopen group membership only through a new ADR if public groups or richer roles become necessary.
+- **Next action:** Review remaining admin response shapes and decide whether same-status stale replacement writes need a versioned-write policy. Lifecycle transitions and terminal-race protection for editable session replacements now use conditional transactional status gates. Reopen group membership only through a new ADR if public groups or richer roles become necessary.
 - **Dependencies:** None; coordinate with the canonical session/data decision.
 
 ### READINESS-002 [Critical] TS-005/NEST-004/API-002 — Activate boundary validation
@@ -93,9 +93,9 @@ group loop demonstrates repeat use.
 
 - **Status:** In progress
 - **Affected area:** `backend/test/`, backend `src`, frontend `src/**/*.spec.ts`
-- **Evidence:** Backend now has 44 focused suites and 210 passing unit tests plus 2 environment-safe HTTP E2E tests; frontend has 26 browser-based unit tests plus four passing public Playwright tests, while seeded/integration journeys and authenticated browser coverage remain opt-in.
+- **Evidence:** Backend now has 44 focused suites and 211 passing unit tests plus 2 environment-safe HTTP E2E tests; frontend has 26 browser-based unit tests plus four passing public Playwright tests, while seeded/integration journeys and authenticated browser coverage remain opt-in. The opt-in authenticated collection, invitation, and session journeys each pass against disposable Clerk development identities and data; the full local Playwright run passes 11 tests with 2 guarded skips when the optional fixtures are not supplied.
 - **Risk:** Security and product regressions are invisible.
-- **Next action:** Add auth/authorization/data tests first, then core-loop and frontend state tests.
+- **Next action:** Add negative authorization/contract cases, repeatable disposable fixture setup, and recommendation/acquisition browser evidence; preserve the existing authenticated core-loop journeys as launch regression gates.
 - **Dependencies:** READINESS-001, READINESS-002, READINESS-003.
 
 ### READINESS-006 [High] CI-001/002/007 — Add CI gates
@@ -228,7 +228,9 @@ as TODO items here.
 
 - [ ] Validate the complete session flow through authenticated browser coverage,
   including refresh, retryable failures, RSVP, attendance, per-game
-  participants, active-to-completed lifecycle, and feedback.
+  participants, active-to-completed lifecycle, and feedback. A disposable
+  two-account journey now passes all of these behaviors; repeat the rehearsal
+  with a clean, documented fixture before treating the criterion as complete.
 - [ ] Remove or hide incomplete compatibility flows once the canonical session
   journey replaces them.
 
