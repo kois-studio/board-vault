@@ -159,7 +159,7 @@ export class SessionsService {
 
         const currentStatus = String(session.rows[0][5] ?? 'completed') as SessionStatusUpdatedDto['status']
         const allowedTransitions: Record<SessionStatusUpdatedDto['status'], Array<UpdateSessionStatusBody['status']>> = {
-            scheduled: ['active', 'completed', 'cancelled'],
+            scheduled: ['active', 'cancelled'],
             active: ['completed', 'cancelled'],
             completed: [],
             cancelled: [],

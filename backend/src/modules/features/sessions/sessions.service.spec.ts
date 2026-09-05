@@ -432,6 +432,16 @@ describe('SessionsService', () => {
         expect(database.updateMeetStatus).toHaveBeenCalledWith(12, 'active')
     })
 
+    it('requires a scheduled session to become active before it can be completed', async () => {
+        const database = createDatabaseMock()
+        const service = new SessionsService(database as unknown as DatabaseService)
+
+        await expect(service.updateSessionStatus(1, 12, { status: 'completed' })).rejects.toThrow(
+            'Cannot change a scheduled session to completed',
+        )
+        expect(database.updateMeetStatus).not.toHaveBeenCalled()
+    })
+
     it('rejects invalid lifecycle transitions', async () => {
         const database = createDatabaseMock()
 

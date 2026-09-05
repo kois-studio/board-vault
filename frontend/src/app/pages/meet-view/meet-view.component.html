@@ -32,8 +32,10 @@
                 <div class="flex flex-wrap gap-3 mt-6 pt-6 border-t border-zinc-200 dark:border-zinc-700">
                     @if (meetData?.status === 'scheduled') {
                         <button type="button" class="app-btn-primary" [disabled]="isUpdatingStatus" (click)="updateStatus('active')">Start game night</button>
+                        <p class="basis-full text-sm text-secondary">Start the session when the group is playing. Then record attendance and the games you actually play before saving the memory.</p>
+                    } @else if (meetData?.status === 'active') {
+                        <button type="button" class="app-btn-primary" [disabled]="isUpdatingStatus" (click)="updateStatus('completed')">Finish and save memory</button>
                     }
-                    <button type="button" class="app-btn-secondary" [disabled]="isUpdatingStatus" (click)="updateStatus('completed')">Finish and save memory</button>
                     <button type="button" class="app-btn-danger" [disabled]="isUpdatingStatus" (click)="updateStatus('cancelled')">Cancel session</button>
                 </div>
             }
