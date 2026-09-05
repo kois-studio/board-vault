@@ -2776,3 +2776,19 @@ Review: EQ-003 / PROD-003
 Changed: Added `frontend/e2e/social-invitation-flow.spec.ts`, guarded by explicit owner/invitee Clerk states and a fresh group fixture. The journey verifies owner invitation, pending-invite visibility, recipient refresh, atomic acceptance, and group visibility after membership creation. Documentation now distinguishes this covered legacy existing-account path from still-open secure email delivery and expiry/provider-failure validation.
 
 Verified: `PLAYWRIGHT_BASE_URL=http://localhost:4300 PLAYWRIGHT_OWNER_STORAGE_STATE=/tmp/board-vault-clerk-owner.json PLAYWRIGHT_INVITEE_STORAGE_STATE=/tmp/board-vault-clerk-invitee.json PLAYWRIGHT_INVITATION_GROUP_ID=5 PLAYWRIGHT_INVITATION_GROUP_NAME='Invite Run 2' PLAYWRIGHT_INVITEE_USERNAME=bvtestinvitee npx playwright test e2e/social-invitation-flow.spec.ts` passes (1 test). The run used only disposable SQLite and development Clerk identities; no production user, database, provider configuration, deployment, or storage token was changed.
+
+Continuation claim: EQ-003 / PROD-002 / TRUTH-001
+
+Owner: Codex
+
+Claimed: 2026-09-05
+
+Scope: make first-game personal collection activation repeatable in authenticated browser coverage.
+
+Planned: verify the empty private shelf leads to catalog search, one game can be added, refresh preserves the ownership state, and duplicate adding is blocked.
+
+Review: EQ-003 / PROD-002 / TRUTH-001
+
+Changed: Added `frontend/e2e/collection-activation-flow.spec.ts`, guarded by an explicit disposable Clerk storage state and selected game fixture. The journey verifies private-shelf activation guidance, catalog search, first-game addition, persisted refresh state, duplicate protection, and return to the private shelf. `docs/TODO.md` now records that this is first-game evidence only; the five-game and real-group usefulness goal remains open.
+
+Verified: `PLAYWRIGHT_BASE_URL=http://localhost:4300 PLAYWRIGHT_COLLECTION_STORAGE_STATE=/tmp/board-vault-clerk-collection.json PLAYWRIGHT_COLLECTION_GAME_SEARCH=Cascadia PLAYWRIGHT_COLLECTION_GAME_TITLE=Cascadia npx playwright test e2e/collection-activation-flow.spec.ts` passes (1 test). The run used only disposable SQLite and a development Clerk identity; no production user, database, provider configuration, deployment, or storage token was changed.

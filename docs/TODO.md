@@ -197,6 +197,9 @@ as TODO items here.
 
 - [ ] Let a person add their first five useful games quickly, with reliable
   search, duplicate protection, ownership state, and persisted refresh state.
+  The opt-in authenticated collection journey now proves first-game activation,
+  duplicate protection, and refresh persistence; the five-game activation run
+  and real-group usefulness still need validation.
 - [ ] Let an organizer create a private group and invite the actual people
   they play with.
 - [ ] Complete invitation lifecycle behavior. The groups workspace now exposes
