@@ -2536,3 +2536,19 @@ Review: PROD-005 / EQ-006
 Changed: The past-session recorder’s no-group state now links directly to Create a group and View invitations, so users can satisfy the social prerequisite without navigating away blindly.
 
 Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (22 tests), `cd frontend && npm run build` (599.05 kB initial / 137.88 kB estimated transfer), and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.
+
+Continuation claim: PROD-004 / PROD-005 / EQ-006
+
+Owner: Codex
+
+Claimed: 2026-09-05
+
+Scope: make attendee context easy to adjust in the recommendation decision flow.
+
+Planned: provide explicit bulk selection controls and pressed-state semantics so a group can quickly compare different attendance combinations without losing the social meaning of the result.
+
+Review: PROD-004 / PROD-005 / EQ-006
+
+Changed: The recommendation chooser now offers Everyone and Clear controls, announces the selected-member count, labels each attendee checkbox, and resets stale results and feedback whenever attendance context changes.
+
+Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (23 tests), `cd frontend && npm run build` (599.05 kB initial / 137.89 kB estimated transfer), and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.

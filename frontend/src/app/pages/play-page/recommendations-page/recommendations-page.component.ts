@@ -68,12 +68,32 @@ export class RecommendationsPageComponent {
         this.feedbackState.set({})
     }
 
+    public selectAllAttendees(): void {
+        const group = this.selectedGroup()
+        if (!group) return
+
+        this.selectedAttendeeIds.set(group.members.map((member) => member.id))
+        this.resetRecommendationState()
+    }
+
+    public clearAttendees(): void {
+        this.selectedAttendeeIds.set([])
+        this.resetRecommendationState()
+    }
+
     public isAttendeeSelected(accountId: number): boolean {
         return this.selectedAttendeeIds().includes(accountId)
     }
 
     public retryGroups(): void {
         this.dataService.refreshUserGroups()
+    }
+
+    private resetRecommendationState(): void {
+        this.recommendations.set(null)
+        this.recommendationSignals.set(null)
+        this.feedbackState.set({})
+        this.errorMessage.set(null)
     }
 
     public async loadRecommendations(): Promise<void> {
