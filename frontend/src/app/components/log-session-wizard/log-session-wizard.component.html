@@ -87,6 +87,7 @@
                 <button
                     type="button"
                     class="p-4 border rounded-lg cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-zinc-700"
+                    [attr.aria-pressed]="selectedGroup()?.id === group.id"
                     [class]="
                         selectedGroup()?.id === group.id
                             ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
@@ -159,6 +160,7 @@
                     type="button"
                     (click)="toggleAttendee(attendee.user.id)"
                     class="rounded-lg cursor-pointer flex items-center justify-start border"
+                    [attr.aria-pressed]="attendee.selected"
                     [ngClass]="{
                         'bg-zinc-200 dark:bg-zinc-800/30 border-zinc-300 dark:border-zinc-800': !attendee.selected,
                         'bg-white dark:bg-zinc-800 border-green-400': attendee.selected,
@@ -208,6 +210,7 @@
                     type="button"
                     (click)="toggleGame(game.game.id)"
                     class="rounded-lg cursor-pointer flex items-center justify-start border"
+                    [attr.aria-pressed]="game.selected"
                     [ngClass]="{
                         'bg-zinc-200 dark:bg-zinc-800/30 border-zinc-300 dark:border-zinc-800': !game.selected,
                         'bg-white dark:bg-zinc-800 border-green-400': game.selected,

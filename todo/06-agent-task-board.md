@@ -1933,10 +1933,6 @@ Changed: Group-library cards now expose named owners, member-rating counts, play
 
 Review: PROD-005 / EQ-006
 
-Changed: Upcoming Sessions now gives people without groups direct paths to create a group or review invitations. When there are no upcoming sessions, the empty state exposes the scheduling action instead of requiring the user to find the header control.
-
-Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (22 tests), `cd frontend && npm run build` (599.05 kB initial / 137.90 kB estimated transfer), and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.
-
 Continuation claim: PROD-005 / EQ-006 / AUTH-001
 
 Owner: Codex
@@ -2028,10 +2024,6 @@ Scope: preserve group context when a member opens the complete play history.
 Changed: Group-home history now links to `/play/history?groupId=...`; the history page derives a group-scoped title, filters completed sessions to that group, and provides a group-specific empty state with a plan-session action. Personal history remains unchanged when no filter is supplied.
 
 Review: PROD-005 / TRUTH-001 / EQ-006
-
-Changed: Group cards now use completed sessions only for “Last session”, so planned or cancelled records cannot be presented as past group activity. Groups with no completed history now show an explicit “No sessions recorded yet” state.
-
-Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (22 tests), `cd frontend && npm run build` (599.05 kB initial / 137.90 kB estimated transfer), and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.
 
 Continuation claim: PROD-005 / EQ-006
 
@@ -2480,6 +2472,22 @@ Review: PROD-005 / EQ-006
 Changed: The six-step past-session progress strip now scrolls within its own row on narrow screens instead of widening the page. The date field has an explicit label/ID, and attendee/game selection cards explicitly declare their button type.
 
 Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (22 tests), `cd frontend && npm run build` (599.05 kB initial / 137.87 kB estimated transfer), and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.
+
+Continuation claim: PROD-005 / EQ-006
+
+Owner: Codex
+
+Claimed: 2026-09-05
+
+Scope: expose selection state in the past-session recorder to assistive technology.
+
+Planned: add pressed-state semantics to group, attendee, and game selection cards while preserving their current keyboard behavior.
+
+Review: PROD-005 / EQ-006
+
+Changed: Group, attendee, and game selection cards in the past-session recorder now expose `aria-pressed` state so the visual selection model is available to assistive technology.
+
+Verified: `cd frontend && npm run lint:check`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (22 tests), `cd frontend && npm run build` (599.05 kB initial / 137.89 kB estimated transfer), and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.
 
 Continuation claim: EQ-006 / PROD-001
 
