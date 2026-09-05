@@ -1,9 +1,15 @@
 <app-page-header titleText="My Games" [showActionButton]="true">
-    Browse and manage your board game collection
+    Your private shelf — games you can bring into group decisions
 
     <app-button class="action-button" icon="plus-lg" routerLink="/collection/browse">Explore Games</app-button>
 </app-page-header>
 <container-wrapper>
+    <section class="mb-8 rounded-2xl border border-indigo-200 bg-indigo-50 p-6 dark:border-indigo-900/60 dark:bg-indigo-950/30" aria-labelledby="private-shelf-heading">
+        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Personal collection</p>
+        <h2 id="private-shelf-heading" class="mt-2 text-2xl font-bold">Your shelf is private until you use it in a group decision.</h2>
+        <p class="mt-2 max-w-3xl text-secondary">Add the games you own here. Board Vault uses them as input when you and your friends choose a game; the group workspace shows only the shared context that helps everyone decide.</p>
+    </section>
+
     @if (isLoadingUserGames()) {
         <section class="flex flex-wrap gap-4">
             <app-skeleton-card-game />
@@ -17,12 +23,21 @@
             <button type="button" class="app-btn-primary mt-4" (click)="retryGames()">Retry</button>
         </div>
     } @else if (userGames$().length === 0) {
-        <!-- no data -->
-        <div class="text-center text-secondary">
-            <p>No games found</p>
-        </div>
+        <section class="rounded-2xl border border-dashed border-zinc-300 p-8 text-center dark:border-zinc-700" aria-labelledby="empty-collection-heading">
+            <i class="bi bi-collection text-4xl text-indigo-500" aria-hidden="true"></i>
+            <h2 id="empty-collection-heading" class="mt-3 text-xl font-semibold">Start with the games you actually bring to the table</h2>
+            <p class="mx-auto mt-2 max-w-xl text-secondary">A few real games make group suggestions useful. Add your first five, then invite friends or choose what to play together.</p>
+            <div class="mt-5 flex flex-wrap justify-center gap-3">
+                <a class="app-btn-primary inline-block" routerLink="/collection/browse">Add your first game</a>
+                <a class="app-btn-secondary inline-block" routerLink="/groups">Go to groups</a>
+            </div>
+        </section>
     } @else {
-        <section class="flex flex-wrap gap-4">
+        <section class="mb-5 flex flex-wrap items-center justify-between gap-3" aria-label="Collection summary">
+            <p class="text-secondary">Only you manage this shelf. Open a group to see shared ownership, play memory, and decisions.</p>
+            <a class="text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400" routerLink="/groups">Open group workspace →</a>
+        </section>
+        <section class="flex flex-wrap gap-4" aria-label="Your private games">
             @for (game of userGames$(); track game.id) {
                 <app-card-game
                     [routerLink]="['/games', game.id]"
