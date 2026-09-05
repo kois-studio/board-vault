@@ -1,7 +1,7 @@
 # ADR: Group-first product context
 
-- **Status:** Proposed
-- **Date:** 2026-08-11
+- **Status:** Accepted
+- **Date:** 2026-09-05
 - **Supersedes:** None
 - **Superseded by:** None
 
@@ -13,7 +13,9 @@ The product backlog identifies the recurring board-game organizer as the initial
 
 For the first flagship release, the group is the primary product context for recommendations and shared history. Individual collections remain inputs, but recommendation and session behavior should be evaluated against the intersection of group members, selected attendees, available games, constraints, and prior group history.
 
-This ADR is proposed, not accepted. It does not settle ownership policy, invited guests, privacy, rating visibility, or the exact minimum recommendation data; those questions remain in [todo/01-product-direction.md](../../todo/01-product-direction.md).
+This decision is accepted as the product context for the restart. Board Vault is a social decision-and-memory layer for recurring game groups: the group workspace, shared collection, recommendations, play history, and lightweight statistics are the product center. Game details are supporting context only; catalog breadth, import depth, and public discovery must not displace the group loop.
+
+Ownership policy, invited guests, privacy, rating visibility, and the exact minimum recommendation data remain governed by the product workstreams and later ADRs where needed.
 
 ## Consequences
 

@@ -1,6 +1,7 @@
 import { Component, computed, effect, inject, signal } from '@angular/core'
 import { ReactiveFormsModule } from '@angular/forms'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
+import { firstValueFrom } from 'rxjs'
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
 import { Api } from '../../../api/api'
 import { CardGameComponent } from '../../../components/card-game/card-game.component'
@@ -49,7 +50,10 @@ export class BrowsePageComponent {
     public readonly acquisitionGroupName = computed(
         () => this.userGroups$().find((group) => group.id === this.acquisitionGroupId())?.name ?? 'this group',
     )
-    public readonly acquisitionState = signal<Record<number, 'saving' | 'saved'>>({})
+    public readonly acquisitionState = signal<Record<number, 'saving' | 'saved' | 'removing'>>({})
+    public readonly acquisitionBoardLoading = signal(false)
+    public readonly acquisitionBoardError = signal(false)
+    private readonly acquisitionBoard = signal<Array<{ gameData: { id: number }; interestedBy: Array<{ id: number }> }>>([])
     public readonly collectionState = signal<Record<number, 'saving' | 'saved'>>({})
 
     // --------------------------------------------------------------------------
@@ -83,6 +87,7 @@ export class BrowsePageComponent {
         const requestedGroupId = Number(this.route.snapshot.queryParamMap.get('groupId'))
         if (Number.isInteger(requestedGroupId) && requestedGroupId > 0) {
             this.acquisitionGroupId.set(requestedGroupId)
+            this.loadAcquisitionBoard(requestedGroupId)
         }
 
         // Initialize search with debounce
@@ -153,9 +158,31 @@ export class BrowsePageComponent {
         this._searchGames()
     }
 
+    public retryAcquisitionBoard(): void {
+        const groupId = this.acquisitionGroupId()
+        if (groupId) this.loadAcquisitionBoard(groupId)
+    }
+
+    public acquisitionActionState(gameId: number): 'saving' | 'saved' | 'removing' | null {
+        const localState = this.acquisitionState()[gameId]
+        if (localState) return localState
+
+        const currentUserId = this.currentUser$()?.id
+        if (
+            currentUserId &&
+            this.acquisitionBoard().some(
+                (entry) => entry.gameData.id === gameId && entry.interestedBy.some((member) => member.id === currentUserId),
+            )
+        ) {
+            return 'saved'
+        }
+
+        return null
+    }
+
     public addGameToAcquisitionBoard(gameId: number): void {
         const groupId = this.acquisitionGroupId()
-        if (!groupId || this.acquisitionState()[gameId]) return
+        if (!groupId || this.acquisitionBoardLoading() || this.acquisitionBoardError() || this.acquisitionActionState(gameId)) return
 
         this.acquisitionState.update((state) => ({ ...state, [gameId]: 'saving' }))
         this.api.addGroupAcquisitionInterest(groupId, gameId).subscribe({
@@ -172,6 +199,30 @@ export class BrowsePageComponent {
                 this.toastService.error('Could not add this game to the group board.')
             },
         })
+    }
+
+    public async removeGameFromAcquisitionBoard(gameId: number): Promise<void> {
+        const groupId = this.acquisitionGroupId()
+        if (!groupId || this.acquisitionActionState(gameId) !== 'saved') return
+
+        this.acquisitionState.update((state) => ({ ...state, [gameId]: 'removing' }))
+        try {
+            await firstValueFrom(this.api.removeGroupAcquisitionInterest(groupId, gameId))
+            this.acquisitionBoard.update((entries) =>
+                entries.filter(
+                    (entry) => entry.gameData.id !== gameId || !entry.interestedBy.some((member) => member.id === this.currentUser$()?.id),
+                ),
+            )
+            this.acquisitionState.update((state) => {
+                const nextState = { ...state }
+                delete nextState[gameId]
+                return nextState
+            })
+            this.toastService.success(`Removed your interest from ${this.acquisitionGroupName()}'s acquisition board.`)
+        } catch {
+            this.acquisitionState.update((state) => ({ ...state, [gameId]: 'saved' }))
+            this.toastService.error('Could not remove your interest from the group board.')
+        }
     }
 
     public addGameToCollection(gameId: number): void {
@@ -243,5 +294,19 @@ export class BrowsePageComponent {
                     this.isSearching$.set(false)
                 },
             })
+    }
+
+    private loadAcquisitionBoard(groupId: number): void {
+        this.acquisitionBoardLoading.set(true)
+        this.acquisitionBoardError.set(false)
+        this.api.getGroupAcquisitionBoard(groupId).subscribe({
+            next: (entries) => this.acquisitionBoard.set(entries),
+            error: () => {
+                this.acquisitionBoardLoading.set(false)
+                this.acquisitionBoard.set([])
+                this.acquisitionBoardError.set(true)
+            },
+            complete: () => this.acquisitionBoardLoading.set(false),
+        })
     }
 }
