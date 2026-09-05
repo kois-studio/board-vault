@@ -1366,7 +1366,11 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
-    async updateMeetStatus(meetId: number, status: 'scheduled' | 'active' | 'completed' | 'cancelled') {
+    async updateMeetStatus(
+        meetId: number,
+        expectedStatus: 'scheduled' | 'active' | 'completed' | 'cancelled',
+        status: 'scheduled' | 'active' | 'completed' | 'cancelled',
+    ) {
         const transaction = await this.tursoClient.transaction('write')
 
         try {
@@ -1374,12 +1378,12 @@ export class DatabaseService implements OnModuleInit {
                 sql: `
                     UPDATE Meet
                     SET status = ?, isConfirmed = ?, updatedAt = CURRENT_TIMESTAMP
-                    WHERE id = ?
+                    WHERE id = ? AND status = ?
                 `,
-                args: [status, status === 'completed' || status === 'cancelled', meetId],
+                args: [status, status === 'completed' || status === 'cancelled', meetId, expectedStatus],
             })
 
-            if (status === 'completed' || status === 'cancelled') {
+            if (result.rowsAffected === 1 && (status === 'completed' || status === 'cancelled')) {
                 await transaction.execute({
                     sql: `
                         UPDATE MeetGame

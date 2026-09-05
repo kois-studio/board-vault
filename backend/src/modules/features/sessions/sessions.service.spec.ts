@@ -429,7 +429,7 @@ describe('SessionsService', () => {
         const service = new SessionsService(database as unknown as DatabaseService)
 
         await expect(service.updateSessionStatus(1, 12, { status: 'active' })).resolves.toEqual({ sessionId: 12, status: 'active' })
-        expect(database.updateMeetStatus).toHaveBeenCalledWith(12, 'active')
+        expect(database.updateMeetStatus).toHaveBeenCalledWith(12, 'scheduled', 'active')
     })
 
     it('requires a scheduled session to become active before it can be completed', async () => {
