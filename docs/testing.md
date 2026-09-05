@@ -4,7 +4,7 @@
 
 - Backend: `backend/test/app.e2e-spec.ts` plus focused security, validation, persistence, recommendation, session, and provider-boundary suites under `backend/src/`.
 - Frontend: `frontend/src/app/app.component.spec.ts`, API response-contract coverage, collection activation guidance, and session schedule/detail component coverage.
-- Frontend browser coverage now uses Playwright under `frontend/e2e/`; the suite is configured to run against an isolated local Angular server on port 4300 or an explicit `PLAYWRIGHT_BASE_URL`. Public tests run by default. Authenticated core-navigation tests activate only when `PLAYWRIGHT_AUTH_STORAGE_STATE` points to a local, uncommitted Clerk storage-state JSON file. The opt-in `social-session-flow.spec.ts` uses separate owner/member states and a disposable seeded session to cover the two-account flagship loop.
+- Frontend browser coverage now uses Playwright under `frontend/e2e/`; the suite is configured to run against an isolated local Angular server on port 4300 or an explicit `PLAYWRIGHT_BASE_URL`. Public tests run by default. Authenticated core-navigation tests activate only when `PLAYWRIGHT_AUTH_STORAGE_STATE` points to a local, uncommitted Clerk storage-state JSON file. The opt-in `social-session-flow.spec.ts` uses separate owner/member states and a disposable seeded session to cover the two-account flagship loop; `social-invitation-flow.spec.ts` covers an existing-account invite and acceptance.
 - No broad contract, migration, persistence, provider-adapter, accessibility, or responsive tests were found; focused authorization boundary tests now exist.
 - A manual migration verification was run against a restored SQLite backup copy; it is not an automated migration suite.
 
@@ -21,6 +21,7 @@
 | `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` | Pass | 26 browser-based unit tests pass, including private collection-boundary and activation guidance, schedule handoff/submission, session participant safeguards, group-history attendee summaries, upcoming-session social context labels, recommendation history context, attendee controls, and decision-lens semantics, accessible theme-control labels, valid and malformed self-profile/auth response-contract cases, canonical session detail/lifecycle contracts, direct collection-add, acquisition-board and recommendation-lens contracts, administrator pagination, and notification response contracts. |
 | `cd frontend && npm run e2e` | Pass | Four public Playwright tests pass by default, including the Clerk invitation-ticket registration path; seven authenticated core-navigation tests cover dashboard, groups/collection entry points, session logging, upcoming sessions, history, and recommendations. With the disposable development Clerk state documented below, all 11 tests pass locally; without that state, the seven authenticated tests are intentionally skipped. |
 | `PLAYWRIGHT_BASE_URL=http://localhost:4300 PLAYWRIGHT_OWNER_STORAGE_STATE=/tmp/board-vault-clerk-owner.json PLAYWRIGHT_MEMBER_STORAGE_STATE=/tmp/board-vault-clerk-member.json PLAYWRIGHT_SOCIAL_SESSION_ID=<id> npx playwright test e2e/social-session-flow.spec.ts` | Pass | A disposable seeded session passed RSVP, refresh, owner lifecycle, attendance, per-game participant editing, retryable detail loading, completion, feedback, and history verification. The test is intentionally skipped unless both local Clerk states and an explicit disposable session ID are supplied. |
+| `PLAYWRIGHT_BASE_URL=http://localhost:4300 PLAYWRIGHT_OWNER_STORAGE_STATE=/tmp/board-vault-clerk-owner.json PLAYWRIGHT_INVITEE_STORAGE_STATE=/tmp/board-vault-clerk-invitee.json PLAYWRIGHT_INVITATION_GROUP_ID=<id> PLAYWRIGHT_INVITATION_GROUP_NAME=<name> PLAYWRIGHT_INVITEE_USERNAME=<username> npx playwright test e2e/social-invitation-flow.spec.ts` | Pass | A fresh disposable group passed owner invite, recipient refresh, invitation acceptance, and post-acceptance group visibility. Email-provider delivery, expiry, and failure/retry paths remain separate checks. |
 | Local Clerk impersonation plus Board Vault handshake | Pass | A temporary actor issued against the linked development instance reached the local Angular app on port 4300; the backend accepted the Clerk session, provisioned the development identity into disposable SQLite, and served the authenticated dashboard. Local development CORS now includes both Angular's default 4200 origin and the isolated 4300 browser-test origin. |
 | `node database/scripts/verify-empty-state.mjs` | Pass | Loads the current deployed schema snapshot into disposable SQLite, reports `PRAGMA integrity_check = ok`, records baseline 0005, applies pending migrations 0006–0008, and asserts the acquisition table, session-notes column, invitation expiry column, and eight-migration state exist. |
 | `cd backend && npm test -- --runInBand src/modules/features/sessions/sessions.service.spec.ts` | Pass | Fourteen tests cover canonical completed/scheduled creation, planned-game availability, missing groups, actor membership, selected attendee membership, group game availability, participant/attendee consistency, and lifecycle transitions. |
@@ -48,7 +49,7 @@
 - deterministic explainable recommendation scoring, including collective attendee ownership, invalid attendee rejection, and stable ordering;
 - atomic completed/scheduled session creation, planned/played distinction, lifecycle transitions, completion, awaited detail edits, and history;
 - frontend loading, empty, failure, retry, and mobile/accessibility states.
-- frontend browser journeys for public navigation, Clerk authentication, collection activation, group invitations, session creation/completion, and history. The reusable authenticated navigation suite now covers dashboard, groups, collection entry points, session logging, upcoming sessions, history, and recommendations. The opt-in two-account social session journey now covers session creation through a seeded fixture, RSVP, attendance, per-game participants, lifecycle, retry, feedback, and history; collection mutations and invitation acceptance still need a repeatable non-production browser fixture. Local component coverage now protects schedule handoff/submission, session participant safeguards, group-history attendee summaries, upcoming-session social context labels, and recommendation history context.
+- frontend browser journeys for public navigation, Clerk authentication, collection activation, group invitations, session creation/completion, and history. The reusable authenticated navigation suite now covers dashboard, groups, collection entry points, session logging, upcoming sessions, history, and recommendations. The opt-in two-account social session journey now covers session creation through a seeded fixture, RSVP, attendance, per-game participants, lifecycle, retry, feedback, and history; the opt-in invitation journey covers existing-account invite acceptance. Collection mutations, secure email-invite delivery, and invitation expiry/failure paths still need repeatable non-production fixtures. Local component coverage now protects schedule handoff/submission, session participant safeguards, group-history attendee summaries, upcoming-session social context labels, and recommendation history context.
 
 ### P2 delivery quality
 
@@ -119,6 +120,22 @@ npx playwright test e2e/social-session-flow.spec.ts
 
 The journey mutates that session to completed and is not a production smoke
 test. Create a fresh scheduled fixture for each run.
+
+The existing-account invitation journey expects a fresh disposable group owned
+by the owner state and a recipient account that is not already a member:
+
+```shell
+PLAYWRIGHT_BASE_URL=http://localhost:4300 \
+PLAYWRIGHT_OWNER_STORAGE_STATE=/tmp/board-vault-clerk-owner.json \
+PLAYWRIGHT_INVITEE_STORAGE_STATE=/tmp/board-vault-clerk-invitee.json \
+PLAYWRIGHT_INVITATION_GROUP_ID=<disposable-group-id> \
+PLAYWRIGHT_INVITATION_GROUP_NAME=<disposable-group-name> \
+PLAYWRIGHT_INVITEE_USERNAME=<existing-account-username> \
+npx playwright test e2e/social-invitation-flow.spec.ts
+```
+
+It mutates the group by creating membership and is therefore also limited to
+disposable development data.
 
 ## Completion evidence
 

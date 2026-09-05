@@ -2760,3 +2760,19 @@ Review: EQ-003 / PROD-005 / TRUTH-001
 Changed: Added `frontend/e2e/social-session-flow.spec.ts`, guarded by explicit owner/member Clerk storage states and a disposable session ID. The journey now verifies member RSVP persistence, scheduled-to-active-to-completed lifecycle, organizer attendance, game-specific participant editing, retry after a failed session-detail request, post-session rating, and history refresh. The testing documentation records the fixture requirements and mutation boundary.
 
 Verified: `PLAYWRIGHT_BASE_URL=http://localhost:4300 PLAYWRIGHT_OWNER_STORAGE_STATE=/tmp/board-vault-clerk-owner.json PLAYWRIGHT_MEMBER_STORAGE_STATE=/tmp/board-vault-clerk-member.json PLAYWRIGHT_SOCIAL_SESSION_ID=6 npx playwright test e2e/social-session-flow.spec.ts` passes (1 test). `cd frontend && npm run lint:check` and `git diff --check` pass. The run used only disposable SQLite and development Clerk identities; no production user, database, provider configuration, deployment, or storage token was changed.
+
+Continuation claim: EQ-003 / PROD-003
+
+Owner: Codex
+
+Claimed: 2026-09-05
+
+Scope: make the existing-account invitation acceptance journey repeatable in authenticated browser coverage.
+
+Planned: add an opt-in owner/recipient browser journey for a fresh disposable group, preserving the invite-only boundary and proving refresh-safe acceptance.
+
+Review: EQ-003 / PROD-003
+
+Changed: Added `frontend/e2e/social-invitation-flow.spec.ts`, guarded by explicit owner/invitee Clerk states and a fresh group fixture. The journey verifies owner invitation, pending-invite visibility, recipient refresh, atomic acceptance, and group visibility after membership creation. Documentation now distinguishes this covered legacy existing-account path from still-open secure email delivery and expiry/provider-failure validation.
+
+Verified: `PLAYWRIGHT_BASE_URL=http://localhost:4300 PLAYWRIGHT_OWNER_STORAGE_STATE=/tmp/board-vault-clerk-owner.json PLAYWRIGHT_INVITEE_STORAGE_STATE=/tmp/board-vault-clerk-invitee.json PLAYWRIGHT_INVITATION_GROUP_ID=5 PLAYWRIGHT_INVITATION_GROUP_NAME='Invite Run 2' PLAYWRIGHT_INVITEE_USERNAME=bvtestinvitee npx playwright test e2e/social-invitation-flow.spec.ts` passes (1 test). The run used only disposable SQLite and development Clerk identities; no production user, database, provider configuration, deployment, or storage token was changed.
