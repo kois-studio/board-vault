@@ -61,15 +61,43 @@ Tests must not depend on a developer’s real Turso, Redis, or Resend credential
 
 ## Running authenticated browser journeys
 
-Create a local Playwright storage state by signing in with a dedicated test
-account, then point the suite at that uncommitted file:
+The Clerk CLI authenticates the developer account, not the application user.
+For development testing, use its impersonation flow against the linked
+development instance so no personal password or MFA code is needed:
 
 ```shell
-PLAYWRIGHT_AUTH_STORAGE_STATE=/absolute/path/to/board-vault-auth.json npm run e2e
+clerk whoami
+clerk users list --instance dev
+clerk impersonate <development-user-id> --instance dev --print --yes
+```
+
+The last command prints a temporary sign-in URL. Open that URL with Playwright
+Codegen, complete the redirect to the local app, and close the browser to save
+the storage state:
+
+```shell
+cd frontend
+npx playwright codegen \
+  --save-storage=/tmp/board-vault-clerk-owner.json \
+  '<paste-the-impersonation-url-here>'
+```
+
+Use a dedicated development/test user. Never run impersonation with a
+production instance, and never use a production user for local mutation tests.
+The backend must also be running with a configured, non-production
+`backend/.env` (see [`backend/.env.example`](../backend/.env.example)).
+Then point the suite at the uncommitted file:
+
+```shell
+PLAYWRIGHT_AUTH_STORAGE_STATE=/tmp/board-vault-clerk-owner.json npm run e2e
 ```
 
 The storage-state file may contain session cookies and tokens. Keep it outside
 the repository, never commit it, and prefer a disposable Clerk/test account.
+For two-person invitation acceptance, repeat the workflow for a second
+development user and save `/tmp/board-vault-clerk-member.json`; the current
+single-state suite uses one file, while the full two-account rehearsal requires
+both identities.
 
 ## Completion evidence
 

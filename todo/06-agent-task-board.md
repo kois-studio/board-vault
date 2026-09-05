@@ -2680,3 +2680,19 @@ Review: SEC-002 / PROD-003
 Changed: The deprecated generic and username invitation creation endpoints now require `GroupOwnerGuard`, and the guard accepts the legacy body-based `groupId` as well as canonical URL parameters. `InvitationsModule` now wires the guard and its group-service dependency, so the runtime Nest dependency graph matches the tested authorization policy. This keeps member-level acquisition/session participation separate from owner-level membership management.
 
 Verified: `cd backend && npm run lint:check`, `cd backend && npm test -- --runInBand` (44 suites / 210 tests), `cd backend && npm run build`, `cd backend && npm run test:e2e -- --runInBand` (2 tests), and `git diff --check` pass. No migration, production data, provider configuration, or deployment changed.
+
+Continuation claim: EQ-003 / EQ-006
+
+Owner: Codex
+
+Claimed: 2026-09-05
+
+Scope: document the safe development workflow for Clerk CLI impersonation and authenticated Playwright state.
+
+Planned: record how to target the development instance, create a temporary impersonation URL, save a local browser state, and avoid production credentials or committed tokens.
+
+Review: EQ-003 / EQ-006
+
+Changed: `docs/testing.md` now documents the complete development-only workflow: inspect the linked instance, impersonate a development user with Clerk CLI, save the redirected browser state with Playwright Codegen, run the authenticated suite, and repeat for a second user when testing invitations. `docs/operations.md` links the same workflow and records that production impersonation and committed storage tokens are prohibited.
+
+Verified: `git diff --check` passes. The local backend watch attempt was stopped because `backend/.env` currently lacks required Turso, JWT, and Redis values; no provider, database, or deployment state was changed.
