@@ -1,6 +1,6 @@
 <app-page-header titleText="Browse Games">
     @if (acquisitionGroupId()) {
-        Find a game for {{ acquisitionGroupName() }} to consider acquiring.
+        Find a game for {{ acquisitionGroupName() }} to consider acquiring. Your shortlist is shared with the group.
     } @else {
         Browse games to add to your collection
     }
@@ -40,7 +40,11 @@
         <div class="text-center text-secondary space-y-4">
             @if (searchTermIsValid$()) {
                 <div>
-                    @if (allSearchResultsOwnedByGroup()) {
+                    @if (acquisitionGroupId() && acquisitionBoardError()) {
+                        <p class="mb-2">We couldn't check {{ acquisitionGroupName() }}'s shortlist.</p>
+                        <p class="text-sm text-gray-500 mb-4">Try again before adding a game so the group decision stays accurate.</p>
+                        <app-button (click)="retryAcquisitionBoard()">Try again</app-button>
+                    } @else if (allSearchResultsOwnedByGroup()) {
                         <p class="mb-2">Your group already owns every matching game</p>
                         <p class="text-sm text-gray-500 mb-4">Search for another game if you want to grow the group’s acquisition shortlist.</p>
                     } @else {
@@ -93,17 +97,33 @@
                         <button
                             type="button"
                             class="app-btn-secondary mt-2 w-full text-sm"
-                            [disabled]="!!acquisitionState()[game.id]"
+                            [disabled]="acquisitionBoardLoading() || acquisitionBoardError() || !!acquisitionActionState(game.id)"
                             (click)="addGameToAcquisitionBoard(game.id)"
                         >
-                            @if (acquisitionState()[game.id] === 'saved') {
-                                Added to group board
-                            } @else if (acquisitionState()[game.id] === 'saving') {
+                            @if (acquisitionBoardLoading()) {
+                                Checking group shortlist…
+                            } @else if (acquisitionBoardError()) {
+                                Shortlist unavailable
+                            } @else if (acquisitionActionState(game.id) === 'saved') {
+                                On group shortlist ✓
+                            } @else if (acquisitionActionState(game.id) === 'removing') {
+                                Removing…
+                            } @else if (acquisitionActionState(game.id) === 'saving') {
                                 Adding…
                             } @else {
                                 Add for {{ acquisitionGroupName() }}
                             }
                         </button>
+                        @if (acquisitionActionState(game.id) === 'saved') {
+                            <button
+                                type="button"
+                                class="mt-1 w-full text-xs text-secondary underline"
+                                [disabled]="acquisitionActionState(game.id) === 'removing'"
+                                (click)="removeGameFromAcquisitionBoard(game.id)"
+                            >
+                                Remove my interest
+                            </button>
+                        }
                     }
                 </div>
             }
