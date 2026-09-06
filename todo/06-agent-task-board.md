@@ -3488,6 +3488,20 @@ Changed: Added a group-filtered history CTA that opens the recommendation flow w
 
 Verified: The history component regression passes; frontend Biome, full 36-test unit suite, and production build pass. The authenticated two-account assertion remains opt-in and needs fresh Clerk storage state when the disposable session is rerun. No deployment or push was performed.
 
+Scope: make the history surface preserve the full social memory of each played game.
+
+Acceptance: the shared-memory summary must count people recorded either as session attendees or per-game participants, and each game card must explain who played it while retaining an honest fallback when participant data is missing.
+
+Continuation claim: PROD-003 / EQ-006
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Changed: History now counts the union of recorded attendees and per-game participants, and game cards display a readable “Played by …” summary instead of only an opaque player count. Existing missing-participant fallback copy remains explicit.
+
+Verified: Frontend Biome, all 36 browser unit tests, and the production build pass at 606.76 kB initial raw / 138.40 kB estimated transfer. No deployment or push was performed.
+
 Scope: audit remaining service logs for identifiers, provider payloads, and exception details that should not cross the operational log boundary.
 
 Acceptance: retain actionable allow-listed events and correlation context while preventing emails, usernames, Clerk identifiers, recipient addresses, cache keys/payloads, SQL parameters, tokens, and provider exception details from being emitted; add focused regressions for any newly corrected service.
