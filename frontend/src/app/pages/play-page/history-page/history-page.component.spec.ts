@@ -59,6 +59,7 @@ describe('HistoryPageComponent shared-memory summaries', () => {
         fixture.detectChanges()
         const component = fixture.componentInstance
         component.groupIdFilter.set(7)
+        fixture.detectChanges()
 
         expect(component.sortedUserHistoryComputed().map((record) => record.meetData.id)).toEqual([11, 10])
         expect(component.historySummary()).toEqual({
@@ -69,5 +70,6 @@ describe('HistoryPageComponent shared-memory summaries', () => {
             mostPlayed: { title: 'Cascadia', count: 2 },
         })
         expect(component.mostPlayedSummary()).toBe('Cascadia · 2 sessions')
+        expect(fixture.nativeElement.textContent).toContain('Get a recommendation for this group')
     })
 })
