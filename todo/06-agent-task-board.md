@@ -3012,6 +3012,18 @@ Verified: Frontend production build (606.82 kB initial raw), Biome, all 34 brows
 
 Known follow-up: keyboard traversal, contrast, screen-reader behavior, long-content review, and the real two-person social-loop rehearsal remain open.
 
+Continuation claim: UX-CORE / TRUTH-001
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Scope: remove transiently misleading loading values from the group social home.
+
+Changed: The group pulse now shows an unknown/loading dash instead of a settled zero while history is being fetched; group-home history, standalone history, and upcoming-session loading states now expose polite status announcements. Updated the active product TODO, UI/UX register, and test ledger.
+
+Verified: Frontend build, Biome, and all 34 browser unit tests pass. The backend environment gate for the real two-person rehearsal remains open; no deployment or push was performed.
+
 Continuation claim: SEC-006 / OPS-007
 
 Owner: Codex

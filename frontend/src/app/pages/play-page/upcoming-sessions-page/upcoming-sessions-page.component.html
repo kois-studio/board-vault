@@ -39,7 +39,7 @@
     }
 
     @if (isLoadingMeets()) {
-        <div class="text-center py-8 text-secondary">Loading upcoming sessions…</div>
+        <div class="text-center py-8 text-secondary" role="status" aria-live="polite">Loading upcoming sessions…</div>
     } @else if (meetsError()) {
         <div class="text-center py-8 text-secondary" role="alert">
             <p>Upcoming sessions could not be loaded.</p>

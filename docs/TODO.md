@@ -222,7 +222,9 @@ as TODO items here.
   history should be group-aware shared memory rather than a generic analytics
   page. The core action styles now expose a consistent keyboard focus ring;
   session date and notes controls use explicit labels; and history/upcoming
-  failures announce themselves as alerts. Rendered and real-group validation
+  failures announce themselves as alerts. The group home now also avoids
+  showing a false zero-session pulse while shared history is loading, and its
+  history loading state is announced. Rendered and real-group validation
   remain open after implementation.
 
 ## Collection and group activation
