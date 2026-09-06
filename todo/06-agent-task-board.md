@@ -3040,6 +3040,20 @@ Changed: Schedule tests now provide the loading/error boundary dependencies expl
 
 Verified: Frontend Biome and all 33 browser unit tests pass. The reassessment keeps real two-person usefulness, provider/recovery evidence, and rendered accessibility review ahead of further catalog or analytics work.
 
+Continuation claim: SEC-003 / EQ-007
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Branch/worktree: main / shared workspace
+
+Scope: prevent stale group context from surviving a membership/group-list refresh on the scheduling route.
+
+Changed: Canonical scheduling now clears the selected group, attendees, and planned games when the route’s group disappears or the authenticated user is unavailable. The truthful unavailable-group state can therefore not expose an old planning form after a permission or membership change.
+
+Verified: Targeted Biome and all 34 frontend browser unit tests pass. No production data, deployment, or push was changed.
+
 Scope: validate the pending schema release against a fresh production snapshot without changing live Turso.
 
 Changed: Exported the live `board-vault` database through the authenticated Turso CLI into a temporary local SQLite file, checked integrity and foreign keys, and applied migrations 0006–0009 to the copy with the committed migration runner.
