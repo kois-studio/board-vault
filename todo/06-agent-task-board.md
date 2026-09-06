@@ -58,6 +58,25 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 Most recent claim:
 
 ```text
+Task: DATA-004
+Owner: Codex
+Claimed: 2026-09-06
+
+Branch/worktree: main / shared workspace
+Scope: make the deprecated bulk user-game compatibility mutation atomic so a partial collection update cannot survive a failed delete or insert
+```
+
+Review: DATA-004
+
+Changed: The deprecated bulk collection path now uses one write transaction with idempotent inserts; canonical collection routes remain the preferred product path.
+
+Verified: `cd backend && npm test -- --runInBand` passes 48 suites / 259 tests; `cd backend && npm run test:e2e -- --runInBand` passes 6 environment-safe HTTP tests; `cd backend && npm run build`; `cd backend && npm run lint:check`; `cd backend && npm run lint:logs`; and `git diff --check` pass. Failure-injection coverage proves a later ownership write rolls back the earlier delete. No deployment, push, provider mutation, or production data change was performed.
+
+Known follow-ups: Audit proposal/admin multi-write behavior separately; do not expand legacy compatibility into new product surface.
+
+Previous most recent claim:
+
+```text
 Task: EQ-006
 Owner: Codex
 Claimed: 2026-09-06

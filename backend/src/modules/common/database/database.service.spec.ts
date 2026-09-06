@@ -70,6 +70,60 @@ describe('DatabaseService logging', () => {
         })
     })
 
+    it('updates the legacy bulk collection path in one idempotent transaction', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const transaction = {
+            execute: jest.fn().mockResolvedValue({ rowsAffected: 1 }),
+            commit: jest.fn().mockResolvedValue(undefined),
+            rollback: jest.fn().mockResolvedValue(undefined),
+            close: jest.fn(),
+        }
+        const transactionFactory = jest.fn().mockResolvedValue(transaction)
+
+        ;(service as unknown as { tursoClient: { transaction: typeof transactionFactory } }).tursoClient = {
+            transaction: transactionFactory,
+        }
+
+        await expect(service.updateGames(1, [42, 43], [7])).resolves.toBeUndefined()
+
+        expect(transactionFactory).toHaveBeenCalledWith('write')
+        expect(transaction.execute).toHaveBeenNthCalledWith(1, {
+            sql: 'DELETE FROM OwnedGame WHERE accountId = ? AND gameId = ?',
+            args: [1, 7],
+        })
+        expect(transaction.execute).toHaveBeenNthCalledWith(2, {
+            sql: 'INSERT OR IGNORE INTO OwnedGame (accountId, gameId) VALUES (?, ?)',
+            args: [1, 42],
+        })
+        expect(transaction.execute).toHaveBeenNthCalledWith(3, {
+            sql: 'INSERT OR IGNORE INTO OwnedGame (accountId, gameId) VALUES (?, ?)',
+            args: [1, 43],
+        })
+        expect(transaction.commit).toHaveBeenCalledTimes(1)
+        expect(transaction.rollback).not.toHaveBeenCalled()
+        expect(transaction.close).toHaveBeenCalledTimes(1)
+    })
+
+    it('rolls back the legacy bulk collection path when a later write fails', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const transaction = {
+            execute: jest.fn().mockResolvedValueOnce({ rowsAffected: 1 }).mockRejectedValueOnce(new Error('ownership write failed')),
+            commit: jest.fn().mockResolvedValue(undefined),
+            rollback: jest.fn().mockResolvedValue(undefined),
+            close: jest.fn(),
+        }
+
+        ;(service as unknown as { tursoClient: { transaction: jest.Mock } }).tursoClient = {
+            transaction: jest.fn().mockResolvedValue(transaction),
+        }
+
+        await expect(service.updateGames(1, [42], [7])).rejects.toThrow('ownership write failed')
+
+        expect(transaction.rollback).toHaveBeenCalledTimes(1)
+        expect(transaction.commit).not.toHaveBeenCalled()
+        expect(transaction.close).toHaveBeenCalledTimes(1)
+    })
+
     it('adds collection ownership, memory, and wishlist cleanup in one transaction', async () => {
         const service = new DatabaseService({} as ConfigService)
         const execute = jest

@@ -285,7 +285,7 @@ remote CI, provider delivery, and operational recovery ownership.
 
 - **Status:** In progress
 - **Affected area:** `backend/test/`, backend `src`, frontend `src/**/*.spec.ts`
-- **Evidence:** Backend now has 48 focused suites and 257 passing unit tests plus 6 environment-safe HTTP E2E tests; frontend has 59 browser-based unit tests plus five passing public Playwright tests. The current default Playwright run discovers 26 tests, with 21 intentionally guarded without disposable Clerk/browser fixture state. The opt-in authenticated collection, invitation, session, recommendation, acquisition-decision, settings, destructive-flow, and rendered-core journeys remain available; a disposable provider-invitation rehearsal also proves create/list/revoke/removal. Email-provider failure mapping, disabled-cache behavior, rollback paths, and fail-closed core social routes now have focused coverage.
+- **Evidence:** Backend now has 48 focused suites and 259 passing unit tests plus 6 environment-safe HTTP E2E tests; frontend has 59 browser-based unit tests plus five passing public Playwright tests. The current default Playwright run discovers 26 tests, with 21 intentionally guarded without disposable Clerk/browser fixture state. The opt-in authenticated collection, invitation, session, recommendation, acquisition-decision, settings, destructive-flow, and rendered-core journeys remain available; a disposable provider-invitation rehearsal also proves create/list/revoke/removal. Email-provider failure mapping, disabled-cache behavior, rollback paths including the deprecated bulk collection boundary, and fail-closed core social routes now have focused coverage.
 - **Risk:** Security and product regressions are invisible.
 - **Next action:** Add remaining negative authorization/contract cases and provider/cache boundary evidence, preserve the authenticated core-loop journeys as launch regression gates, and observe them in a disposable environment with real Clerk state.
 - **Dependencies:** READINESS-001, READINESS-002, READINESS-003.
@@ -350,7 +350,7 @@ remote CI, provider delivery, and operational recovery ownership.
 
 - **Status:** In progress
 - **Affected area:** core services, `DatabaseService`, `CacheService`
-- **Evidence:** Concrete infrastructure is used directly; canonical session creation, scheduled-session creation, lifecycle transitions, played-game recording, group creation, legacy invitation acceptance, collection add/remove/metadata/wishlist transitions, and group acquisition signal reopening now use explicit Turso transactions. Collection transitions trim bounded activity memory within the same transaction and invalidate the account activity cache once after commit. Disabled Redis reads/writes, rate-limit increments, and readiness now have deterministic coverage; remaining review/activity coupling, proposal and legacy bulk writes, adapter boundaries, and cache ownership/invalidation completeness remain open.
+- **Evidence:** Concrete infrastructure is used directly; canonical session creation, scheduled-session creation, lifecycle transitions, played-game recording, group creation, legacy invitation acceptance, collection add/remove/metadata/wishlist transitions, group acquisition signal reopening, and the deprecated bulk collection update now use explicit Turso transactions. Collection transitions trim bounded activity memory within the same transaction and invalidate the account activity cache once after commit. Disabled Redis reads/writes, rate-limit increments, and readiness now have deterministic coverage; remaining review/activity coupling, proposal writes, adapter boundaries, and cache ownership/invalidation completeness remain open.
 - **Risk:** Partial writes, stale data, provider coupling, and test instability.
 - **Next action:** Define adapter interfaces, transaction boundaries, cache ownership/invalidation, and provider fakes; add integration coverage where provider state can be disposable.
 - **Dependencies:** READINESS-003 and canonical session model.
@@ -425,6 +425,17 @@ as TODO items here.
   danger zone deliberately. The route remains a full management workspace for
   now; whether invitation composition should become an in-context dialog needs
   validation with a real owner/member pair.
+
+### Tech-lead reassessment — after group management UX — 2026-09-06
+
+The group-management redesign now makes the social owner workflow legible, but
+rendered owner/member validation is still open because the authenticated fixture
+is intentionally not run by default. The next bounded engineering slice is the
+remaining deprecated bulk collection mutation: it currently performs multiple
+ownership writes outside a transaction. Making that compatibility boundary
+atomic reduces partial-state risk without expanding the catalog or changing the
+canonical social collection flow. After this safety slice, priority returns to
+the real two-account rehearsal and rendered route validation.
 
 ## Collection and group activation
 
