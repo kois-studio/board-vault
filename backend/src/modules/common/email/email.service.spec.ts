@@ -35,7 +35,8 @@ describe('EmailService logging', () => {
 
         await expect(service.sendVerificationEmail(recipient, 'verification-token')).rejects.toThrow('provider failure')
 
-        expect(internals.LOGGER.error).toHaveBeenCalledWith('Failed to send verification email', expect.any(Error))
+        expect(internals.LOGGER.error).toHaveBeenCalledWith('Failed to send verification email (Error)')
+        expect(internals.LOGGER.error).not.toHaveBeenCalledWith(expect.anything(), expect.anything())
         expect(internals.LOGGER.error).not.toHaveBeenCalledWith(expect.stringContaining(recipient), expect.anything())
     })
 

@@ -22,7 +22,6 @@ export class GroupMembershipsService {
 
         if (!result.success) {
             this.LOGGER.error('Failed to parse groupMemberships from database')
-            this.LOGGER.error(result.error)
             return []
         }
 
@@ -51,8 +50,8 @@ export class GroupMembershipsService {
     async getSafeGroupMembershipById(accountId: number, groupId: number): Promise<null | GroupMembershipDto> {
         try {
             return await this.getGroupMembershipById(accountId, groupId)
-        } catch (error) {
-            this.LOGGER.error('Failed to get safe group membership by id', error)
+        } catch {
+            this.LOGGER.error('Failed to get safe group membership by id')
             return null
         }
     }
@@ -77,8 +76,8 @@ export class GroupMembershipsService {
             await this.databaseService.createGroupMembership(membershipDto)
 
             return { success: true }
-        } catch (error) {
-            this.LOGGER.error('Failed to create membership', error)
+        } catch {
+            this.LOGGER.error('Failed to create membership')
             throw new InternalServerErrorException('Failed to create membership')
         }
     }

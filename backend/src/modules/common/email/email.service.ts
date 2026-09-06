@@ -2,6 +2,8 @@ import { Injectable, Logger } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { Resend } from 'resend'
 
+import { safeErrorName } from '../../../common/logging/structured-log'
+
 @Injectable()
 export class EmailService {
     private readonly LOGGER: Logger = new Logger(this.constructor.name)
@@ -49,13 +51,12 @@ export class EmailService {
             })
 
             if (error) {
-                this.LOGGER.error('Failed to send verification email', error)
                 throw error
             }
 
             this.LOGGER.log(`Verification email sent. Message ID: ${data!.id}`)
         } catch (error) {
-            this.LOGGER.error('Failed to send verification email', error)
+            this.LOGGER.error(`Failed to send verification email (${safeErrorName(error)})`)
             throw error // Re-throw the error to be handled by the calling function
         }
     }
@@ -73,13 +74,12 @@ export class EmailService {
             })
 
             if (error) {
-                this.LOGGER.error('Failed to send password reset email', error)
                 throw error
             }
 
             this.LOGGER.log(`Password reset email sent. Message ID: ${data!.id}`)
         } catch (error) {
-            this.LOGGER.error('Failed to send password reset email', error)
+            this.LOGGER.error(`Failed to send password reset email (${safeErrorName(error)})`)
             throw error // Re-throw the error to be handled by the calling function
         }
     }
@@ -96,13 +96,12 @@ export class EmailService {
             })
 
             if (error) {
-                this.LOGGER.error('Failed to send notification email', error)
                 throw error
             }
 
             this.LOGGER.log(`Notification email sent. Message ID: ${data!.id}`)
         } catch (error) {
-            this.LOGGER.error('Failed to send notification email', error)
+            this.LOGGER.error(`Failed to send notification email (${safeErrorName(error)})`)
             throw error // Re-throw the error to be handled by the calling function
         }
     }

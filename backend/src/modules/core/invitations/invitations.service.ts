@@ -26,7 +26,6 @@ export class InvitationsService {
 
         if (!result.success) {
             this.LOGGER.error('Failed to parse invitations from database')
-            this.LOGGER.error(result.error)
             return []
         }
 
@@ -80,17 +79,15 @@ export class InvitationsService {
             await this.databaseService.createInvitation(invitationDto)
 
             return { success: true }
-        } catch (error) {
-            this.LOGGER.error('Invitation creation failed', error)
+        } catch {
+            this.LOGGER.error('Invitation creation failed')
             throw new BadRequestException('Invitation creation failed')
         }
     }
 
     // TODO: composite en databaseService? oh nonono
     async createInvitationByUsername(invitationDto: CreateInvitationByUsernameBody): Promise<UserPublicDto> {
-        this.LOGGER.log(
-            `Creating invitation to group ${invitationDto.groupId}: ${invitationDto.fromAccountId} -> ${invitationDto.username}`,
-        )
+        this.LOGGER.log(`Creating invitation to group ${invitationDto.groupId} from account ${invitationDto.fromAccountId}`)
         const userRow = await this.databaseService.createInvitationByUsername(invitationDto)
 
         return {

@@ -1,6 +1,7 @@
 import { ResultSet } from '@libsql/client/.'
 import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 
+import { safeErrorName } from '../../../common/logging/structured-log'
 import { gamesSchema } from '../../../common/schemas'
 import { GameDto } from '../../../common/types/game.type'
 import { CacheService } from '../../common/cache/cache.service'
@@ -33,7 +34,6 @@ export class GamesService {
 
         if (!result.success) {
             this.LOGGER.error('Failed to parse games from database')
-            this.LOGGER.error(result.error)
             return []
         }
 
@@ -70,7 +70,7 @@ export class GamesService {
         try {
             return await this.getGameById(id)
         } catch (error) {
-            this.LOGGER.error('Failed to get safe game by id', error)
+            this.LOGGER.error(`Failed to get safe game by id (${safeErrorName(error)})`)
             return null
         }
     }
@@ -91,7 +91,7 @@ export class GamesService {
         minPlayers: number
         maxPlayers: number
     }): Promise<GameDto> {
-        this.LOGGER.log(`Creating game: ${gameData.title}`)
+        this.LOGGER.log('Creating game')
 
         await this.databaseService.createGame(gameData)
 

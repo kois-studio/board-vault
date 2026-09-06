@@ -31,7 +31,6 @@ export class UsersService {
 
         if (!result.success) {
             this.LOGGER.error('Failed to parse users from database')
-            this.LOGGER.error(result.error)
             return []
         }
 
@@ -153,8 +152,8 @@ export class UsersService {
             await this.databaseService.createUser(userDto, verificationToken, verificationTokenExpiresAt)
 
             return { success: true }
-        } catch (error) {
-            this.LOGGER.error('Failed to create user', error)
+        } catch {
+            this.LOGGER.error('Failed to create user')
             throw new ConflictException('Email or Username already in use')
         }
     }
@@ -188,8 +187,8 @@ export class UsersService {
             await this.databaseService.updateGames(accountId, gamesToAdd, gamesToRemove)
 
             return { success: true }
-        } catch (error) {
-            this.LOGGER.error('Failed to update games for user', error)
+        } catch {
+            this.LOGGER.error('Failed to update games for user')
             throw new NotFoundException('Failed to update games for user')
         }
     }
