@@ -2,7 +2,7 @@
 
 This document tracks whether each frontend area has received a deliberate UI/UX review. It is a review register, not a claim that a route works. A source audit can identify risks, but an area is not considered fully reviewed until its states, interaction model, responsive behavior, accessibility basics, visual hierarchy, and real API behavior have been exercised.
 
-Reviewed: 2026-09-05
+Reviewed: 2026-09-06
 
 ## Review status
 

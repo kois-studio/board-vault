@@ -12,7 +12,7 @@ checked boxes. Product direction that remains true after implementation belongs
 in [`todo/01-product-direction.md`](../todo/01-product-direction.md); durable
 technical decisions belong in [`docs/adr/`](adr/README.md).
 
-Reviewed: 2026-09-05
+Reviewed: 2026-09-06
 
 Readiness entries use `In progress`, `Planned`, `Blocked`, or `Deferred`.
 Product execution ownership remains in `/todo/`.
@@ -64,7 +64,7 @@ group loop demonstrates repeat use.
 
 - **Status:** In progress
 - **Affected area:** `backend/src/main.ts`, DTO/type boundaries, `frontend/src/app/api/api.schemas.ts`
-- **Evidence:** `backend/src/main.ts` now installs a global strict `ValidationPipe` (`whitelist`, `forbidNonWhitelisted`, and `transform`) as a safety net for DTO boundaries, while login, registration, password-reset, availability query, legacy token path, user profile-update, user game-update, review, collection ownership metadata, profile-proposal, administrator catalog/proposal-review, group, invitation, notification, and deprecated membership inputs retain targeted validation. Verification/reset tokens now have persisted expiry and atomic one-time-use enforcement; migration 0002 is applied and integrity-verified in live Turso. Targeted Zod response schemas now validate every current frontend API adapter response, including legacy invitation/attendee/played-game compatibility writes; client negative tests remain open.
+- **Evidence:** `backend/src/main.ts` now installs a global strict `ValidationPipe` (`whitelist`, `forbidNonWhitelisted`, and `transform`) as a safety net for DTO boundaries, while login, registration, password-reset, availability query, legacy token path, user profile-update, user game-update, review, collection ownership metadata, profile-proposal, administrator catalog/proposal-review, group, invitation, notification, session, and deprecated membership inputs retain targeted validation. High-risk request DTOs now bound credentials, free text, nested avatar fields, bulk game/tag/session arrays, and provider invitation identifiers/emails; the new request-boundary suite and existing controller tests pass. Verification/reset tokens now have persisted expiry and atomic one-time-use enforcement; migration 0002 is applied and integrity-verified in live Turso. Targeted Zod response schemas now validate every current frontend API adapter response, including legacy invitation/attendee/played-game compatibility writes; client negative tests and a complete legacy DTO inventory remain open.
 - **Risk:** Malformed, unexpected, oversized, or unsafe values reach services, SQL, HTML, or client state.
 - **Next action:** Audit remaining DTO decorators against the global pipe, then add client negative tests beyond the authentication boundary.
 - **Dependencies:** API error contract and security review.
@@ -93,7 +93,7 @@ group loop demonstrates repeat use.
 
 - **Status:** In progress
 - **Affected area:** `backend/test/`, backend `src`, frontend `src/**/*.spec.ts`
-- **Evidence:** Backend now has 44 focused suites and 227 passing unit tests plus 2 environment-safe HTTP E2E tests; frontend has 30 browser-based unit tests plus four passing public Playwright tests, while seeded/integration journeys and authenticated browser coverage remain opt-in. The opt-in authenticated collection, invitation, session, recommendation, and acquisition-decision journeys pass against disposable Clerk development identities and data; the full local Playwright run passes 13 tests with 3 guarded skips when the owner/recommendation/acquisition fixtures are supplied.
+- **Evidence:** Backend now has 45 focused suites and 230 passing unit tests plus 2 environment-safe HTTP E2E tests; frontend has 30 browser-based unit tests plus four passing public Playwright tests, while seeded/integration journeys and authenticated browser coverage remain opt-in. The opt-in authenticated collection, invitation, session, recommendation, and acquisition-decision journeys pass against disposable Clerk development identities and data; the full local Playwright run passes 13 tests with 3 guarded skips when the owner/recommendation/acquisition fixtures are supplied.
 - **Risk:** Security and product regressions are invisible.
 - **Next action:** Add negative authorization/contract cases, repeatable disposable fixture setup, and provider/remote integration evidence; preserve the existing authenticated core-loop journeys as launch regression gates.
 - **Dependencies:** READINESS-001, READINESS-002, READINESS-003.
@@ -102,7 +102,7 @@ group loop demonstrates repeat use.
 
 - **Status:** In progress
 - **Affected area:** `.github/` or chosen CI provider
-- **Evidence:** `.github/workflows/ci.yml` now runs a repository whitespace check, locked backend/frontend installs, backend tests/build/lint, frontend build/Biome/public Playwright checks, and disposable database migration verification. The local run passes backend lint, 222 backend tests, frontend build/Biome, and four public Playwright tests; authenticated E2E and deployment smoke checks are intentionally excluded because they require secret-bearing state.
+- **Evidence:** `.github/workflows/ci.yml` now runs a repository whitespace check, locked backend/frontend installs, backend tests/build/lint, frontend build/Biome/public Playwright checks, and disposable database migration verification. The local run passes backend lint, 230 backend tests, frontend build/Biome, and four public Playwright tests; authenticated E2E and deployment smoke checks are intentionally excluded because they require secret-bearing state.
 - **Risk:** Build, test, lint, formatting, migration, and contract regressions reach integration/deployment.
 - **Next action:** Observe the first GitHub Actions run and add non-production authenticated E2E when disposable Clerk state exists.
 - **Dependencies:** A meaningful test baseline and the repository’s locked-install workflow.

@@ -1,5 +1,5 @@
 import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger'
-import { IsDateString, IsInt, IsNumber, IsOptional, IsString, Min } from 'class-validator'
+import { IsDateString, IsInt, IsNumber, IsOptional, IsString, MaxLength, Min } from 'class-validator'
 
 // base GameOwned as it comes from db
 export class GameOwnedDto {
@@ -27,6 +27,7 @@ export class GameOwnedDto {
     @ApiProperty({ example: 'I got this as a gift from my friend.', description: 'Any notes about the purchase.' })
     @IsOptional()
     @IsString()
+    @MaxLength(1000)
     purchaseNotes: string | null
 }
 

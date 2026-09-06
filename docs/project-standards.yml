@@ -88,7 +88,7 @@ compliance:
 
     - id: TEST-001
       status: gap
-      evidence: backend has 44 focused suites and 227 passing tests covering authentication, authorization, validation, sessions, service-level participation invariants, organizer/current-membership enforcement, per-game participation, recommendations, invitation visibility/expiry/atomic acceptance, owner-only legacy invitation creation, provider invitation listing/revocation boundaries, soft-deleted account exclusion, verified-user gating, admin route and bounded list-query validation, bounded collection browse and duplicate-review inputs, bounded group names, self-profile response privacy, cache endpoint protection, safe API errors, health/readiness probes, canonical session reads, group acquisition ownership-race protection and owner decisions, and provider boundaries; frontend has 30 browser-based unit tests, four passing public Playwright checks, and five opt-in authenticated journey specs with 13 passing checks and three guarded skips when the owner/recommendation/acquisition fixtures are supplied
+      evidence: backend has 45 focused suites and 230 passing tests covering authentication, authorization, validation and request-size boundaries, sessions, service-level participation invariants, organizer/current-membership enforcement, per-game participation, recommendations, invitation visibility/expiry/atomic acceptance, owner-only legacy invitation creation, provider invitation listing/revocation boundaries, soft-deleted account exclusion, verified-user gating, admin route and bounded list-query validation, bounded collection browse and duplicate-review inputs, bounded group names, self-profile response privacy, cache endpoint protection, safe API errors, health/readiness probes, canonical session reads, group acquisition ownership-race protection and owner decisions, and provider boundaries; frontend has 30 browser-based unit tests, four passing public Playwright checks, and five opt-in authenticated journey specs with 13 passing checks and three guarded skips when the owner/recommendation/acquisition fixtures are supplied
       priority: high
       next_action: Add layered unit, integration, and journey tests for the flagship loop.
     - id: TEST-002
@@ -108,12 +108,12 @@ compliance:
       next_action: Expand the HTTP contract suite with disposable authenticated/authorized journeys.
     - id: TEST-005
       status: gap
-      evidence: 222 focused backend tests now cover the highest-risk unit boundaries, while the suite still does not exercise a clean database, provider failure contract, or remote integration boundary
+      evidence: 230 focused backend tests now cover the highest-risk unit boundaries, while the suite still does not exercise a clean database, provider failure contract, or remote integration boundary
       priority: critical
       next_action: Add repeatable disposable integration/contract coverage for auth, group membership, collection ownership, session transactions, recommendation decisions, and provider failure behavior.
     - id: TEST-006
       status: gap
-      evidence: backend unit command passes 227 focused tests and frontend has 30 browser-based unit tests plus four public Playwright checks; clean installs now pass and the validation workflow now includes repository whitespace, lint/Biome, build, test, and migration gates, while CI enforcement is not yet observed remotely
+      evidence: backend unit command passes 230 focused tests and frontend has 30 browser-based unit tests plus four public Playwright checks; clean installs now pass and the validation workflow now includes repository whitespace, lint/Biome, build, test, and migration gates, while CI enforcement is not yet observed remotely
       priority: high
       next_action: Keep the supported test commands meaningful and observe their first required CI run.
     - id: TEST-007
@@ -149,12 +149,12 @@ compliance:
       next_action: Complete the session API/transaction state contract and establish the recommendation state model before implementation.
     - id: TS-005
       status: partial
-      evidence: backend main.ts applies a global strict ValidationPipe and targeted DTO pipes cover current write paths; frontend api.schemas.ts validates the core auth, private-profile, collection, group, notification, session, meet, recommendation, feedback, and admin/proposal response paths, while remaining legacy paths and client negative tests are not covered
+      evidence: backend main.ts applies a global strict ValidationPipe and targeted DTO pipes cover current write paths with explicit bounds on high-risk text and bulk arrays; frontend api.schemas.ts validates the core auth, private-profile, collection, group, notification, session, meet, recommendation, feedback, and admin/proposal response paths, while remaining legacy paths and client negative tests are not covered
       priority: critical
       next_action: Activate and test boundary validation on both API and client response boundaries.
     - id: TS-006
       status: partial
-      evidence: zod schemas and class-validator dependencies exist; global and targeted backend request validation plus core frontend response validation are enabled, but legacy response paths and client negative tests remain open
+      evidence: zod schemas and class-validator dependencies exist; global and targeted backend request validation plus explicit request-size limits and core frontend response validation are enabled, but legacy response paths and client negative tests remain open
       priority: high
       next_action: Keep class-validator for backend request DTOs, Zod for frontend responses, and expand the negative-test matrix.
     - id: TS-007
@@ -200,7 +200,7 @@ compliance:
       next_action: Review remaining admin response shapes, then execute the remaining authorization and session transaction decisions in todo/06-agent-task-board.md.
     - id: SEC-004
       status: partial
-      evidence: global strict request validation is enabled in main.ts and targeted login, registration, password-reset, availability-query, legacy-token, user-profile, user-game-update, review-score, collection ownership metadata, profile-proposal, administrator catalog/proposal-review, group, invitation, notification, and deprecated membership validation is enabled, including nested avatar, positive integer-array, database-aligned 0..10 review, non-negative integer proposal-field, purchase field, admin review, identity/reference validation, and numeric admin route IDs; auth endpoints now have Upstash-backed route limits, CORS is allowlisted, and the API bootstrap limits JSON/URL-encoded request bodies to 100 KB with baseline security headers; forgot-password now returns the same success behavior for missing and existing accounts; verification/reset token expiry and atomic one-time-use enforcement are implemented and migration 0002 is applied and integrity-verified in live Turso; DatabaseService no longer formats bound SQL arguments in logs; email links and notification text are HTML-escaped before interpolation
+      evidence: global strict request validation is enabled in main.ts and targeted login, registration, password-reset, availability-query, legacy-token, user-profile, user-game-update, review-score, collection ownership metadata, profile-proposal, administrator catalog/proposal-review, group, invitation, notification, session, and deprecated membership validation is enabled, including bounded credentials, free text, nested avatar fields, positive integer arrays, bulk collection/tag/session arrays, database-aligned 0..10 review, non-negative integer proposal fields, purchase fields, admin review fields, identity/reference validation, and numeric admin route IDs; auth endpoints now have Upstash-backed route limits, CORS is allowlisted, and the API bootstrap limits JSON/URL-encoded request bodies to 100 KB with baseline security headers; forgot-password now returns the same success behavior for missing and existing accounts; verification/reset token expiry and atomic one-time-use enforcement are implemented and migration 0002 is applied and integrity-verified in live Turso; DatabaseService no longer formats bound SQL arguments in logs; email links and notification text are HTML-escaped before interpolation
       priority: critical
       next_action: Continue the global validation and provider-failure review; preserve the transport-boundary regression tests and make migration execution reproducible across environments.
     - id: SEC-005

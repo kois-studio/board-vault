@@ -4,7 +4,7 @@ This is the current inventory of unfinished, missing, or only partially connecte
 
 This document records implementation truth, not wishes. A route, component, label, or TODO comment is not treated as evidence that a capability works. Findings below come from source inspection, the documented database reconciliation, the current test baseline, and the production verification recorded in [`operations.md`](operations.md).
 
-Reviewed: 2026-09-05
+Reviewed: 2026-09-06
 
 ## Status vocabulary
 
@@ -146,6 +146,7 @@ Relevant surfaces: [`collection-page`](../frontend/src/app/pages/collection-page
 - Game detail now keeps one route-parameter subscription outside the auth effect, preventing duplicate loads when the current user signal changes; the unused empty share handler was removed.
 - Review responsive card grids, image fallbacks, accessible controls, and keyboard behavior.
 - The frontend API adapter now validates every current response shape, including the narrowed self-profile contract, catalog/owned/wishlist/browse/game-detail games, ownership and wishlist mutations, group/member/game, both invitation feeds and invitation creation, dashboard stats, notifications, reviews, collection activity, admin tags/games/proposals, user proposals, proposal stats, persisted meets, completed history, and legacy attendee/played-game compatibility writes; the auth-status adapter now has valid/malformed response tests, and future endpoints or broader client negative cases still need coverage.
+- Backend request DTOs now cap high-risk credentials, free text, nested avatar fields, provider invitation identifiers/emails, and bulk game/tag/session arrays; representative request-boundary regression coverage passes, while a complete legacy decorator inventory and client-negative-test matrix remain open.
 
 ### 8. Groups and invitations — Partial / Needs review
 

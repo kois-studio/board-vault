@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
 import {
+    ArrayMaxSize,
     ArrayMinSize,
     ArrayUnique,
     IsArray,
@@ -24,6 +25,7 @@ export class PlaySessionGameBody {
     @IsArray()
     @ArrayUnique()
     @ArrayMinSize(1)
+    @ArrayMaxSize(50)
     @IsInt({ each: true })
     @Min(1, { each: true })
     participantIds: Array<number>
@@ -54,6 +56,7 @@ export class CreatePlaySessionBody {
     @IsArray()
     @ArrayUnique()
     @ArrayMinSize(1)
+    @ArrayMaxSize(50)
     @IsInt({ each: true })
     @Min(1, { each: true })
     attendeeIds: Array<number>
@@ -61,6 +64,7 @@ export class CreatePlaySessionBody {
     @ApiProperty({ type: [PlaySessionGameBody] })
     @IsArray()
     @ArrayMinSize(1)
+    @ArrayMaxSize(100)
     @ValidateNested({ each: true })
     @Type(() => PlaySessionGameBody)
     games: Array<PlaySessionGameBody>
@@ -100,6 +104,7 @@ export class CreateScheduledSessionBody {
     @IsArray()
     @ArrayUnique()
     @ArrayMinSize(1)
+    @ArrayMaxSize(50)
     @IsInt({ each: true })
     @Min(1, { each: true })
     attendeeIds?: Array<number>
@@ -108,6 +113,7 @@ export class CreateScheduledSessionBody {
     @IsOptional()
     @IsArray()
     @ArrayUnique()
+    @ArrayMaxSize(100)
     @IsInt({ each: true })
     @Min(1, { each: true })
     plannedGameIds?: Array<number>
@@ -131,6 +137,7 @@ export class UpdateSessionAttendeesBody {
     @ApiProperty({ example: [1, 2] })
     @IsArray()
     @ArrayUnique()
+    @ArrayMaxSize(50)
     @ArrayMinSize(1)
     @IsInt({ each: true })
     @Min(1, { each: true })
@@ -160,6 +167,7 @@ export class UpdateSessionShortlistBody {
     })
     @IsArray()
     @ArrayUnique()
+    @ArrayMaxSize(100)
     @IsInt({ each: true })
     @Min(1, { each: true })
     plannedGameIds: Array<number>
@@ -180,6 +188,7 @@ export class UpdateSessionPlayedGamesBody {
     })
     @IsArray()
     @ArrayUnique()
+    @ArrayMaxSize(100)
     @IsInt({ each: true })
     @Min(1, { each: true })
     playedGameIds: Array<number>
@@ -192,6 +201,7 @@ export class UpdateSessionPlayedGamesBody {
     @IsOptional()
     @IsArray()
     @ArrayUnique((game: PlaySessionGameBody) => game.gameId)
+    @ArrayMaxSize(100)
     @ValidateNested({ each: true })
     @Type(() => PlaySessionGameBody)
     games?: Array<PlaySessionGameBody>
@@ -232,6 +242,7 @@ export class UpdateSessionAttendanceBody {
     })
     @IsArray()
     @ArrayUnique()
+    @ArrayMaxSize(50)
     @IsInt({ each: true })
     @Min(1, { each: true })
     attendedIds: Array<number>

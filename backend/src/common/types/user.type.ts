@@ -1,6 +1,18 @@
 import { ApiProperty, OmitType, PickType } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
-import { IsArray, IsEmail, IsIn, IsInt, IsNotEmpty, IsOptional, IsString, Min, ValidateNested } from 'class-validator'
+import {
+    ArrayMaxSize,
+    IsArray,
+    IsEmail,
+    IsIn,
+    IsInt,
+    IsNotEmpty,
+    IsOptional,
+    IsString,
+    MaxLength,
+    Min,
+    ValidateNested,
+} from 'class-validator'
 
 import { GameCompleteDto } from './game.type'
 
@@ -8,16 +20,19 @@ export class AvatarDto {
     @ApiProperty({ example: '#3B82F6' })
     @IsString()
     @IsNotEmpty()
+    @MaxLength(24)
     backgroundColor: string
 
     @ApiProperty({ example: 'person-fill' })
     @IsOptional()
     @IsString()
+    @MaxLength(100)
     iconName: string | null
 
     @ApiProperty({ example: null })
     @IsOptional()
     @IsString()
+    @MaxLength(16)
     emoji: string | null
 
     @ApiProperty({ example: 'icon' })
@@ -27,6 +42,7 @@ export class AvatarDto {
     @ApiProperty({ example: 'AB' })
     @IsString()
     @IsNotEmpty()
+    @MaxLength(8)
     initials: string
 }
 
@@ -109,12 +125,14 @@ export class UpdateUserBody {
     @IsOptional()
     @IsString()
     @IsNotEmpty()
+    @MaxLength(50)
     username?: string
 
     @ApiProperty({ example: 'Jose Antonio', required: false })
     @IsOptional()
     @IsString()
     @IsNotEmpty()
+    @MaxLength(100)
     displayName?: string
 
     @ApiProperty({ type: AvatarDto, required: false })
@@ -159,11 +177,13 @@ export class RegisterUserDto {
     @ApiProperty({ example: 'joseantonio' })
     @IsString()
     @IsNotEmpty()
+    @MaxLength(50)
     username: string
 
     @ApiProperty({ example: 'correct-horse-battery-staple' })
     @IsString()
     @IsNotEmpty()
+    @MaxLength(128)
     password: string
 }
 
@@ -178,6 +198,7 @@ export class LoginUserDto {
     @ApiProperty({ example: 'correct-horse-battery-staple' })
     @IsString()
     @IsNotEmpty()
+    @MaxLength(128)
     password: string
 }
 
@@ -200,12 +221,14 @@ export class UserPublicWithGames extends UserPublicDto {
 export class UserUpdateGamesBody {
     @ApiProperty({ type: [Number], description: 'The games to add to user' })
     @IsArray()
+    @ArrayMaxSize(1000)
     @IsInt({ each: true })
     @Min(1, { each: true })
     gamesToAdd: Array<number>
 
     @ApiProperty({ type: [Number], description: 'The games to remove from user' })
     @IsArray()
+    @ArrayMaxSize(1000)
     @IsInt({ each: true })
     @Min(1, { each: true })
     gamesToRemove: Array<number>
