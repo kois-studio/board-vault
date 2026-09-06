@@ -3323,3 +3323,15 @@ Continuation claim: PROD-003 / EQ-006
 Owner: Codex
 
 Claimed: 2026-09-06
+
+Scope: remove provider-session-only races from protected-route activation.
+
+Changed: LoginService now keeps the authenticated guard result pending until the local Board Vault account profile has loaded for both Clerk and legacy sessions. Profile failure still clears auth state and navigates away; the focused regression proves a valid provider session does not activate the route before local account data arrives.
+
+Verified: Focused frontend Biome and LoginService test pass; no deployment or push was performed. Broader session-expiry/revocation browser review remains open.
+
+Continuation claim: AUTH-001 / EQ-006
+
+Owner: Codex
+
+Claimed: 2026-09-06

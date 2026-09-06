@@ -185,6 +185,7 @@ Relevant surfaces: [`auth pages`](../frontend/src/app/pages/auth/), [`profile-me
 - The unconfigured Contact settings route and dead Featurebase links were removed; add the section back only after a real support/feedback destination is selected.
 - Ensure user-facing identity data follows the accepted privacy/DTO policy.
 - Verify session-expiry and revoked-session behavior in the UI.
+- Protected-route verification now waits for the local account profile after a valid Clerk or legacy provider session before emitting an authenticated guard result; provider-session-only races remain covered by a focused LoginService test.
 - The private-beta gate and a dry-run-by-default 60-day retention tool for
   inactive unverified legacy accounts are implemented; production cleanup is
   intentionally not scheduled or run automatically until account-retention
