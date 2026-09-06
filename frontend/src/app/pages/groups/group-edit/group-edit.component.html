@@ -1,8 +1,20 @@
 <div class="mt-24 lg:mt-48 mb-96 mx-2 max-w-5xl md:mx-auto p-6">
+    @if (isResolvingGroup()) {
+        <div class="rounded-lg border border-zinc-200 p-8 text-center app-bg-secondary dark:border-zinc-700" role="status">
+            <p class="text-lg font-medium">Loading group management…</p>
+            <p class="mt-2 text-secondary">We are checking your membership and pending invitations.</p>
+        </div>
+    } @else if (groupResolutionError()) {
+        <div class="rounded-lg border border-amber-200 bg-amber-50 p-8 text-center dark:border-amber-900/50 dark:bg-amber-950/30" role="alert">
+            <p class="text-lg font-medium">This group is not available.</p>
+            <p class="mt-2 text-secondary">It may have been deleted, or your membership may have changed.</p>
+            <button type="button" class="app-btn-primary mt-4" routerLink="/groups">Back to groups</button>
+        </div>
+    } @else if (groupData) {
     <div class="shadow-md rounded-lg p-6 app-bg-secondary relative">
         <!-- TOP RIGHT BUTTONS -->
         <div class="absolute -top-16 left-0">    
-            <button routerLink="/groups/{{ groupData?.id }}" class="app-btn-danger" title="Cancel editing">
+            <button routerLink="/groups/{{ groupData.id }}" class="app-btn-danger" title="Cancel editing">
                 <i class="bi bi-arrow-left"></i> Back
             </button>
         </div>
@@ -29,7 +41,7 @@
         }
 
         <!-- GROUP CARD -->
-        <h2 class="text-xl font-semibold mb-4">{{ groupData?.name }}</h2>
+        <h2 class="text-xl font-semibold mb-4">{{ groupData.name }}</h2>
         @if (groupData && !isGroupOwner) {
             <p class="rounded-lg border border-amber-500/50 bg-amber-500/10 p-3 text-amber-200">
                 You can view this group, but only its owner can manage members, invitations, or delete it.
@@ -91,9 +103,10 @@
 
         <hr />
     </div>
+    }
 
     <!-- INVITE PEOPLE -->
-    @if (isGroupOwner) {
+    @if (!isResolvingGroup() && !groupResolutionError() && isGroupOwner) {
     <div class="pt-8 pb-2 grid lg:grid-cols-2">
         <span></span>
         <div class="grid md:grid-cols-2 gap-4">
@@ -130,7 +143,7 @@
     </div>
     }
 
-    @if (isGroupOwner) {
+    @if (!isResolvingGroup() && !groupResolutionError() && isGroupOwner) {
     <div class="mt-6 rounded-lg border border-indigo-400/30 bg-indigo-950/20 p-5">
         <h3 class="font-bold tracking-wider">Invite someone by email</h3>
         <p class="mt-2 text-sm text-secondary">They will receive a secure Clerk invitation and join this group after verifying their email. Use the username invite above for an existing Board Vault account.</p>
@@ -169,6 +182,39 @@
                         }
                     </p>
                 }
+            </div>
+        }
+
+        @if (clerkInvitationsLoading()) {
+            <p class="mt-5 text-sm text-secondary" role="status">Loading pending email invitations…</p>
+        } @else if (clerkInvitationsError()) {
+            <div class="mt-5 rounded-lg border border-amber-400/30 bg-amber-950/20 p-4 text-sm" role="alert">
+                <p class="text-secondary">Pending email invitations could not be loaded.</p>
+                <button type="button" class="app-btn-secondary mt-3 py-2!" (click)="refreshClerkInvitations(groupData!.id)">Retry</button>
+            </div>
+        } @else if (clerkPendingInvitations().length > 0) {
+            <div class="mt-5 border-t border-indigo-400/20 pt-5">
+                <h4 class="font-semibold">Pending email invitations</h4>
+                <p class="mt-1 text-sm text-secondary">These links are managed by Clerk and have not joined the group yet.</p>
+                <ul class="mt-3 space-y-2">
+                    @for (invitation of clerkPendingInvitations(); track invitation.invitationId) {
+                        <li class="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-zinc-900/40 p-3 text-sm">
+                            <div>
+                                <p class="font-medium">{{ invitation.emailAddress }}</p>
+                                <p class="text-xs text-secondary">Sent {{ invitation.createdAt | customDate: true }}</p>
+                            </div>
+                            @if (pendingClerkRevokeId() === invitation.invitationId) {
+                                <div class="flex flex-wrap items-center gap-2" role="group" aria-label="Confirm email invitation revocation">
+                                    <span class="text-xs text-secondary">Revoke this link?</span>
+                                    <button type="button" class="app-btn-danger py-2!" [disabled]="isLoading" (click)="revokeClerkInvitation(invitation.invitationId)">Yes, revoke</button>
+                                    <button type="button" class="app-btn-secondary py-2!" [disabled]="isLoading" (click)="pendingClerkRevokeId.set(null)">Keep it</button>
+                                </div>
+                            } @else {
+                                <button type="button" class="app-btn-danger py-2!" [disabled]="isLoading" (click)="requestClerkRevoke(invitation.invitationId)">Revoke</button>
+                            }
+                        </li>
+                    }
+                </ul>
             </div>
         }
     </div>

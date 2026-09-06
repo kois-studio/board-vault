@@ -1,18 +1,25 @@
 import { CommonModule } from '@angular/common'
-import { Component, effect } from '@angular/core'
+import { Component, effect, inject, signal } from '@angular/core'
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
-import { firstValueFrom } from 'rxjs'
-import { ClerkGroupInvitationType, GameType } from '../../../api/api.types'
+import { finalize, firstValueFrom } from 'rxjs'
+import { Api } from '../../../api/api'
+import { ClerkGroupInvitationSummaryType, ClerkGroupInvitationType, GameType } from '../../../api/api.types'
 import { CardAccountComponent } from '../../../components/card-account/card-account.component'
 import { ImageProfileComponent } from '../../../components/image-profile/image-profile.component'
+import { ToastService } from '../../../components/toast/toast.service'
+import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
+import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { DataService } from '../../../core/services/data.service'
+import { LoadingService } from '../../../core/services/loading.service'
 
 @Component({
-    imports: [CommonModule, RouterLink, ImageProfileComponent, ReactiveFormsModule, CardAccountComponent],
+    imports: [CommonModule, RouterLink, ImageProfileComponent, ReactiveFormsModule, CardAccountComponent, CustomDatePipe],
     templateUrl: 'group-edit.component.html',
 })
 export class GroupEditComponent {
+    private readonly api = inject(Api)
+    private readonly toastService = inject(ToastService)
     // --------------------------------------------------------------------------
     //        DATA from services
     // --------------------------------------------------------------------------
@@ -28,13 +35,21 @@ export class GroupEditComponent {
     public usernameToInvite = new FormControl('', [Validators.required, Validators.minLength(4), Validators.maxLength(20)])
     public emailToInvite = new FormControl('', [Validators.required, Validators.email, Validators.maxLength(320)])
     public clerkInvitation: ClerkGroupInvitationType | null = null
+    public readonly clerkPendingInvitations = signal<Array<ClerkGroupInvitationSummaryType>>([])
+    public readonly clerkInvitationsLoading = signal(false)
+    public readonly clerkInvitationsError = signal(false)
+    public readonly pendingClerkRevokeId = signal<string | null>(null)
+    public readonly isResolvingGroup = signal(true)
+    public readonly groupResolutionError = signal(false)
     public copyLinkStatus: 'idle' | 'copied' | 'unavailable' | 'failed' = 'idle'
     public isLoading = false
+    private loadedClerkInvitationsGroupId: number | null = null
 
     constructor(
         private readonly router: Router,
         private readonly route: ActivatedRoute,
         private readonly dataService: DataService,
+        private readonly loadingService: LoadingService,
     ) {
         effect(() => {
             this.userData = this.dataService.currentUser()
@@ -44,11 +59,26 @@ export class GroupEditComponent {
             const groupId = Number.parseInt(this.route.snapshot.paramMap.get('groupId') || '')
             const groupData = this.userGroups.find((group) => group.id === groupId)
 
-            if (Number.isNaN(groupId) || !this.userData || !groupData) {
+            if (Number.isNaN(groupId) || !this.userData) {
+                return
+            }
+
+            const isLoadingGroups = this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_GROUPS]
+            if (isLoadingGroups) return
+
+            if (this.dataService.userGroupsError() || !groupData) {
+                this.isResolvingGroup.set(false)
+                this.groupResolutionError.set(true)
                 return
             }
 
             this.groupData = groupData
+            this.isResolvingGroup.set(false)
+            this.groupResolutionError.set(false)
+
+            if (this.isGroupOwner) {
+                this.loadClerkInvitations(groupData.id)
+            }
         })
     }
 
@@ -128,8 +158,48 @@ export class GroupEditComponent {
                 this.dataService.inviteNewPersonToGroup(this.groupData.id, this.emailToInvite.value),
             )
             this.emailToInvite.reset()
+            this.refreshClerkInvitations(this.groupData.id)
         } catch {
             // DataService presents the request error; keep the entered email available for retry.
+        } finally {
+            this.isLoading = false
+        }
+    }
+
+    private loadClerkInvitations(groupId: number): void {
+        if (this.loadedClerkInvitationsGroupId === groupId) return
+        this.loadedClerkInvitationsGroupId = groupId
+        this.clerkInvitationsLoading.set(true)
+        this.clerkInvitationsError.set(false)
+        this.api
+            .getClerkGroupInvitations(groupId)
+            .pipe(finalize(() => this.clerkInvitationsLoading.set(false)))
+            .subscribe({
+                next: (invitations) => this.clerkPendingInvitations.set(invitations),
+                error: () => this.clerkInvitationsError.set(true),
+            })
+    }
+
+    public refreshClerkInvitations(groupId: number): void {
+        this.loadedClerkInvitationsGroupId = null
+        this.loadClerkInvitations(groupId)
+    }
+
+    public requestClerkRevoke(invitationId: string): void {
+        this.pendingClerkRevokeId.set(this.pendingClerkRevokeId() === invitationId ? null : invitationId)
+    }
+
+    async revokeClerkInvitation(invitationId: string): Promise<void> {
+        if (!this.isGroupOwner || !this.groupData || this.pendingClerkRevokeId() !== invitationId || this.isLoading) return
+        this.isLoading = true
+
+        try {
+            await firstValueFrom(this.api.revokeClerkGroupInvitation(this.groupData.id, invitationId))
+            this.pendingClerkRevokeId.set(null)
+            this.toastService.success('Email invitation revoked')
+            this.refreshClerkInvitations(this.groupData.id)
+        } catch {
+            this.toastService.error('Error revoking email invitation')
         } finally {
             this.isLoading = false
         }

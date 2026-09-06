@@ -13,6 +13,7 @@ import { assertSelfRegistrationEnabled } from '../../../common/registration-poli
 import {
     CLERK_GROUP_INVITATION_METADATA_KEY,
     type ClerkGroupInvitationDto,
+    type ClerkGroupInvitationSummaryDto,
     type ClerkGroupInvitationMetadata,
 } from '../../../common/types/clerk-invitation.type'
 import { UsersService } from '../../core/users/users.service'
@@ -29,11 +30,7 @@ export class ClerkIdentityService {
     ) {}
 
     async createGroupInvitation(groupId: number, inviterAccountId: number, emailAddress: string): Promise<ClerkGroupInvitationDto> {
-        const group = await this.databaseService.getGroupById(groupId)
-
-        if (group.rows.length === 0 || Number(group.rows[0][2]) !== inviterAccountId) {
-            throw new ForbiddenException('You are not the owner of this group')
-        }
+        await this.assertGroupOwner(groupId, inviterAccountId)
 
         const invitation = await this.getClerkClient().invitations.createInvitation({
             emailAddress,
@@ -58,6 +55,77 @@ export class ClerkIdentityService {
             emailAddress: invitation.emailAddress,
             url: invitation.url,
         }
+    }
+
+    async getGroupInvitations(groupId: number, inviterAccountId: number): Promise<Array<ClerkGroupInvitationSummaryDto>> {
+        await this.assertGroupOwner(groupId, inviterAccountId)
+
+        const invitations: Array<ClerkGroupInvitationSummaryDto> = []
+        const clerkClient = this.getClerkClient()
+        const limit = 500
+        let offset = 0
+
+        while (true) {
+            const page = await clerkClient.invitations.getInvitationList({
+                limit,
+                offset,
+                orderBy: '-created_at',
+                status: 'pending',
+            })
+
+            for (const invitation of page.data) {
+                let metadata: ClerkGroupInvitationMetadata | null = null
+
+                try {
+                    metadata = this.getGroupInvitationMetadata(invitation.publicMetadata)
+                } catch {
+                    // Ignore malformed metadata belonging to another integration.
+                    continue
+                }
+
+                if (!metadata || metadata.groupId !== groupId || metadata.inviterAccountId !== inviterAccountId) {
+                    continue
+                }
+
+                invitations.push({
+                    invitationId: invitation.id,
+                    emailAddress: invitation.emailAddress,
+                    status: 'pending',
+                    createdAt: new Date(invitation.createdAt).toISOString(),
+                })
+            }
+
+            offset += page.data.length
+            if (offset >= page.totalCount || page.data.length === 0) break
+        }
+
+        return invitations
+    }
+
+    async revokeGroupInvitation(groupId: number, inviterAccountId: number, invitationId: string): Promise<{ success: true }> {
+        await this.assertGroupOwner(groupId, inviterAccountId)
+
+        const page = await this.getClerkClient().invitations.getInvitationList({ query: invitationId, limit: 10 })
+        const invitation = page.data.find(candidate => candidate.id === invitationId)
+
+        if (!invitation || invitation.status !== 'pending') {
+            throw new NotFoundException('Pending invitation not found')
+        }
+
+        let metadata: ClerkGroupInvitationMetadata | null = null
+
+        try {
+            metadata = this.getGroupInvitationMetadata(invitation.publicMetadata)
+        } catch {
+            metadata = null
+        }
+
+        if (!metadata || metadata.groupId !== groupId || metadata.inviterAccountId !== inviterAccountId) {
+            throw new NotFoundException('Pending invitation not found')
+        }
+
+        await this.getClerkClient().invitations.revokeInvitation(invitationId)
+        return { success: true }
     }
 
     /**
@@ -144,6 +212,14 @@ export class ClerkIdentityService {
         }
 
         throw new InternalServerErrorException('Clerk invitation redirect URL is not configured')
+    }
+
+    private async assertGroupOwner(groupId: number, inviterAccountId: number): Promise<void> {
+        const group = await this.databaseService.getGroupById(groupId)
+
+        if (group.rows.length === 0 || Number(group.rows[0][2]) !== inviterAccountId) {
+            throw new ForbiddenException('You are not the owner of this group')
+        }
     }
 
     private getGroupInvitationMetadata(publicMetadata: unknown): ClerkGroupInvitationMetadata | null {

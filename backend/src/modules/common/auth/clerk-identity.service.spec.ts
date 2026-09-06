@@ -181,4 +181,90 @@ describe('ClerkIdentityService', () => {
             },
         })
     })
+
+    it('lists only pending Clerk invitations owned by the requested group', async () => {
+        databaseService.getGroupById.mockResolvedValue({ rows: [[12, 'Friends', 7]] })
+        const getInvitationList = jest.fn().mockResolvedValue({
+            totalCount: 3,
+            data: [
+                {
+                    id: 'invitation_group',
+                    emailAddress: 'friend@example.com',
+                    status: 'pending',
+                    createdAt: 1757066400000,
+                    publicMetadata: { boardVaultGroupInvitation: { groupId: 12, inviterAccountId: 7, version: 1 } },
+                },
+                {
+                    id: 'invitation_other_group',
+                    emailAddress: 'other@example.com',
+                    status: 'pending',
+                    createdAt: 1757066400000,
+                    publicMetadata: { boardVaultGroupInvitation: { groupId: 99, inviterAccountId: 7, version: 1 } },
+                },
+                {
+                    id: 'invitation_unrelated',
+                    emailAddress: 'unrelated@example.com',
+                    status: 'pending',
+                    createdAt: 1757066400000,
+                    publicMetadata: {},
+                },
+            ],
+        })
+
+        mockedCreateClerkClient.mockReturnValue({ invitations: { getInvitationList } } as never)
+
+        await expect(service.getGroupInvitations(12, 7)).resolves.toEqual([
+            {
+                invitationId: 'invitation_group',
+                emailAddress: 'friend@example.com',
+                status: 'pending',
+                createdAt: '2025-09-05T10:00:00.000Z',
+            },
+        ])
+        expect(getInvitationList).toHaveBeenCalledWith({ limit: 500, offset: 0, orderBy: '-created_at', status: 'pending' })
+    })
+
+    it('revokes only a pending Clerk invitation carrying the requested group metadata', async () => {
+        databaseService.getGroupById.mockResolvedValue({ rows: [[12, 'Friends', 7]] })
+        const getInvitationList = jest.fn().mockResolvedValue({
+            totalCount: 1,
+            data: [
+                {
+                    id: 'invitation_group',
+                    emailAddress: 'friend@example.com',
+                    status: 'pending',
+                    createdAt: 1757066400000,
+                    publicMetadata: { boardVaultGroupInvitation: { groupId: 12, inviterAccountId: 7, version: 1 } },
+                },
+            ],
+        })
+        const revokeInvitation = jest.fn().mockResolvedValue({})
+
+        mockedCreateClerkClient.mockReturnValue({ invitations: { getInvitationList, revokeInvitation } } as never)
+
+        await expect(service.revokeGroupInvitation(12, 7, 'invitation_group')).resolves.toEqual({ success: true })
+        expect(revokeInvitation).toHaveBeenCalledWith('invitation_group')
+    })
+
+    it('does not revoke an invitation belonging to another group', async () => {
+        databaseService.getGroupById.mockResolvedValue({ rows: [[12, 'Friends', 7]] })
+        const getInvitationList = jest.fn().mockResolvedValue({
+            totalCount: 1,
+            data: [
+                {
+                    id: 'invitation_other_group',
+                    emailAddress: 'other@example.com',
+                    status: 'pending',
+                    createdAt: 1757066400000,
+                    publicMetadata: { boardVaultGroupInvitation: { groupId: 99, inviterAccountId: 7, version: 1 } },
+                },
+            ],
+        })
+        const revokeInvitation = jest.fn()
+
+        mockedCreateClerkClient.mockReturnValue({ invitations: { getInvitationList, revokeInvitation } } as never)
+
+        await expect(service.revokeGroupInvitation(12, 7, 'invitation_other_group')).rejects.toBeInstanceOf(NotFoundException)
+        expect(revokeInvitation).not.toHaveBeenCalled()
+    })
 })
