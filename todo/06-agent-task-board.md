@@ -15,7 +15,7 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 | DATA-001 | REVIEW | Data model | Reconcile repository SQL and services against the owner-confirmed deployed schema and produce a code/schema drift report. | None |
 | DATA-002 | REVIEW | Data model | Add numbered migrations and make the schema reproducible from empty state. | DATA-001 |
 | DATA-003 | REVIEW | Data model | Choose and implement the canonical session schema, including attendance and planned/played games. | DATA-001 |
-| DATA-004 | IN_PROGRESS | Data model | Add transaction boundaries for remaining group, session, proposal, and collection mutations; group creation, legacy invitation acceptance, canonical session writes, and collection activation/activity/wishlist cleanup are now transactional. | DATA-002, DATA-003 |
+| DATA-004 | IN_PROGRESS | Data model | Add transaction boundaries for remaining group, session, proposal, and collection mutations; group creation, legacy invitation acceptance, canonical session writes, collection state transitions, review/activity memory, and group-decision signals are now transactional. | DATA-002, DATA-003 |
 
 ## P1 — flagship product loop
 
@@ -127,6 +127,24 @@ Changed: Collection removal, ownership metadata edits, and wishlist toggles now 
 Verified: `cd backend && npm test -- --runInBand` passes 47 suites / 252 tests; `cd backend && npm run build`; `cd backend && npm run lint:check`; and `git diff --check` pass. No deployment, push, provider mutation, or production data change was performed.
 
 Known follow-ups: Audit review/activity coupling, proposal and remaining legacy bulk mutations, then add failure-injection coverage for the next transaction boundary.
+
+Continuation claim: DATA-004
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Branch/worktree: main / shared workspace
+
+Scope: atomically persist review changes with rated activity memory and preserve review/activity cache invalidation boundaries
+
+Review: DATA-004
+
+Changed: Review replacement and rated activity recording now share one transaction, including bounded activity-memory trimming. Review cache invalidation and collection-activity cache invalidation happen only after the database commit; the collection feature no longer performs a second activity write.
+
+Verified: `cd backend && npm test -- --runInBand` passes 48 suites / 254 tests; `cd backend && npm run build`; `cd backend && npm run lint:check`; `cd backend && npm run lint:logs`; and `git diff --check` pass. No deployment, push, provider mutation, or production data change was performed.
+
+Known follow-ups: Audit proposal and remaining legacy bulk mutations, then add failure-injection and HTTP integration coverage for the transaction boundaries.
 
 Previous most recent claim:
 

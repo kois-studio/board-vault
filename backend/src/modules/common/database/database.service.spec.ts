@@ -220,6 +220,38 @@ describe('DatabaseService logging', () => {
         expect(transaction.close).toHaveBeenCalledTimes(1)
     })
 
+    it('saves a review and its rating memory in one transaction', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const transaction = {
+            execute: jest
+                .fn()
+                .mockResolvedValueOnce({ rowsAffected: 1 })
+                .mockResolvedValueOnce({ rowsAffected: 1 })
+                .mockResolvedValueOnce({ rowsAffected: 1 })
+                .mockResolvedValueOnce({ rowsAffected: 1 }),
+            commit: jest.fn().mockResolvedValue(undefined),
+            rollback: jest.fn().mockResolvedValue(undefined),
+            close: jest.fn(),
+        }
+
+        ;(service as unknown as { tursoClient: { transaction: jest.Mock } }).tursoClient = {
+            transaction: jest.fn().mockResolvedValue(transaction),
+        }
+
+        await expect(service.saveGameReviewAndLogActivity(1, 42, 8)).resolves.toEqual({ success: true })
+
+        expect(transaction.execute).toHaveBeenNthCalledWith(2, {
+            sql: 'INSERT INTO GameReview (accountId, gameId, review) VALUES (?, ?, ?)',
+            args: [1, 42, 8],
+        })
+        expect(transaction.execute).toHaveBeenNthCalledWith(3, {
+            sql: 'INSERT INTO CollectionActivity (accountId, gameId, actionType, actionDetails) VALUES (?, ?, ?, ?)',
+            args: [1, 42, 'rated', '{"rating":8}'],
+        })
+        expect(transaction.commit).toHaveBeenCalledTimes(1)
+        expect(transaction.close).toHaveBeenCalledTimes(1)
+    })
+
     it('guards group acquisition interest against games already owned by a member', async () => {
         const service = new DatabaseService({} as ConfigService)
         const execute = jest.fn().mockResolvedValue({ rowsAffected: 1 })

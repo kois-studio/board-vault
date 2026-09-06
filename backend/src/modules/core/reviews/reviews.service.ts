@@ -76,30 +76,14 @@ export class ReviewsService {
     }
 
     async saveGameReview(accountId: number, gameId: number, review: number) {
-        // NOTE: the review may alread exist
         this.LOGGER.log('Saving game review')
         try {
-            // check if the review already exists
-            const existingReview = await this.getSafeGameReviewsById(accountId, gameId)
-
-            // its the same, so skip 1 query
-            if (existingReview && existingReview?.review === review) {
-                this.LOGGER.log('Review already exists, skipping')
-                return { success: true }
-            }
-
-            if (existingReview) {
-                // update the review
-                await this.databaseService.deleteGameReviewById(accountId, gameId)
-            }
-
-            // create the review
-            await this.databaseService.createGameReview(accountId, gameId, review)
+            const result = await this.databaseService.saveGameReviewAndLogActivity(accountId, gameId, review)
 
             // invalidate the cache
             await this.cacheService.deleteOne(`${this.CACHE_KEY}:userReviewsWithGameData:${accountId}`)
 
-            return { success: true }
+            return result
         } catch (error) {
             this.LOGGER.error(`Review save failed (${safeErrorName(error)})`)
             throw new BadRequestException('Review save failed')

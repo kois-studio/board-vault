@@ -178,6 +178,19 @@ The next priority is a failure-path audit of the remaining core multi-write
 flows, while keeping the two-account acceptance rehearsal and rendered route
 review as the release evidence gates.
 
+### Tech-lead reassessment — after atomic review memory — 2026-09-06
+
+Review changes now write the review row and its rated activity memory in one
+transaction, while review and collection-activity caches invalidate only after
+the commit. The complete collection social-state write set is now covered by
+254 backend tests across 48 suites.
+
+Code-level DATA-004 is substantially healthier, but release readiness is not
+implied by unit coverage. The next focus is failure-injection and HTTP
+integration evidence for these boundaries, followed by the real two-account
+acceptance loop, rendered UX review, remote CI observation, and backup/rollback
+ownership. Catalog detail and discovery remain intentionally out of scope.
+
 ### Tech-lead reassessment — after collection-state transaction completion — 2026-09-06
 
 The collection social state is now transactionally consistent across add,
