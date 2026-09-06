@@ -32,6 +32,19 @@ type GroupLibraryContext = {
     lastPlayedTimezone: string | null
 }
 
+export function shouldShowFirstGroupSetup(input: {
+    memberCount: number
+    gameCount: number
+    historyCount: number
+    hasUpcomingSession: boolean
+    historyLoading: boolean
+    historyError: boolean
+}): boolean {
+    if (input.historyLoading || input.historyError) return false
+
+    return input.memberCount <= 1 && input.gameCount === 0 && input.historyCount === 0 && !input.hasUpcomingSession
+}
+
 @Component({
     imports: [
         RouterLink,
@@ -113,6 +126,20 @@ export class GroupViewComponent {
     })
 
     public readonly nextMeetingComputed = computed(() => this.upcomingMeetingsComputed()[0] ?? null)
+
+    public readonly needsFirstGroupSetup = computed(() => {
+        const group = this.groupData$()
+        if (!group) return false
+
+        return shouldShowFirstGroupSetup({
+            memberCount: group.members.length,
+            gameCount: this.totalUniqueGamesComputed().length,
+            historyCount: this.groupHistory$().length,
+            hasUpcomingSession: Boolean(this.nextMeetingComputed()),
+            historyLoading: this.isLoading(),
+            historyError: this.groupHistoryError(),
+        })
+    })
 
     public readonly mostPlayedGamesComputed = computed(() => {
         const games = new Map<number, { gameData: GameCompleteType; sessionCount: number; playerCount: number }>()
