@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common'
+import { CommonModule, DOCUMENT } from '@angular/common'
 import { Component, computed, effect, inject, signal } from '@angular/core'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
@@ -61,6 +61,7 @@ export function shouldShowFirstGroupSetup(input: {
     styleUrls: ['group-view.component.scss'],
 })
 export class GroupViewComponent {
+    private readonly document = inject(DOCUMENT)
     private readonly api = inject(Api)
     private readonly router = inject(Router)
     private readonly route = inject(ActivatedRoute)
@@ -106,6 +107,7 @@ export class GroupViewComponent {
     public readonly isLeavingGroup = signal(false)
     private activeSelectionGroupId: number | null = null
     private activeAcquisitionGroupId: number | null = null
+    private leaveDialogTrigger: HTMLElement | null = null
 
     // --------------------------------------------------------------------------
     //        Computed
@@ -469,12 +471,16 @@ export class GroupViewComponent {
 
     onClickLeaveGroup() {
         if (this.isGroupOwnerComputed() || !this.groupData$()) return
+        this.leaveDialogTrigger = this.document.activeElement instanceof HTMLElement ? this.document.activeElement : null
         this.isLeaveDialogOpen.set(true)
+        queueMicrotask(() => this.document.getElementById('leave-group-dialog-cancel')?.focus())
     }
 
     public cancelLeaveGroup(): void {
         if (this.isLeavingGroup()) return
         this.isLeaveDialogOpen.set(false)
+        queueMicrotask(() => this.leaveDialogTrigger?.focus())
+        this.leaveDialogTrigger = null
     }
 
     public async confirmLeaveGroup(): Promise<void> {
