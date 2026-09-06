@@ -43,7 +43,11 @@ test.describe('authenticated core navigation', () => {
         const groupId = process.env['PLAYWRIGHT_GROUP_ID']
         test.skip(!groupId, 'Set PLAYWRIGHT_GROUP_ID to a disposable local group to run the rendered group accessibility check.')
 
+        await page.setViewportSize({ width: 375, height: 900 })
         await page.goto(`/groups/${groupId}`)
+
+        const documentWidth = await page.evaluate(() => ({ viewport: window.innerWidth, document: document.documentElement.scrollWidth }))
+        expect(documentWidth.document).toBeLessThanOrEqual(documentWidth.viewport)
 
         const gameLinks = page.locator('a[href^="/games/"]')
         await expect(gameLinks.first()).toBeVisible()
@@ -56,6 +60,12 @@ test.describe('authenticated core navigation', () => {
             'Group library',
             'History & insights',
         ])
+
+        await page.goto('/play/history')
+        const historyGameLinks = page.locator('a[href^="/games/"]')
+        if (await historyGameLinks.count()) {
+            await expect(historyGameLinks.first()).toHaveAccessibleName(/^View /)
+        }
     })
 
     test('opens the past-session recorder', async ({ page }) => {

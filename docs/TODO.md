@@ -191,7 +191,10 @@ as TODO items here.
 ## Information architecture and UX
 
 - [ ] Complete responsive, keyboard, contrast, focus, and screen-reader
-  behavior for the primary journeys.
+  behavior for the primary journeys. The group workspace now has a rendered
+  375px overflow guard, ordered section navigation, and accessible image-only
+  group/history links; the full route matrix and keyboard/focus/contrast review
+  remain open.
 
 ## Collection and group activation
 

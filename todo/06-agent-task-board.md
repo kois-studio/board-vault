@@ -3095,3 +3095,15 @@ Scope: attempt the remaining provider-managed invitation acceptance path with a 
 Changed: Rehearsed a fresh owner-created provider ticket with the backend redirect explicitly set to the isolated frontend port 4300. The ticket reached local `/register`, but Clerk’s client sign-up exchange returned HTTP 400; the result is recorded as an open provider investigation rather than a passing acceptance claim. All temporary pending invitations were revoked afterward.
 
 Verified: Redirect configuration is now documented for the 4300 workflow; create/list/revoke remains green. Recipient acceptance, expiry, and provider delivery-failure/retry remain open and no production state was touched.
+
+Scope: continue the rendered accessibility/responsive review with concrete core-route regressions.
+
+Changed: Group decision/library cards now allow their content to shrink within the mobile grid, removing the 11px document overflow at 375px. History image-only game links now expose accessible “View …” names. The authenticated core browser check now guards the 375px overflow boundary and the history-link accessible name in addition to the group navigator order.
+
+Verified: Frontend lint passes; all 9 authenticated core-navigation checks pass against the disposable Clerk/local SQLite environment. The broader route matrix and keyboard/focus/contrast review remain open. No deployment or push was performed.
+
+Continuation claim: EQ-007
+
+Owner: Codex
+
+Claimed: 2026-09-06
