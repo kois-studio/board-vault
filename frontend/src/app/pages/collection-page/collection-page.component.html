@@ -39,7 +39,7 @@
             <div class="mt-5 flex flex-wrap gap-3">
                 <a class="app-btn-primary inline-block" routerLink="/collection/browse">Browse games</a>
                 @if (groupDecisionReady()) {
-                    <a class="app-btn-secondary inline-block" routerLink="/play/recommendations">Choose a game with your group</a>
+                    <a class="app-btn-secondary inline-block" routerLink="/play/recommendations" [queryParams]="{ groupId: decisionGroupId() }">Choose a game with your group</a>
                 } @else if (userGroups$().length === 0) {
                     <a class="app-btn-secondary inline-block" routerLink="/groups">Join or create a group</a>
                 }
@@ -61,7 +61,7 @@
                     <a class="app-btn-secondary inline-block" routerLink="/groups">View invitations</a>
                 </div>
             } @else if (groupDecisionReady()) {
-                <a class="app-btn-primary inline-block mt-5" routerLink="/play/recommendations">Choose a game for your group</a>
+                <a class="app-btn-primary inline-block mt-5" routerLink="/play/recommendations" [queryParams]="{ groupId: decisionGroupId() }">Choose a game for your group</a>
             } @else {
                 <a class="app-btn-primary inline-block mt-5" routerLink="/groups">Add games to your group’s shared shelf</a>
             }

@@ -45,6 +45,8 @@ describe('CollectionPageComponent activation guidance', () => {
 
         expect(component.activationComplete()).toBeFalse()
         expect(component.groupDecisionReady()).toBeTrue()
+        expect(component.decisionGroupId()).toBe(10)
+        expect(fixture.nativeElement.querySelector('a[href="/play/recommendations?groupId=10"]')).not.toBeNull()
         expect(fixture.nativeElement.textContent).toContain('Choose a game with your group')
     })
 

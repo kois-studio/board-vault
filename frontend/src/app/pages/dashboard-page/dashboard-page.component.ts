@@ -33,6 +33,7 @@ export class DashboardPageComponent {
             }
         })
     })
+    public readonly decisionGroup = computed(() => this.groupSummaries().find((summary) => summary.gameCount > 0) ?? null)
     public readonly isLoadingOverview = computed(() => {
         const loading = this.loadingService.loadingStatesIndex()
         return loading[LOADING_KEYS.USER_GROUPS] || loading[LOADING_KEYS.USER_MEETS]
