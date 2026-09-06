@@ -2,6 +2,13 @@ import { signal } from '@angular/core'
 import { RecommendationsPageComponent } from './recommendations-page.component'
 
 describe('RecommendationsPageComponent history context', () => {
+    it('makes the selected group the decision context', () => {
+        const component = Object.create(RecommendationsPageComponent.prototype) as RecommendationsPageComponent
+
+        expect(component.getDecisionTitle({ name: 'Friday Crew' })).toBe('What should Friday Crew play?')
+        expect(component.getDecisionTitle(null)).toBe('Decide what to play')
+    })
+
     it('labels persisted group play history honestly', () => {
         const component = Object.create(RecommendationsPageComponent.prototype) as RecommendationsPageComponent
 
