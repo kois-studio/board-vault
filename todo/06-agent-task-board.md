@@ -3035,3 +3035,15 @@ Scope: remove the provider invitation pending-list race exposed by the real deve
 Changed: Group email invitation creation and revocation now await the provider-list refresh before the operation settles, keeping the success/revoked state and pending list consistent. The disposable Clerk rehearsal was rerun after the change.
 
 Verified: Frontend build, targeted Biome, frontend unit tests (32/32), and provider create/list/revoke browser rehearsal pass. No deployment or push was performed.
+
+Continuation claim: EQ-007
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Scope: close a rendered accessibility and hit-area defect in the group shared library.
+
+Changed: Group-library image-only links now have explicit responsive dimensions and accessible “View …” names. Added an opt-in authenticated browser assertion for the rendered contract.
+
+Verified: Frontend build passes; the focused browser check passes with `PLAYWRIGHT_GROUP_ID=7`; the mobile rendered check reports no horizontal overflow and 96×96 game-link targets. Broader image fallback and accessibility review remains open.

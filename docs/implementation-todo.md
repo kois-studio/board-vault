@@ -161,6 +161,7 @@ Relevant surfaces: [`groups`](../frontend/src/app/pages/groups/), [`group-view`]
 - Make empty groups useful: explain the next step for members, games, and invitations; failed group loading now has an explicit retry state.
 - Ensure member visibility and private group data follow the backend authorization rules; group-history failures no longer get cached as an empty result and now expose retry.
 - Group detail now distinguishes group-list loading, a failed group-list read, and a group that is no longer available; it also clears shared group state when the route changes so an old group cannot appear under a new URL. The rendered mobile social-loop pass still needs broader keyboard, focus, contrast, and long-content review.
+- Group-library game thumbnails now have explicit responsive dimensions and accessible link names; the rendered mobile check confirms no horizontal overflow. Image failure fallbacks and broader visual content review remain open.
 - Remove unnecessary reload-all behavior after group mutations where safe.
 - Review invitation and notification feedback, unread/read states, provider pending/revoked states, and failure recovery.
 - Provider invitation creation and revocation now await the pending-list refresh, so the group-management surface settles before the action completes instead of briefly reporting a sent/revoked state with stale list data.

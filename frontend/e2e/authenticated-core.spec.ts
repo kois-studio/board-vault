@@ -39,6 +39,17 @@ test.describe('authenticated core navigation', () => {
         await expect(page.getByRole('link', { name: 'Back to groups', exact: true })).toHaveAttribute('href', '/groups')
     })
 
+    test('gives image-only group game links accessible names', async ({ page }) => {
+        const groupId = process.env['PLAYWRIGHT_GROUP_ID']
+        test.skip(!groupId, 'Set PLAYWRIGHT_GROUP_ID to a disposable local group to run the rendered group accessibility check.')
+
+        await page.goto(`/groups/${groupId}`)
+
+        const gameLinks = page.locator('a[href^="/games/"]')
+        await expect(gameLinks.first()).toBeVisible()
+        await expect(gameLinks.first()).toHaveAttribute('aria-label', /^View /)
+    })
+
     test('opens the past-session recorder', async ({ page }) => {
         await page.goto('/play/log-session')
 
