@@ -2968,6 +2968,20 @@ Changed: Group leave and delete dialogs now remember their trigger, focus the sa
 
 Verified: `cd frontend && npx biome check src/app e2e`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (43 passing), `cd frontend && npm run build` (605.70 kB initial raw / 138.26 kB estimated transfer), `PLAYWRIGHT_BASE_URL=http://127.0.0.1:4300 npx playwright test e2e/public-navigation.spec.ts` (5 passing), and `git diff --check` pass. Disposable authenticated destructive-flow execution remains opt-in. No deployment or push was performed.
 
+Scope: keep every primary “choose a game” handoff group-scoped after the Play hub redesign.
+
+Acceptance: Dashboard and Collection must pass a concrete usable group ID into recommendations when one exists, and route to group selection when none exists; no new global recommendation entry point is added.
+
+Continuation claim: PROD-003 / TRUTH-001
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Changed: Dashboard now selects a group with shared games for its decision card and names that group; otherwise it routes to group selection. Collection activation and ready-state decision links now carry the first group with usable shared games. Focused tests cover both handoffs.
+
+Verified: `cd frontend && npx biome check src/app/pages/collection-page src/app/pages/dashboard-page`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (44 passing), `cd frontend && npm run build` (605.70 kB initial raw / 138.26 kB estimated transfer), and `git diff --check` pass. Rendered Dashboard/Collection review remains open. No deployment or push was performed.
+
 Scope: finish the numeric-identifier part of the service logging audit without losing useful provider diagnostics.
 
 Acceptance: domain and legacy compatibility logs must not interpolate account, group, game, invitation, membership, notification, proposal, review, tag, or meeting identifiers; only explicitly safe operational fields such as error class, feature method, port/path, TTL/status, and cache-disabled state may remain.

@@ -44,6 +44,9 @@ export class CollectionPageComponent {
     public readonly groupDecisionReady = computed(() =>
         this.userGroups$().some((group) => group.members.some((member) => member.games.length > 0)),
     )
+    public readonly decisionGroupId = computed(
+        () => this.userGroups$().find((group) => group.members.some((member) => member.games.length > 0))?.id ?? null,
+    )
 
     public retryGames(): void {
         this.dataService.refreshUserGames()
