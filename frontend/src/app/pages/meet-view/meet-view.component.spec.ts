@@ -91,6 +91,7 @@ describe('MeetViewComponent participant safeguards', () => {
         await component.onClickMember(1)
 
         expect(component.isAttendeeRemovalBlocked(1)).toBeTrue()
+        expect(component.hasPlayedGameAttendeeLock).toBeFalse()
         expect(dataService.updateSessionAttendees).not.toHaveBeenCalled()
         expect(toastService.error).toHaveBeenCalledWith('A session must retain at least one attendee.')
     })
@@ -101,6 +102,7 @@ describe('MeetViewComponent participant safeguards', () => {
         await component.onClickMember(1)
 
         expect(component.isAttendeeRemovalBlocked(1)).toBeTrue()
+        expect(component.hasPlayedGameAttendeeLock).toBeTrue()
         expect(dataService.updateSessionAttendees).not.toHaveBeenCalled()
         expect(toastService.error).toHaveBeenCalledWith('Remove this person from played games before removing them from the session.')
     })
