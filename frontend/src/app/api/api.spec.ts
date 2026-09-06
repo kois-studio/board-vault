@@ -71,6 +71,24 @@ describe('Api response contracts', () => {
         await expectAsync(response).toBeRejected()
     })
 
+    it('rejects a malformed group workspace response at the API boundary', async () => {
+        const response = firstValueFrom(api.getUserGroups(7))
+        const request = http.expectOne(`${environment.apiUrl}/dashboard/users/7/groups`)
+
+        request.flush([{ id: 7, name: 'Friday Crew', createdBy: 1, createdAt: '2026-09-04' }])
+
+        await expectAsync(response).toBeRejected()
+    })
+
+    it('rejects a malformed shared-history response at the API boundary', async () => {
+        const response = firstValueFrom(api.getUserGamesHistory(7))
+        const request = http.expectOne(`${environment.apiUrl}/play/users/7/history`)
+
+        request.flush([{ meetData: { id: 12, groupId: 7 }, attendedBy: [], gamesPlayed: [] }])
+
+        await expectAsync(response).toBeRejected()
+    })
+
     it('reads canonical session details from the member-scoped session endpoint', async () => {
         const response = firstValueFrom(api.getSessionDetailsById(12))
         const request = http.expectOne(`${environment.apiUrl}/sessions/12`)
