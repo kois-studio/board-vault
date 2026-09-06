@@ -16,7 +16,10 @@ describe('HistoryPageComponent shared-memory summaries', () => {
                     { id: 2, displayName: 'Bo', username: 'bo' },
                 ],
                 gamesPlayed: [
-                    { gameData: { id: 42, title: 'Cascadia', titleTranslations: { en: 'Cascadia' } }, playedBy: [] },
+                    {
+                        gameData: { id: 42, title: 'Cascadia', titleTranslations: { en: 'Cascadia' } },
+                        playedBy: [{ id: 4, displayName: 'Dee', username: 'dee' }],
+                    },
                     { gameData: { id: 43, title: 'Scout', titleTranslations: { en: 'Scout' } }, playedBy: [] },
                 ],
             },
@@ -66,10 +69,11 @@ describe('HistoryPageComponent shared-memory summaries', () => {
             sessions: 2,
             gamesPlayed: 3,
             uniqueGames: 2,
-            people: 2,
+            people: 3,
             mostPlayed: { title: 'Cascadia', count: 2 },
         })
         expect(component.mostPlayedSummary()).toBe('Cascadia · 2 sessions')
+        expect(component.getPlayedBySummary([{ displayName: 'Dee', username: 'dee' }])).toBe('Dee')
         expect(fixture.nativeElement.textContent).toContain('Get a recommendation for this group')
     })
 })

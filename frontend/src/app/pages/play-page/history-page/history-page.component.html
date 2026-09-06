@@ -123,7 +123,7 @@
                                         @if (gamePlayed.playedBy.length === 0) {
                                             <span class="ml-3 text-xs text-secondary">Players not recorded</span>
                                         } @else {
-                                            <span class="ml-3 text-xs text-secondary">{{ gamePlayed.playedBy.length }} player{{ gamePlayed.playedBy.length === 1 ? '' : 's' }}</span>
+                                            <span class="ml-3 text-xs text-secondary" [attr.aria-label]="'Played by ' + getPlayedBySummary(gamePlayed.playedBy)">Played by {{ getPlayedBySummary(gamePlayed.playedBy) }}</span>
                                         }
                                     </div>
                                 </div>
