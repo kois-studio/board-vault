@@ -1,5 +1,5 @@
 import { ResultSet } from '@libsql/client/.'
-import { ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common'
+import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { meetAccountGamesSchema } from '../../../common/schemas/db-meet-account-game.schema'
 import { DatabaseService } from '../../common/database/database.service'
@@ -116,16 +116,23 @@ export class MeetAccountGamesService {
 
     // #region other
 
-    private async _assertAccountCanAccessMeet(accountId: number, meetId: number) {
+    private async _assertAccountCanAccessMeet(accountId: number, meetId: number): Promise<number> {
         const resultSet = await this.databaseService.getMeetByIdForAccount(meetId, accountId)
 
         if (resultSet.rows.length === 0) {
             throw new ForbiddenException('You are not a member of this meet group')
         }
+
+        return Number(resultSet.rows[0][1])
     }
 
     async createMeetAccountGameForAccount(accountId: number, meetId: number, gameId: number): Promise<MeetAccountGameDto> {
-        await this._assertAccountCanAccessMeet(accountId, meetId)
+        const groupId = await this._assertAccountCanAccessMeet(accountId, meetId)
+        const availableGameIds = new Set(await this.databaseService.getGroupAvailableGameIds(groupId))
+
+        if (!availableGameIds.has(gameId)) {
+            throw new BadRequestException('The game must be owned by at least one member of the meet group')
+        }
 
         return this.createMeetAccountGame(accountId, meetId, gameId)
     }

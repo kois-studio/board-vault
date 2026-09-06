@@ -2950,6 +2950,20 @@ Owner: Codex
 
 Claimed: 2026-09-06
 
+Scope: close the remaining legacy played-game authorization gap found during the social session boundary audit.
+
+Acceptance: the deprecated per-account played-game create path must derive the actor from the verified identity, require membership in the session group, and reject game IDs that are not owned by any current group member. Preserve deletion of existing historical links so old data remains removable.
+
+Continuation claim: SEC-003 / SEC-008
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Changed: The compatibility create path now returns the authorized session group from its member-scoped lookup, checks the requested game against the group’s currently owned games, and rejects unrelated game IDs before any write. Deletion remains membership-scoped so historical links can still be removed after ownership changes.
+
+Verified: The focused service suite passes four tests, including outside-group denial, unrelated-game denial, permitted owned-game creation, and delete-boundary protection. No production data, deployment, or push was touched.
+
 Scope: recheck private-beta account retention and production identity-verification access.
 
 Changed: Read-only Turso queries found four active unverified legacy accounts; three have group/game history and are excluded by the retention policy, while the only history-free account remains younger than 60 days. The cleanup candidate count is zero. A read-only Clerk production config pull was attempted but the linked CLI has no production instance configured.
