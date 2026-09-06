@@ -41,7 +41,7 @@
     @if (isLoadingMeets()) {
         <div class="text-center py-8 text-secondary">Loading upcoming sessions…</div>
     } @else if (meetsError()) {
-        <div class="text-center py-8 text-secondary">
+        <div class="text-center py-8 text-secondary" role="alert">
             <p>Upcoming sessions could not be loaded.</p>
             <p class="text-sm mt-2 mb-4">Check your connection and try again.</p>
             <app-button icon="arrow-repeat" (click)="retrySessions()">Retry</app-button>

@@ -32,9 +32,10 @@
                         <p class="text-secondary text-sm">Use the day your group expects to play together.</p>
                     </div>
                 </div>
+                <label for="session-date" class="block text-sm font-medium mb-2">Game night date</label>
                 <input
+                    id="session-date"
                     type="date"
-                    aria-label="Game night date"
                     [formControl]="dateForm"
                     [class]="dateClass"
                     class="app-input"
@@ -121,7 +122,8 @@
                         <p class="text-secondary text-sm">A quick reason, idea, or reminder helps the group understand this plan later.</p>
                     </div>
                 </div>
-                <textarea class="app-input min-h-24" [(ngModel)]="notes" maxlength="1000" aria-label="Session notes" placeholder="For example: Try the new co-op game or finish our campaign."></textarea>
+                <label for="session-notes" class="sr-only">Session notes</label>
+                <textarea id="session-notes" class="app-input min-h-24" [(ngModel)]="notes" maxlength="1000" placeholder="For example: Try the new co-op game or finish our campaign."></textarea>
             </section>
         </div>
 
