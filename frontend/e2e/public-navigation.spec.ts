@@ -14,6 +14,19 @@ test.describe('public navigation', () => {
         await expect(page.locator('a[href="#"]')).toHaveCount(0)
     })
 
+    test('keeps the landing promise usable and truthful across viewport sizes', async ({ page }) => {
+        for (const width of [375, 1280]) {
+            await page.setViewportSize({ width, height: 900 })
+            await page.goto('/')
+
+            await expect(page.getByRole('heading', { name: /Make the next game night easier/i })).toBeVisible()
+            await expect(page.getByText(/Board Vault is in private beta|Start with the people and games you already know/i)).toBeVisible()
+            await expect(page.getByText(/not a public encyclopedia of every game/i)).toBeVisible()
+            await expect(page.getByRole('link', { name: /Get invited|Create an account/ }).first()).toHaveAttribute('href', '/register')
+            expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+        }
+    })
+
     test('does not expose protected dashboard content to signed-out users', async ({ page }) => {
         await page.goto('/dashboard')
 

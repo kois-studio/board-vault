@@ -3441,3 +3441,13 @@ Continuation claim: PROD-003 / EQ-006
 Owner: Codex
 
 Claimed: 2026-09-06
+
+Scope: protect the public landing page’s social product promise with a responsive rendered regression.
+
+Acceptance: the landing page must remain usable at mobile and desktop widths, expose the private-beta invitation CTA truthfully, and retain explicit group-decision/memory positioning without drifting toward a public game encyclopedia.
+
+Continuation claim: EQ-007 / TRUTH-001
+
+Owner: Codex
+
+Claimed: 2026-09-06

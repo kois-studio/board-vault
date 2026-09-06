@@ -113,7 +113,7 @@ public discovery, and standalone analytics remain deferred.
 
 - **Status:** In progress
 - **Affected area:** `backend/test/`, backend `src`, frontend `src/**/*.spec.ts`
-- **Evidence:** Backend now has 46 focused suites and 234 passing unit tests plus 2 environment-safe HTTP E2E tests; frontend has 36 browser-based unit tests plus four passing public Playwright tests, while seeded/integration journeys and authenticated browser coverage remain opt-in. The opt-in authenticated collection, invitation, session, recommendation, and acquisition-decision journeys pass against disposable Clerk development identities and data; a disposable provider-invitation rehearsal also proves create/list/revoke/removal; the full local Playwright run passes 13 tests with 3 guarded skips when the owner/recommendation/acquisition fixtures are supplied.
+- **Evidence:** Backend now has 46 focused suites and 234 passing unit tests plus 2 environment-safe HTTP E2E tests; frontend has 36 browser-based unit tests plus five passing public Playwright tests, while seeded/integration journeys and authenticated browser coverage remain opt-in. The opt-in authenticated collection, invitation, session, recommendation, and acquisition-decision journeys pass against disposable Clerk development identities and data; a disposable provider-invitation rehearsal also proves create/list/revoke/removal; the full local Playwright run passes 13 tests with 3 guarded skips when the owner/recommendation/acquisition fixtures are supplied.
 - **Risk:** Security and product regressions are invisible.
 - **Next action:** Add negative authorization/contract cases, repeatable disposable fixture setup, and provider/remote integration evidence; preserve the existing authenticated core-loop journeys as launch regression gates.
 - **Dependencies:** READINESS-001, READINESS-002, READINESS-003.
@@ -122,7 +122,7 @@ public discovery, and standalone analytics remain deferred.
 
 - **Status:** In progress
 - **Affected area:** `.github/` or chosen CI provider
-- **Evidence:** `.github/workflows/ci.yml` now runs a repository whitespace check, locked backend/frontend installs, backend tests/build/lint, frontend build/Biome/public Playwright checks, and disposable database migration verification. The local run passes backend lint, 234 backend tests, frontend build/Biome, and four public Playwright tests; authenticated E2E and deployment smoke checks are intentionally excluded because they require secret-bearing state.
+- **Evidence:** `.github/workflows/ci.yml` now runs a repository whitespace check, locked backend/frontend installs, backend tests/build/lint, frontend build/Biome/public Playwright checks, and disposable database migration verification. The local run passes backend lint, 234 backend tests, frontend build/Biome, and five public Playwright tests; authenticated E2E and deployment smoke checks are intentionally excluded because they require secret-bearing state.
 - **Risk:** Build, test, lint, formatting, migration, and contract regressions reach integration/deployment.
 - **Next action:** Observe the first GitHub Actions run and add non-production authenticated E2E when disposable Clerk state exists.
 - **Dependencies:** A meaningful test baseline and the repository’s locked-install workflow.
