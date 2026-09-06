@@ -3553,3 +3553,17 @@ Claimed: 2026-09-06
 Changed: Upcoming session cards now show honest group context (`people · games available`) and a status-specific prompt: planned sessions direct members to review attendees and the shortlist, while active sessions direct organizers to record what was actually played. The list still keeps dates, notes, retryable states, and direct session actions visible without claiming that all group members are confirmed attendees.
 
 Verified: `cd frontend && npx biome check src/app`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (40 passing), `cd frontend && npm run build` (605.28 kB initial raw / 138.24 kB estimated transfer), and `git diff --check` pass. Rendered upcoming-session review and real-group usefulness remain open. No deployment or push was performed.
+
+Scope: establish stable safe diagnostic codes for private-beta and Clerk provider/configuration failures.
+
+Acceptance: the API error envelope must preserve an allow-listed machine-readable code for the covered domain/provider boundaries, collapse unknown provider details to safe messages, retain request correlation, and cover the mapping with focused tests. Existing generic Nest error behavior must remain compatible.
+
+Continuation claim: SEC-006 / API-003
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Changed: Added an allow-listed API error-code contract for private-beta registration closure, Clerk configuration, invitation-link, and provider availability failures. The filter preserves those safe codes and remediation messages while keeping unknown 5xx/provider details generic; Clerk invitation provider calls now map unexpected provider failures to a correlated 502 code. Existing generic Nest exceptions remain compatible.
+
+Verified: `cd backend && npx eslint "{src,apps,libs,test}/**/*.ts"`, `cd backend && npm test -- --runInBand` (46 suites / 237 tests), `cd backend && npm run build`, and `git diff --check` pass. No deployment or push was performed.

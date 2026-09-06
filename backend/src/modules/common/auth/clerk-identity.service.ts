@@ -1,14 +1,8 @@
 import { createClerkClient, type User as ClerkUser } from '@clerk/backend'
-import {
-    ConflictException,
-    ForbiddenException,
-    Injectable,
-    InternalServerErrorException,
-    NotFoundException,
-    UnauthorizedException,
-} from '@nestjs/common'
+import { ConflictException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 
+import { API_ERROR_CODES, BoardVaultHttpException } from '../../../common/http/api-error'
 import { assertSelfRegistrationEnabled } from '../../../common/registration-policy'
 import {
     CLERK_GROUP_INVITATION_METADATA_KEY,
@@ -32,22 +26,28 @@ export class ClerkIdentityService {
     async createGroupInvitation(groupId: number, inviterAccountId: number, emailAddress: string): Promise<ClerkGroupInvitationDto> {
         await this.assertGroupOwner(groupId, inviterAccountId)
 
-        const invitation = await this.getClerkClient().invitations.createInvitation({
-            emailAddress,
-            expiresInDays: 30,
-            notify: true,
-            redirectUrl: this.getInvitationRedirectUrl(),
-            publicMetadata: {
-                [CLERK_GROUP_INVITATION_METADATA_KEY]: {
-                    groupId,
-                    inviterAccountId,
-                    version: 1,
+        const invitation = await this.withClerkProviderBoundary(() =>
+            this.getClerkClient().invitations.createInvitation({
+                emailAddress,
+                expiresInDays: 30,
+                notify: true,
+                redirectUrl: this.getInvitationRedirectUrl(),
+                publicMetadata: {
+                    [CLERK_GROUP_INVITATION_METADATA_KEY]: {
+                        groupId,
+                        inviterAccountId,
+                        version: 1,
+                    },
                 },
-            },
-        })
+            }),
+        )
 
         if (!invitation.url) {
-            throw new InternalServerErrorException('Clerk did not return an invitation link')
+            throw new BoardVaultHttpException(
+                API_ERROR_CODES.CLERK_INVITATION_LINK_UNAVAILABLE,
+                502,
+                'The invitation provider did not return a usable link',
+            )
         }
 
         return {
@@ -66,12 +66,14 @@ export class ClerkIdentityService {
         let offset = 0
 
         while (true) {
-            const page = await clerkClient.invitations.getInvitationList({
-                limit,
-                offset,
-                orderBy: '-created_at',
-                status: 'pending',
-            })
+            const page = await this.withClerkProviderBoundary(() =>
+                clerkClient.invitations.getInvitationList({
+                    limit,
+                    offset,
+                    orderBy: '-created_at',
+                    status: 'pending',
+                }),
+            )
 
             for (const invitation of page.data) {
                 let metadata: ClerkGroupInvitationMetadata | null = null
@@ -105,7 +107,9 @@ export class ClerkIdentityService {
     async revokeGroupInvitation(groupId: number, inviterAccountId: number, invitationId: string): Promise<{ success: true }> {
         await this.assertGroupOwner(groupId, inviterAccountId)
 
-        const page = await this.getClerkClient().invitations.getInvitationList({ query: invitationId, limit: 10 })
+        const page = await this.withClerkProviderBoundary(() =>
+            this.getClerkClient().invitations.getInvitationList({ query: invitationId, limit: 10 }),
+        )
         const invitation = page.data.find(candidate => candidate.id === invitationId)
 
         if (!invitation || invitation.status !== 'pending') {
@@ -124,7 +128,7 @@ export class ClerkIdentityService {
             throw new NotFoundException('Pending invitation not found')
         }
 
-        await this.getClerkClient().invitations.revokeInvitation(invitationId)
+        await this.withClerkProviderBoundary(() => this.getClerkClient().invitations.revokeInvitation(invitationId))
         return { success: true }
     }
 
@@ -149,7 +153,7 @@ export class ClerkIdentityService {
             }
         }
 
-        const clerkUser = await this.getClerkClient().users.getUser(clerkUserId)
+        const clerkUser = await this.withClerkProviderBoundary(() => this.getClerkClient().users.getUser(clerkUserId))
         const groupInvitation = this.getGroupInvitationMetadata(clerkUser.publicMetadata)
         const primaryEmailAddress = clerkUser.emailAddresses.find(emailAddress => emailAddress.id === clerkUser.primaryEmailAddressId)
         const primaryEmail = primaryEmailAddress?.emailAddress
@@ -211,7 +215,11 @@ export class ClerkIdentityService {
             return 'http://localhost:4200/register'
         }
 
-        throw new InternalServerErrorException('Clerk invitation redirect URL is not configured')
+        throw new BoardVaultHttpException(
+            API_ERROR_CODES.CLERK_INVITATION_REDIRECT_MISCONFIGURED,
+            500,
+            'The invitation redirect is not configured',
+        )
     }
 
     private async assertGroupOwner(groupId: number, inviterAccountId: number): Promise<void> {
@@ -256,10 +264,26 @@ export class ClerkIdentityService {
         const secretKey = this.configService.get<string>('CLERK_SECRET_KEY')
 
         if (!secretKey) {
-            throw new InternalServerErrorException('Clerk backend integration is not configured')
+            throw new BoardVaultHttpException(API_ERROR_CODES.CLERK_INTEGRATION_MISCONFIGURED, 500, 'Clerk integration is not configured')
         }
 
         return createClerkClient({ secretKey })
+    }
+
+    private async withClerkProviderBoundary<T>(operation: () => Promise<T>): Promise<T> {
+        try {
+            return await operation()
+        } catch (error) {
+            if (error instanceof BoardVaultHttpException) {
+                throw error
+            }
+
+            throw new BoardVaultHttpException(
+                API_ERROR_CODES.CLERK_PROVIDER_UNAVAILABLE,
+                502,
+                'The invitation provider is temporarily unavailable',
+            )
+        }
     }
 
     private async provisionAccount(clerkUserId: string, clerkUser: ClerkUser, email: string): Promise<UserGetDto> {

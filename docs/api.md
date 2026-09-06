@@ -4,7 +4,7 @@
 
 The backend is an HTTP NestJS API with no global prefix. `main.ts` creates runtime Swagger at `/swagger` using `@nestjs/swagger`, installs a global strict `ValidationPipe` as a DTO safety net, and exposes bearer auth metadata and decorated DTOs. The API is consumed by the Angular client through the `Api` service and `DataService`; the production frontend environment targets `https://backend.board-vault.com`.
 
-The runtime Swagger document is generated from source. There is no committed versioned OpenAPI artifact, generated client, consumer-driven contract, or contract-test gate. HTTP failures now use the safe `{ statusCode, code, message, details?, requestId }` envelope and include `X-Request-Id`; 5xx responses intentionally collapse provider and exception details to `Request failed`. The removed dashboard meeting-creation mutation has no remaining frontend client helper.
+The runtime Swagger document is generated from source. There is no committed versioned OpenAPI artifact, generated client, consumer-driven contract, or contract-test gate. HTTP failures now use the safe `{ statusCode, code, message, details?, requestId }` envelope and include `X-Request-Id`; unknown 5xx responses collapse provider and exception details to `Request failed`, while the allow-listed private-beta and Clerk integration/provider codes retain safe remediation context. The removed dashboard meeting-creation mutation has no remaining frontend client helper.
 
 ## Route families observed
 

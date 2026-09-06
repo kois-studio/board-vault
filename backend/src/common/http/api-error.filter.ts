@@ -64,11 +64,10 @@ export class ApiErrorFilter implements ExceptionFilter {
     } {
         const defaultCode = HttpStatus[statusCode] ?? 'HTTP_ERROR'
 
-        if (statusCode >= HttpStatus.INTERNAL_SERVER_ERROR) {
-            return { code: defaultCode, message: 'Request failed' }
-        }
-
         if (typeof payload === 'string') {
+            if (statusCode >= HttpStatus.INTERNAL_SERVER_ERROR) {
+                return { code: defaultCode, message: 'Request failed' }
+            }
             return { code: defaultCode, message: payload }
         }
 
@@ -76,7 +75,18 @@ export class ApiErrorFilter implements ExceptionFilter {
             return { code: defaultCode, message: 'Request failed' }
         }
 
-        const candidate = payload as { error?: unknown; message?: unknown }
+        const candidate = payload as { code?: unknown; error?: unknown; message?: unknown }
+        const explicitCode = typeof candidate.code === 'string' && /^[A-Z][A-Z0-9_]+$/.test(candidate.code) ? candidate.code : undefined
+
+        if (statusCode >= HttpStatus.INTERNAL_SERVER_ERROR) {
+            return explicitCode
+                ? {
+                      code: explicitCode,
+                      message: typeof candidate.message === 'string' && candidate.message.length > 0 ? candidate.message : 'Request failed',
+                  }
+                : { code: defaultCode, message: 'Request failed' }
+        }
+
         const details = Array.isArray(candidate.message)
             ? candidate.message.filter((item): item is string => typeof item === 'string' && item.length > 0)
             : undefined
@@ -89,9 +99,10 @@ export class ApiErrorFilter implements ExceptionFilter {
                   ? candidate.message
                   : 'Request failed'
         const code =
-            typeof candidate.error === 'string' && candidate.error.length > 0
+            explicitCode ??
+            (typeof candidate.error === 'string' && candidate.error.length > 0
                 ? candidate.error.replace(/[^a-zA-Z0-9]+/g, '_').toUpperCase()
-                : defaultCode
+                : defaultCode)
 
         return { code, message, ...(details && details.length > 0 ? { details } : {}) }
     }
