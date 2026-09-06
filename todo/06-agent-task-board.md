@@ -3179,3 +3179,15 @@ Continuation claim: EQ-007
 Owner: Codex
 
 Claimed: 2026-09-06
+
+Scope: close the current local regression checkpoint after the auth, private-beta, and operations reviews.
+
+Changed: Rechecked repository cleanliness and diff safety, frontend no-mutation Biome lint, and the complete backend test suite after the latest documentation and Clerk-policy evidence updates.
+
+Verified: Worktree is clean; `git diff --check` passes; frontend lint passes; backend 45 suites/230 tests pass. The prior frontend build/unit/public-browser gate also remains green, and no deployment or push was performed.
+
+Continuation claim: TEST-001 / CI-001
+
+Owner: Codex
+
+Claimed: 2026-09-06
