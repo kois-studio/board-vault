@@ -2980,7 +2980,7 @@ Claimed: 2026-09-06
 
 Changed: Removed internal entity/account identifiers, provider message IDs, cache key counts, and serialized query options from the remaining audited service logs. Safe error-class and operational diagnostics remain available for diagnosis.
 
-Verified: `rg` audit of backend logger interpolation, `cd backend && npx eslint "{src,apps,libs,test}/**/*.ts"`, `cd backend && npm test -- --runInBand` (46 suites / 237 tests), `cd backend && npm run build`, and `git diff --check` pass. No deployment or push was performed.
+Verified: `rg` audit of backend logger interpolation, `cd backend && npm run lint:logs`, `cd backend && npx eslint "{src,apps,libs,test}/**/*.ts"`, `cd backend && npm test -- --runInBand` (46 suites / 237 tests), `cd backend && npm run build`, and `git diff --check` pass. No deployment or push was performed.
 
 Changed: Audited backend service logging and removed raw schema/provider exception objects plus user-entered group, game, tag, username, and search values from the corrected operational messages. Email failures now emit only a safe error class and no longer double-log provider failures; existing database, cache, auth, and HTTP logging boundaries remain intact.
 

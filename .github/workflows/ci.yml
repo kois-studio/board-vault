@@ -45,6 +45,8 @@ jobs:
               run: npm test -- --runInBand
             - name: Run backend lint
               run: npx eslint "{src,apps,libs,test}/**/*.ts"
+            - name: Check log boundary
+              run: npm run lint:logs
             - name: Run HTTP E2E tests
               run: npm run test:e2e -- --runInBand
             - name: Build backend
