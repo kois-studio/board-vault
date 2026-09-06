@@ -5,22 +5,22 @@
             <app-card-account [member]="currentUser$()" />
 
             <div class="pt-4 grid gap-2">
-                <button
+                <a
                     routerLink="/settings/account"
                     [routerLinkActive]="['bg-zinc-200', 'dark:bg-indigo-800']"
-                    class="flex gap-2 py-2 px-4 rounded-lg hover:bg-zinc-300 dark:hover:bg-indigo-600 w-full cursor-pointer"
+                    class="flex gap-2 py-2 px-4 rounded-lg hover:bg-zinc-300 dark:hover:bg-indigo-600 w-full"
                 >
                     <i class="bi bi-person-circle"></i>
                     <span>Profile</span>
-                </button>
-                <button
+                </a>
+                <a
                     routerLink="/settings/security"
                     [routerLinkActive]="['bg-zinc-200', 'dark:bg-indigo-800']"
-                    class="flex gap-2 py-2 px-4 rounded-lg hover:bg-zinc-300 dark:hover:bg-indigo-600 w-full cursor-pointer"
+                    class="flex gap-2 py-2 px-4 rounded-lg hover:bg-zinc-300 dark:hover:bg-indigo-600 w-full"
                 >
                     <i class="bi bi-shield-lock-fill"></i>
                     <span>Security</span>
-                </button>
+                </a>
             </div>
         </div>
         <!-- Right content area -->
