@@ -3007,3 +3007,19 @@ Changed: Clerk invitation route identifiers now match the observed `inv_...` pro
 Review: SEC-005 / EQ-003
 
 Verified: Targeted backend tests pass (15 tests), backend lint/build pass, and the local provider rehearsal passes create/list/revoke/removal. Provider acceptance after recipient verification, expiry, and delivery-failure/retry remain open.
+
+Continuation claim: EQ-007 / PROD-003
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Branch/worktree: main / shared workspace
+
+Scope: make group-detail navigation truthful when group data is still loading, fails, disappears, or changes under a reused route.
+
+Changed: Group detail now exposes loading, retryable group-list failure, and unavailable-group states with a route back to the groups workspace. Shared group state is cleared when the route changes or membership disappears, preventing stale group content from appearing under another group URL. Added an authenticated Playwright regression for unavailable-group recovery.
+
+Review: EQ-007 / PROD-003
+
+Verified: Frontend build and targeted Biome checks pass; the unavailable-group authenticated browser check passes. Broader rendered responsive, keyboard, focus, contrast, and long-content review remains open.

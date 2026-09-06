@@ -160,6 +160,7 @@ Relevant surfaces: [`groups`](../frontend/src/app/pages/groups/), [`group-view`]
 - Group edit/delete/leave surfaces now mirror the owner/member policy: members see a read-only management explanation, owners see member/invitation controls, owners cannot leave, destructive actions wait for successful API responses before navigating, and direct edit-route resolution has explicit loading/unavailable states.
 - Make empty groups useful: explain the next step for members, games, and invitations; failed group loading now has an explicit retry state.
 - Ensure member visibility and private group data follow the backend authorization rules; group-history failures no longer get cached as an empty result and now expose retry.
+- Group detail now distinguishes group-list loading, a failed group-list read, and a group that is no longer available; it also clears shared group state when the route changes so an old group cannot appear under a new URL. The rendered mobile social-loop pass still needs broader keyboard, focus, contrast, and long-content review.
 - Remove unnecessary reload-all behavior after group mutations where safe.
 - Review invitation and notification feedback, unread/read states, provider pending/revoked states, and failure recovery.
 - Validate the new 30-day legacy invitation expiry in a real two-account flow, then complete provider/legacy retry behavior and notification copy/read-state validation with real invitation data.
