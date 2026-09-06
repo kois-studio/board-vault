@@ -2950,6 +2950,18 @@ Owner: Codex
 
 Claimed: 2026-09-06
 
+Scope: recheck private-beta account retention and production identity-verification access.
+
+Changed: Read-only Turso queries found four active unverified legacy accounts; three have group/game history and are excluded by the retention policy, while the only history-free account remains younger than 60 days. The cleanup candidate count is zero. A read-only Clerk production config pull was attempted but the linked CLI has no production instance configured.
+
+Verified: No account was deleted, contacted, or modified. Production Clerk sign-up configuration remains an operational verification gap; no production mutation was attempted.
+
+Continuation claim: AUTH-001 / OPS-005
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
 Scope: redesign and verify the Clerk invitation registration flow after the provider ticket exchange failure.
 
 Changed: Replaced the eager ticket exchange with an explicit invitation form for the configured username/password requirements, added existing-user ticket sign-in handling, activated completed Clerk sessions, redirected successful invitees to the dashboard, mounted Clerk’s required `clerk-captcha` target, and added bounded validation/error states.

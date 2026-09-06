@@ -137,6 +137,15 @@ and is younger than the 60-day cleanup threshold. None has a Clerk identity,
 and none was deleted or contacted. See [ADR-0008](adr/0008-private-beta-registration.md)
 for the retention and notification policy.
 
+A follow-up aggregate check on 2026-09-06 found four active unverified legacy
+accounts. Accounts `#4`, `#7`, and `#9` already have group or owned-game
+history, so the retention tool correctly excludes them; account `#16` remains
+history-free but is still younger than the 60-day threshold. The cleanup
+candidate count is zero. No account was deleted or contacted. The linked Clerk
+CLI has no production instance configured, so production Clerk sign-up settings
+still require verification through the deployment owner or a deliberately
+linked production CLI session.
+
 On 2026-08-15, an authenticated request to
 `/collection/users/1/games` returned a Vercel 504 because the configured
 Upstash Redis hostname failed DNS resolution. The browser reported this as a
