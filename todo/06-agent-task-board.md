@@ -3694,3 +3694,21 @@ Claimed: 2026-09-06
 Scope: give email-provider failures the same safe, correlated API contract as Clerk-provider failures.
 
 Acceptance: verification, password-reset, and notification delivery failures must log only a safe error class, return an allow-listed `EMAIL_PROVIDER_UNAVAILABLE` 502 response through the API filter, and never expose provider payloads or recipient data. Add focused service/filter coverage and update current-state evidence.
+
+Changed: Email delivery now maps Resend failures to `EMAIL_PROVIDER_UNAVAILABLE` with a safe 502 message for verification, password-reset, and notification callers; provider logs retain only the safe error class. Preserved password recovery now removes artificial waits, adds accessible labels/status/error states, and offers fresh-link/sign-in recovery.
+
+Verified: Backend 239 tests across 46 suites, frontend 52 browser unit tests, frontend Biome, and the 604.88 kB / 136.42 kB production build pass. No deployment or push was performed.
+
+Continuation claim: AUTH-001 / EQ-007
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Scope: make the preserved legacy password-recovery path clear, immediate, and recoverable while Clerk migration remains staged.
+
+Acceptance: remove artificial waits, give request/token forms explicit labels and accessible status/error states, distinguish temporary email-provider failure from invalid/expired reset links, and preserve safe navigation back to sign-in. Add focused component coverage without changing the private-beta or Clerk cutover policy.
+
+Changed: Preserved password recovery now submits without artificial waits, exposes labeled request/token fields with live loading and error states, distinguishes temporary email delivery failure from invalid/expired links, and offers direct fresh-link and sign-in recovery.
+
+Verified: `cd frontend && npx biome check src/app`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (52 passing), and `cd frontend && npm run build` (604.88 kB initial raw / 136.42 kB estimated transfer) pass. No deployment or push was performed.

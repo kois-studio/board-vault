@@ -131,6 +131,16 @@ surface because it has meaningful onboarding content and lands directly in the
 new group workspace; it is not an empty side page that needs to become a
 dialog. Catalog/detail breadth remains deferred.
 
+### Tech-lead reassessment — after preserved password-recovery UX — 2026-09-06
+
+The preserved legacy recovery path now has immediate request/token feedback,
+explicit form labels, retryable provider guidance, fresh-link recovery, and a
+deliberate return to sign-in. This supports the staged Clerk migration without
+expanding the old authentication surface into a second product identity.
+Frontend coverage is now 52 browser-based unit tests and the production build
+remains under budget. The recovery flow still needs rendered browser review;
+legacy password/JWT retirement remains gated on real Clerk rollback evidence.
+
 ## Critical — unblock safe feature development
 
 ### READINESS-001 [Critical] SEC-003/SEC-008 — Complete object-level authorization audit
@@ -175,7 +185,7 @@ dialog. Catalog/detail breadth remains deferred.
 
 - **Status:** In progress
 - **Affected area:** `backend/test/`, backend `src`, frontend `src/**/*.spec.ts`
-- **Evidence:** Backend now has 46 focused suites and 239 passing unit tests plus 2 environment-safe HTTP E2E tests; frontend has 48 browser-based unit tests plus five passing public Playwright tests. The current default Playwright run discovers 26 tests, with 21 intentionally guarded without disposable Clerk/browser fixture state. The opt-in authenticated collection, invitation, session, recommendation, acquisition-decision, settings, destructive-flow, and rendered-core journeys remain available; a disposable provider-invitation rehearsal also proves create/list/revoke/removal. Email-provider failure mapping now has focused service and API-error-filter coverage.
+- **Evidence:** Backend now has 46 focused suites and 239 passing unit tests plus 2 environment-safe HTTP E2E tests; frontend has 52 browser-based unit tests plus five passing public Playwright tests. The current default Playwright run discovers 26 tests, with 21 intentionally guarded without disposable Clerk/browser fixture state. The opt-in authenticated collection, invitation, session, recommendation, acquisition-decision, settings, destructive-flow, and rendered-core journeys remain available; a disposable provider-invitation rehearsal also proves create/list/revoke/removal. Email-provider failure mapping now has focused service and API-error-filter coverage.
 - **Risk:** Security and product regressions are invisible.
 - **Next action:** Add remaining negative authorization/contract cases and provider/cache boundary evidence, preserve the authenticated core-loop journeys as launch regression gates, and observe them in a disposable environment with real Clerk state.
 - **Dependencies:** READINESS-001, READINESS-002, READINESS-003.

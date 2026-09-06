@@ -1,17 +1,19 @@
 import { CommonModule } from '@angular/common'
 import { Component } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
-import { ActivatedRoute, Router } from '@angular/router'
+import { ActivatedRoute } from '@angular/router'
+import { RouterLink } from '@angular/router'
 import { Api } from '../../../api/api'
 import { SpinnerComponent } from '../../../components/ui/spinner/spinner.component'
 import { TitleSubtitleComponent } from '../../../components/ui/title-subtitle/title-subtitle.component'
 
 @Component({
-    imports: [SpinnerComponent, TitleSubtitleComponent, CommonModule, ReactiveFormsModule],
+    imports: [SpinnerComponent, TitleSubtitleComponent, CommonModule, ReactiveFormsModule, RouterLink],
     templateUrl: 'reset-password-token.component.html',
 })
 export class ResetPasswordTokenComponent {
     public state: 'form' | 'loading' | 'success' | 'error' = 'form'
+    public errorMessage = 'This reset link is invalid or expired. Request a fresh link to continue.'
 
     // Form inputs
     public resetPasswordFormGroup = new FormGroup({
@@ -21,7 +23,6 @@ export class ResetPasswordTokenComponent {
 
     constructor(
         private readonly api: Api,
-        private readonly router: Router,
         private readonly route: ActivatedRoute,
     ) {}
 
@@ -51,7 +52,10 @@ export class ResetPasswordTokenComponent {
         return !this.passwordsDoNotMatch ? 'border-green-500' : 'border-red-500'
     }
 
-    public resetPassword() {
+    public resetPassword(): void {
+        this.resetPasswordFormGroup.markAllAsTouched()
+        if (this.disableSubmit) return
+
         const token = this.route.snapshot.paramMap.get('token')
         if (!token) {
             this.state = 'error'
@@ -59,26 +63,13 @@ export class ResetPasswordTokenComponent {
         }
 
         this.state = 'loading'
-
-        // set timeout to 2 seconds to show loading state
-        // this gives the user time to read the messages without taking too long
-        setTimeout(() => {
-            if (!this.password?.value) {
+        this.api.resetPassword(token, this.password?.value ?? '').subscribe({
+            next: () => {
+                this.state = 'success'
+            },
+            error: () => {
                 this.state = 'error'
-                return
-            }
-
-            this.api.resetPassword(token, this.password.value).subscribe({
-                next: (response) => {
-                    this.state = 'success'
-                    setTimeout(() => {
-                        this.router.navigate(['/login'])
-                    }, 2000)
-                },
-                error: (error) => {
-                    this.state = 'error'
-                },
-            })
-        }, 2000)
+            },
+        })
     }
 }
