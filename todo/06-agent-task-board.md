@@ -3669,7 +3669,7 @@ Claimed: 2026-09-06
 
 Scope: prevent impossible attendee edits in the canonical session-detail flow and explain the constraint before a failed API write.
 
-Changed: Session detail now disables removing the only attendee or an attendee recorded for a played game, exposes an accessible action label describing why, and keeps a defensive toast guard for programmatic/legacy activation.
+Changed: Session detail now disables removing the only attendee or an attendee recorded for a played game, shows visible guidance and an accessible action label describing why, and keeps a defensive toast guard for programmatic/legacy activation.
 
 Verified: `cd frontend && npx ng test --watch=false --browsers=ChromeHeadless --include='src/app/pages/meet-view/meet-view.component.spec.ts'` (4 passing), targeted Biome, and `cd frontend && npm run build` pass. No deployment or push was performed.
 
