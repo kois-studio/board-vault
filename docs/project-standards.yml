@@ -457,7 +457,7 @@ compliance:
 
     - id: WEB-001
       status: gap
-      evidence: no repeatable rendered-page accessibility/responsive audit exists; frontend has 32 browser-based unit tests and public Playwright navigation checks, but no systematic authenticated route audit
+      evidence: an opt-in rendered route audit now covers core authenticated routes at 375px, 768px, and 1280px for overflow and unnamed controls; global focus-visible rings and explicit core session labels are now present, while keyboard traversal, focus visibility in all route contexts, contrast, screen-reader behavior, and non-core route coverage remain open
       priority: high
       next_action: Audit landing, auth, collection, group, and play routes.
     - id: WEB-002

@@ -43,6 +43,15 @@ Next priority order:
    public discovery, and complex recommendation scoring remain outside the
    finished-product gate.
 
+## Tech-lead reassessment — after safe HTTP logging milestone
+
+The operational logging milestone improves diagnosis but does not justify
+expanding product surface. The next UI/UX work is a narrow quality pass over
+the social loop: make the next action obvious, keep loading/error/empty states
+truthful, and verify keyboard/focus semantics on the routes that decide,
+coordinate, and remember. Real two-person acceptance remains the primary
+product gate; deeper catalog/detail work stays deferred.
+
 ## Review status
 
 - **Not reviewed** — no systematic UI/UX review has been recorded.
@@ -81,7 +90,7 @@ For each area, review:
 | Authenticated header | `header`, `top-bar` | Source-audited | Review information architecture, active states, mobile navigation, focus, and terminology. |
 | Profile menu | `profile-menu`, invitation/notification modals | Source-audited | Review account identity, unread states, modal behavior, errors, and small-screen usability. |
 | Basic/complete layouts | `layout-basic`, `layout-complete` | Source-audited | Validate distraction-free action pages versus browsing pages; review spacing, scroll, and responsive behavior. |
-| Shared controls | button, badge, page header, container, spinner, tooltip, image background | Source-audited | The theme toggle now has a state-aware accessible name, pressed state, and visible keyboard focus. Establish the remaining shared component conventions and accessibility; test loading and icon-only variants. |
+| Shared controls | button, badge, page header, container, spinner, tooltip, image background | Partially reviewed | The theme toggle now has a state-aware accessible name, pressed state, and visible keyboard focus; the shared link/button/form baseline now exposes a consistent focus-visible ring. Establish the remaining shared component conventions and accessibility; test loading and icon-only variants. |
 | Cards and sections | account, game, group, invitation, notification, card section | Source-audited | Review density, hierarchy, long content, actions, empty states, and mobile wrapping. |
 | Toasts and global loading | `toast`, `loading.service`, `DataService` patterns | Source-audited | Standardize timing, severity, focus/announcement behavior, and failure recovery. |
 
@@ -116,7 +125,7 @@ For each area, review:
 | Session detail | `/sessions/:sessionId`, `meet-view` | Partially reviewed | Organizer lifecycle controls, human-readable Planned/Live now/Completed/Cancelled status labels, planned/played/skipped separation, atomic attendee replacement, editable shortlist, member RSVP, organizer-recorded actual attendance, attendee-only post-session game ratings, persisted session context, awaited game writes, rollback-on-error, terminal-state editing guards, translation-backed labels, member-scoped canonical session detail reads, and retryable load failures now sit inside a game-night plan/record UX; review error feedback and rendered responsive controls. Legacy `/meets/:meetId` redirects here. |
 | Session confirmation | Removed | Reviewed | Removed the no-op confirmation route because attendee and played-game changes persist immediately from session detail; the detail page now says so explicitly. |
 | Upcoming sessions | `/play/upcoming-sessions` | Partially reviewed | Reads scheduled/active sessions and offers real group scheduling links. The page now leads with the group handoff for planning, uses an agenda-like session timeline, keeps notes and status visible, and gives a clear zero-session next action. Review rendered status hierarchy, loading/error states, and mobile/keyboard layout with real sessions. |
-| History | `/play/history`, `/play/history?groupId=:groupId` | Partially reviewed | Now treated as shared memory: the surface adds group-aware filtering, lightweight activity summaries, stronger session cards, participant/game context, honest zero-data guidance, and a direct planning action. Advanced analytics remain deferred; rendered responsive, keyboard, focus, contrast, and real-data review remain. |
+| History | `/play/history`, `/play/history?groupId=:groupId` | Partially reviewed | Now treated as shared memory: the surface adds group-aware filtering, lightweight activity summaries, stronger session cards, participant/game context, honest zero-data guidance, a direct planning action, and an announced retryable failure state. Advanced analytics remain deferred; rendered responsive, keyboard, focus, contrast, and real-data review remain. |
 | Recommendations | `/play/recommendations`, recommendations page | Partially reviewed | Group loading/failure states now distinguish unavailable data from no groups and expose retry. Group/attendee selection, optional duration, balanced/fresh/favorite decision lenses, loading/error/no-results states, explanation cards, persisted last-played context, current group interested/passed signals, direct scheduling handoff, and “Not for us” feedback now exist. Complexity and history-weighted scoring remain intentionally deferred until real usage exists. Run the authenticated browser journey and complete responsive, keyboard, focus, contrast, and real-data review. |
 | Quick play | `/play/quick-play` link/reference only | Blocked | No declared route or implemented flow currently exists. |
 | Analytics | Group home insight cards; `/play/analytics` remains absent | Partially reviewed | The group home now shows lightweight most-played, participation, recently-played, and revisit signals from persisted completed sessions. A separate analytics route/read model remains deferred until real usage justifies it; review the rendered cards with real history before exposing more navigation. |

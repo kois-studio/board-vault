@@ -58,6 +58,17 @@ rehearsal against persisted data, then close provider-delivery, Turso recovery,
 Clerk migration, and rendered accessibility gates. Advanced analytics and
 game-detail breadth remain deferred until real groups demonstrate repeat use.
 
+### Tech-lead reassessment — after safe HTTP logging milestone — 2026-09-06
+
+The request-correlation slice is complete and locally verified, but it does
+not change the product priority: the first release still needs a trustworthy
+two-person social loop. The next code slice is a narrow core-route quality
+pass (keyboard/focus semantics, truthful states, and decision-oriented copy)
+that can be validated without production writes. Broader service-log
+redaction, provider-error mapping, Turso recovery ownership, Clerk cutover,
+and real-group acceptance remain explicit release gates. Catalog breadth,
+public discovery, and standalone analytics remain deferred.
+
 ## Critical — unblock safe feature development
 
 ### READINESS-001 [Critical] SEC-003/SEC-008 — Complete object-level authorization audit
@@ -149,7 +160,7 @@ game-detail breadth remain deferred until real groups demonstrate repeat use.
 
 - **Status:** Planned
 - **Affected area:** `frontend/src/styles.css`, component SCSS/templates, route surfaces
-- **Evidence:** Tailwind global styles now use plain CSS with a PostCSS nesting pass; route-level components are lazy-loaded; production build has no Sass/selector/bundle-budget warnings and the initial raw bundle is 604.11 kB (138.16 kB estimated transfer) under the 650 kB warning budget. Shared theme-control semantics, the preserved-account auth fallback, migration-state copy, group/session empty states, owner-only invitation controls, invitation-decline confirmation, pending provider-invitation management, direct group-edit route loading/error states, mobile session-progress behavior, attendee-selection handoff, recommendation attendee controls, explainable recommendation lenses, reversible group acquisition interest, invitation-link copy feedback, and the personal/private collection boundary have been improved, but a full accessibility/responsive audit and all route-surface reviews remain open.
+- **Evidence:** Tailwind global styles now use plain CSS with a PostCSS nesting pass; route-level components are lazy-loaded; production build has no Sass/selector/bundle-budget warnings and the latest initial raw bundle is 606.82 kB (138.44 kB estimated transfer) under the 650 kB warning budget. Shared theme-control semantics, consistent keyboard focus rings, explicit session input labels, the preserved-account auth fallback, migration-state copy, group/session empty states, owner-only invitation controls, invitation-decline confirmation, pending provider-invitation management, direct group-edit route loading/error states, mobile session-progress behavior, attendee-selection handoff, recommendation attendee controls, explainable recommendation lenses, reversible group acquisition interest, invitation-link copy feedback, and the personal/private collection boundary have been improved, but a full accessibility/responsive audit and all route-surface reviews remain open.
 - **Risk:** Broken styles, poor mobile/accessibility behavior, and unsupported public claims.
 - **Next action:** Complete the rendered route audit matrix, resolve remaining accessibility/responsive findings, and link content-truth findings to `TRUTH-001`.
 - **Dependencies:** Product truth/brand decision where claims are involved.
@@ -209,7 +220,10 @@ as TODO items here.
   landing should explain the social decision-and-memory loop, group creation
   should remain a focused setup route with an explicit next-step handoff, and
   history should be group-aware shared memory rather than a generic analytics
-  page. Rendered and real-group validation remain open after implementation.
+  page. The core action styles now expose a consistent keyboard focus ring;
+  session date and notes controls use explicit labels; and history/upcoming
+  failures announce themselves as alerts. Rendered and real-group validation
+  remain open after implementation.
 
 ## Collection and group activation
 

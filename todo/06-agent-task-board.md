@@ -2998,6 +2998,20 @@ Owner: Codex
 
 Claimed: 2026-09-06
 
+Continuation claim: EQ-007 / UX-CORE
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Scope: improve keyboard and assistive-technology fundamentals across the primary social loop without expanding catalog scope.
+
+Changed: Added a shared focus-visible ring for links, buttons, and form controls; explicitly associated the session date and notes fields with labels; and marked history/upcoming load failures as alerts. Updated the PM/PO reassessment, UI/UX register, active TODO, standards matrix, and test ledger.
+
+Verified: Frontend production build (606.82 kB initial raw), Biome, all 34 browser unit tests, and four public Playwright tests pass. No deployment or push was performed.
+
+Known follow-up: keyboard traversal, contrast, screen-reader behavior, long-content review, and the real two-person social-loop rehearsal remain open.
+
 Continuation claim: SEC-006 / OPS-007
 
 Owner: Codex
