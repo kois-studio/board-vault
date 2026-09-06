@@ -334,7 +334,8 @@ as TODO items here.
 - [ ] Remove remaining dead routes, placeholder links, misleading copy, stale
   starter documentation, and naming inconsistencies. The old group leave and
   delete pages have been removed and their URLs now use explicit compatibility
-  handoffs; the broader route and documentation inventory remains open.
+  handoffs; the Security page’s disabled deletion placeholder is now truthful
+  policy copy; the broader route and documentation inventory remains open.
 - [ ] Resolve remaining frontend baseline lint/format findings and complete the
   rendered accessibility/responsive route audit; the production build warning
   and initial bundle work is verified locally.

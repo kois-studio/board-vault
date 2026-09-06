@@ -3393,3 +3393,23 @@ Continuation claim: EQ-007 / PROD-003
 Owner: Codex
 
 Claimed: 2026-09-06
+
+Scope: remove the unfinished security destructive-action placeholder and align settings navigation semantics with the actual route behavior.
+
+Acceptance: security presents Clerk-managed controls as the actionable path, explains the current account-deletion policy without a disabled fake action, and settings navigation uses accessible links while retaining active-state styling.
+
+Continuation claim: AUTH-001 / EQ-007
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Changed: Security now presents Clerk-managed sign-in controls as the actionable path and replaces the disabled account-deletion button with explicit private-beta policy copy. Settings Profile/Security navigation now uses semantic links while preserving active-route styling.
+
+Verified: The disposable authenticated settings journey passes the semantic-link and truthful-policy assertions; frontend build and Biome pass. No deployment or push was performed.
+
+Continuation claim: EQ-007 / AUTH-001
+
+Owner: Codex
+
+Claimed: 2026-09-06

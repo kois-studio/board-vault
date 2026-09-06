@@ -145,9 +145,9 @@ For each area, review:
 
 | Area | Routes/components | Current status | Known review scope / next action |
 |---|---|---|---|
-| Settings shell | `/settings`, settings navigation | Source-audited | Review navigation, active state, nested routing, mobile layout, and terminology. |
+| Settings shell | `/settings`, settings navigation | Partially reviewed | Profile and Security are now semantic route links with active styling rather than button-shaped navigation; review nested routing, mobile layout, focus, and terminology. |
 | Account settings | `/settings/account` | Source-audited | Review profile/avatar/display-name/username editing, validation, success/error states, and privacy presentation. |
-| Security settings | `/settings/security` | Partially reviewed | Uses Clerk's account-management panel for email/password/sign-in methods; local Board Vault data deletion is intentionally disabled pending a retention/deletion policy. Review loading/error states, modal accessibility, and deletion policy when defined. |
+| Security settings | `/settings/security` | Partially reviewed | Uses Clerk's account-management panel for email/password/sign-in methods; local Board Vault data deletion now explains the pending retention/deletion policy without rendering a fake disabled action. Review provider loading/error states, modal accessibility, and deletion policy when defined. |
 | Contact settings | Removed | Reviewed for content truth | The unconfigured route and dead Featurebase links were removed; reintroduce only with a real support/feedback destination. |
 | Admin shell | `/admin`, admin layout/sidebar | Source-audited | Sidebar now supports a collapsed mobile overlay with a backdrop and focusable toggle; review role gating, active states, navigation-after-selection, and unauthorized behavior. |
 | Admin dashboard | `/admin/panel` | Source-audited | The blank placeholder was replaced with a responsive hub for implemented admin tools; review hierarchy, keyboard/focus behavior, and future persisted metrics when that contract exists. |
