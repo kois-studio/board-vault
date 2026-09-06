@@ -3107,3 +3107,15 @@ Continuation claim: EQ-007
 Owner: Codex
 
 Claimed: 2026-09-06
+
+Scope: turn the rendered core-route review into a repeatable responsive regression.
+
+Changed: Added an opt-in Playwright audit for group, group-edit, session planning/detail, collection, upcoming-session, and history routes at 375px, 768px, and 1280px. It checks document overflow and unnamed visible controls using accessible-label, associated-label, labelled-by, title, text, and image-alt semantics.
+
+Verified: The rendered audit passes all listed routes and breakpoints against disposable Clerk/local SQLite state. Keyboard-only traversal, focus visibility, contrast, screen-reader behavior, and non-core routes remain open. No deployment or push was performed.
+
+Continuation claim: EQ-007
+
+Owner: Codex
+
+Claimed: 2026-09-06

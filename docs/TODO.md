@@ -191,10 +191,10 @@ as TODO items here.
 ## Information architecture and UX
 
 - [ ] Complete responsive, keyboard, contrast, focus, and screen-reader
-  behavior for the primary journeys. The group workspace now has a rendered
-  375px overflow guard, ordered section navigation, and accessible image-only
-  group/history links; the full route matrix and keyboard/focus/contrast review
-  remain open.
+  behavior for the primary journeys. The core rendered audit now checks group,
+  collection, session, upcoming, and history routes at 375px, 768px, and
+  1280px for overflow and unnamed visible controls; keyboard-only, focus,
+  contrast, screen-reader, and broader route review remain open.
 
 ## Collection and group activation
 
