@@ -55,6 +55,7 @@ Relevant surfaces: [`app.routes.ts`](../frontend/src/app/app.routes.ts), [`meet-
 - Complete the organizer-only attendee API verification through the production UI.
 - Add transaction boundaries for invitation acceptance, scheduled-session creation, completion, cancellation, attendee changes, and played-game recording; legacy invitation acceptance, canonical session creation, lifecycle transitions, played-game recording, and attendee replacement now have transaction boundaries, while deprecated per-row attendee endpoints remain for compatibility.
 - Ensure the upcoming sessions page reads real persisted scheduled/active sessions; the old completed-history placeholder has been removed and the page now uses `userMeets`. Its cards now lead with the group name and human-readable status, expose saved planning notes, and omit the internal session identifier from the primary context.
+- The upcoming-session page now presents a group-first planning handoff, an agenda-like timeline, a useful no-session state, and explicit status/note context. The canonical schedule route now distinguishes group loading, group-read failure, and an unavailable group before rendering the form, preventing stale links from producing an empty planning page.
 - Ensure completed sessions appear in history and cancelled sessions do not appear as completed history; lifecycle filtering now excludes cancelled sessions from upcoming, while richer history/status read models remain to be completed.
 
 ### 2. Recommendations — Verified slice / Partial

@@ -6,10 +6,13 @@ import { firstValueFrom } from 'rxjs'
 import { Api } from '../../api/api'
 import type { GameCompleteType } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
+import { ButtonComponent } from '../../components/ui/button/button.component'
+import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
 import { DataService } from '../../core/services/data.service'
+import { LoadingService } from '../../core/services/loading.service'
 
 @Component({
-    imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterLink],
+    imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterLink, ButtonComponent],
     templateUrl: 'meet-new.component.html',
 })
 export class MeetNewComponent {
@@ -48,6 +51,7 @@ export class MeetNewComponent {
         private readonly api: Api,
         private readonly router: Router,
         private readonly toastService: ToastService,
+        private readonly loadingService: LoadingService,
     ) {
         effect(() => {
             this.userData = this.dataService.currentUser()
@@ -140,6 +144,22 @@ export class MeetNewComponent {
         }
 
         return this.isCreatingLoading || this.dateForm.invalid || this.timeForm.invalid || this.selectedAttendeeIds.length === 0
+    }
+
+    get isLoadingGroups(): boolean {
+        return this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_GROUPS]
+    }
+
+    get groupsError(): boolean {
+        return this.dataService.userGroupsError()
+    }
+
+    get groupUnavailable(): boolean {
+        return !this.isLoadingGroups && !this.groupsError && this.groupData === null
+    }
+
+    retryGroups(): void {
+        this.dataService.refreshUserGroups()
     }
 
     onClickCreateMeeting() {

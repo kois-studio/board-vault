@@ -3012,6 +3012,20 @@ Changed: The landing page now centers the recurring-group decision-and-memory lo
 
 Verified: Frontend production build, Biome, 32 browser unit tests, `git diff --check`, signed-out rendered preview at desktop and 375px, and the four-test public Playwright suite pass. No production data, deployment, or push was changed. Full authenticated real-group usefulness, keyboard/focus/contrast/screen-reader review, and the broader completion checklist remain open.
 
+Continuation claim: PROD-006 / EQ-007
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Branch/worktree: main / shared workspace
+
+Scope: continue the social-loop UX pass into upcoming sessions and canonical scheduling.
+
+Changed: Upcoming sessions now starts with a group-first planning handoff, uses an agenda-like timeline, preserves useful status and planning-note context, and gives an actionable no-session state. The canonical schedule route now distinguishes group loading, group-read failure, and an unavailable/stale group before exposing the form, preventing blank or misleading planning pages.
+
+Verified: Frontend production build, Biome, 32 browser unit tests, and the four-test public Playwright suite pass. No production data, deployment, or push was changed. Authenticated real-session usefulness and full keyboard/focus/contrast/screen-reader review remain open.
+
 Scope: validate the pending schema release against a fresh production snapshot without changing live Turso.
 
 Changed: Exported the live `board-vault` database through the authenticated Turso CLI into a temporary local SQLite file, checked integrity and foreign keys, and applied migrations 0006–0009 to the copy with the committed migration runner.
