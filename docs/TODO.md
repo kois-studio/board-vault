@@ -285,7 +285,7 @@ remote CI, provider delivery, and operational recovery ownership.
 
 - **Status:** In progress
 - **Affected area:** `backend/test/`, backend `src`, frontend `src/**/*.spec.ts`
-- **Evidence:** Backend now has 48 focused suites and 261 passing unit tests plus 6 environment-safe HTTP E2E tests; frontend has 59 browser-based unit tests plus five passing public Playwright tests. The current default Playwright run discovers 26 tests, with 21 intentionally guarded without disposable Clerk/browser fixture state. The opt-in authenticated collection, invitation, session, recommendation, acquisition-decision, settings, destructive-flow, and rendered-core journeys remain available; a disposable provider-invitation rehearsal also proves create/list/revoke/removal. Email-provider failure mapping, disabled-cache behavior, rollback paths including the deprecated bulk collection and proposal-approval boundaries, and fail-closed core social routes now have focused coverage.
+- **Evidence:** Backend now has 48 focused suites and 263 passing unit tests plus 6 environment-safe HTTP E2E tests; frontend has 59 browser-based unit tests plus five passing public Playwright tests. The current default Playwright run discovers 26 tests, with 21 intentionally guarded without disposable Clerk/browser fixture state. The opt-in authenticated collection, invitation, session, recommendation, acquisition-decision, settings, destructive-flow, and rendered-core journeys remain available; a disposable provider-invitation rehearsal also proves create/list/revoke/removal. Email-provider failure mapping, disabled-cache behavior, rollback paths including the deprecated bulk collection and proposal approval/rejection boundaries, and fail-closed core social routes now have focused coverage.
 - **Risk:** Security and product regressions are invisible.
 - **Next action:** Add remaining negative authorization/contract cases and provider/cache boundary evidence, preserve the authenticated core-loop journeys as launch regression gates, and observe them in a disposable environment with real Clerk state.
 - **Dependencies:** READINESS-001, READINESS-002, READINESS-003.
@@ -350,7 +350,7 @@ remote CI, provider delivery, and operational recovery ownership.
 
 - **Status:** In progress
 - **Affected area:** core services, `DatabaseService`, `CacheService`
-- **Evidence:** Concrete infrastructure is used directly; canonical session creation, scheduled-session creation, lifecycle transitions, played-game recording, group creation, legacy invitation acceptance, collection add/remove/metadata/wishlist transitions, group acquisition signal reopening, the deprecated bulk collection update, and administrative proposal approval now use explicit Turso transactions. Collection transitions trim bounded activity memory within the same transaction and invalidate the account activity cache once after commit; proposal caches invalidate only after approval commit. Disabled Redis reads/writes, rate-limit increments, and readiness now have deterministic coverage; remaining review/activity coupling, rejection/duplicate proposal notifications, adapter boundaries, and cache ownership/invalidation completeness remain open.
+- **Evidence:** Concrete infrastructure is used directly; canonical session creation, scheduled-session creation, lifecycle transitions, played-game recording, group creation, legacy invitation acceptance, collection add/remove/metadata/wishlist transitions, group acquisition signal reopening, the deprecated bulk collection update, and administrative proposal approval/rejection now use explicit Turso transactions. Collection transitions trim bounded activity memory within the same transaction and invalidate the account activity cache once after commit; proposal caches invalidate only after the corresponding approval or rejection commit. Disabled Redis reads/writes, rate-limit increments, and readiness now have deterministic coverage; remaining review/activity coupling, adapter boundaries, and cache ownership/invalidation completeness remain open.
 - **Risk:** Partial writes, stale data, provider coupling, and test instability.
 - **Next action:** Define adapter interfaces, transaction boundaries, cache ownership/invalidation, and provider fakes; add integration coverage where provider state can be disposable.
 - **Dependencies:** READINESS-003 and canonical session model.
@@ -447,6 +447,14 @@ catalog product; it is a bounded integrity fix so an admin action cannot leave
 half-created catalog data. Rejection/duplicate notification behavior remains a
 separate lower-priority boundary, and the social two-account rehearsal remains
 the release gate.
+
+### Tech-lead reassessment — proposal rejection boundary — 2026-09-06
+
+Approval and rejection are now atomic and rollback-tested, including their
+submitter notifications. Duplicate marking intentionally keeps its existing
+no-notification behavior. Admin/catalog persistence work now pauses and the
+priority returns to the real social loop, rendered route review, and operational
+launch gates.
 
 ## Collection and group activation
 

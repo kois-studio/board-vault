@@ -63,6 +63,25 @@ Owner: Codex
 Claimed: 2026-09-06
 
 Branch/worktree: main / shared workspace
+Scope: close the remaining proposal-rejection partial-write gap by committing proposal state and submitter notification together, without changing public catalog or social UX
+```
+
+Review: DATA-004
+
+Changed: Administrative proposal rejection now updates proposal state and creates the submitter notification through one explicit database transaction. Duplicate marking remains behaviorally unchanged because it currently has no notification side effect; proposal and submitter-stat caches invalidate only after commit.
+
+Verified: `cd backend && npm test -- --runInBand` passes 48 suites / 263 tests; `cd backend && npm run test:e2e -- --runInBand` passes 6 environment-safe HTTP tests; `cd backend && npm run lint:check`; `cd backend && npm run lint:logs`; and `git diff --check` pass. Failure-injection coverage proves notification failure rolls back the proposal rejection. Build verification is being rerun before commit. No deployment, push, provider mutation, or production data change was performed.
+
+Known follow-ups: Return to social-loop acceptance and rendered UX after this bounded admin-data slice; adapter/cache ownership review remains open.
+
+Previous most recent claim:
+
+```text
+Task: DATA-004
+Owner: Codex
+Claimed: 2026-09-06
+
+Branch/worktree: main / shared workspace
 Scope: make administrative game-proposal approval atomic across the created game, translations, tags, proposal state, and submitter notification without expanding catalog UX
 ```
 
@@ -70,9 +89,9 @@ Review: DATA-004
 
 Changed: Administrative proposal approval now writes the created game, translations, tags, proposal status, and submitter notification through one database transaction. Proposal and submitter-stat caches invalidate only after commit; the canonical social product surface remains unchanged.
 
-Verified: `cd backend && npm test -- --runInBand` passes 48 suites / 261 tests; `cd backend && npm run test:e2e -- --runInBand` passes 6 environment-safe HTTP tests; `cd backend && npm run build`; `cd backend && npm run lint:check`; `cd backend && npm run lint:logs`; and `git diff --check` pass. Failure-injection coverage proves notification failure rolls back the created game, translation, tag, and proposal writes. No deployment, push, provider mutation, or production data change was performed.
+Verified: `cd backend && npm test -- --runInBand` passes 48 suites / 263 tests after the rejection follow-up; `cd backend && npm run test:e2e -- --runInBand` passes 6 environment-safe HTTP tests; `cd backend && npm run build`; `cd backend && npm run lint:check`; `cd backend && npm run lint:logs`; and `git diff --check` pass. Failure-injection coverage proves notification failure rolls back the created game, translation, tag, and proposal writes, and the rejected proposal state. No deployment, push, provider mutation, or production data change was performed.
 
-Known follow-ups: Rejection/duplicate proposal notifications and broader provider/cache integration remain separate; the public social loop remains the product priority.
+Known follow-ups: Duplicate marking intentionally has no notification side effect; broader provider/cache integration remains separate, and the public social loop remains the product priority.
 
 Previous most recent claim:
 
