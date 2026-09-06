@@ -145,13 +145,13 @@ export class Api {
 
     checkEmail(email: string) {
         return this.http
-            .get<{ isAvailable: boolean }>(`${this.url}/auth/check-email?email=${email}`)
+            .get<{ isAvailable: boolean }>(`${this.url}/auth/check-email?${new URLSearchParams({ email }).toString()}`)
             .pipe(map((response) => availabilitySchema.parse(response)))
     }
 
     checkUsername(username: string) {
         return this.http
-            .get<{ isAvailable: boolean }>(`${this.url}/auth/check-username?username=${username}`)
+            .get<{ isAvailable: boolean }>(`${this.url}/auth/check-username?${new URLSearchParams({ username }).toString()}`)
             .pipe(map((response) => availabilitySchema.parse(response)))
     }
 
