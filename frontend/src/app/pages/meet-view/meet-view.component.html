@@ -85,7 +85,8 @@
                     <button
                         type="button"
                         (click)="onClickMember(member.id)"
-                        [disabled]="!canEditSession || isPersistingChanges"
+                        [disabled]="!canEditSession || isPersistingChanges || isAttendeeRemovalBlocked(member.id)"
+                        [attr.aria-label]="getAttendeeToggleLabel(member.id)"
                         [attr.aria-pressed]="meetData?.attendees?.includes(member.id)"
                         class="rounded-lg border p-2 flex items-center justify-start text-left transition-colors disabled:cursor-not-allowed"
                         [ngClass]="{

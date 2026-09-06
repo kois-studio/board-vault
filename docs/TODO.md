@@ -323,7 +323,9 @@ as TODO items here.
 
 - [ ] Validate the complete session flow through authenticated browser coverage,
   including refresh, retryable failures, RSVP, attendance, per-game
-  participants, active-to-completed lifecycle, and feedback. A fresh,
+  participants, active-to-completed lifecycle, and feedback. Session detail
+  now also blocks removing the only attendee or a person still recorded for a
+  played game. A fresh,
   repeatable two-account fixture now passes all of these behaviors, including
   visible history-card assertions after the route-readiness fix; real-group
   usefulness remains part of the separate two-person acceptance rehearsal.

@@ -33,6 +33,13 @@ describe('MeetViewComponent participant safeguards', () => {
         const api = {
             updateSessionPlayedGames: jasmine.createSpy('updateSessionPlayedGames'),
         }
+        const dataService = {
+            currentUser: signal(null),
+            userGroups: signal([]),
+            userReviews: signal([]),
+            updateSessionAttendees: jasmine.createSpy('updateSessionAttendees'),
+            refreshGameReviews: jasmine.createSpy('refreshGameReviews'),
+        }
         const toastService = {
             success: jasmine.createSpy('success'),
             error: jasmine.createSpy('error'),
@@ -45,13 +52,7 @@ describe('MeetViewComponent participant safeguards', () => {
                 { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ sessionId: '99' }) } } },
                 {
                     provide: DataService,
-                    useValue: {
-                        currentUser: signal(null),
-                        userGroups: signal([]),
-                        userReviews: signal([]),
-                        updateSessionAttendees: jasmine.createSpy('updateSessionAttendees'),
-                        refreshGameReviews: jasmine.createSpy('refreshGameReviews'),
-                    },
+                    useValue: dataService,
                 },
                 { provide: ToastService, useValue: toastService },
             ],
@@ -62,7 +63,7 @@ describe('MeetViewComponent participant safeguards', () => {
         component.userData = { id: 1 } as typeof component.userData
         component.meetData = createMeet()
         component.meetDataCopyOriginal = structuredClone(component.meetData)
-        return { component, api, toastService }
+        return { component, api, dataService, toastService }
     }
 
     it('does not allow a played game to lose its final participant', async () => {
@@ -77,6 +78,31 @@ describe('MeetViewComponent participant safeguards', () => {
         expect(component.getGameParticipantIds(42)).toEqual([1])
         expect(api.updateSessionPlayedGames).not.toHaveBeenCalled()
         expect(toastService.error).toHaveBeenCalledWith('Keep at least one participant for each played game.')
+    })
+
+    it('blocks removing the only attendee before sending an invalid request', async () => {
+        const { component, dataService, toastService } = await setup()
+        const meetData = component.meetData
+        expect(meetData).not.toBeNull()
+        if (!meetData) return
+        meetData.attendees = [1]
+        meetData.playedGameParticipants = []
+
+        await component.onClickMember(1)
+
+        expect(component.isAttendeeRemovalBlocked(1)).toBeTrue()
+        expect(dataService.updateSessionAttendees).not.toHaveBeenCalled()
+        expect(toastService.error).toHaveBeenCalledWith('A session must retain at least one attendee.')
+    })
+
+    it('blocks removing an attendee recorded for a played game', async () => {
+        const { component, dataService, toastService } = await setup()
+
+        await component.onClickMember(1)
+
+        expect(component.isAttendeeRemovalBlocked(1)).toBeTrue()
+        expect(dataService.updateSessionAttendees).not.toHaveBeenCalled()
+        expect(toastService.error).toHaveBeenCalledWith('Remove this person from played games before removing them from the session.')
     })
 
     it('restores the participant selection when saving fails', async () => {

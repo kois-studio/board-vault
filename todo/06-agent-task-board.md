@@ -3660,3 +3660,15 @@ Scope: keep shared history truthful when a bookmarked or stale group filter no l
 Changed: The history route now distinguishes a missing group filter from a real empty history. It shows a recoverable “group not available” state, avoids blank group labels, and does not offer a planning link for an unavailable group.
 
 Verified: `cd frontend && npx ng test --watch=false --browsers=ChromeHeadless --include='src/app/pages/play-page/history-page/history-page.component.spec.ts'`, `cd frontend && npx biome check` on the changed files, and `cd frontend && npm run build` pass. Full rendered authenticated review remains dependent on disposable Clerk storage state. No deployment or push was performed.
+
+Continuation claim: PROD-006 / EQ-006
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Scope: prevent impossible attendee edits in the canonical session-detail flow and explain the constraint before a failed API write.
+
+Changed: Session detail now disables removing the only attendee or an attendee recorded for a played game, exposes an accessible action label describing why, and keeps a defensive toast guard for programmatic/legacy activation.
+
+Verified: `cd frontend && npx ng test --watch=false --browsers=ChromeHeadless --include='src/app/pages/meet-view/meet-view.component.spec.ts'` (4 passing), targeted Biome, and `cd frontend && npm run build` pass. No deployment or push was performed.
