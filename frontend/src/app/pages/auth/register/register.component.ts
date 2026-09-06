@@ -1,14 +1,16 @@
-import { Component, effect, inject, signal } from '@angular/core'
-import { RouterLink } from '@angular/router'
+import { Component, inject, signal } from '@angular/core'
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
+import { Router, RouterLink } from '@angular/router'
 import { ClerkService } from '../../../core/services/clerk.service'
 import { FormRegisterComponent } from './form-register/form-register.component'
 
 @Component({
     templateUrl: 'register.component.html',
-    imports: [RouterLink, FormRegisterComponent],
+    imports: [RouterLink, ReactiveFormsModule, FormRegisterComponent],
 })
 export class RegisterComponent {
     private readonly clerkService = inject(ClerkService)
+    private readonly router = inject(Router)
 
     public readonly clerkIsConfigured = this.clerkService.isConfigured
     public readonly clerkIsAvailable = this.clerkService.isAvailable
@@ -16,36 +18,44 @@ export class RegisterComponent {
     public readonly isInvitationFlow = this.clerkService.isInvitationFlow
     public readonly invitationError = signal<string | null>(null)
 
-    private invitationOpened = false
-
-    constructor() {
-        effect(() => {
-            if (!this.isInvitationFlow() || !this.clerkIsAvailable() || this.invitationOpened) {
-                return
-            }
-
-            this.invitationOpened = true
-            void this.beginInvitationSignUp()
-        })
-    }
+    public readonly invitationForm = new FormGroup({
+        username: new FormControl('', {
+            nonNullable: true,
+            validators: [Validators.required, Validators.minLength(4), Validators.maxLength(64)],
+        }),
+        password: new FormControl('', {
+            nonNullable: true,
+            validators: [Validators.required, Validators.minLength(15), Validators.maxLength(128)],
+        }),
+        confirmPassword: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    })
+    public isInvitationSubmitting = false
 
     public openClerkSignUp(): void {
-        if (this.isInvitationFlow()) {
-            void this.beginInvitationSignUp()
-            return
-        }
-
         this.clerkService.openSignUp()
     }
 
-    private async beginInvitationSignUp(): Promise<void> {
+    public get invitationPasswordsMatch(): boolean {
+        return this.invitationForm.controls.password.value === this.invitationForm.controls.confirmPassword.value
+    }
+
+    public async completeInvitationSignUp(): Promise<void> {
+        this.invitationForm.markAllAsTouched()
+        if (this.invitationForm.invalid || !this.invitationPasswordsMatch || this.isInvitationSubmitting) return
+
+        this.isInvitationSubmitting = true
         this.invitationError.set(null)
 
         try {
-            await this.clerkService.beginInvitationSignUp()
+            await this.clerkService.completeInvitationSignUp(
+                this.invitationForm.controls.username.value,
+                this.invitationForm.controls.password.value,
+            )
+            await this.router.navigateByUrl('/dashboard')
         } catch {
-            this.invitationError.set('This invitation is invalid or expired. Ask the group owner to send a new one.')
-            this.invitationOpened = false
+            this.invitationError.set('This invitation could not be completed. Ask the group owner to send a fresh link and try again.')
+        } finally {
+            this.isInvitationSubmitting = false
         }
     }
 }

@@ -68,18 +68,32 @@ export class ClerkService {
         this.clerk?.openSignUp()
     }
 
-    public async beginInvitationSignUp(): Promise<void> {
+    public async completeInvitationSignUp(username: string, password: string): Promise<void> {
         if (!this.isInvitationFlow() || !this.clerk) {
-            return
+            throw new Error('Invitation sign-up is unavailable')
         }
 
         const ticket = this.getInvitationTicket()
         if (!ticket) {
+            throw new Error('Invitation ticket is missing')
+        }
+
+        if (this.getInvitationStatus() === 'sign_in') {
+            const signIn = await this.clerk.client.signIn.create({ strategy: 'ticket', ticket })
+            if (signIn.status !== 'complete' || !signIn.createdSessionId) {
+                throw new Error('Invitation sign-in is incomplete')
+            }
+
+            await this.clerk.setActive({ session: signIn.createdSessionId })
             return
         }
 
-        await this.clerk.client.signUp.create({ strategy: 'ticket', ticket })
-        this.clerk.openSignUp()
+        const signUp = await this.clerk.client.signUp.create({ strategy: 'ticket', ticket, username, password })
+        if (signUp.status !== 'complete' || !signUp.createdSessionId) {
+            throw new Error('Invitation sign-up is incomplete')
+        }
+
+        await this.clerk.setActive({ session: signUp.createdSessionId })
     }
 
     public openUserProfile(): void {
@@ -167,5 +181,9 @@ export class ClerkService {
 
     private getInvitationTicket(): string | null {
         return typeof globalThis.location !== 'undefined' ? new URLSearchParams(globalThis.location.search).get('__clerk_ticket') : null
+    }
+
+    private getInvitationStatus(): string | null {
+        return typeof globalThis.location !== 'undefined' ? new URLSearchParams(globalThis.location.search).get('__clerk_status') : null
     }
 }
