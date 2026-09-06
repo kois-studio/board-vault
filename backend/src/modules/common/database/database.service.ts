@@ -332,20 +332,29 @@ export class DatabaseService implements OnModuleInit {
     }
 
     async updateGames(accountId: number, gamesToAdd: number[], gamesToRemove: number[]): Promise<void> {
-        // Remove games
-        for (const gameId of gamesToRemove) {
-            await this._tursoExecute({
-                sql: 'DELETE FROM OwnedGame WHERE accountId = ? AND gameId = ?',
-                args: [accountId, gameId],
-            })
-        }
+        const transaction = await this.tursoClient.transaction('write')
 
-        // Add games
-        for (const gameId of gamesToAdd) {
-            await this._tursoExecute({
-                sql: 'INSERT INTO OwnedGame (accountId, gameId) VALUES (?, ?)',
-                args: [accountId, gameId],
-            })
+        try {
+            for (const gameId of gamesToRemove) {
+                await transaction.execute({
+                    sql: 'DELETE FROM OwnedGame WHERE accountId = ? AND gameId = ?',
+                    args: [accountId, gameId],
+                })
+            }
+
+            for (const gameId of gamesToAdd) {
+                await transaction.execute({
+                    sql: 'INSERT OR IGNORE INTO OwnedGame (accountId, gameId) VALUES (?, ?)',
+                    args: [accountId, gameId],
+                })
+            }
+
+            await transaction.commit()
+        } catch (error) {
+            await transaction.rollback()
+            throw error
+        } finally {
+            transaction.close()
         }
     }
 
