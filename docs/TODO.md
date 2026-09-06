@@ -113,6 +113,24 @@ not providing inspectable snapshots, and the documented CLI workflow now
 extracts/revokes development actor sessions safely. Catalog breadth, public
 discovery, and standalone analytics remain deferred.
 
+### Tech-lead reassessment — after default browser baseline and email boundary — 2026-09-06
+
+The current local Playwright command discovers 26 tests: five public tests pass
+without credentials and 21 tests are intentionally guarded until disposable
+Clerk/browser fixtures are supplied. This is a healthy safety boundary, but it
+must not be mistaken for authenticated release evidence. Email delivery now
+maps Resend failures to a stable safe 502 code, so registration, reset, and
+notification callers no longer expose arbitrary provider exceptions; real
+delivery/failure rehearsal remains open.
+
+The next product gate is still a real two-person social-loop rehearsal. The
+next local engineering gates are the remaining provider/cache contract cases,
+the complete DTO/object-authorization review, and a rendered accessibility
+pass with real group data. The create-group route remains a focused setup
+surface because it has meaningful onboarding content and lands directly in the
+new group workspace; it is not an empty side page that needs to become a
+dialog. Catalog/detail breadth remains deferred.
+
 ## Critical — unblock safe feature development
 
 ### READINESS-001 [Critical] SEC-003/SEC-008 — Complete object-level authorization audit
@@ -157,9 +175,9 @@ discovery, and standalone analytics remain deferred.
 
 - **Status:** In progress
 - **Affected area:** `backend/test/`, backend `src`, frontend `src/**/*.spec.ts`
-- **Evidence:** Backend now has 46 focused suites and 237 passing unit tests plus 2 environment-safe HTTP E2E tests; frontend has 48 browser-based unit tests plus five passing public Playwright tests, while seeded/integration journeys and authenticated browser coverage remain opt-in. The opt-in authenticated collection, invitation, session, recommendation, and acquisition-decision journeys pass against disposable Clerk development identities and data; a disposable provider-invitation rehearsal also proves create/list/revoke/removal; the full local Playwright run passes 13 tests with 3 guarded skips when the owner/recommendation/acquisition fixtures are supplied.
+- **Evidence:** Backend now has 46 focused suites and 239 passing unit tests plus 2 environment-safe HTTP E2E tests; frontend has 48 browser-based unit tests plus five passing public Playwright tests. The current default Playwright run discovers 26 tests, with 21 intentionally guarded without disposable Clerk/browser fixture state. The opt-in authenticated collection, invitation, session, recommendation, acquisition-decision, settings, destructive-flow, and rendered-core journeys remain available; a disposable provider-invitation rehearsal also proves create/list/revoke/removal. Email-provider failure mapping now has focused service and API-error-filter coverage.
 - **Risk:** Security and product regressions are invisible.
-- **Next action:** Add negative authorization/contract cases, repeatable disposable fixture setup, and provider/remote integration evidence; preserve the existing authenticated core-loop journeys as launch regression gates.
+- **Next action:** Add remaining negative authorization/contract cases and provider/cache boundary evidence, preserve the authenticated core-loop journeys as launch regression gates, and observe them in a disposable environment with real Clerk state.
 - **Dependencies:** READINESS-001, READINESS-002, READINESS-003.
 
 ### READINESS-006 [High] CI-001/002/007 — Add CI gates

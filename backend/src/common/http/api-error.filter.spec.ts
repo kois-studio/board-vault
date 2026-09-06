@@ -99,4 +99,31 @@ describe('ApiErrorFilter', () => {
             requestId: expect.any(String),
         })
     })
+
+    it('keeps email-provider failures safe and diagnosable', () => {
+        const filter = new ApiErrorFilter()
+        const { host, response } = createHost(
+            new BoardVaultHttpException(
+                API_ERROR_CODES.EMAIL_PROVIDER_UNAVAILABLE,
+                HttpStatus.BAD_GATEWAY,
+                'Email delivery is temporarily unavailable',
+            ),
+        )
+
+        filter.catch(
+            new BoardVaultHttpException(
+                API_ERROR_CODES.EMAIL_PROVIDER_UNAVAILABLE,
+                HttpStatus.BAD_GATEWAY,
+                'Email delivery is temporarily unavailable',
+            ),
+            host as never,
+        )
+
+        expect(response.json).toHaveBeenCalledWith({
+            statusCode: 502,
+            code: 'EMAIL_PROVIDER_UNAVAILABLE',
+            message: 'Email delivery is temporarily unavailable',
+            requestId: expect.any(String),
+        })
+    })
 })

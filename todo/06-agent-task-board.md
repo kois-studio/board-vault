@@ -3684,3 +3684,13 @@ Scope: extend client response-contract negative coverage to the group workspace 
 Changed: Added malformed group-workspace and shared-history response regressions. The frontend API boundary now rejects incomplete payloads before they reach group or history state, complementing the existing auth/profile/session/recommendation/admin/notification/provider cases.
 
 Verified: `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (48 passing) and the targeted Biome check pass. No deployment or push was performed.
+
+Continuation claim: SEC-006 / API-003
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Scope: give email-provider failures the same safe, correlated API contract as Clerk-provider failures.
+
+Acceptance: verification, password-reset, and notification delivery failures must log only a safe error class, return an allow-listed `EMAIL_PROVIDER_UNAVAILABLE` 502 response through the API filter, and never expose provider payloads or recipient data. Add focused service/filter coverage and update current-state evidence.
