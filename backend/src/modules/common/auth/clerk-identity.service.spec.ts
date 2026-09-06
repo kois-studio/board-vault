@@ -159,7 +159,7 @@ describe('ClerkIdentityService', () => {
         )
         databaseService.getGroupById.mockResolvedValue({ rows: [[12, 'Friends', 7]] })
         const createInvitation = jest.fn().mockResolvedValue({
-            id: 'invitation_123',
+            id: 'inv_123',
             emailAddress: 'invite@example.com',
             url: 'https://clerk.test/invite',
         })
@@ -167,7 +167,7 @@ describe('ClerkIdentityService', () => {
         mockedCreateClerkClient.mockReturnValue({ invitations: { createInvitation } } as never)
 
         await expect(service.createGroupInvitation(12, 7, 'invite@example.com')).resolves.toEqual({
-            invitationId: 'invitation_123',
+            invitationId: 'inv_123',
             emailAddress: 'invite@example.com',
             url: 'https://clerk.test/invite',
         })
