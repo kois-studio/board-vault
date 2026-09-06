@@ -2950,6 +2950,18 @@ Owner: Codex
 
 Claimed: 2026-09-06
 
+Scope: validate the pending schema release against a fresh production snapshot without changing live Turso.
+
+Changed: Exported the live `board-vault` database through the authenticated Turso CLI into a temporary local SQLite file, checked integrity and foreign keys, and applied migrations 0006–0009 to the copy with the committed migration runner.
+
+Verified: The live export is healthy and reports 16 accounts, 13 sessions, 22 session-game links, and 5 groups; the migrated copy reaches 0009 cleanly with the same counts. Production remains at migration 0005 and was not modified. Backup ownership, schedule, recovery target, and live rollout/rollback procedure remain open.
+
+Continuation claim: DATA-001 / OPS-001
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
 Scope: close the next request-boundary gaps found during the DTO audit without
 expanding the product beyond the social loop.
 

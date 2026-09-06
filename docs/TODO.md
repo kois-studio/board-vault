@@ -265,8 +265,11 @@ as TODO items here.
 
 - [ ] Document the real Turso backup/restore schedule, owner, recovery target,
   rollback procedure, and verify every pending migration against a clean
-  environment before production rollout. The synthetic restore rehearsal is
-  already passing locally.
+  environment before production rollout. A fresh read-only production export
+  has now been integrity-checked and migrations 0006–0009 have been rehearsed
+  successfully against that copy; the schedule, owner, recovery target, and
+  live rollout/rollback procedure remain open. The synthetic restore rehearsal
+  is also passing locally.
 - [ ] Complete the authorization, input-validation, API-contract,
   logging/redaction, cache, and provider-failure reviews.
 - [ ] Expand automated coverage for auth, authorization, collection activation,

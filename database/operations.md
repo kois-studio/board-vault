@@ -32,6 +32,8 @@ turso db shell <database-name> < dump.sql
 
 These procedures need to be supplemented by a real scheduled-backup owner, recovery target, rollback procedure, and provider-level restore rehearsal before launch. The repository’s safe local check is `npm run verify:restore`; it creates a temporary synthetic SQLite snapshot, copies it, applies pending migrations, verifies representative social/session data, and deletes the temporary files. It does not prove that a Turso backup can be restored.
 
+On 2026-09-06, a read-only `turso db export board-vault --output-file <temporary-path> --with-metadata` export was verified locally with `PRAGMA integrity_check = ok` and no foreign-key violations. Pending migrations 0006–0009 were then applied to that disposable copy and preserved the live counts observed at export time. This is a one-time release rehearsal, not a backup schedule; keep the export out of the repository and do not apply migrations to live Turso without an approved rollout and rollback window.
+
 ## Clerk migration configuration
 
 The backend Clerk boundary reads `CLERK_SECRET_KEY`. Before production
