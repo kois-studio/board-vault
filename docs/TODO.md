@@ -195,6 +195,12 @@ as TODO items here.
   collection, session, upcoming, and history routes at 375px, 768px, and
   1280px for overflow and unnamed visible controls; keyboard-only, focus,
   contrast, screen-reader, and broader route review remain open.
+- [ ] Complete the product-facing UX pass for the public landing, group setup,
+  and history/memory surfaces. The PM/PO checkpoint on 2026-09-06 decided that
+  landing should explain the social decision-and-memory loop, group creation
+  should remain a focused setup route with an explicit next-step handoff, and
+  history should be group-aware shared memory rather than a generic analytics
+  page. Rendered and real-group validation remain open after implementation.
 
 ## Collection and group activation
 

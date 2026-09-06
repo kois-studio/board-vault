@@ -4,6 +4,23 @@ This document tracks whether each frontend area has received a deliberate UI/UX 
 
 Reviewed: 2026-09-06
 
+## PM/PO checkpoint — 2026-09-06
+
+The product remains a private social workspace for recurring board-game groups.
+The landing page must explain the group decision-and-memory loop, not sell a
+catalog or game-detail database. The create-group flow is intentionally a
+focused route rather than a modal for now: creating a group is the beginning of
+an onboarding handoff (invite people, add useful games, plan a first session),
+so it needs enough space for context, validation, and a successful next step.
+It must still feel lightweight and avoid the current empty-page presentation.
+
+History is a core product surface, not a future analytics dashboard. Its first
+job is to help a group remember what happened and decide what to do next. The
+next review slice therefore prioritizes group/date/attendee/game context,
+useful summary signals, group filtering, honest empty states, and a direct
+return to planning. Advanced metrics remain deferred until real groups create
+enough history to justify them.
+
 ## Review status
 
 - **Not reviewed** — no systematic UI/UX review has been recorded.
@@ -28,7 +45,7 @@ For each area, review:
 
 | Area | Routes/components | Current status | Known review scope / next action |
 |---|---|---|---|
-| Landing page | `/`, `landing.component` | Partially reviewed | Public route/content-truth behavior is covered by Playwright; continue with rendered responsive, keyboard, focus, contrast, semantics, and visual-hierarchy review. |
+| Landing page | `/`, `landing.component` | Partially reviewed | The copy now centers the group decision-and-memory loop and explains private-beta access by environment. Continue with rendered responsive, keyboard, focus, contrast, semantics, and visual-hierarchy review. |
 | Header and public navigation | `header`, `/login`, `/register` links | Partially reviewed | Clerk production controls work, and public section links now route through the landing page from any shell location; navigation still needs a final signed-out/signed-in and mobile review. |
 | Login | `/login`, login form | Partially reviewed | Production Clerk login was manually verified; the preserved-account fallback now has responsive sizing, labels, autocomplete, and an honest submit state. Review error, loading, expired-session, keyboard, and legacy-UI behavior. |
 | Registration | `/register`, register form | Partially reviewed | Clerk signup/linking was manually verified; invited registration now uses an explicit username/password form, mounts the bot-protection target, activates the created session, and redirects to the dashboard. The degraded-mode fallback has responsive sizing, labels, and password-manager metadata. Review Smart CAPTCHA interaction, duplicate identity, errors, and whether legacy registration remains visible. |
@@ -52,7 +69,7 @@ For each area, review:
 |---|---|---|---|
 | Dashboard home | `/dashboard`, `dashboard-page` | Source-audited | The authenticated home now leads with group workspaces, each group’s shared game count/members/next session, and direct decision/session actions; the personal collection-value counter was removed from this social surface. Loading and retry now depend only on groups and upcoming sessions, so unrelated collection/history failures do not block the workspace. Continue with rendered responsive, keyboard, focus, contrast, and visual-hierarchy review. |
 | Groups index | `/groups`, `groups-page` | Source-audited | Loading, empty, and retryable failure states now distinguish unavailable data from no groups; review create/join guidance, group card hierarchy, and responsive grid. |
-| Create group | `/create-group`, `group-create` | Source-audited | Review form labels, validation, success navigation, duplicate/error handling, and mobile form layout. |
+| Create group | `/create-group`, `group-create` | Partially reviewed | Kept as a focused route because creation is the start of a group setup handoff, not a one-off setting. The redesigned surface explains the next three actions, gives the name field a real label, preserves retryable failure, and provides a useful success handoff; rendered mobile, keyboard, and duplicate/error review remain. |
 | Group detail | `/groups/:groupId`, `group-view` | Partially reviewed | The route is now shaped as a group-first social home with an accessible area navigator matching the rendered order: Decide, Games to acquire, Sessions, Group library, and History/insights. It also includes next session, group pulse, attendee context, shared library, acquisition decisions, recommendation hand-off, recent group memory, and basic most-played/participation insights. Loading, retryable group-list failure, unavailable-group recovery, route-state reset, sized/named group-library game links, and a 375px horizontal-overflow guard are now explicit. A rendered mobile pass found the core hierarchy usable; invitation feedback, image fallbacks, private-data states, keyboard/focus/contrast behavior, and long-content review remain. |
 | Edit/leave/delete group | `/groups/:groupId/{edit,leave,delete}` | Source-audited | Owner/member visibility is now explicit: members see read-only guidance, owners see management controls, owners cannot leave, and destructive actions wait for API success. Review confirmation language, cancellation, failure recovery, and responsive presentation. |
 | Invitations | groups workspace, profile invitation modal, group edit invitation controls | Partially reviewed | Pending invitations are now visible at the groups workspace boundary with direct accept/decline actions; the shared invitation card explains the membership consequence, confirms a decline before mutating it, and keeps failures retryable. Group edit invitation mutations are owner-only, existing-member username validation is visible, provider email invites are listed/revocable for owners, and group management copy distinguishes username invites from new-person email invites. The profile modal remains a secondary access path; pending/accepted/rejected/expired states, notification clarity, provider delivery, and rendered responsive/keyboard behavior still need review. |
@@ -77,7 +94,7 @@ For each area, review:
 | Session detail | `/sessions/:sessionId`, `meet-view` | Partially reviewed | Organizer lifecycle controls, human-readable Planned/Live now/Completed/Cancelled status labels, planned/played/skipped separation, atomic attendee replacement, editable shortlist, member RSVP, organizer-recorded actual attendance, attendee-only post-session game ratings, persisted session context, awaited game writes, rollback-on-error, terminal-state editing guards, translation-backed labels, member-scoped canonical session detail reads, and retryable load failures now sit inside a game-night plan/record UX; review error feedback and rendered responsive controls. Legacy `/meets/:meetId` redirects here. |
 | Session confirmation | Removed | Reviewed | Removed the no-op confirmation route because attendee and played-game changes persist immediately from session detail; the detail page now says so explicitly. |
 | Upcoming sessions | `/play/upcoming-sessions` | Partially reviewed | Reads scheduled/active sessions and offers real group scheduling links. Session cards now lead with the group name and human-readable Planned/Live now state, expose saved planning notes, and remove the internal session identifier from the primary context. Review rendered status hierarchy, loading/error states, and mobile/keyboard layout. |
-| History | `/play/history`, `/play/history?groupId=:groupId` | Partially reviewed | Reads completed-only history with actionable empty state and group labels; group-home links preserve the selected group context, loading failures have a retry state, and the loading skeleton matches the session/game card structure. Group-home history cards now expose recorded attendees and saved session notes; review richer personal-history context and responsive cards. |
+| History | `/play/history`, `/play/history?groupId=:groupId` | Partially reviewed | Now treated as shared memory: the surface adds group-aware filtering, lightweight activity summaries, stronger session cards, participant/game context, honest zero-data guidance, and a direct planning action. Advanced analytics remain deferred; rendered responsive, keyboard, focus, contrast, and real-data review remain. |
 | Recommendations | `/play/recommendations`, recommendations page | Partially reviewed | Group loading/failure states now distinguish unavailable data from no groups and expose retry. Group/attendee selection, optional duration, balanced/fresh/favorite decision lenses, loading/error/no-results states, explanation cards, persisted last-played context, current group interested/passed signals, direct scheduling handoff, and “Not for us” feedback now exist. Complexity and history-weighted scoring remain intentionally deferred until real usage exists. Run the authenticated browser journey and complete responsive, keyboard, focus, contrast, and real-data review. |
 | Quick play | `/play/quick-play` link/reference only | Blocked | No declared route or implemented flow currently exists. |
 | Analytics | Group home insight cards; `/play/analytics` remains absent | Partially reviewed | The group home now shows lightweight most-played, participation, recently-played, and revisit signals from persisted completed sessions. A separate analytics route/read model remains deferred until real usage justifies it; review the rendered cards with real history before exposing more navigation. |

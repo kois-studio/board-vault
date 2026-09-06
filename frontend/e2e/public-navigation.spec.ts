@@ -5,7 +5,7 @@ test.describe('public navigation', () => {
         await page.goto('/')
 
         await expect(page).toHaveTitle(/Board Vault/i)
-        await expect(page.getByRole('heading', { name: /Keep your group’s games close/i })).toBeVisible()
+        await expect(page.getByRole('heading', { name: /Make the next game night easier/i })).toBeVisible()
         await expect(page.getByRole('link', { name: 'Home' })).toBeVisible()
         const navigation = page.getByRole('navigation')
         await expect(navigation.getByRole('link', { name: 'Features' })).toHaveAttribute('href', '/#features')
@@ -18,7 +18,7 @@ test.describe('public navigation', () => {
         await page.goto('/dashboard')
 
         await expect(page).toHaveURL(/\/$/)
-        await expect(page.getByRole('heading', { name: /Keep your group’s games close/i })).toBeVisible()
+        await expect(page.getByRole('heading', { name: /Make the next game night easier/i })).toBeVisible()
     })
 
     test('shows a not-found page for an unknown route', async ({ page }) => {
@@ -31,6 +31,6 @@ test.describe('public navigation', () => {
         await page.goto('/register?__clerk_ticket=test-ticket')
 
         await expect(page.getByRole('heading', { name: /Join your Board Vault group/i })).toBeVisible()
-        await expect(page.getByText(/Complete the secure Clerk sign-up/i)).toBeVisible()
+        await expect(page.getByLabel('Choose a username')).toBeVisible()
     })
 })

@@ -4,10 +4,10 @@
             <div>
                 <p class="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400">Board Vault</p>
                 <h1 class="text-4xl font-bold tracking-tight text-zinc-900 dark:text-white md:text-6xl">
-                    Keep your group’s games close.
+                    Make the next game night easier.
                 </h1>
                 <p class="mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
-                    Organize the games you own, bring your group together, and keep a reliable memory of the sessions you play.
+                    Board Vault helps a recurring group decide what to play, coordinate the night, and remember what happened afterwards.
                 </p>
                 <div class="mt-10 flex flex-col gap-4 sm:flex-row">
                     <a
@@ -24,7 +24,7 @@
                     </a>
                 </div>
                 <p class="mt-5 text-sm text-zinc-500 dark:text-zinc-400">
-                    Board Vault is an early product. Collection, groups, session planning, and first-release recommendations are available; richer scoring and analytics are still being built.
+                    {{ selfRegistrationEnabled() ? 'Start with the people and games you already know.' : 'Board Vault is in private beta while we finish the core group experience.' }}
                 </p>
             </div>
 
@@ -32,23 +32,23 @@
                 <div class="mb-8 flex items-center gap-3">
                     <img src="/images/logo.webp" alt="Board Vault logo" class="h-12 w-12 rounded-xl" />
                     <div>
-                        <p class="font-semibold text-zinc-900 dark:text-white">Your game shelf</p>
-                        <p class="text-sm text-zinc-500 dark:text-zinc-400">A calmer starting point for game night</p>
+                        <p class="font-semibold text-zinc-900 dark:text-white">One shared memory for game night</p>
+                        <p class="text-sm text-zinc-500 dark:text-zinc-400">From “what can we play?” to “remember that session?”</p>
                     </div>
                 </div>
                 <div class="space-y-4">
                     <div class="rounded-2xl bg-indigo-50 p-5 dark:bg-indigo-950/40">
-                        <p class="text-sm font-medium text-indigo-700 dark:text-indigo-300">Collection</p>
-                        <p class="mt-1 text-2xl font-bold text-zinc-900 dark:text-white">Games worth remembering</p>
+                        <p class="text-sm font-medium text-indigo-700 dark:text-indigo-300">Decide together</p>
+                        <p class="mt-1 text-2xl font-bold text-zinc-900 dark:text-white">Use your group’s games, people, and time</p>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div class="rounded-2xl bg-zinc-100 p-5 dark:bg-zinc-800">
-                            <p class="text-sm text-zinc-500 dark:text-zinc-400">Groups</p>
-                            <p class="mt-1 font-semibold text-zinc-900 dark:text-white">Play together</p>
+                            <p class="text-sm text-zinc-500 dark:text-zinc-400">Coordinate</p>
+                            <p class="mt-1 font-semibold text-zinc-900 dark:text-white">Plan the night</p>
                         </div>
                         <div class="rounded-2xl bg-zinc-100 p-5 dark:bg-zinc-800">
-                            <p class="text-sm text-zinc-500 dark:text-zinc-400">History</p>
-                            <p class="mt-1 font-semibold text-zinc-900 dark:text-white">Remember sessions</p>
+                            <p class="text-sm text-zinc-500 dark:text-zinc-400">Remember</p>
+                            <p class="mt-1 font-semibold text-zinc-900 dark:text-white">Build useful history</p>
                         </div>
                     </div>
                 </div>
@@ -62,24 +62,24 @@
                 <p class="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400">The foundation</p>
                 <h2 class="mt-3 text-3xl font-bold text-zinc-900 dark:text-white">Everything starts with trustworthy shared data.</h2>
                 <p class="mt-4 text-lg text-zinc-600 dark:text-zinc-300">
-                    Build the collection and group context that makes future session planning useful.
+                    Your personal collection is the input. Your group’s decisions and play history are the value.
                 </p>
             </div>
 
             <div class="mt-12 grid gap-6 md:grid-cols-3">
                 <article class="rounded-2xl border border-zinc-200 p-6 dark:border-zinc-800">
-                    <h3 class="text-xl font-semibold text-zinc-900 dark:text-white">Your collection</h3>
-                    <p class="mt-3 leading-7 text-zinc-600 dark:text-zinc-300">Browse the catalog, track owned games, rate what you play, and keep wishlist notes in one place.</p>
+                    <h3 class="text-xl font-semibold text-zinc-900 dark:text-white">Bring your shelf</h3>
+                    <p class="mt-3 leading-7 text-zinc-600 dark:text-zinc-300">Keep a lightweight record of the games you can bring. It gives your group a trustworthy starting point.</p>
                     <a routerLink="/register" class="mt-5 inline-flex font-medium text-indigo-600 hover:underline dark:text-indigo-400">{{ registrationCta() }} →</a>
                 </article>
                 <article class="rounded-2xl border border-zinc-200 p-6 dark:border-zinc-800">
-                    <h3 class="text-xl font-semibold text-zinc-900 dark:text-white">Your groups</h3>
-                    <p class="mt-3 leading-7 text-zinc-600 dark:text-zinc-300">Create a private group and invite the people you actually play with.</p>
+                    <h3 class="text-xl font-semibold text-zinc-900 dark:text-white">Decide as a group</h3>
+                    <p class="mt-3 leading-7 text-zinc-600 dark:text-zinc-300">See what fits the people attending, capture shared signals, and turn “maybe” into a useful next choice.</p>
                     <a routerLink="/register" class="mt-5 inline-flex font-medium text-indigo-600 hover:underline dark:text-indigo-400">{{ registrationCta() }} →</a>
                 </article>
                 <article class="rounded-2xl border border-zinc-200 p-6 dark:border-zinc-800">
-                    <h3 class="text-xl font-semibold text-zinc-900 dark:text-white">Your history</h3>
-                    <p class="mt-3 leading-7 text-zinc-600 dark:text-zinc-300">Keep the sessions and games you have played visible for the next game night.</p>
+                    <h3 class="text-xl font-semibold text-zinc-900 dark:text-white">Remember the night</h3>
+                    <p class="mt-3 leading-7 text-zinc-600 dark:text-zinc-300">Record who came, what you played, and the notes that make the next session easier to plan.</p>
                     <a routerLink="/register" class="mt-5 inline-flex font-medium text-indigo-600 hover:underline dark:text-indigo-400">{{ registrationCta() }} →</a>
                 </article>
             </div>
@@ -90,7 +90,7 @@
         <div class="mx-auto max-w-6xl">
             <div class="max-w-2xl">
                 <p class="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400">How it works today</p>
-                <h2 class="mt-3 text-3xl font-bold text-zinc-900 dark:text-white">Start small and make the next game night easier.</h2>
+                <h2 class="mt-3 text-3xl font-bold text-zinc-900 dark:text-white">Start with one group and one real game night.</h2>
             </div>
             <ol class="mt-12 grid gap-6 md:grid-cols-3">
                 <li class="rounded-2xl bg-white p-6 shadow-sm dark:bg-zinc-800">
@@ -101,12 +101,12 @@
                 <li class="rounded-2xl bg-white p-6 shadow-sm dark:bg-zinc-800">
                     <span class="text-sm font-bold text-indigo-600 dark:text-indigo-400">02</span>
                     <h3 class="mt-3 text-xl font-semibold text-zinc-900 dark:text-white">Add the games you own</h3>
-                    <p class="mt-3 leading-7 text-zinc-600 dark:text-zinc-300">Use your collection as the shared source of truth for what is available.</p>
+                    <p class="mt-3 leading-7 text-zinc-600 dark:text-zinc-300">Your collection tells the group what is actually available—not everything on the internet.</p>
                 </li>
                 <li class="rounded-2xl bg-white p-6 shadow-sm dark:bg-zinc-800">
                     <span class="text-sm font-bold text-indigo-600 dark:text-indigo-400">03</span>
                     <h3 class="mt-3 text-xl font-semibold text-zinc-900 dark:text-white">Bring in your group</h3>
-                    <p class="mt-3 leading-7 text-zinc-600 dark:text-zinc-300">Invite friends, build the group context, and keep your past sessions available.</p>
+                    <p class="mt-3 leading-7 text-zinc-600 dark:text-zinc-300">Invite the friends you play with, choose a session, and let the history improve future decisions.</p>
                 </li>
             </ol>
         </div>
@@ -115,8 +115,8 @@
     <section class="bg-indigo-700 px-4 py-20 text-white sm:px-6 lg:px-8">
         <div class="mx-auto flex max-w-6xl flex-col items-start justify-between gap-8 md:flex-row md:items-center">
             <div>
-                <h2 class="text-3xl font-bold">Ready to organize your shelf?</h2>
-                <p class="mt-3 max-w-xl text-indigo-100">Start with the games and people you already know. The rest of the product will grow from there.</p>
+                <h2 class="text-3xl font-bold">Ready to make your group’s next choice easier?</h2>
+                <p class="mt-3 max-w-xl text-indigo-100">Board Vault is for the people you already play with—not a public encyclopedia of every game.</p>
             </div>
             <a routerLink="/register" class="rounded-lg bg-white px-6 py-3 font-semibold text-indigo-700 transition hover:bg-indigo-50">{{ registrationCta() }}</a>
         </div>

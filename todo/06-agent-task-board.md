@@ -2998,6 +2998,20 @@ Owner: Codex
 
 Claimed: 2026-09-06
 
+Continuation claim: PROD-002 / EQ-007
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Branch/worktree: main / shared workspace
+
+Scope: run a PM/PO/tech-lead UX checkpoint for the public landing, group setup, and history surfaces, then implement the highest-value social-loop improvements locally.
+
+Changed: The landing page now centers the recurring-group decision-and-memory loop and explicitly stays outside public catalog/encyclopedia positioning. Group creation was redesigned as a focused setup route with corrected control validation, clear next steps, accessible labeling, and retryable submission behavior. History was redesigned as group-aware shared memory with a group filter, session/game/people summaries, most-played context, stronger timeline cards, participant/note context, honest empty states, and direct future-planning handoffs. Public navigation assertions were updated to protect the new product promise.
+
+Verified: Frontend production build, Biome, 32 browser unit tests, `git diff --check`, signed-out rendered preview at desktop and 375px, and the four-test public Playwright suite pass. No production data, deployment, or push was changed. Full authenticated real-group usefulness, keyboard/focus/contrast/screen-reader review, and the broader completion checklist remain open.
+
 Scope: validate the pending schema release against a fresh production snapshot without changing live Turso.
 
 Changed: Exported the live `board-vault` database through the authenticated Turso CLI into a temporary local SQLite file, checked integrity and foreign keys, and applied migrations 0006–0009 to the copy with the committed migration runner.

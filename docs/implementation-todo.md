@@ -78,7 +78,7 @@ Relevant intent: [`todo/04-core-product-loop.md`](../todo/04-core-product-loop.m
 
 Relevant surfaces: [`history-page`](../frontend/src/app/pages/play-page/history-page/), [`upcoming-sessions-page`](../frontend/src/app/pages/play-page/upcoming-sessions-page/), [`dashboard-page`](../frontend/src/app/pages/dashboard-page/), [`play-page`](../frontend/src/app/pages/play-page/).
 
-- Make personal history reflect actual persisted sessions and games played; history and upcoming-session loading failures now have explicit retry states instead of being presented as empty data, and both history surfaces use a session-shaped loading skeleton. History now also accepts a group filter from the group workspace so “see all sessions” remains scoped to that group.
+- Make personal history reflect actual persisted sessions and games played; history and upcoming-session loading failures now have explicit retry states instead of being presented as empty data, and both history surfaces use a session-shaped loading skeleton. History now also accepts a group filter from the group workspace so “see all sessions” remains scoped to that group. The main history surface now presents a group-aware shared-memory timeline with session/game/people summaries, a most-played signal, stronger participant/note context, and direct planning handoffs; advanced analytics remain intentionally deferred.
 - Add group history and basic statistics from persisted data.
 - Remove any remaining hardcoded/sample charts, counts, and analytics cards as those surfaces are implemented; the dashboard and play landing cleanup is complete for the currently identified fabricated content.
 - Create the `/play/analytics` route or remove the dashboard link to it.
@@ -101,7 +101,7 @@ Relevant surface: [`landing.component.html`](../frontend/src/app/pages/landing/l
 - Keep testimonials, social proof, and pricing out of the public surface until they become intentionally supported content.
 - Ensure every primary call to action leads to an existing route and works for signed-out users.
 - Keep the Playwright public-navigation checks updated when the public information architecture changes.
-- Review responsive layout, keyboard navigation, focus states, contrast, semantics, and performance.
+- The first product-facing copy pass now leads with the group decision-and-memory loop, explicitly distinguishes personal collection input from shared group value, and states that Board Vault is not a public game encyclopedia. The signed-out public suite and a 375px rendered preview pass. Continue with the full responsive, keyboard, focus, contrast, semantics, and performance review.
 
 ### 5. Application shell and navigation — Partial / Needs review
 
@@ -154,7 +154,7 @@ Relevant surfaces: [`groups`](../frontend/src/app/pages/groups/), [`group-view`]
 
 - Verify the complete two-account flow: create group, invite account, accept/reject invitation, refresh, and see membership; the groups workspace now exposes pending invitations with direct actions, the shared card explains the membership consequence and confirms a decline before mutation, while invitation and notification modals distinguish loading, failed fetch, retry, and empty states.
 - Group owners can now invite a person who does not yet have a local account by email through Clerk; the ticketed `/register` flow remains available while ordinary private-beta sign-up stays closed, and verified invitees are joined only after the inviter-owned group check succeeds.
-- Keep group creation awaitable and recoverable; the create form now waits for the API result before navigating and leaves failures retryable, while the backend now creates the group and owner membership in one Turso transaction.
+- Keep group creation awaitable and recoverable; the create form now waits for the API result before navigating and leaves failures retryable, while the backend now creates the group and owner membership in one Turso transaction. The route was redesigned as a focused setup handoff with a real label, inline validation, loading state, and explicit invite → add games → plan session next steps; it remains a route rather than a modal because creation begins onboarding context.
 - Keep invitation send, pending-invitation removal, and member removal awaitable; group editing now keeps retryable selections and prevents overlapping requests.
 - V1 group membership is now invite-only with `owner` and `member` roles; only owners manage membership and see pending-invitation details. Public groups, ownership transfer, and richer roles require a new product decision.
 - Group edit/delete/leave surfaces now mirror the owner/member policy: members see a read-only management explanation, owners see member/invitation controls, owners cannot leave, destructive actions wait for successful API responses before navigating, and direct edit-route resolution has explicit loading/unavailable states.
