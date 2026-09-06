@@ -88,7 +88,7 @@ compliance:
 
     - id: TEST-001
       status: gap
-      evidence: backend has 46 focused suites and 231 passing tests covering authentication, authorization, validation and request-size boundaries, sessions, service-level participation invariants, organizer/current-membership enforcement, per-game participation, recommendations, invitation visibility/expiry/atomic acceptance, owner-only legacy invitation creation, provider invitation listing/revocation boundaries, soft-deleted account exclusion, verified-user gating, admin route and bounded list-query validation, bounded collection browse and duplicate-review inputs, bounded group names, self-profile response privacy, cache endpoint protection, safe API errors, correlated request logging, health/readiness probes, canonical session reads, group acquisition ownership-race protection and owner decisions, and provider boundaries; frontend has 34 browser-based unit tests with malformed-response and false-success coverage, four passing public Playwright checks, and five opt-in authenticated journey specs with 13 passing checks and three guarded skips when the owner/recommendation/acquisition fixtures are supplied
+      evidence: backend has 46 focused suites and 231 passing tests covering authentication, authorization, validation and request-size boundaries, sessions, service-level participation invariants, organizer/current-membership enforcement, per-game participation, recommendations, invitation visibility/expiry/atomic acceptance, owner-only legacy invitation creation, provider invitation listing/revocation boundaries, soft-deleted account exclusion, verified-user gating, admin route and bounded list-query validation, bounded collection browse and duplicate-review inputs, bounded group names, self-profile response privacy, cache endpoint protection, safe API errors, correlated request logging, health/readiness probes, canonical session reads, group acquisition ownership-race protection and owner decisions, and provider boundaries; frontend has 35 browser-based unit tests with malformed-response and false-success coverage, four passing public Playwright checks, and five opt-in authenticated journey specs with 13 passing checks and three guarded skips when the owner/recommendation/acquisition fixtures are supplied
       priority: high
       next_action: Add layered unit, integration, and journey tests for the flagship loop.
     - id: TEST-002
@@ -108,12 +108,12 @@ compliance:
       next_action: Expand the HTTP contract suite with disposable authenticated/authorized journeys.
     - id: TEST-005
       status: gap
-      evidence: 230 focused backend tests now cover the highest-risk unit boundaries, while the suite still does not exercise a clean database, provider failure contract, or remote integration boundary
+      evidence: 231 focused backend tests now cover the highest-risk unit boundaries, while the suite still does not exercise a clean database, provider failure contract, or remote integration boundary
       priority: critical
       next_action: Add repeatable disposable integration/contract coverage for auth, group membership, collection ownership, session transactions, recommendation decisions, and provider failure behavior.
     - id: TEST-006
       status: gap
-      evidence: backend unit command passes 231 focused tests and frontend has 34 browser-based unit tests plus four public Playwright checks; clean installs now pass and the validation workflow now includes repository whitespace, lint/Biome, build, test, and migration gates, while CI enforcement is not yet observed remotely
+      evidence: backend unit command passes 231 focused tests and frontend has 35 browser-based unit tests plus four public Playwright checks; clean installs now pass and the validation workflow now includes repository whitespace, lint/Biome, build, test, and migration gates, while CI enforcement is not yet observed remotely
       priority: high
       next_action: Keep the supported test commands meaningful and observe their first required CI run.
     - id: TEST-007
@@ -513,7 +513,7 @@ compliance:
       next_action: Document state lifecycle for auth, DataService, loading, and cache state.
     - id: ANGULAR-008
       status: gap
-      evidence: thirteen frontend specs now pass 32 browser-based unit tests, including private collection-boundary and activation guidance, invitation-decline confirmation, pending Clerk invitation contracts, schedule handoff/submission, session participant safeguards, group-history attendee summaries, upcoming-session social context labels, recommendation history context, attendee controls, and decision-lens semantics, accessible theme-control labels, self-profile, session lifecycle, acquisition-board and recommendation-lens contracts, provider invitation rejection, false-success rejection, admin pagination, notification, and API response-contract cases, but no isolated core workflow tests exist yet
+      evidence: fourteen frontend specs now pass 35 browser-based unit tests, including private collection-boundary and activation guidance, invitation-decline confirmation, pending Clerk invitation contracts, schedule handoff/submission, session participant safeguards, group-history attendee summaries, upcoming-session social context labels, recommendation history context, attendee controls, and decision-lens semantics, accessible theme-control labels, self-profile, session lifecycle, acquisition-board and recommendation-lens contracts, provider invitation rejection, false-success rejection, admin pagination, notification, API response-contract cases, and direct group-creation handoff behavior, but no isolated core workflow tests exist yet
       priority: high
       next_action: Extract and unit-test recommendation/session/authorization rules.
     - id: ANGULAR-009

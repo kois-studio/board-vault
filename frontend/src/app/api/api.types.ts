@@ -97,6 +97,11 @@ export type GroupType = {
     createdAt: string
 }
 
+export type CreatedGroupType = {
+    success: true
+    groupId: number
+}
+
 export type GroupWithMembersAndGames = GroupType & {
     members: Array<
         PublicUserType & {

@@ -3299,3 +3299,27 @@ Continuation claim: TEST-001 / CI-001
 Owner: Codex
 
 Claimed: 2026-09-06
+
+Scope: close the post-creation onboarding handoff gap in the social group flow.
+
+Changed: The dashboard group-creation contract now returns the new group ID from the same transaction that creates its owner membership. The data service validates that response, and the focused create-group route opens `/groups/:groupId` after success so invite, shared-library, acquisition, and planning actions are immediately available. Added backend and frontend regression coverage.
+
+Verified: Backend group-creation service coverage passes; frontend Biome, build, and the focused handoff test pass. The full frontend suite remains at 35 passing browser tests. No deployment or push was performed.
+
+Continuation claim: PROD-003 / EQ-006
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Scope: make direct group-creation navigation truthful while the authenticated account profile is still settling.
+
+Changed: The create-group form now exposes the DataService account signal, keeps submission disabled until that local account exists, and announces the loading state instead of allowing an ambiguous busy submission. Added the readiness boundary to the component’s handoff regression.
+
+Verified: Focused frontend Biome and component test pass; no deployment or push was performed. Broader rendered mobile, keyboard, duplicate-name, and real-group review remain open.
+
+Continuation claim: PROD-003 / EQ-006
+
+Owner: Codex
+
+Claimed: 2026-09-06

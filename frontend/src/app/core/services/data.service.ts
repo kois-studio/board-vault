@@ -4,6 +4,7 @@ import { catchError, concatMap, finalize, of, tap, throwError } from 'rxjs'
 import { Api } from '../../api/api'
 import type {
     CollectionActivityWithGameDataType,
+    CreatedGroupType,
     GameCompleteType,
     GameProposalType,
     GameReviewWithGameData,
@@ -552,11 +553,10 @@ export class DataService {
         if (!currentUser) return throwError(() => new Error('No authenticated user'))
 
         return this.api.createGroup(currentUser.id, groupName).pipe(
-            concatMap(() => {
+            tap((createdGroup: CreatedGroupType) => {
                 this.userGroups.set([])
                 this._getUserGroups(currentUser.id)
                 this.toastService.success(`You have created the group ${groupName}`)
-                return of(true)
             }),
             catchError((error) => {
                 if (error.status === 404) {

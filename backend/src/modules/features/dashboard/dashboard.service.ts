@@ -15,7 +15,7 @@ import { ReviewsService } from '../../core/reviews/reviews.service'
 import { UsersService } from '../../core/users/users.service'
 
 import type { SuccessDto } from '../../../common/types/auth.type'
-import type { GroupMemberWithGames, GroupWithMembersAndGames } from '../../../common/types/group.type'
+import type { CreatedGroupDto, GroupMemberWithGames, GroupWithMembersAndGames } from '../../../common/types/group.type'
 import type { UserStatsDto, UserProposalStatsDto } from '../../../common/types/stats.type'
 import type { UserPublicWithGames } from '../../../common/types/user.type'
 import type { HistoryRecordDto } from '../play/play.types'
@@ -90,13 +90,13 @@ export class DashboardService {
     }
 
     @LogFeature(new Logger('DashboardService'))
-    async createGroup(userId: number, groupName: string): Promise<SuccessDto> {
-        await this.databaseService.createGroupWithMembership({
+    async createGroup(userId: number, groupName: string): Promise<CreatedGroupDto> {
+        const { groupId } = await this.databaseService.createGroupWithMembership({
             name: groupName,
             createdBy: userId,
         })
 
-        return { success: true }
+        return { success: true, groupId }
     }
 
     @LogFeature(new Logger('DashboardService'))

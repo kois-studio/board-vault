@@ -6,6 +6,7 @@ import type {
     ClerkGroupInvitationSummaryType,
     ClerkGroupInvitationType,
     CollectionActivityWithGameDataType,
+    CreatedGroupType,
     GameCompleteType,
     GameOwnedType,
     GameProposalType,
@@ -486,5 +487,6 @@ export const recommendationSignalsSchema: z.ZodType<RecommendationSignalsType> =
 })
 
 export const successSchema = z.object({ success: z.literal(true) })
+export const createdGroupSchema: z.ZodType<CreatedGroupType> = z.object({ success: z.literal(true), groupId: z.number().int().positive() })
 
 export const wishlistResponseSchema = z.object({ isWishlisted: z.boolean() })
