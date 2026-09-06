@@ -39,6 +39,7 @@ export class RecommendationsPageComponent {
     public readonly errorMessage = signal<string | null>(null)
     public readonly feedbackState = signal<Record<number, 'saving' | 'interested' | 'not_for_us'>>({})
     public readonly selectedGroup = computed(() => this.userGroups().find((group) => group.id === this.selectedGroupId()) ?? null)
+    public readonly pageTitle = computed(() => this.getDecisionTitle(this.selectedGroup()))
 
     constructor() {
         effect(() => {
@@ -178,6 +179,10 @@ export class RecommendationsPageComponent {
 
     public getRecommendationHistoryLabel(lastPlayedAt: string | null): string {
         return lastPlayedAt ? 'Last played by this group' : 'Not played by this group yet'
+    }
+
+    public getDecisionTitle(group: Pick<GroupWithMembersAndGames, 'name'> | null): string {
+        return group ? `What should ${group.name} play?` : 'Decide what to play'
     }
 
     public async saveFeedback(gameId: number, feedback: 'interested' | 'not_for_us'): Promise<void> {

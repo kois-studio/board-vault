@@ -1,4 +1,4 @@
-<app-page-header titleText="Decide what to play">
+<app-page-header [titleText]="pageTitle()">
     Choose the people attending and the time you have. Use the suggestions to agree on a game, then schedule it with the group.
 </app-page-header>
 
@@ -20,6 +20,12 @@
             <a class="app-btn-primary inline-block" routerLink="/groups">Open groups</a>
         </section>
     } @else {
+        @if (selectedGroup(); as group) {
+            <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
+                <p class="text-sm text-secondary">A group decision for this night—not a global game ranking.</p>
+                <a class="text-sm font-medium text-indigo-600 underline underline-offset-2 dark:text-indigo-400" [routerLink]="['/groups', group.id]">Back to {{ group.name }}</a>
+            </div>
+        }
         <section class="app-bg-secondary rounded-lg p-6 mb-8">
             <div class="grid gap-6 lg:grid-cols-3">
                 <label class="grid gap-2">
