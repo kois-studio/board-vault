@@ -1,9 +1,10 @@
-import { Injectable, Logger } from '@nestjs/common'
+import { ConflictException, Injectable, Logger } from '@nestjs/common'
 
 import { LogFeature } from '../../../common/decorators/logger.decorator'
 import { UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
 import { CollectionActivityService } from '../../../modules/core/collection-activity/collection-activity.service'
 import { GameTranslationService } from '../../../modules/core/game-translation/game-translation.service'
+import { DatabaseService } from '../../common/database/database.service'
 import { GameTagsService } from '../../core/game-tags/game-tags.service'
 import { GamesService } from '../../core/games/games.service'
 import { GamesOwnedService } from '../../core/games-owned/games-owned.service'
@@ -29,6 +30,7 @@ export class CollectionService {
         private readonly tagCategoriesService: TagCategoryService,
         private readonly gameTranslationService: GameTranslationService,
         private readonly collectionActivityService: CollectionActivityService,
+        private readonly databaseService: DatabaseService,
     ) {}
 
     @LogFeature(new Logger('CollectionService'))
@@ -143,27 +145,15 @@ export class CollectionService {
 
     @LogFeature(new Logger('CollectionService'))
     async addGameToUserCollection(userId: number, gameId: number): Promise<SuccessDto> {
-        const result = await this.gamesOwnedService.createGamesOwned({
-            accountId: userId,
-            gameId,
-            purchaseDate: null,
-            purchasePrice: null,
-            purchaseNotes: null,
-        })
+        const result = await this.databaseService.addGameToCollection(userId, gameId)
 
-        if (result.success) {
-            await this.collectionActivityService.logCollectionActivity(userId, gameId, 'added', null)
-
-            // Automatically remove from wishlist if it exists
-            const isWishlisted = await this.wishlistService.isGameWishlisted(userId, gameId)
-
-            if (isWishlisted) {
-                await this.wishlistService.toggleWishlist(userId, gameId)
-                await this.collectionActivityService.logCollectionActivity(userId, gameId, 'unwishlisted', null)
-            }
+        if (!result.success) {
+            throw new ConflictException('This game is already in your collection')
         }
 
-        return { success: result.success }
+        await this.collectionActivityService.invalidateForAccount(userId)
+
+        return { success: true }
     }
 
     @LogFeature(new Logger('CollectionService'))

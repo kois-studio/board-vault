@@ -70,6 +70,67 @@ describe('DatabaseService logging', () => {
         })
     })
 
+    it('adds collection ownership, memory, and wishlist cleanup in one transaction', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const execute = jest
+            .fn()
+            .mockResolvedValueOnce({ rowsAffected: 1 })
+            .mockResolvedValueOnce({ rowsAffected: 1 })
+            .mockResolvedValueOnce({ rows: [{}] })
+            .mockResolvedValueOnce({ rowsAffected: 1 })
+            .mockResolvedValueOnce({ rowsAffected: 1 })
+            .mockResolvedValueOnce({ rowsAffected: 1 })
+        const transaction = {
+            execute,
+            commit: jest.fn().mockResolvedValue(undefined),
+            rollback: jest.fn().mockResolvedValue(undefined),
+            close: jest.fn(),
+        }
+        const transactionFactory = jest.fn().mockResolvedValue(transaction)
+
+        ;(service as unknown as { tursoClient: { transaction: typeof transactionFactory } }).tursoClient = {
+            transaction: transactionFactory,
+        }
+
+        await expect(service.addGameToCollection(1, 42)).resolves.toEqual({ success: true, wishlistRemoved: true })
+
+        expect(transactionFactory).toHaveBeenCalledWith('write')
+        expect(execute).toHaveBeenNthCalledWith(1, {
+            sql: 'INSERT OR IGNORE INTO OwnedGame (accountId, gameId) VALUES (?, ?)',
+            args: [1, 42],
+        })
+        expect(execute).toHaveBeenCalledWith({
+            sql: 'SELECT 1 FROM WishlistedGame WHERE accountId = ? AND gameId = ?',
+            args: [1, 42],
+        })
+        expect(execute).toHaveBeenCalledWith(expect.objectContaining({ sql: expect.stringContaining('DELETE FROM CollectionActivity') }))
+        expect(transaction.commit).toHaveBeenCalledTimes(1)
+        expect(transaction.rollback).not.toHaveBeenCalled()
+        expect(transaction.close).toHaveBeenCalledTimes(1)
+    })
+
+    it('reports duplicate collection activation without touching activity or wishlist state', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const execute = jest.fn().mockResolvedValue({ rowsAffected: 0 })
+        const transaction = {
+            execute,
+            commit: jest.fn().mockResolvedValue(undefined),
+            rollback: jest.fn().mockResolvedValue(undefined),
+            close: jest.fn(),
+        }
+
+        ;(service as unknown as { tursoClient: { transaction: jest.Mock } }).tursoClient = {
+            transaction: jest.fn().mockResolvedValue(transaction),
+        }
+
+        await expect(service.addGameToCollection(1, 42)).resolves.toEqual({ success: false, wishlistRemoved: false })
+
+        expect(execute).toHaveBeenCalledTimes(1)
+        expect(transaction.commit).toHaveBeenCalledTimes(1)
+        expect(transaction.rollback).not.toHaveBeenCalled()
+        expect(transaction.close).toHaveBeenCalledTimes(1)
+    })
+
     it('guards group acquisition interest against games already owned by a member', async () => {
         const service = new DatabaseService({} as ConfigService)
         const execute = jest.fn().mockResolvedValue({ rowsAffected: 1 })
