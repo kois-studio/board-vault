@@ -40,6 +40,7 @@ describe('HistoryPageComponent shared-memory summaries', () => {
                 { id: 7, name: 'Friday Crew' },
                 { id: 8, name: 'Sunday Crew' },
             ]),
+            userGroupsError: signal(false),
             userHistory: signal(history),
             userHistoryError: signal(false),
             refreshUserHistory: jasmine.createSpy('refreshUserHistory'),
@@ -75,5 +76,12 @@ describe('HistoryPageComponent shared-memory summaries', () => {
         expect(component.mostPlayedSummary()).toBe('Cascadia · 2 sessions')
         expect(component.getPlayedBySummary([{ displayName: 'Dee', username: 'dee' }])).toBe('Dee')
         expect(fixture.nativeElement.textContent).toContain('Get a recommendation for this group')
+
+        component.groupIdFilter.set(999)
+        fixture.detectChanges()
+
+        expect(component.isUnknownGroupFilter()).toBeTrue()
+        expect(fixture.nativeElement.textContent).toContain('That group is not available')
+        expect(fixture.nativeElement.textContent).not.toContain('has no recorded sessions yet')
     })
 })
