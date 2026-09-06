@@ -15,7 +15,7 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 | DATA-001 | REVIEW | Data model | Reconcile repository SQL and services against the owner-confirmed deployed schema and produce a code/schema drift report. | None |
 | DATA-002 | REVIEW | Data model | Add numbered migrations and make the schema reproducible from empty state. | DATA-001 |
 | DATA-003 | REVIEW | Data model | Choose and implement the canonical session schema, including attendance and planned/played games. | DATA-001 |
-| DATA-004 | IN_PROGRESS | Data model | Add transaction boundaries for remaining group, session, proposal, and collection mutations; group creation, legacy invitation acceptance, and canonical session writes are now transactional. | DATA-002, DATA-003 |
+| DATA-004 | IN_PROGRESS | Data model | Add transaction boundaries for remaining group, session, proposal, and collection mutations; group creation, legacy invitation acceptance, canonical session writes, and collection activation/activity/wishlist cleanup are now transactional. | DATA-002, DATA-003 |
 
 ## P1 — flagship product loop
 
@@ -73,6 +73,24 @@ Changed: Availability checks now encode query values so email addresses/username
 Verified: `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` passes 59 tests; `cd frontend && npm run lint:check` passes; `cd frontend && npm run build` passes with a 604.95 kB initial raw bundle / 136.36 kB estimated transfer; `git diff --check` passes. No deployment, push, provider mutation, or production data change was performed.
 
 Known follow-ups: Keep authenticated two-account rehearsal and generated-client evaluation separate until core response shapes stabilize.
+
+Continuation claim: DATA-004
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Branch/worktree: main / shared workspace
+
+Scope: make collection activation ownership, activity memory, and wishlist cleanup one atomic database write, with explicit activity-cache invalidation
+
+Review: DATA-004
+
+Changed: Collection activation now atomically inserts ownership, records the added/unwishlisted activity events, removes the wishlist row when present, and trims activity memory to the newest 32 rows. The collection service invalidates the account activity cache only after the transaction commits; duplicate activation maps back to the established conflict response.
+
+Verified: `cd backend && npm test -- --runInBand` passes 47 suites / 245 tests; `cd backend && npm run build`; `cd backend && npm run lint:check`; `cd backend && npm run lint:logs`; and `git diff --check` pass. No deployment, push, provider mutation, or production data change was performed.
+
+Known follow-ups: Audit proposal and remaining legacy multi-write mutations, then add failure-injection coverage for the next transaction boundary.
 
 Previous most recent claim:
 

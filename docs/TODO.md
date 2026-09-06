@@ -158,6 +158,26 @@ without expanding game-detail or catalog scope. After that, the remaining work
 still needs a real disposable authenticated rehearsal, rendered accessibility
 review, remote CI observation, and operational recovery ownership.
 
+The next data-integrity slice is now explicit: adding a game to a personal
+collection must atomically write ownership, collection activity, and wishlist
+cleanup, then invalidate the account activity cache once. This is valuable to
+the group loop because collection ownership feeds shared recommendations and
+history; it does not justify expanding the standalone game-details surface.
+
+### Tech-lead reassessment — after atomic collection activation — 2026-09-06
+
+Collection activation now commits ownership, activity memory, wishlist cleanup,
+and the bounded activity-memory trim in one Turso transaction, then invalidates
+the account activity cache once. Duplicate activation preserves the existing
+conflict behavior, and the backend gate is now 245 tests across 47 suites.
+
+This closes one concrete partial-write risk in the social loop, but it does not
+close persistence work generally: proposal writes, remaining legacy mutations,
+cache ownership, disposable integration, and recovery ownership remain open.
+The next priority is a failure-path audit of the remaining core multi-write
+flows, while keeping the two-account acceptance rehearsal and rendered route
+review as the release evidence gates.
+
 ## Critical — unblock safe feature development
 
 ### READINESS-001 [Critical] SEC-003/SEC-008 — Complete object-level authorization audit
@@ -265,9 +285,9 @@ review, remote CI observation, and operational recovery ownership.
 
 ### READINESS-012 [Medium] NEST-012/013/DATA-004/006 — Define persistence and cache boundaries
 
-- **Status:** Deferred
+- **Status:** In progress
 - **Affected area:** core services, `DatabaseService`, `CacheService`
-- **Evidence:** Concrete infrastructure is used directly; canonical session creation, scheduled-session creation, lifecycle transitions, played-game recording, group creation, and legacy invitation acceptance now use explicit Turso transactions. Disabled Redis reads/writes, rate-limit increments, and readiness now have deterministic coverage; remaining multi-write flows and cache ownership/invalidation completeness remain open.
+- **Evidence:** Concrete infrastructure is used directly; canonical session creation, scheduled-session creation, lifecycle transitions, played-game recording, group creation, legacy invitation acceptance, and collection activation now use explicit Turso transactions. Collection activation also trims bounded activity memory within the same transaction and invalidates its account cache once after commit. Disabled Redis reads/writes, rate-limit increments, and readiness now have deterministic coverage; remaining multi-write flows, adapter boundaries, and cache ownership/invalidation completeness remain open.
 - **Risk:** Partial writes, stale data, provider coupling, and test instability.
 - **Next action:** Define adapter interfaces, transaction boundaries, cache ownership/invalidation, and provider fakes; add integration coverage where provider state can be disposable.
 - **Dependencies:** READINESS-003 and canonical session model.

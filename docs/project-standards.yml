@@ -108,12 +108,12 @@ compliance:
       next_action: Expand the HTTP contract suite with disposable authenticated/authorized journeys.
     - id: TEST-005
       status: gap
-      evidence: 241 focused backend tests now cover the highest-risk unit boundaries, including safe Clerk and email provider-failure contracts, while the suite still does not exercise a clean database/provider integration or remote integration boundary
+      evidence: 245 focused backend tests now cover the highest-risk unit boundaries, including atomic collection activation, safe Clerk and email provider-failure contracts, while the suite still does not exercise a clean database/provider integration or remote integration boundary
       priority: critical
       next_action: Add repeatable disposable integration/contract coverage for auth, group membership, collection ownership, session transactions, recommendation decisions, and provider failure behavior.
     - id: TEST-006
       status: gap
-      evidence: backend unit command passes 241 focused tests and frontend has 59 browser-based unit tests plus five public Playwright checks; clean installs now pass and the validation workflow now includes repository whitespace, lint/Biome, build, test, and migration gates, while CI enforcement is not yet observed remotely
+      evidence: backend unit command passes 245 focused tests and frontend has 59 browser-based unit tests plus five public Playwright checks; clean installs now pass and the validation workflow now includes repository whitespace, lint/Biome, build, test, and migration gates, while CI enforcement is not yet observed remotely
       priority: high
       next_action: Keep the supported test commands meaningful and observe their first required CI run.
     - id: TEST-007
@@ -405,7 +405,7 @@ compliance:
       next_action: Add session API/write contracts and transaction tests on a disposable database.
     - id: DATA-004
       status: partial
-      evidence: canonical group creation, session creation, lifecycle writes, played-game recording, and attendee replacement now use explicit Turso transactions; legacy per-row attendee endpoints and proposal/collection multi-write policies remain incomplete
+      evidence: canonical group creation, session creation, lifecycle writes, played-game recording, attendee replacement, and collection activation now use explicit Turso transactions; collection activation also trims activity memory atomically and invalidates its cache after commit. Legacy per-row attendee endpoints, proposal writes, and other multi-write policies remain incomplete.
       priority: critical
       next_action: Add failure-injection coverage for group creation, then define transaction/partial-failure behavior for remaining multi-record use cases.
     - id: DATA-005

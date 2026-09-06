@@ -1058,6 +1058,68 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    async addGameToCollection(accountId: number, gameId: number): Promise<{ success: boolean; wishlistRemoved: boolean }> {
+        const transaction = await this.tursoClient.transaction('write')
+
+        try {
+            const ownedGame = await transaction.execute({
+                sql: 'INSERT OR IGNORE INTO OwnedGame (accountId, gameId) VALUES (?, ?)',
+                args: [accountId, gameId],
+            })
+
+            if (ownedGame.rowsAffected !== 1) {
+                await transaction.commit()
+                return { success: false, wishlistRemoved: false }
+            }
+
+            await transaction.execute({
+                sql: 'INSERT INTO CollectionActivity (accountId, gameId, actionType, actionDetails) VALUES (?, ?, ?, ?)',
+                args: [accountId, gameId, 'added', null],
+            })
+
+            const wishlist = await transaction.execute({
+                sql: 'SELECT 1 FROM WishlistedGame WHERE accountId = ? AND gameId = ?',
+                args: [accountId, gameId],
+            })
+            const wishlistRemoved = wishlist.rows.length > 0
+
+            if (wishlistRemoved) {
+                await transaction.execute({
+                    sql: 'DELETE FROM WishlistedGame WHERE accountId = ? AND gameId = ?',
+                    args: [accountId, gameId],
+                })
+                await transaction.execute({
+                    sql: 'INSERT INTO CollectionActivity (accountId, gameId, actionType, actionDetails) VALUES (?, ?, ?, ?)',
+                    args: [accountId, gameId, 'unwishlisted', null],
+                })
+            }
+
+            // Keep the bounded activity-memory policy inside the same transaction
+            // as the writes that produced the events.
+            await transaction.execute({
+                sql: `
+                    DELETE FROM CollectionActivity
+                    WHERE accountId = ?
+                      AND id NOT IN (
+                          SELECT id FROM CollectionActivity
+                          WHERE accountId = ?
+                          ORDER BY id DESC
+                          LIMIT 32
+                      )
+                `,
+                args: [accountId, accountId],
+            })
+
+            await transaction.commit()
+            return { success: true, wishlistRemoved }
+        } catch (error) {
+            await transaction.rollback()
+            throw error
+        } finally {
+            transaction.close()
+        }
+    }
+
     updateGameOwned(accountId: number, gameId: number, ownedGameDto: UpdateGameOwnedDto) {
         const fields = []
         const args = []

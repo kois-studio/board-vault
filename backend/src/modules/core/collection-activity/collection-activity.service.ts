@@ -93,13 +93,16 @@ export class CollectionActivityService {
                 throw new BadRequestException('Failed to log collection activity')
             }
 
-            // Clear cache
-            await this.cacheService.deleteOne(`${this.CACHE_KEY}:byAccountId:${accountId}`)
+            await this.invalidateForAccount(accountId)
 
             return { success: true }
         } catch {
             this.LOGGER.error('Failed to log collection activity')
             throw new BadRequestException('Failed to log collection activity')
         }
+    }
+
+    async invalidateForAccount(accountId: number): Promise<void> {
+        await this.cacheService.deleteOne(`${this.CACHE_KEY}:byAccountId:${accountId}`)
     }
 }
