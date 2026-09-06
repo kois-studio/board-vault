@@ -40,7 +40,7 @@ export class MeetAccountGamesService {
         singleField: number[]
         fullRecords: MeetAccountGameDto[]
     }> {
-        this.LOGGER.log(`Querying MeetAccountGame with options: ${JSON.stringify(options)}`)
+        this.LOGGER.log('Querying legacy MeetAccountGame compatibility data')
         const resultSet = await this.databaseService.queryMeetAccountGame(options)
 
         // For single field selections with distinct, return an array of that field
@@ -61,7 +61,7 @@ export class MeetAccountGamesService {
     // #region query wrappers
 
     async getMeetAccountGamesBy(config: { accountId?: number; meetId?: number; gameId?: number }): Promise<Array<MeetAccountGameDto>> {
-        this.LOGGER.log(`Getting meetAccountGames by accountId ${config.accountId} meetId ${config.meetId} gameId ${config.gameId}`)
+        this.LOGGER.log('Getting legacy MeetAccountGame records')
         const resultSet = await this._queryMeetAccountGame({
             where: config,
         })
@@ -70,7 +70,7 @@ export class MeetAccountGamesService {
     }
 
     async getDistinctAccountIdsByMeetId(meetId: number): Promise<number[]> {
-        this.LOGGER.log(`Getting distinct accountIds by meetId ${meetId}`)
+        this.LOGGER.log('Getting distinct account IDs for a legacy meeting')
         const result = await this._queryMeetAccountGame({
             select: ['accountId'],
             where: { meetId },
@@ -81,7 +81,7 @@ export class MeetAccountGamesService {
     }
 
     async getDistinctMeetIdsByAccountId(accountId: number): Promise<number[]> {
-        this.LOGGER.log(`Getting distinct meetIds by accountId ${accountId}`)
+        this.LOGGER.log('Getting distinct legacy meeting IDs for an account')
         const result = await this._queryMeetAccountGame({
             select: ['meetId'],
             where: { accountId },
@@ -92,7 +92,7 @@ export class MeetAccountGamesService {
     }
 
     async getDistinctGameIdsByMeetId(meetId: number): Promise<number[]> {
-        this.LOGGER.log(`Getting distinct gameIds by meetId ${meetId}`)
+        this.LOGGER.log('Getting distinct game IDs for a legacy meeting')
         const result = await this._queryMeetAccountGame({
             select: ['gameId'],
             where: { meetId },
@@ -103,7 +103,7 @@ export class MeetAccountGamesService {
     }
 
     async getDistinctAccountIdsByMeetIdAndGameId(meetId: number, gameId: number): Promise<number[]> {
-        this.LOGGER.log(`Getting distinct accountIds by meetId ${meetId} and gameId ${gameId}`)
+        this.LOGGER.log('Getting distinct account IDs for a legacy meeting game')
         const result = await this._queryMeetAccountGame({
             select: ['accountId'],
             where: { meetId, gameId },
@@ -143,7 +143,7 @@ export class MeetAccountGamesService {
     }
 
     async createMeetAccountGame(accountId: number, meetId: number, gameId: number): Promise<MeetAccountGameDto> {
-        this.LOGGER.log(`Creating meetAccountGame with accountId ${accountId}, meetId ${meetId} and gameId ${gameId}`)
+        this.LOGGER.log('Creating a legacy MeetAccountGame record')
         const resultSet = await this.databaseService.createMeetAccountGame(accountId, meetId, gameId)
 
         if (resultSet.rowsAffected === 0) {
@@ -154,7 +154,7 @@ export class MeetAccountGamesService {
     }
 
     async deleteMeetAccountGame(accountId: number, meetId: number, gameId: number): Promise<{ success: boolean }> {
-        this.LOGGER.log(`Deleting meetAccountGame with accountId ${accountId}, meetId ${meetId} and gameId ${gameId}`)
+        this.LOGGER.log('Deleting a legacy MeetAccountGame record')
         const resultSet = await this.databaseService.deleteMeetAccountGame(accountId, meetId, gameId)
 
         if (resultSet.rowsAffected === 0) {

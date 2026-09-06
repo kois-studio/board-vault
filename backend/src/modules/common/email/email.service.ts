@@ -43,7 +43,7 @@ export class EmailService {
         const safeVerificationLink = this.escapeHtml(verificationLink)
 
         try {
-            const { data, error } = await this.resend.emails.send({
+            const { error } = await this.resend.emails.send({
                 from: this.noReplyEmail,
                 to: [to],
                 subject: 'Verify Your Email Address',
@@ -54,7 +54,7 @@ export class EmailService {
                 throw error
             }
 
-            this.LOGGER.log(`Verification email sent. Message ID: ${data!.id}`)
+            this.LOGGER.log('Verification email sent successfully')
         } catch (error) {
             this.LOGGER.error(`Failed to send verification email (${safeErrorName(error)})`)
             throw error // Re-throw the error to be handled by the calling function
@@ -66,7 +66,7 @@ export class EmailService {
         const safeResetLink = this.escapeHtml(resetLink)
 
         try {
-            const { data, error } = await this.resend.emails.send({
+            const { error } = await this.resend.emails.send({
                 from: this.noReplyEmail,
                 to: [to],
                 subject: 'Reset Your Password',
@@ -77,7 +77,7 @@ export class EmailService {
                 throw error
             }
 
-            this.LOGGER.log(`Password reset email sent. Message ID: ${data!.id}`)
+            this.LOGGER.log('Password reset email sent successfully')
         } catch (error) {
             this.LOGGER.error(`Failed to send password reset email (${safeErrorName(error)})`)
             throw error // Re-throw the error to be handled by the calling function
@@ -88,7 +88,7 @@ export class EmailService {
         const safeMessage = this.escapeHtml(message)
 
         try {
-            const { data, error } = await this.resend.emails.send({
+            const { error } = await this.resend.emails.send({
                 from: this.noReplyEmail,
                 to: [to],
                 subject: 'Important Notification',
@@ -99,7 +99,7 @@ export class EmailService {
                 throw error
             }
 
-            this.LOGGER.log(`Notification email sent. Message ID: ${data!.id}`)
+            this.LOGGER.log('Notification email sent successfully')
         } catch (error) {
             this.LOGGER.error(`Failed to send notification email (${safeErrorName(error)})`)
             throw error // Re-throw the error to be handled by the calling function

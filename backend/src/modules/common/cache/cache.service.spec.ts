@@ -30,7 +30,7 @@ describe('CacheService logging', () => {
 
         expect(internals.REDIS.set).toHaveBeenCalledWith('user:7:profile', { email: 'person@example.com' }, { ex: 3600 })
         expect(internals.REDIS.get).toHaveBeenCalledWith('user:7:profile')
-        expect(internals.LOGGER.log).toHaveBeenCalledWith('REDIS: set cache value with 3600s TTL')
+        expect(internals.LOGGER.log).toHaveBeenCalledWith('REDIS: set cache value')
         expect(internals.LOGGER.log).toHaveBeenCalledWith('REDIS: get cache value')
         expect(internals.LOGGER.log).not.toHaveBeenCalledWith(expect.stringContaining('user:7:profile'))
         expect(internals.LOGGER.log).not.toHaveBeenCalledWith(expect.stringContaining('person@example.com'))

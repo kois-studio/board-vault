@@ -25,7 +25,7 @@ export class UserInGroupGuard implements CanActivate {
             const membership = await this.groupMembershipsService.getSafeGroupMembershipById(userId, groupId)
 
             if (!membership) {
-                this.LOGGER.error(`User ${userId} is not a member of group ${groupId}`)
+                this.LOGGER.error('A user attempted to access a group without membership')
                 throw new ForbiddenException('You are not a member of this group and do not have permission to access this information')
             }
 

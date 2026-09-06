@@ -24,7 +24,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         const user = await this.usersService.getUserById(Number(payload.sub))
 
         if (user.isDeleted) {
-            this.LOGGER.warn(`Rejected JWT for deleted user ${user.id}`)
+            this.LOGGER.warn('Rejected JWT for a deleted user')
             throw new UnauthorizedException('Account is unavailable')
         }
 

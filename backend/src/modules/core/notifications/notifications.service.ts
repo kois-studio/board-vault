@@ -46,7 +46,7 @@ export class NotificationsService {
     }
 
     async getNotificationById(id: number, accountId: number): Promise<NotificationDto> {
-        this.LOGGER.log(`Getting notification with id ${id}`)
+        this.LOGGER.log('Getting notification by id')
         const resultSet = await this.databaseService.getNotificationById(id, accountId)
         const notifications = this._parseResultSet(resultSet)
 
@@ -57,7 +57,7 @@ export class NotificationsService {
     }
 
     async getNotificationsByAccountId(accountId: number): Promise<Array<NotificationDto>> {
-        this.LOGGER.log(`Getting notifications for account with id ${accountId}`)
+        this.LOGGER.log('Getting notifications for account')
         const resultSet = await this.databaseService.getNotificationsByAccountId(accountId)
 
         return this._parseResultSet(resultSet)
@@ -80,7 +80,7 @@ export class NotificationsService {
         accountId: number,
         partialNotificationDto: UpdateNotificationRequestBody,
     ): Promise<{ success: boolean }> {
-        this.LOGGER.log(`Updating notification with id ${id}`)
+        this.LOGGER.log('Updating notification')
         const resultSet = await this.databaseService.updateNotification(id, accountId, partialNotificationDto)
 
         if (resultSet.rowsAffected === 0) {
@@ -91,7 +91,7 @@ export class NotificationsService {
     }
 
     async deleteNotificationById(id: number, accountId: number): Promise<{ success: boolean }> {
-        this.LOGGER.log(`Deleting notification with id ${id}`)
+        this.LOGGER.log('Deleting notification')
         const resultSet = await this.databaseService.deleteNotificationById(id, accountId)
 
         if (resultSet.rowsAffected === 0) {

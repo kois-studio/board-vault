@@ -49,7 +49,7 @@ export class ReviewsService {
     }
 
     async getGameReviewsById(accountId: number, gameId: number): Promise<GameReviewDto> {
-        this.LOGGER.log(`Getting review with accountId ${accountId} and gameId ${gameId}`)
+        this.LOGGER.log('Getting review')
         const resultSet = await this.databaseService.getGameReviewById(accountId, gameId)
         const reviews = this._parseResultSet(resultSet)
 
@@ -63,13 +63,13 @@ export class ReviewsService {
         try {
             return await this.getGameReviewsById(accountId, gameId)
         } catch (error) {
-            this.LOGGER.error(`Failed to get review with accountId ${accountId} and gameId ${gameId} (${safeErrorName(error)})`)
+            this.LOGGER.error(`Failed to get review (${safeErrorName(error)})`)
             return null
         }
     }
 
     async getGameReviewsByAccountId(accountId: number): Promise<Array<GameReviewDto>> {
-        this.LOGGER.log(`Getting reviews for account ${accountId}`)
+        this.LOGGER.log('Getting reviews for account')
         const resultSet = await this.databaseService.getGameReviewsByAccountId(accountId)
 
         return this._parseResultSet(resultSet)
@@ -77,14 +77,14 @@ export class ReviewsService {
 
     async saveGameReview(accountId: number, gameId: number, review: number) {
         // NOTE: the review may alread exist
-        this.LOGGER.log(`Saving gameReview ${accountId} - ${gameId}`)
+        this.LOGGER.log('Saving game review')
         try {
             // check if the review already exists
             const existingReview = await this.getSafeGameReviewsById(accountId, gameId)
 
             // its the same, so skip 1 query
             if (existingReview && existingReview?.review === review) {
-                this.LOGGER.log(`Review ${accountId} - ${gameId} already exists, skipping`)
+                this.LOGGER.log('Review already exists, skipping')
                 return { success: true }
             }
 
@@ -107,7 +107,7 @@ export class ReviewsService {
     }
 
     async deleteGameReviewById(accountId: number, gameId: number): Promise<{ success: boolean }> {
-        this.LOGGER.log(`Deleting review with accountId ${accountId} and gameId ${gameId}`)
+        this.LOGGER.log('Deleting review')
         const resultSet = await this.databaseService.deleteGameReviewById(accountId, gameId)
 
         if (resultSet.rowsAffected === 0) {
@@ -118,13 +118,13 @@ export class ReviewsService {
     }
 
     async getUserReviews(userId: number): Promise<Array<GameReviewDto>> {
-        this.LOGGER.log(`Getting reviews for user ${userId}`)
+        this.LOGGER.log('Getting reviews for user')
 
         // Step 1: Try to get them from cache
         const cachedReviews = await this.cacheService.get(`${this.CACHE_KEY}:userReviewsWithGameData:${userId}`)
 
         if (cachedReviews) {
-            this.LOGGER.log(`Returning cached reviews for user ${userId}`)
+            this.LOGGER.log('Returning cached reviews')
             return cachedReviews
         }
 
@@ -141,13 +141,13 @@ export class ReviewsService {
     // #region avg methods
 
     async getAvgGlobalRating(gameId: number): Promise<null | { review: number; count: number }> {
-        this.LOGGER.log(`Getting avg global rating for game ${gameId}`)
+        this.LOGGER.log('Getting average global rating for game')
 
         // Step 1: Try to get them from cache
         const cachedRating = await this.cacheService.get(`${this.CACHE_KEY}:avgGlobalRating:${gameId}`)
 
         if (cachedRating) {
-            this.LOGGER.log(`Returning cached avg global rating for game ${gameId}`)
+            this.LOGGER.log('Returning cached average global rating')
             return { review: Number(cachedRating.review), count: Number(cachedRating.count) }
         }
 
@@ -165,13 +165,13 @@ export class ReviewsService {
     }
 
     async getAvgGroupsRating(accountId: number, gameId: number): Promise<null | { review: number; count: number }> {
-        this.LOGGER.log(`Getting avg groups rating for game ${gameId}`)
+        this.LOGGER.log('Getting average group rating for game')
 
         // Step 1: Try to get them from cache
         const cachedRating = await this.cacheService.get(`${this.CACHE_KEY}:avgGroupsRating:${accountId}:${gameId}`)
 
         if (cachedRating) {
-            this.LOGGER.log(`Returning cached avg groups rating for game ${gameId}`)
+            this.LOGGER.log('Returning cached average group rating')
             return { review: Number(cachedRating.review), count: Number(cachedRating.count) }
         }
 

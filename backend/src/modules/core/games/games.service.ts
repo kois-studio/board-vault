@@ -43,13 +43,13 @@ export class GamesService {
     // #region methods
 
     async getGameById(id: number): Promise<GameDto> {
-        this.LOGGER.log(`Getting game by id ${id}`)
+        this.LOGGER.log('Getting game by id')
 
         // Step 1: Try to get them from cache
         const cachedGame = await this.cacheService.get(`${this.CACHE_KEY}:byId:${id}`)
 
         if (cachedGame) {
-            this.LOGGER.log(`Returning cached game by id ${id}`)
+            this.LOGGER.log('Returning cached game')
             return this._validateSchema([cachedGame])[0]
         }
 

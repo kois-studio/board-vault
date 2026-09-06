@@ -39,14 +39,14 @@ export class GroupsService {
     // #region methods
 
     async getGroupsForAccount(accountId: number): Promise<Array<GroupDto>> {
-        this.LOGGER.log(`Getting groups for account ${accountId}`)
+        this.LOGGER.log('Getting groups for account')
         const resultSet = await this.databaseService.getGroupsForAccount(accountId)
 
         return this._parseResultSet(resultSet)
     }
 
     async getGroupById(id: number): Promise<GroupDto> {
-        this.LOGGER.log(`Getting group with id ${id}`)
+        this.LOGGER.log('Getting group by id')
         const resultSet = await this.databaseService.getGroupById(id)
         const groups = this._parseResultSet(resultSet)
 
@@ -70,7 +70,7 @@ export class GroupsService {
     }
 
     async createGroup(groupBody: CreateGroupBody) {
-        this.LOGGER.log(`Creating group for account ${groupBody.createdBy}`)
+        this.LOGGER.log('Creating group')
         try {
             await this.databaseService.createGroup(groupBody)
 
@@ -82,7 +82,7 @@ export class GroupsService {
     }
 
     async deleteGroupById(id: number): Promise<{ success: boolean }> {
-        this.LOGGER.log(`Deleting group with id ${id}`)
+        this.LOGGER.log('Deleting group')
         const resultSet = await this.databaseService.deleteGroupById(id)
 
         if (resultSet.rowsAffected === 0) {
@@ -93,7 +93,7 @@ export class GroupsService {
     }
 
     async updateGroup(id: number, partialGroupDto: UpdateGroupBody): Promise<{ success: boolean }> {
-        this.LOGGER.log(`Updating group with id ${id}`)
+        this.LOGGER.log('Updating group')
         const resultSet = await this.databaseService.updateGroup(id, partialGroupDto)
 
         if (resultSet.rows.length === 0) {
@@ -104,7 +104,7 @@ export class GroupsService {
     }
 
     async getGroupInvitations(groupId: number): Promise<Array<InvitationWithAccountsData>> {
-        this.LOGGER.log(`Getting all invitations for group ${groupId}`)
+        this.LOGGER.log('Getting all invitations for group')
         const resultSet = await this.databaseService.getGroupInvitations(groupId)
 
         return resultSet.rows

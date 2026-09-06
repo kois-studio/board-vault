@@ -67,13 +67,13 @@ export class GameTranslationService {
     // --------------------------------------------------------------------------
 
     async getGameTranslations(gameId: number): Promise<Record<SupportedLanguage, string>> {
-        this.LOGGER.log(`Getting translations for game ${gameId}`)
+        this.LOGGER.log('Getting translations for game')
 
         // Step 1: Try to get them from cache
         const cachedGameTranslations = await this.cacheService.get(`${this.CACHE_KEY}:byGameId:${gameId}`)
 
         if (cachedGameTranslations) {
-            this.LOGGER.log(`Returning cached translations for game ${gameId}`)
+            this.LOGGER.log('Returning cached game translations')
             const gameTranslations = this._validateSchema(cachedGameTranslations)
 
             return this._reduceGameTranslations(gameTranslations)
@@ -90,7 +90,7 @@ export class GameTranslationService {
     }
 
     async createGameTranslation(gameId: number, languageCode: string, title: string): Promise<SuccessDto> {
-        this.LOGGER.log(`Creating translation for game ${gameId}`)
+        this.LOGGER.log('Creating game translation')
 
         const normalizedTitle = this._normalizeTitle(title)
 
@@ -103,7 +103,7 @@ export class GameTranslationService {
     }
 
     async upsertGameTranslation(gameId: number, languageCode: string, title: string): Promise<SuccessDto> {
-        this.LOGGER.log(`Upserting translation for game ${gameId}`)
+        this.LOGGER.log('Upserting game translation')
 
         const normalizedTitle = this._normalizeTitle(title)
 

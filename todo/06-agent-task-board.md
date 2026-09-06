@@ -2954,6 +2954,20 @@ Changed: Added a zero-context group activation panel that appears only for a one
 
 Verified: `cd frontend && npx biome check src/app/pages/group-view/group-view.component.ts src/app/pages/group-view/group-view.component.spec.ts src/app/pages/group-view/group-view.component.html`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (43 passing), `cd frontend && npm run build` (605.70 kB initial raw / 138.25 kB estimated transfer), and `git diff --check` pass. Rendered empty-group validation remains open. No deployment or push was performed.
 
+Scope: finish the numeric-identifier part of the service logging audit without losing useful provider diagnostics.
+
+Acceptance: domain and legacy compatibility logs must not interpolate account, group, game, invitation, membership, notification, proposal, review, tag, or meeting identifiers; only explicitly safe operational fields such as error class, feature method, port/path, TTL/status, and cache-disabled state may remain.
+
+Continuation claim: SEC-006 / OPS-007
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Changed: Removed internal entity/account identifiers, provider message IDs, cache key counts, and serialized query options from the remaining audited service logs. Safe error-class and operational diagnostics remain available for diagnosis.
+
+Verified: `rg` audit of backend logger interpolation, `cd backend && npx eslint "{src,apps,libs,test}/**/*.ts"`, `cd backend && npm test -- --runInBand` (46 suites / 237 tests), `cd backend && npm run build`, and `git diff --check` pass. No deployment or push was performed.
+
 Changed: Audited backend service logging and removed raw schema/provider exception objects plus user-entered group, game, tag, username, and search values from the corrected operational messages. Email failures now emit only a safe error class and no longer double-log provider failures; existing database, cache, auth, and HTTP logging boundaries remain intact.
 
 Verified: Backend tests pass 46 suites / 234 tests, backend build and no-mutation ESLint pass, the email-log regression confirms no raw provider object or recipient value crosses the logger, and `git diff --check` passes. No deployment or push was performed. Stable provider/domain diagnostic codes, numeric-identifier policy, and broader remote observability remain open.

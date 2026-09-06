@@ -39,7 +39,7 @@ export class TagsService {
     }
 
     async getTags(): Promise<Array<TagDto>> {
-        this.LOGGER.log(`Getting all tags`)
+        this.LOGGER.log('Getting all tags')
 
         const resultSet = await this.databaseService.getTags()
         const tags = this._parseResultSet(resultSet)
@@ -48,7 +48,7 @@ export class TagsService {
     }
 
     async getTagById(tagId: number): Promise<TagDto> {
-        this.LOGGER.log(`Getting tag by id ${tagId}`)
+        this.LOGGER.log('Getting tag by id')
 
         const resultSet = await this.databaseService.getTagById(tagId)
         const tags = this._parseResultSet(resultSet)
@@ -61,7 +61,7 @@ export class TagsService {
     }
 
     async getTagsByCategoryId(categoryId: number): Promise<Array<TagDto>> {
-        this.LOGGER.log(`Getting tags for category ${categoryId}`)
+        this.LOGGER.log('Getting tags for category')
 
         const resultSet = await this.databaseService.getTagsByCategoryId(categoryId)
         const tags = this._parseResultSet(resultSet)
@@ -70,7 +70,7 @@ export class TagsService {
     }
 
     async createTag(name: string, categoryId: number): Promise<TagDto> {
-        this.LOGGER.log(`Creating tag in category ${categoryId}`)
+        this.LOGGER.log('Creating tag in category')
 
         const resultSet = await this.databaseService.createTag(name, categoryId)
         const tagId = Number(resultSet.lastInsertRowid)
@@ -82,7 +82,7 @@ export class TagsService {
     }
 
     async updateTag(id: number, name: string, categoryId: number): Promise<TagDto> {
-        this.LOGGER.log(`Updating tag ${id} in category ${categoryId}`)
+        this.LOGGER.log('Updating tag in category')
 
         await this.databaseService.updateTag(id, name, categoryId)
 
@@ -93,7 +93,7 @@ export class TagsService {
     }
 
     async deleteTag(id: number): Promise<{ success: boolean }> {
-        this.LOGGER.log(`Deleting tag ${id}`)
+        this.LOGGER.log('Deleting tag')
 
         await this.databaseService.deleteTag(id)
 
