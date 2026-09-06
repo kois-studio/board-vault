@@ -37,7 +37,7 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 | EQ-001 | IN_PROGRESS | Quality | Add lockfiles, root commands, environment documentation, and reproducible local setup. | None |
 | EQ-002 | REVIEW | Quality | Add CI gates for build, tests, lint, and migrations. | EQ-001 |
 | EQ-003 | REVIEW | Quality | Replace starter tests with authorization and core journey coverage. | SEC-001, PROD-005 |
-| EQ-004 | REVIEW | Quality | Establish generated/shared API contracts and response validation; the committed OpenAPI snapshot now has a CI freshness gate, and targeted frontend schemas cover core session/play responses while broader compatibility coverage remains. | DATA-003 |
+| EQ-004 | REVIEW | Quality | Establish generated/shared API contracts and response validation; the committed OpenAPI snapshot now has a CI freshness gate, targeted frontend schemas cover core session/play responses, and the deprecated URL-based group-creation parameters are documented and bounded while broader compatibility coverage remains. | DATA-003 |
 | EQ-005 | TODO | Quality | Add health checks, structured logging, error monitoring, and database operational checks. | EQ-001 |
 | EQ-006 | IN_PROGRESS | Quality | Fix frontend bundle, styling warnings, accessibility, responsiveness, and timezone handling. | PROD-005 |
 | TRUTH-001 | REVIEW | Launch | Remove unsupported landing claims, fake testimonials, dead links, and placeholder product states. | PROD-001, PROD-004, PROD-007 |

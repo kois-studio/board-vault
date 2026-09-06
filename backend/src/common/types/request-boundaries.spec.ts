@@ -2,6 +2,7 @@ import { plainToInstance } from 'class-transformer'
 import { validate } from 'class-validator'
 
 import { CreateGameProposalBody } from './game-proposal.type'
+import { LegacyCreateGroupParams } from './group.type'
 import { CreateNotificationRequestBody } from './notification.type'
 import { CreatePlaySessionBody, UpdateSessionShortlistBody } from './session.type'
 import { RegisterUserDto, UserUpdateGamesBody } from './user.type'
@@ -54,5 +55,15 @@ describe('request boundary limits', () => {
 
         expect(shortlistErrors.map(error => error.property)).toContain('plannedGameIds')
         expect(sessionErrors.map(error => error.property)).toContain('games')
+    })
+
+    it('bounds the deprecated URL-based group creation parameters', async () => {
+        const errors = await validationErrors(LegacyCreateGroupParams, {
+            userId: '7',
+            groupName: 'a'.repeat(101),
+        })
+
+        expect(errors.map(error => error.property)).toContain('groupName')
+        expect(errors.map(error => error.property)).not.toContain('userId')
     })
 })

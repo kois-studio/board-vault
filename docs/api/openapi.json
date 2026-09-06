@@ -3164,7 +3164,9 @@
             "name": "userId",
             "required": true,
             "in": "path",
+            "description": "The authenticated account identifier.",
             "schema": {
+              "example": 12345,
               "type": "number"
             }
           },
@@ -3172,7 +3174,9 @@
             "name": "groupName",
             "required": true,
             "in": "path",
+            "description": "The name of the new group.",
             "schema": {
+              "example": "Friday game's group",
               "type": "string"
             }
           }
