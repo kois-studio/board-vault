@@ -16,7 +16,7 @@ export class MeetAccountGamesController {
     constructor(private readonly meetAccountGamesService: MeetAccountGamesService) {}
 
     @Post(':accountId/:meetId/:gameId')
-    @ApiOperation({ summary: 'Create meetAccountGames ', deprecated: false })
+    @ApiOperation({ summary: 'Create a legacy per-account played-game link', deprecated: true })
     @ApiResponse({ status: 200, type: MeetAccountGameDto, description: 'The meetAccountGames has been successfully created.' })
     @ApiResponse({ status: 404, description: 'MeetId not found.' })
     createMeetAccountGame(
@@ -28,7 +28,7 @@ export class MeetAccountGamesController {
     }
 
     @Delete(':accountId/:meetId/:gameId')
-    @ApiOperation({ summary: 'Update meetAccountGames ', deprecated: false })
+    @ApiOperation({ summary: 'Delete a legacy per-account played-game link', deprecated: true })
     @ApiResponse({ status: 200, type: SuccessDto, description: 'The meetGames has been successfully updated.' })
     @ApiResponse({ status: 404, description: 'MeetId not found.' })
     updateMeetAccountGame(
