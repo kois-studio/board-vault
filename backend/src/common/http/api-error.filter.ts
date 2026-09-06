@@ -38,7 +38,7 @@ export class ApiErrorFilter implements ExceptionFilter {
                 structuredLog('http.request.failed', {
                     requestId,
                     method: request.method,
-                    path: request.path || (request.originalUrl ?? request.url).split('?')[0],
+                    path: (request.originalUrl ?? request.url).split('?')[0],
                     statusCode,
                 }),
             )
