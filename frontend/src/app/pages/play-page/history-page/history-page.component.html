@@ -10,7 +10,7 @@
 <container-wrapper>
     <!-- Loading state -->
     @if (isLoadingHistory()) {
-        <app-skeleton-history />
+        <div role="status" aria-live="polite"><span class="sr-only">Loading shared history…</span><app-skeleton-history /></div>
     } @else if (historyError()) {
         <div class="text-center py-8 text-secondary" role="alert">
             <p>History could not be loaded.</p>
