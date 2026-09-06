@@ -196,7 +196,7 @@ flagship loop, followed by rendered route review with real group data.
 
 ## Known unknowns
 
-- Migration history, backup schedule, and database owner. The deployed schema baseline is owner-confirmed for this work, though not independently queried in this session.
+- Migration history, backup schedule, and database owner. The live migration markers, schema integrity, foreign-key state, primary location, and aggregate row counts were independently queried read-only on 2026-09-06; no scheduled backup policy or recovery owner is exposed by the available Turso CLI output.
 - Vercel project settings, frontend hosting, domain/DNS ownership, production environment provisioning, and rollback path.
 - Upstash Redis is explicitly optional only for local development; production authentication rate limiting requires it enabled and configured.
 - Supported Node/package-manager versions beyond the observed local runtime.
