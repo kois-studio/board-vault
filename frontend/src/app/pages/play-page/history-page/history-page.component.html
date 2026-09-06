@@ -55,7 +55,10 @@
                     @for (gamePlayed of historyRecord.gamesPlayed; track gamePlayed.gameData.id) {
                         <div class="app-bg-tertiary rounded-lg p-4 flex gap-4">
                             <!-- Game image -->
-                            <a [routerLink]="['/games/', gamePlayed.gameData.id]">
+                            <a
+                                [routerLink]="['/games/', gamePlayed.gameData.id]"
+                                [attr.aria-label]="'View ' + (gamePlayed.gameData.titleTranslations.en || gamePlayed.gameData.title || 'game')"
+                            >
                                 <img
                                     [src]="gamePlayed.gameData.imageUrl"
                                     [alt]="gamePlayed.gameData.titleTranslations.en"
