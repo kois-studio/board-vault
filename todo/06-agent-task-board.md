@@ -146,6 +146,24 @@ Verified: `cd backend && npm test -- --runInBand` passes 48 suites / 254 tests; 
 
 Known follow-ups: Audit proposal and remaining legacy bulk mutations, then add failure-injection and HTTP integration coverage for the transaction boundaries.
 
+Continuation claim: DATA-004 / EQ-003
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Branch/worktree: main / shared workspace
+
+Scope: prove rollback behavior for the collection, review-memory, and group-decision transaction boundaries through failure-injection regressions
+
+Review: DATA-004 / EQ-003
+
+Changed: Added failure-injection coverage proving that a collection activity failure, review-memory failure, or group-decision reopening failure rolls back the preceding write, never commits, and always closes the transaction.
+
+Verified: `cd backend && npm test -- --runInBand` passes 48 suites / 257 tests; `cd backend && npm run build`; `cd backend && npm run lint:check`; `cd backend && npm run lint:logs`; and `git diff --check` pass. No deployment, push, provider mutation, or production data change was performed.
+
+Known follow-ups: Add disposable HTTP/database integration evidence, audit proposal and remaining legacy bulk mutations, and keep authenticated social-loop rehearsal as the release gate.
+
 Previous most recent claim:
 
 ```text

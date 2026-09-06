@@ -191,6 +191,18 @@ integration evidence for these boundaries, followed by the real two-account
 acceptance loop, rendered UX review, remote CI observation, and backup/rollback
 ownership. Catalog detail and discovery remain intentionally out of scope.
 
+### Tech-lead reassessment — after transaction failure injection — 2026-09-06
+
+The collection/review/group-decision transaction boundaries now prove rollback
+on mid-write failures, not only successful commits. The backend gate is now 257
+tests across 48 suites, with build and log audit green.
+
+This closes a meaningful unit-level safety gate but is not a substitute for a
+disposable database/provider integration rehearsal. The next priorities are
+HTTP-level authenticated boundary evidence, remaining legacy/proposal mutation
+review, the two-account social journey, rendered UX/accessibility, remote CI,
+and operational recovery ownership.
+
 ### Tech-lead reassessment — after collection-state transaction completion — 2026-09-06
 
 The collection social state is now transactionally consistent across add,

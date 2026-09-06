@@ -131,6 +131,26 @@ describe('DatabaseService logging', () => {
         expect(transaction.close).toHaveBeenCalledTimes(1)
     })
 
+    it('rolls back collection activation when activity memory fails', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const transaction = {
+            execute: jest.fn().mockResolvedValueOnce({ rowsAffected: 1 }).mockRejectedValueOnce(new Error('activity write failed')),
+            commit: jest.fn().mockResolvedValue(undefined),
+            rollback: jest.fn().mockResolvedValue(undefined),
+            close: jest.fn(),
+        }
+
+        ;(service as unknown as { tursoClient: { transaction: jest.Mock } }).tursoClient = {
+            transaction: jest.fn().mockResolvedValue(transaction),
+        }
+
+        await expect(service.addGameToCollection(1, 42)).rejects.toThrow('activity write failed')
+
+        expect(transaction.rollback).toHaveBeenCalledTimes(1)
+        expect(transaction.commit).not.toHaveBeenCalled()
+        expect(transaction.close).toHaveBeenCalledTimes(1)
+    })
+
     it('removes collection ownership and its memory in one transaction', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
@@ -252,6 +272,26 @@ describe('DatabaseService logging', () => {
         expect(transaction.close).toHaveBeenCalledTimes(1)
     })
 
+    it('rolls back review replacement when rated activity memory fails', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const transaction = {
+            execute: jest.fn().mockResolvedValueOnce({ rowsAffected: 1 }).mockRejectedValueOnce(new Error('review write failed')),
+            commit: jest.fn().mockResolvedValue(undefined),
+            rollback: jest.fn().mockResolvedValue(undefined),
+            close: jest.fn(),
+        }
+
+        ;(service as unknown as { tursoClient: { transaction: jest.Mock } }).tursoClient = {
+            transaction: jest.fn().mockResolvedValue(transaction),
+        }
+
+        await expect(service.saveGameReviewAndLogActivity(1, 42, 8)).rejects.toThrow('review write failed')
+
+        expect(transaction.rollback).toHaveBeenCalledTimes(1)
+        expect(transaction.commit).not.toHaveBeenCalled()
+        expect(transaction.close).toHaveBeenCalledTimes(1)
+    })
+
     it('guards group acquisition interest against games already owned by a member', async () => {
         const service = new DatabaseService({} as ConfigService)
         const execute = jest.fn().mockResolvedValue({ rowsAffected: 1 })
@@ -297,6 +337,26 @@ describe('DatabaseService logging', () => {
         )
         expect(transaction.commit).toHaveBeenCalledTimes(1)
         expect(transaction.rollback).not.toHaveBeenCalled()
+        expect(transaction.close).toHaveBeenCalledTimes(1)
+    })
+
+    it('rolls back group interest when reopening its decision fails', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const transaction = {
+            execute: jest.fn().mockResolvedValueOnce({ rowsAffected: 1 }).mockRejectedValueOnce(new Error('decision write failed')),
+            commit: jest.fn().mockResolvedValue(undefined),
+            rollback: jest.fn().mockResolvedValue(undefined),
+            close: jest.fn(),
+        }
+
+        ;(service as unknown as { tursoClient: { transaction: jest.Mock } }).tursoClient = {
+            transaction: jest.fn().mockResolvedValue(transaction),
+        }
+
+        await expect(service.addGroupGameInterestAndReopenDecision(7, 1, 42)).rejects.toThrow('decision write failed')
+
+        expect(transaction.rollback).toHaveBeenCalledTimes(1)
+        expect(transaction.commit).not.toHaveBeenCalled()
         expect(transaction.close).toHaveBeenCalledTimes(1)
     })
 
