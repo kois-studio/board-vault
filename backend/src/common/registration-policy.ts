@@ -1,5 +1,7 @@
 import { ForbiddenException } from '@nestjs/common'
 
+import { API_ERROR_CODES } from './http/api-error'
+
 export const PRIVATE_BETA_REGISTRATION_MESSAGE = 'Board Vault is currently in private beta. Registration is by invitation only.'
 
 /**
@@ -18,6 +20,6 @@ export function isSelfRegistrationEnabled(): boolean {
 
 export function assertSelfRegistrationEnabled(): void {
     if (!isSelfRegistrationEnabled()) {
-        throw new ForbiddenException(PRIVATE_BETA_REGISTRATION_MESSAGE)
+        throw new ForbiddenException({ code: API_ERROR_CODES.PRIVATE_BETA_REGISTRATION_CLOSED, message: PRIVATE_BETA_REGISTRATION_MESSAGE })
     }
 }

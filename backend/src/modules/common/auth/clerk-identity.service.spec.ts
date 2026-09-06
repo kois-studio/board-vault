@@ -1,6 +1,8 @@
 import { createClerkClient } from '@clerk/backend'
 import { ForbiddenException, NotFoundException } from '@nestjs/common'
 
+import { API_ERROR_CODES, BoardVaultHttpException } from '../../../common/http/api-error'
+
 import { ClerkIdentityService } from './clerk-identity.service'
 
 jest.mock('@clerk/backend', () => ({
@@ -180,6 +182,25 @@ describe('ClerkIdentityService', () => {
                 boardVaultGroupInvitation: { groupId: 12, inviterAccountId: 7, version: 1 },
             },
         })
+    })
+
+    it('maps an unexpected Clerk provider failure to a stable safe code', async () => {
+        configService.get.mockImplementation((key: string) =>
+            key === 'BOARD_VAULT_CLERK_INVITATION_REDIRECT_URL' ? 'https://board-vault.test/register' : 'secret',
+        )
+        databaseService.getGroupById.mockResolvedValue({ rows: [[12, 'Friends', 7]] })
+        mockedCreateClerkClient.mockReturnValue({
+            invitations: { createInvitation: jest.fn().mockRejectedValue(new Error('provider payload must not escape')) },
+        } as never)
+
+        const error = await service.createGroupInvitation(12, 7, 'invite@example.com').catch((caught: unknown) => caught)
+
+        expect(error).toBeInstanceOf(BoardVaultHttpException)
+        expect((error as BoardVaultHttpException).getResponse()).toEqual({
+            code: API_ERROR_CODES.CLERK_PROVIDER_UNAVAILABLE,
+            message: 'The invitation provider is temporarily unavailable',
+        })
+        expect((error as BoardVaultHttpException).getStatus()).toBe(502)
     })
 
     it('lists only pending Clerk invitations owned by the requested group', async () => {
