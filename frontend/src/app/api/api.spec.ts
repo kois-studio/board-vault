@@ -240,4 +240,69 @@ describe('Api response contracts', () => {
 
         await expectAsync(response).toBeRejected()
     })
+
+    it('encodes availability queries without changing plus signs into spaces', async () => {
+        const response = firstValueFrom(api.checkEmail('friend+board@example.com'))
+        const request = http.expectOne(`${environment.apiUrl}/auth/check-email?email=friend%2Bboard%40example.com`)
+
+        expect(request.request.method).toBe('GET')
+        request.flush({ isAvailable: true })
+
+        await expectAsync(response).toBeResolvedTo({ isAvailable: true })
+    })
+
+    it('rejects a malformed acquisition decision entry at the API boundary', async () => {
+        const response = firstValueFrom(api.getGroupAcquisitionBoard(7))
+        const request = http.expectOne(`${environment.apiUrl}/groups/7/acquisition-board`)
+
+        request.flush([
+            {
+                gameData: { id: 42 },
+                interestedBy: [],
+                interestCount: 0,
+                ownerCount: 0,
+                firstInterestedAt: '2026-09-05',
+                decisionStatus: 'open',
+                decisionAt: null,
+                decisionBy: null,
+            },
+        ])
+
+        await expectAsync(response).toBeRejected()
+    })
+
+    it('rejects a malformed recommendation-signal response at the API boundary', async () => {
+        const response = firstValueFrom(api.getRecommendationSignals(7))
+        const request = http.expectOne(`${environment.apiUrl}/play/recommendations/signals?groupId=7`)
+
+        request.flush({ groupId: 7, signals: [{ gameId: 42, interestedCount: 1 }] })
+
+        await expectAsync(response).toBeRejected()
+    })
+
+    it('rejects a scheduled-session response that does not confirm scheduling', async () => {
+        const response = firstValueFrom(
+            api.scheduleSession({
+                groupId: 7,
+                sessionDate: '2026-09-12T19:30:00.000Z',
+                timezone: 'Europe/Madrid',
+                attendeeIds: [1, 2],
+                plannedGameIds: [42],
+            }),
+        )
+        const request = http.expectOne(`${environment.apiUrl}/sessions/scheduled`)
+
+        request.flush({ sessionId: 12, status: 'completed' })
+
+        await expectAsync(response).toBeRejected()
+    })
+
+    it('rejects a malformed invitation handoff response at the API boundary', async () => {
+        const response = firstValueFrom(api.createClerkGroupInvitation(7, 'friend@example.com'))
+        const request = http.expectOne(`${environment.apiUrl}/groups/7/clerk-invitations`)
+
+        request.flush({ invitationId: 'inv_123', emailAddress: 'not-an-email', url: '/register' })
+
+        await expectAsync(response).toBeRejected()
+    })
 })
