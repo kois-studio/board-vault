@@ -88,7 +88,7 @@ compliance:
 
     - id: TEST-001
       status: gap
-      evidence: backend has 46 focused suites and 234 passing tests covering authentication, authorization, validation and request-size boundaries, sessions, service-level participation invariants, organizer/current-membership enforcement, per-game participation and legacy played-game ownership validation, recommendations, invitation visibility/expiry/atomic acceptance, owner-only legacy invitation creation, provider invitation listing/revocation boundaries, soft-deleted account exclusion, verified-user gating, admin route and bounded list-query validation, bounded collection browse and duplicate-review inputs, bounded group names, self-profile response privacy, cache endpoint protection, safe API errors, correlated request logging, health/readiness probes, canonical session reads, group acquisition ownership-race protection and owner decisions, and provider boundaries; frontend has 37 browser-based unit tests with malformed-response, false-success, history-handoff, player-summary, and decision-context coverage, five passing public Playwright checks, and five opt-in authenticated journey specs with 13 passing checks and three guarded skips when the owner/recommendation/acquisition fixtures are supplied
+      evidence: backend has 46 focused suites and 237 passing tests covering authentication, authorization, validation and request-size boundaries, sessions, service-level participation invariants, organizer/current-membership enforcement, per-game participation and legacy played-game ownership validation, recommendations, invitation visibility/expiry/atomic acceptance, owner-only legacy invitation creation, provider invitation listing/revocation boundaries, soft-deleted account exclusion, verified-user gating, admin route and bounded list-query validation, bounded collection browse and duplicate-review inputs, bounded group names, self-profile response privacy, cache endpoint protection, safe API errors, correlated request logging, health/readiness probes, canonical session reads, group acquisition ownership-race protection and owner decisions, and provider boundaries; frontend has 43 browser-based unit tests with malformed-response, false-success, history-handoff, player-summary, decision-context, empty-group-activation, and dialog-focus coverage, five passing public Playwright checks, and five opt-in authenticated journey specs with 13 passing checks and three guarded skips when the owner/recommendation/acquisition fixtures are supplied
       priority: high
       next_action: Add layered unit, integration, and journey tests for the flagship loop.
     - id: TEST-002
@@ -108,12 +108,12 @@ compliance:
       next_action: Expand the HTTP contract suite with disposable authenticated/authorized journeys.
     - id: TEST-005
       status: gap
-      evidence: 234 focused backend tests now cover the highest-risk unit boundaries, while the suite still does not exercise a clean database, provider failure contract, or remote integration boundary
+      evidence: 237 focused backend tests now cover the highest-risk unit boundaries, while the suite still does not exercise a clean database, provider failure contract, or remote integration boundary
       priority: critical
       next_action: Add repeatable disposable integration/contract coverage for auth, group membership, collection ownership, session transactions, recommendation decisions, and provider failure behavior.
     - id: TEST-006
       status: gap
-      evidence: backend unit command passes 234 focused tests and frontend has 37 browser-based unit tests plus five public Playwright checks; clean installs now pass and the validation workflow now includes repository whitespace, lint/Biome, build, test, and migration gates, while CI enforcement is not yet observed remotely
+      evidence: backend unit command passes 237 focused tests and frontend has 43 browser-based unit tests plus five public Playwright checks; clean installs now pass and the validation workflow now includes repository whitespace, lint/Biome, build, test, and migration gates, while CI enforcement is not yet observed remotely
       priority: high
       next_action: Keep the supported test commands meaningful and observe their first required CI run.
     - id: TEST-007
@@ -513,7 +513,7 @@ compliance:
       next_action: Document state lifecycle for auth, DataService, loading, and cache state.
     - id: ANGULAR-008
       status: gap
-      evidence: sixteen frontend specs now pass 37 browser-based unit tests, including private collection-boundary and activation guidance, invitation-decline confirmation, pending Clerk invitation contracts, schedule handoff/submission, session participant safeguards, group-history attendee/player summaries and recommendation handoff, upcoming-session social context labels, recommendation history context, attendee controls, decision-context semantics, accessible theme-control labels, self-profile, session lifecycle, acquisition-board and recommendation-lens contracts, provider invitation rejection, false-success rejection, admin pagination, notification, API response-contract cases, direct group-creation handoff behavior, and protected-route account-readiness gating, but no isolated core workflow tests exist yet
+      evidence: sixteen frontend specs now pass 43 browser-based unit tests, including private collection-boundary and activation guidance, empty-group activation, invitation-decline confirmation, pending Clerk invitation contracts, schedule handoff/submission, session participant safeguards, group-history attendee/player summaries and recommendation handoff, upcoming-session social context labels, recommendation history context, attendee controls, decision-context semantics, accessible theme-control labels, self-profile, session lifecycle, acquisition-board and recommendation-lens contracts, provider invitation rejection, false-success rejection, admin pagination, notification, API response-contract cases, direct group-creation handoff behavior, protected-route account-readiness gating, and contextual dialog focus behavior, but no isolated core workflow tests exist yet
       priority: high
       next_action: Extract and unit-test recommendation/session/authorization rules.
     - id: ANGULAR-009
