@@ -208,12 +208,14 @@ export const routes: Routes = [
             },
             {
                 path: 'groups/:groupId/leave',
-                loadComponent: () => import('./pages/group-leave/group-leave.component').then((m) => m.GroupLeaveComponent),
+                loadComponent: () => import('./pages/groups/group-action-redirect.component').then((m) => m.GroupActionRedirectComponent),
+                data: { target: 'leave' },
                 canActivate: [AuthOnlyGuard],
             },
             {
                 path: 'groups/:groupId/delete',
-                loadComponent: () => import('./pages/group-delete/group-delete.component').then((m) => m.GroupDeleteComponent),
+                loadComponent: () => import('./pages/groups/group-action-redirect.component').then((m) => m.GroupActionRedirectComponent),
+                data: { target: 'delete' },
                 canActivate: [AuthOnlyGuard],
             },
             {
