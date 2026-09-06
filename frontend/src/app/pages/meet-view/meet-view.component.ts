@@ -343,6 +343,14 @@ export class MeetViewComponent {
         return this.meetData.playedGameParticipants.some((game) => game.participantIds.includes(memberId))
     }
 
+    get hasPlayedGameAttendeeLock(): boolean {
+        return Boolean(
+            this.meetData?.playedGameParticipants.some((game) =>
+                game.participantIds.some((memberId) => this.meetData?.attendees.includes(memberId)),
+            ),
+        )
+    }
+
     getAttendeeToggleLabel(memberId: number): string {
         const member = this.groupData?.members.find((candidate) => candidate.id === memberId)
         const name = member?.displayName || member?.username || 'this member'
