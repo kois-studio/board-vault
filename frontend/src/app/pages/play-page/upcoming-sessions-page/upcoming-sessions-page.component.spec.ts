@@ -46,4 +46,24 @@ describe('UpcomingSessionsPageComponent social context', () => {
         expect(component.getSessionActionLabel('scheduled')).toBe('Open session')
         expect(component.getSessionActionLabel('active')).toBe('Open live session')
     })
+
+    it('describes a session using available group context without claiming everyone is attending', async () => {
+        const { component } = await setup()
+        component.userGroups$.set([
+            {
+                id: 7,
+                name: 'Friday crew',
+                createdBy: 1,
+                createdAt: '2026-09-01T10:00:00.000Z',
+                members: [
+                    { id: 1, games: [{ id: 11 }, { id: 12 }] },
+                    { id: 2, games: [{ id: 12 }, { id: 13 }] },
+                ],
+            } as never,
+        ])
+
+        expect(component.getGroupContext(7)).toBe('2 people · 3 games available')
+        expect(component.getSessionPrompt('scheduled')).toBe('Review attendees and the game shortlist')
+        expect(component.getSessionPrompt('active')).toBe('Record what the group actually plays')
+    })
 })
