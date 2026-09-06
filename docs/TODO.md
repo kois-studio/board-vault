@@ -262,9 +262,10 @@ as TODO items here.
   notifications are wanted.
 - [ ] Finish the preserved-account migration and retire legacy password/JWT
   registration only after recovery, rollback, and production verification pass.
-  The linked Clerk CLI currently has no production instance configured; the
-  local private-beta and retention policies are verified, but production Clerk
-  configuration still needs an explicit read-only verification.
+  Production Clerk’s private-beta configuration is now verified read-only:
+  sign-up mode is restricted, required username/password settings match the
+  invitation form, email verification is enabled, and Smart CAPTCHA is on.
+  Migration recovery, rollback, and legacy-auth retirement remain open.
 
 ## Reliability, quality, and launch readiness
 

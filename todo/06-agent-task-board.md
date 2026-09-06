@@ -2954,9 +2954,21 @@ Scope: recheck private-beta account retention and production identity-verificati
 
 Changed: Read-only Turso queries found four active unverified legacy accounts; three have group/game history and are excluded by the retention policy, while the only history-free account remains younger than 60 days. The cleanup candidate count is zero. A read-only Clerk production config pull was attempted but the linked CLI has no production instance configured.
 
-Verified: No account was deleted, contacted, or modified. Production Clerk sign-up configuration remains an operational verification gap; no production mutation was attempted.
+Verified: No account was deleted, contacted, or modified. The initial `prod` alias lookup did not verify Clerk configuration and no production mutation was attempted; the exact-instance read-only verification is recorded in the follow-up entry below.
 
 Continuation claim: AUTH-001 / OPS-005
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Scope: close the production private-beta configuration verification gap without changing Clerk.
+
+Changed: Queried the exact production Clerk instance configuration read-only after the CLI’s `prod` alias proved unset.
+
+Verified: Production sign-up mode is `restricted`; email, username, and password are required; password minimum is 15 characters; email verification and Smart CAPTCHA are enabled. No production setting, user, invitation, deployment, or database row was changed.
+
+Continuation claim: AUTH-001
 
 Owner: Codex
 

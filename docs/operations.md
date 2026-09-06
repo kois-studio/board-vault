@@ -143,8 +143,10 @@ history, so the retention tool correctly excludes them; account `#16` remains
 history-free but is still younger than the 60-day threshold. The cleanup
 candidate count is zero. No account was deleted or contacted. The linked Clerk
 CLI has no production instance configured, so production Clerk sign-up settings
-still require verification through the deployment owner or a deliberately
-linked production CLI session.
+were verified read-only through the exact production instance ID: sign-up mode
+is `restricted`, email/username/password are required, the password minimum is
+15 characters, email verification is enabled, and Smart CAPTCHA is enabled.
+No production setting was changed.
 
 On 2026-08-15, an authenticated request to
 `/collection/users/1/games` returned a Vercel 504 because the configured
