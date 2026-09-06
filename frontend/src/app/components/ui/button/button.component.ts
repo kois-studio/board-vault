@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, Input } from '@angular/core'
+import { Component, HostBinding, Input } from '@angular/core'
 import { RouterLink } from '@angular/router'
 
 /**
@@ -23,6 +23,13 @@ import { RouterLink } from '@angular/router'
     imports: [CommonModule, RouterLink],
 })
 export class ButtonComponent {
+    /**
+     * RouterLink can add a tabindex to the host when routerLink is passed to
+     * this component. The native button below is the only interactive control
+     * that should appear in the keyboard order.
+     */
+    @HostBinding('attr.tabindex') public readonly hostTabIndex = '-1'
+
     @Input() variant: 'primary' | 'secondary' | 'danger' | 'success' = 'primary'
     @Input() size: 'small' | 'medium' | 'large' = 'medium'
     @Input() type: 'button' | 'submit' | 'reset' = 'button'
