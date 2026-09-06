@@ -145,6 +145,40 @@ describe('DatabaseService logging', () => {
         })
     })
 
+    it('reopens a group acquisition decision with the member interest in one transaction', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const transaction = {
+            execute: jest.fn().mockResolvedValueOnce({ rowsAffected: 1 }).mockResolvedValueOnce({ rowsAffected: 1 }),
+            commit: jest.fn().mockResolvedValue(undefined),
+            rollback: jest.fn().mockResolvedValue(undefined),
+            close: jest.fn(),
+        }
+
+        ;(service as unknown as { tursoClient: { transaction: jest.Mock } }).tursoClient = {
+            transaction: jest.fn().mockResolvedValue(transaction),
+        }
+
+        await expect(service.addGroupGameInterestAndReopenDecision(7, 1, 42)).resolves.toEqual({ rowsAffected: 1 })
+
+        expect(transaction.execute).toHaveBeenNthCalledWith(
+            1,
+            expect.objectContaining({
+                sql: expect.stringContaining('INSERT OR IGNORE INTO GroupGameInterest'),
+                args: [7, 1, 42, 7, 42],
+            }),
+        )
+        expect(transaction.execute).toHaveBeenNthCalledWith(
+            2,
+            expect.objectContaining({
+                sql: expect.stringContaining("SET status = 'open'"),
+                args: [7, 42],
+            }),
+        )
+        expect(transaction.commit).toHaveBeenCalledTimes(1)
+        expect(transaction.rollback).not.toHaveBeenCalled()
+        expect(transaction.close).toHaveBeenCalledTimes(1)
+    })
+
     it('upserts a group acquisition decision without creating purchase semantics', async () => {
         const service = new DatabaseService({} as ConfigService)
         const execute = jest.fn().mockResolvedValue({ rowsAffected: 1 })

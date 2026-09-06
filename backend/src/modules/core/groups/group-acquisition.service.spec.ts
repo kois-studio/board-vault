@@ -61,33 +61,31 @@ describe('GroupAcquisitionService', () => {
         const database = {
             getGameById: jest.fn().mockResolvedValue({ rows: [[42]] }),
             getGroupAvailableGameIds: jest.fn().mockResolvedValue([42]),
-            addGroupGameInterest: jest.fn(),
-            reopenGroupAcquisitionDecision: jest.fn().mockResolvedValue({ rowsAffected: 0 }),
+            addGroupGameInterestAndReopenDecision: jest.fn(),
         }
         const service = new GroupAcquisitionService(database as unknown as DatabaseService)
 
         await expect(service.addInterest(7, 1, { gameId: 42 })).rejects.toThrow('This group already owns the selected game')
-        expect(database.addGroupGameInterest).not.toHaveBeenCalled()
+        expect(database.addGroupGameInterestAndReopenDecision).not.toHaveBeenCalled()
     })
 
     it('persists interest for a catalog game not owned by the group', async () => {
         const database = {
             getGameById: jest.fn().mockResolvedValue({ rows: [[42]] }),
             getGroupAvailableGameIds: jest.fn().mockResolvedValue([]),
-            addGroupGameInterest: jest.fn().mockResolvedValue({ rowsAffected: 1 }),
-            reopenGroupAcquisitionDecision: jest.fn().mockResolvedValue({ rowsAffected: 0 }),
+            addGroupGameInterestAndReopenDecision: jest.fn().mockResolvedValue({ rowsAffected: 1 }),
         }
         const service = new GroupAcquisitionService(database as unknown as DatabaseService)
 
         await expect(service.addInterest(7, 1, { gameId: 42 })).resolves.toEqual({ success: true })
-        expect(database.addGroupGameInterest).toHaveBeenCalledWith(7, 1, { gameId: 42 })
+        expect(database.addGroupGameInterestAndReopenDecision).toHaveBeenCalledWith(7, 1, 42)
     })
 
     it('reports ownership when the atomic insert loses a race to a group purchase', async () => {
         const database = {
             getGameById: jest.fn().mockResolvedValue({ rows: [[42]] }),
             getGroupAvailableGameIds: jest.fn().mockResolvedValueOnce([]).mockResolvedValueOnce([42]),
-            addGroupGameInterest: jest.fn().mockResolvedValue({ rowsAffected: 0 }),
+            addGroupGameInterestAndReopenDecision: jest.fn().mockResolvedValue({ rowsAffected: 0 }),
         }
         const service = new GroupAcquisitionService(database as unknown as DatabaseService)
 

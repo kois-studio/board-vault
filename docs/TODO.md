@@ -178,6 +178,18 @@ The next priority is a failure-path audit of the remaining core multi-write
 flows, while keeping the two-account acceptance rehearsal and rendered route
 review as the release evidence gates.
 
+### Tech-lead reassessment — after atomic group acquisition signals — 2026-09-06
+
+The group acquisition decision loop now commits member interest and reopening a
+previously declined group decision in one transaction, preserving the social
+meaning of “someone is interested again” under provider failure or races. The
+backend gate is now 246 tests across 47 suites.
+
+The remaining persistence priority is still a bounded audit of proposal and
+legacy multi-write paths, not more catalog/detail functionality. Product
+release evidence remains the clean two-account loop, rendered accessibility,
+remote CI, provider delivery, and operational recovery ownership.
+
 ## Critical — unblock safe feature development
 
 ### READINESS-001 [Critical] SEC-003/SEC-008 — Complete object-level authorization audit

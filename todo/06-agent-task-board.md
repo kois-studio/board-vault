@@ -92,6 +92,24 @@ Verified: `cd backend && npm test -- --runInBand` passes 47 suites / 245 tests; 
 
 Known follow-ups: Audit proposal and remaining legacy multi-write mutations, then add failure-injection coverage for the next transaction boundary.
 
+Continuation claim: DATA-004
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Branch/worktree: main / shared workspace
+
+Scope: make group acquisition interest and reopening a declined group decision one atomic social signal
+
+Review: DATA-004
+
+Changed: Member interest now uses one transaction for the guarded interest insert and reopening a `not_now` group decision. The existing ownership-race check remains in the service, and duplicate/owned-group outcomes preserve the current API behavior.
+
+Verified: `cd backend && npm test -- --runInBand` passes 47 suites / 246 tests; `cd backend && npm run build`; `cd backend && npm run lint:check`; `cd backend && npm run lint:logs`; and `git diff --check` pass. No deployment, push, provider mutation, or production data change was performed.
+
+Known follow-ups: Audit proposal and remaining legacy multi-write mutations, then add failure-injection coverage for the next transaction boundary.
+
 Previous most recent claim:
 
 ```text

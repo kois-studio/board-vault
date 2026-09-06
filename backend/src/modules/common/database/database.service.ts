@@ -620,6 +620,45 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    async addGroupGameInterestAndReopenDecision(groupId: number, accountId: number, gameId: number): Promise<{ rowsAffected: number }> {
+        const transaction = await this.tursoClient.transaction('write')
+
+        try {
+            const interest = await transaction.execute({
+                sql: `
+                    INSERT OR IGNORE INTO GroupGameInterest (groupId, accountId, gameId)
+                    SELECT ?, ?, ?
+                    WHERE NOT EXISTS (
+                        SELECT 1
+                        FROM OwnedGame ownedByGroupMember
+                        INNER JOIN GroupMembership groupMember ON groupMember.accountId = ownedByGroupMember.accountId
+                        WHERE groupMember.groupId = ? AND ownedByGroupMember.gameId = ?
+                    )
+                `,
+                args: [groupId, accountId, gameId, groupId, gameId],
+            })
+
+            if (interest.rowsAffected === 1) {
+                await transaction.execute({
+                    sql: `
+                        UPDATE GroupAcquisitionDecision
+                        SET status = 'open', decidedBy = NULL, decidedAt = NULL, note = NULL
+                        WHERE groupId = ? AND gameId = ? AND status = 'not_now'
+                    `,
+                    args: [groupId, gameId],
+                })
+            }
+
+            await transaction.commit()
+            return { rowsAffected: interest.rowsAffected }
+        } catch (error) {
+            await transaction.rollback()
+            throw error
+        } finally {
+            transaction.close()
+        }
+    }
+
     upsertGroupAcquisitionDecision(
         groupId: number,
         gameId: number,
