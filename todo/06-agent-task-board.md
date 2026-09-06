@@ -3672,3 +3672,15 @@ Scope: prevent impossible attendee edits in the canonical session-detail flow an
 Changed: Session detail now disables removing the only attendee or an attendee recorded for a played game, exposes an accessible action label describing why, and keeps a defensive toast guard for programmatic/legacy activation.
 
 Verified: `cd frontend && npx ng test --watch=false --browsers=ChromeHeadless --include='src/app/pages/meet-view/meet-view.component.spec.ts'` (4 passing), targeted Biome, and `cd frontend && npm run build` pass. No deployment or push was performed.
+
+Continuation claim: EQ-004 / EQ-006
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Scope: extend client response-contract negative coverage to the group workspace and shared-history boundaries.
+
+Changed: Added malformed group-workspace and shared-history response regressions. The frontend API boundary now rejects incomplete payloads before they reach group or history state, complementing the existing auth/profile/session/recommendation/admin/notification/provider cases.
+
+Verified: `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (48 passing) and the targeted Biome check pass. No deployment or push was performed.
