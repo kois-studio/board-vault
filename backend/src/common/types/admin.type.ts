@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
-import { IsArray, IsIn, IsInt, IsNotEmpty, IsObject, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator'
+import { ArrayMaxSize, IsArray, IsIn, IsInt, IsNotEmpty, IsObject, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator'
 
 import { GameProposalCompleteDto } from './game-proposal.type'
 import { SupportedLanguage } from './game-translation.type'
@@ -69,6 +69,7 @@ export class UpdateGameTranslationsBody {
     })
     @IsOptional()
     @IsString()
+    @MaxLength(200)
     en?: string
 
     @ApiProperty({
@@ -78,6 +79,7 @@ export class UpdateGameTranslationsBody {
     })
     @IsOptional()
     @IsString()
+    @MaxLength(200)
     es?: string
 }
 
@@ -88,6 +90,7 @@ export class UpdateGameTagsBody {
         type: [Number],
     })
     @IsArray()
+    @ArrayMaxSize(100)
     @IsInt({ each: true })
     @Min(1, { each: true })
     tagIds: number[]
@@ -115,6 +118,7 @@ export class ApproveGameProposalBody {
     })
     @IsOptional()
     @IsString()
+    @MaxLength(2000)
     reviewNotes?: string
 
     @ApiProperty({
@@ -124,6 +128,7 @@ export class ApproveGameProposalBody {
     })
     @IsOptional()
     @IsString()
+    @MaxLength(2048)
     imageUrl?: string
 
     @ApiProperty({
@@ -172,6 +177,7 @@ export class ApproveGameProposalBody {
     })
     @IsOptional()
     @IsArray()
+    @ArrayMaxSize(100)
     @IsInt({ each: true })
     @Min(1, { each: true })
     tagIds?: number[]
@@ -184,6 +190,7 @@ export class RejectGameProposalBody {
     })
     @IsString()
     @IsNotEmpty()
+    @MaxLength(2000)
     reviewNotes: string
 }
 

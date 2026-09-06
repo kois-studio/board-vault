@@ -1,5 +1,5 @@
 import { ApiProperty, OmitType } from '@nestjs/swagger'
-import { IsInt, IsNotEmpty, IsString, Min } from 'class-validator'
+import { IsInt, IsNotEmpty, IsString, MaxLength, Min } from 'class-validator'
 
 import type { GroupDto } from './group.type'
 import type { UserPublicDto } from './user.type'
@@ -44,6 +44,7 @@ export class CreateInvitationByUsernameBody extends OmitType(InvitationDto, ['id
     @ApiProperty({ example: 'username', description: 'The username to invite.' })
     @IsString()
     @IsNotEmpty()
+    @MaxLength(50)
     username: string
 }
 export class CreateInvitationByUsernameRequestBody extends OmitType(CreateInvitationByUsernameBody, ['fromAccountId']) {}
