@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { Component, effect, inject, signal } from '@angular/core'
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
-import { finalize, firstValueFrom } from 'rxjs'
+import { firstValueFrom } from 'rxjs'
 import { Api } from '../../../api/api'
 import { ClerkGroupInvitationSummaryType, ClerkGroupInvitationType, GameType } from '../../../api/api.types'
 import { CardAccountComponent } from '../../../components/card-account/card-account.component'
@@ -158,7 +158,7 @@ export class GroupEditComponent {
                 this.dataService.inviteNewPersonToGroup(this.groupData.id, this.emailToInvite.value),
             )
             this.emailToInvite.reset()
-            this.refreshClerkInvitations(this.groupData.id)
+            await this.refreshClerkInvitations(this.groupData.id)
         } catch {
             // DataService presents the request error; keep the entered email available for retry.
         } finally {
@@ -166,23 +166,24 @@ export class GroupEditComponent {
         }
     }
 
-    private loadClerkInvitations(groupId: number): void {
+    private async loadClerkInvitations(groupId: number): Promise<void> {
         if (this.loadedClerkInvitationsGroupId === groupId) return
         this.loadedClerkInvitationsGroupId = groupId
         this.clerkInvitationsLoading.set(true)
         this.clerkInvitationsError.set(false)
-        this.api
-            .getClerkGroupInvitations(groupId)
-            .pipe(finalize(() => this.clerkInvitationsLoading.set(false)))
-            .subscribe({
-                next: (invitations) => this.clerkPendingInvitations.set(invitations),
-                error: () => this.clerkInvitationsError.set(true),
-            })
+        try {
+            const invitations = await firstValueFrom(this.api.getClerkGroupInvitations(groupId))
+            this.clerkPendingInvitations.set(invitations)
+        } catch {
+            this.clerkInvitationsError.set(true)
+        } finally {
+            this.clerkInvitationsLoading.set(false)
+        }
     }
 
-    public refreshClerkInvitations(groupId: number): void {
+    public async refreshClerkInvitations(groupId: number): Promise<void> {
         this.loadedClerkInvitationsGroupId = null
-        this.loadClerkInvitations(groupId)
+        await this.loadClerkInvitations(groupId)
     }
 
     public requestClerkRevoke(invitationId: string): void {
@@ -197,7 +198,7 @@ export class GroupEditComponent {
             await firstValueFrom(this.api.revokeClerkGroupInvitation(this.groupData.id, invitationId))
             this.pendingClerkRevokeId.set(null)
             this.toastService.success('Email invitation revoked')
-            this.refreshClerkInvitations(this.groupData.id)
+            await this.refreshClerkInvitations(this.groupData.id)
         } catch {
             this.toastService.error('Error revoking email invitation')
         } finally {

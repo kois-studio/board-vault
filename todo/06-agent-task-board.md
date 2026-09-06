@@ -3023,3 +3023,15 @@ Changed: Group detail now exposes loading, retryable group-list failure, and una
 Review: EQ-007 / PROD-003
 
 Verified: Frontend build and targeted Biome checks pass; the unavailable-group authenticated browser check passes. Broader rendered responsive, keyboard, focus, contrast, and long-content review remains open.
+
+Continuation claim: EQ-007 / PROD-003
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Scope: remove the provider invitation pending-list race exposed by the real development rehearsal.
+
+Changed: Group email invitation creation and revocation now await the provider-list refresh before the operation settles, keeping the success/revoked state and pending list consistent. The disposable Clerk rehearsal was rerun after the change.
+
+Verified: Frontend build, targeted Biome, frontend unit tests (32/32), and provider create/list/revoke browser rehearsal pass. No deployment or push was performed.

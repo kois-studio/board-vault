@@ -163,6 +163,7 @@ Relevant surfaces: [`groups`](../frontend/src/app/pages/groups/), [`group-view`]
 - Group detail now distinguishes group-list loading, a failed group-list read, and a group that is no longer available; it also clears shared group state when the route changes so an old group cannot appear under a new URL. The rendered mobile social-loop pass still needs broader keyboard, focus, contrast, and long-content review.
 - Remove unnecessary reload-all behavior after group mutations where safe.
 - Review invitation and notification feedback, unread/read states, provider pending/revoked states, and failure recovery.
+- Provider invitation creation and revocation now await the pending-list refresh, so the group-management surface settles before the action completes instead of briefly reporting a sent/revoked state with stale list data.
 - Validate the new 30-day legacy invitation expiry in a real two-account flow, then complete provider/legacy retry behavior and notification copy/read-state validation with real invitation data.
 - Legacy username invitation lookup now excludes soft-deleted accounts; duplicate-invitation behavior, recipient acceptance after provider verification, provider expiry, and delivery-failure/retry behavior still need real-data validation. A disposable development rehearsal now proves provider invitation create/list/revoke/removal and the real `inv_...` route identifier contract.
 - Review member cards, avatars, long usernames, and mobile layouts.
