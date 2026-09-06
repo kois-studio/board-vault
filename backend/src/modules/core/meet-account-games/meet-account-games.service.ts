@@ -28,7 +28,6 @@ export class MeetAccountGamesService {
 
         if (!result.success) {
             this.LOGGER.error('Failed to parse MeetAccountGames from database')
-            this.LOGGER.error(result.error)
             return []
         }
 

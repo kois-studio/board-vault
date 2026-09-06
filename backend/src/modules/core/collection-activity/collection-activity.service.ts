@@ -34,7 +34,6 @@ export class CollectionActivityService {
 
         if (!result.success) {
             this.LOGGER.error('Failed to parse CollectionActivity from database')
-            this.LOGGER.error(result.error)
             return []
         }
 
@@ -98,8 +97,8 @@ export class CollectionActivityService {
             await this.cacheService.deleteOne(`${this.CACHE_KEY}:byAccountId:${accountId}`)
 
             return { success: true }
-        } catch (error) {
-            this.LOGGER.error('Failed to log collection activity', error)
+        } catch {
+            this.LOGGER.error('Failed to log collection activity')
             throw new BadRequestException('Failed to log collection activity')
         }
     }

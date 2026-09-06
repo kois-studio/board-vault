@@ -32,7 +32,6 @@ export class TagsService {
 
         if (!result.success) {
             this.LOGGER.error('Failed to parse Tags from database')
-            this.LOGGER.error(result.error)
             return []
         }
 
@@ -71,7 +70,7 @@ export class TagsService {
     }
 
     async createTag(name: string, categoryId: number): Promise<TagDto> {
-        this.LOGGER.log(`Creating tag: ${name} in category ${categoryId}`)
+        this.LOGGER.log(`Creating tag in category ${categoryId}`)
 
         const resultSet = await this.databaseService.createTag(name, categoryId)
         const tagId = Number(resultSet.lastInsertRowid)
@@ -83,7 +82,7 @@ export class TagsService {
     }
 
     async updateTag(id: number, name: string, categoryId: number): Promise<TagDto> {
-        this.LOGGER.log(`Updating tag ${id} to: ${name} in category ${categoryId}`)
+        this.LOGGER.log(`Updating tag ${id} in category ${categoryId}`)
 
         await this.databaseService.updateTag(id, name, categoryId)
 

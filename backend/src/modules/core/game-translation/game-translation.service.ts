@@ -36,7 +36,6 @@ export class GameTranslationService {
 
         if (!result.success) {
             this.LOGGER.error('Failed to parse GameTranslations from database')
-            this.LOGGER.error(result.error)
             return []
         }
 
@@ -123,7 +122,7 @@ export class GameTranslationService {
         excludeGameIds: number[]
     }): Promise<BrowseGamesPaginationDto & { gameIds: number[] }> {
         this.LOGGER.log(
-            `Browsing games with search: "${options.search}", page: ${options.page}, pageSize: ${options.pageSize}, excludeGameIds: ${options.excludeGameIds.join(',')}`,
+            `Browsing games, page: ${options.page}, pageSize: ${options.pageSize}, excluded game count: ${options.excludeGameIds.length}`,
         )
 
         // Calculate skip based on page and pageSize
@@ -136,7 +135,7 @@ export class GameTranslationService {
         const cachedResult = await this.cacheService.get(cacheKey)
 
         if (cachedResult) {
-            this.LOGGER.log(`Returning cached browse games result for "${normalizedSearch}"`)
+            this.LOGGER.log('Returning cached browse games result')
             return cachedResult
         }
 
@@ -185,7 +184,7 @@ export class GameTranslationService {
         excludeGameIds: number[]
     }): Promise<BrowseGamesPaginationDto & { gameIds: number[] }> {
         this.LOGGER.log(
-            `Browsing games with multi-language search: "${options.search}", page: ${options.page}, pageSize: ${options.pageSize}, excludeGameIds: ${options.excludeGameIds.join(',')}`,
+            `Browsing games with multi-language search, page: ${options.page}, pageSize: ${options.pageSize}, excluded game count: ${options.excludeGameIds.length}`,
         )
 
         // Calculate skip based on page and pageSize
@@ -198,7 +197,7 @@ export class GameTranslationService {
         const cachedResult = await this.cacheService.get(cacheKey)
 
         if (cachedResult) {
-            this.LOGGER.log(`Returning cached multi-language browse games result for "${normalizedSearch}"`)
+            this.LOGGER.log('Returning cached multi-language browse games result')
             return cachedResult
         }
 

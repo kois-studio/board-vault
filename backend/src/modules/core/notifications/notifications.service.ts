@@ -32,7 +32,6 @@ export class NotificationsService {
 
         if (!result.success) {
             this.LOGGER.error('Failed to parse Notifications from database')
-            this.LOGGER.error(result.error)
             return []
         }
 
@@ -70,8 +69,8 @@ export class NotificationsService {
             await this.databaseService.createNotification(notificationDto)
 
             return { success: true }
-        } catch (error) {
-            this.LOGGER.error('Failed to create notification', error)
+        } catch {
+            this.LOGGER.error('Failed to create notification')
             throw new ConflictException('Notification title already in use')
         }
     }

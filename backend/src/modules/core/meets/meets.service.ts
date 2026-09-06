@@ -28,7 +28,6 @@ export class MeetsService {
 
         if (!result.success) {
             this.LOGGER.error('Failed to parse meets from database')
-            this.LOGGER.error(result.error)
             return []
         }
 

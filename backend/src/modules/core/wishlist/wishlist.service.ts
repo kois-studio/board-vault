@@ -30,7 +30,6 @@ export class WishlistService {
 
         if (!result.success) {
             this.LOGGER.error('Failed to parse Tags from database')
-            this.LOGGER.error(result.error)
             return []
         }
 

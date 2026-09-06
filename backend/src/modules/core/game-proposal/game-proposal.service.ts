@@ -45,7 +45,6 @@ export class GameProposalService {
 
         if (!result.success) {
             this.LOGGER.error('Failed to parse GameProposals from database')
-            this.LOGGER.error(result.error)
             return []
         }
 
@@ -57,7 +56,6 @@ export class GameProposalService {
 
         if (!result.success) {
             this.LOGGER.error('Failed to parse GameProposal from database')
-            this.LOGGER.error(result.error)
             throw new Error('Invalid game proposal data')
         }
 
@@ -105,7 +103,7 @@ export class GameProposalService {
     }
 
     async createGameProposal(submittedBy: number, proposalData: CreateGameProposalBody): Promise<GameProposalDto> {
-        this.LOGGER.log(`Creating game proposal: ${proposalData.title} by user ${submittedBy}`)
+        this.LOGGER.log(`Creating game proposal by user ${submittedBy}`)
 
         await this.databaseService.createGameProposal({
             submittedBy,

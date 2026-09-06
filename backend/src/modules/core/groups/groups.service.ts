@@ -30,7 +30,6 @@ export class GroupsService {
 
         if (!result.success) {
             this.LOGGER.error('Failed to parse Groups from database')
-            this.LOGGER.error(result.error)
             return []
         }
 
@@ -59,7 +58,7 @@ export class GroupsService {
     }
 
     async getGroupByName(name: string): Promise<GroupDto> {
-        this.LOGGER.log(`Getting group with name ${name}`)
+        this.LOGGER.log('Getting group by name')
         const resultSet = await this.databaseService.getGroupByName(name)
         const groups = this._parseResultSet(resultSet)
 
@@ -71,13 +70,13 @@ export class GroupsService {
     }
 
     async createGroup(groupBody: CreateGroupBody) {
-        this.LOGGER.log(`Creating group: ${groupBody.name} - by ${groupBody.createdBy}`)
+        this.LOGGER.log(`Creating group for account ${groupBody.createdBy}`)
         try {
             await this.databaseService.createGroup(groupBody)
 
             return { success: true }
-        } catch (error) {
-            this.LOGGER.error('Failed to create group', error)
+        } catch {
+            this.LOGGER.error('Failed to create group')
             throw new NotFoundException('User not found')
         }
     }
