@@ -16,9 +16,11 @@ test.describe('group destructive-flow UX', () => {
         await expect(dialog).toBeVisible()
         await expect(dialog.getByRole('heading', { name: /Delete .+\?/ })).toBeVisible()
         await expect(dialog).toContainText('invitations')
+        await expect(dialog.getByRole('button', { name: 'Keep group' })).toBeFocused()
 
         await dialog.getByRole('button', { name: 'Keep group' }).click()
         await expect(dialog).toBeHidden()
+        await expect(page.getByTitle('Delete group')).toBeFocused()
 
         await page.goto(`/groups/${groupId}/delete`)
         await expect(page).toHaveURL(new RegExp(`/groups/${groupId}/edit$`))
@@ -36,9 +38,11 @@ test.describe('group destructive-flow UX', () => {
             await expect(dialog).toBeVisible()
             await expect(dialog.getByRole('heading', { name: /Leave .+\?/ })).toBeVisible()
             await expect(dialog).toContainText('shared play history')
+            await expect(dialog.getByRole('button', { name: 'Keep group access' })).toBeFocused()
 
             await dialog.getByRole('button', { name: 'Keep group access' }).click()
             await expect(dialog).toBeHidden()
+            await expect(page.getByRole('button', { name: 'Leave group' })).toBeFocused()
 
             await page.goto(`/groups/${groupId}/leave`)
             await expect(page).toHaveURL(new RegExp(`/groups/${groupId}$`))

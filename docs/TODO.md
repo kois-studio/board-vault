@@ -248,6 +248,9 @@ as TODO items here.
   context: owners confirm deletion from management, members confirm leaving
   from the group workspace, and the former sparse full-screen pages are no
   longer the user-facing flow. Focus return and real-group validation remain.
+  The contextual delete/leave dialogs now focus their safe cancel action on
+  open and restore focus to the trigger after cancellation; rendered and
+  screen-reader review remain open.
   The groups index now presents each group as a social workspace entry with
   explicit decision, planning, history, and invitation actions rather than a
   single dense clickable card; rendered group-index review remains open.

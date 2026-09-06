@@ -529,7 +529,7 @@
                 </div>
             </div>
             <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-                <button type="button" class="app-btn-secondary" [disabled]="isLeavingGroup()" (click)="cancelLeaveGroup()">Keep group access</button>
+                <button id="leave-group-dialog-cancel" type="button" class="app-btn-secondary" [disabled]="isLeavingGroup()" (click)="cancelLeaveGroup()">Keep group access</button>
                 <button type="button" class="app-btn-danger" [disabled]="isLeavingGroup()" (click)="confirmLeaveGroup()">{{ isLeavingGroup() ? 'Leaving…' : 'Leave group' }}</button>
             </div>
         </section>

@@ -2954,6 +2954,20 @@ Changed: Added a zero-context group activation panel that appears only for a one
 
 Verified: `cd frontend && npx biome check src/app/pages/group-view/group-view.component.ts src/app/pages/group-view/group-view.component.spec.ts src/app/pages/group-view/group-view.component.html`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (43 passing), `cd frontend && npm run build` (605.70 kB initial raw / 138.25 kB estimated transfer), and `git diff --check` pass. Rendered empty-group validation remains open. No deployment or push was performed.
 
+Scope: complete focus return for the contextual group leave/delete dialogs.
+
+Acceptance: opening either dialog moves focus to the safe cancel action, cancellation restores focus to the triggering action, destructive confirmation remains loading-safe, and the behavior is covered in the disposable destructive-flow journey.
+
+Continuation claim: EQ-007 / PROD-003
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Changed: Group leave and delete dialogs now remember their trigger, focus the safe cancel action after opening, and restore focus after cancellation. The opt-in destructive-flow journey asserts both transitions.
+
+Verified: `cd frontend && npx biome check src/app e2e`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (43 passing), `cd frontend && npm run build` (605.70 kB initial raw / 138.26 kB estimated transfer), `PLAYWRIGHT_BASE_URL=http://127.0.0.1:4300 npx playwright test e2e/public-navigation.spec.ts` (5 passing), and `git diff --check` pass. Disposable authenticated destructive-flow execution remains opt-in. No deployment or push was performed.
+
 Scope: finish the numeric-identifier part of the service logging audit without losing useful provider diagnostics.
 
 Acceptance: domain and legacy compatibility logs must not interpolate account, group, game, invitation, membership, notification, proposal, review, tag, or meeting identifiers; only explicitly safe operational fields such as error class, feature method, port/path, TTL/status, and cache-disabled state may remain.

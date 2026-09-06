@@ -240,7 +240,7 @@
                     </div>
                 </div>
                 <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-                    <button type="button" class="app-btn-secondary" [disabled]="isDeletingGroup()" (click)="cancelDeleteGroup()">Keep group</button>
+                    <button id="delete-group-dialog-cancel" type="button" class="app-btn-secondary" [disabled]="isDeletingGroup()" (click)="cancelDeleteGroup()">Keep group</button>
                     <button type="button" class="app-btn-danger" [disabled]="isDeletingGroup()" (click)="confirmDeleteGroup()">{{ isDeletingGroup() ? 'Deleting…' : 'Delete group' }}</button>
                 </div>
             </section>

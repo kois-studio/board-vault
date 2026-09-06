@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common'
+import { CommonModule, DOCUMENT } from '@angular/common'
 import { Component, effect, inject, signal } from '@angular/core'
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
@@ -18,6 +18,7 @@ import { LoadingService } from '../../../core/services/loading.service'
     templateUrl: 'group-edit.component.html',
 })
 export class GroupEditComponent {
+    private readonly document = inject(DOCUMENT)
     private readonly api = inject(Api)
     private readonly toastService = inject(ToastService)
     // --------------------------------------------------------------------------
@@ -46,6 +47,7 @@ export class GroupEditComponent {
     public copyLinkStatus: 'idle' | 'copied' | 'unavailable' | 'failed' = 'idle'
     public isLoading = false
     private loadedClerkInvitationsGroupId: number | null = null
+    private deleteDialogTrigger: HTMLElement | null = null
 
     constructor(
         private readonly router: Router,
@@ -248,12 +250,16 @@ export class GroupEditComponent {
 
     onDeleteGroup() {
         if (!this.isGroupOwner || !this.groupData) return
+        this.deleteDialogTrigger = this.document.activeElement instanceof HTMLElement ? this.document.activeElement : null
         this.isDeleteDialogOpen.set(true)
+        queueMicrotask(() => this.document.getElementById('delete-group-dialog-cancel')?.focus())
     }
 
     public cancelDeleteGroup(): void {
         if (this.isDeletingGroup()) return
         this.isDeleteDialogOpen.set(false)
+        queueMicrotask(() => this.deleteDialogTrigger?.focus())
+        this.deleteDialogTrigger = null
     }
 
     public async confirmDeleteGroup(): Promise<void> {
