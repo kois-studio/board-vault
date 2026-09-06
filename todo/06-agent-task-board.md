@@ -3373,3 +3373,23 @@ Continuation claim: EQ-007 / PROD-002
 Owner: Codex
 
 Claimed: 2026-09-06
+
+Scope: replace sparse standalone group leave/delete pages with contextual confirmations in the social group workspace.
+
+Acceptance: owners can confirm deletion from group management, members can confirm leaving from the group workspace, both actions expose clear consequences/loading semantics, and the former URLs no longer render dead full-screen pages. Preserve the group-first product direction and add focused regression coverage.
+
+Continuation claim: PROD-003 / EQ-006
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Changed: Group owners now confirm deletion in the management context, members can open a clear leave confirmation from the group workspace, and both dialogs explain the shared-data consequence and expose loading-safe cancel/confirm actions. The former standalone components were removed; their legacy URLs use an explicit compatibility handoff to the group workspace or management route.
+
+Verified: The owner/member disposable Playwright journey passes both dialogs and cancel behavior plus both legacy URL handoffs in 2.5 seconds without executing a destructive mutation. Frontend build and targeted Biome pass. No production data, deployment, or push was touched.
+
+Continuation claim: EQ-007 / PROD-003
+
+Owner: Codex
+
+Claimed: 2026-09-06

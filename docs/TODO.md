@@ -160,7 +160,7 @@ public discovery, and standalone analytics remain deferred.
 
 - **Status:** Planned
 - **Affected area:** `frontend/src/styles.css`, component SCSS/templates, route surfaces
-- **Evidence:** Tailwind global styles now use plain CSS with a PostCSS nesting pass; route-level components are lazy-loaded; production build has no Sass/selector/bundle-budget warnings and the latest initial raw bundle is 607.04 kB (138.50 kB estimated transfer) under the 650 kB warning budget. Shared theme-control semantics, consistent keyboard focus rings, explicit session input labels, the preserved-account auth fallback, migration-state copy, group/session empty states, owner-only invitation controls, invitation-decline confirmation, pending provider-invitation management, direct group-edit route loading/error states, mobile session-progress behavior, attendee-selection handoff, recommendation attendee controls, explainable recommendation lenses, reversible group acquisition interest, invitation-link copy feedback, the personal/private collection boundary, and the routed shared-button focus-order fix have been improved, but a full accessibility/responsive audit and all route-surface reviews remain open.
+- **Evidence:** Tailwind global styles now use plain CSS with a PostCSS nesting pass; route-level components are lazy-loaded; production build has no Sass/selector/bundle-budget warnings and the latest initial raw bundle is 608.11 kB (138.54 kB estimated transfer) under the 650 kB warning budget. Shared theme-control semantics, consistent keyboard focus rings, explicit session input labels, the preserved-account auth fallback, migration-state copy, group/session empty states, owner-only invitation controls, invitation-decline confirmation, pending provider-invitation management, direct group-edit route loading/error states, mobile session-progress behavior, attendee-selection handoff, recommendation attendee controls, explainable recommendation lenses, reversible group acquisition interest, invitation-link copy feedback, the personal/private collection boundary, and the routed shared-button focus-order fix have been improved, but a full accessibility/responsive audit and all route-surface reviews remain open.
 - **Risk:** Broken styles, poor mobile/accessibility behavior, and unsupported public claims.
 - **Next action:** Complete the rendered route audit matrix, resolve remaining accessibility/responsive findings, and link content-truth findings to `TRUTH-001`.
 - **Dependencies:** Product truth/brand decision where claims are involved.
@@ -233,7 +233,10 @@ as TODO items here.
   and real-group validation remain open after implementation. The create form
   also keeps submission disabled with an explicit status while the local
   authenticated account profile is still loading, avoiding an ambiguous
-  busy state on direct navigation.
+  busy state on direct navigation. Destructive group actions now stay in
+  context: owners confirm deletion from management, members confirm leaving
+  from the group workspace, and the former sparse full-screen pages are no
+  longer the user-facing flow. Focus return and real-group validation remain.
 
 ## Collection and group activation
 
@@ -329,7 +332,9 @@ as TODO items here.
 - [ ] Keep production configuration documented without committing secrets;
   verify Turso, Clerk, Resend, Upstash, CORS, health checks, and rollback paths.
 - [ ] Remove remaining dead routes, placeholder links, misleading copy, stale
-  starter documentation, and naming inconsistencies.
+  starter documentation, and naming inconsistencies. The old group leave and
+  delete pages have been removed and their URLs now use explicit compatibility
+  handoffs; the broader route and documentation inventory remains open.
 - [ ] Resolve remaining frontend baseline lint/format findings and complete the
   rendered accessibility/responsive route audit; the production build warning
   and initial bundle work is verified locally.

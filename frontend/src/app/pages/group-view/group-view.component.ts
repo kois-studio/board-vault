@@ -89,6 +89,8 @@ export class GroupViewComponent {
     public readonly acquisitionBoardError = signal(false)
     public readonly acquisitionMutationGameId = signal<number | null>(null)
     public readonly acquisitionDecisionMutationGameId = signal<number | null>(null)
+    public readonly isLeaveDialogOpen = signal(false)
+    public readonly isLeavingGroup = signal(false)
     private activeSelectionGroupId: number | null = null
     private activeAcquisitionGroupId: number | null = null
 
@@ -439,7 +441,26 @@ export class GroupViewComponent {
     }
 
     onClickLeaveGroup() {
-        this.router.navigate(['/groups', this.groupData$()?.id, 'leave'])
+        if (this.isGroupOwnerComputed() || !this.groupData$()) return
+        this.isLeaveDialogOpen.set(true)
+    }
+
+    public cancelLeaveGroup(): void {
+        if (this.isLeavingGroup()) return
+        this.isLeaveDialogOpen.set(false)
+    }
+
+    public async confirmLeaveGroup(): Promise<void> {
+        const groupId = this.groupData$()?.id
+        if (!groupId || this.isGroupOwnerComputed() || this.isLeavingGroup()) return
+
+        this.isLeavingGroup.set(true)
+        try {
+            await firstValueFrom(this.dataService.leaveGroup(groupId))
+            await this.router.navigate(['/dashboard'])
+        } finally {
+            this.isLeavingGroup.set(false)
+        }
     }
 
     onClickNewMeet(): void {
