@@ -88,7 +88,7 @@ compliance:
 
     - id: TEST-001
       status: gap
-      evidence: backend has 45 focused suites and 230 passing tests covering authentication, authorization, validation and request-size boundaries, sessions, service-level participation invariants, organizer/current-membership enforcement, per-game participation, recommendations, invitation visibility/expiry/atomic acceptance, owner-only legacy invitation creation, provider invitation listing/revocation boundaries, soft-deleted account exclusion, verified-user gating, admin route and bounded list-query validation, bounded collection browse and duplicate-review inputs, bounded group names, self-profile response privacy, cache endpoint protection, safe API errors, health/readiness probes, canonical session reads, group acquisition ownership-race protection and owner decisions, and provider boundaries; frontend has 32 browser-based unit tests with malformed-response and false-success coverage, four passing public Playwright checks, and five opt-in authenticated journey specs with 13 passing checks and three guarded skips when the owner/recommendation/acquisition fixtures are supplied
+      evidence: backend has 46 focused suites and 231 passing tests covering authentication, authorization, validation and request-size boundaries, sessions, service-level participation invariants, organizer/current-membership enforcement, per-game participation, recommendations, invitation visibility/expiry/atomic acceptance, owner-only legacy invitation creation, provider invitation listing/revocation boundaries, soft-deleted account exclusion, verified-user gating, admin route and bounded list-query validation, bounded collection browse and duplicate-review inputs, bounded group names, self-profile response privacy, cache endpoint protection, safe API errors, correlated request logging, health/readiness probes, canonical session reads, group acquisition ownership-race protection and owner decisions, and provider boundaries; frontend has 34 browser-based unit tests with malformed-response and false-success coverage, four passing public Playwright checks, and five opt-in authenticated journey specs with 13 passing checks and three guarded skips when the owner/recommendation/acquisition fixtures are supplied
       priority: high
       next_action: Add layered unit, integration, and journey tests for the flagship loop.
     - id: TEST-002
@@ -113,7 +113,7 @@ compliance:
       next_action: Add repeatable disposable integration/contract coverage for auth, group membership, collection ownership, session transactions, recommendation decisions, and provider failure behavior.
     - id: TEST-006
       status: gap
-      evidence: backend unit command passes 230 focused tests and frontend has 30 browser-based unit tests plus four public Playwright checks; clean installs now pass and the validation workflow now includes repository whitespace, lint/Biome, build, test, and migration gates, while CI enforcement is not yet observed remotely
+      evidence: backend unit command passes 231 focused tests and frontend has 34 browser-based unit tests plus four public Playwright checks; clean installs now pass and the validation workflow now includes repository whitespace, lint/Biome, build, test, and migration gates, while CI enforcement is not yet observed remotely
       priority: high
       next_action: Keep the supported test commands meaningful and observe their first required CI run.
     - id: TEST-007
@@ -210,9 +210,9 @@ compliance:
       next_action: Classify data and document storage, retention, deletion, and provider responsibilities.
     - id: SEC-006
       status: gap
-      evidence: DatabaseService excludes bound values from SQL logs, EmailService excludes recipient addresses, CacheService excludes keys/payloads, and auth/user-service logs exclude identity values; provider errors and global structured redaction policy remain undocumented
+      evidence: DatabaseService excludes bound values from SQL logs, EmailService excludes recipient addresses, CacheService excludes keys/payloads, auth/user-service logs exclude identity values, and HTTP middleware emits correlated structured start/complete events without query strings or authorization values; repository-wide service-log allow-list coverage and provider error mapping remain open
       priority: critical
-      next_action: Define safe structured logging and redaction tests.
+      next_action: Migrate remaining service logs to safe allow-listed events and add provider failure/cause mapping with representative redaction tests.
     - id: SEC-007
       status: gap
       evidence: production/provider permissions and database roles are not documented or reviewable here
@@ -333,9 +333,9 @@ compliance:
       next_action: Verify graceful shutdown and resource release.
     - id: OPS-007
       status: partial
-      evidence: Nest Logger and a request middleware exist, but logs include SQL/user/provider details and lack documented correlation
+      evidence: request middleware emits structured start/complete events with server-generated request IDs, method/path/status/duration fields, and no query strings or authorization values; remaining service logs still need an allow-list sweep and provider-specific error mapping
       priority: high
-      next_action: Define structured safe diagnostic events.
+      next_action: Migrate remaining service logs to safe events and document provider failure correlation.
     - id: OPS-008
       status: gap
       evidence: no metrics, tracing, alerting, or error monitoring configuration found
@@ -574,9 +574,9 @@ compliance:
       next_action: Complete the DTO decorator inventory and add negative tests for remaining client/legacy boundaries.
     - id: NEST-005
       status: gap
-      evidence: Logger exists, but no consistent error mapper, correlation, or safe logging contract
+      evidence: ApiErrorFilter and request middleware now share a correlated request ID and structured HTTP events, but no repository-wide service logging contract or provider/domain error mapper exists
       priority: high
-      next_action: Implement OPS-007 and SEC-006 together.
+      next_action: Complete the service-log allow-list/redaction sweep and align provider/domain errors with stable diagnostic codes.
     - id: NEST-006
       status: partial
       evidence: modules have clear names and providers; module README/index coverage is inconsistent

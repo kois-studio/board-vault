@@ -48,7 +48,7 @@ The frontend production environment points at `https://backend.board-vault.com`;
 - Core modules own entity-oriented services such as users, groups, memberships, games, meets, invitations, reviews, tags, translations, notifications, and collection activity.
 - Feature modules orchestrate cross-domain flows for admin, collection, dashboard, play, and profile.
 - Controllers are mostly thin service delegators, but legacy/deprecated controllers and direct identity parameters create an inconsistent authorization surface. Operational cache endpoints are retained only behind authenticated administrator guards.
-- `DatabaseService` centralizes a large raw-SQL surface over a single libSQL client. It logs parameterized SQL templates without bound values; auth/email/cache logging still needs a redaction policy.
+- `DatabaseService` centralizes a large raw-SQL surface over a single libSQL client. It logs parameterized SQL templates without bound values. HTTP request logging is structured and correlated through `X-Request-Id` without query strings; auth/email/cache logging has targeted privacy fixes, while a repository-wide allow-list/redaction sweep remains open.
 
 ## Frontend boundaries
 

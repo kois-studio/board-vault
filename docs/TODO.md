@@ -102,7 +102,7 @@ game-detail breadth remain deferred until real groups demonstrate repeat use.
 
 - **Status:** In progress
 - **Affected area:** `backend/test/`, backend `src`, frontend `src/**/*.spec.ts`
-- **Evidence:** Backend now has 45 focused suites and 230 passing unit tests plus 2 environment-safe HTTP E2E tests; frontend has 34 browser-based unit tests plus four passing public Playwright tests, while seeded/integration journeys and authenticated browser coverage remain opt-in. The opt-in authenticated collection, invitation, session, recommendation, and acquisition-decision journeys pass against disposable Clerk development identities and data; a disposable provider-invitation rehearsal also proves create/list/revoke/removal; the full local Playwright run passes 13 tests with 3 guarded skips when the owner/recommendation/acquisition fixtures are supplied.
+- **Evidence:** Backend now has 46 focused suites and 231 passing unit tests plus 2 environment-safe HTTP E2E tests; frontend has 34 browser-based unit tests plus four passing public Playwright tests, while seeded/integration journeys and authenticated browser coverage remain opt-in. The opt-in authenticated collection, invitation, session, recommendation, and acquisition-decision journeys pass against disposable Clerk development identities and data; a disposable provider-invitation rehearsal also proves create/list/revoke/removal; the full local Playwright run passes 13 tests with 3 guarded skips when the owner/recommendation/acquisition fixtures are supplied.
 - **Risk:** Security and product regressions are invisible.
 - **Next action:** Add negative authorization/contract cases, repeatable disposable fixture setup, and provider/remote integration evidence; preserve the existing authenticated core-loop journeys as launch regression gates.
 - **Dependencies:** READINESS-001, READINESS-002, READINESS-003.
@@ -127,11 +127,11 @@ game-detail breadth remain deferred until real groups demonstrate repeat use.
 
 ### READINESS-008 [High] SEC-006/OPS-007 — Make logs safe and diagnosable
 
-- **Status:** Planned
+- **Status:** In progress
 - **Affected area:** `DatabaseService`, auth/email/cache services, logger middleware
-- **Evidence:** `DatabaseService` excludes bound values from SQL logs, `EmailService` excludes recipient addresses, `CacheService` excludes keys/payloads, and auth/user-service logs exclude identity values; a global structured logging/redaction policy and provider-error correlation remain undocumented.
+- **Evidence:** HTTP logging now emits structured request-start/request-complete events with a server-generated correlation ID, `X-Request-Id`, method/path/status/duration fields, and no query string or authorization value; `ApiErrorFilter` reuses that ID for unexpected failures. Focused middleware/filter regressions and the full backend gate pass. Existing database/email/cache/auth improvements remain in place, but a repository-wide allow-listed service-log sweep and provider-specific error mapping remain open.
 - **Risk:** Secret/PII exposure and poor incident diagnosis.
-- **Next action:** Define structured events, remove value-interpolated SQL logging, redact sensitive fields, and test representative failures.
+- **Next action:** Migrate remaining service logs to the safe allow-listed event format, add provider failure/cause mapping, and extend redaction regressions to representative domain failures.
 - **Dependencies:** Security owner and observability decision.
 
 ### READINESS-009 [High] API-001/003/004/007/NEST-016 — Stabilize API contracts

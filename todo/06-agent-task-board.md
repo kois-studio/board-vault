@@ -2998,6 +2998,20 @@ Owner: Codex
 
 Claimed: 2026-09-06
 
+Continuation claim: SEC-006 / OPS-007
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Scope: establish safe, diagnosable HTTP request logging without exposing query strings, authorization values, or provider details.
+
+Changed: Added a small structured-log helper, server-generated request correlation IDs, `X-Request-Id` response propagation, structured request-start/request-complete events, and reuse of the same ID for unexpected `ApiErrorFilter` failures. Added focused regression coverage for query-string and authorization redaction, event emission, and response correlation. Updated the security, architecture, testing, standards, and active TODO records.
+
+Verified: Backend 46 suites/231 tests pass, including the focused logger/filter tests; backend build and ESLint pass; no deployment or push was performed.
+
+Known follow-up: legacy service logs still need an allow-listed redaction sweep, and provider-specific error/cause mapping remains open.
+
 Continuation claim: PROD-002 / EQ-007
 
 Owner: Codex
