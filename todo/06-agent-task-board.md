@@ -3059,3 +3059,15 @@ Scope: align the group workspace navigator with the actual rendered social workf
 Changed: The area navigator now follows the page order: Decide, Games to acquire, Sessions, Group library, and History & insights. The opt-in browser check asserts the anchor order alongside the accessible game-link contract.
 
 Verified: Frontend build and the focused authenticated browser check pass. No deployment or push was performed.
+
+Continuation claim: PROD-002 / EQ-006
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Scope: make the first-five-games activation gate repeatable without depending on production catalog data.
+
+Changed: Added a file-only `seed-collection-activation-fixture.mjs` that refuses non-file database URLs and seeds five clearly named catalog games. Added an opt-in Playwright journey that adds or recognizes all five games and verifies the “Your games are ready for group decisions” handoff.
+
+Verified: The local fixture and authenticated five-game journey pass in 7.7 seconds. The remaining product question is whether real groups find five games useful and whether catalog search quality is sufficient; no production data or deployment was changed.
