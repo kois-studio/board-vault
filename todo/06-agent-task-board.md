@@ -3347,3 +3347,15 @@ Continuation claim: PROD-003 / TEST-002
 Owner: Codex
 
 Claimed: 2026-09-06
+
+Scope: rerun the existing-account invitation acceptance journey against a fresh owner-only disposable group.
+
+Changed: Created a fresh local group with only the owner, then exercised username invitation, recipient refresh, acceptance, refresh, and post-acceptance group visibility with the two disposable Clerk states. The first attempt was discarded as a fixture-ID selection error: the membership row ID was passed instead of the group ID; the corrected run used the verified group record.
+
+Verified: `social-invitation-flow.spec.ts` passes in 3.2 seconds. Provider email delivery, expiry, and failure/retry paths remain open; no production data, deployment, or push was touched.
+
+Continuation claim: PROD-003 / TEST-002
+
+Owner: Codex
+
+Claimed: 2026-09-06

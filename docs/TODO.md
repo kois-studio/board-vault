@@ -245,11 +245,13 @@ as TODO items here.
 - [ ] Complete invitation lifecycle behavior. The groups workspace now exposes
   pending invites with direct accept/decline actions, and the development
   provider flow now proves create/list/revoke/removal for real Clerk invitation
-  identifiers. The custom ticket path now also proves disposable recipient
-  acceptance, session activation, and group-dashboard handoff with Smart CAPTCHA
-  temporarily disabled only in development. Human CAPTCHA, legacy expiry,
-  provider delivery, retry behavior across provider/legacy flows, and
-  notification clarity still need real-data validation.
+  identifiers. Fresh local browser evidence also proves owner invite, recipient
+  refresh, existing-account acceptance, and post-acceptance group visibility.
+  The custom ticket path proves disposable recipient acceptance, session
+  activation, and group-dashboard handoff with Smart CAPTCHA temporarily
+  disabled only in development. Human CAPTCHA, legacy expiry, provider
+  delivery, retry behavior across provider/legacy flows, and notification
+  clarity still need real-data validation.
 - [ ] Complete the group library decision surface. It now shows owners, member
   ratings, player range, duration, play count, and timezone-aware last-played
   context; the acquisition search and board now exclude games already owned by
