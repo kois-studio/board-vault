@@ -45,6 +45,9 @@
                 @if (mostPlayedSummary(); as mostPlayed) {
                     <p class="mt-4 text-sm text-secondary">Most played in this view: <strong class="text-zinc-900 dark:text-white">{{ mostPlayed }}</strong></p>
                 }
+                @if (groupIdFilter()) {
+                    <a class="app-btn-secondary mt-5 inline-block text-center" routerLink="/play/recommendations" [queryParams]="{ groupId: groupIdFilter() }">Get a recommendation for this group</a>
+                }
             }
         </section>
 
