@@ -58,6 +58,25 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 Most recent claim:
 
 ```text
+Task: EQ-006
+Owner: Codex
+Claimed: 2026-09-06
+
+Branch/worktree: main / shared workspace
+Scope: redesign the group management surface around the owner’s social jobs—invite people, review pending invitations, manage membership, and understand shared context—without expanding catalog/detail scope or changing authorization behavior
+```
+
+Review: EQ-006
+
+Changed: The group management route is now a responsive social-management workspace with explicit owner/member context, group summary, separate known-member and new-person invite paths, pending invitation management, current-member controls, shared-shelf context, and an isolated danger zone. Existing API calls, owner checks, invitation revocation, membership staging, and delete confirmation behavior remain intact.
+
+Verified: `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` passes 59 tests; `cd frontend && npm run lint:check` passes; `cd frontend && npm run build` passes with a 602.51 kB initial raw bundle / 136.22 kB estimated transfer and no Angular template warnings; `PLAYWRIGHT_BASE_URL=http://127.0.0.1:4300 npm run e2e` passes 5 public tests with 21 fixture-gated tests skipped; backend HTTP E2E passes 6 tests; `git diff --check` passes. The in-app preview route was reachable, but snapshot automation timed out twice, so no preview screenshot is claimed. No deployment, push, provider mutation, or production data change was performed.
+
+Known follow-ups: Validate the rendered route with an owner and member in the authenticated browser rehearsal; revisit whether invitation composition should become an in-context dialog after real use.
+
+Previous most recent claim:
+
+```text
 Task: EQ-004
 Owner: Codex
 Claimed: 2026-09-06

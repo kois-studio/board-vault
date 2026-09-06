@@ -99,6 +99,10 @@ export class GroupEditComponent {
         return !!this.groupData && !!this.userData && this.groupData.createdBy === this.userData.id
     }
 
+    public getPendingAccountInvitations(groupId: number) {
+        return this.invitationsGroupIndex[groupId] ?? []
+    }
+
     get disableInviteButton() {
         if (!this.groupData || !this.usernameToInvite.value) {
             return true

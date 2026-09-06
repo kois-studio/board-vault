@@ -58,6 +58,19 @@ rehearsal against persisted data, then close provider-delivery, Turso recovery,
 Clerk migration, and rendered accessibility gates. Advanced analytics and
 game-detail breadth remain deferred until real groups demonstrate repeat use.
 
+### Tech-lead / PM checkpoint — group management UX — 2026-09-06
+
+The group workspace is now the product’s social center, but its management route
+still presents an older CRUD-shaped interface with floating controls, weak action
+hierarchy, and too little explanation of what membership and invitation changes
+mean for shared history. The next UX slice is to make that route a responsive
+management workspace organized around the owner’s real jobs: invite a known
+member, invite a new person, review pending invitations, manage current members,
+and understand the group’s shared shelf before using the destructive zone. This
+does not expand game details or change authorization/mutation contracts. After
+the redesign, the remaining priority returns to the two-account rehearsal and
+rendered accessibility review.
+
 ### Tech-lead reassessment — after safe HTTP logging milestone — 2026-09-06
 
 The request-correlation slice is complete and locally verified, but it does
@@ -319,7 +332,7 @@ remote CI, provider delivery, and operational recovery ownership.
 
 - **Status:** Planned
 - **Affected area:** `frontend/src/styles.css`, component SCSS/templates, route surfaces
-- **Evidence:** Tailwind global styles now use plain CSS with a PostCSS nesting pass; route-level components are lazy-loaded; production build has no Sass/selector/bundle-budget warnings and the latest initial raw bundle is 604.95 kB (136.36 kB estimated transfer) under the 650 kB warning budget. Shared theme-control semantics, consistent keyboard focus rings, explicit session input labels, the preserved-account auth fallback, migration-state copy, group/session empty states, owner-only invitation controls, invitation-decline confirmation, pending provider-invitation management, direct group-edit route loading/error states, mobile session-progress behavior, attendee-selection handoff, recommendation attendee controls, explainable recommendation lenses, reversible group acquisition interest, invitation-link copy feedback, the personal/private collection boundary, the routed shared-button focus-order fix, removal of unused client compatibility adapters, the history-to-recommendation handoff, player names in shared-memory cards, group-oriented recommendation context, explicit groups-index social actions, status-specific upcoming-session prompts, group-first Play entry, empty-group activation guidance, and focus return for contextual destructive dialogs have been improved, but a full accessibility/responsive audit and all route-surface reviews remain open.
+- **Evidence:** Tailwind global styles now use plain CSS with a PostCSS nesting pass; route-level components are lazy-loaded; production build has no Sass/selector/bundle-budget or Angular template warnings and the latest initial raw bundle is 602.51 kB (136.22 kB estimated transfer) under the 650 kB warning budget. Shared theme-control semantics, consistent keyboard focus rings, explicit session input labels, the preserved-account auth fallback, migration-state copy, group/session empty states, owner-only invitation controls, invitation-decline confirmation, pending provider-invitation management, direct group-edit route loading/error states, the responsive group-management workspace, mobile session-progress behavior, attendee-selection handoff, recommendation attendee controls, explainable recommendation lenses, reversible group acquisition interest, invitation-link copy feedback, the personal/private collection boundary, the routed shared-button focus-order fix, removal of unused client compatibility adapters, the history-to-recommendation handoff, player names in shared-memory cards, group-oriented recommendation context, explicit groups-index social actions, status-specific upcoming-session prompts, group-first Play entry, empty-group activation guidance, and focus return for contextual destructive dialogs have been improved, but a full accessibility/responsive audit, rendered group-management review, and all route-surface reviews remain open.
 - **Risk:** Broken styles, poor mobile/accessibility behavior, and unsupported public claims.
 - **Next action:** Complete the rendered route audit matrix, resolve remaining accessibility/responsive findings, and link content-truth findings to `TRUTH-001`.
 - **Dependencies:** Product truth/brand decision where claims are involved.
@@ -406,6 +419,12 @@ as TODO items here.
   → plan first night handoff before the longer workspace sections, with
   owner/member-appropriate actions; established groups keep the full social
   workspace.
+  Group management is now also organized around the owner’s real social jobs:
+  inviting an existing member or a new person, reviewing pending invitations,
+  managing current members, understanding the shared shelf, and reaching the
+  danger zone deliberately. The route remains a full management workspace for
+  now; whether invitation composition should become an in-context dialog needs
+  validation with a real owner/member pair.
 
 ## Collection and group activation
 
