@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsEmail, IsInt, IsNotEmpty, IsString, IsUrl, MaxLength, Min } from 'class-validator'
+import { IsDateString, IsEmail, IsIn, IsInt, IsNotEmpty, IsString, IsUrl, Matches, MaxLength, Min } from 'class-validator'
 
 export const CLERK_GROUP_INVITATION_METADATA_KEY = 'boardVaultGroupInvitation'
 
@@ -43,4 +43,32 @@ export class ClerkGroupInvitationDto {
     @IsNotEmpty()
     @MaxLength(2048)
     url: string
+}
+
+export class ClerkGroupInvitationSummaryDto {
+    @ApiProperty({ example: 'invitation_123' })
+    @IsString()
+    @IsNotEmpty()
+    invitationId: string
+
+    @ApiProperty({ example: 'friend@example.com' })
+    @IsEmail()
+    emailAddress: string
+
+    @ApiProperty({ example: 'pending', enum: ['pending'] })
+    @IsIn(['pending'])
+    status: 'pending'
+
+    @ApiProperty({ example: '2026-09-05T10:00:00.000Z' })
+    @IsDateString()
+    createdAt: string
+}
+
+export class ClerkInvitationIdParam {
+    @ApiProperty({ example: 'invitation_123' })
+    @IsString()
+    @IsNotEmpty()
+    @MaxLength(128)
+    @Matches(/^invitation_[a-zA-Z0-9_-]+$/)
+    invitationId: string
 }

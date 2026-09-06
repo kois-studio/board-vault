@@ -16,6 +16,7 @@ import {
     browseGamesSchema,
     clerkAuthStatusSchema,
     clerkGroupInvitationSchema,
+    clerkGroupInvitationSummariesSchema,
     gameOwnedSchema,
     gameProposalSchema,
     gameViewSchema,
@@ -58,6 +59,7 @@ import {
 import type {
     AdminGamesResultType,
     BrowseGamesResultType,
+    ClerkGroupInvitationSummaryType,
     ClerkGroupInvitationType,
     CollectionActivityWithGameDataType,
     CreateGameProposalType,
@@ -207,6 +209,18 @@ export class Api {
         return this.http
             .post<ClerkGroupInvitationType>(`${this.url}/groups/${groupId}/clerk-invitations`, { emailAddress })
             .pipe(map((response) => clerkGroupInvitationSchema.parse(response)))
+    }
+
+    getClerkGroupInvitations(groupId: number) {
+        return this.http
+            .get<Array<ClerkGroupInvitationSummaryType>>(`${this.url}/groups/${groupId}/clerk-invitations`)
+            .pipe(map((response) => clerkGroupInvitationSummariesSchema.parse(response)))
+    }
+
+    revokeClerkGroupInvitation(groupId: number, invitationId: string) {
+        return this.http
+            .delete<{ success: true }>(`${this.url}/groups/${groupId}/clerk-invitations/${invitationId}`)
+            .pipe(map((response) => successSchema.parse(response)))
     }
 
     // #region games
