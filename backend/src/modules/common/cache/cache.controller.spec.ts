@@ -23,7 +23,7 @@ describe('CacheController', () => {
 
         await expect(controller.printAll()).resolves.toEqual({ keys: ['user-proposal-stats:1'] })
         await expect(controller.reset()).resolves.toBe(true)
-        await expect(controller.delete('user-proposal-stats:1')).resolves.toBe(true)
+        await expect(controller.delete({ key: 'user-proposal-stats:1' })).resolves.toBe(true)
         expect(cacheService.keys).toHaveBeenCalledTimes(1)
         expect(cacheService.deleteAll).toHaveBeenCalledTimes(1)
         expect(cacheService.deleteOne).toHaveBeenCalledWith('user-proposal-stats:1')

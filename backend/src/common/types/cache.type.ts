@@ -1,4 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger'
+import { IsNotEmpty, IsString, MaxLength } from 'class-validator'
+
+export class CacheKeyParam {
+    @ApiProperty({ example: 'user-proposal-stats:1', description: 'The cache key to delete.' })
+    @IsString()
+    @IsNotEmpty()
+    @MaxLength(256)
+    key: string
+}
 
 export class PrintKeysDto {
     @ApiProperty({
