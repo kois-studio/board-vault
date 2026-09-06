@@ -3,7 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http'
 import { Injectable, inject, signal } from '@angular/core'
 import { Router } from '@angular/router'
 import { Observable, of } from 'rxjs'
-import { catchError, map } from 'rxjs/operators'
+import { catchError, map, switchMap, tap } from 'rxjs/operators'
 
 import { Api } from '../../api/api'
 import { ToastService } from '../../components/toast/toast.service'
@@ -70,15 +70,13 @@ export class LoginService {
 
         this.logger.log('LoginService: Token found, validating with backend...')
         return this.api.authStatus().pipe(
-            map((response) => {
+            switchMap((response) => {
                 if (response?.isValid && response?.userId !== undefined) {
                     this.logger.log('LoginService: Token is valid.', response)
-                    this.isAuthenticated.set(true)
                     this.currentUserId.set(response.userId)
                     this.isCurrentUserAdmin.set(response.isAdmin || false)
                     this.authProvider.set('legacy')
-                    this._fetchInitialUserData(response.userId)
-                    return true
+                    return this._fetchInitialUserData(response.userId).pipe(tap((isReady) => this.isAuthenticated.set(isReady)))
                 }
 
                 // NOTE: this should never happen
@@ -87,7 +85,7 @@ export class LoginService {
                 this.toastService.warning('Your session may be invalid. Please log in again.')
                 this._performLogoutCleanup()
                 this.router.navigate(['/'])
-                return false
+                return of(false)
             }),
             catchError((error: HttpErrorResponse) => {
                 this.logger.error('LoginService: Error validating token via /auth/status API.', error)
@@ -122,18 +120,16 @@ export class LoginService {
 
     public verifyClerkSession(): Observable<boolean> {
         return this.api.clerkAuthStatus().pipe(
-            map((response) => {
+            switchMap((response) => {
                 if (!response?.isValid || response.userId === undefined) {
-                    return false
+                    return of(false)
                 }
 
                 this.logger.log('LoginService: Clerk session is valid.', response)
-                this.isAuthenticated.set(true)
                 this.currentUserId.set(response.userId)
                 this.isCurrentUserAdmin.set(response.isAdmin)
                 this.authProvider.set('clerk')
-                this._fetchInitialUserData(response.userId)
-                return true
+                return this._fetchInitialUserData(response.userId).pipe(tap((isReady) => this.isAuthenticated.set(isReady)))
             }),
             catchError((error: HttpErrorResponse) => {
                 this.logger.error('LoginService: Error validating Clerk session.', error)
@@ -146,17 +142,18 @@ export class LoginService {
     /**
      * Initiates the loading of essential user data after authentication.
      */
-    private _fetchInitialUserData(userId: number): void {
+    private _fetchInitialUserData(userId: number): Observable<boolean> {
         this.logger.log(`LoginService: Triggering USER_DATA load for user ID: ${userId}`)
         this.loadingService.start(LOADING_KEYS.USER_DATA)
 
-        this.api.getUserById(userId).subscribe({
-            next: (userData) => {
+        return this.api.getUserById(userId).pipe(
+            tap((userData) => {
                 this.logger.log('LoginService: USER_DATA fetched successfully.')
                 this.dataService.currentUser.set(userData)
                 this.loadingService.finish(LOADING_KEYS.USER_DATA)
-            },
-            error: (err) => {
+            }),
+            map(() => true),
+            catchError((err: unknown) => {
                 this.logger.error('LoginService: Critical error - Failed to fetch USER_DATA after successful auth. Logging out.', err)
                 this.toastService.error(
                     // Specific toast for this critical failure
@@ -166,8 +163,9 @@ export class LoginService {
                 this.router.navigate(['/'])
                 // Ensure USER_DATA loading is also marked as finished to prevent UI hangs
                 this.loadingService.finish(LOADING_KEYS.USER_DATA)
-            },
-        })
+                return of(false)
+            }),
+        )
     }
 
     /**
