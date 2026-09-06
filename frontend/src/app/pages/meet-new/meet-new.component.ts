@@ -62,6 +62,10 @@ export class MeetNewComponent {
             const groupData = this.userGroups.find((group) => group.id === groupId)
 
             if (Number.isNaN(groupId) || !this.userData || !groupData) {
+                this.groupData = null
+                this.selectedAttendeeIds = []
+                this.selectedPlannedGameIds = []
+                this.didInitializeSelections = false
                 return
             }
 
