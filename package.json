@@ -3,7 +3,7 @@
     "version": "0.0.0",
     "private": true,
     "scripts": {
-        "install:all": "npm --prefix backend ci --ignore-scripts && npm --prefix frontend ci --ignore-scripts",
+        "install:all": "cd backend && npm ci --ignore-scripts && cd ../frontend && npm ci --ignore-scripts",
         "build": "npm --prefix backend run build && npm --prefix frontend run build",
         "test:unit": "npm --prefix backend test -- --runInBand && npm --prefix frontend test -- --watch=false --browsers=ChromeHeadless",
         "test:e2e": "npm --prefix backend run test:e2e -- --runInBand && npm --prefix frontend run e2e",
