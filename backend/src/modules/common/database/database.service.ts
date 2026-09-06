@@ -358,6 +358,79 @@ export class DatabaseService implements OnModuleInit {
         }
     }
 
+    async approveGameProposalAtomically(input: {
+        proposalId: number
+        reviewerId: number
+        title: string
+        imageUrl: string
+        gameAvgDuration: number
+        minPlayers: number
+        maxPlayers: number
+        translations: Array<{ languageCode: SupportedLanguage; title: string; normalizedTitle: string }>
+        tagIds: number[]
+        reviewNotes?: string
+        notification: CreateNotificationBody
+    }): Promise<{ createdGameId: number }> {
+        const transaction = await this.tursoClient.transaction('write')
+
+        try {
+            const gameResult = await transaction.execute({
+                sql: 'INSERT INTO Game (imageUrl, gameAvgDuration, minPlayers, maxPlayers) VALUES (?, ?, ?, ?)',
+                args: [input.imageUrl, input.gameAvgDuration, input.minPlayers, input.maxPlayers],
+            })
+            const createdGameId = Number(gameResult.lastInsertRowid)
+
+            for (const translation of input.translations) {
+                await transaction.execute({
+                    sql: 'INSERT OR REPLACE INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (?, ?, ?, ?)',
+                    args: [createdGameId, translation.languageCode, translation.title, translation.normalizedTitle],
+                })
+            }
+
+            for (const tagId of input.tagIds) {
+                await transaction.execute({
+                    sql: 'INSERT OR IGNORE INTO GameTag (gameId, tagId) VALUES (?, ?)',
+                    args: [createdGameId, tagId],
+                })
+            }
+
+            const proposalResult = await transaction.execute({
+                sql: `
+                    UPDATE GameProposal
+                    SET status = 'approved',
+                        reviewedBy = ?,
+                        reviewedAt = CURRENT_TIMESTAMP,
+                        reviewNotes = ?,
+                        createdGameId = ?
+                    WHERE id = ? AND status = 'pending'
+                `,
+                args: [input.reviewerId, input.reviewNotes ?? null, createdGameId, input.proposalId],
+            })
+
+            if (proposalResult.rowsAffected !== 1) {
+                throw new NotFoundException('Pending game proposal not found')
+            }
+
+            await transaction.execute({
+                sql: 'INSERT INTO Notification (accountId, type, message, data) VALUES (?, ?, ?, ?)',
+                args: [
+                    input.notification.accountId,
+                    input.notification.type,
+                    input.notification.message,
+                    JSON.stringify({ ...(input.notification.data || {}), createdGameId }),
+                ],
+            })
+
+            await transaction.commit()
+            return { createdGameId }
+        } catch (error) {
+            await transaction.rollback()
+            throw error
+        } finally {
+            transaction.close()
+        }
+    }
+
     async findUserByVerificationToken(token: string) {
         return this._tursoExecute({
             sql: 'SELECT * FROM Account WHERE verification_token = ? AND verification_token_expires_at IS NOT NULL AND verification_token_expires_at > unixepoch()',

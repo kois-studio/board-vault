@@ -124,6 +124,123 @@ describe('DatabaseService logging', () => {
         expect(transaction.close).toHaveBeenCalledTimes(1)
     })
 
+    it('approves a game proposal and its notification in one transaction', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const transaction = {
+            execute: jest
+                .fn()
+                .mockResolvedValueOnce({ lastInsertRowid: 88 })
+                .mockResolvedValueOnce({ rowsAffected: 1 })
+                .mockResolvedValueOnce({ rowsAffected: 1 })
+                .mockResolvedValueOnce({ rowsAffected: 1 })
+                .mockResolvedValueOnce({ rowsAffected: 1 }),
+            commit: jest.fn().mockResolvedValue(undefined),
+            rollback: jest.fn().mockResolvedValue(undefined),
+            close: jest.fn(),
+        }
+
+        ;(service as unknown as { tursoClient: { transaction: jest.Mock } }).tursoClient = {
+            transaction: jest.fn().mockResolvedValue(transaction),
+        }
+
+        await expect(
+            service.approveGameProposalAtomically({
+                proposalId: 12,
+                reviewerId: 7,
+                title: 'Catan',
+                imageUrl: 'https://example.com/catan.jpg',
+                gameAvgDuration: 60,
+                minPlayers: 3,
+                maxPlayers: 4,
+                translations: [{ languageCode: 'en', title: 'Catan', normalizedTitle: 'catan' }],
+                tagIds: [2],
+                reviewNotes: 'Ready for the shelf',
+                notification: {
+                    accountId: 4,
+                    type: 'game_proposal_approved',
+                    message: 'Your proposal was approved',
+                    data: { gameTitle: 'Catan', proposalId: 12 },
+                },
+            }),
+        ).resolves.toEqual({ createdGameId: 88 })
+
+        expect(transaction.execute).toHaveBeenNthCalledWith(
+            1,
+            expect.objectContaining({ sql: expect.stringContaining('INSERT INTO Game') }),
+        )
+        expect(transaction.execute).toHaveBeenNthCalledWith(2, expect.objectContaining({ sql: expect.stringContaining('GameTranslation') }))
+        expect(transaction.execute).toHaveBeenNthCalledWith(3, {
+            sql: 'INSERT OR IGNORE INTO GameTag (gameId, tagId) VALUES (?, ?)',
+            args: [88, 2],
+        })
+        expect(transaction.execute).toHaveBeenNthCalledWith(
+            4,
+            expect.objectContaining({ sql: expect.stringContaining("status = 'approved'") }),
+        )
+        expect(transaction.execute).toHaveBeenNthCalledWith(
+            5,
+            expect.objectContaining({ sql: expect.stringContaining('INSERT INTO Notification') }),
+        )
+        expect(transaction.execute).toHaveBeenNthCalledWith(
+            5,
+            expect.objectContaining({
+                args: [
+                    4,
+                    'game_proposal_approved',
+                    'Your proposal was approved',
+                    '{"gameTitle":"Catan","proposalId":12,"createdGameId":88}',
+                ],
+            }),
+        )
+        expect(transaction.commit).toHaveBeenCalledTimes(1)
+        expect(transaction.rollback).not.toHaveBeenCalled()
+        expect(transaction.close).toHaveBeenCalledTimes(1)
+    })
+
+    it('rolls back proposal approval when notification persistence fails', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const transaction = {
+            execute: jest
+                .fn()
+                .mockResolvedValueOnce({ lastInsertRowid: 88 })
+                .mockResolvedValueOnce({ rowsAffected: 1 })
+                .mockResolvedValueOnce({ rowsAffected: 1 })
+                .mockResolvedValueOnce({ rowsAffected: 1 })
+                .mockRejectedValueOnce(new Error('notification write failed')),
+            commit: jest.fn().mockResolvedValue(undefined),
+            rollback: jest.fn().mockResolvedValue(undefined),
+            close: jest.fn(),
+        }
+
+        ;(service as unknown as { tursoClient: { transaction: jest.Mock } }).tursoClient = {
+            transaction: jest.fn().mockResolvedValue(transaction),
+        }
+
+        await expect(
+            service.approveGameProposalAtomically({
+                proposalId: 12,
+                reviewerId: 7,
+                title: 'Catan',
+                imageUrl: 'https://example.com/catan.jpg',
+                gameAvgDuration: 60,
+                minPlayers: 3,
+                maxPlayers: 4,
+                translations: [{ languageCode: 'en', title: 'Catan', normalizedTitle: 'catan' }],
+                tagIds: [2],
+                notification: {
+                    accountId: 4,
+                    type: 'game_proposal_approved',
+                    message: 'Your proposal was approved',
+                    data: { gameTitle: 'Catan', proposalId: 12 },
+                },
+            }),
+        ).rejects.toThrow('notification write failed')
+
+        expect(transaction.rollback).toHaveBeenCalledTimes(1)
+        expect(transaction.commit).not.toHaveBeenCalled()
+        expect(transaction.close).toHaveBeenCalledTimes(1)
+    })
+
     it('adds collection ownership, memory, and wishlist cleanup in one transaction', async () => {
         const service = new DatabaseService({} as ConfigService)
         const execute = jest

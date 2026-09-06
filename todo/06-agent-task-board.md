@@ -63,6 +63,25 @@ Owner: Codex
 Claimed: 2026-09-06
 
 Branch/worktree: main / shared workspace
+Scope: make administrative game-proposal approval atomic across the created game, translations, tags, proposal state, and submitter notification without expanding catalog UX
+```
+
+Review: DATA-004
+
+Changed: Administrative proposal approval now writes the created game, translations, tags, proposal status, and submitter notification through one database transaction. Proposal and submitter-stat caches invalidate only after commit; the canonical social product surface remains unchanged.
+
+Verified: `cd backend && npm test -- --runInBand` passes 48 suites / 261 tests; `cd backend && npm run test:e2e -- --runInBand` passes 6 environment-safe HTTP tests; `cd backend && npm run build`; `cd backend && npm run lint:check`; `cd backend && npm run lint:logs`; and `git diff --check` pass. Failure-injection coverage proves notification failure rolls back the created game, translation, tag, and proposal writes. No deployment, push, provider mutation, or production data change was performed.
+
+Known follow-ups: Rejection/duplicate proposal notifications and broader provider/cache integration remain separate; the public social loop remains the product priority.
+
+Previous most recent claim:
+
+```text
+Task: DATA-004
+Owner: Codex
+Claimed: 2026-09-06
+
+Branch/worktree: main / shared workspace
 Scope: make the deprecated bulk user-game compatibility mutation atomic so a partial collection update cannot survive a failed delete or insert
 ```
 

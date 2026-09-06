@@ -52,6 +52,10 @@ export class GameTranslationService {
             .replace(/\s+/g, '-') // replace spaces with hyphens for better readability
     }
 
+    normalizeTitle(title: string): string {
+        return this._normalizeTitle(title)
+    }
+
     private _reduceGameTranslations(gameTranslations: Array<GameTranslationDto>): Record<SupportedLanguage, string> {
         return gameTranslations.reduce(
             (acc, translation) => {
