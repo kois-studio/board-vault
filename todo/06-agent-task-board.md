@@ -3359,3 +3359,17 @@ Continuation claim: PROD-003 / TEST-002
 Owner: Codex
 
 Claimed: 2026-09-06
+
+Scope: continue the primary-route accessibility review with keyboard-only traversal, visible focus, and action semantics.
+
+Acceptance: the core authenticated route audit must exercise representative keyboard traversal on the group workspace, group setup, session planning/detail, upcoming, collection, and history surfaces; any defect found in the reviewed path must be fixed with a focused regression. Do not expand the catalog or add a separate analytics surface in this slice.
+
+Changed: Keyboard traversal exposed a duplicate tab stop on routed `app-button` hosts. The shared button primitive now removes the host from focus order so its native button is the only keyboard action, and the rendered core audit guards against a focusable custom-element host at each core breakpoint.
+
+Verified: Frontend Biome, production build, and the authenticated core plus rendered route audits pass: 10 Playwright tests across the six primary routes and 375/768/1280px breakpoints. No deployment or push was performed.
+
+Continuation claim: EQ-007 / PROD-002
+
+Owner: Codex
+
+Claimed: 2026-09-06
