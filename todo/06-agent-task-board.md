@@ -3047,3 +3047,15 @@ Scope: close a rendered accessibility and hit-area defect in the group shared li
 Changed: Group-library image-only links now have explicit responsive dimensions and accessible “View …” names. Added an opt-in authenticated browser assertion for the rendered contract.
 
 Verified: Frontend build passes; the focused browser check passes with `PLAYWRIGHT_GROUP_ID=7`; the mobile rendered check reports no horizontal overflow and 96×96 game-link targets. Broader image fallback and accessibility review remains open.
+
+Continuation claim: EQ-007
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Scope: align the group workspace navigator with the actual rendered social workflow.
+
+Changed: The area navigator now follows the page order: Decide, Games to acquire, Sessions, Group library, and History & insights. The opt-in browser check asserts the anchor order alongside the accessible game-link contract.
+
+Verified: Frontend build and the focused authenticated browser check pass. No deployment or push was performed.

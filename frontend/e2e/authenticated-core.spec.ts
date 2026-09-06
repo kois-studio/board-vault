@@ -48,6 +48,14 @@ test.describe('authenticated core navigation', () => {
         const gameLinks = page.locator('a[href^="/games/"]')
         await expect(gameLinks.first()).toBeVisible()
         await expect(gameLinks.first()).toHaveAttribute('aria-label', /^View /)
+
+        await expect(page.getByRole('navigation', { name: 'Group workspace areas' }).locator('a')).toHaveText([
+            'Decide',
+            'Games to acquire',
+            'Sessions',
+            'Group library',
+            'History & insights',
+        ])
     })
 
     test('opens the past-session recorder', async ({ page }) => {
