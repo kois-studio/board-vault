@@ -3539,3 +3539,17 @@ Claimed: 2026-09-06
 Changed: Reworked the groups index cards into semantic social workspace entries. Each entry now exposes shared members and games, next-session or first-planning context, last-session memory, group history, recommendation, planning, and invitation-management links. The previous whole-card button was removed, and the empty state now explains the first-group activation handoff.
 
 Verified: `cd frontend && npx biome check src/app`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (39 passing), `cd frontend && npm run build` (605.28 kB initial raw / 138.26 kB estimated transfer), and `git diff --check` pass. Rendered group-index and real-group validation remain open. No deployment or push was performed.
+
+Scope: make upcoming sessions useful as a coordination inbox, not only a date list.
+
+Acceptance: each upcoming session must explain its group context, show the group’s available people/games without pretending they are confirmed attendees, and make the next planning action clear for scheduled versus active sessions. Preserve honest loading/error/empty states and add focused component coverage.
+
+Continuation claim: PROD-003 / EQ-007
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Changed: Upcoming session cards now show honest group context (`people · games available`) and a status-specific prompt: planned sessions direct members to review attendees and the shortlist, while active sessions direct organizers to record what was actually played. The list still keeps dates, notes, retryable states, and direct session actions visible without claiming that all group members are confirmed attendees.
+
+Verified: `cd frontend && npx biome check src/app`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (40 passing), `cd frontend && npm run build` (605.28 kB initial raw / 138.24 kB estimated transfer), and `git diff --check` pass. Rendered upcoming-session review and real-group usefulness remain open. No deployment or push was performed.
