@@ -24,9 +24,7 @@ import {
     gamesSchema,
     groupAcquisitionBoardSchema,
     groupInvitationsSchema,
-    meetAttendeeSchema,
     meetDetailsSchema,
-    meetGameSchema,
     meetSchema,
     messageSchema,
     publicUserSchema,
@@ -77,8 +75,6 @@ import type {
     HistoryRecordType,
     InvitationWithAccountsData,
     InvitationWithExtraData,
-    MeetAttendeeType,
-    MeetGameType,
     MeetType,
     MeetWithAttendeesAndGamesType,
     NotificationType,
@@ -330,34 +326,6 @@ export class Api {
         return this.http
             .patch<SessionAttendanceUpdatedType>(`${this.url}/sessions/${sessionId}/attendance`, body)
             .pipe(map((response) => sessionAttendanceUpdatedSchema.parse(response)))
-    }
-
-    // #region meet attendees
-
-    createMeetAttendee(meetId: number, accountId: number) {
-        return this.http
-            .post<MeetAttendeeType>(`${this.url}/meetAttendees/${meetId}/${accountId}`, {})
-            .pipe(map((response) => meetAttendeeSchema.parse(response)))
-    }
-
-    deleteMeetAttendee(meetId: number, accountId: number) {
-        return this.http
-            .delete<{ success: true }>(`${this.url}/meetAttendees/${meetId}/${accountId}`)
-            .pipe(map((response) => successSchema.parse(response)))
-    }
-
-    // #region meet games
-
-    createMeetAccountGame(accountId: number, meetId: number, gameId: number) {
-        return this.http
-            .post<MeetGameType>(`${this.url}/meetAccountGames/${accountId}/${meetId}/${gameId}`, {})
-            .pipe(map((response) => meetGameSchema.parse(response)))
-    }
-
-    deleteMeetAccountGame(accountId: number, meetId: number, gameId: number) {
-        return this.http
-            .delete<{ success: true }>(`${this.url}/meetAccountGames/${accountId}/${meetId}/${gameId}`)
-            .pipe(map((response) => successSchema.parse(response)))
     }
 
     // --------------------------------------------------------------------------
