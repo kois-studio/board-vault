@@ -137,7 +137,7 @@ The preserved legacy recovery path now has immediate request/token feedback,
 explicit form labels, retryable provider guidance, fresh-link recovery, and a
 deliberate return to sign-in. This supports the staged Clerk migration without
 expanding the old authentication surface into a second product identity.
-Frontend coverage is now 52 browser-based unit tests and the production build
+Frontend coverage is now 54 browser-based unit tests and the production build
 remains under budget. The recovery flow still needs rendered browser review;
 legacy password/JWT retirement remains gated on real Clerk rollback evidence.
 

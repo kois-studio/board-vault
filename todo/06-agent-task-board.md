@@ -3712,3 +3712,17 @@ Acceptance: remove artificial waits, give request/token forms explicit labels an
 Changed: Preserved password recovery now submits without artificial waits, exposes labeled request/token fields with live loading and error states, distinguishes temporary email delivery failure from invalid/expired links, and offers direct fresh-link and sign-in recovery.
 
 Verified: `cd frontend && npx biome check src/app`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (52 passing), and `cd frontend && npm run build` (604.88 kB initial raw / 136.42 kB estimated transfer) pass. No deployment or push was performed.
+
+Continuation claim: AUTH-001 / EQ-007
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Scope: align the preserved legacy email-verification route with the accessible password-recovery states.
+
+Acceptance: remove artificial waits and automatic redirects, expose loading/success/error states with accessible announcements, and give users direct sign-in recovery after verification or an expired token. Add focused component coverage without changing Clerk/private-beta policy.
+
+Changed: Email verification now submits immediately, exposes accessible loading/success/error states, removes automatic redirects, and gives users a direct sign-in path after successful or expired verification.
+
+Verified: `cd frontend && npx biome check src/app`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (54 passing), and `cd frontend && npm run build` (604.88 kB initial raw / 136.40 kB estimated transfer) pass. No deployment or push was performed.
