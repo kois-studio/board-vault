@@ -3,7 +3,7 @@ import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@ne
 
 import { AdminGuard } from '../../../common/guards/admin.guard'
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
-import { PrintKeysDto } from '../../../common/types/cache.type'
+import { CacheKeyParam, PrintKeysDto } from '../../../common/types/cache.type'
 
 import { CacheService } from './cache.service'
 
@@ -68,7 +68,7 @@ export class CacheController {
         name: 'key',
         type: String,
     })
-    async delete(@Param('key') key: string): Promise<boolean> {
-        return this.cacheService.deleteOne(key)
+    async delete(@Param() params: CacheKeyParam): Promise<boolean> {
+        return this.cacheService.deleteOne(params.key)
     }
 }

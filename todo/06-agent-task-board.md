@@ -3726,3 +3726,17 @@ Acceptance: remove artificial waits and automatic redirects, expose loading/succ
 Changed: Email verification now submits immediately, exposes accessible loading/success/error states, removes automatic redirects, and gives users a direct sign-in path after successful or expired verification.
 
 Verified: `cd frontend && npx biome check src/app`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (54 passing), and `cd frontend && npm run build` (604.88 kB initial raw / 136.40 kB estimated transfer) pass. No deployment or push was performed.
+
+Continuation claim: TS-005 / NEST-004 / NEST-012
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Scope: close the remaining operational cache key boundary and document disabled-cache behavior.
+
+Acceptance: cache maintenance key parameters must be typed and bounded before reaching the admin controller, and disabled Redis mode must have deterministic tests for cache reads/writes, rate-limit increments, and readiness without provider calls.
+
+Changed: Cache maintenance deletion now validates a non-empty key capped at 256 characters before calling Redis, and disabled Redis mode has deterministic read/write/increment/readiness coverage without constructing a provider client.
+
+Verified: `cd backend && npx eslint "{src,apps,libs,test}/**/*.ts"`, `cd backend && npm test -- --runInBand` (46 suites / 241 tests), `cd backend && npm run build`, `cd backend && npm run lint:logs`, `cd backend && npm run docs:openapi`, and `git diff --check` pass. No deployment or push was performed.

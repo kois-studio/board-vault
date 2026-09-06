@@ -88,7 +88,7 @@ compliance:
 
     - id: TEST-001
       status: gap
-      evidence: backend has 46 focused suites and 239 passing tests covering authentication, authorization, validation and request-size boundaries, sessions, service-level participation invariants, organizer/current-membership enforcement, per-game participation and legacy played-game ownership validation, recommendations, invitation visibility/expiry/atomic acceptance, owner-only legacy invitation creation, provider invitation listing/revocation boundaries, soft-deleted account exclusion, verified-user gating, admin route and bounded list-query validation, bounded collection browse and duplicate-review inputs, bounded group names, self-profile response privacy, cache endpoint protection, safe API errors including Clerk and email-provider diagnostics, correlated request logging, health/readiness probes, canonical session reads, group acquisition ownership-race protection and owner decisions, and provider boundaries; frontend has 54 browser-based unit tests with malformed-response, false-success, history-handoff, player-summary, decision-context, empty-group-activation, dialog-focus, password-recovery, and email-verification coverage, five passing public Playwright checks, and an opt-in browser suite that currently discovers 26 tests with 21 guarded without disposable Clerk/browser fixture state
+      evidence: backend has 46 focused suites and 241 passing tests covering authentication, authorization, validation and request-size boundaries, sessions, service-level participation invariants, organizer/current-membership enforcement, per-game participation and legacy played-game ownership validation, recommendations, invitation visibility/expiry/atomic acceptance, owner-only legacy invitation creation, provider invitation listing/revocation boundaries, soft-deleted account exclusion, verified-user gating, admin route and bounded list-query validation, bounded collection browse and duplicate-review inputs, bounded group names, typed/bounded cache maintenance parameters and disabled-cache behavior, self-profile response privacy, cache endpoint protection, safe API errors including Clerk and email-provider diagnostics, correlated request logging, health/readiness probes, canonical session reads, group acquisition ownership-race protection and owner decisions, and provider boundaries; frontend has 54 browser-based unit tests with malformed-response, false-success, history-handoff, player-summary, decision-context, empty-group-activation, dialog-focus, password-recovery, and email-verification coverage, five passing public Playwright checks, and an opt-in browser suite that currently discovers 26 tests with 21 guarded without disposable Clerk/browser fixture state
       priority: high
       next_action: Add layered unit, integration, and journey tests for the flagship loop.
     - id: TEST-002
@@ -113,7 +113,7 @@ compliance:
       next_action: Add repeatable disposable integration/contract coverage for auth, group membership, collection ownership, session transactions, recommendation decisions, and provider failure behavior.
     - id: TEST-006
       status: gap
-      evidence: backend unit command passes 239 focused tests and frontend has 52 browser-based unit tests plus five public Playwright checks; clean installs now pass and the validation workflow now includes repository whitespace, lint/Biome, build, test, and migration gates, while CI enforcement is not yet observed remotely
+      evidence: backend unit command passes 241 focused tests and frontend has 54 browser-based unit tests plus five public Playwright checks; clean installs now pass and the validation workflow now includes repository whitespace, lint/Biome, build, test, and migration gates, while CI enforcement is not yet observed remotely
       priority: high
       next_action: Keep the supported test commands meaningful and observe their first required CI run.
     - id: TEST-007
@@ -415,9 +415,9 @@ compliance:
       next_action: Document indexes and test representative query limits.
     - id: DATA-006
       status: partial
-      evidence: CacheService has TTLs, selected invalidations, explicit disabled-mode initialization, failure cooldowns, and non-destructive key-inspection fallback coverage; cache ownership, invalidation completeness, and broader correctness remain open
+      evidence: CacheService has TTLs, selected invalidations, explicit disabled-mode initialization, failure cooldowns, non-destructive key-inspection fallback coverage, and deterministic disabled-mode tests; cache ownership, invalidation completeness, and broader provider integration correctness remain open
       priority: high
-      next_action: Define cache ownership/invalidation and add provider-failure and disabled-mode integration tests.
+      next_action: Define cache ownership/invalidation and add provider-failure integration tests.
     - id: DATA-007
       status: gap
       evidence: Turso dump instructions exist, but no scheduled backup, restore test, or owner
