@@ -7,9 +7,33 @@
                 </div>
                 <p class="mt-6 text-sm font-semibold uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400">You are invited</p>
                 <h1 class="mt-3 text-4xl font-bold tracking-tight text-zinc-900 dark:text-white">Join your Board Vault group</h1>
-                <p class="mt-5 text-lg leading-8 text-zinc-600 dark:text-zinc-300">Complete the secure Clerk sign-up to join the group that invited you.</p>
+                <p class="mt-5 text-lg leading-8 text-zinc-600 dark:text-zinc-300">Choose your Board Vault username and password to join the group that invited you.</p>
                 @if (clerkIsAvailable()) {
-                    <button type="button" class="app-btn-primary mt-8" (click)="openClerkSignUp()">Continue with invitation</button>
+                    <form class="mt-8 space-y-4 text-left" [formGroup]="invitationForm" (ngSubmit)="completeInvitationSignUp()">
+                        <div>
+                            <label for="invitation-username" class="mb-2 block text-sm font-medium">Choose a username</label>
+                            <input id="invitation-username" type="text" autocomplete="username" class="app-input" formControlName="username" />
+                            @if (invitationForm.controls.username.invalid && invitationForm.controls.username.touched) {
+                                <p class="mt-1 text-xs text-red-600 dark:text-red-300">Use 4–64 characters for your username.</p>
+                            }
+                        </div>
+                        <div>
+                            <label for="invitation-password" class="mb-2 block text-sm font-medium">Create a password</label>
+                            <input id="invitation-password" type="password" autocomplete="new-password" class="app-input" formControlName="password" />
+                            <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">Use at least 15 characters.</p>
+                        </div>
+                        <div>
+                            <label for="invitation-confirm-password" class="mb-2 block text-sm font-medium">Confirm your password</label>
+                            <input id="invitation-confirm-password" type="password" autocomplete="new-password" class="app-input" formControlName="confirmPassword" />
+                            @if (invitationForm.controls.confirmPassword.touched && !invitationPasswordsMatch) {
+                                <p class="mt-1 text-xs text-red-600 dark:text-red-300">Passwords must match.</p>
+                            }
+                        </div>
+                        <div id="clerk-captcha" aria-live="polite"></div>
+                        <button type="submit" class="app-btn-primary w-full" [disabled]="isInvitationSubmitting">
+                            {{ isInvitationSubmitting ? 'Joining…' : 'Join the group' }}
+                        </button>
+                    </form>
                 } @else {
                     <p class="mt-8 rounded-lg border border-amber-400/30 bg-amber-50 p-4 text-sm text-amber-800 dark:bg-amber-950/30 dark:text-amber-200">The secure sign-up service is still loading. Refresh this page to continue.</p>
                 }

@@ -2950,6 +2950,30 @@ Owner: Codex
 
 Claimed: 2026-09-06
 
+Scope: redesign and verify the Clerk invitation registration flow after the provider ticket exchange failure.
+
+Changed: Replaced the eager ticket exchange with an explicit invitation form for the configured username/password requirements, added existing-user ticket sign-in handling, activated completed Clerk sessions, redirected successful invitees to the dashboard, mounted Clerk’s required `clerk-captcha` target, and added bounded validation/error states.
+
+Verified: A disposable valid-format development invitation with `notify:false` completed through `/register` to `/dashboard` and provisioned the local session. Smart CAPTCHA was disabled only during that single dev rehearsal and restored to enabled afterward; the broader human-CAPTCHA, delivery, expiry, and failure/retry paths remain open. The `example.test` fixture domain was rejected by Clerk and is documented as invalid test data. No production state, deployment, or push was changed.
+
+Continuation claim: AUTH-001 / EQ-007
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Scope: run the complete local regression gate after the rendered UX and migration-evidence milestones.
+
+Changed: Re-ran backend tests, frontend browser-unit tests, frontend build/lint, and signed-out public Playwright navigation checks against the current tree.
+
+Verified: Backend 45 suites/230 tests, frontend 32/32 browser-unit tests, frontend build, Biome lint, and 3 signed-out public checks passed; the full default public suite remains 4 tests. The current initial bundle is 603.43 kB raw / 138.04 kB estimated transfer. No deployment or push was performed.
+
+Continuation claim: TEST-001 / CI-001
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
 Scope: validate the pending schema release against a fresh production snapshot without changing live Turso.
 
 Changed: Exported the live `board-vault` database through the authenticated Turso CLI into a temporary local SQLite file, checked integrity and foreign keys, and applied migrations 0006–0009 to the copy with the committed migration runner.

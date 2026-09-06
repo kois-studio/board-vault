@@ -140,7 +140,7 @@ group loop demonstrates repeat use.
 
 - **Status:** Planned
 - **Affected area:** `frontend/src/styles.css`, component SCSS/templates, route surfaces
-- **Evidence:** Tailwind global styles now use plain CSS with a PostCSS nesting pass; route-level components are lazy-loaded; production build has no Sass/selector/bundle-budget warnings and the initial raw bundle is 603.43 kB (137.99 kB estimated transfer) under the 650 kB warning budget. Shared theme-control semantics, the preserved-account auth fallback, migration-state copy, group/session empty states, owner-only invitation controls, invitation-decline confirmation, pending provider-invitation management, direct group-edit route loading/error states, mobile session-progress behavior, attendee-selection handoff, recommendation attendee controls, explainable recommendation lenses, reversible group acquisition interest, invitation-link copy feedback, and the personal/private collection boundary have been improved, but a full accessibility/responsive audit and all route-surface reviews remain open.
+- **Evidence:** Tailwind global styles now use plain CSS with a PostCSS nesting pass; route-level components are lazy-loaded; production build has no Sass/selector/bundle-budget warnings and the initial raw bundle is 604.11 kB (138.16 kB estimated transfer) under the 650 kB warning budget. Shared theme-control semantics, the preserved-account auth fallback, migration-state copy, group/session empty states, owner-only invitation controls, invitation-decline confirmation, pending provider-invitation management, direct group-edit route loading/error states, mobile session-progress behavior, attendee-selection handoff, recommendation attendee controls, explainable recommendation lenses, reversible group acquisition interest, invitation-link copy feedback, and the personal/private collection boundary have been improved, but a full accessibility/responsive audit and all route-surface reviews remain open.
 - **Risk:** Broken styles, poor mobile/accessibility behavior, and unsupported public claims.
 - **Next action:** Complete the rendered route audit matrix, resolve remaining accessibility/responsive findings, and link content-truth findings to `TRUTH-001`.
 - **Dependencies:** Product truth/brand decision where claims are involved.
@@ -209,9 +209,11 @@ as TODO items here.
 - [ ] Complete invitation lifecycle behavior. The groups workspace now exposes
   pending invites with direct accept/decline actions, and the development
   provider flow now proves create/list/revoke/removal for real Clerk invitation
-  identifiers. Legacy expiry, recipient acceptance after provider verification,
-  retry behavior across provider/legacy flows, and notification clarity still
-  need real-data validation.
+  identifiers. The custom ticket path now also proves disposable recipient
+  acceptance, session activation, and group-dashboard handoff with Smart CAPTCHA
+  temporarily disabled only in development. Human CAPTCHA, legacy expiry,
+  provider delivery, retry behavior across provider/legacy flows, and
+  notification clarity still need real-data validation.
 - [ ] Complete the group library decision surface. It now shows owners, member
   ratings, player range, duration, play count, and timezone-aware last-played
   context; the acquisition search and board now exclude games already owned by
