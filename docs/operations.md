@@ -176,12 +176,16 @@ operational. The old invalid endpoint is no longer used.
 
 On 2026-09-03, migrations `0006-add-group-game-interest.sql` and
 `0007-add-meet-notes.sql` were added to the local release work for the group
-acquisition board and session context. On 2026-09-04, migration
-`0008-add-invitation-expiry.sql` was added for legacy invitation lifecycle
-control. None of these migrations has been applied to
-live Turso, and no deployment was triggered. The migration and backend routes
-must be verified against a disposable database and a fresh backup before
-release.
+acquisition board and session context. On 2026-09-04, migrations
+`0008-add-invitation-expiry.sql` and `0009-add-group-acquisition-decision.sql`
+were added for invitation lifecycle and owner-controlled acquisition
+decisions. A read-only Turso CLI check on 2026-09-06 confirms that the live
+`board-vault` database has only migration markers `0001` through `0005`; the
+live counts are 16 accounts, 5 groups, 13 sessions, and 22 session/game
+links, with `PRAGMA integrity_check = ok` and no foreign-key violations.
+Migrations `0006`–`0009` remain pending for live Turso. The migration and
+backend routes must be verified against a disposable database and a fresh
+backup before release.
 
 Deployment ownership, domain configuration, environment provisioning, provider scopes, and production traffic behavior are therefore unknown and must not be inferred from the committed URLs/config alone. A non-secret backend variable template is available at [`backend/.env.example`](../backend/.env.example). The API now exposes dependency-free `/health` liveness and coarse `/health/ready` readiness probes; readiness reports only `up`, `down`, or `disabled` states for Turso and Redis.
 
@@ -190,7 +194,7 @@ Deployment ownership, domain configuration, environment provisioning, provider s
 1. Keep the root/package locked-install commands aligned and use the disposable test database verification before schema changes.
 2. Monitor the production Upstash quota and keep Redis explicitly disabled only in local environments.
 3. Add safe structured request logs, error monitoring, and graceful shutdown checks; use `/health` and `/health/ready` in deployment checks.
-4. Add migration/deployment gates and document Turso backup/restore ownership. The repeatable runner, empty-state migration check, and synthetic restore rehearsal exist; real backup schedule, recovery target, rollback ownership, and remote CI observation remain open.
+4. Add migration/deployment gates and document Turso backup/restore ownership. The repeatable runner, empty-state migration check, synthetic restore rehearsal, live schema marker check, and live integrity check exist; Turso CLI exposes the current primary location and database state but no repository-configured backup schedule or recovery owner. Recovery target, rollback ownership, and remote CI observation remain open.
 5. Record Vercel/frontend deployment responsibilities and rollback behavior.
 
 ## Existing operational notes
