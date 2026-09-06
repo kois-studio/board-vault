@@ -68,6 +68,7 @@ export class HistoryPageComponent {
         for (const record of records) {
             for (const attendee of record.attendedBy) people.add(attendee.id)
             for (const game of record.gamesPlayed) {
+                for (const player of game.playedBy) people.add(player.id)
                 gamesPlayed += 1
                 const current = gameCounts.get(game.gameData.id)
                 gameCounts.set(game.gameData.id, {
@@ -97,6 +98,10 @@ export class HistoryPageComponent {
 
     public getAttendeeSummary(attendees: Array<{ displayName: string; username: string }>): string {
         return formatAttendeeSummary(attendees)
+    }
+
+    public getPlayedBySummary(players: Array<{ displayName: string; username: string }>): string {
+        return formatAttendeeSummary(players).replace(/^With /, '')
     }
 
     public retryHistory(): void {
