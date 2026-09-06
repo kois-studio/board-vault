@@ -32,6 +32,13 @@ test.describe('authenticated core navigation', () => {
         await expect(page.getByRole('link', { name: /Browse games/i }).first()).toBeVisible()
     })
 
+    test('explains when a group is no longer available', async ({ page }) => {
+        await page.goto('/groups/999999')
+
+        await expect(page.getByRole('alert')).toContainText('This group is not available')
+        await expect(page.getByRole('link', { name: 'Back to groups', exact: true })).toHaveAttribute('href', '/groups')
+    })
+
     test('opens the past-session recorder', async ({ page }) => {
         await page.goto('/play/log-session')
 
