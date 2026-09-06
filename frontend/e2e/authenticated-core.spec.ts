@@ -90,6 +90,13 @@ test.describe('authenticated core navigation', () => {
         await expect(page.getByRole('button', { name: /Record a past session/i })).toBeVisible()
     })
 
+    test('recovers from a stale history group filter', async ({ page }) => {
+        await page.goto('/play/history?groupId=999999')
+
+        await expect(page.getByRole('alert')).toContainText('That group is not available')
+        await expect(page.getByRole('link', { name: 'Back to your groups', exact: true })).toHaveAttribute('href', '/groups')
+    })
+
     test('opens explainable game recommendations', async ({ page }) => {
         await page.goto('/play/recommendations')
 
