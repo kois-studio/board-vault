@@ -7,7 +7,25 @@
 </app-page-header>
 
 <container-wrapper>
-    @if (groupData$(); as group) {
+    @if (isLoadingGroups()) {
+        <div class="rounded-2xl border border-zinc-200 bg-white p-8 text-center shadow-sm dark:border-zinc-800 dark:bg-zinc-900" role="status" aria-live="polite">
+            <p class="text-lg font-semibold">Loading your group…</p>
+            <p class="mt-2 text-secondary">We are checking the group and its shared context.</p>
+        </div>
+    } @else if (userGroupsError()) {
+        <div class="rounded-2xl border border-amber-200 bg-amber-50 p-8 text-center dark:border-amber-900/50 dark:bg-amber-950/30" role="alert">
+            <p class="text-lg font-semibold">This group could not be loaded.</p>
+            <p class="mt-2 text-secondary">Your group data is safe. Try again when the connection is ready.</p>
+            <button type="button" class="app-btn-primary mt-5" (click)="retryGroups()">Retry group</button>
+        </div>
+    } @else if (!groupData$()) {
+        <div class="rounded-2xl border border-amber-200 bg-amber-50 p-8 text-center dark:border-amber-900/50 dark:bg-amber-950/30" role="alert">
+            <p class="text-lg font-semibold">This group is not available.</p>
+            <p class="mt-2 text-secondary">It may have been deleted, or your membership may have changed.</p>
+            <a class="app-btn-primary mt-5 inline-block" routerLink="/groups">Back to groups</a>
+        </div>
+    } @else {
+        @if (groupData$(); as group) {
         <div class="space-y-8 py-6">
             <nav class="overflow-x-auto rounded-2xl border border-zinc-200 bg-white p-2 shadow-sm dark:border-zinc-800 dark:bg-zinc-900" aria-label="Group workspace areas">
                 <div class="flex min-w-max gap-2">
@@ -423,5 +441,6 @@
                 </section>
             }
         </div>
+        }
     }
 </container-wrapper>

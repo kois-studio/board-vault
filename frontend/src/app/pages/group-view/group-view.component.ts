@@ -17,8 +17,10 @@ import { ButtonComponent } from '../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { ImageBackgroundComponent } from '../../components/ui/image-background/image-background.component'
 import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'
+import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { DataService } from '../../core/services/data.service'
+import { LoadingService } from '../../core/services/loading.service'
 import { LocalStorageService } from '../../core/services/local-storage.service'
 import { formatAttendeeSummary } from '../../core/utils/formatAttendeeSummary'
 import { GroupViewService } from './group-view.service'
@@ -50,6 +52,7 @@ export class GroupViewComponent {
     private readonly router = inject(Router)
     private readonly route = inject(ActivatedRoute)
     private readonly dataService = inject(DataService)
+    private readonly loadingService = inject(LoadingService)
     private readonly groupViewService = inject(GroupViewService)
     private readonly localStorageService = inject(LocalStorageService)
     private readonly toastService = inject(ToastService)
@@ -60,9 +63,11 @@ export class GroupViewComponent {
     // dataService
     public readonly currentUser$ = this.dataService.currentUser
     public readonly userGroups$ = this.dataService.userGroups
+    public readonly userGroupsError = this.dataService.userGroupsError
     public readonly userMeets$ = this.dataService.userMeets
     public readonly invitationsGroupIndex$ = this.dataService.invitationsGroupIndex
     public readonly groupHistoryByGroupId$ = this.dataService.groupHistoryByGroupId
+    public readonly isLoadingGroups = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_GROUPS])
 
     // groupViewService
     public readonly groupData$ = this.groupViewService.groupData
@@ -247,7 +252,18 @@ export class GroupViewComponent {
             const groupId = Number.parseInt(this.route.snapshot.paramMap.get('groupId') || '')
             const group = this.userGroups$().find((group) => group.id === groupId)
 
+            if (this.activeSelectionGroupId !== groupId) {
+                this.activeSelectionGroupId = groupId
+                this.activeAcquisitionGroupId = null
+                this.groupData$.set(null)
+                this.groupHistory$.set([])
+                this.groupHistoryError.set(false)
+                this.acquisitionBoard$.set([])
+                this.acquisitionBoardError.set(false)
+            }
+
             if (Number.isNaN(groupId) || !currentUser || !group) {
+                this.groupData$.set(null)
                 return
             }
 
@@ -256,10 +272,7 @@ export class GroupViewComponent {
 
             // GroupViewService is shared across routes, so establish a fresh
             // default selection whenever this component displays another group.
-            if (this.activeSelectionGroupId !== groupId) {
-                this.activeSelectionGroupId = groupId
-                this.selectedMembers$.set(group.members.map((member) => member.id))
-            }
+            this.selectedMembers$.set(group.members.map((member) => member.id))
 
             if (this.activeAcquisitionGroupId !== groupId) {
                 this.activeAcquisitionGroupId = groupId
@@ -284,6 +297,10 @@ export class GroupViewComponent {
         if (!currentUser || Number.isNaN(groupId)) return
 
         this.loadGroupHistory(currentUser.id, groupId)
+    }
+
+    public retryGroups(): void {
+        this.dataService.refreshUserGroups()
     }
 
     public retryAcquisitionBoard(): void {
