@@ -156,11 +156,11 @@ Relevant surfaces: [`groups`](../frontend/src/app/pages/groups/), [`group-view`]
 - Keep group creation awaitable and recoverable; the create form now waits for the API result before navigating and leaves failures retryable, while the backend now creates the group and owner membership in one Turso transaction.
 - Keep invitation send, pending-invitation removal, and member removal awaitable; group editing now keeps retryable selections and prevents overlapping requests.
 - V1 group membership is now invite-only with `owner` and `member` roles; only owners manage membership and see pending-invitation details. Public groups, ownership transfer, and richer roles require a new product decision.
-- Group edit/delete/leave surfaces now mirror the owner/member policy: members see a read-only management explanation, owners see member/invitation controls, owners cannot leave, and destructive actions wait for successful API responses before navigating.
+- Group edit/delete/leave surfaces now mirror the owner/member policy: members see a read-only management explanation, owners see member/invitation controls, owners cannot leave, destructive actions wait for successful API responses before navigating, and direct edit-route resolution has explicit loading/unavailable states.
 - Make empty groups useful: explain the next step for members, games, and invitations; failed group loading now has an explicit retry state.
 - Ensure member visibility and private group data follow the backend authorization rules; group-history failures no longer get cached as an empty result and now expose retry.
 - Remove unnecessary reload-all behavior after group mutations where safe.
-- Review invitation and notification feedback, unread/read states, and failure recovery.
+- Review invitation and notification feedback, unread/read states, provider pending/revoked states, and failure recovery.
 - Validate the new 30-day legacy invitation expiry in a real two-account flow, then complete provider/legacy retry behavior and notification copy/read-state validation with real invitation data.
 - Legacy username invitation lookup now excludes soft-deleted accounts; duplicate-invitation behavior and the provider-managed Clerk invitation lifecycle still need real-data validation.
 - Review member cards, avatars, long usernames, and mobile layouts.

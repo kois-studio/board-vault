@@ -88,7 +88,7 @@ compliance:
 
     - id: TEST-001
       status: gap
-      evidence: backend has 44 focused suites and 222 passing tests covering authentication, authorization, validation, sessions, service-level participation invariants, organizer/current-membership enforcement, per-game participation, recommendations, invitation visibility/expiry/atomic acceptance, owner-only legacy invitation creation, soft-deleted account exclusion, verified-user gating, admin route and bounded list-query validation, bounded collection browse and duplicate-review inputs, bounded group names, self-profile response privacy, cache endpoint protection, safe API errors, health/readiness probes, canonical session reads, group acquisition ownership-race protection and owner decisions, and provider boundaries; frontend has 28 browser-based unit tests, four passing public Playwright checks, and five opt-in authenticated journey specs with 13 passing checks and three guarded skips when the owner/recommendation/acquisition fixtures are supplied
+      evidence: backend has 44 focused suites and 227 passing tests covering authentication, authorization, validation, sessions, service-level participation invariants, organizer/current-membership enforcement, per-game participation, recommendations, invitation visibility/expiry/atomic acceptance, owner-only legacy invitation creation, provider invitation listing/revocation boundaries, soft-deleted account exclusion, verified-user gating, admin route and bounded list-query validation, bounded collection browse and duplicate-review inputs, bounded group names, self-profile response privacy, cache endpoint protection, safe API errors, health/readiness probes, canonical session reads, group acquisition ownership-race protection and owner decisions, and provider boundaries; frontend has 30 browser-based unit tests, four passing public Playwright checks, and five opt-in authenticated journey specs with 13 passing checks and three guarded skips when the owner/recommendation/acquisition fixtures are supplied
       priority: high
       next_action: Add layered unit, integration, and journey tests for the flagship loop.
     - id: TEST-002
@@ -113,7 +113,7 @@ compliance:
       next_action: Add repeatable disposable integration/contract coverage for auth, group membership, collection ownership, session transactions, recommendation decisions, and provider failure behavior.
     - id: TEST-006
       status: gap
-      evidence: backend unit command passes 222 focused tests and frontend has 28 browser-based unit tests plus four public Playwright checks; clean installs now pass and the validation workflow now includes repository whitespace, lint/Biome, build, test, and migration gates, while CI enforcement is not yet observed remotely
+      evidence: backend unit command passes 227 focused tests and frontend has 30 browser-based unit tests plus four public Playwright checks; clean installs now pass and the validation workflow now includes repository whitespace, lint/Biome, build, test, and migration gates, while CI enforcement is not yet observed remotely
       priority: high
       next_action: Keep the supported test commands meaningful and observe their first required CI run.
     - id: TEST-007
@@ -441,7 +441,7 @@ compliance:
       next_action: Document when custom SCSS is preferred and remove competing legacy patterns incrementally.
     - id: STYLE-004
       status: compliant
-      evidence: global Tailwind styles use plain CSS, postcss-nested flattens generated utility nesting for Angular, and the production build has no Sass or selector warnings; the 602.11 kB initial raw bundle (138.00 kB estimated transfer) is below the 650 kB warning budget
+      evidence: global Tailwind styles use plain CSS, postcss-nested flattens generated utility nesting for Angular, and the production build has no Sass or selector warnings; the 603.43 kB initial raw bundle (137.99 kB estimated transfer) is below the 650 kB warning budget
       priority: high
       next_action: Preserve the CSS/PostCSS integration and keep the rendered accessibility/responsive review in EQ-006.
     - id: STYLE-005
@@ -457,7 +457,7 @@ compliance:
 
     - id: WEB-001
       status: gap
-      evidence: no repeatable rendered-page accessibility/responsive audit exists; frontend has 28 browser-based unit tests and public Playwright navigation checks, but no systematic authenticated route audit
+      evidence: no repeatable rendered-page accessibility/responsive audit exists; frontend has 30 browser-based unit tests and public Playwright navigation checks, but no systematic authenticated route audit
       priority: high
       next_action: Audit landing, auth, collection, group, and play routes.
     - id: WEB-002
@@ -513,7 +513,7 @@ compliance:
       next_action: Document state lifecycle for auth, DataService, loading, and cache state.
     - id: ANGULAR-008
       status: gap
-      evidence: eleven frontend specs now pass 28 browser-based unit tests, including private collection-boundary and activation guidance, invitation-decline confirmation, schedule handoff/submission, session participant safeguards, group-history attendee summaries, upcoming-session social context labels, recommendation history context, attendee controls, and decision-lens semantics, accessible theme-control labels, self-profile, session lifecycle, acquisition-board and recommendation-lens contracts, admin pagination, notification, and API response-contract cases, but no isolated core workflow tests exist yet
+      evidence: thirteen frontend specs now pass 30 browser-based unit tests, including private collection-boundary and activation guidance, invitation-decline confirmation, pending Clerk invitation contracts, schedule handoff/submission, session participant safeguards, group-history attendee summaries, upcoming-session social context labels, recommendation history context, attendee controls, and decision-lens semantics, accessible theme-control labels, self-profile, session lifecycle, acquisition-board and recommendation-lens contracts, admin pagination, notification, and API response-contract cases, but no isolated core workflow tests exist yet
       priority: high
       next_action: Extract and unit-test recommendation/session/authorization rules.
     - id: ANGULAR-009

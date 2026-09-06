@@ -5,7 +5,12 @@ import { GroupOwnerGuard } from '../../../common/guards/group-owner.guard'
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
 import { UserInGroupGuard } from '../../../common/guards/user-in-group.guard'
 import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
-import { ClerkGroupInvitationDto, CreateClerkGroupInvitationBody } from '../../../common/types/clerk-invitation.type'
+import {
+    ClerkGroupInvitationDto,
+    ClerkInvitationIdParam,
+    ClerkGroupInvitationSummaryDto,
+    CreateClerkGroupInvitationBody,
+} from '../../../common/types/clerk-invitation.type'
 import {
     GroupAcquisitionEntryDto,
     GroupGameInterestBody,
@@ -88,6 +93,26 @@ export class GroupsController {
         @Body() body: CreateClerkGroupInvitationBody,
     ) {
         return this.clerkIdentityService.createGroupInvitation(groupId, request.user.userId, body.emailAddress)
+    }
+
+    @UseGuards(GroupOwnerGuard)
+    @Get('/:groupId/clerk-invitations')
+    @ApiOperation({ summary: 'List pending Clerk invitations for a group (owner only)' })
+    @ApiResponse({ status: 200, type: [ClerkGroupInvitationSummaryDto] })
+    getClerkInvitations(@Param('groupId', ParseIntPipe) groupId: number, @Req() request: { user: { userId: number } }) {
+        return this.clerkIdentityService.getGroupInvitations(groupId, request.user.userId)
+    }
+
+    @UseGuards(GroupOwnerGuard)
+    @Delete('/:groupId/clerk-invitations/:invitationId')
+    @ApiOperation({ summary: 'Revoke a pending Clerk invitation for a group (owner only)' })
+    @ApiResponse({ status: 200, description: 'The Clerk invitation was revoked' })
+    revokeClerkInvitation(
+        @Param('groupId', ParseIntPipe) groupId: number,
+        @Param() params: ClerkInvitationIdParam,
+        @Req() request: { user: { userId: number } },
+    ) {
+        return this.clerkIdentityService.revokeGroupInvitation(groupId, request.user.userId, params.invitationId)
     }
 
     @UseGuards(UserInGroupGuard)

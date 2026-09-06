@@ -3,6 +3,7 @@ import { z } from 'zod'
 import type {
     AdminGamesResultType,
     BrowseGamesResultType,
+    ClerkGroupInvitationSummaryType,
     ClerkGroupInvitationType,
     CollectionActivityWithGameDataType,
     GameCompleteType,
@@ -304,6 +305,15 @@ export const clerkGroupInvitationSchema: z.ZodType<ClerkGroupInvitationType> = z
     emailAddress: z.string().email(),
     url: z.string().url(),
 })
+
+export const clerkGroupInvitationSummarySchema: z.ZodType<ClerkGroupInvitationSummaryType> = z.object({
+    invitationId: z.string().min(1),
+    emailAddress: z.string().email(),
+    status: z.literal('pending'),
+    createdAt: z.string(),
+})
+
+export const clerkGroupInvitationSummariesSchema = z.array(clerkGroupInvitationSummarySchema)
 
 export const userInvitationsSchema: z.ZodType<Array<InvitationWithExtraData>> = z.array(
     z.object({

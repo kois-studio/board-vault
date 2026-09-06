@@ -2922,21 +2922,24 @@ Owner: Codex
 
 Claimed: 2026-09-05
 
-Scope: make recipient-side invitation decline an intentional, explainable action
-across the groups workspace and profile invitation modal.
+Scope: make invitation lifecycle state visible and recoverable across the groups
+workspace and group management route.
 
 Changed: The shared invitation card now explains that acceptance adds the
 recipient to the private group’s shared games and future session plans, uses
 explicit action semantics, and requires a reversible inline confirmation before
-declining. Added component coverage for the confirmation boundary and confirmed
-the existing failure path leaves the invitation available for retry.
+declining. Added owner-only Clerk provider-invitation list and revoke endpoints,
+metadata filtering, response contracts, pending-invite management UI, and an
+explicit loading/unavailable state for direct group-edit navigation. Provider
+ticket URLs are never returned by the list endpoint.
 
-Verified: `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless`
-passes 28 tests; `cd frontend && npx biome check src/app src/styles.css` and
-`cd frontend && npm run build` pass with a 602.11 kB initial raw / 138.00 kB
-estimated-transfer bundle. No migration, production data, provider
-configuration, deployment, or push was performed.
+Verified: Backend full suite passes 44 suites / 227 tests, backend build and
+no-mutation lint pass; frontend full unit suite passes 30 tests, Biome passes,
+and the production build passes at 603.43 kB initial raw / 137.99 kB
+estimated transfer. No migration, production data, provider configuration,
+deployment, or push was performed.
 
 Known follow-ups: Validate pending/accepted/rejected/expired and provider email
 invitation states with real two-person data, including the secondary profile
-modal and mobile/keyboard behavior.
+modal and mobile/keyboard behavior; provider pagination and delivery failures
+remain integration checks.
