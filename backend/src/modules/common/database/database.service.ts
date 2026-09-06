@@ -1313,6 +1313,46 @@ export class DatabaseService implements OnModuleInit {
         }
     }
 
+    async saveGameReviewAndLogActivity(accountId: number, gameId: number, review: number): Promise<{ success: true }> {
+        const transaction = await this.tursoClient.transaction('write')
+
+        try {
+            await transaction.execute({
+                sql: 'DELETE FROM GameReview WHERE accountId = ? AND gameId = ?',
+                args: [accountId, gameId],
+            })
+            await transaction.execute({
+                sql: 'INSERT INTO GameReview (accountId, gameId, review) VALUES (?, ?, ?)',
+                args: [accountId, gameId, review],
+            })
+            await transaction.execute({
+                sql: 'INSERT INTO CollectionActivity (accountId, gameId, actionType, actionDetails) VALUES (?, ?, ?, ?)',
+                args: [accountId, gameId, 'rated', JSON.stringify({ rating: review })],
+            })
+            await transaction.execute({
+                sql: `
+                    DELETE FROM CollectionActivity
+                    WHERE accountId = ?
+                      AND id NOT IN (
+                          SELECT id FROM CollectionActivity
+                          WHERE accountId = ?
+                          ORDER BY id DESC
+                          LIMIT 32
+                      )
+                `,
+                args: [accountId, accountId],
+            })
+
+            await transaction.commit()
+            return { success: true }
+        } catch (error) {
+            await transaction.rollback()
+            throw error
+        } finally {
+            transaction.close()
+        }
+    }
+
     updateGameOwned(accountId: number, gameId: number, ownedGameDto: UpdateGameOwnedDto) {
         const fields = []
         const args = []
