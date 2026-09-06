@@ -96,6 +96,23 @@ navigate that third-party URL; no production identity or account was touched.
 Do not use that tooling limitation as a reason to expand catalog/detail or
 standalone analytics work.
 
+### Tech-lead reassessment — after social-loop safety slices — 2026-09-06
+
+The local history and session-detail passes removed two misleading paths from
+the flagship loop: stale/private group filters now recover to the current
+groups workspace, and session detail prevents impossible attendee removals
+before they reach the API. The frontend unit suite is green at 46 tests and
+the production build remains under its warning budget.
+
+The remaining P0/P1 work is evidence and ownership rather than another broad
+surface redesign: authenticated two-account acceptance, provider delivery and
+failure paths, live migration/backup/rollback ownership, Clerk cutover and
+recovery, the remote CI rerun after the local install repair, and the rendered
+accessibility review with real group data. The collaborative preview is still
+not providing inspectable snapshots, and the documented CLI workflow now
+extracts/revokes development actor sessions safely. Catalog breadth, public
+discovery, and standalone analytics remain deferred.
+
 ## Critical — unblock safe feature development
 
 ### READINESS-001 [Critical] SEC-003/SEC-008 — Complete object-level authorization audit

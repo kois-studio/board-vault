@@ -93,26 +93,36 @@ development instance so no personal password or MFA code is needed:
 ```shell
 clerk whoami
 clerk users list --instance dev
-clerk impersonate <development-user-id> --instance dev --print --yes
+impersonation_json="$(clerk impersonate <development-user-id> --instance dev --print --yes)"
+impersonation_url="$(printf '%s' "$impersonation_json" | jq -r '.url')"
+actor_token_id="$(printf '%s' "$impersonation_json" | jq -r '.id')"
 ```
 
-The last command prints a temporary sign-in URL. Open that URL with Playwright
-Codegen, complete the redirect to the local app, and close the browser to save
-the storage state:
+The CLI returns JSON containing a temporary sign-in URL and an actor-session ID;
+extract the URL without printing the JSON or token to logs. Open that URL with
+Playwright Codegen, complete the redirect to the local app, and close the
+browser to save the storage state:
 
 ```shell
 cd frontend
 npx playwright codegen \
   --save-storage=/tmp/board-vault-clerk-owner.json \
-  '<paste-the-impersonation-url-here>'
+  "$impersonation_url"
+```
+
+After the local browser state is saved, revoke the temporary actor session:
+
+```shell
+clerk impersonate revoke "$actor_token_id" --instance dev
 ```
 
 If the development Clerk instance has no application home URL configured, the
 first redirect may land on Clerk's development account page instead of the
-local app. In that case, add a URL-encoded `redirect_url` query parameter to
-the printed URL before opening it, for example
+local app. In that case, append a URL-encoded `redirect_url` query parameter to
+`$impersonation_url` before opening it, for example
 `redirect_url=http%3A%2F%2Flocalhost%3A4300%2F`. Keep the temporary URL private;
-it contains a short-lived actor token.
+it contains a short-lived actor token. If the CLI/browser flow fails, revoke
+`$actor_token_id` even when no storage state was produced.
 
 Use a dedicated development/test user. Never run impersonation with a
 production instance, and never use a production user for local mutation tests.
