@@ -1,5 +1,5 @@
 import { ApiProperty, OmitType } from '@nestjs/swagger'
-import { IsNumber, IsString } from 'class-validator'
+import { IsNumber, IsString, MaxLength } from 'class-validator'
 
 /**
  * Tag with its category
@@ -11,6 +11,7 @@ export class TagDto {
 
     @ApiProperty({ example: 'Tag Name' })
     @IsString()
+    @MaxLength(100)
     name: string
 
     @ApiProperty({ example: 1 })

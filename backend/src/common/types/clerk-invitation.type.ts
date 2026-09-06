@@ -25,6 +25,7 @@ export class CreateClerkGroupInvitationBody {
     @IsEmail()
     @IsNotEmpty()
     @IsString()
+    @MaxLength(320)
     emailAddress: string
 }
 

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsIn, IsInt, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator'
+import { IsIn, IsInt, IsNotEmpty, IsOptional, IsString, MaxLength, Min } from 'class-validator'
 
 import { UserPublicDto } from './user.type'
 
@@ -107,6 +107,7 @@ export class CreateGameProposalBody {
     @ApiProperty({ example: 'Catan', description: 'Game title' })
     @IsString()
     @IsNotEmpty()
+    @MaxLength(200)
     title: string
 
     @ApiProperty({
@@ -116,6 +117,7 @@ export class CreateGameProposalBody {
     })
     @IsOptional()
     @IsString()
+    @MaxLength(2048)
     imageUrl?: string
 
     @ApiProperty({
@@ -155,6 +157,7 @@ export class CreateGameProposalBody {
     })
     @IsOptional()
     @IsString()
+    @MaxLength(1000)
     proposedTags?: string
 
     @ApiProperty({
@@ -164,6 +167,7 @@ export class CreateGameProposalBody {
     })
     @IsOptional()
     @IsString()
+    @MaxLength(2000)
     notes?: string
 }
 
@@ -188,6 +192,7 @@ export class UpdateGameProposalBody {
     })
     @IsOptional()
     @IsString()
+    @MaxLength(2000)
     reviewNotes?: string
 
     @ApiProperty({

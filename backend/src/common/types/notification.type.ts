@@ -1,5 +1,5 @@
 import { ApiProperty, OmitType, PartialType, PickType } from '@nestjs/swagger'
-import { IsBoolean, IsInt, IsNotEmpty, IsObject, IsString, Min } from 'class-validator'
+import { IsBoolean, IsInt, IsNotEmpty, IsObject, IsString, MaxLength, Min } from 'class-validator'
 
 import { NotificationDataMap, NotificationTypeEnum } from '../../modules/core/notifications/notifications-enum.type'
 
@@ -18,11 +18,13 @@ export class NotificationDto {
     @ApiProperty({ example: 'expelled' })
     @IsString()
     @IsNotEmpty()
+    @MaxLength(100)
     type: string
 
     @ApiProperty({ example: 'message' })
     @IsString()
     @IsNotEmpty()
+    @MaxLength(1000)
     message: string
 
     @ApiProperty({ example: '{}' })
