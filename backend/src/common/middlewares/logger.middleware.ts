@@ -17,7 +17,7 @@ export class LoggerMiddleware implements NestMiddleware {
 
         req.requestId = requestId
         res.setHeader('X-Request-Id', requestId)
-        const path = req.path || req.originalUrl.split('?')[0]
+        const path = req.originalUrl.split('?')[0] || req.url.split('?')[0]
 
         this.LOGGER.log(
             structuredLog('http.request.started', {
