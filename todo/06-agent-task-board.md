@@ -3326,9 +3326,19 @@ Owner: Codex
 
 Claimed: 2026-09-06
 
-Changed: Removed the unused Angular API/DataService methods and response types/schemas for deprecated per-row attendee and played-game mutations. The current client now exposes only the canonical session attendee/shortlist/played-game writes; backend compatibility routes remain documented and guarded for older clients.
+Scope: make the remaining server-side Meet compatibility routes visibly deprecated in the generated API contract.
 
-Verified: Frontend Biome passes, all 36 browser unit tests pass, and the production build passes at 606.76 kB initial raw / 138.39 kB estimated transfer. No deployment or push was performed.
+Acceptance: old meet detail and per-row attendee/played-game routes remain available for migration compatibility, but Swagger marks them deprecated and their source documentation points new work to canonical session routes.
+
+Continuation claim: API-002 / PROD-003
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Changed: Marked legacy meet detail and per-row attendee/played-game operations as deprecated in their Nest Swagger metadata and updated the API contract documentation to direct new work to canonical session routes.
+
+Verified: Backend test suite passes 46 suites / 234 tests, backend build and no-mutation ESLint pass, and no deployment or push was performed.
 
 Scope: make direct group-creation navigation truthful while the authenticated account profile is still settling.
 
@@ -3442,6 +3452,10 @@ Owner: Codex
 
 Claimed: 2026-09-06
 
+Changed: Removed the unused Angular API/DataService methods and response types/schemas for deprecated per-row attendee and played-game mutations. The current client now exposes only the canonical session attendee/shortlist/played-game writes; backend compatibility routes remain documented and guarded for older clients.
+
+Verified: Frontend Biome passes, all 36 browser unit tests pass, and the production build passes at 606.76 kB initial raw / 138.39 kB estimated transfer. No deployment or push was performed.
+
 Scope: protect the public landing page’s social product promise with a responsive rendered regression.
 
 Acceptance: the landing page must remain usable at mobile and desktop widths, expose the private-beta invitation CTA truthfully, and retain explicit group-decision/memory positioning without drifting toward a public game encyclopedia.
@@ -3452,6 +3466,10 @@ Owner: Codex
 
 Claimed: 2026-09-06
 
+Changed: Added a public Playwright regression at 375px and 1280px that checks no horizontal overflow, truthful self-registration/private-beta copy and CTA behavior, and explicit positioning against a public game encyclopedia.
+
+Verified: `PLAYWRIGHT_BASE_URL=http://127.0.0.1:4300 npx playwright test e2e/public-navigation.spec.ts` passes all 5 public tests. No deployment or push was performed.
+
 Scope: close the history-to-decision handoff gap in the shared-memory surface.
 
 Acceptance: when viewing a specific group’s completed history, members can move directly from the shared memory summary to that group’s recommendation decision flow without leaving the group context; cover the handoff in the two-account journey.
@@ -3461,3 +3479,7 @@ Continuation claim: PROD-003 / EQ-006
 Owner: Codex
 
 Claimed: 2026-09-06
+
+Changed: Added a group-filtered history CTA that opens the recommendation flow with the current group ID, and added component plus opt-in two-account journey assertions for the handoff.
+
+Verified: The history component regression passes; frontend Biome, full 36-test unit suite, and production build pass. The authenticated two-account assertion remains opt-in and needs fresh Clerk storage state when the disposable session is rerun. No deployment or push was performed.

@@ -16,7 +16,7 @@ export class MeetAttendeesController {
     constructor(private readonly meetAttendeesService: MeetAttendeesService) {}
 
     @Post(':meetId/:accountId')
-    @ApiOperation({ summary: 'Add a group member to a meeting' })
+    @ApiOperation({ summary: 'Add a group member to a legacy meet compatibility record', deprecated: true })
     @ApiResponse({ status: 200, type: MeetAttendeeDto })
     @ApiResponse({ status: 403, description: 'Only the meeting creator may manage attendees.' })
     createMeetAttendee(
@@ -28,7 +28,7 @@ export class MeetAttendeesController {
     }
 
     @Delete(':meetId/:accountId')
-    @ApiOperation({ summary: 'Remove a group member from a meeting' })
+    @ApiOperation({ summary: 'Remove a group member from a legacy meet compatibility record', deprecated: true })
     @ApiResponse({ status: 200, type: SuccessDto })
     @ApiResponse({ status: 403, description: 'Only the meeting creator may manage attendees.' })
     deleteMeetAttendee(
