@@ -2970,3 +2970,25 @@ provider configuration, deployment, or push was changed.
 Known follow-ups: Complete the remaining DTO decorator inventory and client
 negative-response tests; validate provider failures and real-group usefulness
 before treating the core loop as launch-ready.
+
+Continuation claim: TS-005 / ANGULAR-006 / EQ-003
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Scope: extend negative client response-contract evidence beyond the original
+authentication boundary.
+
+Changed: Added Angular API contract tests that reject non-pending provider
+invitation summaries and false success envelopes from recommendation feedback.
+The current client negative matrix now covers malformed auth/profile/session/
+recommendation/admin/notification/provider-invitation responses and mutation
+success contracts.
+
+Verified: Frontend unit suite passes 32 browser-based tests and the affected
+API spec passes Biome with no fixes. No backend, database, provider, deployment,
+or production state changed.
+
+Known follow-ups: Cover the remaining legacy response shapes and connect the
+contract matrix to broader authenticated/authorized integration journeys.

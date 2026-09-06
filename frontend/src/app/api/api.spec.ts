@@ -159,6 +159,15 @@ describe('Api response contracts', () => {
         await expectAsync(response).toBeResolvedTo({ success: true })
     })
 
+    it('rejects a provider invitation with a non-pending status', async () => {
+        const response = firstValueFrom(api.getClerkGroupInvitations(7))
+        const request = http.expectOne(`${environment.apiUrl}/groups/7/clerk-invitations`)
+
+        request.flush([{ invitationId: 'invitation_123', emailAddress: 'friend@example.com', status: 'revoked', createdAt: '2026-09-05' }])
+
+        await expectAsync(response).toBeRejected()
+    })
+
     it('rejects malformed recommendation lens responses at the API boundary', async () => {
         const response = firstValueFrom(api.getRecommendations({ groupId: 7, attendeeIds: [1], decisionLens: 'fresh' }))
         const request = http.expectOne(`${environment.apiUrl}/play/recommendations`)
@@ -181,6 +190,17 @@ describe('Api response contracts', () => {
         const request = http.expectOne(`${environment.apiUrl}/sessions/12/status`)
 
         request.flush({ sessionId: 12, status: 'archived' })
+
+        await expectAsync(response).toBeRejected()
+    })
+
+    it('rejects a false success envelope before it reaches app state', async () => {
+        const response = firstValueFrom(
+            api.createRecommendationFeedback({ groupId: 7, gameId: 42, attendeeIds: [1], feedback: 'interested' }),
+        )
+        const request = http.expectOne(`${environment.apiUrl}/play/recommendations/feedback`)
+
+        request.flush({ success: false })
 
         await expectAsync(response).toBeRejected()
     })
