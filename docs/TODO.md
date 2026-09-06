@@ -124,7 +124,7 @@ flagship loop, followed by rendered route review with real group data.
 
 - **Status:** In progress
 - **Affected area:** `backend/test/`, backend `src`, frontend `src/**/*.spec.ts`
-- **Evidence:** Backend now has 46 focused suites and 237 passing unit tests plus 2 environment-safe HTTP E2E tests; frontend has 41 browser-based unit tests plus five passing public Playwright tests, while seeded/integration journeys and authenticated browser coverage remain opt-in. The opt-in authenticated collection, invitation, session, recommendation, and acquisition-decision journeys pass against disposable Clerk development identities and data; a disposable provider-invitation rehearsal also proves create/list/revoke/removal; the full local Playwright run passes 13 tests with 3 guarded skips when the owner/recommendation/acquisition fixtures are supplied.
+- **Evidence:** Backend now has 46 focused suites and 237 passing unit tests plus 2 environment-safe HTTP E2E tests; frontend has 43 browser-based unit tests plus five passing public Playwright tests, while seeded/integration journeys and authenticated browser coverage remain opt-in. The opt-in authenticated collection, invitation, session, recommendation, and acquisition-decision journeys pass against disposable Clerk development identities and data; a disposable provider-invitation rehearsal also proves create/list/revoke/removal; the full local Playwright run passes 13 tests with 3 guarded skips when the owner/recommendation/acquisition fixtures are supplied.
 - **Risk:** Security and product regressions are invisible.
 - **Next action:** Add negative authorization/contract cases, repeatable disposable fixture setup, and provider/remote integration evidence; preserve the existing authenticated core-loop journeys as launch regression gates.
 - **Dependencies:** READINESS-001, READINESS-002, READINESS-003.
@@ -251,6 +251,10 @@ as TODO items here.
   The groups index now presents each group as a social workspace entry with
   explicit decision, planning, history, and invitation actions rather than a
   single dense clickable card; rendered group-index review remains open.
+  A genuinely empty one-person group now receives a focused invite → add games
+  → plan first night handoff before the longer workspace sections, with
+  owner/member-appropriate actions; established groups keep the full social
+  workspace.
 
 ## Collection and group activation
 

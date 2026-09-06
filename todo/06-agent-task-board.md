@@ -2950,6 +2950,10 @@ Owner: Codex
 
 Claimed: 2026-09-06
 
+Changed: Added a zero-context group activation panel that appears only for a one-person group with no games, history, or upcoming session. It stages the first three social actions—invite the people, add useful games, and plan the first night—with owner/member-appropriate copy and direct actions, while established groups keep the complete workspace.
+
+Verified: `cd frontend && npx biome check src/app/pages/group-view/group-view.component.ts src/app/pages/group-view/group-view.component.spec.ts src/app/pages/group-view/group-view.component.html`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (43 passing), `cd frontend && npm run build` (605.70 kB initial raw / 138.25 kB estimated transfer), and `git diff --check` pass. Rendered empty-group validation remains open. No deployment or push was performed.
+
 Changed: Audited backend service logging and removed raw schema/provider exception objects plus user-entered group, game, tag, username, and search values from the corrected operational messages. Email failures now emit only a safe error class and no longer double-log provider failures; existing database, cache, auth, and HTTP logging boundaries remain intact.
 
 Verified: Backend tests pass 46 suites / 234 tests, backend build and no-mutation ESLint pass, the email-log regression confirms no raw provider object or recipient value crosses the logger, and `git diff --check` passes. No deployment or push was performed. Stable provider/domain diagnostic codes, numeric-identifier policy, and broader remote observability remain open.
@@ -3581,3 +3585,13 @@ Claimed: 2026-09-06
 Changed: Added a group-first decision panel to the Play hub, showing up to three shared groups with honest member/game context and direct Decide/Plan session actions. The recommendation card now routes to groups rather than implying a global recommendation feed, while future planning and past-session recording remain separate entry points; the no-group state explains how to create or join the social space.
 
 Verified: `cd frontend && npx biome check src/app`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (41 passing), `cd frontend && npm run build` (605.58 kB initial raw / 138.28 kB estimated transfer), and `git diff --check` pass. Rendered Play-hub and real-group validation remain open. No deployment or push was performed.
+
+Scope: make the first group workspace useful immediately after creation instead of presenting a long collection of empty sections.
+
+Acceptance: a genuinely empty one-person group must receive a clear invite → add games → plan first night handoff, with owner/member-appropriate actions, while established groups keep the full social workspace and no catalog or analytics surface is added.
+
+Continuation claim: PROD-003 / EQ-006
+
+Owner: Codex
+
+Claimed: 2026-09-06
