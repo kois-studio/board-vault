@@ -29,7 +29,6 @@ export class GameTagsService {
 
         if (!result.success) {
             this.LOGGER.error('Failed to parse GameTags from database')
-            this.LOGGER.error(result.error)
             return []
         }
 

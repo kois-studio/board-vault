@@ -1,6 +1,7 @@
 import { ResultSet } from '@libsql/client/.'
 import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 
+import { safeErrorName } from '../../../common/logging/structured-log'
 import { gameReviewsSchema } from '../../../common/schemas/db-game-review.schema'
 import { GameReviewDto } from '../../../common/types/game-review.type'
 import { CacheService } from '../../common/cache/cache.service'
@@ -32,7 +33,6 @@ export class ReviewsService {
 
         if (!result.success) {
             this.LOGGER.error('Failed to parse reviews from database')
-            this.LOGGER.error(result.error)
             return []
         }
 
@@ -63,7 +63,7 @@ export class ReviewsService {
         try {
             return await this.getGameReviewsById(accountId, gameId)
         } catch (error) {
-            this.LOGGER.error(`Failed to get review with accountId ${accountId} and gameId ${gameId}`, error)
+            this.LOGGER.error(`Failed to get review with accountId ${accountId} and gameId ${gameId} (${safeErrorName(error)})`)
             return null
         }
     }
@@ -101,7 +101,7 @@ export class ReviewsService {
 
             return { success: true }
         } catch (error) {
-            this.LOGGER.error('Review save failed', error)
+            this.LOGGER.error(`Review save failed (${safeErrorName(error)})`)
             throw new BadRequestException('Review save failed')
         }
     }

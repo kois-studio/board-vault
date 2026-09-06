@@ -2950,6 +2950,10 @@ Owner: Codex
 
 Claimed: 2026-09-06
 
+Changed: Audited backend service logging and removed raw schema/provider exception objects plus user-entered group, game, tag, username, and search values from the corrected operational messages. Email failures now emit only a safe error class and no longer double-log provider failures; existing database, cache, auth, and HTTP logging boundaries remain intact.
+
+Verified: Backend tests pass 46 suites / 234 tests, backend build and no-mutation ESLint pass, the email-log regression confirms no raw provider object or recipient value crosses the logger, and `git diff --check` passes. No deployment or push was performed. Stable provider/domain diagnostic codes, numeric-identifier policy, and broader remote observability remain open.
+
 Scope: close the remaining legacy played-game authorization gap found during the social session boundary audit.
 
 Acceptance: the deprecated per-account played-game create path must derive the actor from the verified identity, require membership in the session group, and reject game IDs that are not owned by any current group member. Preserve deletion of existing historical links so old data remains removable.
@@ -3483,3 +3487,13 @@ Claimed: 2026-09-06
 Changed: Added a group-filtered history CTA that opens the recommendation flow with the current group ID, and added component plus opt-in two-account journey assertions for the handoff.
 
 Verified: The history component regression passes; frontend Biome, full 36-test unit suite, and production build pass. The authenticated two-account assertion remains opt-in and needs fresh Clerk storage state when the disposable session is rerun. No deployment or push was performed.
+
+Scope: audit remaining service logs for identifiers, provider payloads, and exception details that should not cross the operational log boundary.
+
+Acceptance: retain actionable allow-listed events and correlation context while preventing emails, usernames, Clerk identifiers, recipient addresses, cache keys/payloads, SQL parameters, tokens, and provider exception details from being emitted; add focused regressions for any newly corrected service.
+
+Continuation claim: SEC-006 / OPS-007
+
+Owner: Codex
+
+Claimed: 2026-09-06

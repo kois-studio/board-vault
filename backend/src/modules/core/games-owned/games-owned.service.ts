@@ -29,7 +29,6 @@ export class GamesOwnedService {
 
         if (!result.success) {
             this.LOGGER.error('Failed to parse OwnedGames from database')
-            this.LOGGER.error(result.error)
             return []
         }
 
@@ -86,8 +85,8 @@ export class GamesOwnedService {
             await this.databaseService.createOwnedGame(ownedGameDto)
 
             return { success: true }
-        } catch (error) {
-            this.LOGGER.error('Failed to create ownedGame', error)
+        } catch {
+            this.LOGGER.error('Failed to create ownedGame')
             throw new HttpException(
                 `OwnedGame with accountId ${ownedGameDto.accountId} and gameId ${ownedGameDto.gameId} already exists`,
                 HttpStatus.CONFLICT,

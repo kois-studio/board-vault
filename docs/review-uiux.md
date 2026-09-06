@@ -18,8 +18,15 @@ History is a core product surface, not a future analytics dashboard. Its first
 job is to help a group remember what happened and decide what to do next. The
 completed local slice prioritized group/date/attendee/game context, useful
 summary signals, group filtering, honest empty states, and a direct return to
-planning. Advanced metrics remain deferred until real groups create enough
-history to justify them.
+planning. A group-filtered history view now also carries the current group into
+recommendations, preserving the social decision context. Advanced metrics remain
+deferred until real groups create enough history to justify them.
+
+The public landing now has a rendered regression at mobile and desktop widths
+for the private-beta/self-registration copy and the explicit “group decision
+and memory, not public encyclopedia” positioning. Group creation remains a
+focused route because it is an onboarding handoff; its direct workspace
+navigation is the intended next step, not a modal conversion.
 
 ## Tech-lead reassessment — after local UX slices
 

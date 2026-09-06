@@ -1,5 +1,6 @@
 import { Injectable, CanActivate, ExecutionContext, ForbiddenException, Logger } from '@nestjs/common'
 
+import { safeErrorName } from '../../common/logging/structured-log'
 import { GroupMembershipsService } from '../../modules/core/group-memberships/group-memberships.service'
 
 @Injectable()
@@ -30,7 +31,7 @@ export class UserInGroupGuard implements CanActivate {
 
             return true // User is in the group
         } catch (error) {
-            this.LOGGER.error(`Error checking group membership: ${error.message}`)
+            this.LOGGER.error(`Error checking group membership (${safeErrorName(error)})`)
             throw new ForbiddenException('Error verifying group membership')
         }
     }

@@ -209,10 +209,10 @@ compliance:
       priority: high
       next_action: Classify data and document storage, retention, deletion, and provider responsibilities.
     - id: SEC-006
-      status: gap
-      evidence: DatabaseService excludes bound values from SQL logs, EmailService excludes recipient addresses, CacheService excludes keys/payloads, auth/user-service logs exclude identity values, and HTTP middleware emits correlated structured start/complete events without query strings or authorization values; repository-wide service-log allow-list coverage and provider error mapping remain open
+      status: partial
+      evidence: DatabaseService excludes bound values from SQL logs, EmailService excludes recipient addresses and raw provider errors, CacheService excludes keys/payloads, auth/user-service logs exclude identity values, audited domain services exclude raw schema errors and user-entered free text, and HTTP middleware emits correlated structured start/complete events without query strings or authorization values; stable provider/domain diagnostic codes and a deliberate numeric-identifier allow-list remain open
       priority: critical
-      next_action: Migrate remaining service logs to safe allow-listed events and add provider failure/cause mapping with representative redaction tests.
+      next_action: Define stable provider/domain diagnostic codes and extend representative redaction tests to the remaining provider boundaries.
     - id: SEC-007
       status: gap
       evidence: production/provider permissions and database roles are not documented or reviewable here
@@ -333,9 +333,9 @@ compliance:
       next_action: Verify graceful shutdown and resource release.
     - id: OPS-007
       status: partial
-      evidence: request middleware emits structured start/complete events with server-generated request IDs, method/path/status/duration fields, and no query strings or authorization values; remaining service logs still need an allow-list sweep and provider-specific error mapping
+      evidence: request middleware emits structured start/complete events with server-generated request IDs, method/path/status/duration fields, and no query strings or authorization values; audited service logs now remove raw exceptions and free-text inputs, while provider-specific diagnostic mapping remains open
       priority: high
-      next_action: Migrate remaining service logs to safe events and document provider failure correlation.
+      next_action: Document provider failure correlation and stable diagnostic codes.
     - id: OPS-008
       status: gap
       evidence: no metrics, tracing, alerting, or error monitoring configuration found
@@ -574,9 +574,9 @@ compliance:
       next_action: Complete the DTO decorator inventory and add negative tests for remaining client/legacy boundaries.
     - id: NEST-005
       status: gap
-      evidence: ApiErrorFilter and request middleware now share a correlated request ID and structured HTTP events, but no repository-wide service logging contract or provider/domain error mapper exists
+      evidence: ApiErrorFilter and request middleware now share a correlated request ID and structured HTTP events; a safe-error helper and audited service-log redaction are in place, but no stable provider/domain error mapper exists
       priority: high
-      next_action: Complete the service-log allow-list/redaction sweep and align provider/domain errors with stable diagnostic codes.
+      next_action: Align provider/domain errors with stable diagnostic codes and finish the numeric-identifier policy.
     - id: NEST-006
       status: partial
       evidence: modules have clear names and providers; module README/index coverage is inconsistent

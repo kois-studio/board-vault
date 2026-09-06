@@ -25,7 +25,6 @@ export class TagCategoryService {
 
         if (!result.success) {
             this.LOGGER.error('Failed to parse TagCategories from database')
-            this.LOGGER.error(result.error)
             return []
         }
 
@@ -49,7 +48,7 @@ export class TagCategoryService {
     }
 
     async createTagCategory(name: string): Promise<TagCategoryDto> {
-        this.LOGGER.log(`Creating tag category: ${name}`)
+        this.LOGGER.log('Creating tag category')
 
         const resultSet = await this.databaseService.createTagCategory(name)
         const categoryId = Number(resultSet.lastInsertRowid)
@@ -58,7 +57,7 @@ export class TagCategoryService {
     }
 
     async updateTagCategory(id: number, name: string): Promise<TagCategoryDto> {
-        this.LOGGER.log(`Updating tag category ${id} to: ${name}`)
+        this.LOGGER.log(`Updating tag category ${id}`)
 
         await this.databaseService.updateTagCategory(id, name)
 

@@ -69,6 +69,17 @@ redaction, provider-error mapping, Turso recovery ownership, Clerk cutover,
 and real-group acceptance remain explicit release gates. Catalog breadth,
 public discovery, and standalone analytics remain deferred.
 
+### Tech-lead reassessment — after service-log redaction slice — 2026-09-06
+
+The service-log audit now removes raw Zod/provider errors and user-entered
+group names, game titles, usernames, tag names, and search terms from the
+audited backend paths. The operational log boundary is materially safer, but
+the release gate is not closed: provider/domain failures still need stable
+diagnostic codes, the remaining numeric identifier policy needs a deliberate
+allow-list, and real deployment observability/recovery ownership is still
+unverified. The next product-facing priority remains the clean two-person
+flagship loop, followed by rendered route review with real group data.
+
 ## Critical — unblock safe feature development
 
 ### READINESS-001 [Critical] SEC-003/SEC-008 — Complete object-level authorization audit
@@ -140,9 +151,9 @@ public discovery, and standalone analytics remain deferred.
 
 - **Status:** In progress
 - **Affected area:** `DatabaseService`, auth/email/cache services, logger middleware
-- **Evidence:** HTTP logging now emits structured request-start/request-complete events with a server-generated correlation ID, `X-Request-Id`, method/path/status/duration fields, and no query string or authorization value; the real request path is preserved through `originalUrl` rather than Express’s router-relative `path`. `ApiErrorFilter` reuses that ID for unexpected failures. Focused middleware/filter regressions and the full backend gate pass. Existing database/email/cache/auth improvements remain in place, but a repository-wide allow-listed service-log sweep and provider-specific error mapping remain open.
+- **Evidence:** HTTP logging now emits structured request-start/request-complete events with a server-generated correlation ID, `X-Request-Id`, method/path/status/duration fields, and no query string or authorization value; the real request path is preserved through `originalUrl` rather than Express’s router-relative `path`. `ApiErrorFilter` reuses that ID for unexpected failures. Focused middleware/filter regressions and the full backend gate pass. The service-log slice also removes raw schema/provider exceptions from audited services, keeps email failures to a safe error class, and removes user-entered group, game, tag, username, and search values from operational messages. Stable provider/domain diagnostic codes and the remaining numeric-identifier policy remain open.
 - **Risk:** Secret/PII exposure and poor incident diagnosis.
-- **Next action:** Migrate remaining service logs to the safe allow-listed event format, add provider failure/cause mapping, and extend redaction regressions to representative domain failures.
+- **Next action:** Define stable provider/domain diagnostic codes, decide the allow-list for numeric identifiers, and extend redaction regressions to the remaining provider and domain boundaries.
 - **Dependencies:** Security owner and observability decision.
 
 ### READINESS-009 [High] API-001/003/004/007/NEST-016 — Stabilize API contracts
