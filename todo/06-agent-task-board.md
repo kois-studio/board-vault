@@ -3335,3 +3335,15 @@ Continuation claim: AUTH-001 / EQ-006
 Owner: Codex
 
 Claimed: 2026-09-06
+
+Scope: rerun and harden the two-account flagship social journey after the route-readiness change.
+
+Changed: Refreshed the disposable owner Clerk storage state, seeded a fresh local scheduled session, and corrected the final history assertion to scope group/game/memory checks to the visible history article instead of a hidden group-filter option.
+
+Verified: `social-session-flow.spec.ts` passes RSVP, refresh, owner lifecycle, attendance, per-game participant editing, retryable detail loading, completion, feedback, and visible history-card verification in 5.3 seconds. No production data, deployment, or push was touched.
+
+Continuation claim: PROD-003 / TEST-002
+
+Owner: Codex
+
+Claimed: 2026-09-06

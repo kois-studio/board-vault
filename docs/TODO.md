@@ -277,7 +277,8 @@ as TODO items here.
 - [ ] Validate the complete session flow through authenticated browser coverage,
   including refresh, retryable failures, RSVP, attendance, per-game
   participants, active-to-completed lifecycle, and feedback. A fresh,
-  repeatable two-account fixture now passes all of these behaviors; real-group
+  repeatable two-account fixture now passes all of these behaviors, including
+  visible history-card assertions after the route-readiness fix; real-group
   usefulness remains part of the separate two-person acceptance rehearsal.
 - [ ] Remove or hide incomplete compatibility flows once the canonical session
   journey replaces them.
