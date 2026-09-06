@@ -767,48 +767,12 @@ export class DataService {
         this._getUserHistory(currentUser.id)
     }
 
-    public createMeetAttendee(meetId: number, accountId: number) {
-        return this.api.createMeetAttendee(meetId, accountId).pipe(
-            catchError((error) => {
-                this.toastService.error(error.status === 404 ? 'Meet attendee not found' : 'Could not save the attendee change')
-                return throwError(() => error)
-            }),
-        )
-    }
-
-    public deleteMeetAttendee(meetId: number, accountId: number) {
-        return this.api.deleteMeetAttendee(meetId, accountId).pipe(
-            catchError((error) => {
-                this.toastService.error(error.status === 404 ? 'Meet attendee not found' : 'Could not save the attendee change')
-                return throwError(() => error)
-            }),
-        )
-    }
-
     public updateSessionAttendees(meetId: number, attendeeIds: Array<number>) {
         return this.api.updateSessionAttendees(meetId, { attendeeIds }).pipe(
             catchError((error) => {
                 this.toastService.error(
                     error.status === 400 ? 'A session must have at least one group member' : 'Could not save the attendee changes',
                 )
-                return throwError(() => error)
-            }),
-        )
-    }
-
-    public createMeetAccountGame(accountId: number, meetId: number, gameId: number) {
-        return this.api.createMeetAccountGame(accountId, meetId, gameId).pipe(
-            catchError((error) => {
-                this.toastService.error(error.status === 404 ? 'Meet game not found' : 'Could not save the played-game change')
-                return throwError(() => error)
-            }),
-        )
-    }
-
-    public deleteMeetAccountGame(accountId: number, meetId: number, gameId: number) {
-        return this.api.deleteMeetAccountGame(accountId, meetId, gameId).pipe(
-            catchError((error) => {
-                this.toastService.error(error.status === 404 ? 'Meet game not found' : 'Could not save the played-game change')
                 return throwError(() => error)
             }),
         )
