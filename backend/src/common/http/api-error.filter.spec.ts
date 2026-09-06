@@ -1,5 +1,6 @@
 import { BadRequestException, HttpStatus } from '@nestjs/common'
 
+import { API_ERROR_CODES, BoardVaultHttpException } from './api-error'
 import { ApiErrorFilter } from './api-error.filter'
 
 function createHost(exception: unknown) {
@@ -51,5 +52,51 @@ describe('ApiErrorFilter', () => {
             requestId: expect.any(String),
         })
         expect(JSON.stringify(response.json.mock.calls[0][0])).not.toContain('TURSO_AUTH_TOKEN')
+    })
+
+    it('preserves a stable allow-listed domain code', () => {
+        const filter = new ApiErrorFilter()
+        const { host, response } = createHost(
+            new BoardVaultHttpException(API_ERROR_CODES.PRIVATE_BETA_REGISTRATION_CLOSED, HttpStatus.FORBIDDEN, 'Registration is closed'),
+        )
+
+        filter.catch(
+            new BoardVaultHttpException(API_ERROR_CODES.PRIVATE_BETA_REGISTRATION_CLOSED, HttpStatus.FORBIDDEN, 'Registration is closed'),
+            host as never,
+        )
+
+        expect(response.json).toHaveBeenCalledWith({
+            statusCode: 403,
+            code: 'PRIVATE_BETA_REGISTRATION_CLOSED',
+            message: 'Registration is closed',
+            requestId: expect.any(String),
+        })
+    })
+
+    it('keeps provider failures safe and diagnosable', () => {
+        const filter = new ApiErrorFilter()
+        const { host, response } = createHost(
+            new BoardVaultHttpException(
+                API_ERROR_CODES.CLERK_PROVIDER_UNAVAILABLE,
+                HttpStatus.BAD_GATEWAY,
+                'The invitation provider is temporarily unavailable',
+            ),
+        )
+
+        filter.catch(
+            new BoardVaultHttpException(
+                API_ERROR_CODES.CLERK_PROVIDER_UNAVAILABLE,
+                HttpStatus.BAD_GATEWAY,
+                'The invitation provider is temporarily unavailable',
+            ),
+            host as never,
+        )
+
+        expect(response.json).toHaveBeenCalledWith({
+            statusCode: 502,
+            code: 'CLERK_PROVIDER_UNAVAILABLE',
+            message: 'The invitation provider is temporarily unavailable',
+            requestId: expect.any(String),
+        })
     })
 })
