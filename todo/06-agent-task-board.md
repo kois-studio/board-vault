@@ -3026,6 +3026,20 @@ Changed: Upcoming sessions now starts with a group-first planning handoff, uses 
 
 Verified: Frontend production build, Biome, 32 browser unit tests, and the four-test public Playwright suite pass. No production data, deployment, or push was changed. Authenticated real-session usefulness and full keyboard/focus/contrast/screen-reader review remain open.
 
+Continuation claim: EQ-007 / TEST-001
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Branch/worktree: main / shared workspace
+
+Scope: protect the new shared-memory and schedule-state UX with explicit frontend contracts.
+
+Changed: Schedule tests now provide the loading/error boundary dependencies explicitly. Added a history component contract covering group filtering, session/game/people counts, and the bounded most-played summary used by the social-memory surface.
+
+Verified: Frontend Biome and all 33 browser unit tests pass. The reassessment keeps real two-person usefulness, provider/recovery evidence, and rendered accessibility review ahead of further catalog or analytics work.
+
 Scope: validate the pending schema release against a fresh production snapshot without changing live Turso.
 
 Changed: Exported the live `board-vault` database through the authenticated Turso CLI into a temporary local SQLite file, checked integrity and foreign keys, and applied migrations 0006–0009 to the copy with the committed migration runner.

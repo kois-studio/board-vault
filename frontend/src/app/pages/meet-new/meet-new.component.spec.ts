@@ -4,7 +4,9 @@ import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/route
 import { of } from 'rxjs'
 import { Api } from '../../api/api'
 import { ToastService } from '../../components/toast/toast.service'
+import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
 import { DataService } from '../../core/services/data.service'
+import { LoadingService } from '../../core/services/loading.service'
 import { MeetNewComponent } from './meet-new.component'
 
 describe('MeetNewComponent social handoff', () => {
@@ -37,7 +39,11 @@ describe('MeetNewComponent social handoff', () => {
             currentUser: signal({ id: 1 }),
             userGroups: signal([group]),
             invitationsGroupIndex: signal({}),
+            userGroupsError: signal(false),
             refreshUserMeets: jasmine.createSpy('refreshUserMeets'),
+        }
+        const loadingService = {
+            loadingStatesIndex: signal({ [LOADING_KEYS.USER_GROUPS]: false }),
         }
 
         await TestBed.configureTestingModule({
@@ -47,6 +53,7 @@ describe('MeetNewComponent social handoff', () => {
                 { provide: Api, useValue: api },
                 { provide: ActivatedRoute, useValue: routerData },
                 { provide: DataService, useValue: dataService },
+                { provide: LoadingService, useValue: loadingService },
                 { provide: ToastService, useValue: { success: jasmine.createSpy('success'), error: jasmine.createSpy('error') } },
             ],
         }).compileComponents()

@@ -49,6 +49,15 @@ Do not expand catalog detail, global discovery, social feeds, mobile apps,
 separate analytics routes, or complex recommendation scoring until the core
 group loop demonstrates repeat use.
 
+### Tech-lead reassessment — 2026-09-06
+
+The landing, group setup, history, upcoming, and scheduling surfaces now share
+one social-loop vocabulary and handoff model. The next implementation priority
+is evidence, not more catalog surface: run the clean two-person acceptance
+rehearsal against persisted data, then close provider-delivery, Turso recovery,
+Clerk migration, and rendered accessibility gates. Advanced analytics and
+game-detail breadth remain deferred until real groups demonstrate repeat use.
+
 ## Critical — unblock safe feature development
 
 ### READINESS-001 [Critical] SEC-003/SEC-008 — Complete object-level authorization audit
@@ -93,7 +102,7 @@ group loop demonstrates repeat use.
 
 - **Status:** In progress
 - **Affected area:** `backend/test/`, backend `src`, frontend `src/**/*.spec.ts`
-- **Evidence:** Backend now has 45 focused suites and 230 passing unit tests plus 2 environment-safe HTTP E2E tests; frontend has 32 browser-based unit tests plus four passing public Playwright tests, while seeded/integration journeys and authenticated browser coverage remain opt-in. The opt-in authenticated collection, invitation, session, recommendation, and acquisition-decision journeys pass against disposable Clerk development identities and data; a disposable provider-invitation rehearsal also proves create/list/revoke/removal; the full local Playwright run passes 13 tests with 3 guarded skips when the owner/recommendation/acquisition fixtures are supplied.
+- **Evidence:** Backend now has 45 focused suites and 230 passing unit tests plus 2 environment-safe HTTP E2E tests; frontend has 33 browser-based unit tests plus four passing public Playwright tests, while seeded/integration journeys and authenticated browser coverage remain opt-in. The opt-in authenticated collection, invitation, session, recommendation, and acquisition-decision journeys pass against disposable Clerk development identities and data; a disposable provider-invitation rehearsal also proves create/list/revoke/removal; the full local Playwright run passes 13 tests with 3 guarded skips when the owner/recommendation/acquisition fixtures are supplied.
 - **Risk:** Security and product regressions are invisible.
 - **Next action:** Add negative authorization/contract cases, repeatable disposable fixture setup, and provider/remote integration evidence; preserve the existing authenticated core-loop journeys as launch regression gates.
 - **Dependencies:** READINESS-001, READINESS-002, READINESS-003.

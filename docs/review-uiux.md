@@ -16,10 +16,32 @@ It must still feel lightweight and avoid the current empty-page presentation.
 
 History is a core product surface, not a future analytics dashboard. Its first
 job is to help a group remember what happened and decide what to do next. The
-next review slice therefore prioritizes group/date/attendee/game context,
-useful summary signals, group filtering, honest empty states, and a direct
-return to planning. Advanced metrics remain deferred until real groups create
-enough history to justify them.
+completed local slice prioritized group/date/attendee/game context, useful
+summary signals, group filtering, honest empty states, and a direct return to
+planning. Advanced metrics remain deferred until real groups create enough
+history to justify them.
+
+## Tech-lead reassessment — after local UX slices
+
+The landing, group setup, history, upcoming, and scheduling surfaces now tell
+one consistent story: decide with the group, coordinate a session, and preserve
+the memory. Further visual expansion is lower priority than proving that this
+story works with two real accounts and persisted data.
+
+Next priority order:
+
+1. **P0:** complete a clean two-person acceptance rehearsal, including invite
+   acceptance, collection input, attendee selection, recommendation, schedule,
+   RSVP, attendance, actual games, feedback, refresh, and history context.
+2. **P0:** close production safety/recovery evidence: provider delivery and
+   failure paths, Turso backup ownership and rollback, pending migrations, and
+   Clerk/legacy-auth migration recovery.
+3. **P1:** finish rendered keyboard, focus, contrast, screen-reader, and
+   long-content review across the now-coherent primary flow; retire any
+   compatibility surface that confuses the session journey.
+4. **Deferred:** catalog breadth, game-detail enrichment, standalone analytics,
+   public discovery, and complex recommendation scoring remain outside the
+   finished-product gate.
 
 ## Review status
 
