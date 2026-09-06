@@ -30,7 +30,7 @@ export class MeetsController {
     }
 
     @Get('/:meetId/details')
-    @ApiOperation({ summary: 'Get meet details by id' })
+    @ApiOperation({ summary: 'Get legacy meet details by id', deprecated: true })
     @ApiResponse({ status: 200, type: MeetWithAttendeesAndGames, description: 'Meet details found' })
     @ApiResponse({ status: 404, description: 'Meet details not found' })
     getMeetDetailsById(@Req() request: { user: { userId: number } }, @Param('meetId', ParseIntPipe) meetId: number) {
