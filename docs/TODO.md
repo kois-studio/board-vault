@@ -93,7 +93,7 @@ group loop demonstrates repeat use.
 
 - **Status:** In progress
 - **Affected area:** `backend/test/`, backend `src`, frontend `src/**/*.spec.ts`
-- **Evidence:** Backend now has 45 focused suites and 230 passing unit tests plus 2 environment-safe HTTP E2E tests; frontend has 30 browser-based unit tests plus four passing public Playwright tests, while seeded/integration journeys and authenticated browser coverage remain opt-in. The opt-in authenticated collection, invitation, session, recommendation, and acquisition-decision journeys pass against disposable Clerk development identities and data; the full local Playwright run passes 13 tests with 3 guarded skips when the owner/recommendation/acquisition fixtures are supplied.
+- **Evidence:** Backend now has 45 focused suites and 230 passing unit tests plus 2 environment-safe HTTP E2E tests; frontend has 32 browser-based unit tests plus four passing public Playwright tests, while seeded/integration journeys and authenticated browser coverage remain opt-in. The opt-in authenticated collection, invitation, session, recommendation, and acquisition-decision journeys pass against disposable Clerk development identities and data; a disposable provider-invitation rehearsal also proves create/list/revoke/removal; the full local Playwright run passes 13 tests with 3 guarded skips when the owner/recommendation/acquisition fixtures are supplied.
 - **Risk:** Security and product regressions are invisible.
 - **Next action:** Add negative authorization/contract cases, repeatable disposable fixture setup, and provider/remote integration evidence; preserve the existing authenticated core-loop journeys as launch regression gates.
 - **Dependencies:** READINESS-001, READINESS-002, READINESS-003.
@@ -203,7 +203,9 @@ as TODO items here.
 - [ ] Let an organizer create a private group and invite the actual people
   they play with.
 - [ ] Complete invitation lifecycle behavior. The groups workspace now exposes
-  pending invites with direct accept/decline actions, while invitation expiry,
+  pending invites with direct accept/decline actions, and the development
+  provider flow now proves create/list/revoke/removal for real Clerk invitation
+  identifiers. Legacy expiry, recipient acceptance after provider verification,
   retry behavior across provider/legacy flows, and notification clarity still
   need real-data validation.
 - [ ] Complete the group library decision surface. It now shows owners, member

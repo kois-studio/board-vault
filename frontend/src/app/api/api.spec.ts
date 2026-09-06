@@ -132,7 +132,7 @@ describe('Api response contracts', () => {
         expect(request.request.method).toBe('GET')
         request.flush([
             {
-                invitationId: 'invitation_123',
+                invitationId: 'inv_123',
                 emailAddress: 'friend@example.com',
                 status: 'pending',
                 createdAt: '2026-09-05T10:00:00.000Z',
@@ -141,7 +141,7 @@ describe('Api response contracts', () => {
 
         await expectAsync(response).toBeResolvedTo([
             {
-                invitationId: 'invitation_123',
+                invitationId: 'inv_123',
                 emailAddress: 'friend@example.com',
                 status: 'pending',
                 createdAt: '2026-09-05T10:00:00.000Z',
@@ -150,8 +150,8 @@ describe('Api response contracts', () => {
     })
 
     it('uses the group-scoped endpoint for Clerk invitation revocation', async () => {
-        const response = firstValueFrom(api.revokeClerkGroupInvitation(7, 'invitation_123'))
-        const request = http.expectOne(`${environment.apiUrl}/groups/7/clerk-invitations/invitation_123`)
+        const response = firstValueFrom(api.revokeClerkGroupInvitation(7, 'inv_123'))
+        const request = http.expectOne(`${environment.apiUrl}/groups/7/clerk-invitations/inv_123`)
 
         expect(request.request.method).toBe('DELETE')
         request.flush({ success: true })
@@ -163,7 +163,7 @@ describe('Api response contracts', () => {
         const response = firstValueFrom(api.getClerkGroupInvitations(7))
         const request = http.expectOne(`${environment.apiUrl}/groups/7/clerk-invitations`)
 
-        request.flush([{ invitationId: 'invitation_123', emailAddress: 'friend@example.com', status: 'revoked', createdAt: '2026-09-05' }])
+        request.flush([{ invitationId: 'inv_123', emailAddress: 'friend@example.com', status: 'revoked', createdAt: '2026-09-05' }])
 
         await expectAsync(response).toBeRejected()
     })

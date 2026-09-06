@@ -2992,3 +2992,18 @@ or production state changed.
 
 Known follow-ups: Cover the remaining legacy response shapes and connect the
 contract matrix to broader authenticated/authorized integration journeys.
+Continuation claim: SEC-005 / EQ-003
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Branch/worktree: main / shared workspace
+
+Scope: verify the provider-managed group email invitation lifecycle with the linked development Clerk instance and close the route-parameter contract defect exposed by that rehearsal.
+
+Changed: Clerk invitation route identifiers now match the observed `inv_...` provider format. The strict route DTO validates both `groupId` and `invitationId`, preventing the global `forbidNonWhitelisted` pipe from rejecting otherwise valid revoke requests. A disposable owner flow created an invitation, observed pending-list visibility, revoked it, and confirmed removal after refresh. No production invitation, migration, deployment, or push was performed.
+
+Review: SEC-005 / EQ-003
+
+Verified: Targeted backend tests pass (15 tests), backend lint/build pass, and the local provider rehearsal passes create/list/revoke/removal. Provider acceptance after recipient verification, expiry, and delivery-failure/retry remain open.
