@@ -1,14 +1,10 @@
 <app-page-header [titleText]="historyTitle()" [showActionButton]="true">
     @if (groupIdFilter()) {
-        Browse games this group played in completed sessions
+        Your group’s shared memory of completed sessions
     } @else {
-        Browse games played in completed sessions
+        Remember the people, games, and nights that brought your groups together
     }
-    <app-button
-        class="action-button"
-        icon="plus-lg"
-        routerLink="/play/log-session"
-    >Record a past session</app-button>
+    <app-button class="action-button" icon="plus-lg" routerLink="/play/log-session">Record a past session</app-button>
 </app-page-header>
 
 <container-wrapper>
@@ -21,47 +17,82 @@
             <p class="text-sm mt-2 mb-4">Check your connection and try again.</p>
             <app-button icon="arrow-repeat" (click)="retryHistory()">Retry</app-button>
         </div>
-    } @else if (!hasFilteredHistory()) {
-        <!-- no data -->
-        <div class="text-center py-8 text-secondary">
+    } @else {
+        <section class="mb-8 rounded-3xl border border-indigo-100 bg-indigo-50 p-5 dark:border-indigo-900/60 dark:bg-indigo-950/30 sm:p-6" aria-labelledby="history-intro-heading">
+            <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+                <div>
+                    <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Shared memory</p>
+                    <h2 id="history-intro-heading" class="mt-2 text-2xl font-bold text-zinc-900 dark:text-white">What should your group remember?</h2>
+                    <p class="mt-2 max-w-2xl text-sm leading-6 text-zinc-600 dark:text-zinc-300">History is here to make the next decision easier. Keep the useful context close: who came, what hit the table, and when you last played it.</p>
+                </div>
+                <div class="w-full lg:max-w-xs">
+                    <label for="history-group-filter" class="mb-2 block text-sm font-semibold text-zinc-900 dark:text-white">Show history for</label>
+                    <select id="history-group-filter" class="app-input" [value]="groupIdFilter() ?? ''" (change)="setGroupFilter($event)">
+                        <option value="">All groups</option>
+                        @for (group of userGroups$(); track group.id) {
+                            <option [value]="group.id">{{ group.name }}</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            @if (hasFilteredHistory()) {
+                <dl class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                    <div class="rounded-2xl bg-white/80 p-4 dark:bg-zinc-900/60"><dt class="text-xs uppercase tracking-wide text-secondary">Sessions</dt><dd class="mt-1 text-2xl font-bold text-zinc-900 dark:text-white">{{ historySummary().sessions }}</dd></div>
+                    <div class="rounded-2xl bg-white/80 p-4 dark:bg-zinc-900/60"><dt class="text-xs uppercase tracking-wide text-secondary">Games played</dt><dd class="mt-1 text-2xl font-bold text-zinc-900 dark:text-white">{{ historySummary().gamesPlayed }}</dd></div>
+                    <div class="rounded-2xl bg-white/80 p-4 dark:bg-zinc-900/60"><dt class="text-xs uppercase tracking-wide text-secondary">Different games</dt><dd class="mt-1 text-2xl font-bold text-zinc-900 dark:text-white">{{ historySummary().uniqueGames }}</dd></div>
+                    <div class="rounded-2xl bg-white/80 p-4 dark:bg-zinc-900/60"><dt class="text-xs uppercase tracking-wide text-secondary">People recorded</dt><dd class="mt-1 text-2xl font-bold text-zinc-900 dark:text-white">{{ historySummary().people }}</dd></div>
+                </dl>
+                @if (mostPlayedSummary(); as mostPlayed) {
+                    <p class="mt-4 text-sm text-secondary">Most played in this view: <strong class="text-zinc-900 dark:text-white">{{ mostPlayed }}</strong></p>
+                }
+            }
+        </section>
+
+        @if (!hasFilteredHistory()) {
+        <div class="rounded-3xl border border-dashed border-zinc-300 px-6 py-12 text-center dark:border-zinc-700">
             @if (groupIdFilter()) {
-                <p>No completed sessions for {{ historyGroupName() }} yet.</p>
-                <p class="mt-2 text-sm">Record the next game night from the group workspace to start its shared memory.</p>
-                <a class="app-btn-primary mt-5 inline-block" [routerLink]="['/groups', groupIdFilter(), 'sessions', 'new']">Plan a session</a>
+                <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-100 text-2xl text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-300" aria-hidden="true"><i class="bi bi-journal-plus"></i></div>
+                <h2 class="mt-5 text-xl font-bold text-zinc-900 dark:text-white">{{ historyGroupName() }} has no recorded sessions yet</h2>
+                <p class="mx-auto mt-2 max-w-lg text-sm leading-6 text-secondary">Plan the first night with this group. Once it is complete, this page will keep the people, games, and notes ready for the next decision.</p>
+                <a class="app-btn-primary mt-6 inline-block" [routerLink]="['/groups', groupIdFilter(), 'sessions', 'new']">Plan the first session</a>
             } @else {
-                <p>No completed sessions yet.</p>
+                <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-100 text-2xl text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-300" aria-hidden="true"><i class="bi bi-clock-history"></i></div>
+                <h2 class="mt-5 text-xl font-bold text-zinc-900 dark:text-white">Your group memory starts with one session</h2>
+                <p class="mx-auto mt-2 max-w-lg text-sm leading-6 text-secondary">Record a past game night or open a group workspace to plan the next one. Board Vault becomes more useful as your real play history grows.</p>
+                <div class="mt-6 flex flex-col justify-center gap-3 sm:flex-row"><a class="app-btn-primary text-center" routerLink="/play/upcoming-sessions">Plan a session</a><a class="app-btn-secondary text-center" routerLink="/play/log-session">Record past play</a></div>
             }
         </div>
-    } @else {
-        @for (historyRecord of sortedUserHistoryComputed(); track historyRecord.meetData.id) {
-            <div class="app-bg-secondary relative p-4 mb-8">
-                <div class="flex flex-wrap items-start justify-between gap-3 mb-4">
+        } @else {
+            <div class="relative ml-2 border-l-2 border-indigo-100 pl-6 dark:border-indigo-950 sm:ml-4 sm:pl-8">
+            @for (historyRecord of sortedUserHistoryComputed(); track historyRecord.meetData.id) {
+                <article class="app-bg-secondary relative mb-8 rounded-3xl p-5 shadow-sm sm:p-6" [attr.aria-labelledby]="'history-session-' + historyRecord.meetData.id">
+                    <span class="absolute -left-[2.05rem] top-6 h-4 w-4 rounded-full border-4 border-white bg-indigo-500 dark:border-zinc-950" aria-hidden="true"></span>
+                    <div class="flex flex-wrap items-start justify-between gap-4">
                     <div>
-                        <p class="text-secondary text-sm mb-1">{{ getGroupName(historyRecord.meetData.groupId) }}</p>
-                        <h2 class="text-xl font-semibold">
+                        <p class="text-sm font-semibold text-indigo-600 dark:text-indigo-400">{{ getGroupName(historyRecord.meetData.groupId) }}</p>
+                        <h2 class="mt-1 text-xl font-bold text-zinc-900 dark:text-white" [id]="'history-session-' + historyRecord.meetData.id">
                             {{ historyRecord.meetData.meetDate | customDate: true: historyRecord.meetData.timezone }}
                         </h2>
-                        <p class="mt-1 text-sm text-secondary">{{ getAttendeeSummary(historyRecord.attendedBy) }}</p>
+                        <p class="mt-2 text-sm text-secondary">{{ getAttendeeSummary(historyRecord.attendedBy) }} · {{ historyRecord.gamesPlayed.length }} game{{ historyRecord.gamesPlayed.length === 1 ? '' : 's' }} played</p>
                     </div>
-                    <a class="text-sm text-indigo-600 hover:underline dark:text-indigo-400" [routerLink]="['/sessions', historyRecord.meetData.id]">Open memory</a>
-                </div>
+                    <a class="app-btn-secondary text-center text-sm" [routerLink]="['/sessions', historyRecord.meetData.id]">Open session memory</a>
+                    </div>
 
-                @if (historyRecord.meetData.notes) {
-                    <p class="mb-4 rounded-xl bg-zinc-50 p-3 text-sm text-secondary dark:bg-zinc-800">{{ historyRecord.meetData.notes }}</p>
-                }
+                    @if (historyRecord.meetData.notes) {
+                        <p class="mt-5 rounded-2xl bg-zinc-50 p-4 text-sm leading-6 text-secondary dark:bg-zinc-800"><span class="font-semibold text-zinc-900 dark:text-white">Session note:</span> {{ historyRecord.meetData.notes }}</p>
+                    }
 
-                <!-- Games played on this date -->
-                <ul class="grid lg:grid-cols-2 gap-4">
+                    <ul class="mt-5 grid gap-4 lg:grid-cols-2">
                     @for (gamePlayed of historyRecord.gamesPlayed; track gamePlayed.gameData.id) {
-                        <div class="app-bg-tertiary rounded-lg p-4 flex gap-4">
+                        <li class="app-bg-tertiary flex min-w-0 gap-4 rounded-2xl p-4">
                             <!-- Game image -->
                             <a
                                 [routerLink]="['/games/', gamePlayed.gameData.id]"
-                                [attr.aria-label]="'View ' + (gamePlayed.gameData.titleTranslations.en || gamePlayed.gameData.title || 'game')"
+                                    [attr.aria-label]="'View ' + getGameTitle(gamePlayed.gameData)"
                             >
                                 <img
                                     [src]="gamePlayed.gameData.imageUrl"
-                                    [alt]="gamePlayed.gameData.titleTranslations.en"
+                                    [alt]="getGameTitle(gamePlayed.gameData)"
                                     loading="lazy"
                                     class="w-24 h-24 object-cover rounded-lg"
                                 />
@@ -69,7 +100,7 @@
 
                             <!-- Game info -->
                             <div class="flex flex-col justify-between flex-1">
-                                <h3 class="text-lg font-semibold mb-1">{{ gamePlayed.gameData.titleTranslations.en }}</h3>
+                                <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">{{ getGameTitle(gamePlayed.gameData) }}</h3>
 
                                 <div class="flex justify-between items-end">
                                     
@@ -88,13 +119,25 @@
                                         </div>
                                         @if (gamePlayed.playedBy.length === 0) {
                                             <span class="ml-3 text-xs text-secondary">Players not recorded</span>
+                                        } @else {
+                                            <span class="ml-3 text-xs text-secondary">{{ gamePlayed.playedBy.length }} player{{ gamePlayed.playedBy.length === 1 ? '' : 's' }}</span>
                                         }
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </li>
                     }
-                </ul>
+                    </ul>
+                </article>
+            }
+            </div>
+            <div class="mt-2 flex flex-col items-center justify-between gap-4 rounded-2xl border border-zinc-200 bg-white p-5 text-center dark:border-zinc-800 dark:bg-zinc-900 sm:flex-row sm:text-left">
+                <p class="text-sm text-secondary">Ready to make another memory?</p>
+                @if (groupIdFilter()) {
+                    <a class="app-btn-primary text-center" [routerLink]="['/groups', groupIdFilter(), 'sessions', 'new']">Plan the next session</a>
+                } @else {
+                    <a class="app-btn-primary text-center" routerLink="/play/upcoming-sessions">Plan the next session</a>
+                }
             </div>
         }
     }
