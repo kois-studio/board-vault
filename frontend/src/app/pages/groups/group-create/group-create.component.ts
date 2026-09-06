@@ -19,6 +19,7 @@ export class GroupCreateComponent {
     // --------------------------------------------------------------------------
     public groupNameForm = new FormControl('', [Validators.required, Validators.minLength(4), Validators.maxLength(20)])
     public isLoading = false
+    public readonly currentUser$ = this.dataService.currentUser
 
     get groupName() {
         return this.groupNameForm
@@ -30,7 +31,7 @@ export class GroupCreateComponent {
     }
 
     get disableCreateButton() {
-        if (!this.groupNameForm.value) {
+        if (!this.groupNameForm.value || !this.currentUser$()) {
             return true
         }
         return this.isLoading || this.groupNameForm.invalid
@@ -42,9 +43,9 @@ export class GroupCreateComponent {
         this.isLoading = true
 
         try {
-            await firstValueFrom(this.dataService.createGroup(this.groupNameForm.value))
+            const createdGroup = await firstValueFrom(this.dataService.createGroup(this.groupNameForm.value))
             this.groupNameForm.reset()
-            await this.router.navigate(['/groups'])
+            await this.router.navigate(['/groups', createdGroup.groupId])
         } catch {
             // DataService presents the request error; keep the form available for retry.
         } finally {
