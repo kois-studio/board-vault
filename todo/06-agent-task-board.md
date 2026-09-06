@@ -110,6 +110,24 @@ Verified: `cd backend && npm test -- --runInBand` passes 47 suites / 246 tests; 
 
 Known follow-ups: Audit proposal and remaining legacy multi-write mutations, then add failure-injection coverage for the next transaction boundary.
 
+Continuation claim: DATA-004
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Branch/worktree: main / shared workspace
+
+Scope: extend transaction boundaries across collection removal, ownership metadata updates, and wishlist toggles so activity memory cannot drift from collection state
+
+Review: DATA-004
+
+Changed: Collection removal, ownership metadata edits, and wishlist toggles now write their domain row, bounded activity memory, and cache invalidation boundary through explicit transactions. Existing conflict/not-found behavior is preserved at the feature service boundary.
+
+Verified: `cd backend && npm test -- --runInBand` passes 47 suites / 252 tests; `cd backend && npm run build`; `cd backend && npm run lint:check`; and `git diff --check` pass. No deployment, push, provider mutation, or production data change was performed.
+
+Known follow-ups: Audit review/activity coupling, proposal and remaining legacy bulk mutations, then add failure-injection coverage for the next transaction boundary.
+
 Previous most recent claim:
 
 ```text

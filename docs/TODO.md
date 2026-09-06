@@ -178,6 +178,19 @@ The next priority is a failure-path audit of the remaining core multi-write
 flows, while keeping the two-account acceptance rehearsal and rendered route
 review as the release evidence gates.
 
+### Tech-lead reassessment — after collection-state transaction completion — 2026-09-06
+
+The collection social state is now transactionally consistent across add,
+remove, ownership metadata updates, and wishlist toggles. Each transition
+records bounded activity memory and invalidates the account activity cache only
+after commit. The backend gate is now 252 tests across 47 suites.
+
+This materially strengthens recommendation inputs and personal-to-group
+handoffs. It does not close the broader persistence work: review/activity
+coupling, proposal writes, legacy bulk updates, adapter boundaries, and
+failure-injection coverage remain open. The product gate is still the real
+two-account social loop plus rendered and operational evidence.
+
 ### Tech-lead reassessment — after atomic group acquisition signals — 2026-09-06
 
 The group acquisition decision loop now commits member interest and reopening a
@@ -299,7 +312,7 @@ remote CI, provider delivery, and operational recovery ownership.
 
 - **Status:** In progress
 - **Affected area:** core services, `DatabaseService`, `CacheService`
-- **Evidence:** Concrete infrastructure is used directly; canonical session creation, scheduled-session creation, lifecycle transitions, played-game recording, group creation, legacy invitation acceptance, and collection activation now use explicit Turso transactions. Collection activation also trims bounded activity memory within the same transaction and invalidates its account cache once after commit. Disabled Redis reads/writes, rate-limit increments, and readiness now have deterministic coverage; remaining multi-write flows, adapter boundaries, and cache ownership/invalidation completeness remain open.
+- **Evidence:** Concrete infrastructure is used directly; canonical session creation, scheduled-session creation, lifecycle transitions, played-game recording, group creation, legacy invitation acceptance, collection add/remove/metadata/wishlist transitions, and group acquisition signal reopening now use explicit Turso transactions. Collection transitions trim bounded activity memory within the same transaction and invalidate the account activity cache once after commit. Disabled Redis reads/writes, rate-limit increments, and readiness now have deterministic coverage; remaining review/activity coupling, proposal and legacy bulk writes, adapter boundaries, and cache ownership/invalidation completeness remain open.
 - **Risk:** Partial writes, stale data, provider coupling, and test instability.
 - **Next action:** Define adapter interfaces, transaction boundaries, cache ownership/invalidation, and provider fakes; add integration coverage where provider state can be disposable.
 - **Dependencies:** READINESS-003 and canonical session model.

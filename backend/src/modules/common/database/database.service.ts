@@ -1159,6 +1159,160 @@ export class DatabaseService implements OnModuleInit {
         }
     }
 
+    async removeGameFromCollection(accountId: number, gameId: number): Promise<{ rowsAffected: number }> {
+        const transaction = await this.tursoClient.transaction('write')
+
+        try {
+            const ownedGame = await transaction.execute({
+                sql: 'DELETE FROM OwnedGame WHERE accountId = ? AND gameId = ?',
+                args: [accountId, gameId],
+            })
+
+            if (ownedGame.rowsAffected !== 1) {
+                await transaction.commit()
+                return { rowsAffected: 0 }
+            }
+
+            await transaction.execute({
+                sql: 'INSERT INTO CollectionActivity (accountId, gameId, actionType, actionDetails) VALUES (?, ?, ?, ?)',
+                args: [accountId, gameId, 'removed', null],
+            })
+            await transaction.execute({
+                sql: `
+                    DELETE FROM CollectionActivity
+                    WHERE accountId = ?
+                      AND id NOT IN (
+                          SELECT id FROM CollectionActivity
+                          WHERE accountId = ?
+                          ORDER BY id DESC
+                          LIMIT 32
+                      )
+                `,
+                args: [accountId, accountId],
+            })
+
+            await transaction.commit()
+            return { rowsAffected: 1 }
+        } catch (error) {
+            await transaction.rollback()
+            throw error
+        } finally {
+            transaction.close()
+        }
+    }
+
+    async updateGameOwnershipAndLogActivity(
+        accountId: number,
+        gameId: number,
+        ownedGameDto: UpdateGameOwnedDto,
+    ): Promise<{ rowsAffected: number }> {
+        const fields: Array<string> = []
+        const args: Array<string | number | null> = []
+
+        if (ownedGameDto.purchaseDate !== undefined) {
+            fields.push('purchaseDate = ?')
+            args.push(ownedGameDto.purchaseDate)
+        }
+
+        if (ownedGameDto.purchaseNotes !== undefined) {
+            fields.push('purchaseNotes = ?')
+            args.push(ownedGameDto.purchaseNotes)
+        }
+
+        if (ownedGameDto.purchasePrice !== undefined) {
+            fields.push('purchasePrice = ?')
+            args.push(ownedGameDto.purchasePrice)
+        }
+
+        if (fields.length === 0) {
+            throw new BadRequestException('No fields to update')
+        }
+
+        const transaction = await this.tursoClient.transaction('write')
+
+        try {
+            const ownedGame = await transaction.execute({
+                sql: `UPDATE OwnedGame SET ${fields.join(', ')} WHERE accountId = ? AND gameId = ?`,
+                args: [...args, accountId, gameId],
+            })
+
+            if (ownedGame.rowsAffected !== 1) {
+                await transaction.commit()
+                return { rowsAffected: 0 }
+            }
+
+            await transaction.execute({
+                sql: 'INSERT INTO CollectionActivity (accountId, gameId, actionType, actionDetails) VALUES (?, ?, ?, ?)',
+                args: [accountId, gameId, 'updated', null],
+            })
+            await transaction.execute({
+                sql: `
+                    DELETE FROM CollectionActivity
+                    WHERE accountId = ?
+                      AND id NOT IN (
+                          SELECT id FROM CollectionActivity
+                          WHERE accountId = ?
+                          ORDER BY id DESC
+                          LIMIT 32
+                      )
+                `,
+                args: [accountId, accountId],
+            })
+
+            await transaction.commit()
+            return { rowsAffected: 1 }
+        } catch (error) {
+            await transaction.rollback()
+            throw error
+        } finally {
+            transaction.close()
+        }
+    }
+
+    async toggleWishlistAndLogActivity(accountId: number, gameId: number): Promise<boolean> {
+        const transaction = await this.tursoClient.transaction('write')
+
+        try {
+            const wishlist = await transaction.execute({
+                sql: 'SELECT 1 FROM WishlistedGame WHERE accountId = ? AND gameId = ?',
+                args: [accountId, gameId],
+            })
+            const isWishlisted = wishlist.rows.length > 0
+
+            await transaction.execute({
+                sql: isWishlisted
+                    ? 'DELETE FROM WishlistedGame WHERE accountId = ? AND gameId = ?'
+                    : 'INSERT INTO WishlistedGame (accountId, gameId) VALUES (?, ?)',
+                args: [accountId, gameId],
+            })
+            await transaction.execute({
+                sql: 'INSERT INTO CollectionActivity (accountId, gameId, actionType, actionDetails) VALUES (?, ?, ?, ?)',
+                args: [accountId, gameId, isWishlisted ? 'unwishlisted' : 'wishlisted', null],
+            })
+            await transaction.execute({
+                sql: `
+                    DELETE FROM CollectionActivity
+                    WHERE accountId = ?
+                      AND id NOT IN (
+                          SELECT id FROM CollectionActivity
+                          WHERE accountId = ?
+                          ORDER BY id DESC
+                          LIMIT 32
+                      )
+                `,
+                args: [accountId, accountId],
+            })
+
+            await transaction.commit()
+            return !isWishlisted
+        } catch (error) {
+            await transaction.rollback()
+            throw error
+        } finally {
+            transaction.close()
+        }
+    }
+
     updateGameOwned(accountId: number, gameId: number, ownedGameDto: UpdateGameOwnedDto) {
         const fields = []
         const args = []
