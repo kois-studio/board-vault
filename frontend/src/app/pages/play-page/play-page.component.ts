@@ -45,7 +45,17 @@ export class PlayPageComponent {
             .sort((a, b) => new Date(a.meetDate).getTime() - new Date(b.meetDate).getTime()),
     )
 
+    public readonly featuredGroups = computed(() => this.userGroups$().slice(0, 3))
+
     public getGroupName(groupId: number): string {
         return this.userGroups$().find((group) => group.id === groupId)?.name ?? `Group ${groupId}`
+    }
+
+    public getGroupContext(groupId: number): string {
+        const group = this.userGroups$().find((candidate) => candidate.id === groupId)
+        if (!group) return 'Shared group context unavailable'
+
+        const gameIds = new Set(group.members.flatMap((member) => member.games.map((game) => game.id)))
+        return `${group.members.length} people · ${gameIds.size} games available`
     }
 }

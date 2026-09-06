@@ -3567,3 +3567,17 @@ Claimed: 2026-09-06
 Changed: Added an allow-listed API error-code contract for private-beta registration closure, Clerk configuration, invitation-link, and provider availability failures. The filter preserves those safe codes and remediation messages while keeping unknown 5xx/provider details generic; Clerk invitation provider calls now map unexpected provider failures to a correlated 502 code. Existing generic Nest exceptions remain compatible.
 
 Verified: `cd backend && npx eslint "{src,apps,libs,test}/**/*.ts"`, `cd backend && npm test -- --runInBand` (46 suites / 237 tests), `cd backend && npm run build`, and `git diff --check` pass. No deployment or push was performed.
+
+Scope: make the Play hub group-first so recommendation decisions cannot feel like global catalog browsing.
+
+Acceptance: the Play landing must lead with the user’s shared groups and explicit decide/plan actions, preserve separate future-planning and past-memory jobs, and provide an honest create/join path when no groups exist. Add focused frontend coverage without adding catalog or analytics surface.
+
+Continuation claim: PROD-003 / TRUTH-001
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Changed: Added a group-first decision panel to the Play hub, showing up to three shared groups with honest member/game context and direct Decide/Plan session actions. The recommendation card now routes to groups rather than implying a global recommendation feed, while future planning and past-session recording remain separate entry points; the no-group state explains how to create or join the social space.
+
+Verified: `cd frontend && npx biome check src/app`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (41 passing), `cd frontend && npm run build` (605.58 kB initial raw / 138.28 kB estimated transfer), and `git diff --check` pass. Rendered Play-hub and real-group validation remain open. No deployment or push was performed.
