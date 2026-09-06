@@ -88,6 +88,7 @@ Relevant surfaces: [`history-page`](../frontend/src/app/pages/play-page/history-
 - Keep the play landing honest while its dependent reads load or fail; the upcoming/history cards now show loading and unavailable states instead of presenting zero as fact.
 - Recommendation and scheduling entry points now distinguish unavailable group data from a genuinely empty group list and expose retry.
 - Make empty history actionable and honest.
+- Handle stale or unauthorized `groupId` history filters without showing a blank group name or linking into an unavailable group; the history page now shows a recovery state that returns the person to their current groups.
 - Validate the decision lenses with real groups; recommendation cards now show persisted last-played context and the chooser exposes balanced, fresh, and favorite lenses. Complexity scoring and more granular history/replay weighting remain deferred until real usage exists.
 - Add simple post-session ratings or feedback when the product contract is defined.
 

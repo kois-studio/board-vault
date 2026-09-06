@@ -336,7 +336,9 @@ as TODO items here.
 - [ ] Validate that history, group library, and recommendations show the same
   last-played and participant context after refresh. Group history cards now
   expose recorded attendees and session notes; validate this context with a
-  real completed session and a zero-attendance-recorded edge case.
+  real completed session and a zero-attendance-recorded edge case. Stale or
+  unauthorized history group filters now recover to the groups workspace
+  instead of rendering an empty group label or an invalid planning link.
 
 ## Authentication, privacy, and trust
 

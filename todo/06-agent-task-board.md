@@ -3648,3 +3648,15 @@ Verified: `npm run install:all`, package-local `npm ci --ignore-scripts`, and
 the frontend/backend build dependency graphs pass locally. The remote run was
 read-only inspected and failed before tests on dependency installation; no
 push or rerun was performed.
+
+Continuation claim: PROD-007 / EQ-006
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Scope: keep shared history truthful when a bookmarked or stale group filter no longer resolves to one of the user’s current private groups.
+
+Changed: The history route now distinguishes a missing group filter from a real empty history. It shows a recoverable “group not available” state, avoids blank group labels, and does not offer a planning link for an unavailable group.
+
+Verified: `cd frontend && npx ng test --watch=false --browsers=ChromeHeadless --include='src/app/pages/play-page/history-page/history-page.component.spec.ts'`, `cd frontend && npx biome check` on the changed files, and `cd frontend && npm run build` pass. Full rendered authenticated review remains dependent on disposable Clerk storage state. No deployment or push was performed.

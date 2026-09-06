@@ -37,6 +37,7 @@ export class HistoryPageComponent {
     // dataService
     public readonly currentUser$ = this.dataService.currentUser
     public readonly userGroups$ = this.dataService.userGroups
+    public readonly groupsError = this.dataService.userGroupsError
     public readonly userHistory$ = this.dataService.userHistory
     public readonly historyError = this.dataService.userHistoryError
     // loadingService
@@ -45,6 +46,13 @@ export class HistoryPageComponent {
     public readonly historyGroupName = computed(() => {
         const groupId = this.groupIdFilter()
         return groupId ? this.getGroupName(groupId) : null
+    })
+    public readonly isLoadingGroups = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_GROUPS])
+    public readonly isUnknownGroupFilter = computed(() => {
+        const groupId = this.groupIdFilter()
+        return Boolean(
+            groupId && !this.isLoadingGroups() && !this.groupsError() && !this.userGroups$().some((group) => group.id === groupId),
+        )
     })
     public readonly historyTitle = computed(() => (this.historyGroupName() ? `${this.historyGroupName()} history` : 'History'))
 
@@ -93,7 +101,7 @@ export class HistoryPageComponent {
     })
 
     public getGroupName(groupId: number): string {
-        return this.userGroups$().find((group) => group.id === groupId)?.name ?? `Group ${groupId}`
+        return this.userGroups$().find((group) => group.id === groupId)?.name ?? 'Selected group'
     }
 
     public getAttendeeSummary(attendees: Array<{ displayName: string; username: string }>): string {
