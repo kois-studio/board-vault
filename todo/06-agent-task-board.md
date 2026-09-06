@@ -3326,6 +3326,10 @@ Owner: Codex
 
 Claimed: 2026-09-06
 
+Changed: Removed the unused Angular API/DataService methods and response types/schemas for deprecated per-row attendee and played-game mutations. The current client now exposes only the canonical session attendee/shortlist/played-game writes; backend compatibility routes remain documented and guarded for older clients.
+
+Verified: Frontend Biome passes, all 36 browser unit tests pass, and the production build passes at 606.76 kB initial raw / 138.37 kB estimated transfer. No deployment or push was performed.
+
 Scope: make direct group-creation navigation truthful while the authenticated account profile is still settling.
 
 Changed: The create-group form now exposes the DataService account signal, keeps submission disabled until that local account exists, and announces the loading state instead of allowing an ambiguous busy submission. Added the readiness boundary to the component’s handoff regression.
@@ -3423,6 +3427,16 @@ Changed: Security now presents Clerk-managed sign-in controls as the actionable 
 Verified: The disposable authenticated settings journey passes the semantic-link and truthful-policy assertions; frontend build and Biome pass. No deployment or push was performed.
 
 Continuation claim: EQ-007 / AUTH-001
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Scope: retire unused frontend compatibility adapters so the client exposes only the canonical session flow.
+
+Acceptance: remove unused Angular API/DataService methods and response types for deprecated per-row attendee and played-game writes; keep the backend compatibility routes documented for older clients and preserve the canonical session UI/API.
+
+Continuation claim: PROD-003 / EQ-006
 
 Owner: Codex
 

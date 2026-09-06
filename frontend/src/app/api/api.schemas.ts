@@ -21,8 +21,6 @@ import type {
     InvitationWithAccountsData,
     InvitationWithExtraData,
     MeetAttendeeStatusType,
-    MeetAttendeeType,
-    MeetGameType,
     MeetType,
     MeetWithAttendeesAndGamesType,
     NotificationType,
@@ -360,16 +358,6 @@ export const meetDetailsSchema: z.ZodType<MeetWithAttendeesAndGamesType> = meetF
             participantIds: z.array(z.number()),
         }),
     ),
-})
-
-export const meetAttendeeSchema: z.ZodType<MeetAttendeeType> = z.object({
-    meetId: z.number(),
-    accountId: z.number(),
-})
-
-export const meetGameSchema: z.ZodType<MeetGameType> = z.object({
-    meetId: z.number(),
-    gameId: z.number(),
 })
 
 const historyRecordSchema: z.ZodType<HistoryRecordType> = z.object({

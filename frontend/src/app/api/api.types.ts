@@ -194,16 +194,6 @@ export type MeetType = {
     notes: string | null
 }
 
-export type MeetAttendeeType = {
-    meetId: number
-    accountId: number
-}
-
-export type MeetGameType = {
-    meetId: number
-    gameId: number
-}
-
 export type MeetAttendeeStatusType = {
     accountId: number
     rsvpStatus: 'pending' | 'accepted' | 'declined'
