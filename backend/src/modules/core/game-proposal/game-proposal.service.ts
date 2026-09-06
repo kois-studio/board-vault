@@ -72,7 +72,7 @@ export class GameProposalService {
     }
 
     async getGameProposalById(id: number): Promise<GameProposalDto> {
-        this.LOGGER.log(`Getting game proposal by id ${id}`)
+        this.LOGGER.log('Getting game proposal by id')
 
         const resultSet = await this.databaseService.getGameProposalById(id)
         const proposals = this._parseResultSet(resultSet)
@@ -85,7 +85,7 @@ export class GameProposalService {
     }
 
     async getGameProposalsByStatus(status: 'pending' | 'approved' | 'rejected' | 'duplicate'): Promise<Array<GameProposalDto>> {
-        this.LOGGER.log(`Getting game proposals by status: ${status}`)
+        this.LOGGER.log('Getting game proposals by status')
 
         const resultSet = await this.databaseService.getGameProposalsByStatus(status)
         const proposals = this._parseResultSet(resultSet)
@@ -94,7 +94,7 @@ export class GameProposalService {
     }
 
     async getGameProposalsBySubmitter(submittedBy: number): Promise<Array<GameProposalDto>> {
-        this.LOGGER.log(`Getting game proposals by submitter ${submittedBy}`)
+        this.LOGGER.log('Getting game proposals by submitter')
 
         const resultSet = await this.databaseService.getGameProposalsBySubmitter(submittedBy)
         const proposals = this._parseResultSet(resultSet)
@@ -103,7 +103,7 @@ export class GameProposalService {
     }
 
     async createGameProposal(submittedBy: number, proposalData: CreateGameProposalBody): Promise<GameProposalDto> {
-        this.LOGGER.log(`Creating game proposal by user ${submittedBy}`)
+        this.LOGGER.log('Creating game proposal')
 
         await this.databaseService.createGameProposal({
             submittedBy,
@@ -138,7 +138,7 @@ export class GameProposalService {
     }
 
     async updateGameProposal(id: number, updateData: UpdateGameProposalBody, reviewedBy?: number): Promise<GameProposalDto> {
-        this.LOGGER.log(`Updating game proposal ${id}`)
+        this.LOGGER.log('Updating game proposal')
 
         const updatePayload: any = { ...updateData }
 
@@ -158,7 +158,7 @@ export class GameProposalService {
     }
 
     async deleteGameProposalById(id: number): Promise<{ success: boolean }> {
-        this.LOGGER.log(`Deleting game proposal ${id}`)
+        this.LOGGER.log('Deleting game proposal')
 
         await this.databaseService.deleteGameProposalById(id)
 
@@ -169,7 +169,7 @@ export class GameProposalService {
     }
 
     async approveGameProposal(id: number, reviewedBy: number, reviewNotes?: string, createdGameId?: number): Promise<GameProposalDto> {
-        this.LOGGER.log(`Approving game proposal ${id}`)
+        this.LOGGER.log('Approving game proposal')
 
         const proposal = await this.updateGameProposal(
             id,
@@ -188,7 +188,7 @@ export class GameProposalService {
     }
 
     async rejectGameProposal(id: number, reviewedBy: number, reviewNotes: string): Promise<GameProposalDto> {
-        this.LOGGER.log(`Rejecting game proposal ${id}`)
+        this.LOGGER.log('Rejecting game proposal')
 
         const proposal = await this.updateGameProposal(
             id,
@@ -206,7 +206,7 @@ export class GameProposalService {
     }
 
     async markGameProposalAsDuplicate(id: number, reviewedBy: number, reviewNotes?: string): Promise<GameProposalDto> {
-        this.LOGGER.log(`Marking game proposal ${id} as duplicate`)
+        this.LOGGER.log('Marking game proposal as duplicate')
 
         const proposal = await this.updateGameProposal(
             id,
@@ -224,7 +224,7 @@ export class GameProposalService {
     }
 
     async getUserProposalStats(userId: number): Promise<UserProposalStatsDto> {
-        this.LOGGER.log(`Getting user proposal stats for user ${userId}`)
+        this.LOGGER.log('Getting user proposal stats')
 
         // Try to get from cache first
         const cachedStats = await this.cacheService.get(`user-proposal-stats:${userId}`)

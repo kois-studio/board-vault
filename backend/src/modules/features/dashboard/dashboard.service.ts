@@ -190,7 +190,7 @@ export class DashboardService {
         const cachedStats = await this.cacheService.get(cacheKey)
 
         if (cachedStats) {
-            this.LOGGER.log(`Returning cached proposal stats for user ${userId}`)
+            this.LOGGER.log('Returning cached proposal stats')
             return cachedStats
         }
 

@@ -36,13 +36,13 @@ export class GameTagsService {
     }
 
     async getGameTags(gameId: number): Promise<Array<GameTagType>> {
-        this.LOGGER.log(`Getting tags for game ${gameId}`)
+        this.LOGGER.log('Getting tags for game')
 
         // Step 1: Try to get them from cache
         const cachedTags = await this.cacheService.get(`${this.CACHE_KEY}:byGameId:${gameId}`)
 
         if (cachedTags) {
-            this.LOGGER.log(`Returning cached tags for game ${gameId}`)
+            this.LOGGER.log('Returning cached game tags')
             return this._validateSchema(cachedTags)
         }
 
@@ -57,7 +57,7 @@ export class GameTagsService {
     }
 
     async getGameCountByTagCategoryId(tagCategoryId: number): Promise<number> {
-        this.LOGGER.log(`Getting game count for tag category ${tagCategoryId}`)
+        this.LOGGER.log('Getting game count for tag category')
 
         const resultSet = await this.databaseService.getGameCountByTagCategoryId(tagCategoryId)
 
@@ -65,7 +65,7 @@ export class GameTagsService {
     }
 
     async getGameCountByTagId(tagId: number): Promise<number> {
-        this.LOGGER.log(`Getting game count for tag ${tagId}`)
+        this.LOGGER.log('Getting game count for tag')
 
         const resultSet = await this.databaseService.getGameCountByTagId(tagId)
 
@@ -73,7 +73,7 @@ export class GameTagsService {
     }
 
     async addGameTag(gameId: number, tagId: number): Promise<{ success: boolean }> {
-        this.LOGGER.log(`Adding tag ${tagId} to game ${gameId}`)
+        this.LOGGER.log('Adding tag to game')
 
         await this.databaseService.addGameTag(gameId, tagId)
 
@@ -84,7 +84,7 @@ export class GameTagsService {
     }
 
     async removeGameTag(gameId: number, tagId: number): Promise<{ success: boolean }> {
-        this.LOGGER.log(`Removing tag ${tagId} from game ${gameId}`)
+        this.LOGGER.log('Removing tag from game')
 
         await this.databaseService.removeGameTag(gameId, tagId)
 

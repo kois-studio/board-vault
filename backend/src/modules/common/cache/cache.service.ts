@@ -77,7 +77,7 @@ export class CacheService {
         try {
             const keys = await this.REDIS!.keys('*')
 
-            this.LOGGER.log(`REDIS: Found ${keys.length} keys!`)
+            this.LOGGER.log('REDIS: Cache key inspection completed')
             return { total: keys.length, keys }
         } catch (err) {
             // Key inspection is diagnostic only. Never turn a provider failure
@@ -92,9 +92,9 @@ export class CacheService {
      */
     @Wrapper(false)
     async deleteAll(): Promise<boolean> {
-        const keys = await this.REDIS!.keys('*')
+        await this.REDIS!.keys('*')
 
-        this.LOGGER.log(`REDIS: Deleting all ${keys.length} keys...`)
+        this.LOGGER.log('REDIS: Deleting all cache entries')
         await this.REDIS!.flushdb()
         return true
     }
@@ -138,7 +138,7 @@ export class CacheService {
      */
     @Wrapper()
     async set(key: string, data: any, ttl: keyof typeof CACHE_TTL = 'short'): Promise<void> {
-        this.LOGGER.log(`REDIS: set cache value with ${CACHE_TTL[ttl]}s TTL`)
+        this.LOGGER.log('REDIS: set cache value')
 
         await this.REDIS!.set(key, data, { ex: CACHE_TTL[ttl] })
     }

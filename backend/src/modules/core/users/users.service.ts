@@ -49,7 +49,7 @@ export class UsersService {
     }
 
     async getUserById(id: number): Promise<UserGetDto> {
-        this.LOGGER.log(`Getting user with id ${id}`)
+        this.LOGGER.log('Getting user by id')
         const resultSet = await this.databaseService.getUserById(id)
         const users = this._parseResultSet(resultSet)
 
@@ -127,7 +127,7 @@ export class UsersService {
     }
 
     async linkClerkUser(accountId: number, clerkUserId: string): Promise<UserGetDto> {
-        this.LOGGER.log(`Linking local user ${accountId} to Clerk identity`)
+        this.LOGGER.log('Linking local user to Clerk identity')
         const resultSet = await this.databaseService.linkUserToClerkId(accountId, clerkUserId)
 
         if (resultSet.rowsAffected !== 1) {
@@ -159,7 +159,7 @@ export class UsersService {
     }
 
     async updateUser(id: number, partialUserDto: UpdateUserBody): Promise<{ success: boolean }> {
-        this.LOGGER.log(`Updating user with id ${id}`)
+        this.LOGGER.log('Updating user')
         const resultSet = await this.databaseService.updateUserProfile(id, partialUserDto)
 
         if (resultSet.rows.length === 0) {
@@ -170,7 +170,7 @@ export class UsersService {
     }
 
     async deleteUserById(id: number): Promise<{ success: boolean }> {
-        this.LOGGER.log(`Deleting user with id ${id}`)
+        this.LOGGER.log('Deleting user')
         const resultSet = await this.databaseService.softDeleteUserById(id)
 
         if (resultSet.rowsAffected === 0) {
@@ -181,7 +181,7 @@ export class UsersService {
     }
 
     async updateGames(accountId: number, gamesToAdd: number[], gamesToRemove: number[]): Promise<{ success: boolean }> {
-        this.LOGGER.log(`Updating games for user with id ${accountId}`)
+        this.LOGGER.log('Updating games for user')
         try {
             // TODO: responsability of games-owned.service, delete this query
             await this.databaseService.updateGames(accountId, gamesToAdd, gamesToRemove)
