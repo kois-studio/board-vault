@@ -215,9 +215,6 @@ as TODO items here.
   any member, including after an ownership race. Real-group validation is still
   needed so the group can move from “we can play this” to “we should acquire
   this” without a catalog detour.
-- [ ] Make private personal collection data and shared group data visibly
-  distinct.
-
 ## Recommendation and acquisition decisions
 
 - [ ] Validate the current recommendation decision lenses with real group

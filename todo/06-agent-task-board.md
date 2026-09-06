@@ -3071,3 +3071,15 @@ Scope: make the first-five-games activation gate repeatable without depending on
 Changed: Added a file-only `seed-collection-activation-fixture.mjs` that refuses non-file database URLs and seeds five clearly named catalog games. Added an opt-in Playwright journey that adds or recognizes all five games and verifies the “Your games are ready for group decisions” handoff.
 
 Verified: The local fixture and authenticated five-game journey pass in 7.7 seconds. The remaining product question is whether real groups find five games useful and whether catalog search quality is sufficient; no production data or deployment was changed.
+
+Continuation claim: SEC-006 / PROD-002
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Scope: verify that personal collection data remains private while group surfaces provide shared context.
+
+Changed: Added an opt-in two-account browser journey covering owner/member private shelves with distinct disposable games. The journey asserts each account sees its own game and not the other account’s private-only game; the collection copy and group-workspace boundary are now backed by rendered evidence.
+
+Verified: Disposable owner/member Clerk sessions pass the privacy journey in 2.5 seconds. No production data, deployment, or push was changed.
