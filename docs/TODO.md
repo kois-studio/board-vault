@@ -158,11 +158,11 @@ flagship loop, followed by rendered route review with real group data.
 
 ### READINESS-009 [High] API-001/003/004/007/NEST-016 — Stabilize API contracts
 
-- **Status:** Planned
+- **Status:** In progress
 - **Affected area:** Swagger generation, `frontend/src/app/api/`, Nest controllers/DTOs
-- **Evidence:** Runtime Swagger exists and the backend now applies `ApiErrorFilter`, returning a stable `{ statusCode, code, message, details?, requestId }` envelope with `X-Request-Id`; no versioned contract artifact, compatibility policy, or producer/consumer contract tests exist yet.
+- **Evidence:** Runtime Swagger exists and the backend now applies `ApiErrorFilter`, returning a stable `{ statusCode, code, message, details?, requestId }` envelope with `X-Request-Id`. A versioned OpenAPI snapshot is now committed at [`docs/api/openapi.json`](api/openapi.json) and regenerated from the Nest module with `cd backend && npm run build && npm run docs:openapi`; CI checks that regeneration is clean. Frontend response schemas and focused malformed-response tests cover representative consumer boundaries. Generated-client and broader producer/consumer compatibility tests remain open.
 - **Risk:** Frontend/backend drift and unsafe breaking changes.
-- **Next action:** Publish versioned OpenAPI/contract output, standardize errors/pagination, and test representative producer/consumer compatibility.
+- **Next action:** Add a CI freshness check for the committed OpenAPI snapshot, then standardize pagination and expand producer/consumer compatibility tests.
 - **Dependencies:** READINESS-002 and canonical session/data model.
 
 ## Medium — launch quality and maintainability

@@ -49,6 +49,7 @@ Commands can run from the repository root or package directory. Dependencies are
 | Backend e2e tests | `cd backend && npm run test:e2e -- --runInBand` | Passes 2 environment-safe HTTP boundary tests; the suite uses a disposable SQLite URL, disables Redis, and never calls production providers. |
 | Backend lint, no mutation | `cd backend && npx eslint "{src,apps,libs,test}/**/*.ts"` | Passes with no errors or warnings. Do not use the package `lint` script casually because it includes `--fix`. |
 | Backend log boundary | `cd backend && npm run lint:logs` | Passes the source audit that allow-lists dynamic logger fields and rejects domain/entity identifiers in production log templates. |
+| OpenAPI snapshot | `cd backend && npm run build && npm run docs:openapi` | Regenerates the committed [`docs/api/openapi.json`](api/openapi.json) contract snapshot from the same Nest module used by runtime Swagger. |
 | Backend formatting, writes files | `cd backend && npm run format` | Available; run only when formatting changes are in scope. |
 | Frontend install | `cd frontend && npm ci --ignore-scripts` | Passes from the committed `frontend/package-lock.json`; Angular packages are pinned to a coherent 19.2 toolchain. |
 | Frontend build | `cd frontend && npm run build` | Passes without Sass/selector/bundle-budget warnings; route-level components are lazy-loaded and the initial raw bundle is 605.70 kB (138.26 kB estimated transfer) under the 650 kB warning budget. |
