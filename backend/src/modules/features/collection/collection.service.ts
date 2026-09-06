@@ -212,10 +212,7 @@ export class CollectionService {
     async saveGameReview(userId: number, gameId: number, gameReviewDto: CreateGameReviewBody): Promise<SuccessDto> {
         const result = await this.reviewsService.saveGameReview(userId, gameId, gameReviewDto.review)
 
-        if (result.success) {
-            await this.collectionActivityService.logCollectionActivity(userId, gameId, 'rated', { rating: gameReviewDto.review })
-        }
-
+        await this.collectionActivityService.invalidateForAccount(userId)
         return result
     }
 
