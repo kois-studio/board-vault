@@ -80,6 +80,22 @@ allow-list, and real deployment observability/recovery ownership is still
 unverified. The next product-facing priority remains the clean two-person
 flagship loop, followed by rendered route review with real group data.
 
+### Tech-lead reassessment — after CI install repair — 2026-09-06
+
+The first remote validation run failed before tests because clean npm installs
+were not reproducible across the backend/frontend dependency graphs. That is
+now repaired locally and committed: package-local installs pass, the database
+job avoids npm's root `--prefix` validation path, and every local build/test/
+migration/restore/public-browser gate is green again. The next remote run is
+still needed because this workspace cannot push by policy.
+
+Product priority is unchanged: the next meaningful evidence is a disposable
+two-person social-loop rehearsal. The development Clerk CLI is linked and can
+issue short-lived impersonation URLs, but the collaborative preview cannot
+navigate that third-party URL; no production identity or account was touched.
+Do not use that tooling limitation as a reason to expand catalog/detail or
+standalone analytics work.
+
 ## Critical — unblock safe feature development
 
 ### READINESS-001 [Critical] SEC-003/SEC-008 — Complete object-level authorization audit
