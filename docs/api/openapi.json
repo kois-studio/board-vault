@@ -1,0 +1,7291 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/auth/clerk/status": {
+      "get": {
+        "operationId": "AuthController_getClerkStatus",
+        "summary": "Verify a Clerk session during the migration",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Clerk session is valid"
+          },
+          "401": {
+            "description": "Clerk session is invalid or expired"
+          }
+        },
+        "tags": [
+          "auth"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/auth/status": {
+      "get": {
+        "operationId": "AuthController_getTokenStatus",
+        "summary": "Validate JWT token and get user status",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Token is valid and user status returned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenStatusDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Token is invalid or expired"
+          }
+        },
+        "tags": [
+          "auth"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "operationId": "AuthController_createUser",
+        "summary": "Create a new user",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The user has been successfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "AuthController_loginUser",
+        "summary": "Log in a user",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successfully logged in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessTokenDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials"
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/check-email": {
+      "get": {
+        "operationId": "AuthController_checkEmail",
+        "summary": "Check if an email exists",
+        "parameters": [
+          {
+            "name": "email",
+            "required": true,
+            "in": "query",
+            "description": "The email address to check",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Email availability status"
+          },
+          "400": {
+            "description": "Email is required"
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/check-username": {
+      "get": {
+        "operationId": "AuthController_checkUsername",
+        "summary": "Check if a username exists",
+        "parameters": [
+          {
+            "name": "username",
+            "required": true,
+            "in": "query",
+            "description": "The username to check",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Username availability status"
+          },
+          "400": {
+            "description": "Username is required"
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/verify-email/{token}": {
+      "get": {
+        "operationId": "AuthController_verifyEmail",
+        "summary": "Verify user email",
+        "parameters": [
+          {
+            "name": "token",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Email successfully verified"
+          },
+          "400": {
+            "description": "Invalid or expired token"
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/forgot-password": {
+      "post": {
+        "operationId": "AuthController_forgotPassword",
+        "summary": "Request a password reset",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset link sent"
+          },
+          "400": {
+            "description": "Email is required"
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/reset-password/{token}": {
+      "post": {
+        "operationId": "AuthController_resetPassword",
+        "summary": "Reset user password",
+        "parameters": [
+          {
+            "name": "token",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset successfully"
+          },
+          "400": {
+            "description": "Invalid or expired token"
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/users": {
+      "get": {
+        "operationId": "UsersController_getUsers",
+        "summary": "Get all users",
+        "deprecated": true,
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of all users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserGetDto"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Administrator access required"
+          }
+        },
+        "tags": [
+          "users"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/users/{userId}": {
+      "get": {
+        "operationId": "UsersController_getUserById",
+        "summary": "Get user by id",
+        "deprecated": true,
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserGetDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found"
+          }
+        },
+        "tags": [
+          "users"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "put": {
+        "operationId": "UsersController_updateUser",
+        "summary": "Update a user by ID",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The user has been successfully updated."
+          },
+          "404": {
+            "description": "User not found."
+          }
+        },
+        "tags": [
+          "users"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "UsersController_deleteUserById",
+        "summary": "Delete a user by Id",
+        "deprecated": true,
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The user has been succesfully deleted"
+          }
+        },
+        "tags": [
+          "users"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/users/{userId}/games": {
+      "put": {
+        "operationId": "UsersController_updateUserGames",
+        "summary": "Modify games owned by user",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserUpdateGamesBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The games have been successfully updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found."
+          }
+        },
+        "tags": [
+          "users"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/cache/print": {
+      "get": {
+        "operationId": "CacheController_printAll",
+        "summary": "Print all keys stored in the database",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrintKeysDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "cache"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/cache/reset": {
+      "delete": {
+        "operationId": "CacheController_reset",
+        "summary": "Clear all data | try to avoid!",
+        "description": "It flushes the whole Redis database, use it only if needed",
+        "deprecated": true,
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "cache"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/cache/delete/{key}": {
+      "delete": {
+        "operationId": "CacheController_delete",
+        "summary": "Delete all data from a key",
+        "parameters": [
+          {
+            "name": "key",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "cache"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "operationId": "HealthController_getLiveness",
+        "summary": "Check whether the API process is alive",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LivenessDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "operationId": "HealthController_getReadiness",
+        "summary": "Check whether the API dependencies are ready",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadinessDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/memberships": {
+      "get": {
+        "operationId": "GroupMembershipsController_getGroupMemberships",
+        "summary": "Get all memberships",
+        "deprecated": true,
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of all memberships",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GroupMembershipDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "memberships"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "GroupMembershipsController_createGroupMembership",
+        "summary": "Create a new membership",
+        "deprecated": true,
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateGroupMembershipRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The membership has been succesfully created"
+          }
+        },
+        "tags": [
+          "memberships"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/memberships/{accountId}/{groupId}": {
+      "get": {
+        "operationId": "GroupMembershipsController_getGroupMembershipById",
+        "summary": "Get membership by id",
+        "deprecated": true,
+        "parameters": [
+          {
+            "name": "accountId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Membership found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupMembershipDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Membership not found"
+          }
+        },
+        "tags": [
+          "memberships"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "GroupMembershipsController_deleteGroupMembershipById",
+        "summary": "Delete a membership by Id",
+        "parameters": [
+          {
+            "name": "accountId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The membership has been succesfully deleted"
+          }
+        },
+        "tags": [
+          "memberships"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/groups": {
+      "get": {
+        "operationId": "GroupsController_getGroups",
+        "summary": "Get all groups",
+        "deprecated": true,
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of all groups",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GroupDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "groups"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "GroupsController_createGroup",
+        "summary": "Create a new group",
+        "deprecated": true,
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateGroupRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The group has been succesfully created"
+          }
+        },
+        "tags": [
+          "groups"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/groups/{groupId}": {
+      "get": {
+        "operationId": "GroupsController_getGroupById",
+        "summary": "Get group by id",
+        "deprecated": true,
+        "parameters": [
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Group found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Group not found"
+          }
+        },
+        "tags": [
+          "groups"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "put": {
+        "operationId": "GroupsController_updateGroup",
+        "summary": "Update a group by ID",
+        "deprecated": true,
+        "parameters": [
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateGroupBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The group has been successfully updated."
+          },
+          "404": {
+            "description": "Group not found."
+          }
+        },
+        "tags": [
+          "groups"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "GroupsController_deleteGroupById",
+        "summary": "Delete a group by Id",
+        "deprecated": true,
+        "parameters": [
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The group has been succesfully deleted"
+          }
+        },
+        "tags": [
+          "groups"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/groups/{groupId}/invitations": {
+      "get": {
+        "operationId": "GroupsController_getGroupInvitations",
+        "summary": "Get pending invitations for a group (owner only)",
+        "parameters": [
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InvitationWithAccountsData"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "groups"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/groups/{groupId}/clerk-invitations": {
+      "post": {
+        "operationId": "GroupsController_createClerkInvitation",
+        "summary": "Invite a new person to the group by email through Clerk",
+        "parameters": [
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateClerkGroupInvitationBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The Clerk invitation was created and emailed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClerkGroupInvitationDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "groups"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "GroupsController_getClerkInvitations",
+        "summary": "List pending Clerk invitations for a group (owner only)",
+        "parameters": [
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ClerkGroupInvitationSummaryDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "groups"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/groups/{groupId}/clerk-invitations/{invitationId}": {
+      "delete": {
+        "operationId": "GroupsController_revokeClerkInvitation",
+        "summary": "Revoke a pending Clerk invitation for a group (owner only)",
+        "parameters": [
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "invitationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "inv_123",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The Clerk invitation was revoked"
+          }
+        },
+        "tags": [
+          "groups"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/groups/{groupId}/acquisition-board": {
+      "get": {
+        "operationId": "GroupsController_getAcquisitionBoard",
+        "summary": "Get the group acquisition board",
+        "parameters": [
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GroupAcquisitionEntryDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "groups"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "GroupsController_addAcquisitionInterest",
+        "summary": "Express interest in a game for the group",
+        "parameters": [
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GroupGameInterestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Interest saved"
+          }
+        },
+        "tags": [
+          "groups"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/groups/{groupId}/acquisition-board/{gameId}": {
+      "delete": {
+        "operationId": "GroupsController_removeAcquisitionInterest",
+        "summary": "Remove the current member’s acquisition interest",
+        "parameters": [
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "gameId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Interest removed"
+          }
+        },
+        "tags": [
+          "groups"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/groups/{groupId}/acquisition-board/{gameId}/decision": {
+      "put": {
+        "operationId": "GroupsController_updateAcquisitionDecision",
+        "summary": "Update the group acquisition decision (owner only)",
+        "parameters": [
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "gameId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateGroupAcquisitionDecisionBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Group acquisition decision updated"
+          }
+        },
+        "tags": [
+          "groups"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/invitations": {
+      "get": {
+        "operationId": "InvitationsController_getInvitations",
+        "summary": "Get all invitations",
+        "deprecated": true,
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of all invitations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InvitationDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "invitations"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "InvitationsController_createInvitation",
+        "summary": "Create a new invitation",
+        "deprecated": true,
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateInvitationRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The invitation has been succesfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "invitations"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/invitations/{invitationId}": {
+      "get": {
+        "operationId": "InvitationsController_getInvitationById",
+        "summary": "Get invitation by id",
+        "deprecated": true,
+        "parameters": [
+          {
+            "name": "invitationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Invitation found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvitationDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Invitation not found"
+          }
+        },
+        "tags": [
+          "invitations"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "InvitationsController_deleteInvitationById",
+        "summary": "Delete a invitation by Id",
+        "parameters": [
+          {
+            "name": "invitationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The invitation has been succesfully deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "invitations"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/invitations/byUsername": {
+      "post": {
+        "operationId": "InvitationsController_createInvitationByUsername",
+        "summary": "Create a new invitation",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateInvitationByUsernameRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The invitation has been succesfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPublicDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found"
+          }
+        },
+        "tags": [
+          "invitations"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/invitations/{invitationId}/reject": {
+      "post": {
+        "operationId": "InvitationsController_rejectInvitation",
+        "summary": "Reject -> add to group -> notify",
+        "parameters": [
+          {
+            "name": "invitationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The invitation has been rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "invitations"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/meetAccountGames/{accountId}/{meetId}/{gameId}": {
+      "post": {
+        "operationId": "MeetAccountGamesController_createMeetAccountGame",
+        "summary": "Create a legacy per-account played-game link",
+        "deprecated": true,
+        "parameters": [
+          {
+            "name": "meetId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "gameId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The meetAccountGames has been successfully created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeetAccountGameDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "MeetId not found."
+          }
+        },
+        "tags": [
+          "meetAccountGames"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "MeetAccountGamesController_updateMeetAccountGame",
+        "summary": "Delete a legacy per-account played-game link",
+        "deprecated": true,
+        "parameters": [
+          {
+            "name": "meetId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "gameId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The meetGames has been successfully updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "MeetId not found."
+          }
+        },
+        "tags": [
+          "meetAccountGames"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/meetAttendees/{meetId}/{accountId}": {
+      "post": {
+        "operationId": "MeetAttendeesController_createMeetAttendee",
+        "summary": "Add a group member to a legacy meet compatibility record",
+        "deprecated": true,
+        "parameters": [
+          {
+            "name": "meetId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "accountId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeetAttendeeDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Only the meeting creator may manage attendees."
+          }
+        },
+        "tags": [
+          "meetAttendees"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "MeetAttendeesController_deleteMeetAttendee",
+        "summary": "Remove a group member from a legacy meet compatibility record",
+        "deprecated": true,
+        "parameters": [
+          {
+            "name": "meetId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "accountId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Only the meeting creator may manage attendees."
+          }
+        },
+        "tags": [
+          "meetAttendees"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/meets": {
+      "get": {
+        "operationId": "MeetsController_getMeets",
+        "summary": "Get all meets",
+        "deprecated": true,
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of all meets",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MeetDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "meets"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/meets/{meetId}": {
+      "get": {
+        "operationId": "MeetsController_getMeetById",
+        "summary": "Get meet by id",
+        "deprecated": true,
+        "parameters": [
+          {
+            "name": "meetId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Meet found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeetDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Meet not found"
+          }
+        },
+        "tags": [
+          "meets"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/meets/{meetId}/details": {
+      "get": {
+        "operationId": "MeetsController_getMeetDetailsById",
+        "summary": "Get legacy meet details by id",
+        "deprecated": true,
+        "parameters": [
+          {
+            "name": "meetId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Meet details found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeetWithAttendeesAndGames"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Meet details not found"
+          }
+        },
+        "tags": [
+          "meets"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/notifications": {
+      "get": {
+        "operationId": "NotificationsController_getNotifications",
+        "summary": "Get all notifications",
+        "deprecated": true,
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of all notifications",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NotificationDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "notifications"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "NotificationsController_createNotification",
+        "summary": "Create a new notification",
+        "deprecated": true,
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateNotificationRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The notification has been succesfully created"
+          }
+        },
+        "tags": [
+          "notifications"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/notifications/{notificationId}": {
+      "get": {
+        "operationId": "NotificationsController_getNotificationById",
+        "summary": "Get notification by id",
+        "deprecated": true,
+        "parameters": [
+          {
+            "name": "notificationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Notification found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Notification not found"
+          }
+        },
+        "tags": [
+          "notifications"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "put": {
+        "operationId": "NotificationsController_updateNotification",
+        "summary": "Update a notification by ID",
+        "parameters": [
+          {
+            "name": "notificationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateNotificationRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The notification has been successfully updated."
+          },
+          "404": {
+            "description": "Notification not found."
+          }
+        },
+        "tags": [
+          "notifications"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "NotificationsController_deleteNotificationById",
+        "summary": "Delete a notification by Id",
+        "parameters": [
+          {
+            "name": "notificationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The notification has been succesfully deleted"
+          }
+        },
+        "tags": [
+          "notifications"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/admin/tag-categories": {
+      "get": {
+        "operationId": "AdminController_getTagCategories",
+        "summary": "Get all tag categories",
+        "deprecated": false,
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of all tag categories",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TagCategoryWithTagsDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "admin"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "AdminController_createTagCategory",
+        "summary": "Create a new tag category",
+        "deprecated": false,
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTagCategoryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "New tag category created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateTagCategoryDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "admin"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/admin/tag-categories/{id}": {
+      "put": {
+        "operationId": "AdminController_updateTagCategory",
+        "summary": "Update a tag category",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTagCategoryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tag category updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateTagCategoryDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "admin"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "AdminController_deleteTagCategory",
+        "summary": "Delete a tag category",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tag category deleted"
+          }
+        },
+        "tags": [
+          "admin"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/admin/tags": {
+      "get": {
+        "operationId": "AdminController_getTags",
+        "summary": "Get all tags",
+        "deprecated": false,
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of all tags",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TagDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "admin"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "AdminController_createTag",
+        "summary": "Create a new tag",
+        "deprecated": false,
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTagDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "New tag created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateTagDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "admin"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/admin/tags/{id}": {
+      "put": {
+        "operationId": "AdminController_updateTag",
+        "summary": "Update a tag",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTagDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tag updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateTagDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "admin"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "AdminController_deleteTag",
+        "summary": "Delete a tag",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tag deleted"
+          }
+        },
+        "tags": [
+          "admin"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/admin/games": {
+      "get": {
+        "operationId": "AdminController_getGames",
+        "summary": "Get games with translations and tags (paginated and searchable)",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Title search, across supported translations.",
+            "schema": {
+              "example": "catan",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of games with translations and tags",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminGamesResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "admin"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/admin/games/{id}/translations": {
+      "put": {
+        "operationId": "AdminController_updateGameTranslations",
+        "summary": "Update game translations",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateGameTranslationsBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Game translations updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "admin"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/admin/games/{id}/tags": {
+      "put": {
+        "operationId": "AdminController_updateGameTags",
+        "summary": "Update game tags",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateGameTagsBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Game tags updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "admin"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/admin/proposals": {
+      "get": {
+        "operationId": "AdminController_getGameProposals",
+        "summary": "Get game proposals (paginated and filterable by status)",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "enum": [
+                "pending",
+                "approved",
+                "rejected",
+                "duplicate"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of game proposals",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminGameProposalsResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "admin"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/admin/proposals/{id}": {
+      "get": {
+        "operationId": "AdminController_getGameProposal",
+        "summary": "Get a specific game proposal",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Game proposal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameProposalCompleteDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "admin"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "AdminController_deleteGameProposal",
+        "summary": "Delete a game proposal",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Game proposal deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "admin"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/admin/proposals/{id}/approve": {
+      "post": {
+        "operationId": "AdminController_approveGameProposal",
+        "summary": "Approve a game proposal and create the game",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApproveGameProposalBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Game proposal approved and game created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "createdGameId": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "admin"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/admin/proposals/{id}/reject": {
+      "post": {
+        "operationId": "AdminController_rejectGameProposal",
+        "summary": "Reject a game proposal",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RejectGameProposalBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Game proposal rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "admin"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/admin/proposals/{id}/duplicate": {
+      "post": {
+        "operationId": "AdminController_markGameProposalAsDuplicate",
+        "summary": "Mark a game proposal as duplicate",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "reviewNotes",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "Already present in the catalog.",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Game proposal marked as duplicate",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "admin"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/collection/users/{userId}/games": {
+      "get": {
+        "operationId": "CollectionController_getGamesOwnedByUser",
+        "summary": "Get all games owned by a user",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of all games owned by the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GameCompleteDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "collection"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/collection/users/{userId}/games/{gameId}": {
+      "get": {
+        "operationId": "CollectionController_getGameViewByUserId",
+        "summary": "Game view for a user (not owned necessarily)",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "gameId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Game view for the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameViewDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "collection"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "CollectionController_addGameToUserCollection",
+        "summary": "Add a game to a user's collection",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "gameId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Game added to the user's collection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "collection"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "CollectionController_removeGameFromUserCollection",
+        "summary": "Remove a game from a user's collection",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "gameId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Game removed from the user's collection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "collection"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/collection/users/{userId}/games/{gameId}/ownership": {
+      "patch": {
+        "operationId": "CollectionController_updateGameOwnership",
+        "summary": "Update ownership details of a game",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "gameId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateGameOwnedDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated game ownership details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameOwnedDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "collection"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/collection/users/{userId}/games/{gameId}/wishlist": {
+      "put": {
+        "operationId": "CollectionController_toggleWishlist",
+        "summary": "Toggle the wishlist status of the game",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "gameId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WishlistResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "collection"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/collection/users/{userId}/browse/games": {
+      "get": {
+        "operationId": "CollectionController_getGamesNotOwnedByUser",
+        "summary": "Browse games not owned by a user",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of all games not owned by the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BrowseGamesResultDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "collection"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/collection/users/{userId}/reviews": {
+      "get": {
+        "operationId": "CollectionController_getReviewsOfUser",
+        "summary": "Get all reviews of a user",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of all reviews of the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GameReviewWithGameDataDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "collection"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/collection/users/{userId}/reviews/{gameId}": {
+      "post": {
+        "operationId": "CollectionController_saveGameReview",
+        "summary": "Save a game review",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "gameId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateGameReviewBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The review has been succesfully saved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "collection"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/collection/users/{userId}/wishlist": {
+      "get": {
+        "operationId": "CollectionController_getUserWishlist",
+        "summary": "Get all wishlist of a user",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of all wishlist of the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GameDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "collection"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/collection/users/{userId}/recent-activity": {
+      "get": {
+        "operationId": "CollectionController_getUserCollectionActivities",
+        "summary": "Get all recent activity of a user's collection",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of all recent activity of the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CollectionActivityDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "collection"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/dashboard/users/{userId}/stats": {
+      "get": {
+        "operationId": "DashboardController_getStatsOfUser",
+        "summary": "Get all stats of a user",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Stats retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserStatsDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "dashboard"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/dashboard/users/{userId}/groups": {
+      "get": {
+        "operationId": "DashboardController_getGroupsOfUser",
+        "summary": "Get all groups of a user with members and games",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of all groups of the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GroupWithMembersAndGames"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "dashboard"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/dashboard/users/{userId}/groups/create/{groupName}": {
+      "post": {
+        "operationId": "DashboardController_createGroup",
+        "summary": "Create a new group",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "groupName",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Group created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatedGroupDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "dashboard"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/dashboard/users/{userId}/groups/{groupId}": {
+      "delete": {
+        "operationId": "DashboardController_deleteGroup",
+        "summary": "Delete a group (owner only)",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Group deleted successfully"
+          }
+        },
+        "tags": [
+          "dashboard"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/dashboard/users/{userId}/groups/{groupId}/meetings": {
+      "get": {
+        "operationId": "DashboardController_getGroupMeetings",
+        "summary": "Get all meetings of a group",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Meetings retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HistoryRecordDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "dashboard"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/dashboard/users/{userId}/groups/{groupId}/members": {
+      "delete": {
+        "operationId": "DashboardController_leaveGroup",
+        "summary": "Leaves a group",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Member left successfully"
+          }
+        },
+        "tags": [
+          "dashboard"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/dashboard/users/{userId}/groups/{groupId}/members/{memberId}": {
+      "delete": {
+        "operationId": "DashboardController_deleteMemberFromGroup",
+        "summary": "Removes a member from a group",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "memberId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Member removed successfully"
+          }
+        },
+        "tags": [
+          "dashboard"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/play/recommendations": {
+      "post": {
+        "operationId": "PlayController_getRecommendations",
+        "summary": "Get deterministic recommendations for selected group attendees",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecommendationRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecommendationsDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "play"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/play/recommendations/feedback": {
+      "post": {
+        "operationId": "PlayController_createRecommendationFeedback",
+        "summary": "Record feedback for a recommendation",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecommendationFeedbackBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecommendationFeedbackDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "play"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/play/recommendations/signals": {
+      "get": {
+        "operationId": "PlayController_getRecommendationSignals",
+        "summary": "View the latest group-level recommendation signals",
+        "parameters": [
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecommendationSignalsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The current user does not belong to the group."
+          }
+        },
+        "tags": [
+          "play"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/play/users/{userId}/history": {
+      "get": {
+        "operationId": "PlayController_getUserGamesHistory",
+        "summary": "List of all games played by the user",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of all games played by the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HistoryRecordDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "play"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/play/users/{userId}/meets": {
+      "get": {
+        "operationId": "PlayController_getUserMeets",
+        "summary": "List of all meets of the user",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of all meets of the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MeetDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "play"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/profile/users/{userId}": {
+      "get": {
+        "operationId": "ProfileController_getUserById",
+        "summary": "Get user by id",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Authenticated user profile found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserSelfDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found"
+          }
+        },
+        "tags": [
+          "profile"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/profile/users/{userId}/notifications": {
+      "get": {
+        "operationId": "ProfileController_getNotificationsByAccountId",
+        "summary": "Get notifications by user id",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Notifications found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Notifications not found"
+          }
+        },
+        "tags": [
+          "profile"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/profile/users/{userId}/invitations": {
+      "get": {
+        "operationId": "ProfileController_getUserInvitations",
+        "summary": "Get invitations received",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InvitationWithExtraData"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "profile"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/profile/users/{userId}/invitations/{invitationId}/accept": {
+      "post": {
+        "operationId": "ProfileController_acceptInvitation",
+        "summary": "Accept invitation",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "invitationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Invitation accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Invitation not found"
+          }
+        },
+        "tags": [
+          "profile"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/profile/users/{userId}/proposals": {
+      "get": {
+        "operationId": "ProfileController_getUserProposals",
+        "summary": "Get user proposals",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User proposals found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GameProposalDto"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found"
+          }
+        },
+        "tags": [
+          "profile"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "ProfileController_createGameProposal",
+        "summary": "Create a new game proposal",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateGameProposalBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Game proposal created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameProposalDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid proposal data"
+          }
+        },
+        "tags": [
+          "profile"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/profile/users/{userId}/proposal-stats": {
+      "get": {
+        "operationId": "ProfileController_getUserProposalStats",
+        "summary": "Get user proposal statistics",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User proposal stats found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProposalStatsDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found"
+          }
+        },
+        "tags": [
+          "profile"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/sessions/{sessionId}": {
+      "get": {
+        "operationId": "SessionsController_getSessionDetails",
+        "summary": "Get a session with attendees and planned/played games",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeetWithAttendeesAndGames"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Session not found or not visible to the current member."
+          }
+        },
+        "tags": [
+          "sessions"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/sessions": {
+      "post": {
+        "operationId": "SessionsController_createCompletedSession",
+        "summary": "Create a completed play session from selected attendees and games",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePlaySessionBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionCreatedDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The selected group, attendees, games, or participants are invalid."
+          }
+        },
+        "tags": [
+          "sessions"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/sessions/scheduled": {
+      "post": {
+        "operationId": "SessionsController_createScheduledSession",
+        "summary": "Schedule a session for a group",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateScheduledSessionBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScheduledSessionCreatedDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "sessions"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/sessions/{sessionId}/attendees": {
+      "patch": {
+        "operationId": "SessionsController_updateSessionAttendees",
+        "summary": "Replace the attendees of an editable session",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSessionAttendeesBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionAttendeesUpdatedDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The session must retain at least one group member."
+          },
+          "403": {
+            "description": "Only the session organizer may manage attendees."
+          }
+        },
+        "tags": [
+          "sessions"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/sessions/{sessionId}/shortlist": {
+      "patch": {
+        "operationId": "SessionsController_updateSessionShortlist",
+        "summary": "Replace the planned games of an editable session",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSessionShortlistBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionShortlistUpdatedDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The planned games must be owned by at least one group member."
+          },
+          "403": {
+            "description": "Only the session organizer may manage the shortlist."
+          }
+        },
+        "tags": [
+          "sessions"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/sessions/{sessionId}/played-games": {
+      "patch": {
+        "operationId": "SessionsController_updateSessionPlayedGames",
+        "summary": "Replace the games actually played in an editable session",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSessionPlayedGamesBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionPlayedGamesUpdatedDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Every played game must be owned by at least one group member."
+          },
+          "403": {
+            "description": "Only the session organizer may record games played."
+          }
+        },
+        "tags": [
+          "sessions"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/sessions/{sessionId}/rsvp": {
+      "patch": {
+        "operationId": "SessionsController_updateSessionRsvp",
+        "summary": "Respond to the current user’s session invitation",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSessionRsvpBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionRsvpUpdatedDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The current user is not invited to this session."
+          }
+        },
+        "tags": [
+          "sessions"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/sessions/{sessionId}/attendance": {
+      "patch": {
+        "operationId": "SessionsController_updateSessionAttendance",
+        "summary": "Record which invited members actually attended a session",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSessionAttendanceBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionAttendanceUpdatedDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Only the session organizer can record attendance."
+          }
+        },
+        "tags": [
+          "sessions"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/sessions/{sessionId}/status": {
+      "patch": {
+        "operationId": "SessionsController_updateSessionStatus",
+        "summary": "Transition a session lifecycle status",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSessionStatusBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionStatusUpdatedDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The requested lifecycle transition is invalid."
+          }
+        },
+        "tags": [
+          "sessions"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Board Vault API",
+    "description": "Versioned contract snapshot for the Board Vault social group workspace API.",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "TokenStatusDto": {
+        "type": "object",
+        "properties": {
+          "isValid": {
+            "type": "boolean",
+            "example": true
+          },
+          "userId": {
+            "type": "number",
+            "example": 1
+          },
+          "isAdmin": {
+            "type": "boolean",
+            "example": false
+          }
+        },
+        "required": [
+          "isValid",
+          "userId",
+          "isAdmin"
+        ]
+      },
+      "RegisterUserDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "jose@email.com"
+          },
+          "username": {
+            "type": "string",
+            "example": "joseantonio"
+          },
+          "password": {
+            "type": "string",
+            "example": "correct-horse-battery-staple"
+          }
+        },
+        "required": [
+          "email",
+          "username",
+          "password"
+        ]
+      },
+      "SuccessDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true,
+            "description": "The success status of the operation."
+          }
+        },
+        "required": [
+          "success"
+        ]
+      },
+      "LoginUserDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "jose@email.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "correct-horse-battery-staple"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "AccessTokenDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "example": "eyJhbGcifasdjghnsndgi...",
+            "description": "The JWT access token."
+          }
+        },
+        "required": [
+          "accessToken"
+        ]
+      },
+      "ForgotPasswordDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "The email address of the user"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "ResetPasswordDto": {
+        "type": "object",
+        "properties": {
+          "password": {
+            "type": "string",
+            "description": "The new password for the user"
+          }
+        },
+        "required": [
+          "password"
+        ]
+      },
+      "AvatarDto": {
+        "type": "object",
+        "properties": {
+          "backgroundColor": {
+            "type": "string",
+            "example": "#3B82F6"
+          },
+          "iconName": {
+            "type": "object",
+            "example": "person-fill"
+          },
+          "emoji": {
+            "type": "object",
+            "example": null
+          },
+          "type": {
+            "type": "string",
+            "example": "icon"
+          },
+          "initials": {
+            "type": "string",
+            "example": "AB"
+          }
+        },
+        "required": [
+          "backgroundColor",
+          "iconName",
+          "emoji",
+          "type",
+          "initials"
+        ]
+      },
+      "UserGetDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "email": {
+            "type": "string",
+            "example": "jose@email.com"
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2024-09-28 10:02:39"
+          },
+          "username": {
+            "type": "string",
+            "example": "joseantonio"
+          },
+          "displayName": {
+            "type": "string",
+            "example": "Jose Antonio"
+          },
+          "avatar": {
+            "description": "The avatar of the user.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AvatarDto"
+              }
+            ]
+          },
+          "isDeleted": {
+            "type": "boolean",
+            "example": false
+          },
+          "isAdmin": {
+            "type": "boolean",
+            "example": false
+          },
+          "email_verified": {
+            "type": "boolean",
+            "example": false
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "createdAt",
+          "username",
+          "displayName",
+          "avatar",
+          "isDeleted",
+          "isAdmin",
+          "email_verified"
+        ]
+      },
+      "UpdateUserBody": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "example": "joseantonio"
+          },
+          "displayName": {
+            "type": "string",
+            "example": "Jose Antonio"
+          },
+          "avatar": {
+            "$ref": "#/components/schemas/AvatarDto"
+          }
+        }
+      },
+      "UserUpdateGamesBody": {
+        "type": "object",
+        "properties": {
+          "gamesToAdd": {
+            "description": "The games to add to user",
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "gamesToRemove": {
+            "description": "The games to remove from user",
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "required": [
+          "gamesToAdd",
+          "gamesToRemove"
+        ]
+      },
+      "PrintKeysDto": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "number",
+            "description": "Total number of records in the database",
+            "example": 42
+          },
+          "keys": {
+            "description": "Keys stored in the database",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "total",
+          "keys"
+        ]
+      },
+      "LivenessDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "ok"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "ReadinessChecksDto": {
+        "type": "object",
+        "properties": {
+          "database": {
+            "type": "string",
+            "example": "up",
+            "enum": [
+              "up",
+              "down"
+            ]
+          },
+          "cache": {
+            "type": "string",
+            "example": "up",
+            "enum": [
+              "up",
+              "down",
+              "disabled"
+            ]
+          }
+        },
+        "required": [
+          "database",
+          "cache"
+        ]
+      },
+      "ReadinessDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "ready",
+            "enum": [
+              "ready",
+              "not_ready"
+            ]
+          },
+          "checks": {
+            "$ref": "#/components/schemas/ReadinessChecksDto"
+          }
+        },
+        "required": [
+          "status",
+          "checks"
+        ]
+      },
+      "GroupMembershipDto": {
+        "type": "object",
+        "properties": {
+          "accountId": {
+            "type": "number",
+            "example": 12345,
+            "description": "The unique identifier for the account."
+          },
+          "groupId": {
+            "type": "number",
+            "example": 12345,
+            "description": "The unique identifier for the group."
+          },
+          "joinedAt": {
+            "type": "string",
+            "example": "2024-09-28 10:02:39",
+            "description": "The date and time the membership was created."
+          }
+        },
+        "required": [
+          "accountId",
+          "groupId",
+          "joinedAt"
+        ]
+      },
+      "CreateGroupMembershipRequestBody": {
+        "type": "object",
+        "properties": {
+          "groupId": {
+            "type": "number",
+            "example": 12345,
+            "description": "The unique identifier for the group."
+          }
+        },
+        "required": [
+          "groupId"
+        ]
+      },
+      "GroupDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 12345
+          },
+          "name": {
+            "type": "string",
+            "example": "example-user's Group"
+          },
+          "createdBy": {
+            "type": "number",
+            "example": 12345
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2024-09-28 10:02:39"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "createdBy",
+          "createdAt"
+        ]
+      },
+      "CreateGroupRequestBody": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "example-user's Group"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "UpdateGroupBody": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "example-user's Group"
+          }
+        }
+      },
+      "Function": {
+        "type": "object",
+        "properties": {}
+      },
+      "InvitationWithAccountsData": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 12345
+          },
+          "groupId": {
+            "type": "number",
+            "example": 12345
+          },
+          "fromAccountId": {
+            "type": "number",
+            "example": 12345
+          },
+          "toAccountId": {
+            "type": "number",
+            "example": 12345
+          },
+          "sentAt": {
+            "type": "string",
+            "example": "2021-10-10T12:00:00Z"
+          },
+          "expiresAt": {
+            "type": "string",
+            "example": "2021-11-09T12:00:00Z",
+            "description": "The invitation stops being actionable after this UTC timestamp."
+          },
+          "fromAccount": {
+            "description": "The account data of the user who made the invitation.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Function"
+              }
+            ]
+          },
+          "toAccount": {
+            "description": "The account data of the user to invite.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Function"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "groupId",
+          "fromAccountId",
+          "toAccountId",
+          "sentAt",
+          "expiresAt",
+          "fromAccount",
+          "toAccount"
+        ]
+      },
+      "CreateClerkGroupInvitationBody": {
+        "type": "object",
+        "properties": {
+          "emailAddress": {
+            "type": "string",
+            "example": "friend@example.com"
+          }
+        },
+        "required": [
+          "emailAddress"
+        ]
+      },
+      "ClerkGroupInvitationDto": {
+        "type": "object",
+        "properties": {
+          "invitationId": {
+            "type": "string",
+            "example": "inv_123"
+          },
+          "emailAddress": {
+            "type": "string",
+            "example": "friend@example.com"
+          },
+          "url": {
+            "type": "string",
+            "example": "https://accounts.example.com/sign-up?__clerk_ticket=..."
+          }
+        },
+        "required": [
+          "invitationId",
+          "emailAddress",
+          "url"
+        ]
+      },
+      "ClerkGroupInvitationSummaryDto": {
+        "type": "object",
+        "properties": {
+          "invitationId": {
+            "type": "string",
+            "example": "inv_123"
+          },
+          "emailAddress": {
+            "type": "string",
+            "example": "friend@example.com"
+          },
+          "status": {
+            "type": "string",
+            "example": "pending",
+            "enum": [
+              "pending"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2026-09-05T10:00:00.000Z"
+          }
+        },
+        "required": [
+          "invitationId",
+          "emailAddress",
+          "status",
+          "createdAt"
+        ]
+      },
+      "GameCompleteDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 12345
+          },
+          "imageUrl": {
+            "type": "string",
+            "example": "https://www.example.com/image.jpg"
+          },
+          "gameAvgDuration": {
+            "type": "number",
+            "example": 120,
+            "description": "The average duration of the game in minutes."
+          },
+          "minPlayers": {
+            "type": "number",
+            "example": 3,
+            "description": "The minimum number of players required to play the game."
+          },
+          "maxPlayers": {
+            "type": "number",
+            "example": 4,
+            "description": "The maximum number of players that can play the game."
+          },
+          "title": {
+            "type": "string",
+            "example": "Game Title"
+          },
+          "titleTranslations": {
+            "type": "object",
+            "example": {
+              "en": "Game Title"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "imageUrl",
+          "gameAvgDuration",
+          "minPlayers",
+          "maxPlayers",
+          "titleTranslations"
+        ]
+      },
+      "UserPublicDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "username": {
+            "type": "string",
+            "example": "joseantonio"
+          },
+          "displayName": {
+            "type": "string",
+            "example": "Jose Antonio"
+          },
+          "avatar": {
+            "description": "The avatar of the user.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AvatarDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "username",
+          "displayName",
+          "avatar"
+        ]
+      },
+      "GroupAcquisitionEntryDto": {
+        "type": "object",
+        "properties": {
+          "gameData": {
+            "$ref": "#/components/schemas/GameCompleteDto"
+          },
+          "interestedBy": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserPublicDto"
+            }
+          },
+          "interestCount": {
+            "type": "number",
+            "example": 2
+          },
+          "ownerCount": {
+            "type": "number",
+            "example": 0
+          },
+          "firstInterestedAt": {
+            "type": "string",
+            "example": "2026-09-03 20:00:00"
+          },
+          "decisionStatus": {
+            "type": "string",
+            "example": "open",
+            "enum": [
+              "open",
+              "planned",
+              "not_now"
+            ]
+          },
+          "decisionAt": {
+            "type": "object",
+            "example": "2026-09-04 20:00:00",
+            "nullable": true
+          },
+          "decisionBy": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserPublicDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "gameData",
+          "interestedBy",
+          "interestCount",
+          "ownerCount",
+          "firstInterestedAt",
+          "decisionStatus",
+          "decisionAt",
+          "decisionBy"
+        ]
+      },
+      "GroupGameInterestBody": {
+        "type": "object",
+        "properties": {
+          "gameId": {
+            "type": "number",
+            "example": 42,
+            "description": "Catalog game the member wants the group to consider acquiring."
+          }
+        },
+        "required": [
+          "gameId"
+        ]
+      },
+      "UpdateGroupAcquisitionDecisionBody": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "planned",
+            "enum": [
+              "open",
+              "planned",
+              "not_now"
+            ]
+          },
+          "note": {
+            "type": "object",
+            "example": "Aim to buy before the autumn game nights.",
+            "nullable": true
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "InvitationDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 12345
+          },
+          "groupId": {
+            "type": "number",
+            "example": 12345
+          },
+          "fromAccountId": {
+            "type": "number",
+            "example": 12345
+          },
+          "toAccountId": {
+            "type": "number",
+            "example": 12345
+          },
+          "sentAt": {
+            "type": "string",
+            "example": "2021-10-10T12:00:00Z"
+          },
+          "expiresAt": {
+            "type": "string",
+            "example": "2021-11-09T12:00:00Z",
+            "description": "The invitation stops being actionable after this UTC timestamp."
+          }
+        },
+        "required": [
+          "id",
+          "groupId",
+          "fromAccountId",
+          "toAccountId",
+          "sentAt",
+          "expiresAt"
+        ]
+      },
+      "CreateInvitationRequestBody": {
+        "type": "object",
+        "properties": {
+          "groupId": {
+            "type": "number",
+            "example": 12345
+          },
+          "toAccountId": {
+            "type": "number",
+            "example": 12345
+          }
+        },
+        "required": [
+          "groupId",
+          "toAccountId"
+        ]
+      },
+      "CreateInvitationByUsernameRequestBody": {
+        "type": "object",
+        "properties": {
+          "groupId": {
+            "type": "number",
+            "example": 12345
+          },
+          "username": {
+            "type": "string",
+            "example": "username",
+            "description": "The username to invite."
+          }
+        },
+        "required": [
+          "groupId",
+          "username"
+        ]
+      },
+      "MeetAccountGameDto": {
+        "type": "object",
+        "properties": {
+          "accountId": {
+            "type": "number",
+            "example": 12345,
+            "description": "The unique identifier for the Account."
+          },
+          "meetId": {
+            "type": "number",
+            "example": 12345,
+            "description": "The unique identifier for the Meeting."
+          },
+          "gameId": {
+            "type": "number",
+            "example": 12345,
+            "description": "The unique identifier for the Group."
+          }
+        },
+        "required": [
+          "accountId",
+          "meetId",
+          "gameId"
+        ]
+      },
+      "MeetAttendeeDto": {
+        "type": "object",
+        "properties": {
+          "meetId": {
+            "type": "number",
+            "example": 12345
+          },
+          "accountId": {
+            "type": "number",
+            "example": 12345
+          }
+        },
+        "required": [
+          "meetId",
+          "accountId"
+        ]
+      },
+      "MeetDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 12345
+          },
+          "groupId": {
+            "type": "number",
+            "example": 12345
+          },
+          "createdBy": {
+            "type": "number",
+            "example": 12345
+          },
+          "meetDate": {
+            "type": "string",
+            "example": "2024-09-28 10:02:39"
+          },
+          "isConfirmed": {
+            "type": "boolean",
+            "example": true
+          },
+          "status": {
+            "type": "string",
+            "example": "completed",
+            "enum": [
+              "scheduled",
+              "active",
+              "completed",
+              "cancelled"
+            ]
+          },
+          "timezone": {
+            "type": "string",
+            "example": "UTC"
+          },
+          "notes": {
+            "type": "object",
+            "example": "Tried the new co-op expansion.",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "groupId",
+          "createdBy",
+          "meetDate",
+          "isConfirmed",
+          "status",
+          "timezone"
+        ]
+      },
+      "MeetAttendeeStatusDto": {
+        "type": "object",
+        "properties": {
+          "accountId": {
+            "type": "number",
+            "example": 12345
+          },
+          "rsvpStatus": {
+            "type": "string",
+            "example": "accepted",
+            "enum": [
+              "pending",
+              "accepted",
+              "declined"
+            ]
+          },
+          "attendanceStatus": {
+            "type": "string",
+            "example": "unknown",
+            "enum": [
+              "unknown",
+              "attended",
+              "absent"
+            ]
+          }
+        },
+        "required": [
+          "accountId",
+          "rsvpStatus",
+          "attendanceStatus"
+        ]
+      },
+      "GameDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 12345
+          },
+          "imageUrl": {
+            "type": "string",
+            "example": "https://www.example.com/image.jpg"
+          },
+          "gameAvgDuration": {
+            "type": "number",
+            "example": 120,
+            "description": "The average duration of the game in minutes."
+          },
+          "minPlayers": {
+            "type": "number",
+            "example": 3,
+            "description": "The minimum number of players required to play the game."
+          },
+          "maxPlayers": {
+            "type": "number",
+            "example": 4,
+            "description": "The maximum number of players that can play the game."
+          }
+        },
+        "required": [
+          "id",
+          "imageUrl",
+          "gameAvgDuration",
+          "minPlayers",
+          "maxPlayers"
+        ]
+      },
+      "MeetPlayedGameParticipantsDto": {
+        "type": "object",
+        "properties": {
+          "gameId": {
+            "type": "number",
+            "example": 42
+          },
+          "participantIds": {
+            "example": [
+              1,
+              2
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "gameId",
+          "participantIds"
+        ]
+      },
+      "MeetWithAttendeesAndGames": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 12345
+          },
+          "groupId": {
+            "type": "number",
+            "example": 12345
+          },
+          "createdBy": {
+            "type": "number",
+            "example": 12345
+          },
+          "meetDate": {
+            "type": "string",
+            "example": "2024-09-28 10:02:39"
+          },
+          "isConfirmed": {
+            "type": "boolean",
+            "example": true
+          },
+          "status": {
+            "type": "string",
+            "example": "completed",
+            "enum": [
+              "scheduled",
+              "active",
+              "completed",
+              "cancelled"
+            ]
+          },
+          "timezone": {
+            "type": "string",
+            "example": "UTC"
+          },
+          "notes": {
+            "type": "object",
+            "example": "Tried the new co-op expansion.",
+            "nullable": true
+          },
+          "attendees": {
+            "description": "The attendees of the meet.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserGetDto"
+            }
+          },
+          "attendeeStatuses": {
+            "description": "RSVP and final attendance state for each invited member.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MeetAttendeeStatusDto"
+            }
+          },
+          "playedGames": {
+            "description": "The games played at the meet.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GameDto"
+            }
+          },
+          "plannedGames": {
+            "description": "The games planned for the meet.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GameDto"
+            }
+          },
+          "skippedGames": {
+            "description": "The games planned but not played in the meet.",
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "playedGameParticipants": {
+            "description": "The members recorded as participants for each played game.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MeetPlayedGameParticipantsDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "groupId",
+          "createdBy",
+          "meetDate",
+          "isConfirmed",
+          "status",
+          "timezone",
+          "attendees",
+          "attendeeStatuses",
+          "playedGames",
+          "plannedGames",
+          "skippedGames",
+          "playedGameParticipants"
+        ]
+      },
+      "NotificationDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 12345
+          },
+          "accountId": {
+            "type": "number",
+            "example": 12345
+          },
+          "type": {
+            "type": "string",
+            "example": "expelled"
+          },
+          "message": {
+            "type": "string",
+            "example": "message"
+          },
+          "data": {
+            "type": "object",
+            "example": "{}"
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2022-03-07T16:00:00.000Z"
+          },
+          "isRead": {
+            "type": "boolean",
+            "example": true
+          }
+        },
+        "required": [
+          "id",
+          "accountId",
+          "type",
+          "message",
+          "data",
+          "createdAt",
+          "isRead"
+        ]
+      },
+      "CreateNotificationRequestBody": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "expelled"
+          },
+          "message": {
+            "type": "string",
+            "example": "message"
+          },
+          "data": {
+            "type": "object",
+            "example": "{}"
+          }
+        },
+        "required": [
+          "type",
+          "message",
+          "data"
+        ]
+      },
+      "UpdateNotificationRequestBody": {
+        "type": "object",
+        "properties": {
+          "isRead": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "TagDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "Tag Name"
+          },
+          "categoryId": {
+            "type": "number",
+            "example": 1
+          },
+          "gameCount": {
+            "type": "number",
+            "example": 10
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "categoryId",
+          "gameCount"
+        ]
+      },
+      "TagCategoryWithTagsDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "Action"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TagDto"
+            }
+          },
+          "gameCount": {
+            "type": "number",
+            "example": 10
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "tags",
+          "gameCount"
+        ]
+      },
+      "CreateTagCategoryDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Action"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "CreateTagDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Tag Name"
+          },
+          "categoryId": {
+            "type": "number",
+            "example": 1
+          },
+          "gameCount": {
+            "type": "number",
+            "example": 10
+          }
+        },
+        "required": [
+          "name",
+          "categoryId",
+          "gameCount"
+        ]
+      },
+      "GameTagWithCategoryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1,
+            "description": "Tag ID"
+          },
+          "name": {
+            "type": "string",
+            "example": "Strategy",
+            "description": "Tag name"
+          },
+          "categoryName": {
+            "type": "string",
+            "example": "Game Type",
+            "description": "Category name"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "categoryName"
+        ]
+      },
+      "GameWithTagsAndTranslationsDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 12345
+          },
+          "imageUrl": {
+            "type": "string",
+            "example": "https://www.example.com/image.jpg"
+          },
+          "gameAvgDuration": {
+            "type": "number",
+            "example": 120,
+            "description": "The average duration of the game in minutes."
+          },
+          "minPlayers": {
+            "type": "number",
+            "example": 3,
+            "description": "The minimum number of players required to play the game."
+          },
+          "maxPlayers": {
+            "type": "number",
+            "example": 4,
+            "description": "The maximum number of players that can play the game."
+          },
+          "translations": {
+            "type": "object",
+            "example": {
+              "en": "Catan",
+              "es": "Catan"
+            },
+            "description": "Game title translations for supported languages"
+          },
+          "tags": {
+            "description": "Tags assigned to this game with their categories",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GameTagWithCategoryDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "imageUrl",
+          "gameAvgDuration",
+          "minPlayers",
+          "maxPlayers",
+          "translations",
+          "tags"
+        ]
+      },
+      "BrowseGamesPaginationDto": {
+        "type": "object",
+        "properties": {
+          "currentPage": {
+            "type": "number",
+            "example": 1
+          },
+          "totalPages": {
+            "type": "number",
+            "example": 10
+          },
+          "totalItems": {
+            "type": "number",
+            "example": 100
+          },
+          "itemsPerPage": {
+            "type": "number",
+            "example": 10
+          }
+        },
+        "required": [
+          "currentPage",
+          "totalPages",
+          "totalItems",
+          "itemsPerPage"
+        ]
+      },
+      "AdminGamesResponseDto": {
+        "type": "object",
+        "properties": {
+          "games": {
+            "description": "Array of games with their translations and tags",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GameWithTagsAndTranslationsDto"
+            }
+          },
+          "pagination": {
+            "description": "Pagination information",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/BrowseGamesPaginationDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "games",
+          "pagination"
+        ]
+      },
+      "UpdateGameTranslationsBody": {
+        "type": "object",
+        "properties": {
+          "en": {
+            "type": "string",
+            "description": "English translation of the game title",
+            "example": "Catan"
+          },
+          "es": {
+            "type": "string",
+            "description": "Spanish translation of the game title",
+            "example": "Catan"
+          }
+        }
+      },
+      "UpdateGameTagsBody": {
+        "type": "object",
+        "properties": {
+          "tagIds": {
+            "description": "Array of tag IDs to assign to the game",
+            "example": [
+              1,
+              2,
+              3
+            ],
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "required": [
+          "tagIds"
+        ]
+      },
+      "GameProposalCompleteDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 12345
+          },
+          "submittedBy": {
+            "type": "number",
+            "example": 1,
+            "description": "Account ID that submitted the proposal"
+          },
+          "status": {
+            "type": "string",
+            "example": "pending",
+            "enum": [
+              "pending",
+              "approved",
+              "rejected",
+              "duplicate"
+            ],
+            "description": "Current status of the proposal"
+          },
+          "title": {
+            "type": "string",
+            "example": "Catan",
+            "description": "Game title"
+          },
+          "imageUrl": {
+            "type": "object",
+            "example": "https://www.example.com/image.jpg",
+            "nullable": true,
+            "description": "Game image URL"
+          },
+          "gameAvgDuration": {
+            "type": "object",
+            "example": 120,
+            "nullable": true,
+            "description": "Average duration of the game in minutes"
+          },
+          "minPlayers": {
+            "type": "object",
+            "example": 3,
+            "nullable": true,
+            "description": "Minimum number of players required"
+          },
+          "maxPlayers": {
+            "type": "object",
+            "example": 4,
+            "nullable": true,
+            "description": "Maximum number of players allowed"
+          },
+          "proposedTags": {
+            "type": "object",
+            "example": "[\"strategy\", \"family\"]",
+            "nullable": true,
+            "description": "Proposed tags as JSON string"
+          },
+          "notes": {
+            "type": "object",
+            "example": "A great family strategy game",
+            "nullable": true,
+            "description": "User notes about the game"
+          },
+          "reviewedBy": {
+            "type": "object",
+            "example": 2,
+            "nullable": true,
+            "description": "Admin account ID that reviewed the proposal"
+          },
+          "reviewedAt": {
+            "type": "object",
+            "example": "2024-01-15T10:30:00Z",
+            "nullable": true,
+            "description": "When the proposal was reviewed"
+          },
+          "reviewNotes": {
+            "type": "object",
+            "example": "Approved - great game for our collection",
+            "nullable": true,
+            "description": "Admin review notes"
+          },
+          "createdGameId": {
+            "type": "object",
+            "example": 123,
+            "nullable": true,
+            "description": "ID of the created game if approved"
+          },
+          "submittedAt": {
+            "type": "string",
+            "example": "2024-01-10T15:45:00Z",
+            "description": "When the proposal was submitted"
+          },
+          "submitterId": {
+            "type": "number",
+            "example": 1,
+            "description": "ID of the user who submitted the proposal"
+          },
+          "reviewerId": {
+            "type": "number",
+            "example": 2,
+            "nullable": true,
+            "description": "ID of the admin who reviewed the proposal"
+          }
+        },
+        "required": [
+          "id",
+          "submittedBy",
+          "status",
+          "title",
+          "imageUrl",
+          "gameAvgDuration",
+          "minPlayers",
+          "maxPlayers",
+          "proposedTags",
+          "notes",
+          "reviewedBy",
+          "reviewedAt",
+          "reviewNotes",
+          "createdGameId",
+          "submittedAt",
+          "submitterId",
+          "reviewerId"
+        ]
+      },
+      "AdminGameProposalsResponseDto": {
+        "type": "object",
+        "properties": {
+          "proposals": {
+            "description": "Array of game proposals with submitter and reviewer information",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GameProposalCompleteDto"
+            }
+          },
+          "pagination": {
+            "description": "Pagination information",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/BrowseGamesPaginationDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "proposals",
+          "pagination"
+        ]
+      },
+      "ApproveGameProposalBody": {
+        "type": "object",
+        "properties": {
+          "reviewNotes": {
+            "type": "string",
+            "example": "Great game for our collection!",
+            "description": "Admin review notes for approval"
+          },
+          "imageUrl": {
+            "type": "string",
+            "example": "https://www.example.com/game-image.jpg",
+            "description": "Image URL for the game (if not provided in proposal)"
+          },
+          "gameAvgDuration": {
+            "type": "number",
+            "example": 120,
+            "description": "Average duration in minutes (if not provided in proposal)"
+          },
+          "minPlayers": {
+            "type": "number",
+            "example": 3,
+            "description": "Minimum players (if not provided in proposal)"
+          },
+          "maxPlayers": {
+            "type": "number",
+            "example": 4,
+            "description": "Maximum players (if not provided in proposal)"
+          },
+          "translations": {
+            "type": "object",
+            "example": {
+              "en": "Catan",
+              "es": "Catan"
+            },
+            "description": "Game title translations"
+          },
+          "tagIds": {
+            "example": [
+              1,
+              2,
+              3
+            ],
+            "description": "Tag IDs to assign to the game",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "RejectGameProposalBody": {
+        "type": "object",
+        "properties": {
+          "reviewNotes": {
+            "type": "string",
+            "example": "This game is already in our database",
+            "description": "Admin review notes explaining the rejection"
+          }
+        },
+        "required": [
+          "reviewNotes"
+        ]
+      },
+      "GameViewDto": {
+        "type": "object",
+        "properties": {
+          "gameData": {
+            "$ref": "#/components/schemas/GameCompleteDto"
+          },
+          "similarGames": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GameCompleteDto"
+            }
+          }
+        },
+        "required": [
+          "gameData",
+          "similarGames"
+        ]
+      },
+      "UpdateGameOwnedDto": {
+        "type": "object",
+        "properties": {
+          "purchasePrice": {
+            "type": "object",
+            "example": 12345,
+            "description": "The price of the game when purchased."
+          },
+          "purchaseDate": {
+            "type": "object",
+            "example": "2021-01-01",
+            "description": "The date the game was purchased."
+          },
+          "purchaseNotes": {
+            "type": "object",
+            "example": "I got this as a gift from my friend.",
+            "description": "Any notes about the purchase."
+          }
+        }
+      },
+      "GameOwnedDto": {
+        "type": "object",
+        "properties": {
+          "accountId": {
+            "type": "number",
+            "example": 12345,
+            "description": "The unique identifier for the Account."
+          },
+          "gameId": {
+            "type": "number",
+            "example": 12345,
+            "description": "The unique identifier for the Game."
+          },
+          "purchasePrice": {
+            "type": "object",
+            "example": 12345,
+            "description": "The price of the game when purchased."
+          },
+          "purchaseDate": {
+            "type": "object",
+            "example": "2021-01-01",
+            "description": "The date the game was purchased."
+          },
+          "purchaseNotes": {
+            "type": "object",
+            "example": "I got this as a gift from my friend.",
+            "description": "Any notes about the purchase."
+          }
+        },
+        "required": [
+          "accountId",
+          "gameId",
+          "purchasePrice",
+          "purchaseDate",
+          "purchaseNotes"
+        ]
+      },
+      "WishlistResponseDto": {
+        "type": "object",
+        "properties": {
+          "isWishlisted": {
+            "type": "boolean",
+            "example": true,
+            "description": "Whether the game is wishlisted."
+          }
+        },
+        "required": [
+          "isWishlisted"
+        ]
+      },
+      "BrowseGamesResultDto": {
+        "type": "object",
+        "properties": {
+          "games": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GameCompleteDto"
+            }
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/BrowseGamesPaginationDto"
+          }
+        },
+        "required": [
+          "games",
+          "pagination"
+        ]
+      },
+      "GameReviewWithGameDataDto": {
+        "type": "object",
+        "properties": {
+          "accountId": {
+            "type": "number",
+            "example": 12345
+          },
+          "gameId": {
+            "type": "number",
+            "example": 12345
+          },
+          "review": {
+            "type": "number",
+            "example": 8
+          },
+          "reviewDate": {
+            "type": "string",
+            "example": "2022-03-07T16:00:00.000Z"
+          },
+          "gameData": {
+            "$ref": "#/components/schemas/GameCompleteDto"
+          }
+        },
+        "required": [
+          "accountId",
+          "gameId",
+          "review",
+          "reviewDate",
+          "gameData"
+        ]
+      },
+      "CreateGameReviewBody": {
+        "type": "object",
+        "properties": {
+          "review": {
+            "type": "number",
+            "example": 8,
+            "minimum": 0,
+            "maximum": 10
+          }
+        },
+        "required": [
+          "review"
+        ]
+      },
+      "CollectionActivityDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 12345
+          },
+          "accountId": {
+            "type": "number",
+            "example": 12345
+          },
+          "gameId": {
+            "type": "number",
+            "example": 567
+          },
+          "actionType": {
+            "type": "string",
+            "example": "rated",
+            "enum": [
+              "added",
+              "rated",
+              "wishlisted",
+              "unwishlisted",
+              "updated",
+              "removed"
+            ]
+          },
+          "actionDetails": {
+            "type": "object",
+            "example": "{\"rating\": 4.5}",
+            "description": "JSON string with additional details about the action"
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2024-09-28 10:02:39"
+          }
+        },
+        "required": [
+          "id",
+          "accountId",
+          "gameId",
+          "actionType",
+          "actionDetails",
+          "createdAt"
+        ]
+      },
+      "UserStatsDto": {
+        "type": "object",
+        "properties": {
+          "totalGamesValue": {
+            "type": "number",
+            "description": "Total value of all games",
+            "example": 1000
+          }
+        },
+        "required": [
+          "totalGamesValue"
+        ]
+      },
+      "GameReviewDto": {
+        "type": "object",
+        "properties": {
+          "accountId": {
+            "type": "number",
+            "example": 12345
+          },
+          "gameId": {
+            "type": "number",
+            "example": 12345
+          },
+          "review": {
+            "type": "number",
+            "example": 8
+          },
+          "reviewDate": {
+            "type": "string",
+            "example": "2022-03-07T16:00:00.000Z"
+          }
+        },
+        "required": [
+          "accountId",
+          "gameId",
+          "review",
+          "reviewDate"
+        ]
+      },
+      "GroupMemberWithGames": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "username": {
+            "type": "string",
+            "example": "joseantonio"
+          },
+          "displayName": {
+            "type": "string",
+            "example": "Jose Antonio"
+          },
+          "avatar": {
+            "description": "The avatar of the user.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AvatarDto"
+              }
+            ]
+          },
+          "games": {
+            "description": "The games the user has.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GameCompleteDto"
+            }
+          },
+          "joinedAt": {
+            "type": "string",
+            "example": "2024-09-28 10:02:39",
+            "description": "The date and time the user joined the group."
+          },
+          "reviews": {
+            "description": "Reviews of this account",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GameReviewDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "username",
+          "displayName",
+          "avatar",
+          "games",
+          "joinedAt",
+          "reviews"
+        ]
+      },
+      "GroupWithMembersAndGames": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 12345
+          },
+          "name": {
+            "type": "string",
+            "example": "example-user's Group"
+          },
+          "createdBy": {
+            "type": "number",
+            "example": 12345
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2024-09-28 10:02:39"
+          },
+          "members": {
+            "description": "The members of the group.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GroupMemberWithGames"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "createdBy",
+          "createdAt",
+          "members"
+        ]
+      },
+      "CreatedGroupDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true,
+            "description": "Whether the group was created successfully."
+          },
+          "groupId": {
+            "type": "number",
+            "example": 42,
+            "description": "The newly created group identifier."
+          }
+        },
+        "required": [
+          "success",
+          "groupId"
+        ]
+      },
+      "GamePlayedDto": {
+        "type": "object",
+        "properties": {
+          "gameData": {
+            "description": "The game data.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/GameCompleteDto"
+              }
+            ]
+          },
+          "playedBy": {
+            "description": "The users who played the game in that meet.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserPublicDto"
+            }
+          }
+        },
+        "required": [
+          "gameData",
+          "playedBy"
+        ]
+      },
+      "HistoryRecordDto": {
+        "type": "object",
+        "properties": {
+          "meetData": {
+            "description": "The meet data.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MeetDto"
+              }
+            ]
+          },
+          "gamesPlayed": {
+            "description": "The games played in that meet.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GamePlayedDto"
+            }
+          },
+          "attendedBy": {
+            "description": "The group members recorded as actually attending the session.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserPublicDto"
+            }
+          }
+        },
+        "required": [
+          "meetData",
+          "gamesPlayed",
+          "attendedBy"
+        ]
+      },
+      "RecommendationRequestBody": {
+        "type": "object",
+        "properties": {
+          "groupId": {
+            "type": "number",
+            "example": 7
+          },
+          "attendeeIds": {
+            "example": [
+              1,
+              2
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "availableMinutes": {
+            "type": "number",
+            "example": 120,
+            "description": "Maximum desired game duration in minutes."
+          },
+          "decisionLens": {
+            "type": "string",
+            "example": "balanced",
+            "enum": [
+              "balanced",
+              "fresh",
+              "favorite"
+            ]
+          }
+        },
+        "required": [
+          "groupId",
+          "attendeeIds"
+        ]
+      },
+      "RecommendationExplanationDto": {
+        "type": "object",
+        "properties": {
+          "reasons": {
+            "example": [
+              "Owned by 2 of 3 selected attendees",
+              "Fits 3 players"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "attendeeOwnerCount": {
+            "type": "number",
+            "example": 2
+          },
+          "attendeeCount": {
+            "type": "number",
+            "example": 3
+          },
+          "averageReview": {
+            "type": "object",
+            "example": 8.5,
+            "nullable": true
+          },
+          "lastPlayedAt": {
+            "type": "object",
+            "example": "2026-08-01T19:30:00.000Z",
+            "nullable": true
+          },
+          "interestedCount": {
+            "type": "number",
+            "example": 2,
+            "description": "Selected attendees who previously marked this game as interesting."
+          },
+          "notForUsCount": {
+            "type": "number",
+            "example": 0,
+            "description": "Selected attendees who previously passed on this game."
+          }
+        },
+        "required": [
+          "reasons",
+          "attendeeOwnerCount",
+          "attendeeCount",
+          "averageReview",
+          "lastPlayedAt",
+          "interestedCount",
+          "notForUsCount"
+        ]
+      },
+      "RecommendationDto": {
+        "type": "object",
+        "properties": {
+          "gameData": {
+            "$ref": "#/components/schemas/GameCompleteDto"
+          },
+          "score": {
+            "type": "number",
+            "example": 82
+          },
+          "explanation": {
+            "$ref": "#/components/schemas/RecommendationExplanationDto"
+          }
+        },
+        "required": [
+          "gameData",
+          "score",
+          "explanation"
+        ]
+      },
+      "RecommendationsDto": {
+        "type": "object",
+        "properties": {
+          "groupId": {
+            "type": "number",
+            "example": 7
+          },
+          "attendeeIds": {
+            "example": [
+              1,
+              2
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "availableMinutes": {
+            "type": "object",
+            "example": 120,
+            "nullable": true
+          },
+          "decisionLens": {
+            "type": "string",
+            "example": "balanced",
+            "enum": [
+              "balanced",
+              "fresh",
+              "favorite"
+            ]
+          },
+          "recommendations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RecommendationDto"
+            }
+          },
+          "noResultReason": {
+            "type": "object",
+            "example": "No owned games match the selected attendees and filters.",
+            "nullable": true
+          }
+        },
+        "required": [
+          "groupId",
+          "attendeeIds",
+          "availableMinutes",
+          "decisionLens",
+          "recommendations",
+          "noResultReason"
+        ]
+      },
+      "RecommendationFeedbackBody": {
+        "type": "object",
+        "properties": {
+          "groupId": {
+            "type": "number",
+            "example": 7
+          },
+          "gameId": {
+            "type": "number",
+            "example": 42
+          },
+          "attendeeIds": {
+            "example": [
+              1,
+              2
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "feedback": {
+            "type": "string",
+            "example": "not_for_us",
+            "enum": [
+              "interested",
+              "not_for_us",
+              "played"
+            ]
+          }
+        },
+        "required": [
+          "groupId",
+          "gameId",
+          "attendeeIds",
+          "feedback"
+        ]
+      },
+      "RecommendationFeedbackDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          }
+        },
+        "required": [
+          "success"
+        ]
+      },
+      "RecommendationSignalDto": {
+        "type": "object",
+        "properties": {
+          "gameId": {
+            "type": "number",
+            "example": 42
+          },
+          "interestedCount": {
+            "type": "number",
+            "example": 2
+          },
+          "notForUsCount": {
+            "type": "number",
+            "example": 0
+          },
+          "yourFeedback": {
+            "type": "string",
+            "example": "interested",
+            "enum": [
+              "interested",
+              "not_for_us"
+            ],
+            "nullable": true
+          },
+          "interestedBy": {
+            "description": "Current group members who most recently marked this game as interesting.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserPublicDto"
+            }
+          },
+          "lastUpdatedAt": {
+            "type": "string",
+            "example": "2026-09-03 20:00:00"
+          }
+        },
+        "required": [
+          "gameId",
+          "interestedCount",
+          "notForUsCount",
+          "yourFeedback",
+          "interestedBy",
+          "lastUpdatedAt"
+        ]
+      },
+      "RecommendationSignalsDto": {
+        "type": "object",
+        "properties": {
+          "groupId": {
+            "type": "number",
+            "example": 7
+          },
+          "signals": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RecommendationSignalDto"
+            }
+          }
+        },
+        "required": [
+          "groupId",
+          "signals"
+        ]
+      },
+      "UserSelfDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "email": {
+            "type": "string",
+            "example": "jose@email.com"
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2024-09-28 10:02:39"
+          },
+          "username": {
+            "type": "string",
+            "example": "joseantonio"
+          },
+          "displayName": {
+            "type": "string",
+            "example": "Jose Antonio"
+          },
+          "avatar": {
+            "description": "The avatar of the user.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AvatarDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "createdAt",
+          "username",
+          "displayName",
+          "avatar"
+        ]
+      },
+      "InvitationWithExtraData": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 12345
+          },
+          "groupId": {
+            "type": "number",
+            "example": 12345
+          },
+          "fromAccountId": {
+            "type": "number",
+            "example": 12345
+          },
+          "toAccountId": {
+            "type": "number",
+            "example": 12345
+          },
+          "sentAt": {
+            "type": "string",
+            "example": "2021-10-10T12:00:00Z"
+          },
+          "expiresAt": {
+            "type": "string",
+            "example": "2021-11-09T12:00:00Z",
+            "description": "The invitation stops being actionable after this UTC timestamp."
+          },
+          "fromAccount": {
+            "description": "The account data of the user who was invited.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Function"
+              }
+            ]
+          },
+          "group": {
+            "description": "The group data of the group the user was invited to.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Function"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "groupId",
+          "fromAccountId",
+          "toAccountId",
+          "sentAt",
+          "expiresAt",
+          "fromAccount",
+          "group"
+        ]
+      },
+      "GameProposalDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 12345
+          },
+          "submittedBy": {
+            "type": "number",
+            "example": 1,
+            "description": "Account ID that submitted the proposal"
+          },
+          "status": {
+            "type": "string",
+            "example": "pending",
+            "enum": [
+              "pending",
+              "approved",
+              "rejected",
+              "duplicate"
+            ],
+            "description": "Current status of the proposal"
+          },
+          "title": {
+            "type": "string",
+            "example": "Catan",
+            "description": "Game title"
+          },
+          "imageUrl": {
+            "type": "object",
+            "example": "https://www.example.com/image.jpg",
+            "nullable": true,
+            "description": "Game image URL"
+          },
+          "gameAvgDuration": {
+            "type": "object",
+            "example": 120,
+            "nullable": true,
+            "description": "Average duration of the game in minutes"
+          },
+          "minPlayers": {
+            "type": "object",
+            "example": 3,
+            "nullable": true,
+            "description": "Minimum number of players required"
+          },
+          "maxPlayers": {
+            "type": "object",
+            "example": 4,
+            "nullable": true,
+            "description": "Maximum number of players allowed"
+          },
+          "proposedTags": {
+            "type": "object",
+            "example": "[\"strategy\", \"family\"]",
+            "nullable": true,
+            "description": "Proposed tags as JSON string"
+          },
+          "notes": {
+            "type": "object",
+            "example": "A great family strategy game",
+            "nullable": true,
+            "description": "User notes about the game"
+          },
+          "reviewedBy": {
+            "type": "object",
+            "example": 2,
+            "nullable": true,
+            "description": "Admin account ID that reviewed the proposal"
+          },
+          "reviewedAt": {
+            "type": "object",
+            "example": "2024-01-15T10:30:00Z",
+            "nullable": true,
+            "description": "When the proposal was reviewed"
+          },
+          "reviewNotes": {
+            "type": "object",
+            "example": "Approved - great game for our collection",
+            "nullable": true,
+            "description": "Admin review notes"
+          },
+          "createdGameId": {
+            "type": "object",
+            "example": 123,
+            "nullable": true,
+            "description": "ID of the created game if approved"
+          },
+          "submittedAt": {
+            "type": "string",
+            "example": "2024-01-10T15:45:00Z",
+            "description": "When the proposal was submitted"
+          }
+        },
+        "required": [
+          "id",
+          "submittedBy",
+          "status",
+          "title",
+          "imageUrl",
+          "gameAvgDuration",
+          "minPlayers",
+          "maxPlayers",
+          "proposedTags",
+          "notes",
+          "reviewedBy",
+          "reviewedAt",
+          "reviewNotes",
+          "createdGameId",
+          "submittedAt"
+        ]
+      },
+      "UserProposalStatsDto": {
+        "type": "object",
+        "properties": {
+          "totalProposals": {
+            "type": "number",
+            "description": "Total number of proposals submitted",
+            "example": 15
+          },
+          "approvedProposals": {
+            "type": "number",
+            "description": "Number of approved proposals",
+            "example": 8
+          },
+          "rejectedProposals": {
+            "type": "number",
+            "description": "Number of rejected proposals",
+            "example": 3
+          },
+          "duplicateProposals": {
+            "type": "number",
+            "description": "Number of proposals marked as duplicate",
+            "example": 2
+          },
+          "pendingProposals": {
+            "type": "number",
+            "description": "Number of pending proposals",
+            "example": 2
+          },
+          "approvalRate": {
+            "type": "number",
+            "description": "Approval rate percentage",
+            "example": 53.33
+          },
+          "reputationScore": {
+            "type": "number",
+            "description": "User reputation score (0-100)",
+            "example": 75
+          }
+        },
+        "required": [
+          "totalProposals",
+          "approvedProposals",
+          "rejectedProposals",
+          "duplicateProposals",
+          "pendingProposals",
+          "approvalRate",
+          "reputationScore"
+        ]
+      },
+      "CreateGameProposalBody": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Catan",
+            "description": "Game title"
+          },
+          "imageUrl": {
+            "type": "string",
+            "example": "https://www.example.com/image.jpg",
+            "description": "Game image URL"
+          },
+          "gameAvgDuration": {
+            "type": "number",
+            "example": 120,
+            "description": "Average duration of the game in minutes"
+          },
+          "minPlayers": {
+            "type": "number",
+            "example": 3,
+            "description": "Minimum number of players required"
+          },
+          "maxPlayers": {
+            "type": "number",
+            "example": 4,
+            "description": "Maximum number of players allowed"
+          },
+          "proposedTags": {
+            "type": "string",
+            "example": "[\"strategy\", \"family\"]",
+            "description": "Proposed tags as JSON string"
+          },
+          "notes": {
+            "type": "string",
+            "example": "A great family strategy game",
+            "description": "User notes about the game"
+          }
+        },
+        "required": [
+          "title"
+        ]
+      },
+      "PlaySessionGameBody": {
+        "type": "object",
+        "properties": {
+          "gameId": {
+            "type": "number",
+            "example": 42
+          },
+          "participantIds": {
+            "example": [
+              1,
+              2
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "gameId",
+          "participantIds"
+        ]
+      },
+      "CreatePlaySessionBody": {
+        "type": "object",
+        "properties": {
+          "groupId": {
+            "type": "number",
+            "example": 7
+          },
+          "sessionDate": {
+            "type": "string",
+            "example": "2026-08-16T19:30:00.000Z"
+          },
+          "timezone": {
+            "type": "string",
+            "example": "Europe/Madrid"
+          },
+          "notes": {
+            "type": "string",
+            "example": "Tried the new co-op expansion."
+          },
+          "attendeeIds": {
+            "example": [
+              1,
+              2
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "games": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlaySessionGameBody"
+            }
+          }
+        },
+        "required": [
+          "groupId",
+          "sessionDate",
+          "timezone",
+          "attendeeIds",
+          "games"
+        ]
+      },
+      "SessionCreatedDto": {
+        "type": "object",
+        "properties": {
+          "sessionId": {
+            "type": "number",
+            "example": 12345
+          },
+          "status": {
+            "type": "string",
+            "example": "completed"
+          }
+        },
+        "required": [
+          "sessionId",
+          "status"
+        ]
+      },
+      "CreateScheduledSessionBody": {
+        "type": "object",
+        "properties": {
+          "groupId": {
+            "type": "number",
+            "example": 7
+          },
+          "sessionDate": {
+            "type": "string",
+            "example": "2026-08-21T19:30:00.000Z"
+          },
+          "timezone": {
+            "type": "string",
+            "example": "Europe/Madrid"
+          },
+          "notes": {
+            "type": "string",
+            "example": "Bring the new co-op expansion."
+          },
+          "attendeeIds": {
+            "example": [
+              1,
+              2
+            ],
+            "description": "Selected group members attending the session.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "plannedGameIds": {
+            "example": [
+              42,
+              84
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "groupId",
+          "sessionDate",
+          "timezone"
+        ]
+      },
+      "ScheduledSessionCreatedDto": {
+        "type": "object",
+        "properties": {
+          "sessionId": {
+            "type": "number",
+            "example": 12345
+          },
+          "status": {
+            "type": "string",
+            "example": "scheduled"
+          }
+        },
+        "required": [
+          "sessionId",
+          "status"
+        ]
+      },
+      "UpdateSessionAttendeesBody": {
+        "type": "object",
+        "properties": {
+          "attendeeIds": {
+            "example": [
+              1,
+              2
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "attendeeIds"
+        ]
+      },
+      "SessionAttendeesUpdatedDto": {
+        "type": "object",
+        "properties": {
+          "sessionId": {
+            "type": "number",
+            "example": 12345
+          },
+          "attendeeIds": {
+            "example": [
+              1,
+              2
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "sessionId",
+          "attendeeIds"
+        ]
+      },
+      "UpdateSessionShortlistBody": {
+        "type": "object",
+        "properties": {
+          "plannedGameIds": {
+            "example": [
+              42,
+              84
+            ],
+            "description": "Games the group wants to consider for this session. Use an empty array to clear the shortlist.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "plannedGameIds"
+        ]
+      },
+      "SessionShortlistUpdatedDto": {
+        "type": "object",
+        "properties": {
+          "sessionId": {
+            "type": "number",
+            "example": 12
+          },
+          "plannedGameIds": {
+            "example": [
+              42,
+              84
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "sessionId",
+          "plannedGameIds"
+        ]
+      },
+      "UpdateSessionPlayedGamesBody": {
+        "type": "object",
+        "properties": {
+          "playedGameIds": {
+            "example": [
+              42,
+              84
+            ],
+            "description": "Games actually played. Use an empty array to record that none of the tracked games were played.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "games": {
+            "description": "Optional per-game participants. Older clients may omit this and record only the games played.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlaySessionGameBody"
+            }
+          }
+        },
+        "required": [
+          "playedGameIds"
+        ]
+      },
+      "SessionPlayedGamesUpdatedDto": {
+        "type": "object",
+        "properties": {
+          "sessionId": {
+            "type": "number",
+            "example": 12
+          },
+          "playedGameIds": {
+            "example": [
+              42,
+              84
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "skippedGameIds": {
+            "example": [
+              99
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "playedGameParticipants": {
+            "description": "The participants recorded for each played game.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlaySessionGameBody"
+            }
+          }
+        },
+        "required": [
+          "sessionId",
+          "playedGameIds",
+          "skippedGameIds",
+          "playedGameParticipants"
+        ]
+      },
+      "UpdateSessionRsvpBody": {
+        "type": "object",
+        "properties": {
+          "rsvpStatus": {
+            "type": "string",
+            "example": "accepted",
+            "enum": [
+              "accepted",
+              "declined"
+            ]
+          }
+        },
+        "required": [
+          "rsvpStatus"
+        ]
+      },
+      "SessionRsvpUpdatedDto": {
+        "type": "object",
+        "properties": {
+          "sessionId": {
+            "type": "number",
+            "example": 12
+          },
+          "rsvpStatus": {
+            "type": "string",
+            "example": "accepted",
+            "enum": [
+              "pending",
+              "accepted",
+              "declined"
+            ]
+          }
+        },
+        "required": [
+          "sessionId",
+          "rsvpStatus"
+        ]
+      },
+      "UpdateSessionAttendanceBody": {
+        "type": "object",
+        "properties": {
+          "attendedIds": {
+            "example": [
+              1,
+              2
+            ],
+            "description": "Invited members who actually attended the session. Use an empty array when nobody attended.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "attendedIds"
+        ]
+      },
+      "SessionAttendanceUpdatedDto": {
+        "type": "object",
+        "properties": {
+          "sessionId": {
+            "type": "number",
+            "example": 12
+          },
+          "attendedIds": {
+            "example": [
+              1,
+              2
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "sessionId",
+          "attendedIds"
+        ]
+      },
+      "UpdateSessionStatusBody": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "active",
+            "enum": [
+              "active",
+              "completed",
+              "cancelled"
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "SessionStatusUpdatedDto": {
+        "type": "object",
+        "properties": {
+          "sessionId": {
+            "type": "number",
+            "example": 12345
+          },
+          "status": {
+            "type": "string",
+            "example": "active",
+            "enum": [
+              "scheduled",
+              "active",
+              "completed",
+              "cancelled"
+            ]
+          }
+        },
+        "required": [
+          "sessionId",
+          "status"
+        ]
+      }
+    }
+  }
+}

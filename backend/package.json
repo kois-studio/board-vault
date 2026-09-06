@@ -16,6 +16,7 @@
     "start:prod": "node dist/main",
     "lint:check": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "lint:logs": "node scripts/check-log-boundary.mjs",
+    "docs:openapi": "node scripts/generate-openapi.mjs",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",

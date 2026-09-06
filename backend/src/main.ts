@@ -55,8 +55,8 @@ async function bootstrap() {
 
     // Create the swagger documentation
     const swaggerConfig = new DocumentBuilder()
-        .setTitle('BoardVault Swagger API')
-        .setDescription('The deprecated endpoints are simply the ones that are not currently being used by frontend.')
+        .setTitle('Board Vault API')
+        .setDescription('Versioned contract snapshot for the Board Vault social group workspace API.')
         .setVersion('1.0')
         .addBearerAuth()
         .build()
