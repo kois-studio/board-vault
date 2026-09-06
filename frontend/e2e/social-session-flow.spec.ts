@@ -78,9 +78,10 @@ test.describe('two-account social session flow', () => {
             await memberPage.reload()
 
             await memberPage.goto(`${baseURL}/play/history`)
-            await expect(memberPage.getByText(groupName ?? '').first()).toBeVisible()
-            await expect(memberPage.getByText(gameTitle ?? '').first()).toBeVisible()
-            await expect(memberPage.getByText('Open memory').first()).toBeVisible()
+            const memoryCard = memberPage.locator('article').filter({ hasText: groupName ?? '' }).first()
+            await expect(memoryCard).toBeVisible()
+            await expect(memoryCard.getByText(gameTitle ?? '').first()).toBeVisible()
+            await expect(memoryCard.getByRole('link', { name: 'Open session memory' })).toBeVisible()
         } finally {
             await ownerContext.close()
             await memberContext.close()
