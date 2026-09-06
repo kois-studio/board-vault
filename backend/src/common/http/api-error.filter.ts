@@ -2,6 +2,8 @@ import { randomUUID } from 'node:crypto'
 
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logger } from '@nestjs/common'
 
+import { structuredLog } from '../logging/structured-log'
+
 import type { Request, Response } from 'express'
 
 export type ApiErrorResponse = {
@@ -26,13 +28,20 @@ export class ApiErrorFilter implements ExceptionFilter {
         const http = host.switchToHttp()
         const request = http.getRequest<Request>()
         const response = http.getResponse<Response>()
-        const requestId = randomUUID()
+        const requestId = (request as Request & { requestId?: string }).requestId ?? randomUUID()
         const statusCode = exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR
         const payload = exception instanceof HttpException ? exception.getResponse() : undefined
         const normalized = this.normalizePayload(payload, statusCode)
 
         if (!(exception instanceof HttpException)) {
-            this.logger.error(`Unhandled HTTP exception for ${request.method} ${request.originalUrl ?? request.url}`)
+            this.logger.error(
+                structuredLog('http.request.failed', {
+                    requestId,
+                    method: request.method,
+                    path: request.path || (request.originalUrl ?? request.url).split('?')[0],
+                    statusCode,
+                }),
+            )
         }
 
         response.setHeader('X-Request-Id', requestId)
