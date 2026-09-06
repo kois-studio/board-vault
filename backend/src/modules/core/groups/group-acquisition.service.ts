@@ -80,7 +80,7 @@ export class GroupAcquisitionService {
             throw new BadRequestException('This group already owns the selected game')
         }
 
-        const result = await this.databaseService.addGroupGameInterest(groupId, accountId, body)
+        const result = await this.databaseService.addGroupGameInterestAndReopenDecision(groupId, accountId, body.gameId)
 
         if (result.rowsAffected === 0) {
             const availableGameIdsAfterWrite = await this.databaseService.getGroupAvailableGameIds(groupId)
@@ -89,8 +89,6 @@ export class GroupAcquisitionService {
                 throw new BadRequestException('This group already owns the selected game')
             }
         }
-
-        await this.databaseService.reopenGroupAcquisitionDecision(groupId, body.gameId)
 
         return { success: true }
     }
