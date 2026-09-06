@@ -2962,6 +2962,18 @@ Owner: Codex
 
 Claimed: 2026-09-06
 
+Scope: correct and close the structured HTTP logging regression found during a real authenticated local request.
+
+Changed: Request middleware and the global API error filter now derive the logged path from `originalUrl` (with a safe URL fallback), so mounted routes no longer collapse to `/`. The focused middleware regression now asserts a mounted auth path, in addition to request-ID reuse and query/authorization redaction.
+
+Verified: Backend 46 suites/231 tests pass; backend build and ESLint pass; no deployment or push was performed. Repository-wide service-log allow-listing and provider-specific error mapping remain open under READINESS-008.
+
+Continuation claim: SEC-006 / OPS-007
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
 Scope: close the production private-beta configuration verification gap without changing Clerk.
 
 Changed: Queried the exact production Clerk instance configuration read-only after the CLI’s `prod` alias proved unset.

@@ -25,5 +25,6 @@ describe('LoggerMiddleware', () => {
         expect(logger.mock.calls.join(' ')).not.toContain('secret-token')
         expect(logger.mock.calls[0][0]).toContain('http.request.started')
         expect(logger.mock.calls[1][0]).toContain('http.request.completed')
+        expect(logger.mock.calls.join(' ')).toContain('/auth/clerk/status')
     })
 })

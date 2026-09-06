@@ -140,7 +140,7 @@ public discovery, and standalone analytics remain deferred.
 
 - **Status:** In progress
 - **Affected area:** `DatabaseService`, auth/email/cache services, logger middleware
-- **Evidence:** HTTP logging now emits structured request-start/request-complete events with a server-generated correlation ID, `X-Request-Id`, method/path/status/duration fields, and no query string or authorization value; `ApiErrorFilter` reuses that ID for unexpected failures. Focused middleware/filter regressions and the full backend gate pass. Existing database/email/cache/auth improvements remain in place, but a repository-wide allow-listed service-log sweep and provider-specific error mapping remain open.
+- **Evidence:** HTTP logging now emits structured request-start/request-complete events with a server-generated correlation ID, `X-Request-Id`, method/path/status/duration fields, and no query string or authorization value; the real request path is preserved through `originalUrl` rather than Express’s router-relative `path`. `ApiErrorFilter` reuses that ID for unexpected failures. Focused middleware/filter regressions and the full backend gate pass. Existing database/email/cache/auth improvements remain in place, but a repository-wide allow-listed service-log sweep and provider-specific error mapping remain open.
 - **Risk:** Secret/PII exposure and poor incident diagnosis.
 - **Next action:** Migrate remaining service logs to the safe allow-listed event format, add provider failure/cause mapping, and extend redaction regressions to representative domain failures.
 - **Dependencies:** Security owner and observability decision.
