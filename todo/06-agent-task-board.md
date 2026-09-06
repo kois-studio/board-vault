@@ -3083,3 +3083,15 @@ Scope: verify that personal collection data remains private while group surfaces
 Changed: Added an opt-in two-account browser journey covering owner/member private shelves with distinct disposable games. The journey asserts each account sees its own game and not the other account’s private-only game; the collection copy and group-workspace boundary are now backed by rendered evidence.
 
 Verified: Disposable owner/member Clerk sessions pass the privacy journey in 2.5 seconds. No production data, deployment, or push was changed.
+
+Continuation claim: PROD-003 / EQ-003
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Scope: attempt the remaining provider-managed invitation acceptance path with a disposable Clerk identity.
+
+Changed: Rehearsed a fresh owner-created provider ticket with the backend redirect explicitly set to the isolated frontend port 4300. The ticket reached local `/register`, but Clerk’s client sign-up exchange returned HTTP 400; the result is recorded as an open provider investigation rather than a passing acceptance claim. All temporary pending invitations were revoked afterward.
+
+Verified: Redirect configuration is now documented for the 4300 workflow; create/list/revoke remains green. Recipient acceptance, expiry, and provider delivery-failure/retry remain open and no production state was touched.
