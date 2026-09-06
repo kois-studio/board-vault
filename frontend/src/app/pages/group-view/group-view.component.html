@@ -68,7 +68,11 @@
                         </div>
                         <div class="rounded-xl bg-zinc-50 p-3 dark:bg-zinc-800">
                             <dt class="text-xs text-secondary">Sessions</dt>
-                            <dd class="mt-1 text-2xl font-bold">{{ groupHistory$().length }}</dd>
+                            @if (isLoading()) {
+                                <dd class="mt-1 text-2xl font-bold" aria-label="Sessions loading">—</dd>
+                            } @else {
+                                <dd class="mt-1 text-2xl font-bold">{{ groupHistory$().length }}</dd>
+                            }
                         </div>
                     </dl>
                     <p class="mt-5 text-sm text-secondary">The more sessions you record, the better the group’s memory becomes.</p>
@@ -320,7 +324,7 @@
                 </div>
 
                 @if (isLoading()) {
-                    <div class="mt-5"><app-skeleton-history /></div>
+                    <div class="mt-5" role="status" aria-live="polite"><span class="sr-only">Loading recent sessions…</span><app-skeleton-history /></div>
                 } @else if (groupHistoryError()) {
                     <div class="mt-5 rounded-2xl border border-amber-200 bg-amber-50 p-8 text-center dark:border-amber-900/50 dark:bg-amber-950/30" role="alert">
                         <p class="font-medium">Recent sessions could not be loaded.</p>
