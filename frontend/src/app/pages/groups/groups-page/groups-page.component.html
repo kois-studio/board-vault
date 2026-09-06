@@ -1,5 +1,5 @@
 <app-page-header titleText="My Groups" [showActionButton]="true">
-    Organize your gaming groups
+    Your shared spaces for deciding, playing, and remembering together.
     <app-button
         class="action-button"
         icon="plus-lg"
@@ -32,7 +32,7 @@
         </section>
     }
 
-    <section class="grid grid-cols-1 gap-8 mb-40">
+    <section class="mb-40 grid grid-cols-1 gap-6 xl:grid-cols-2" aria-label="Your groups">
         @if (isLoadingGroups()) {
             @for (item of [1,2]; track $index) {
                 <app-skeleton-card-group />
@@ -44,13 +44,14 @@
                 <button type="button" class="app-btn-primary inline-block mt-4" (click)="retryGroups()">Retry</button>
             </div>
         } @else if (userGroups$().length === 0) {
-            <div class="text-center col-span-2 rounded-lg border border-dashed border-zinc-300 dark:border-zinc-700 p-8">
-                <p class="text-lg font-medium">You don't have any groups yet.</p>
-                <p class="text-secondary mt-2">Create a group or accept an invitation to start planning sessions together.</p>
-                <a routerLink="/create-group" class="app-btn-primary inline-block mt-4">Create your first group</a>
+            <div class="col-span-full rounded-2xl border border-dashed border-zinc-300 p-8 text-center dark:border-zinc-700">
+                <i class="bi bi-people text-4xl text-indigo-500" aria-hidden="true"></i>
+                <p class="mt-3 text-xl font-semibold">Your group space starts with an invitation or a new group.</p>
+                <p class="mx-auto mt-2 max-w-xl text-secondary">Create the private space, invite the people you play with, then add the games you actually have before planning your first night.</p>
+                <a routerLink="/create-group" class="app-btn-primary mt-5 inline-block">Create your first group</a>
             </div>
         } @else {
-            @for (group of userGroups$(); track $index) {
+            @for (group of userGroups$(); track group.id) {
                 <app-card-group [group]="group" [invitations]="invitationsGroupIndex$()[group.id]" />
             }
         }
