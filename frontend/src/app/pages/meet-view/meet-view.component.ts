@@ -337,6 +337,24 @@ export class MeetViewComponent {
         return 'Not recorded'
     }
 
+    isAttendeeRemovalBlocked(memberId: number): boolean {
+        if (!this.meetData?.attendees.includes(memberId)) return false
+        if (this.meetData.attendees.length <= 1) return true
+        return this.meetData.playedGameParticipants.some((game) => game.participantIds.includes(memberId))
+    }
+
+    getAttendeeToggleLabel(memberId: number): string {
+        const member = this.groupData?.members.find((candidate) => candidate.id === memberId)
+        const name = member?.displayName || member?.username || 'this member'
+
+        if (!this.meetData?.attendees.includes(memberId)) return `Add ${name} to session attendees`
+        if (this.meetData.attendees.length <= 1) return `Keep ${name} as the session attendee`
+        if (this.meetData.playedGameParticipants.some((game) => game.participantIds.includes(memberId))) {
+            return `Keep ${name} as an attendee because they are recorded for a played game`
+        }
+        return `Remove ${name} from session attendees`
+    }
+
     async updateStatus(status: 'active' | 'completed' | 'cancelled'): Promise<void> {
         if (!this.meetData || !this.canManageLifecycle || !this.canEditSession) return
 
@@ -489,6 +507,15 @@ export class MeetViewComponent {
 
     async onClickMember(memberId: number): Promise<void> {
         if (!this.meetData || !this.canEditSession || this.isPersistingChanges) {
+            return
+        }
+
+        if (this.isAttendeeRemovalBlocked(memberId)) {
+            this.toastService.error(
+                this.meetData.attendees.length <= 1
+                    ? 'A session must retain at least one attendee.'
+                    : 'Remove this person from played games before removing them from the session.',
+            )
             return
         }
 
