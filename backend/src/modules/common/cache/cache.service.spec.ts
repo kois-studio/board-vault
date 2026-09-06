@@ -22,6 +22,16 @@ describe('CacheService logging', () => {
         return { service, internals }
     }
 
+    it('has deterministic disabled-cache behavior without constructing a Redis client', async () => {
+        const configService = { get: jest.fn().mockReturnValue('true') }
+        const service = new CacheService(configService as never)
+
+        await expect(service.get('games:byId:7')).resolves.toBeNull()
+        await expect(service.set('games:byId:7', { id: 7 })).resolves.toBeNull()
+        await expect(service.increment('rate-limit:hash', 60)).resolves.toBeNull()
+        await expect(service.checkHealth()).resolves.toBe('disabled')
+    })
+
     it('does not log cache keys or serialized payloads', async () => {
         const { service, internals } = createService()
 

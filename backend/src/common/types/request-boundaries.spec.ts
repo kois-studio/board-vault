@@ -1,6 +1,7 @@
 import { plainToInstance } from 'class-transformer'
 import { validate } from 'class-validator'
 
+import { CacheKeyParam } from './cache.type'
 import { CreateGameProposalBody } from './game-proposal.type'
 import { LegacyCreateGroupParams } from './group.type'
 import { CreateNotificationRequestBody } from './notification.type'
@@ -65,5 +66,11 @@ describe('request boundary limits', () => {
 
         expect(errors.map(error => error.property)).toContain('groupName')
         expect(errors.map(error => error.property)).not.toContain('userId')
+    })
+
+    it('bounds operational cache key parameters', async () => {
+        const errors = await validationErrors(CacheKeyParam, { key: 'a'.repeat(257) })
+
+        expect(errors.map(error => error.property)).toContain('key')
     })
 })
