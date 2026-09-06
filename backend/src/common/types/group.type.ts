@@ -1,5 +1,6 @@
 import { ApiProperty, OmitType, PartialType, PickType } from '@nestjs/swagger'
-import { IsNotEmpty, IsString, MaxLength } from 'class-validator'
+import { Type } from 'class-transformer'
+import { IsInt, IsNotEmpty, IsString, MaxLength, Min } from 'class-validator'
 
 import { GameReviewDto } from './game-review.type'
 import { UserPublicWithGames } from './user.type'
@@ -10,6 +11,24 @@ export class CreatedGroupDto {
 
     @ApiProperty({ example: 42, description: 'The newly created group identifier.' })
     groupId: number
+}
+
+/**
+ * Compatibility parameters for the deprecated dashboard group-creation URL.
+ * New clients should use POST /groups with CreateGroupRequestBody.
+ */
+export class LegacyCreateGroupParams {
+    @ApiProperty({ example: 12345, description: 'The authenticated account identifier.' })
+    @Type(() => Number)
+    @IsInt()
+    @Min(1)
+    userId: number
+
+    @ApiProperty({ example: "Friday game's group", description: 'The name of the new group.' })
+    @IsString()
+    @IsNotEmpty()
+    @MaxLength(100)
+    groupName: string
 }
 
 /**
