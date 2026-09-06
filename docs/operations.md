@@ -27,6 +27,8 @@ The API accepts JSON and URL-encoded request bodies up to 100 KB. This is config
 
 The exact local values are intentionally not documented. The committed `backend/.env.example` documents variable names and safe local defaults; a typed configuration schema, test environment, and production environment ownership record remain open. The frontend uses committed environment files containing only public API URLs, a production boolean, and the development Clerk publishable key. Production builds generate an ignored `public/runtime-config.js` from the public `CLERK_PUBLISHABLE_KEY` build variable; the production Clerk toggle/key are configured in Vercel as documented in the deployment section below. These values are configuration, not secrets. The Clerk secret must remain backend-only.
 
+Clean installs are package-local: use `npm run install:all` from the repository root or run `npm ci --ignore-scripts` inside `backend/` and `frontend/`. The backend dev lock pins Compodoc to the Nest-compatible 1.1 line, and the frontend declares the optional `utf-8-validate` peer used by its WebSocket toolchain so clean Linux CI installs resolve the same graph as local development. Avoid replacing these with root `npm ci --prefix …` commands; npm validates those nested optional/peer graphs differently when the dependency-free root package is present.
+
 When `NODE_ENV=production`, startup fails closed unless `CLERK_SECRET_KEY` and `CLERK_AUTHORIZED_PARTIES` are present. This prevents a deployment from accepting Clerk sessions without an explicit trusted frontend-origin policy.
 
 ## Build, test, and quality baseline

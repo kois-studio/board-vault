@@ -3637,3 +3637,14 @@ Continuation claim: PROD-003 / EQ-006
 Owner: Codex
 
 Claimed: 2026-09-06
+
+Changed: Repaired clean-install determinism after observing the first remote
+GitHub Actions run. The backend dev toolchain now pins Compodoc to the
+Nest-compatible 1.1 line, the frontend declares its optional `utf-8-validate`
+peer, the root install wrapper uses package-local installs, and the database
+CI job no longer uses npm's failing root `--prefix` validation path.
+
+Verified: `npm run install:all`, package-local `npm ci --ignore-scripts`, and
+the frontend/backend build dependency graphs pass locally. The remote run was
+read-only inspected and failed before tests on dependency installation; no
+push or rerun was performed.

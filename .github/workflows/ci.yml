@@ -103,7 +103,8 @@ jobs:
                   cache: npm
                   cache-dependency-path: backend/package-lock.json
             - name: Install database client dependency
-              run: npm ci --ignore-scripts --prefix backend
+              working-directory: backend
+              run: npm ci --ignore-scripts
             - name: Verify empty-state schema and migration baseline
               run: node database/scripts/verify-empty-state.mjs
             - name: Run synthetic backup and restore rehearsal

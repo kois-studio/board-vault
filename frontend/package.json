@@ -50,6 +50,7 @@
         "postcss": "^8.4.47",
         "postcss-nested": "^7.0.2",
         "tailwindcss": "^4.0.0",
-        "typescript": "~5.5.4"
+        "typescript": "~5.5.4",
+        "utf-8-validate": "^5.0.10"
     }
 }

@@ -133,9 +133,9 @@ flagship loop, followed by rendered route review with real group data.
 
 - **Status:** In progress
 - **Affected area:** `.github/` or chosen CI provider
-- **Evidence:** `.github/workflows/ci.yml` now runs a repository whitespace check, locked backend/frontend installs, backend tests/build/lint, frontend build/Biome/public Playwright checks, and disposable database migration verification. The local run passes backend lint, 237 backend tests, frontend build/Biome, and five public Playwright tests; authenticated E2E and deployment smoke checks are intentionally excluded because they require secret-bearing state.
+- **Evidence:** `.github/workflows/ci.yml` now runs a repository whitespace check, clean backend/frontend installs, backend tests/build/lint, frontend build/Biome/public Playwright checks, the committed OpenAPI freshness check, and disposable database migration verification. The first remote run on 2026-09-06 failed before tests because the lock graph was not reproducible on the clean runner; locally, `npm run install:all` now passes after pinning the incompatible Compodoc toolchain and declaring the frontend optional WebSocket peer. The database job now installs from its package working directory instead of npm’s failing root `--prefix` validation path. Authenticated E2E and deployment smoke checks remain intentionally excluded because they require secret-bearing state.
 - **Risk:** Build, test, lint, formatting, migration, and contract regressions reach integration/deployment.
-- **Next action:** Observe the first GitHub Actions run and add non-production authenticated E2E when disposable Clerk state exists.
+- **Next action:** Observe the next GitHub Actions run after this local CI repair, then add non-production authenticated E2E when disposable Clerk state exists.
 - **Dependencies:** A meaningful test baseline and the repository’s locked-install workflow.
 
 ### READINESS-007 [High] OPS-001/002/005/009 — Document environments and recovery
