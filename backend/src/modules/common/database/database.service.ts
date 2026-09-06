@@ -431,6 +431,50 @@ export class DatabaseService implements OnModuleInit {
         }
     }
 
+    async rejectGameProposalAtomically(input: {
+        proposalId: number
+        reviewerId: number
+        reviewNotes: string
+        notification: CreateNotificationBody
+    }): Promise<void> {
+        const transaction = await this.tursoClient.transaction('write')
+
+        try {
+            const proposalResult = await transaction.execute({
+                sql: `
+                    UPDATE GameProposal
+                    SET status = 'rejected',
+                        reviewedBy = ?,
+                        reviewedAt = CURRENT_TIMESTAMP,
+                        reviewNotes = ?
+                    WHERE id = ? AND status = 'pending'
+                `,
+                args: [input.reviewerId, input.reviewNotes, input.proposalId],
+            })
+
+            if (proposalResult.rowsAffected !== 1) {
+                throw new NotFoundException('Pending game proposal not found')
+            }
+
+            await transaction.execute({
+                sql: 'INSERT INTO Notification (accountId, type, message, data) VALUES (?, ?, ?, ?)',
+                args: [
+                    input.notification.accountId,
+                    input.notification.type,
+                    input.notification.message,
+                    JSON.stringify(input.notification.data || {}),
+                ],
+            })
+
+            await transaction.commit()
+        } catch (error) {
+            await transaction.rollback()
+            throw error
+        } finally {
+            transaction.close()
+        }
+    }
+
     async findUserByVerificationToken(token: string) {
         return this._tursoExecute({
             sql: 'SELECT * FROM Account WHERE verification_token = ? AND verification_token_expires_at IS NOT NULL AND verification_token_expires_at > unixepoch()',

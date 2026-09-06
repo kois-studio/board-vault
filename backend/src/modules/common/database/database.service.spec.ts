@@ -241,6 +241,78 @@ describe('DatabaseService logging', () => {
         expect(transaction.close).toHaveBeenCalledTimes(1)
     })
 
+    it('rejects a game proposal and its notification in one transaction', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const transaction = {
+            execute: jest.fn().mockResolvedValueOnce({ rowsAffected: 1 }).mockResolvedValueOnce({ rowsAffected: 1 }),
+            commit: jest.fn().mockResolvedValue(undefined),
+            rollback: jest.fn().mockResolvedValue(undefined),
+            close: jest.fn(),
+        }
+
+        ;(service as unknown as { tursoClient: { transaction: jest.Mock } }).tursoClient = {
+            transaction: jest.fn().mockResolvedValue(transaction),
+        }
+
+        await expect(
+            service.rejectGameProposalAtomically({
+                proposalId: 12,
+                reviewerId: 7,
+                reviewNotes: 'Already present',
+                notification: {
+                    accountId: 4,
+                    type: 'game_proposal_rejected',
+                    message: 'Your proposal was rejected',
+                    data: { gameTitle: 'Catan', proposalId: 12, reviewNotes: 'Already present' },
+                },
+            }),
+        ).resolves.toBeUndefined()
+
+        expect(transaction.execute).toHaveBeenNthCalledWith(
+            1,
+            expect.objectContaining({ sql: expect.stringContaining("status = 'rejected'") }),
+        )
+        expect(transaction.execute).toHaveBeenNthCalledWith(
+            2,
+            expect.objectContaining({ sql: expect.stringContaining('INSERT INTO Notification') }),
+        )
+        expect(transaction.commit).toHaveBeenCalledTimes(1)
+        expect(transaction.rollback).not.toHaveBeenCalled()
+        expect(transaction.close).toHaveBeenCalledTimes(1)
+    })
+
+    it('rolls back proposal rejection when notification persistence fails', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const transaction = {
+            execute: jest.fn().mockResolvedValueOnce({ rowsAffected: 1 }).mockRejectedValueOnce(new Error('notification write failed')),
+            commit: jest.fn().mockResolvedValue(undefined),
+            rollback: jest.fn().mockResolvedValue(undefined),
+            close: jest.fn(),
+        }
+
+        ;(service as unknown as { tursoClient: { transaction: jest.Mock } }).tursoClient = {
+            transaction: jest.fn().mockResolvedValue(transaction),
+        }
+
+        await expect(
+            service.rejectGameProposalAtomically({
+                proposalId: 12,
+                reviewerId: 7,
+                reviewNotes: 'Already present',
+                notification: {
+                    accountId: 4,
+                    type: 'game_proposal_rejected',
+                    message: 'Your proposal was rejected',
+                    data: { gameTitle: 'Catan', proposalId: 12, reviewNotes: 'Already present' },
+                },
+            }),
+        ).rejects.toThrow('notification write failed')
+
+        expect(transaction.rollback).toHaveBeenCalledTimes(1)
+        expect(transaction.commit).not.toHaveBeenCalled()
+        expect(transaction.close).toHaveBeenCalledTimes(1)
+    })
+
     it('adds collection ownership, memory, and wishlist cleanup in one transaction', async () => {
         const service = new DatabaseService({} as ConfigService)
         const execute = jest
