@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common'
 
+import { CacheModule } from '../../common/cache/cache.module'
 import { DatabaseModule } from '../../common/database/database.module'
 import { GameProposalModule } from '../../core/game-proposal/game-proposal.module'
 import { GameTagsModule } from '../../core/game-tags/game-tags.module'
@@ -15,6 +16,7 @@ import { AdminService } from './admin.service'
 @Module({
     imports: [
         DatabaseModule, // needed for VerifiedUserGuard
+        CacheModule,
         GamesModule,
         TagsModule,
         GameTagsModule,

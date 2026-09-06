@@ -20,6 +20,8 @@ import { NotificationTypeEnum } from '../../../modules/core/notifications/notifi
 import { NotificationsService } from '../../../modules/core/notifications/notifications.service'
 import { TagCategoryService } from '../../../modules/core/tag-category/tag-category.service'
 import { TagsService } from '../../../modules/core/tags/tags.service'
+import { CacheService } from '../../common/cache/cache.service'
+import { DatabaseService } from '../../common/database/database.service'
 
 import type { TagCategoryWithTagsDto } from '../../../common/types/tag-category.type'
 
@@ -33,6 +35,8 @@ export class AdminService {
         private readonly gameTranslationService: GameTranslationService,
         private readonly gameProposalService: GameProposalService,
         private readonly notificationsService: NotificationsService,
+        private readonly databaseService: DatabaseService,
+        private readonly cacheService: CacheService,
     ) {}
 
     // #region Tag Categories
@@ -276,52 +280,56 @@ export class AdminService {
             maxPlayers: approvalData.maxPlayers ?? proposal.maxPlayers ?? 4,
         }
 
-        // Create the game
-        const createdGame = await this.gameService.createGame(gameData)
-        const createdGameId = createdGame.id
-
-        // Track if English translation was added
+        const translations: Array<{ languageCode: SupportedLanguage; title: string; normalizedTitle: string }> = []
         let englishTranslationAdded = false
 
-        // Add translations if provided
         if (approvalData.translations && Object.keys(approvalData.translations).length > 0) {
             for (const [languageCode, title] of Object.entries(approvalData.translations)) {
                 if (title?.trim()) {
-                    // Use upsert to avoid duplicate key errors if translation already exists
-                    await this.gameTranslationService.upsertGameTranslation(createdGameId, languageCode as SupportedLanguage, title)
-                    if (languageCode === 'en') {
-                        englishTranslationAdded = true
-                    }
+                    translations.push({
+                        languageCode: languageCode as SupportedLanguage,
+                        title,
+                        normalizedTitle: this.gameTranslationService.normalizeTitle(title),
+                    })
+                    englishTranslationAdded = englishTranslationAdded || languageCode === 'en'
                 }
             }
         }
 
-        // Ensure English translation exists if not provided
         if (!englishTranslationAdded) {
-            await this.gameTranslationService.upsertGameTranslation(createdGameId, 'en' as SupportedLanguage, proposal.title)
+            translations.push({
+                languageCode: 'en',
+                title: proposal.title,
+                normalizedTitle: this.gameTranslationService.normalizeTitle(proposal.title),
+            })
         }
 
-        // Add tags if provided
-        if (approvalData.tagIds && approvalData.tagIds.length > 0) {
-            for (const tagId of approvalData.tagIds) {
-                await this.gameTagsService.addGameTag(createdGameId, tagId)
-            }
-        }
-
-        // Update the proposal status to approved
-        await this.gameProposalService.approveGameProposal(proposalId, reviewerId, approvalData.reviewNotes, createdGameId)
-
-        // Send notification to the user
-        await this.notificationsService.createNotification({
-            accountId: proposal.submittedBy,
-            type: NotificationTypeEnum.GAME_PROPOSAL_APPROVED,
-            message: `Your game proposal "${proposal.title}" was approved!`,
-            data: {
-                gameTitle: proposal.title,
-                proposalId: proposal.id,
-                createdGameId,
+        const { createdGameId } = await this.databaseService.approveGameProposalAtomically({
+            proposalId,
+            reviewerId,
+            ...gameData,
+            translations,
+            tagIds: approvalData.tagIds ?? [],
+            reviewNotes: approvalData.reviewNotes,
+            notification: {
+                accountId: proposal.submittedBy,
+                type: NotificationTypeEnum.GAME_PROPOSAL_APPROVED,
+                message: `Your game proposal "${proposal.title}" was approved!`,
+                data: {
+                    gameTitle: proposal.title,
+                    proposalId: proposal.id,
+                    createdGameId: undefined,
+                },
             },
         })
+
+        await Promise.all([
+            this.cacheService.deleteOne(`game-proposal:byId:${proposalId}`),
+            this.cacheService.deleteOne('game-proposal:byStatus:pending'),
+            this.cacheService.deleteOne('game-proposal:byStatus:approved'),
+            this.cacheService.deleteOne(`game-proposal:bySubmitter:${proposal.submittedBy}`),
+            this.cacheService.deleteOne(`user-proposal-stats:${proposal.submittedBy}`),
+        ])
 
         return { success: true, createdGameId }
     }
