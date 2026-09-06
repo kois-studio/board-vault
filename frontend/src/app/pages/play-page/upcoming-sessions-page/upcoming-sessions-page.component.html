@@ -10,9 +10,11 @@
 
 <container-wrapper>
     @if (isSchedulingASession()) {
-        <section class="app-bg-secondary rounded-lg p-4 mb-8">
-            <h2 class="text-xl font-semibold mb-2">Where are you playing?</h2>
-            <p class="text-secondary mb-4">Choose a group, then set the date, attendees, and shortlist for the future game night.</p>
+        <section class="mb-8 rounded-3xl border border-indigo-100 bg-indigo-50 p-6 dark:border-indigo-900/60 dark:bg-indigo-950/30" aria-labelledby="schedule-start-heading">
+            <div class="flex flex-wrap items-start justify-between gap-4">
+                <div><p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Start with the group</p><h2 id="schedule-start-heading" class="mt-2 text-2xl font-bold">Which group is this game night for?</h2><p class="mt-2 text-secondary">The next page will help you choose the time, attendees, shortlist, and context.</p></div>
+                <button type="button" class="text-sm font-medium text-secondary underline" (click)="isSchedulingASession.set(false)">Cancel</button>
+            </div>
             @if (isLoadingGroups()) {
                 <p class="text-secondary">Loading groups…</p>
             } @else if (groupsError()) {
@@ -27,9 +29,9 @@
                     <a class="app-btn-secondary" routerLink="/groups">View invitations</a>
                 </div>
             } @else {
-                <div class="grid gap-3 sm:grid-cols-2">
+                <div class="mt-5 grid gap-3 sm:grid-cols-2">
                     @for (group of userGroups$(); track group.id) {
-                        <a class="app-btn-secondary" [routerLink]="['/groups', group.id, 'sessions', 'new']">{{ group.name }}</a>
+                        <a class="rounded-2xl border border-white/80 bg-white p-4 text-left font-semibold text-zinc-900 shadow-sm transition hover:border-indigo-400 dark:border-zinc-800 dark:bg-zinc-900 dark:text-white" [routerLink]="['/groups', group.id, 'sessions', 'new']"><span class="block">{{ group.name }}</span><span class="mt-1 block text-sm font-normal text-secondary">Plan this group’s next night →</span></a>
                     }
                 </div>
             }
@@ -45,28 +47,32 @@
             <app-button icon="arrow-repeat" (click)="retrySessions()">Retry</app-button>
         </div>
     } @else if (upcomingSessions().length === 0) {
-        <div class="text-center py-8 text-secondary">
-            <p>No upcoming sessions yet.</p>
-            <p class="text-sm mt-2">Schedule a session to bring your group together.</p>
-            <app-button class="mt-5" icon="plus-lg" (click)="isSchedulingASession.set(true)">Plan a future session</app-button>
+        <div class="rounded-3xl border border-dashed border-zinc-300 px-6 py-12 text-center dark:border-zinc-700">
+            <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-100 text-2xl text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-300" aria-hidden="true"><i class="bi bi-calendar-plus"></i></div>
+            <h2 class="mt-5 text-xl font-bold text-zinc-900 dark:text-white">Your next game night is not planned yet</h2>
+            <p class="mx-auto mt-2 max-w-lg text-sm leading-6 text-secondary">Choose a group to coordinate the people, time, and games. The session stays editable until the night begins.</p>
+            <app-button class="mt-6" icon="plus-lg" (click)="isSchedulingASession.set(true)">Plan a future session</app-button>
         </div>
     } @else {
+        <div class="relative ml-2 border-l-2 border-indigo-100 pl-6 dark:border-indigo-950 sm:ml-4 sm:pl-8">
         @for (session of upcomingSessions(); track session.id) {
-            <div class="app-bg-secondary relative p-4 mb-8">
-                <div class="flex flex-wrap items-start justify-between gap-3 mb-4">
+            <article class="app-bg-secondary relative mb-6 rounded-3xl p-5 shadow-sm sm:p-6" [attr.aria-labelledby]="'upcoming-session-' + session.id">
+                <span class="absolute -left-[2.05rem] top-6 h-4 w-4 rounded-full border-4 border-white bg-indigo-500 dark:border-zinc-950" aria-hidden="true"></span>
+                <div class="flex flex-wrap items-start justify-between gap-4">
                     <div>
-                        <p class="text-secondary text-sm mb-1">{{ getGroupName(session.groupId) }}</p>
-                        <h2 class="text-xl font-semibold">
+                        <p class="text-sm font-semibold text-indigo-600 dark:text-indigo-400">{{ getGroupName(session.groupId) }}</p>
+                        <h2 class="mt-1 text-xl font-bold text-zinc-900 dark:text-white" [id]="'upcoming-session-' + session.id">
                             {{ session.meetDate | customDate:true:session.timezone }}
                         </h2>
                     </div>
-                    <span class="inline-flex rounded-full bg-zinc-700 px-3 py-1 text-sm">{{ getStatusLabel(session.status) }}</span>
+                    <span class="inline-flex rounded-full bg-indigo-100 px-3 py-1 text-sm font-semibold text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300">{{ getStatusLabel(session.status) }}</span>
                 </div>
                 @if (session.notes) {
-                    <p class="text-secondary mb-4">{{ session.notes }}</p>
+                    <p class="mt-5 rounded-2xl bg-zinc-50 p-4 text-sm leading-6 text-secondary dark:bg-zinc-800"><span class="font-semibold text-zinc-900 dark:text-white">Plan note:</span> {{ session.notes }}</p>
                 }
-                <a class="app-btn-secondary inline-block" [routerLink]="['/sessions', session.id]">{{ getSessionActionLabel(session.status) }}</a>
-            </div>
+                <div class="mt-5 flex flex-wrap items-center justify-between gap-3"><p class="text-sm text-secondary">Open the plan to update attendees, games, or status.</p><a class="app-btn-secondary" [routerLink]="['/sessions', session.id]">{{ getSessionActionLabel(session.status) }}</a></div>
+            </article>
         }
+        </div>
     }
 </container-wrapper>
