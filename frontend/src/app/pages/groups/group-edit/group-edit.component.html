@@ -219,4 +219,31 @@
         }
     </div>
     }
+
+    @if (isDeleteDialogOpen()) {
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/70 p-4" role="presentation" (click)="cancelDeleteGroup()" (keydown.escape)="cancelDeleteGroup()">
+            <section
+                class="w-full max-w-md rounded-3xl border border-red-200 bg-white p-6 shadow-2xl dark:border-red-900/70 dark:bg-zinc-900"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="delete-group-dialog-title"
+                aria-describedby="delete-group-dialog-description"
+                (click)="$event.stopPropagation()"
+            >
+                <div class="flex items-start gap-4">
+                    <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-red-100 text-xl text-red-700 dark:bg-red-950/60 dark:text-red-300" aria-hidden="true">
+                        <i class="bi bi-trash3"></i>
+                    </div>
+                    <div>
+                        <h2 id="delete-group-dialog-title" class="text-xl font-bold text-zinc-900 dark:text-white">Delete {{ groupData?.name }}?</h2>
+                        <p id="delete-group-dialog-description" class="mt-2 text-sm leading-6 text-secondary">This removes the group, its invitations, and its shared play context. It cannot be undone.</p>
+                    </div>
+                </div>
+                <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                    <button type="button" class="app-btn-secondary" [disabled]="isDeletingGroup()" (click)="cancelDeleteGroup()">Keep group</button>
+                    <button type="button" class="app-btn-danger" [disabled]="isDeletingGroup()" (click)="confirmDeleteGroup()">{{ isDeletingGroup() ? 'Deleting…' : 'Delete group' }}</button>
+                </div>
+            </section>
+        </div>
+    }
 </div>

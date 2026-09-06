@@ -3,6 +3,8 @@
 
     @if (isGroupOwnerComputed()) {
         <app-button class="action-button" icon="gear-fill" (click)="onClickEditGroup()">Manage group</app-button>
+    } @else {
+        <app-button class="action-button" variant="secondary" icon="box-arrow-right" (click)="onClickLeaveGroup()">Leave group</app-button>
     }
 </app-page-header>
 
@@ -456,3 +458,30 @@
         }
     }
 </container-wrapper>
+
+@if (isLeaveDialogOpen()) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/70 p-4" role="presentation" (click)="cancelLeaveGroup()" (keydown.escape)="cancelLeaveGroup()">
+        <section
+            class="w-full max-w-md rounded-3xl border border-zinc-200 bg-white p-6 shadow-2xl dark:border-zinc-700 dark:bg-zinc-900"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="leave-group-dialog-title"
+            aria-describedby="leave-group-dialog-description"
+            (click)="$event.stopPropagation()"
+        >
+            <div class="flex items-start gap-4">
+                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-amber-100 text-xl text-amber-700 dark:bg-amber-950/60 dark:text-amber-300" aria-hidden="true">
+                    <i class="bi bi-box-arrow-right"></i>
+                </div>
+                <div>
+                    <h2 id="leave-group-dialog-title" class="text-xl font-bold text-zinc-900 dark:text-white">Leave {{ groupData$()?.name }}?</h2>
+                    <p id="leave-group-dialog-description" class="mt-2 text-sm leading-6 text-secondary">You will lose access to this group’s games, plans, and shared play history. The owner can invite you again later.</p>
+                </div>
+            </div>
+            <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                <button type="button" class="app-btn-secondary" [disabled]="isLeavingGroup()" (click)="cancelLeaveGroup()">Keep group access</button>
+                <button type="button" class="app-btn-danger" [disabled]="isLeavingGroup()" (click)="confirmLeaveGroup()">{{ isLeavingGroup() ? 'Leaving…' : 'Leave group' }}</button>
+            </div>
+        </section>
+    </div>
+}

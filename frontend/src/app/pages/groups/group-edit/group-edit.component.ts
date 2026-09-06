@@ -39,6 +39,8 @@ export class GroupEditComponent {
     public readonly clerkInvitationsLoading = signal(false)
     public readonly clerkInvitationsError = signal(false)
     public readonly pendingClerkRevokeId = signal<string | null>(null)
+    public readonly isDeleteDialogOpen = signal(false)
+    public readonly isDeletingGroup = signal(false)
     public readonly isResolvingGroup = signal(true)
     public readonly groupResolutionError = signal(false)
     public copyLinkStatus: 'idle' | 'copied' | 'unavailable' | 'failed' = 'idle'
@@ -246,6 +248,23 @@ export class GroupEditComponent {
 
     onDeleteGroup() {
         if (!this.isGroupOwner || !this.groupData) return
-        this.router.navigate(['/groups', this.groupData.id, 'delete'])
+        this.isDeleteDialogOpen.set(true)
+    }
+
+    public cancelDeleteGroup(): void {
+        if (this.isDeletingGroup()) return
+        this.isDeleteDialogOpen.set(false)
+    }
+
+    public async confirmDeleteGroup(): Promise<void> {
+        if (!this.isGroupOwner || !this.groupData || this.isDeletingGroup()) return
+
+        this.isDeletingGroup.set(true)
+        try {
+            await firstValueFrom(this.dataService.deleteGroup(this.groupData.id))
+            await this.router.navigate(['/dashboard'])
+        } finally {
+            this.isDeletingGroup.set(false)
+        }
     }
 }
