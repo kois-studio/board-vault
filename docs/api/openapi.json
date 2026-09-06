@@ -5892,11 +5892,143 @@
           "reviewNotes"
         ]
       },
+      "GameOwnershipDto": {
+        "type": "object",
+        "properties": {
+          "purchaseDate": {
+            "type": "object",
+            "example": "2026-09-01",
+            "nullable": true
+          },
+          "purchasePrice": {
+            "type": "object",
+            "example": 42.5,
+            "nullable": true
+          },
+          "purchaseNotes": {
+            "type": "object",
+            "example": "Bought for the group",
+            "nullable": true
+          }
+        },
+        "required": [
+          "purchaseDate",
+          "purchasePrice",
+          "purchaseNotes"
+        ]
+      },
+      "GameViewTagDto": {
+        "type": "object",
+        "properties": {
+          "tag": {
+            "type": "string",
+            "example": "Strategy"
+          },
+          "category": {
+            "type": "string",
+            "example": "Genre"
+          }
+        },
+        "required": [
+          "tag",
+          "category"
+        ]
+      },
+      "GameWishlistDto": {
+        "type": "object",
+        "properties": {
+          "dateAdded": {
+            "type": "string",
+            "example": "2026-09-01"
+          },
+          "notes": {
+            "type": "string",
+            "example": "Suggested by a friend"
+          }
+        },
+        "required": [
+          "dateAdded",
+          "notes"
+        ]
+      },
+      "GameViewRatingSummaryDto": {
+        "type": "object",
+        "properties": {
+          "review": {
+            "type": "number",
+            "example": 8.5
+          },
+          "count": {
+            "type": "number",
+            "example": 4
+          }
+        },
+        "required": [
+          "review",
+          "count"
+        ]
+      },
+      "GameViewRatingDto": {
+        "type": "object",
+        "properties": {
+          "userRating": {
+            "type": "object",
+            "example": 9,
+            "nullable": true
+          },
+          "avgGroupsRating": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/GameViewRatingSummaryDto"
+              }
+            ]
+          },
+          "avgGlobalRating": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/GameViewRatingSummaryDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "userRating",
+          "avgGroupsRating",
+          "avgGlobalRating"
+        ]
+      },
       "GameViewDto": {
         "type": "object",
         "properties": {
           "gameData": {
             "$ref": "#/components/schemas/GameCompleteDto"
+          },
+          "ownedGameData": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/GameOwnershipDto"
+              }
+            ]
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GameViewTagDto"
+            }
+          },
+          "wishlistedGameData": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/GameWishlistDto"
+              }
+            ]
+          },
+          "ratingData": {
+            "$ref": "#/components/schemas/GameViewRatingDto"
           },
           "similarGames": {
             "type": "array",
@@ -5907,6 +6039,10 @@
         },
         "required": [
           "gameData",
+          "ownedGameData",
+          "tags",
+          "wishlistedGameData",
+          "ratingData",
           "similarGames"
         ]
       },

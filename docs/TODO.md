@@ -160,9 +160,9 @@ flagship loop, followed by rendered route review with real group data.
 
 - **Status:** In progress
 - **Affected area:** Swagger generation, `frontend/src/app/api/`, Nest controllers/DTOs
-- **Evidence:** Runtime Swagger exists and the backend now applies `ApiErrorFilter`, returning a stable `{ statusCode, code, message, details?, requestId }` envelope with `X-Request-Id`. A versioned OpenAPI snapshot is now committed at [`docs/api/openapi.json`](api/openapi.json) and regenerated from the Nest module with `cd backend && npm run build && npm run docs:openapi`; CI checks that regeneration is clean. Frontend response schemas and focused malformed-response tests cover representative consumer boundaries. Generated-client and broader producer/consumer compatibility tests remain open.
+- **Evidence:** Runtime Swagger exists and the backend now applies `ApiErrorFilter`, returning a stable `{ statusCode, code, message, details?, requestId }` envelope with `X-Request-Id`. A versioned OpenAPI snapshot is now committed at [`docs/api/openapi.json`](api/openapi.json) and regenerated from the Nest module with `cd backend && npm run build && npm run docs:openapi`; CI checks that regeneration is clean. The snapshot now documents the nested game-detail ownership, wishlist, tag, and rating response shapes. Frontend response schemas and focused malformed-response tests cover representative consumer boundaries. Generated-client and broader producer/consumer compatibility tests remain open.
 - **Risk:** Frontend/backend drift and unsafe breaking changes.
-- **Next action:** Add a CI freshness check for the committed OpenAPI snapshot, then standardize pagination and expand producer/consumer compatibility tests.
+- **Next action:** Standardize pagination only on unbounded group-facing reads where real growth requires it, then expand producer/consumer compatibility tests for the core social routes. Defer generated-client adoption until those response shapes stabilize.
 - **Dependencies:** READINESS-002 and canonical session/data model.
 
 ## Medium — launch quality and maintainability
