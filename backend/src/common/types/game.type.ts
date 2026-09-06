@@ -70,6 +70,52 @@ export class BrowseGamesResultDto {
     pagination: BrowseGamesPaginationDto
 }
 
+export class GameOwnershipDto {
+    @ApiProperty({ example: '2026-09-01', nullable: true })
+    purchaseDate: string | null
+
+    @ApiProperty({ example: 42.5, nullable: true })
+    purchasePrice: number | null
+
+    @ApiProperty({ example: 'Bought for the group', nullable: true })
+    purchaseNotes: string | null
+}
+
+export class GameViewTagDto {
+    @ApiProperty({ example: 'Strategy' })
+    tag: string
+
+    @ApiProperty({ example: 'Genre' })
+    category: string
+}
+
+export class GameWishlistDto {
+    @ApiProperty({ example: '2026-09-01' })
+    dateAdded: string
+
+    @ApiProperty({ example: 'Suggested by a friend' })
+    notes: string
+}
+
+export class GameViewRatingSummaryDto {
+    @ApiProperty({ example: 8.5 })
+    review: number
+
+    @ApiProperty({ example: 4 })
+    count: number
+}
+
+export class GameViewRatingDto {
+    @ApiProperty({ example: 9, nullable: true })
+    userRating: number | null
+
+    @ApiProperty({ type: GameViewRatingSummaryDto, nullable: true })
+    avgGroupsRating: GameViewRatingSummaryDto | null
+
+    @ApiProperty({ type: GameViewRatingSummaryDto, nullable: true })
+    avgGlobalRating: GameViewRatingSummaryDto | null
+}
+
 export class BrowseGamesQuery {
     @ApiPropertyOptional({ example: 'catan', description: 'Title search across supported translations.' })
     @IsOptional()
@@ -101,28 +147,17 @@ export class GameViewDto {
     @ApiProperty({ type: GameCompleteDto })
     gameData: GameCompleteDto
 
-    // TODO: add missing @ApiProperty
-    ownedGameData: null | {
-        purchaseDate: string | null
-        purchasePrice: number | null
-        purchaseNotes: string | null
-    }
+    @ApiProperty({ type: GameOwnershipDto, nullable: true })
+    ownedGameData: GameOwnershipDto | null
 
-    tags: Array<{
-        tag: string
-        category: string
-    }>
+    @ApiProperty({ type: [GameViewTagDto] })
+    tags: Array<GameViewTagDto>
 
-    wishlistedGameData: null | {
-        dateAdded: string
-        notes: string
-    }
+    @ApiProperty({ type: GameWishlistDto, nullable: true })
+    wishlistedGameData: GameWishlistDto | null
 
-    ratingData: {
-        userRating: null | number
-        avgGroupsRating: null | { review: number; count: number }
-        avgGlobalRating: null | { review: number; count: number }
-    }
+    @ApiProperty({ type: GameViewRatingDto })
+    ratingData: GameViewRatingDto
 
     @ApiProperty({ type: [GameCompleteDto] })
     similarGames: Array<GameCompleteDto>
