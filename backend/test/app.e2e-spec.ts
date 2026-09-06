@@ -45,4 +45,13 @@ describe('HTTP security boundary (e2e)', () => {
             .expect(400)
             .expect(({ body }) => expect(body.message).toEqual(expect.arrayContaining(['email must be an email'])))
     })
+
+    it.each([
+        ['group acquisition board', () => request(app.getHttpServer()).get('/groups/7/acquisition-board')],
+        ['recommendation signals', () => request(app.getHttpServer()).get('/play/recommendations/signals?groupId=7')],
+        ['session scheduling', () => request(app.getHttpServer()).post('/sessions/scheduled').send({ groupId: 7 })],
+        ['collection activation', () => request(app.getHttpServer()).post('/collection/users/7/games/42')],
+    ])('rejects unauthenticated %s before domain access', (_name, buildRequest) => {
+        return buildRequest().expect(401)
+    })
 })

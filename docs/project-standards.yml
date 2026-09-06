@@ -103,7 +103,7 @@ compliance:
       next_action: Define disposable test data and provider fakes before adding integration coverage.
     - id: TEST-004
       status: partial
-      evidence: backend focused tests plus 2 environment-safe HTTP E2E tests and frontend public Playwright tests assert security/user-visible behavior; seeded integration and authenticated browser tests remain opt-in
+      evidence: backend focused tests plus 6 environment-safe HTTP E2E tests and frontend public Playwright tests assert security/user-visible behavior; seeded integration and authenticated browser tests remain opt-in
       priority: high
       next_action: Expand the HTTP contract suite with disposable authenticated/authorized journeys.
     - id: TEST-005

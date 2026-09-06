@@ -164,6 +164,24 @@ Verified: `cd backend && npm test -- --runInBand` passes 48 suites / 257 tests; 
 
 Known follow-ups: Add disposable HTTP/database integration evidence, audit proposal and remaining legacy bulk mutations, and keep authenticated social-loop rehearsal as the release gate.
 
+Continuation claim: EQ-003 / TEST-004
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Branch/worktree: main / shared workspace
+
+Scope: extend disposable HTTP security evidence across the core social endpoints without requiring production or authenticated fixture state
+
+Review: EQ-003 / TEST-004
+
+Changed: The disposable Nest HTTP suite now proves unauthenticated group-acquisition, recommendation-signal, session-scheduling, and collection-activation requests fail with 401 before domain access, alongside the existing Clerk-status and public-query checks.
+
+Verified: `cd backend && npm run test:e2e -- --runInBand` passes 6 tests; `git diff --check` passes. No deployment, push, provider mutation, or production data change was performed.
+
+Known follow-ups: Add authenticated disposable database/HTTP journeys when Clerk storage state is available, and keep the two-account social rehearsal as the release gate.
+
 Previous most recent claim:
 
 ```text
