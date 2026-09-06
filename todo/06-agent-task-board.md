@@ -2943,3 +2943,30 @@ Known follow-ups: Validate pending/accepted/rejected/expired and provider email
 invitation states with real two-person data, including the secondary profile
 modal and mobile/keyboard behavior; provider pagination and delivery failures
 remain integration checks.
+
+Continuation claim: TS-005 / SEC-004 / EQ-003
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Scope: close the next request-boundary gaps found during the DTO audit without
+expanding the product beyond the social loop.
+
+Changed: Added explicit maximums for legacy credentials, profile/avatar fields,
+proposal and notification text, invitation identifiers/emails, and bulk
+collection/tag/session arrays. Added a focused request-boundary suite covering
+registration, proposal, notification, collection, and session limits. Updated
+the security, API, operations, testing, standards, implementation inventory,
+and active TODO documents with the remaining legacy/client validation gaps.
+
+Verified: Backend full suite passes 45 suites / 230 tests; backend build, no-
+mutation lint, and `git diff --check` pass. Refreshed disposable development
+Clerk owner/member storage states and reran the seeded two-account session
+journey: RSVP → active → attendance → per-game participants → completed →
+feedback → history passes in 6.4 seconds. No migration, production data,
+provider configuration, deployment, or push was changed.
+
+Known follow-ups: Complete the remaining DTO decorator inventory and client
+negative-response tests; validate provider failures and real-group usefulness
+before treating the core loop as launch-ready.
