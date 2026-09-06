@@ -338,19 +338,29 @@ export class AdminService {
     async rejectGameProposal(proposalId: number, reviewerId: number, rejectionData: RejectGameProposalBody): Promise<{ success: boolean }> {
         const proposal = await this.gameProposalService.getGameProposalById(proposalId)
 
-        await this.gameProposalService.rejectGameProposal(proposalId, reviewerId, rejectionData.reviewNotes)
-
-        // Send notification to the user
-        await this.notificationsService.createNotification({
-            accountId: proposal.submittedBy,
-            type: NotificationTypeEnum.GAME_PROPOSAL_REJECTED,
-            message: `Your game proposal "${proposal.title}" was rejected: ${rejectionData.reviewNotes}`,
-            data: {
-                gameTitle: proposal.title,
-                proposalId: proposal.id,
-                reviewNotes: rejectionData.reviewNotes,
+        await this.databaseService.rejectGameProposalAtomically({
+            proposalId,
+            reviewerId,
+            reviewNotes: rejectionData.reviewNotes,
+            notification: {
+                accountId: proposal.submittedBy,
+                type: NotificationTypeEnum.GAME_PROPOSAL_REJECTED,
+                message: `Your game proposal "${proposal.title}" was rejected: ${rejectionData.reviewNotes}`,
+                data: {
+                    gameTitle: proposal.title,
+                    proposalId: proposal.id,
+                    reviewNotes: rejectionData.reviewNotes,
+                },
             },
         })
+
+        await Promise.all([
+            this.cacheService.deleteOne(`game-proposal:byId:${proposalId}`),
+            this.cacheService.deleteOne('game-proposal:byStatus:pending'),
+            this.cacheService.deleteOne('game-proposal:byStatus:rejected'),
+            this.cacheService.deleteOne(`game-proposal:bySubmitter:${proposal.submittedBy}`),
+            this.cacheService.deleteOne(`user-proposal-stats:${proposal.submittedBy}`),
+        ])
 
         return { success: true }
     }
