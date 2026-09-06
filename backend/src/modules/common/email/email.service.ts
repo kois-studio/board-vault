@@ -1,7 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common'
+import { HttpStatus, Injectable, Logger } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { Resend } from 'resend'
 
+import { BoardVaultHttpException, API_ERROR_CODES } from '../../../common/http/api-error'
 import { safeErrorName } from '../../../common/logging/structured-log'
 
 @Injectable()
@@ -57,7 +58,7 @@ export class EmailService {
             this.LOGGER.log('Verification email sent successfully')
         } catch (error) {
             this.LOGGER.error(`Failed to send verification email (${safeErrorName(error)})`)
-            throw error // Re-throw the error to be handled by the calling function
+            throw this.providerUnavailableError()
         }
     }
 
@@ -80,7 +81,7 @@ export class EmailService {
             this.LOGGER.log('Password reset email sent successfully')
         } catch (error) {
             this.LOGGER.error(`Failed to send password reset email (${safeErrorName(error)})`)
-            throw error // Re-throw the error to be handled by the calling function
+            throw this.providerUnavailableError()
         }
     }
 
@@ -102,7 +103,15 @@ export class EmailService {
             this.LOGGER.log('Notification email sent successfully')
         } catch (error) {
             this.LOGGER.error(`Failed to send notification email (${safeErrorName(error)})`)
-            throw error // Re-throw the error to be handled by the calling function
+            throw this.providerUnavailableError()
         }
+    }
+
+    private providerUnavailableError(): BoardVaultHttpException {
+        return new BoardVaultHttpException(
+            API_ERROR_CODES.EMAIL_PROVIDER_UNAVAILABLE,
+            HttpStatus.BAD_GATEWAY,
+            'Email delivery is temporarily unavailable',
+        )
     }
 }

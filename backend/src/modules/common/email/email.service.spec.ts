@@ -1,3 +1,5 @@
+import { API_ERROR_CODES, BoardVaultHttpException } from '../../../common/http/api-error'
+
 import { EmailService } from './email.service'
 
 type EmailServiceInternals = {
@@ -33,7 +35,14 @@ describe('EmailService logging', () => {
     it('does not log recipient addresses on provider failure', async () => {
         const { service, internals } = createService({ error: new Error('provider failure') })
 
-        await expect(service.sendVerificationEmail(recipient, 'verification-token')).rejects.toThrow('provider failure')
+        const error = await service.sendVerificationEmail(recipient, 'verification-token').catch((caught: unknown) => caught)
+
+        expect(error).toBeInstanceOf(BoardVaultHttpException)
+        expect((error as BoardVaultHttpException).getResponse()).toEqual({
+            code: API_ERROR_CODES.EMAIL_PROVIDER_UNAVAILABLE,
+            message: 'Email delivery is temporarily unavailable',
+        })
+        expect((error as BoardVaultHttpException).getStatus()).toBe(502)
 
         expect(internals.LOGGER.error).toHaveBeenCalledWith('Failed to send verification email (Error)')
         expect(internals.LOGGER.error).not.toHaveBeenCalledWith(expect.anything(), expect.anything())
