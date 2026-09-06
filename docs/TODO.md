@@ -124,7 +124,7 @@ flagship loop, followed by rendered route review with real group data.
 
 - **Status:** In progress
 - **Affected area:** `backend/test/`, backend `src`, frontend `src/**/*.spec.ts`
-- **Evidence:** Backend now has 46 focused suites and 234 passing unit tests plus 2 environment-safe HTTP E2E tests; frontend has 37 browser-based unit tests plus five passing public Playwright tests, while seeded/integration journeys and authenticated browser coverage remain opt-in. The opt-in authenticated collection, invitation, session, recommendation, and acquisition-decision journeys pass against disposable Clerk development identities and data; a disposable provider-invitation rehearsal also proves create/list/revoke/removal; the full local Playwright run passes 13 tests with 3 guarded skips when the owner/recommendation/acquisition fixtures are supplied.
+- **Evidence:** Backend now has 46 focused suites and 234 passing unit tests plus 2 environment-safe HTTP E2E tests; frontend has 39 browser-based unit tests plus five passing public Playwright tests, while seeded/integration journeys and authenticated browser coverage remain opt-in. The opt-in authenticated collection, invitation, session, recommendation, and acquisition-decision journeys pass against disposable Clerk development identities and data; a disposable provider-invitation rehearsal also proves create/list/revoke/removal; the full local Playwright run passes 13 tests with 3 guarded skips when the owner/recommendation/acquisition fixtures are supplied.
 - **Risk:** Security and product regressions are invisible.
 - **Next action:** Add negative authorization/contract cases, repeatable disposable fixture setup, and provider/remote integration evidence; preserve the existing authenticated core-loop journeys as launch regression gates.
 - **Dependencies:** READINESS-001, READINESS-002, READINESS-003.
@@ -171,7 +171,7 @@ flagship loop, followed by rendered route review with real group data.
 
 - **Status:** Planned
 - **Affected area:** `frontend/src/styles.css`, component SCSS/templates, route surfaces
-- **Evidence:** Tailwind global styles now use plain CSS with a PostCSS nesting pass; route-level components are lazy-loaded; production build has no Sass/selector/bundle-budget warnings and the latest initial raw bundle is 606.76 kB (138.39 kB estimated transfer) under the 650 kB warning budget. Shared theme-control semantics, consistent keyboard focus rings, explicit session input labels, the preserved-account auth fallback, migration-state copy, group/session empty states, owner-only invitation controls, invitation-decline confirmation, pending provider-invitation management, direct group-edit route loading/error states, mobile session-progress behavior, attendee-selection handoff, recommendation attendee controls, explainable recommendation lenses, reversible group acquisition interest, invitation-link copy feedback, the personal/private collection boundary, the routed shared-button focus-order fix, removal of unused client compatibility adapters, the history-to-recommendation handoff, player names in shared-memory cards, and group-oriented recommendation context have been improved, but a full accessibility/responsive audit and all route-surface reviews remain open.
+- **Evidence:** Tailwind global styles now use plain CSS with a PostCSS nesting pass; route-level components are lazy-loaded; production build has no Sass/selector/bundle-budget warnings and the latest initial raw bundle is 605.28 kB (138.26 kB estimated transfer) under the 650 kB warning budget. Shared theme-control semantics, consistent keyboard focus rings, explicit session input labels, the preserved-account auth fallback, migration-state copy, group/session empty states, owner-only invitation controls, invitation-decline confirmation, pending provider-invitation management, direct group-edit route loading/error states, mobile session-progress behavior, attendee-selection handoff, recommendation attendee controls, explainable recommendation lenses, reversible group acquisition interest, invitation-link copy feedback, the personal/private collection boundary, the routed shared-button focus-order fix, removal of unused client compatibility adapters, the history-to-recommendation handoff, player names in shared-memory cards, group-oriented recommendation context, and explicit groups-index social actions have been improved, but a full accessibility/responsive audit and all route-surface reviews remain open.
 - **Risk:** Broken styles, poor mobile/accessibility behavior, and unsupported public claims.
 - **Next action:** Complete the rendered route audit matrix, resolve remaining accessibility/responsive findings, and link content-truth findings to `TRUTH-001`.
 - **Dependencies:** Product truth/brand decision where claims are involved.
@@ -248,6 +248,9 @@ as TODO items here.
   context: owners confirm deletion from management, members confirm leaving
   from the group workspace, and the former sparse full-screen pages are no
   longer the user-facing flow. Focus return and real-group validation remain.
+  The groups index now presents each group as a social workspace entry with
+  explicit decision, planning, history, and invitation actions rather than a
+  single dense clickable card; rendered group-index review remains open.
 
 ## Collection and group activation
 
@@ -258,7 +261,9 @@ as TODO items here.
   now proves the ready-state handoff. Real-group usefulness and catalog quality
   still need validation.
 - [ ] Let an organizer create a private group and invite the actual people
-  they play with.
+  they play with. The groups index now makes the workspace handoff and the
+  next decision/planning actions explicit; real invitation and first-group
+  activation remain open.
 - [ ] Complete invitation lifecycle behavior. The groups workspace now exposes
   pending invites with direct accept/decline actions, and the development
   provider flow now proves create/list/revoke/removal for real Clerk invitation

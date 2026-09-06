@@ -59,6 +59,22 @@ truthful, and verify keyboard/focus semantics on the routes that decide,
 coordinate, and remember. Real two-person acceptance remains the primary
 product gate; deeper catalog/detail work stays deferred.
 
+## PM/PO checkpoint — after groups-index redesign — 2026-09-06
+
+The groups index had been technically functional but still behaved like a
+dense catalog of group metadata. That made the social next step ambiguous and
+used one large interactive card to hide several different actions. The entry
+surface now treats each group as a workspace: it shows people, available
+shared games, upcoming or first-session planning context, last shared memory,
+and explicit links for opening the workspace, deciding, planning, reviewing
+history, and managing pending invitations.
+
+This is intentionally an entry-point improvement, not a new analytics or
+catalog surface. The next evidence needed is rendered review at supported
+breakpoints plus the real two-person acceptance rehearsal. If that rehearsal
+shows that one of the actions is rarely used or unclear, simplify the card
+again rather than adding more metrics.
+
 ## Review status
 
 - **Not reviewed** — no systematic UI/UX review has been recorded.
@@ -117,7 +133,7 @@ For each area, review:
 | Area | Routes/components | Current status | Known review scope / next action |
 |---|---|---|---|
 | Dashboard home | `/dashboard`, `dashboard-page` | Source-audited | The authenticated home now leads with group workspaces, each group’s shared game count/members/next session, and direct decision/session actions; the personal collection-value counter was removed from this social surface. Loading and retry now depend only on groups and upcoming sessions, so unrelated collection/history failures do not block the workspace. Continue with rendered responsive, keyboard, focus, contrast, and visual-hierarchy review. |
-| Groups index | `/groups`, `groups-page` | Source-audited | Loading, empty, and retryable failure states now distinguish unavailable data from no groups; review create/join guidance, group card hierarchy, and responsive grid. |
+| Groups index | `/groups`, `groups-page` | Partially reviewed | Loading, empty, and retryable failure states now distinguish unavailable data from no groups. Group entries are semantic articles rather than one opaque clickable block and expose members, shared-game count, next/last session context, history, recommendation, planning, and invitation-management actions. The component regression protects that social entry model; rendered mobile/desktop, keyboard/focus, long-content, and real-group review remain. |
 | Create group | `/create-group`, `group-create` | Partially reviewed | Kept as a focused route because creation is the start of a group setup handoff, not a one-off setting. The redesigned surface explains the next three actions, gives the name field a real label, preserves retryable failure, waits for the local authenticated account before enabling submission, and now opens the newly created group workspace directly so invite/add-games/plan actions are immediately available; rendered mobile, keyboard, and duplicate/error review remain. |
 | Group detail | `/groups/:groupId`, `group-view` | Partially reviewed | The route is now shaped as a group-first social home with an accessible area navigator matching the rendered order: Decide, Games to acquire, Sessions, Group library, and History/insights. It also includes next session, group pulse, attendee context, shared library, acquisition decisions, recommendation hand-off, recent group memory, and basic most-played/participation insights. Loading, retryable group-list failure, unavailable-group recovery, route-state reset, an announced history loader that avoids a transient zero-session pulse, sized/named group-library game links, a 375px horizontal-overflow guard, and a member-only contextual leave dialog are now explicit. A rendered mobile pass found the core hierarchy usable; invitation feedback, image fallbacks, private-data states, keyboard/focus/contrast behavior, and long-content review remain. |
 | Edit/leave/delete group | `/groups/:groupId/{edit,leave,delete}` | Partially reviewed | Owner/member visibility is now explicit: owners see a contextual delete confirmation in management, members can leave from the group workspace, owners cannot leave, and destructive actions wait for API success. Former standalone leave/delete pages were removed; their URLs use an explicit compatibility handoff to the group workspace or management route. Review focus return, failure recovery, and responsive presentation. |

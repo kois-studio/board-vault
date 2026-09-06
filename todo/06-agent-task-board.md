@@ -3525,3 +3525,17 @@ Continuation claim: SEC-006 / OPS-007
 Owner: Codex
 
 Claimed: 2026-09-06
+
+Scope: orient the groups index around the next social action instead of a dense catalog-like card.
+
+Acceptance: each group entry must expose its members, shared-game count, next or last session context, and explicit links to open the workspace, decide what to play, or plan a session. The entry must not use a single nested interactive block that obscures the available actions. Preserve pending-invitation visibility and add focused component coverage.
+
+Continuation claim: PROD-003 / EQ-007
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Changed: Reworked the groups index cards into semantic social workspace entries. Each entry now exposes shared members and games, next-session or first-planning context, last-session memory, group history, recommendation, planning, and invitation-management links. The previous whole-card button was removed, and the empty state now explains the first-group activation handoff.
+
+Verified: `cd frontend && npx biome check src/app`, `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` (39 passing), `cd frontend && npm run build` (605.28 kB initial raw / 138.26 kB estimated transfer), and `git diff --check` pass. Rendered group-index and real-group validation remain open. No deployment or push was performed.
