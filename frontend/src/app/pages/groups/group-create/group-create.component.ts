@@ -21,7 +21,7 @@ export class GroupCreateComponent {
     public isLoading = false
 
     get groupName() {
-        return this.groupNameForm.get('groupName')
+        return this.groupNameForm
     }
 
     get groupNameClass() {
@@ -37,7 +37,8 @@ export class GroupCreateComponent {
     }
 
     async onCreateGroup() {
-        if (!this.groupNameForm.value || this.isLoading) return
+        this.groupNameForm.markAsTouched()
+        if (!this.groupNameForm.value || this.groupNameForm.invalid || this.isLoading) return
         this.isLoading = true
 
         try {
