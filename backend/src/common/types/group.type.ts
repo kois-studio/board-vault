@@ -4,6 +4,14 @@ import { IsNotEmpty, IsString, MaxLength } from 'class-validator'
 import { GameReviewDto } from './game-review.type'
 import { UserPublicWithGames } from './user.type'
 
+export class CreatedGroupDto {
+    @ApiProperty({ example: true, description: 'Whether the group was created successfully.' })
+    success: true
+
+    @ApiProperty({ example: 42, description: 'The newly created group identifier.' })
+    groupId: number
+}
+
 /**
  * base User as it comes from db
  */

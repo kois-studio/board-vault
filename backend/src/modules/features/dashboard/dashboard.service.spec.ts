@@ -52,3 +52,28 @@ describe('DashboardService group history', () => {
         expect(database.getPlayedGameIdsByMeetId).not.toHaveBeenCalledWith(11)
     })
 })
+
+describe('DashboardService group creation', () => {
+    it('returns the created group identifier for the onboarding handoff', async () => {
+        const database = {
+            createGroupWithMembership: jest.fn().mockResolvedValue({ groupId: 42 }),
+        }
+        const service = new DashboardService(
+            {} as never,
+            database as never,
+            {} as never,
+            {} as never,
+            {} as never,
+            {} as never,
+            {} as never,
+            {} as never,
+            {} as never,
+            {} as never,
+            {} as never,
+            {} as never,
+        )
+
+        await expect(service.createGroup(7, 'Friday Crew')).resolves.toEqual({ success: true, groupId: 42 })
+        expect(database.createGroupWithMembership).toHaveBeenCalledWith({ name: 'Friday Crew', createdBy: 7 })
+    })
+})

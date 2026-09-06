@@ -17,6 +17,7 @@ import {
     clerkAuthStatusSchema,
     clerkGroupInvitationSchema,
     clerkGroupInvitationSummariesSchema,
+    createdGroupSchema,
     gameOwnedSchema,
     gameProposalSchema,
     gameViewSchema,
@@ -516,8 +517,11 @@ export class Api {
 
     createGroup(userId: number, groupName: string) {
         return this.http
-            .post<{ success: true }>(`${this.url}/dashboard/users/${userId}/groups/create/${encodeURIComponent(groupName)}`, {})
-            .pipe(map((response) => successSchema.parse(response)))
+            .post<{ success: true; groupId: number }>(
+                `${this.url}/dashboard/users/${userId}/groups/create/${encodeURIComponent(groupName)}`,
+                {},
+            )
+            .pipe(map((response) => createdGroupSchema.parse(response)))
     }
 
     deleteGroup(userId: number, groupId: number) {

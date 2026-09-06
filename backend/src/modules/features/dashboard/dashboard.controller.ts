@@ -5,8 +5,7 @@ import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
 import { UserInGroupGuard } from '../../../common/guards/user-in-group.guard'
 import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
-import { SuccessDto } from '../../../common/types/auth.type'
-import { GroupWithMembersAndGames } from '../../../common/types/group.type'
+import { CreatedGroupDto, GroupWithMembersAndGames } from '../../../common/types/group.type'
 import { UserStatsDto } from '../../../common/types/stats.type'
 import { HistoryRecordDto } from '../play/play.types'
 
@@ -38,7 +37,7 @@ export class DashboardController {
     @UseGuards(UserOwnershipGuard)
     @Post('/users/:userId/groups/create/:groupName')
     @ApiOperation({ summary: 'Create a new group', deprecated: false })
-    @ApiResponse({ status: 201, type: SuccessDto, description: 'Group created successfully' })
+    @ApiResponse({ status: 201, type: CreatedGroupDto, description: 'Group created successfully' })
     async createGroup(@Param('userId', ParseIntPipe) userId: number, @Param('groupName') groupName: string) {
         return this.dashboardService.createGroup(userId, groupName)
     }
