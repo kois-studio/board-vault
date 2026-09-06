@@ -23,7 +23,7 @@ export class GroupOwnerGuard implements CanActivate {
         const group = await this.groupsService.getGroupById(groupId)
 
         if (group.createdBy !== userId) {
-            this.LOGGER.warn(`User ${userId} attempted to access group ${groupId} as its owner`)
+            this.LOGGER.warn('A user attempted to access a group-owner action without ownership')
             throw new ForbiddenException('You are not the owner of this group')
         }
 

@@ -45,7 +45,7 @@ export class GamesOwnedService {
     }
 
     async getGameOwnedByAccountIdAndGameId(accountId: number, gameId: number): Promise<GameOwnedDto> {
-        this.LOGGER.log(`Getting ownedGame with accountId ${accountId} and gameId ${gameId}`)
+        this.LOGGER.log('Getting owned game')
         const resultSet = await this.databaseService.getGameOwnedByAccountIdAndGameId(accountId, gameId)
 
         const ownedGames = this._parseResultSet(resultSet)
@@ -58,7 +58,7 @@ export class GamesOwnedService {
     }
 
     async getGamesOwnedByAccountId(accountId: number): Promise<Array<GameOwnedDto>> {
-        this.LOGGER.log(`Getting ownedGames with accountId ${accountId}`)
+        this.LOGGER.log('Getting owned games for account')
         const resultSet = await this.databaseService.getOwnedGamesByAccountId(accountId)
 
         return this._parseResultSet(resultSet)
@@ -66,7 +66,7 @@ export class GamesOwnedService {
 
     // TODO: boolean? what is this method for?
     async isGameIdOwnedByAccountId(accountId: number, gameId: number, throwError = true): Promise<GameOwnedDto | null> {
-        this.LOGGER.log(`Getting ownedGame with id ${accountId} ${gameId}`)
+        this.LOGGER.log('Getting owned game by composite id')
         const resultSet = await this.databaseService.isGameIdOwnedByAccountId(accountId, gameId)
         const ownedGames = this._parseResultSet(resultSet)
 
@@ -80,7 +80,7 @@ export class GamesOwnedService {
     }
 
     async createGamesOwned(ownedGameDto: GameOwnedDto): Promise<SuccessDto> {
-        this.LOGGER.log(`Creating ownedGame ${ownedGameDto.accountId} - ${ownedGameDto.gameId}`)
+        this.LOGGER.log('Creating owned game')
         try {
             await this.databaseService.createOwnedGame(ownedGameDto)
 
@@ -95,7 +95,7 @@ export class GamesOwnedService {
     }
 
     async updateGameOwned(accountId: number, gameId: number, ownedGameDto: UpdateGameOwnedDto) {
-        this.LOGGER.log(`Updating ownedGame with id ${accountId} ${gameId}`)
+        this.LOGGER.log('Updating owned game')
         const resultSet = await this.databaseService.updateGameOwned(accountId, gameId, ownedGameDto)
 
         if (resultSet.rowsAffected === 0) {
@@ -106,7 +106,7 @@ export class GamesOwnedService {
     }
 
     async deleteGamesOwnedById(accountId: number, gameId: number): Promise<SuccessDto> {
-        this.LOGGER.log(`Deleting ownedGame with id ${accountId} ${gameId}`)
+        this.LOGGER.log('Deleting owned game')
         const resultSet = await this.databaseService.deleteOwnedGameById(accountId, gameId)
 
         if (resultSet.rowsAffected === 0) {

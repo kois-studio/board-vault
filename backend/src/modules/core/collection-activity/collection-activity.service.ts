@@ -41,13 +41,13 @@ export class CollectionActivityService {
     }
 
     async getUserCollectionActivities(accountId: number): Promise<Array<CollectionActivityDto>> {
-        this.LOGGER.log(`Getting collection activities for account ${accountId}`)
+        this.LOGGER.log('Getting collection activities for account')
 
         // Step 1: Try to get them from cache
         const cachedCollectionActivities = await this.cacheService.get(`${this.CACHE_KEY}:byAccountId:${accountId}`)
 
         if (cachedCollectionActivities) {
-            this.LOGGER.log(`Returning cached collection activities for account ${accountId}`)
+            this.LOGGER.log('Returning cached collection activities')
             return this._validateSchema(cachedCollectionActivities)
         }
 
@@ -67,7 +67,7 @@ export class CollectionActivityService {
         actionType: CollectionActivityDto['actionType'],
         actionDetails: CollectionActivityDto['actionDetails'],
     ) {
-        this.LOGGER.log(`Logging collection activity for account ${accountId} and game ${gameId}`)
+        this.LOGGER.log('Logging collection activity')
 
         const loggedActivities = await this.getUserCollectionActivities(accountId)
 

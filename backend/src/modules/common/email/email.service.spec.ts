@@ -26,7 +26,7 @@ describe('EmailService logging', () => {
 
         await service.sendPasswordResetEmail(recipient, 'reset-token')
 
-        expect(internals.LOGGER.log).toHaveBeenCalledWith('Password reset email sent. Message ID: message-1')
+        expect(internals.LOGGER.log).toHaveBeenCalledWith('Password reset email sent successfully')
         expect(internals.LOGGER.log).not.toHaveBeenCalledWith(expect.stringContaining(recipient))
     })
 

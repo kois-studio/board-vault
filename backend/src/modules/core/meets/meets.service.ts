@@ -35,14 +35,14 @@ export class MeetsService {
     }
 
     async getMeetsForAccount(accountId: number): Promise<Array<MeetDto>> {
-        this.LOGGER.log(`Getting meets for account ${accountId}`)
+        this.LOGGER.log('Getting meetings for account')
         const resultSet = await this.databaseService.getMeetsForAccount(accountId)
 
         return this._parseResultSet(resultSet)
     }
 
     async getMeetById(id: number, accountId: number): Promise<MeetDto> {
-        this.LOGGER.log(`Getting meet with id ${id}`)
+        this.LOGGER.log('Getting meeting by id')
         const resultSet = await this.databaseService.getMeetByIdForAccount(id, accountId)
         const meets = this._parseResultSet(resultSet)
 
@@ -54,14 +54,14 @@ export class MeetsService {
     }
 
     async getMeetsByGroupId(groupId: number): Promise<Array<MeetDto>> {
-        this.LOGGER.log(`Getting all meets for group ${groupId}`)
+        this.LOGGER.log('Getting all meetings for group')
         const resultSet = await this.databaseService.getMeetsByGroupId(groupId)
 
         return this._parseResultSet(resultSet)
     }
 
     async getMeetDetailsById(id: number, accountId: number): Promise<MeetWithAttendeesAndGames> {
-        this.LOGGER.log(`Getting meet details with id ${id}`)
+        this.LOGGER.log('Getting meeting details')
         const resultSet = await this.databaseService.getMeetDetailsByIdForAccount(id, accountId)
         const meet = mapMeetDetailsResult(resultSet)
 

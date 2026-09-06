@@ -36,7 +36,7 @@ export class GroupMembershipsService {
     }
 
     async getGroupMembershipById(accountId: number, groupId: number): Promise<GroupMembershipDto> {
-        this.LOGGER.log(`Getting membership with id ${accountId} ${groupId}`)
+        this.LOGGER.log('Getting membership')
         const resultSet = await this.databaseService.getGroupMembershipById(accountId, groupId)
         const memberships = this._parseResultSet(resultSet)
 
@@ -57,21 +57,21 @@ export class GroupMembershipsService {
     }
 
     async getGroupMembershipsByAccountId(accountId: number): Promise<Array<GroupMembershipDto>> {
-        this.LOGGER.log(`Getting memberships for account ${accountId}`)
+        this.LOGGER.log('Getting memberships for account')
         const resultSet = await this.databaseService.getGroupMembershipsByAccountId(accountId)
 
         return this._parseResultSet(resultSet)
     }
 
     async getGroupMembershipsByGroupId(groupId: number): Promise<Array<GroupMembershipDto>> {
-        this.LOGGER.log(`Getting memberships for group ${groupId}`)
+        this.LOGGER.log('Getting memberships for group')
         const resultSet = await this.databaseService.getGroupMembershipsByGroupId(groupId)
 
         return this._parseResultSet(resultSet)
     }
 
     async createGroupMembership(membershipDto: CreateGroupMembershipBody) {
-        this.LOGGER.log(`Creating membership ${membershipDto.accountId} - ${membershipDto.groupId}`)
+        this.LOGGER.log('Creating membership')
         try {
             await this.databaseService.createGroupMembership(membershipDto)
 
@@ -93,7 +93,7 @@ export class GroupMembershipsService {
     }
 
     async deleteGroupMembershipById(accountId: number, groupId: number): Promise<{ success: boolean }> {
-        this.LOGGER.log(`Deleting membership with id ${accountId} ${groupId}`)
+        this.LOGGER.log('Deleting membership')
         const resultSet = await this.databaseService.deleteGroupMembershipById(accountId, groupId)
 
         if (resultSet.rowsAffected === 0) {
