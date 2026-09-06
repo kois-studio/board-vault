@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, Logger } from '@nestjs/common'
+import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { LogFeature } from '../../../common/decorators/logger.decorator'
 import { UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
@@ -158,30 +158,35 @@ export class CollectionService {
 
     @LogFeature(new Logger('CollectionService'))
     async removeGameFromUserCollection(userId: number, gameId: number): Promise<SuccessDto> {
-        const result = await this.gamesOwnedService.deleteGamesOwnedById(userId, gameId)
+        const result = await this.databaseService.removeGameFromCollection(userId, gameId)
 
-        if (result.success) {
-            await this.collectionActivityService.logCollectionActivity(userId, gameId, 'removed', null)
+        if (result.rowsAffected === 0) {
+            throw new NotFoundException(`OwnedGame with accountId ${userId} and gameId ${gameId} not found`)
         }
 
-        return { success: result.success }
+        await this.collectionActivityService.invalidateForAccount(userId)
+
+        return { success: true }
     }
 
     @LogFeature(new Logger('CollectionService'))
     async updateGameOwnership(userId: number, gameId: number, body: UpdateGameOwnedDto) {
-        const updatedGameOwned = await this.gamesOwnedService.updateGameOwned(userId, gameId, body)
+        const result = await this.databaseService.updateGameOwnershipAndLogActivity(userId, gameId, body)
 
-        await this.collectionActivityService.logCollectionActivity(userId, gameId, 'updated', null)
+        if (result.rowsAffected === 0) {
+            throw new NotFoundException(`OwnedGame with id ${userId} ${gameId} not found`)
+        }
 
-        return updatedGameOwned
+        await this.collectionActivityService.invalidateForAccount(userId)
+
+        return this.gamesOwnedService.getGameOwnedByAccountIdAndGameId(userId, gameId)
     }
 
     @LogFeature(new Logger('CollectionService'))
     async toggleWishlist(accountId: number, gameId: number): Promise<boolean> {
-        const isWishlisted = await this.wishlistService.toggleWishlist(accountId, gameId)
-        const actionType = isWishlisted ? 'wishlisted' : 'unwishlisted'
+        const isWishlisted = await this.databaseService.toggleWishlistAndLogActivity(accountId, gameId)
 
-        await this.collectionActivityService.logCollectionActivity(accountId, gameId, actionType, null)
+        await this.collectionActivityService.invalidateForAccount(accountId)
 
         return isWishlisted
     }
