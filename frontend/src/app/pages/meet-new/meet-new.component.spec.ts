@@ -60,7 +60,7 @@ describe('MeetNewComponent social handoff', () => {
 
         const fixture = TestBed.createComponent(MeetNewComponent)
         fixture.detectChanges()
-        return { fixture, component: fixture.componentInstance, api, dataService }
+        return { fixture, component: fixture.componentInstance, api, dataService, loadingService }
     }
 
     it('restores selected attendees and the recommended game from the decision handoff', async () => {
@@ -96,5 +96,18 @@ describe('MeetNewComponent social handoff', () => {
         )
         expect(dataService.refreshUserMeets).toHaveBeenCalled()
         expect(component.isCreatingLoading).toBeFalse()
+    })
+
+    it('clears stale planning context when the group disappears during a refresh', async () => {
+        const { fixture, component, dataService } = await setup()
+
+        expect(component.groupData?.id).toBe(7)
+        dataService.userGroups.set([])
+        fixture.detectChanges()
+
+        expect(component.groupData).toBeNull()
+        expect(component.selectedAttendeeIds).toEqual([])
+        expect(component.selectedPlannedGameIds).toEqual([])
+        expect(component.groupUnavailable).toBeTrue()
     })
 })
