@@ -3328,7 +3328,7 @@ Claimed: 2026-09-06
 
 Changed: Removed the unused Angular API/DataService methods and response types/schemas for deprecated per-row attendee and played-game mutations. The current client now exposes only the canonical session attendee/shortlist/played-game writes; backend compatibility routes remain documented and guarded for older clients.
 
-Verified: Frontend Biome passes, all 36 browser unit tests pass, and the production build passes at 606.76 kB initial raw / 138.37 kB estimated transfer. No deployment or push was performed.
+Verified: Frontend Biome passes, all 36 browser unit tests pass, and the production build passes at 606.76 kB initial raw / 138.39 kB estimated transfer. No deployment or push was performed.
 
 Scope: make direct group-creation navigation truthful while the authenticated account profile is still settling.
 
@@ -3447,6 +3447,16 @@ Scope: protect the public landing page’s social product promise with a respons
 Acceptance: the landing page must remain usable at mobile and desktop widths, expose the private-beta invitation CTA truthfully, and retain explicit group-decision/memory positioning without drifting toward a public game encyclopedia.
 
 Continuation claim: EQ-007 / TRUTH-001
+
+Owner: Codex
+
+Claimed: 2026-09-06
+
+Scope: close the history-to-decision handoff gap in the shared-memory surface.
+
+Acceptance: when viewing a specific group’s completed history, members can move directly from the shared memory summary to that group’s recommendation decision flow without leaving the group context; cover the handoff in the two-account journey.
+
+Continuation claim: PROD-003 / EQ-006
 
 Owner: Codex
 
