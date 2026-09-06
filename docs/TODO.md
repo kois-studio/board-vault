@@ -141,6 +141,23 @@ Frontend coverage is now 54 browser-based unit tests and the production build
 remains under budget. The recovery flow still needs rendered browser review;
 legacy password/JWT retirement remains gated on real Clerk rollback evidence.
 
+### Tech-lead reassessment — after cache boundary verification — 2026-09-06
+
+The backend now has 241 passing tests across 46 suites, including bounded cache
+maintenance inputs, deterministic disabled-cache behavior, stable email-provider
+errors, and the preserved authentication recovery paths. The local production
+build, lint, log audit, OpenAPI freshness check, migration verification, and
+restore rehearsal are green. No disposable Clerk storage states are currently
+available, so the two-account flagship rehearsal remains evidence rather than a
+completed release gate.
+
+The next self-contained engineering slice is to widen the frontend contract
+negative matrix around the social handoffs (group decisions, recommendations,
+session scheduling, and invitations). This protects the product's social core
+without expanding game-detail or catalog scope. After that, the remaining work
+still needs a real disposable authenticated rehearsal, rendered accessibility
+review, remote CI observation, and operational recovery ownership.
+
 ## Critical — unblock safe feature development
 
 ### READINESS-001 [Critical] SEC-003/SEC-008 — Complete object-level authorization audit
@@ -185,7 +202,7 @@ legacy password/JWT retirement remains gated on real Clerk rollback evidence.
 
 - **Status:** In progress
 - **Affected area:** `backend/test/`, backend `src`, frontend `src/**/*.spec.ts`
-- **Evidence:** Backend now has 46 focused suites and 241 passing unit tests plus 2 environment-safe HTTP E2E tests; frontend has 54 browser-based unit tests plus five passing public Playwright tests. The current default Playwright run discovers 26 tests, with 21 intentionally guarded without disposable Clerk/browser fixture state. The opt-in authenticated collection, invitation, session, recommendation, acquisition-decision, settings, destructive-flow, and rendered-core journeys remain available; a disposable provider-invitation rehearsal also proves create/list/revoke/removal. Email-provider failure mapping and disabled-cache behavior now have focused coverage.
+- **Evidence:** Backend now has 46 focused suites and 241 passing unit tests plus 2 environment-safe HTTP E2E tests; frontend has 59 browser-based unit tests plus five passing public Playwright tests. The current default Playwright run discovers 26 tests, with 21 intentionally guarded without disposable Clerk/browser fixture state. The opt-in authenticated collection, invitation, session, recommendation, acquisition-decision, settings, destructive-flow, and rendered-core journeys remain available; a disposable provider-invitation rehearsal also proves create/list/revoke/removal. Email-provider failure mapping and disabled-cache behavior now have focused coverage.
 - **Risk:** Security and product regressions are invisible.
 - **Next action:** Add remaining negative authorization/contract cases and provider/cache boundary evidence, preserve the authenticated core-loop journeys as launch regression gates, and observe them in a disposable environment with real Clerk state.
 - **Dependencies:** READINESS-001, READINESS-002, READINESS-003.
@@ -232,7 +249,7 @@ legacy password/JWT retirement remains gated on real Clerk rollback evidence.
 
 - **Status:** Planned
 - **Affected area:** `frontend/src/styles.css`, component SCSS/templates, route surfaces
-- **Evidence:** Tailwind global styles now use plain CSS with a PostCSS nesting pass; route-level components are lazy-loaded; production build has no Sass/selector/bundle-budget warnings and the latest initial raw bundle is 605.70 kB (138.26 kB estimated transfer) under the 650 kB warning budget. Shared theme-control semantics, consistent keyboard focus rings, explicit session input labels, the preserved-account auth fallback, migration-state copy, group/session empty states, owner-only invitation controls, invitation-decline confirmation, pending provider-invitation management, direct group-edit route loading/error states, mobile session-progress behavior, attendee-selection handoff, recommendation attendee controls, explainable recommendation lenses, reversible group acquisition interest, invitation-link copy feedback, the personal/private collection boundary, the routed shared-button focus-order fix, removal of unused client compatibility adapters, the history-to-recommendation handoff, player names in shared-memory cards, group-oriented recommendation context, explicit groups-index social actions, status-specific upcoming-session prompts, group-first Play entry, empty-group activation guidance, and focus return for contextual destructive dialogs have been improved, but a full accessibility/responsive audit and all route-surface reviews remain open.
+- **Evidence:** Tailwind global styles now use plain CSS with a PostCSS nesting pass; route-level components are lazy-loaded; production build has no Sass/selector/bundle-budget warnings and the latest initial raw bundle is 604.95 kB (136.36 kB estimated transfer) under the 650 kB warning budget. Shared theme-control semantics, consistent keyboard focus rings, explicit session input labels, the preserved-account auth fallback, migration-state copy, group/session empty states, owner-only invitation controls, invitation-decline confirmation, pending provider-invitation management, direct group-edit route loading/error states, mobile session-progress behavior, attendee-selection handoff, recommendation attendee controls, explainable recommendation lenses, reversible group acquisition interest, invitation-link copy feedback, the personal/private collection boundary, the routed shared-button focus-order fix, removal of unused client compatibility adapters, the history-to-recommendation handoff, player names in shared-memory cards, group-oriented recommendation context, explicit groups-index social actions, status-specific upcoming-session prompts, group-first Play entry, empty-group activation guidance, and focus return for contextual destructive dialogs have been improved, but a full accessibility/responsive audit and all route-surface reviews remain open.
 - **Risk:** Broken styles, poor mobile/accessibility behavior, and unsupported public claims.
 - **Next action:** Complete the rendered route audit matrix, resolve remaining accessibility/responsive findings, and link content-truth findings to `TRUTH-001`.
 - **Dependencies:** Product truth/brand decision where claims are involved.

@@ -58,6 +58,25 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 Most recent claim:
 
 ```text
+Task: EQ-004
+Owner: Codex
+Claimed: 2026-09-06
+
+Branch/worktree: main / shared workspace
+Scope: extend the frontend response-contract negative matrix around the social decision and session handoffs without expanding catalog/detail scope
+```
+
+Review: EQ-004
+
+Changed: Availability checks now encode query values so email addresses/usernames containing `+` survive transport. The frontend contract matrix now rejects malformed group-acquisition entries, recommendation signals, scheduled-session envelopes, and provider invitation handoffs before they reach application state.
+
+Verified: `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` passes 59 tests; `cd frontend && npm run lint:check` passes; `cd frontend && npm run build` passes with a 604.95 kB initial raw bundle / 136.36 kB estimated transfer; `git diff --check` passes. No deployment, push, provider mutation, or production data change was performed.
+
+Known follow-ups: Keep authenticated two-account rehearsal and generated-client evaluation separate until core response shapes stabilize.
+
+Previous most recent claim:
+
+```text
 Task: PROD-005
 Owner: Codex
 Claimed: 2026-09-03
