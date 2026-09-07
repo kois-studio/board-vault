@@ -424,7 +424,10 @@ as TODO items here.
   managing current members, understanding the shared shelf, and reaching the
   danger zone deliberately. The route remains a full management workspace for
   now; whether invitation composition should become an in-context dialog needs
-  validation with a real owner/member pair.
+  validation with a real owner/member pair. History now keeps a deep-linked
+  group filter selected after async group options arrive and replaces failed
+  game artwork with a readable title-initial fallback; broader visual,
+  keyboard, and real-group review remain open.
 
 ### Tech-lead reassessment — after group management UX — 2026-09-06
 

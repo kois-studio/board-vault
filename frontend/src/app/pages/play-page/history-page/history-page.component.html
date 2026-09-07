@@ -28,9 +28,9 @@
                 <div class="w-full lg:max-w-xs">
                     <label for="history-group-filter" class="mb-2 block text-sm font-semibold text-zinc-900 dark:text-white">Show history for</label>
                     <select id="history-group-filter" class="app-input" [value]="groupIdFilter() ?? ''" (change)="setGroupFilter($event)">
-                        <option value="">All groups</option>
+                        <option value="" [selected]="!groupIdFilter()">All groups</option>
                         @for (group of userGroups$(); track group.id) {
-                            <option [value]="group.id">{{ group.name }}</option>
+                            <option [value]="group.id" [selected]="group.id === groupIdFilter()">{{ group.name }}</option>
                         }
                     </select>
                 </div>
@@ -98,14 +98,19 @@
                             <!-- Game image -->
                             <a
                                 [routerLink]="['/games/', gamePlayed.gameData.id]"
-                                    [attr.aria-label]="'View ' + getGameTitle(gamePlayed.gameData)"
+                                [attr.aria-label]="'View ' + getGameTitle(gamePlayed.gameData)"
+                                class="relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-indigo-100 text-lg font-bold text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300"
                             >
-                                <img
-                                    [src]="gamePlayed.gameData.imageUrl"
-                                    [alt]="getGameTitle(gamePlayed.gameData)"
-                                    loading="lazy"
-                                    class="w-24 h-24 object-cover rounded-lg"
-                                />
+                                <span aria-hidden="true">{{ getGameInitials(getGameTitle(gamePlayed.gameData)) }}</span>
+                                @if (gamePlayed.gameData.imageUrl) {
+                                    <img
+                                        [src]="gamePlayed.gameData.imageUrl"
+                                        [alt]="getGameTitle(gamePlayed.gameData)"
+                                        loading="lazy"
+                                        class="absolute inset-0 h-full w-full object-cover"
+                                        (error)="hideBrokenImage($event)"
+                                    />
+                                }
                             </a>
 
                             <!-- Game info -->

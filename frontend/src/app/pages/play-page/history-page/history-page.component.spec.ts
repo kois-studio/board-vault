@@ -76,6 +76,8 @@ describe('HistoryPageComponent shared-memory summaries', () => {
         expect(component.mostPlayedSummary()).toBe('Cascadia · 2 sessions')
         expect(component.getPlayedBySummary([{ displayName: 'Dee', username: 'dee' }])).toBe('Dee')
         expect(fixture.nativeElement.textContent).toContain('Get a recommendation for this group')
+        expect((fixture.nativeElement.querySelector('#history-group-filter') as HTMLSelectElement).value).toBe('7')
+        expect(component.getGameInitials('Cascadia')).toBe('C')
 
         component.groupIdFilter.set(999)
         fixture.detectChanges()
