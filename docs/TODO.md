@@ -391,11 +391,12 @@ as TODO items here.
   status with an explicit full-page handoff and recoverable error state, and
   routes a successful public auth entry to the dashboard. The state map is
   documented in [`docs/authentication.md`](authentication.md). Remaining
-  acceptance is rendered mobile/desktop review plus authenticated browser
-  coverage for sign-in and invitation registration, including provider delay or
-  failure, retry, sign-out, refresh/back navigation, keyboard, and
-  screen-reader behavior. The authentication contract and private-beta policy
-  remain unchanged.
+  acceptance is authenticated browser coverage for invitation registration and
+  provider failure/retry, plus human checks of sign-out, refresh/back
+  navigation, keyboard focus, and screen-reader behavior. The sign-in handoff
+  has now been rendered and visually reviewed at 375px and 1280px against a
+  delayed local boundary, with both journeys completing into the dashboard.
+  The authentication contract and private-beta policy remain unchanged.
 
 - [ ] Complete responsive, keyboard, contrast, focus, and screen-reader
   behavior for the primary journeys. The core rendered audit now checks group,
