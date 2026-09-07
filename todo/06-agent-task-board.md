@@ -75,13 +75,19 @@ recorded the first-group activation flow as the next end-to-end evidence gate.
 The existing screen-level collection, invitation, recommendation, and session
 coverage is intentionally not treated as proof of one connected user journey.
 
-Verified: Documentation links resolve; no application behavior or provider data
-was changed. The next implementation slice is the clean two-account connected
-journey and its missing handoffs.
+Verified: Documentation links resolve; the fixture-gated connected browser
+journey was exercised against disposable local SQLite and two development-only
+Clerk identities. It reached creation, invitation acceptance, collection
+activation, recommendation, first-session planning, and the member-leave
+confirmation, then exposed a redirect/auth-state failure after leaving. The
+default suite, lint, unit tests, and build remain green; no production data or
+provider settings were changed.
 
-Known follow-ups: Keep AUTH-UX-001 open for invitation-registration browser
-coverage and human focus/screen-reader review. Do not expand catalog or
-standalone analytics scope.
+Known follow-ups: Diagnose and fix the leave → authenticated-dashboard failure,
+rerun the connected journey from clean data, then cover new-person/declined/
+expired invitation and recovery variants. Keep AUTH-UX-001 open for
+invitation-registration browser coverage and human focus/screen-reader review.
+Do not expand catalog or standalone analytics scope.
 
 Previous most recent claim:
 

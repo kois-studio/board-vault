@@ -388,7 +388,11 @@ as TODO items here.
   checkpoints, and evidence for each flagship job. The first priority is one
   clean two-account journey from landing or dashboard through create group,
   invite, add games, recommendation, first planned session, and the resulting
-  shared memory. Screen-level tests do not satisfy this ticket on their own.
+  shared memory. The first local rehearsal reached the member-leave branch but
+  exposed an auth handoff regression after confirmation: the member landed on
+  the public landing instead of the authenticated dashboard. Screen-level tests
+  do not satisfy this ticket on their own; this recovery/destructive branch must
+  be fixed and rerun from clean data.
 
 - [ ] **P0 — Redesign authentication onboarding end to end (AUTH-UX-001).**
   The production path exposed a confusing handoff: after a signed-out visitor
