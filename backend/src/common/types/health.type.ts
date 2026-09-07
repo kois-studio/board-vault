@@ -11,6 +11,9 @@ export class ReadinessChecksDto {
 
     @ApiProperty({ example: 'up', enum: ['up', 'down', 'disabled'] })
     cache: 'up' | 'down' | 'disabled'
+
+    @ApiProperty({ example: 'up', enum: ['up', 'down'] })
+    schema: 'up' | 'down'
 }
 
 export class ReadinessDto {

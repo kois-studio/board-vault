@@ -37,6 +37,8 @@ type ScheduledSessionInput = {
     plannedGameIds: Array<number>
 }
 
+export const CURRENT_SCHEMA_VERSION = '0009'
+
 @Injectable()
 export class DatabaseService implements OnModuleInit {
     private readonly LOGGER: Logger = new Logger(this.constructor.name)
@@ -53,6 +55,12 @@ export class DatabaseService implements OnModuleInit {
 
     async checkHealth(): Promise<void> {
         await this._tursoExecute('SELECT 1')
+    }
+
+    async hasCurrentSchema(): Promise<boolean> {
+        const result = await this._tursoExecute('SELECT MAX(version) AS version FROM SchemaMigrations')
+
+        return String(result.rows[0]?.version ?? '') === CURRENT_SCHEMA_VERSION
     }
 
     /**
