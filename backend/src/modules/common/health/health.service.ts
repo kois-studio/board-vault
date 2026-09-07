@@ -24,10 +24,17 @@ export class HealthService {
                 .catch(() => 'down' as const),
             this.cacheService.checkHealth(),
         ])
-        const checks: ReadinessChecksDto = { database, cache }
+        const schema: ReadinessChecksDto['schema'] =
+            database === 'up'
+                ? await this.databaseService
+                      .hasCurrentSchema()
+                      .then(current => (current ? 'up' : 'down'))
+                      .catch(() => 'down')
+                : 'down'
+        const checks: ReadinessChecksDto = { database, cache, schema }
 
         return {
-            status: database === 'up' && cache !== 'down' ? 'ready' : 'not_ready',
+            status: database === 'up' && schema === 'up' && cache !== 'down' ? 'ready' : 'not_ready',
             checks,
         }
     }
