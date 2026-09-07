@@ -86,9 +86,11 @@ The default suite, lint, unit tests, and build remain green; no production data
 or provider settings were changed.
 
 Known follow-ups: Cover new-person/declined/expired invitation and
-failure/retry variants, then complete human focus/screen-reader review. Keep
-AUTH-UX-001 open for invitation-registration browser coverage and human
-focus/screen-reader review.
+failure/retry variants. New-person registration now has a clear provider
+challenge boundary, but the headless rehearsal stopped at enabled Clerk Smart
+CAPTCHA and needs a human-capable completion. Then complete human
+focus/screen-reader review. Keep AUTH-UX-001 open for invitation-registration
+browser coverage and human focus/screen-reader review.
 Do not expand catalog or standalone analytics scope.
 
 Previous most recent claim:

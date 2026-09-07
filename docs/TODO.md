@@ -404,10 +404,13 @@ as TODO items here.
   changed underneath them. The first implementation now centralizes and
   deduplicates the Clerk-to-local readiness state, replaces the header-only
   status with an explicit full-page handoff and recoverable error state, and
-  routes a successful public auth entry to the dashboard. The state map is
-  documented in [`docs/authentication.md`](authentication.md). Remaining
-  acceptance is authenticated browser coverage for invitation registration,
-  plus human checks of sign-out, refresh/back
+  routes a successful public auth entry to the dashboard. Invitation
+  registration now distinguishes an already-registered recipient, who can
+  continue without replacement credentials, from a new invitee who must
+  create them. The state map is documented in
+  [`docs/authentication.md`](authentication.md). Remaining acceptance is
+  authenticated browser coverage for invitation registration through the
+  provider challenge, plus human checks of sign-out, refresh/back
   navigation, keyboard focus, and screen-reader behavior. The sign-in handoff
   has now been rendered and visually reviewed at 375px and 1280px against a
   delayed local boundary, with both journeys completing into the dashboard; a
