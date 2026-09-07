@@ -37,6 +37,11 @@ export class GroupCreateComponent {
         return this.isLoading || this.groupNameForm.invalid
     }
 
+    public onSubmit(event: SubmitEvent): void {
+        event.preventDefault()
+        void this.onCreateGroup()
+    }
+
     async onCreateGroup() {
         this.groupNameForm.markAsTouched()
         if (!this.groupNameForm.value || this.groupNameForm.invalid || this.isLoading) return

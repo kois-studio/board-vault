@@ -11,7 +11,7 @@
                     <p class="mt-5 rounded-2xl border border-indigo-200 bg-indigo-50 p-4 text-sm text-indigo-800 dark:border-indigo-900/60 dark:bg-indigo-950/30 dark:text-indigo-200" role="status">Loading your account before we create the group…</p>
                 }
 
-                <form class="mt-8" (ngSubmit)="onCreateGroup()" novalidate>
+                <form class="mt-8" (submit)="onSubmit($event)" novalidate>
                     <label for="group-name" class="mb-2 block text-sm font-semibold text-zinc-900 dark:text-white">What should your group be called?</label>
                     <input
                         id="group-name"
