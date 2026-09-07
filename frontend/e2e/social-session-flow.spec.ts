@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test'
 const ownerStorageState = process.env['PLAYWRIGHT_OWNER_STORAGE_STATE']
 const memberStorageState = process.env['PLAYWRIGHT_MEMBER_STORAGE_STATE']
 const sessionId = process.env['PLAYWRIGHT_SOCIAL_SESSION_ID']
+const groupId = process.env['PLAYWRIGHT_SOCIAL_GROUP_ID']
 const groupName = process.env['PLAYWRIGHT_SOCIAL_GROUP_NAME']
 const gameTitle = process.env['PLAYWRIGHT_SOCIAL_GAME_TITLE']
 
@@ -10,8 +11,8 @@ test.describe('two-account social session flow', () => {
     test.describe.configure({ timeout: 120_000 })
 
     test.skip(
-        !ownerStorageState || !memberStorageState || !sessionId || !groupName || !gameTitle,
-        'Set both Clerk storage states, the social session ID, group name, and game title against a disposable seeded environment.',
+        !ownerStorageState || !memberStorageState || !sessionId || !groupId || !groupName || !gameTitle,
+        'Set both Clerk storage states, the social session/group IDs, group name, and game title against a disposable seeded environment.',
     )
 
     test('moves from RSVP to saved memory and history', async ({ browser, baseURL }) => {
@@ -87,6 +88,13 @@ test.describe('two-account social session flow', () => {
                 'href',
                 /\/play\/recommendations\?groupId=\d+/,
             )
+
+            await memberPage.goto(`${baseURL}/groups/${groupId}`)
+            await expect(memberPage.getByRole('heading', { name: 'Games this group can play' })).toBeVisible()
+            const sharedGame = memberPage.locator('article').filter({ hasText: gameTitle ?? '' }).first()
+            await expect(sharedGame).toContainText('Last played')
+            await memberPage.reload()
+            await expect(memberPage.locator('article').filter({ hasText: gameTitle ?? '' }).first()).toContainText('Last played')
         } finally {
             await ownerContext.close()
             await memberContext.close()
