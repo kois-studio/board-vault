@@ -40,7 +40,7 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 | EQ-004 | REVIEW | Quality | Establish generated/shared API contracts and response validation; the committed OpenAPI snapshot now has a CI freshness gate, targeted frontend schemas cover core session/play responses, and the deprecated URL-based group-creation parameters are documented and bounded while broader compatibility coverage remains. | DATA-003 |
 | EQ-005 | TODO | Quality | Add health checks, structured logging, error monitoring, and database operational checks. | EQ-001 |
 | EQ-006 | IN_PROGRESS | Quality | Fix frontend bundle, styling warnings, accessibility, responsiveness, and timezone handling. | PROD-005 |
-| AUTH-UX-001 | TODO | Product quality | Redesign sign-in and invitation-registration onboarding as one explicit, accessible state machine with clear linking/provisioning handoffs and first-dashboard guidance. | AUTH-001/AUTH-002, EQ-006 |
+| AUTH-UX-001 | IN_PROGRESS | Product quality | Redesign sign-in and invitation-registration onboarding as one explicit, accessible state machine with clear linking/provisioning handoffs and first-dashboard guidance. | AUTH-001/AUTH-002, EQ-006 |
 | TRUTH-001 | REVIEW | Launch | Remove unsupported landing claims, fake testimonials, dead links, and placeholder product states. | PROD-001, PROD-004, PROD-007 |
 | TRUTH-002 | TODO | Launch | Define and pass a launch-readiness checklist using a clean database and two real accounts. | SEC-002, PROD-008, EQ-003 |
 
@@ -57,6 +57,25 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 ## Claiming protocol
 
 Most recent claim:
+
+```text
+Task: AUTH-UX-001
+Owner: Codex
+Claimed: 2026-09-07
+
+Branch/worktree: main / shared workspace
+Scope: replace the confusing Clerk-to-local-account header handoff with one explicit, accessible sign-in and invitation-registration onboarding state machine, without changing the private-beta policy or authentication contract
+```
+
+Review: AUTH-UX-001
+
+Changed: Clerk-to-local-account readiness now lives in `LoginService`, concurrent verification is deduplicated, and public auth completion from `/`, `/login`, or `/register` intentionally lands on `/dashboard`. While a Clerk identity is signed in but the local account is not ready, the header keeps navigation stable and the complete layout presents an explicit full-page handoff with accessible busy messaging. A recoverable full-page error provides retry, sign-out, and invitation guidance. The state map is documented in `docs/authentication.md`; the private-beta policy and auth contract are unchanged.
+
+Verified: `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` passes 61/61, including account-readiness gating, deduplicated Clerk verification state, visible loading/error/retry handoff coverage, and Clerk-aware sign-out; `cd frontend && npm run build` passes with a 608.94 kB raw / 138.65 kB estimated-transfer initial bundle; `cd frontend && npx biome check src/app src/styles.css` passes; and `git diff --check` passes. No deployment, push, provider mutation, or production data change was performed.
+
+Known follow-ups: Render the handoff at mobile and desktop widths; exercise authenticated sign-in and invitation-registration browser paths with provider delay/failure, retry, sign-out, refresh/back, keyboard, and screen-reader checks; then remove AUTH-UX-001 from `docs/TODO.md` only when those acceptance criteria are evidenced. Do not expand catalog or analytics scope.
+
+Previous most recent claim:
 
 ```text
 Task: EQ-006 / TRUTH-001

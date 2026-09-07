@@ -12,7 +12,7 @@ checked boxes. Product direction that remains true after implementation belongs
 in [`todo/01-product-direction.md`](../todo/01-product-direction.md); durable
 technical decisions belong in [`docs/adr/`](adr/README.md).
 
-Reviewed: 2026-09-06
+Reviewed: 2026-09-07
 
 Readiness entries use `In progress`, `Planned`, `Blocked`, or `Deferred`.
 Product execution ownership remains in `/todo/`.
@@ -285,7 +285,7 @@ remote CI, provider delivery, and operational recovery ownership.
 
 - **Status:** In progress
 - **Affected area:** `backend/test/`, backend `src`, frontend `src/**/*.spec.ts`
-- **Evidence:** Backend now has 48 focused suites and 266 passing unit tests plus 6 environment-safe HTTP E2E tests; frontend has 59 browser-based unit tests plus five passing public Playwright tests. The current default Playwright run discovers 26 tests, with 21 intentionally guarded without disposable Clerk/browser fixture state. The opt-in authenticated collection, invitation, session, recommendation, acquisition-decision, settings, destructive-flow, and rendered-core journeys remain available; a disposable provider-invitation rehearsal also proves create/list/revoke/removal. Email-provider failure mapping across verification/reset/notification paths, Redis health cooldown behavior, schema-aware readiness, disabled-cache behavior, rollback paths including the deprecated bulk collection and proposal approval/rejection boundaries, and fail-closed core social routes now have focused coverage.
+- **Evidence:** Backend now has 48 focused suites and 266 passing unit tests plus 6 environment-safe HTTP E2E tests; frontend has 61 browser-based unit tests plus five passing public Playwright tests. The current default Playwright run discovers 26 tests, with 21 intentionally guarded without disposable Clerk/browser fixture state. The opt-in authenticated collection, invitation, session, recommendation, acquisition-decision, settings, destructive-flow, and rendered-core journeys remain available; a disposable provider-invitation rehearsal also proves create/list/revoke/removal. Email-provider failure mapping across verification/reset/notification paths, Redis health cooldown behavior, schema-aware readiness, disabled-cache behavior, rollback paths including the deprecated bulk collection and proposal approval/rejection boundaries, and fail-closed core social routes now have focused coverage.
 - **Risk:** Security and product regressions are invisible.
 - **Next action:** Add remaining negative authorization/contract cases and provider/cache boundary evidence, preserve the authenticated core-loop journeys as launch regression gates, and observe them in a disposable environment with real Clerk state.
 - **Dependencies:** READINESS-001, READINESS-002, READINESS-003.
@@ -332,7 +332,7 @@ remote CI, provider delivery, and operational recovery ownership.
 
 - **Status:** Planned
 - **Affected area:** `frontend/src/styles.css`, component SCSS/templates, route surfaces
-- **Evidence:** Tailwind global styles now use plain CSS with a PostCSS nesting pass; route-level components are lazy-loaded; production build has no Sass/selector/bundle-budget or Angular template warnings and the latest initial raw bundle is 602.50 kB (136.20 kB estimated transfer) under the 650 kB warning budget. Shared theme-control semantics, consistent keyboard focus rings, explicit session input labels, the preserved-account auth fallback, migration-state copy, group/session empty states, owner-only invitation controls, invitation-decline confirmation, pending provider-invitation management, direct group-edit route loading/error states, the responsive group-management workspace, mobile session-progress behavior, attendee-selection handoff, recommendation attendee controls, explainable recommendation lenses, reversible group acquisition interest, invitation-link copy feedback, the personal/private collection boundary, the routed shared-button focus-order fix, removal of unused client compatibility adapters, the history-to-recommendation handoff, player names in shared-memory cards, group-oriented recommendation context, explicit groups-index social actions, status-specific upcoming-session prompts, group-first Play entry, empty-group activation guidance, focus return for contextual destructive dialogs, and the min-width/truncation fix for narrow group-management member rows have been improved. The opt-in rendered core audit now checks overflow, visible control names, duplicate routed-button focus stops, and keyboard traversal at 375px, 768px, and 1280px across the primary authenticated routes; human contrast, screen-reader, content, broader route, and provider-failure review remain open.
+- **Evidence:** Tailwind global styles now use plain CSS with a PostCSS nesting pass; route-level components are lazy-loaded; production build has no Sass/selector/bundle-budget or Angular template warnings and the latest initial raw bundle is 608.94 kB (138.65 kB estimated transfer) under the 650 kB warning budget. Shared theme-control semantics, consistent keyboard focus rings, explicit session input labels, the preserved-account auth fallback, migration-state copy, group/session empty states, owner-only invitation controls, invitation-decline confirmation, pending provider-invitation management, direct group-edit route loading/error states, the responsive group-management workspace, mobile session-progress behavior, attendee-selection handoff, recommendation attendee controls, explainable recommendation lenses, reversible group acquisition interest, invitation-link copy feedback, the personal/private collection boundary, the routed shared-button focus-order fix, removal of unused client compatibility adapters, the history-to-recommendation handoff, player names in shared-memory cards, group-oriented recommendation context, explicit groups-index social actions, status-specific upcoming-session prompts, group-first Play entry, empty-group activation guidance, focus return for contextual destructive dialogs, the min-width/truncation fix for narrow group-management member rows, the full-page Clerk account handoff, and Clerk-aware sign-out have been improved. The opt-in rendered core audit now checks overflow, visible control names, duplicate routed-button focus stops, and keyboard traversal at 375px, 768px, and 1280px across the primary authenticated routes; human contrast, screen-reader, content, broader route, and provider-failure review remain open.
 - **Risk:** Broken styles, poor mobile/accessibility behavior, and unsupported public claims.
 - **Next action:** Extend the audit only to the remaining high-value authenticated surfaces, perform human keyboard/screen-reader/content review, and link content-truth findings to `TRUTH-001`; keep catalog/detail expansion out of scope.
 - **Dependencies:** Product truth/brand decision where claims are involved.
@@ -383,19 +383,19 @@ as TODO items here.
 ## Information architecture and UX
 
 - [ ] **P0 — Redesign authentication onboarding end to end (AUTH-UX-001).**
-  The current production path is confusing: after a signed-out visitor opens
-  Login and completes authentication, the header shows a faint loading/status
-  message while local-account validation and Clerk linking happen, then the
-  navigation changes underneath them. Design one explicit onboarding state
-  machine for both sign-in and invitation registration: clear progress copy,
-  a stable full-page or route-level handoff, accessible loading/error/retry
-  states, no barely-visible header-only status, and an intentional first
-  dashboard/group next step. Cover existing-account migration, new invited
-  accounts, already-signed-in users, provider delays/failures, refresh/back
-  navigation, keyboard/screen-reader announcements, and mobile layouts.
-  Acceptance requires a documented state map, rendered mobile/desktop review,
-  and authenticated browser coverage for sign-in and invitation registration;
-  the authentication contract and private-beta policy must remain unchanged.
+  The production path exposed a confusing handoff: after a signed-out visitor
+  completed authentication, the header showed a faint loading/status message
+  while local-account validation and Clerk linking happened, then navigation
+  changed underneath them. The first implementation now centralizes and
+  deduplicates the Clerk-to-local readiness state, replaces the header-only
+  status with an explicit full-page handoff and recoverable error state, and
+  routes a successful public auth entry to the dashboard. The state map is
+  documented in [`docs/authentication.md`](authentication.md). Remaining
+  acceptance is rendered mobile/desktop review plus authenticated browser
+  coverage for sign-in and invitation registration, including provider delay or
+  failure, retry, sign-out, refresh/back navigation, keyboard, and
+  screen-reader behavior. The authentication contract and private-beta policy
+  remain unchanged.
 
 - [ ] Complete responsive, keyboard, contrast, focus, and screen-reader
   behavior for the primary journeys. The core rendered audit now checks group,

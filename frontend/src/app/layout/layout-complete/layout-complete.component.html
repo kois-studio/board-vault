@@ -4,8 +4,12 @@
 <app-layout-top-bar />
 }
 
+@if (isClerkAuthHandoffActive()) {
+<app-auth-handoff />
+} @else {
 <main>
     <router-outlet />
 </main>
+}
 
 <app-layout-footer />

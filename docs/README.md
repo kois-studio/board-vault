@@ -37,6 +37,7 @@ This directory is the canonical operating manual for AI developer agents working
 - [Security boundaries](security.md)
 - [Operations and environments](operations.md)
 - [Testing and verification](testing.md)
+- [Authentication and onboarding state map](authentication.md)
 
 ### Existing project documentation and source-specific notes
 
