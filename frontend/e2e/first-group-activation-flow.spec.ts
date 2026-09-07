@@ -18,7 +18,6 @@ test.describe('first-group activation flow', () => {
         const inviteeContext = await browser.newContext({ storageState: inviteeStorageState })
         const ownerPage = await ownerContext.newPage()
         const inviteePage = await inviteeContext.newPage()
-
         try {
             await ownerPage.goto(`${baseURL}/dashboard`)
             await ownerPage.getByRole('link', { name: 'Create a group' }).first().click()
@@ -27,15 +26,16 @@ test.describe('first-group activation flow', () => {
             await expect(createGroupButton).toBeEnabled()
             await createGroupButton.click()
             await expect(ownerPage).toHaveURL(/\/groups\/\d+$/)
-            await expect(ownerPage.getByRole('heading', { name: new RegExp(`Make ${groupName} ready`) })).toBeVisible()
+            await expect(ownerPage.getByRole('heading', { name: groupName, exact: true })).toBeVisible()
 
             const groupId = ownerPage.url().match(/\/groups\/(\d+)$/)?.[1]
             expect(groupId).toBeTruthy()
 
-            await ownerPage.getByRole('link', { name: 'Invite friends' }).click()
+            await ownerPage.goto(`${baseURL}/groups/${groupId}/edit`)
             await ownerPage.getByLabel('Their username').fill(inviteeUsername)
             await ownerPage.getByRole('button', { name: 'Send invite', exact: true }).click()
-            await expect(ownerPage.getByText('Invitation sent')).toBeVisible()
+            await expect(ownerPage.getByRole('heading', { name: 'Existing account invitations' })).toBeVisible()
+            await expect(ownerPage.getByRole('heading', { name: 'Existing account invitations' }).locator('..').getByText(inviteeUsername, { exact: true })).toBeVisible()
 
             await inviteePage.goto(`${baseURL}/groups`)
             await expect(inviteePage.getByRole('heading', { name: 'Invitations waiting for you' })).toBeVisible()
@@ -53,7 +53,7 @@ test.describe('first-group activation flow', () => {
             await ownerPage.goto(`${baseURL}/groups/${groupId}`)
             await expect(ownerPage.getByRole('heading', { name: new RegExp(`Make ${groupName} ready`) })).not.toBeVisible()
             await expect(ownerPage.getByRole('heading', { name: `What should this group play?` })).toBeVisible()
-            await ownerPage.getByRole('link', { name: 'Find a game' }).click()
+            await ownerPage.getByRole('link', { name: 'Find a game', exact: true }).click()
 
             await expect(ownerPage.getByRole('heading', { name: `What should ${groupName} play?` })).toBeVisible()
             await ownerPage.getByLabel('Decision lens').selectOption('fresh')
