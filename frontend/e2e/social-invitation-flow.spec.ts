@@ -21,9 +21,10 @@ test.describe('two-account invitation flow', () => {
 
         try {
             await ownerPage.goto(`${baseURL}${editPath}`)
-            await ownerPage.getByLabel('Username to invite').fill(inviteeUsername)
-            await ownerPage.getByRole('button', { name: 'Invite', exact: true }).click()
-            await expect(ownerPage.getByText('Invitation sent')).toBeVisible()
+            await ownerPage.getByLabel('Their username').fill(inviteeUsername)
+            await ownerPage.getByRole('button', { name: 'Send invite', exact: true }).click()
+            await expect(ownerPage.getByRole('heading', { name: 'Existing account invitations' })).toBeVisible()
+            await expect(ownerPage.getByRole('heading', { name: 'Existing account invitations' }).locator('..').getByText(inviteeUsername, { exact: true })).toBeVisible()
 
             await inviteePage.goto(`${baseURL}/groups`)
             await expect(inviteePage.getByRole('heading', { name: 'Invitations waiting for you' })).toBeVisible()

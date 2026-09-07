@@ -16,6 +16,7 @@ export class RegisterComponent {
     public readonly clerkIsAvailable = this.clerkService.isAvailable
     public readonly selfRegistrationEnabled = this.clerkService.isSelfRegistrationEnabled
     public readonly isInvitationFlow = this.clerkService.isInvitationFlow
+    public readonly isInvitationSignIn = this.clerkService.isInvitationSignIn
     public readonly invitationError = signal<string | null>(null)
 
     public readonly invitationForm = new FormGroup({
@@ -41,15 +42,16 @@ export class RegisterComponent {
 
     public async completeInvitationSignUp(): Promise<void> {
         this.invitationForm.markAllAsTouched()
-        if (this.invitationForm.invalid || !this.invitationPasswordsMatch || this.isInvitationSubmitting) return
+        if ((!this.isInvitationSignIn() && (this.invitationForm.invalid || !this.invitationPasswordsMatch)) || this.isInvitationSubmitting)
+            return
 
         this.isInvitationSubmitting = true
         this.invitationError.set(null)
 
         try {
             await this.clerkService.completeInvitationSignUp(
-                this.invitationForm.controls.username.value,
-                this.invitationForm.controls.password.value,
+                this.isInvitationSignIn() ? '' : this.invitationForm.controls.username.value,
+                this.isInvitationSignIn() ? '' : this.invitationForm.controls.password.value,
             )
             await this.router.navigateByUrl('/dashboard')
         } catch {
