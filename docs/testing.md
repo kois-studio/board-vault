@@ -36,7 +36,7 @@
 | `PLAYWRIGHT_BASE_URL=http://localhost:4300 PLAYWRIGHT_AUTH_STORAGE_STATE=<owner-state> npx playwright test e2e/settings-security-flow.spec.ts` | Pass | Disposable authenticated settings coverage confirms Profile/Security are semantic links, Clerk remains the actionable security surface, and the account-deletion placeholder is replaced by truthful policy copy. |
 | `TURSO_DATABASE_URL=file:/tmp/board-vault-clerk-F1T4x3/local.db FIXTURE_COLLECTION_ACCOUNT_ID=<id> node database/scripts/seed-collection-activation-fixture.mjs` plus `PLAYWRIGHT_BASE_URL=http://localhost:4300 PLAYWRIGHT_COLLECTION_STORAGE_STATE=/tmp/board-vault-clerk-collection.json PLAYWRIGHT_COLLECTION_GAME_TITLES='<five titles>' npx playwright test e2e/collection-five-game-activation.spec.ts` | Pass | A local-only fixture seeded five catalog translations and the disposable collection journey reached “Your games are ready for group decisions” in 7.7 seconds. The script rejects non-`file:` database URLs. |
 | `PLAYWRIGHT_BASE_URL=http://localhost:4300 PLAYWRIGHT_OWNER_STORAGE_STATE=/tmp/board-vault-clerk-owner.json PLAYWRIGHT_MEMBER_STORAGE_STATE=/tmp/board-vault-clerk-member.json PLAYWRIGHT_OWNER_PRIVATE_GAME_TITLE=<owner-only title> PLAYWRIGHT_MEMBER_PRIVATE_GAME_TITLE=<member-only title> npx playwright test e2e/collection-privacy-flow.spec.ts` | Pass | Two disposable Clerk identities each see their own private shelf and do not see the other person’s private-only game. This validates the personal/shared data distinction without relying on a public catalog route. |
-| `PLAYWRIGHT_BASE_URL=http://localhost:4300 PLAYWRIGHT_OWNER_STORAGE_STATE=/tmp/board-vault-clerk-owner-fresh.json PLAYWRIGHT_MEMBER_STORAGE_STATE=/tmp/board-vault-clerk-member-fresh.json PLAYWRIGHT_SOCIAL_SESSION_ID=<id> PLAYWRIGHT_SOCIAL_GROUP_NAME=<name> PLAYWRIGHT_SOCIAL_GAME_TITLE=<title> npx playwright test e2e/social-session-flow.spec.ts` | Pass | A fresh fixture from `seed-social-fixture.mjs` passed RSVP, refresh, owner lifecycle, attendance, per-game participant editing, retryable detail loading, completion, feedback, and visible history-card verification in 5.3 seconds after refreshing the disposable owner Clerk state. The test is intentionally skipped unless both local Clerk states and the generated session/group/game values are supplied. |
+| `PLAYWRIGHT_BASE_URL=http://localhost:4300 PLAYWRIGHT_OWNER_STORAGE_STATE=<owner-state> PLAYWRIGHT_MEMBER_STORAGE_STATE=<member-state> PLAYWRIGHT_SOCIAL_SESSION_ID=<id> PLAYWRIGHT_SOCIAL_GROUP_NAME=<name> PLAYWRIGHT_SOCIAL_GAME_TITLE=<title> npx playwright test e2e/social-session-flow.spec.ts` | Pass | On 2026-09-07, a fresh local fixture passed RSVP, refresh, owner lifecycle, attendance, per-game participant editing, retryable detail loading, completion, feedback, and visible history-card verification in 7.0 seconds. The development impersonation sessions remained active until the browser run completed and were then revoked. The test is intentionally skipped unless both local Clerk states and the generated session/group/game values are supplied. |
 | `PLAYWRIGHT_BASE_URL=http://localhost:4300 PLAYWRIGHT_OWNER_STORAGE_STATE=/tmp/board-vault-clerk-owner-fresh.json PLAYWRIGHT_INVITEE_STORAGE_STATE=/tmp/board-vault-clerk-member-fresh.json PLAYWRIGHT_INVITATION_GROUP_ID=<id> PLAYWRIGHT_INVITATION_GROUP_NAME=<name> PLAYWRIGHT_INVITEE_USERNAME=bvtestmember npx playwright test e2e/social-invitation-flow.spec.ts` | Pass | A fresh disposable owner-only group passed owner invite, recipient refresh, invitation acceptance, and post-acceptance group visibility in 3.2 seconds. Email-provider delivery, expiry, and failure/retry paths remain separate checks. |
 | Local dev provider-invitation rehearsal | Pass with explicit exception | Against the linked development Clerk instance and disposable local SQLite, the owner create/list/revoke/removal flow passes with real `inv_...` identifiers and awaited list refreshes. The custom ticket flow reaches `/register`, collects the configured username/password requirements, activates the Clerk session, and redirects to `/dashboard`; this was verified with a disposable valid-format address and `notify:false` while development Smart CAPTCHA was temporarily disabled, then restored and verified enabled. A fresh enabled-CAPTCHA headless attempt again reached `/register` but stopped at Clerk’s challenge, so human CAPTCHA interaction, email delivery, expiry, and provider delivery-failure/retry remain separate checks. Invalid `example.test` addresses are rejected by Clerk and must not be used as provider fixtures. |
 | `PLAYWRIGHT_BASE_URL=http://localhost:4300 PLAYWRIGHT_COLLECTION_STORAGE_STATE=/tmp/board-vault-clerk-collection.json PLAYWRIGHT_COLLECTION_GAME_SEARCH=<term> PLAYWRIGHT_COLLECTION_GAME_TITLE=<title> npx playwright test e2e/collection-activation-flow.spec.ts` | Pass | A fresh disposable account passed empty private-shelf guidance, first-game catalog activation, persisted refresh state, duplicate protection, and private-shelf visibility. The test mutates one collection and remains intentionally fixture-scoped. |
@@ -110,11 +110,20 @@ npx playwright codegen \
   "$impersonation_url"
 ```
 
-After the local browser state is saved, revoke the temporary actor session:
+After the local browser state is saved and all browser tests using it have
+completed, revoke the temporary actor session:
 
 ```shell
 clerk impersonate revoke "$actor_token_id" --instance dev
 ```
+
+Do not revoke the actor immediately after saving storage state. The saved
+localhost cookies depend on the live development impersonation session; revoke
+both actor sessions only after the authenticated Playwright run finishes. When
+creating state headlessly, wait for the redirect to return to `localhost:4300`
+and for Clerk to set the localhost `__session`/`__client_uat` cookies before
+calling `storageState`. A short-lived state without those cookies will silently
+fall back to the public landing page.
 
 If the development Clerk instance has no application home URL configured, the
 first redirect may land on Clerk's development account page instead of the

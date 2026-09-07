@@ -58,21 +58,21 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 Most recent claim:
 
 ```text
-Task: DATA-004
+Task: EQ-006 / TRUTH-001
 Owner: Codex
-Claimed: 2026-09-06
+Claimed: 2026-09-07
 
 Branch/worktree: main / shared workspace
-Scope: close the remaining proposal-rejection partial-write gap by committing proposal state and submitter notification together, without changing public catalog or social UX
+Scope: use the clean two-account rehearsal and rendered core audit to review the remaining landing, history, and primary-route UX/accessibility gaps without expanding catalog scope
 ```
 
-Review: DATA-004
+Review: EQ-006 / TRUTH-001
 
-Changed: Administrative proposal rejection now updates proposal state and creates the submitter notification through one explicit database transaction. Duplicate marking remains behaviorally unchanged because it currently has no notification side effect; proposal and submitter-stat caches invalidate only after commit.
+Changed: The disposable two-account social session rehearsal now passes RSVP, refresh, session lifecycle, attendance, per-game participation, feedback, retryable loading, shared history, and recommendation handoff. The rendered core audit passes the primary group, management, session, collection, upcoming, and history routes at 375px, 768px, and 1280px. This claim now moves into the product-facing review of landing/history copy, keyboard semantics, and remaining route-surface friction.
 
-Verified: `cd backend && npm test -- --runInBand` passes 48 suites / 263 tests; `cd backend && npm run test:e2e -- --runInBand` passes 6 environment-safe HTTP tests; `cd backend && npm run lint:check`; `cd backend && npm run lint:logs`; and `git diff --check` pass. Failure-injection coverage proves notification failure rolls back the proposal rejection. Build verification is being rerun before commit. No deployment, push, provider mutation, or production data change was performed.
+Verified: `PLAYWRIGHT_BASE_URL=http://localhost:4300 ... npx playwright test e2e/social-session-flow.spec.ts` passes in 7.0 seconds against disposable local SQLite and two development Clerk identities; `PLAYWRIGHT_BASE_URL=http://localhost:4300 ... npx playwright test e2e/rendered-core-audit.spec.ts` passes at 375px, 768px, and 1280px. Development impersonation sessions were revoked after the runs. No deployment, push, or production data change was performed.
 
-Known follow-ups: Return to social-loop acceptance and rendered UX after this bounded admin-data slice; adapter/cache ownership review remains open.
+Known follow-ups: Human keyboard/content review, broader authenticated route coverage, provider/cache integration, Turso recovery ownership, and launch verification remain open. Do not expand catalog or analytics scope.
 
 Previous most recent claim:
 

@@ -456,6 +456,21 @@ no-notification behavior. Admin/catalog persistence work now pauses and the
 priority returns to the real social loop, rendered route review, and operational
 launch gates.
 
+### Tech-lead reassessment — clean two-account rehearsal — 2026-09-07
+
+The flagship local social loop now passes with two disposable Clerk identities
+and persisted local data: RSVP, refresh, session start, attendance, per-game
+participants, completion, feedback, retryable loading, shared history, and the
+recommendation handoff all work together. The rendered core audit also passes
+the group, management, session, collection, upcoming, and history routes at
+375px, 768px, and 1280px without overflow or unnamed visible controls.
+
+This is strong implementation evidence, not release readiness. The next work
+is to convert the opt-in audit into a broader repeatable gate, inspect the
+landing and history surfaces with human keyboard/content judgment, and close
+operational recovery and provider-failure evidence. No catalog breadth or
+standalone analytics work is justified by this rehearsal.
+
 ## Collection and group activation
 
 - [ ] Let a person add their first five useful games quickly, with reliable
