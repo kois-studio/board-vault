@@ -12,8 +12,10 @@ import { LogService } from './log.service'
 import { LoginService } from './login.service'
 
 describe('LoginService account readiness', () => {
-    it('does not activate the protected route until the local account is loaded', () => {
+    it('does not activate the protected route until the local account is loaded', async () => {
         const profile = new Subject<{ id: number }>()
+        const navigate = jasmine.createSpy('navigate').and.resolveTo(true)
+        const signOut = jasmine.createSpy('signOut').and.resolveTo()
         const api = {
             clerkAuthStatus: jasmine
                 .createSpy('clerkAuthStatus')
@@ -26,7 +28,7 @@ describe('LoginService account readiness', () => {
             providers: [
                 LoginService,
                 { provide: Api, useValue: api },
-                { provide: Router, useValue: { navigate: jasmine.createSpy('navigate') } },
+                { provide: Router, useValue: { navigate } },
                 { provide: LogService, useValue: { log: jasmine.createSpy('log'), error: jasmine.createSpy('error') } },
                 { provide: ToastService, useValue: { error: jasmine.createSpy('error'), success: jasmine.createSpy('success') } },
                 {
@@ -45,23 +47,39 @@ describe('LoginService account readiness', () => {
                         removeItem: jasmine.createSpy('removeItem'),
                     },
                 },
-                { provide: ClerkService, useValue: { isSignedIn: signal(true) } },
+                {
+                    provide: ClerkService,
+                    useValue: { isSignedIn: signal(true), userId: signal<string | null>(null), signOut },
+                },
                 { provide: DataService, useValue: dataService },
             ],
         })
 
         const service = TestBed.inject(LoginService)
         const results: Array<boolean> = []
-        service.verifyClerkSession().subscribe((isReady) => results.push(isReady))
+        const firstVerification = service.verifyClerkSession()
+        const secondVerification = service.verifyClerkSession()
+
+        expect(secondVerification).toBe(firstVerification)
+        firstVerification.subscribe((isReady) => results.push(isReady))
 
         expect(results).toEqual([])
         expect(service.isAuthenticated()).toBeFalse()
+        expect(service.clerkAuthHandoffState()).toBe('linking')
         expect(dataService.currentUser()).toBeNull()
 
         profile.next({ id: 7 })
 
         expect(results).toEqual([true])
         expect(service.isAuthenticated()).toBeTrue()
+        expect(service.clerkAuthHandoffState()).toBe('ready')
         expect(dataService.currentUser()).toEqual({ id: 7 })
+
+        await service.logOut()
+
+        expect(signOut).toHaveBeenCalled()
+        expect(service.isAuthenticated()).toBeFalse()
+        expect(service.clerkAuthHandoffState()).toBe('idle')
+        expect(navigate).toHaveBeenCalledWith(['/'])
     })
 })
