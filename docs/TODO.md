@@ -553,7 +553,11 @@ recovery remain open.
   expose recorded attendees and session notes; validate this context with a
   real completed session and a zero-attendance-recorded edge case. Stale or
   unauthorized history group filters now recover to the groups workspace
-  instead of rendering an empty group label or an invalid planning link.
+  instead of rendering an empty group label or an invalid planning link. The
+  fresh two-account rehearsal now completes a session, confirms its shared
+  history card, and confirms the same game remains marked “Last played” in the
+  group library after a full refresh; recommendation context and the
+  zero-attendance edge case remain open.
 
 ## Authentication, privacy, and trust
 
