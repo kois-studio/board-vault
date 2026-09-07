@@ -21,6 +21,7 @@ export class ClerkService {
     public readonly isConfigured = signal(environment.clerkAuthEnabled && environment.clerkPublishableKey.length > 0)
     public readonly isSelfRegistrationEnabled = signal(environment.selfRegistrationEnabled)
     public readonly isInvitationFlow = signal(this.hasInvitationTicket())
+    public readonly isInvitationSignIn = signal(this.getInvitationStatus() === 'sign_in')
     public readonly isLoaded = signal(false)
     public readonly initializationError = signal<string | null>(null)
     public readonly isAvailable = computed(() => this.isConfigured() && this.isLoaded() && !this.initializationError())
