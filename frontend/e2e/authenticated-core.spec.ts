@@ -100,7 +100,7 @@ test.describe('authenticated core navigation', () => {
     test('opens explainable game recommendations', async ({ page }) => {
         await page.goto('/play/recommendations')
 
-        await expect(page.getByRole('heading', { name: /Decide what to play/i })).toBeVisible()
+        await expect(page.getByRole('heading', { name: /(?:What should .* play|Decide what to play)/i })).toBeVisible()
         await expect(page.locator('body')).toContainText(/Create or join a group first|Who is attending\?/i)
     })
 })
