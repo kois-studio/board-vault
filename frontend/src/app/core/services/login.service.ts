@@ -1,9 +1,9 @@
 import { HttpErrorResponse } from '@angular/common/http'
 // src/app/core/services/login.service.ts
-import { Injectable, inject, signal } from '@angular/core'
+import { Injectable, computed, effect, inject, signal } from '@angular/core'
 import { Router } from '@angular/router'
 import { Observable, of } from 'rxjs'
-import { catchError, map, switchMap, tap } from 'rxjs/operators'
+import { catchError, finalize, map, shareReplay, switchMap, tap } from 'rxjs/operators'
 
 import { Api } from '../../api/api'
 import { ToastService } from '../../components/toast/toast.service'
@@ -13,6 +13,8 @@ import { DataService } from './data.service'
 import { LoadingService } from './loading.service'
 import { LocalStorageService } from './local-storage.service'
 import { LogService } from './log.service'
+
+export type ClerkAuthHandoffState = 'idle' | 'linking' | 'ready' | 'error'
 
 @Injectable({ providedIn: 'root' })
 export class LoginService {
@@ -36,6 +38,25 @@ export class LoginService {
     public readonly currentUserId = signal<number | null>(null)
     public readonly isCurrentUserAdmin = signal<boolean>(false)
     public readonly authProvider = signal<'legacy' | 'clerk' | null>(null)
+    public readonly clerkAuthHandoffState = signal<ClerkAuthHandoffState>('idle')
+    public readonly clerkAuthHandoffError = signal<string | null>(null)
+    public readonly isClerkAuthHandoffActive = computed(() => this.clerkService.isSignedIn() && !this.isAuthenticated())
+
+    private clerkVerificationInFlight: Observable<boolean> | null = null
+
+    constructor() {
+        effect(() => {
+            const clerkUserId = this.clerkService.userId()
+
+            if (!clerkUserId || this.isAuthenticated() || this.clerkVerificationInFlight) return
+
+            this.verifyClerkSession().subscribe((isReady) => {
+                if (isReady && this.shouldOpenDashboardAfterHandoff()) {
+                    void this.router.navigate(['/dashboard'])
+                }
+            })
+        })
+    }
 
     // --- Token Management ---
     get token(): string | null {
@@ -119,9 +140,16 @@ export class LoginService {
     }
 
     public verifyClerkSession(): Observable<boolean> {
-        return this.api.clerkAuthStatus().pipe(
+        if (this.clerkVerificationInFlight) return this.clerkVerificationInFlight
+
+        this.clerkAuthHandoffState.set('linking')
+        this.clerkAuthHandoffError.set(null)
+
+        const verification$ = this.api.clerkAuthStatus().pipe(
             switchMap((response) => {
                 if (!response?.isValid || response.userId === undefined) {
+                    this.clerkAuthHandoffState.set('error')
+                    this.clerkAuthHandoffError.set(this.clerkHandoffErrorMessage)
                     return of(false)
                 }
 
@@ -129,14 +157,46 @@ export class LoginService {
                 this.currentUserId.set(response.userId)
                 this.isCurrentUserAdmin.set(response.isAdmin)
                 this.authProvider.set('clerk')
-                return this._fetchInitialUserData(response.userId).pipe(tap((isReady) => this.isAuthenticated.set(isReady)))
+                return this._fetchInitialUserData(response.userId).pipe(
+                    tap((isReady) => {
+                        this.isAuthenticated.set(isReady)
+                        this.clerkAuthHandoffState.set(isReady ? 'ready' : 'error')
+                        if (!isReady) this.clerkAuthHandoffError.set(this.clerkHandoffErrorMessage)
+                    }),
+                )
             }),
             catchError((error: HttpErrorResponse) => {
                 this.logger.error('LoginService: Error validating Clerk session.', error)
                 this._performLogoutCleanup()
+                this.clerkAuthHandoffState.set('error')
+                this.clerkAuthHandoffError.set(this.clerkHandoffErrorMessage)
                 return of(false)
             }),
+            finalize(() => {
+                this.clerkVerificationInFlight = null
+            }),
+            shareReplay({ bufferSize: 1, refCount: true }),
         )
+
+        this.clerkVerificationInFlight = verification$
+        return verification$
+    }
+
+    public retryClerkSession(): void {
+        if (!this.clerkService.isSignedIn() || this.clerkVerificationInFlight) return
+        this.verifyClerkSession().subscribe((isReady) => {
+            if (isReady && this.shouldOpenDashboardAfterHandoff()) {
+                void this.router.navigate(['/dashboard'])
+            }
+        })
+    }
+
+    public async signOutClerk(): Promise<void> {
+        await this.clerkService.signOut()
+        this.handleAuthErrorAndLogout()
+        this.clerkAuthHandoffState.set('idle')
+        this.clerkAuthHandoffError.set(null)
+        await this.router.navigate(['/'])
     }
 
     /**
@@ -184,17 +244,36 @@ export class LoginService {
         this.loadingService.setAllLoadingTo(true) // Reset all loading states
     }
 
+    private readonly clerkHandoffErrorMessage =
+        'We could not finish connecting this sign-in to Board Vault. Try again, or sign out and use your invitation link.'
+
+    private shouldOpenDashboardAfterHandoff(): boolean {
+        const path = this.router.url.split('?')[0]
+        return path === '/' || path === '/login' || path === '/register'
+    }
+
     /**
      * Public method for when a user explicitly clicks a logout button.
      * Shows a success toast.
      */
-    public logOut(): void {
+    public async logOut(): Promise<void> {
         this.logger.log('LoginService: User initiated logout.')
+
+        if (this.authProvider() === 'clerk') {
+            await this.clerkService.signOut()
+            this._performLogoutCleanup()
+            this.clerkAuthHandoffState.set('idle')
+            this.clerkAuthHandoffError.set(null)
+            await this.router.navigate(['/'])
+            this.toastService.success('You have been successfully logged out.')
+            return
+        }
+
         // Potentially call a backend logout endpoint here if you have one
         // this.api.logout().subscribe();
 
         this._performLogoutCleanup()
-        this.router.navigate(['/']) // Or your designated login/home page
+        await this.router.navigate(['/']) // Or your designated login/home page
         this.toastService.success('You have been successfully logged out.')
     }
 

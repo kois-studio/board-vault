@@ -1,5 +1,5 @@
 import { Component, ElementRef, Renderer2, ViewChild, computed, inject } from '@angular/core'
-import { Router, RouterLink } from '@angular/router'
+import { RouterLink } from '@angular/router'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
 import { DataService } from '../../core/services/data.service'
 import { LoginService } from '../../core/services/login.service'
@@ -16,7 +16,6 @@ export class ProfileMenuComponent {
     //        Services
     // --------------------------------------------------------------------------
     private readonly loginService = inject(LoginService)
-    private readonly router = inject(Router)
     private readonly dataService = inject(DataService)
     private readonly renderer = inject(Renderer2)
     private readonly elementRef = inject(ElementRef)
@@ -96,10 +95,9 @@ export class ProfileMenuComponent {
         this.isDropdownVisible = false
     }
 
-    public onClickSignOut() {
-        this.loginService.logOut()
+    public async onClickSignOut(): Promise<void> {
+        await this.loginService.logOut()
         this.dataService.currentUser.set(null)
-        this.router.navigate(['/'])
     }
 
     // Clean up the listener when the component is destroyed
