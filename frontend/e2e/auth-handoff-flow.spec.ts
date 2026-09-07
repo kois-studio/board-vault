@@ -25,4 +25,29 @@ test.describe('authenticated Clerk handoff', () => {
             await expect(page.getByRole('heading', { name: 'Your game groups' })).toBeVisible({ timeout: 15_000 })
         }
     })
+
+    test('shows recovery controls when local account readiness fails, then retries', async ({ page }) => {
+        let shouldFail = true
+        await page.route('**/auth/clerk/status', async (route) => {
+            if (shouldFail) {
+                shouldFail = false
+                await route.abort('failed')
+                return
+            }
+
+            await new Promise((resolve) => setTimeout(resolve, 1200))
+            await route.continue()
+        })
+
+        await page.goto('/dashboard', { waitUntil: 'domcontentloaded' })
+
+        await expect(page.getByRole('heading', { name: /We could not finish setting up your sign-in/i })).toBeVisible({ timeout: 15_000 })
+        await expect(page.getByRole('alert')).toContainText(/could not finish connecting/i)
+        await expect(page.getByRole('button', { name: 'Try again', exact: true })).toBeVisible()
+        await expect(page.getByRole('button', { name: 'Sign out', exact: true })).toBeVisible()
+
+        await page.getByRole('button', { name: 'Try again', exact: true }).click()
+        await expect(page.getByRole('heading', { name: /Connecting you to your Board Vault/i })).toBeVisible({ timeout: 5_000 })
+        await expect(page.getByRole('heading', { name: 'Your game groups' })).toBeVisible({ timeout: 15_000 })
+    })
 })
