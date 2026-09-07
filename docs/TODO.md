@@ -332,9 +332,9 @@ remote CI, provider delivery, and operational recovery ownership.
 
 - **Status:** Planned
 - **Affected area:** `frontend/src/styles.css`, component SCSS/templates, route surfaces
-- **Evidence:** Tailwind global styles now use plain CSS with a PostCSS nesting pass; route-level components are lazy-loaded; production build has no Sass/selector/bundle-budget or Angular template warnings and the latest initial raw bundle is 602.51 kB (136.22 kB estimated transfer) under the 650 kB warning budget. Shared theme-control semantics, consistent keyboard focus rings, explicit session input labels, the preserved-account auth fallback, migration-state copy, group/session empty states, owner-only invitation controls, invitation-decline confirmation, pending provider-invitation management, direct group-edit route loading/error states, the responsive group-management workspace, mobile session-progress behavior, attendee-selection handoff, recommendation attendee controls, explainable recommendation lenses, reversible group acquisition interest, invitation-link copy feedback, the personal/private collection boundary, the routed shared-button focus-order fix, removal of unused client compatibility adapters, the history-to-recommendation handoff, player names in shared-memory cards, group-oriented recommendation context, explicit groups-index social actions, status-specific upcoming-session prompts, group-first Play entry, empty-group activation guidance, and focus return for contextual destructive dialogs have been improved, but a full accessibility/responsive audit, rendered group-management review, and all route-surface reviews remain open.
+- **Evidence:** Tailwind global styles now use plain CSS with a PostCSS nesting pass; route-level components are lazy-loaded; production build has no Sass/selector/bundle-budget or Angular template warnings and the latest initial raw bundle is 602.50 kB (136.20 kB estimated transfer) under the 650 kB warning budget. Shared theme-control semantics, consistent keyboard focus rings, explicit session input labels, the preserved-account auth fallback, migration-state copy, group/session empty states, owner-only invitation controls, invitation-decline confirmation, pending provider-invitation management, direct group-edit route loading/error states, the responsive group-management workspace, mobile session-progress behavior, attendee-selection handoff, recommendation attendee controls, explainable recommendation lenses, reversible group acquisition interest, invitation-link copy feedback, the personal/private collection boundary, the routed shared-button focus-order fix, removal of unused client compatibility adapters, the history-to-recommendation handoff, player names in shared-memory cards, group-oriented recommendation context, explicit groups-index social actions, status-specific upcoming-session prompts, group-first Play entry, empty-group activation guidance, focus return for contextual destructive dialogs, and the min-width/truncation fix for narrow group-management member rows have been improved. The opt-in rendered core audit now checks overflow, visible control names, duplicate routed-button focus stops, and keyboard traversal at 375px, 768px, and 1280px across the primary authenticated routes; human contrast, screen-reader, content, broader route, and provider-failure review remain open.
 - **Risk:** Broken styles, poor mobile/accessibility behavior, and unsupported public claims.
-- **Next action:** Complete the rendered route audit matrix, resolve remaining accessibility/responsive findings, and link content-truth findings to `TRUTH-001`.
+- **Next action:** Extend the audit only to the remaining high-value authenticated surfaces, perform human keyboard/screen-reader/content review, and link content-truth findings to `TRUTH-001`; keep catalog/detail expansion out of scope.
 - **Dependencies:** Product truth/brand decision where claims are involved.
 
 ### READINESS-011 [Medium] DOC-003/007/009 — Consolidate remaining legacy documentation
@@ -473,6 +473,20 @@ is to convert the opt-in audit into a broader repeatable gate, inspect the
 landing and history surfaces with human keyboard/content judgment, and close
 operational recovery and provider-failure evidence. No catalog breadth or
 standalone analytics work is justified by this rehearsal.
+
+### Tech-lead reassessment — rendered keyboard/responsive audit — 2026-09-07
+
+The first automated core-route audit found a real narrow-screen defect in the
+group-management member rows: long names and the member action could force the
+workspace wider than a 375px viewport. The member cards and list rows now allow
+their content to shrink and truncate, and the regression passes. The audit also
+now waits for the routed main content, traverses visible controls by keyboard,
+checks that focus stays visible and named, and covers the group, management,
+session planning/detail, collection, upcoming, and history routes at 375px,
+768px, and 1280px. This closes the automated core-route slice, not the whole
+quality gate: human keyboard/screen-reader/contrast/content review, broader
+authenticated route coverage, provider/cache failure evidence, and operational
+recovery remain open.
 
 ## Collection and group activation
 

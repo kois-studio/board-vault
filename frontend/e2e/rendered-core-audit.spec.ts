@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, Page, test } from '@playwright/test'
 
 const authStorageState = process.env['PLAYWRIGHT_AUTH_STORAGE_STATE']
 const groupId = process.env['PLAYWRIGHT_GROUP_ID']
@@ -57,6 +57,54 @@ function accessibleNameScript() {
     }
 }
 
+async function assertKeyboardTraversal(page: Page, route: string, width: number): Promise<void> {
+    const focusableControlCount = await page.evaluate(() => {
+        const isVisible = (element: Element) => {
+            const rect = element.getBoundingClientRect()
+            const style = getComputedStyle(element)
+            return rect.width > 0 && rect.height > 0 && style.display !== 'none' && style.visibility !== 'hidden'
+        }
+        const focusable = Array.from(document.querySelectorAll('a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])')).filter(
+            element => isVisible(element) && !element.hasAttribute('disabled'),
+        )
+        const firstFocusable = focusable[0]
+        if (!(firstFocusable instanceof HTMLElement)) return 0
+        firstFocusable.focus()
+        return document.activeElement === firstFocusable ? focusable.length : 0
+    })
+
+    expect(focusableControlCount, `${route} has no visible keyboard starting point at ${width}px`).toBeGreaterThan(0)
+    const tabBudget = Math.min(32, focusableControlCount as number)
+
+    for (let index = 0; index < tabBudget; index += 1) {
+        const focused = await page.evaluate(() => {
+            const element = document.activeElement
+            if (!(element instanceof HTMLElement) || element === document.body) return null
+
+            const rect = element.getBoundingClientRect()
+            const style = getComputedStyle(element)
+            const associatedLabel =
+                element instanceof HTMLInputElement || element instanceof HTMLSelectElement || element instanceof HTMLTextAreaElement
+                    ? (element.id ? document.querySelector(`label[for="${CSS.escape(element.id)}"]`)?.textContent : element.closest('label')?.textContent)
+                    : null
+            return {
+                tagName: element.tagName,
+                name:
+                    element.getAttribute('aria-label') ||
+                    associatedLabel?.replace(/\s+/g, ' ').trim() ||
+                    element.textContent?.replace(/\s+/g, ' ').trim() ||
+                    '',
+                visible: rect.width > 0 && rect.height > 0 && style.display !== 'none' && style.visibility !== 'hidden',
+            }
+        })
+
+        expect(focused, `${route} lost focus during keyboard traversal at ${width}px after ${index + 1} tabs`).not.toBeNull()
+        expect(focused?.visible, `${route} focused an invisible control at ${width}px after ${index + 1} tabs`).toBe(true)
+        expect(focused?.name, `${route} focused an unnamed control at ${width}px after ${index + 1} tabs`).toBeTruthy()
+        await page.keyboard.press('Tab')
+    }
+}
+
 test.describe('rendered core route audit', () => {
     test.skip(!authStorageState || !groupId, 'Set local Clerk auth state and a disposable group ID to run the rendered core audit.')
     test.use({ storageState: authStorageState })
@@ -69,6 +117,7 @@ test.describe('rendered core route audit', () => {
 
             for (const route of routes) {
                 await page.goto(route)
+                await page.locator('main').first().waitFor({ state: 'visible' })
                 await page.waitForTimeout(350)
 
                 const audit = await page.evaluate(accessibleNameScript())
@@ -77,6 +126,8 @@ test.describe('rendered core route audit', () => {
 
                 const duplicateButtonHosts = await page.locator('app-button[tabindex="0"]').count()
                 expect(duplicateButtonHosts, `${route} exposes a focusable app-button host at ${width}px`).toBe(0)
+
+                await assertKeyboardTraversal(page, route, width)
             }
         }
     })

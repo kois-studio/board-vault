@@ -1,12 +1,12 @@
 @if (member) {
-<div class="flex justify-start items-center" [ngClass]="{
+<div class="flex min-w-0 items-center justify-start" [ngClass]="{
     'p-4': format === 'default',
     'p-2': format === 'compact',
 }">
     <app-image-profile [avatar]="member.avatar" />
-    <div class="ml-3 text-nowrap text-start">
-        <p class="font-semibold max-w-[140px] overflow-hidden text-ellipsis">{{ member.displayName }}</p>
-        <p class="text-secondary text-sm max-w-[140px] overflow-hidden text-ellipsis">
+    <div class="ml-3 min-w-0 text-start">
+        <p class="max-w-[140px] truncate font-semibold">{{ member.displayName }}</p>
+        <p class="max-w-[140px] truncate text-sm text-secondary">
             <span>{{ member.username }}</span>
             @if (isOwner) {
             <span class="text-blue-500 pl-2">owner</span>
