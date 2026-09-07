@@ -58,4 +58,25 @@ describe('EmailService logging', () => {
             expect.objectContaining({ html: '<p>&lt;img src=x onerror=&quot;alert(1)&quot;&gt; &amp; welcome</p>' }),
         )
     })
+
+    it('maps reset and notification provider failures to the same safe boundary', async () => {
+        const { service, internals } = createService({ error: new Error('provider failure') })
+
+        await expect(service.sendPasswordResetEmail(recipient, 'reset-token')).rejects.toMatchObject({
+            response: {
+                code: API_ERROR_CODES.EMAIL_PROVIDER_UNAVAILABLE,
+                message: 'Email delivery is temporarily unavailable',
+            },
+        })
+        await expect(service.sendNotificationEmail(recipient, 'A private group update')).rejects.toMatchObject({
+            response: {
+                code: API_ERROR_CODES.EMAIL_PROVIDER_UNAVAILABLE,
+                message: 'Email delivery is temporarily unavailable',
+            },
+        })
+
+        expect(internals.LOGGER.error).toHaveBeenCalledWith('Failed to send password reset email (Error)')
+        expect(internals.LOGGER.error).toHaveBeenCalledWith('Failed to send notification email (Error)')
+        expect(internals.LOGGER.error).not.toHaveBeenCalledWith(expect.stringContaining(recipient), expect.anything())
+    })
 })

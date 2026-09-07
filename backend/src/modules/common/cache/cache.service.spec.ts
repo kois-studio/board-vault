@@ -2,7 +2,7 @@ import { CacheService } from './cache.service'
 
 type CacheServiceInternals = {
     LOGGER: { log: jest.Mock; error: jest.Mock }
-    REDIS: { get: jest.Mock; set: jest.Mock; incr: jest.Mock; expire: jest.Mock; keys: jest.Mock; flushdb: jest.Mock }
+    REDIS: { get: jest.Mock; set: jest.Mock; incr: jest.Mock; expire: jest.Mock; keys: jest.Mock; flushdb: jest.Mock; ping: jest.Mock }
 }
 
 describe('CacheService logging', () => {
@@ -18,6 +18,7 @@ describe('CacheService logging', () => {
             expire: jest.fn().mockResolvedValue(1),
             keys: jest.fn().mockResolvedValue([]),
             flushdb: jest.fn().mockResolvedValue('OK'),
+            ping: jest.fn().mockResolvedValue('PONG'),
         }
         return { service, internals }
     }
@@ -76,5 +77,17 @@ describe('CacheService logging', () => {
 
         expect(internals.REDIS.flushdb).not.toHaveBeenCalled()
         expect(internals.LOGGER.error).toHaveBeenCalledWith('REDIS: Error while getting keys (Error)')
+    })
+
+    it('reports a provider outage and avoids repeated health probes during cooldown', async () => {
+        const { service, internals } = createService()
+
+        internals.REDIS.ping.mockRejectedValueOnce(new Error('Redis unavailable'))
+
+        await expect(service.checkHealth()).resolves.toBe('down')
+        await expect(service.checkHealth()).resolves.toBe('down')
+
+        expect(internals.REDIS.ping).toHaveBeenCalledTimes(1)
+        expect(internals.LOGGER.error).toHaveBeenCalledWith('Redis health check failed (Error)')
     })
 })

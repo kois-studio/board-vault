@@ -488,6 +488,19 @@ quality gate: human keyboard/screen-reader/contrast/content review, broader
 authenticated route coverage, provider/cache failure evidence, and operational
 recovery remain open.
 
+### Tech-lead reassessment — provider degradation evidence — 2026-09-07
+
+The local reliability boundary now proves that verification, password-reset,
+and notification delivery failures map to the same safe email-provider error
+without logging recipient data, and that Redis health failures enter a cooldown
+instead of causing repeated probes. The operations docs now contain a
+read-only provider-degradation runbook for `/health`, `/health/ready`, email
+diagnostic codes, Redis degradation, and Turso recovery boundaries. This is
+local failure evidence only: real email delivery/CAPTCHA behavior, remote CI,
+production monitoring, and Turso backup ownership still require external
+verification. The next product-facing gate remains a clean real-world
+two-person acceptance rehearsal; no catalog or standalone analytics expansion.
+
 ## Collection and group activation
 
 - [ ] Let a person add their first five useful games quickly, with reliable
