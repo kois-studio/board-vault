@@ -184,7 +184,9 @@ were added for invitation lifecycle and owner-controlled acquisition
 decisions. A read-only Turso CLI check on 2026-09-06 confirms that the live
 `board-vault` database has only migration markers `0001` through `0005`; the
 live counts are 16 accounts, 5 groups, 13 sessions, and 22 session/game
-links, with `PRAGMA integrity_check = ok` and no foreign-key violations.
+links, with `PRAGMA integrity_check = ok` and no foreign-key violations. A
+read-only recheck on 2026-09-07 returned the same counts and still found only
+migration markers `0001` through `0005`.
 Migrations `0006`–`0009` remain pending for live Turso. The migration and
 backend routes must be verified against a disposable database and a fresh
 backup before release.
