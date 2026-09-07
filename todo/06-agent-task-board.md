@@ -75,18 +75,20 @@ recorded the first-group activation flow as the next end-to-end evidence gate.
 The existing screen-level collection, invitation, recommendation, and session
 coverage is intentionally not treated as proof of one connected user journey.
 
-Verified: Documentation links resolve; the fixture-gated connected browser
-journey was exercised against disposable local SQLite and two development-only
-Clerk identities with the browser host aligned to the saved Clerk state. The
-clean rerun currently stops at the create-group handoff before the create
-request is observed, so no end-to-end pass is claimed. The default suite, lint,
-unit tests, and build remain green; no production data or provider settings
-were changed.
+Verified: Documentation links resolve; a fresh fixture-gated connected browser
+journey passed against disposable local SQLite and two development-only Clerk
+identities with the browser host aligned to the saved Clerk state. It covered
+group creation, existing-account invitation and acceptance, collection
+activation, explainable recommendation, first-session planning, and member
+leave back to the groups dashboard in 6.5 seconds. The run exposed and fixed
+missing native form-submit handlers in group creation and group management.
+The default suite, lint, unit tests, and build remain green; no production data
+or provider settings were changed.
 
-Known follow-ups: Diagnose and fix the create-group handoff, rerun the
-connected journey from clean data, then cover member leave, new-person/
-declined/expired invitation, and recovery variants. Keep AUTH-UX-001 open for
-invitation-registration browser coverage and human focus/screen-reader review.
+Known follow-ups: Cover new-person/declined/expired invitation and
+failure/retry variants, then complete human focus/screen-reader review. Keep
+AUTH-UX-001 open for invitation-registration browser coverage and human
+focus/screen-reader review.
 Do not expand catalog or standalone analytics scope.
 
 Previous most recent claim:

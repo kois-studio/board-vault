@@ -388,11 +388,14 @@ as TODO items here.
   checkpoints, and evidence for each flagship job. The first priority is one
   clean two-account journey from landing or dashboard through create group,
   invite, add games, recommendation, first planned session, and the resulting
-  shared memory. The connected browser fixture is now host-aligned with its
-  Clerk storage state, but the first clean rerun currently stops at the create
-  group handoff before issuing the create request. The cause and the complete
-  flow still need to be resolved; screen-level tests do not satisfy this ticket
-  on their own.
+  shared memory. The fixture-gated browser journey now passes locally from
+  group creation through existing-account invitation and acceptance, collection
+  activation, an explainable recommendation, first-session planning, and member
+  leave back to the groups dashboard. The run also exposed and fixed missing
+  native submit handlers in group creation and group management. Screen-level
+  tests still do not satisfy this ticket on their own: new-person invitation,
+  declined/expired invitations, failure/retry branches, and human UX review
+  remain open.
 
 - [ ] **P0 — Redesign authentication onboarding end to end (AUTH-UX-001).**
   The production path exposed a confusing handoff: after a signed-out visitor

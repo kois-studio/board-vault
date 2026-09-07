@@ -116,6 +116,16 @@ export class GroupEditComponent {
         return this.isLoading || this.usernameToInvite.invalid || isUserAlreadyInGroup || isUserAlreadyInvited
     }
 
+    public onInviteUserSubmit(event: SubmitEvent): void {
+        event.preventDefault()
+        void this.onInviteUser()
+    }
+
+    public onInviteNewPersonSubmit(event: SubmitEvent): void {
+        event.preventDefault()
+        void this.onInviteNewPerson()
+    }
+
     get totalGames(): Array<GameType> {
         if (!this.groupData) {
             return []
