@@ -41,6 +41,7 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 | EQ-005 | TODO | Quality | Add health checks, structured logging, error monitoring, and database operational checks. | EQ-001 |
 | EQ-006 | IN_PROGRESS | Quality | Fix frontend bundle, styling warnings, accessibility, responsiveness, and timezone handling. | PROD-005 |
 | AUTH-UX-001 | IN_PROGRESS | Product quality | Redesign sign-in and invitation-registration onboarding as one explicit, accessible state machine with clear linking/provisioning handoffs and first-dashboard guidance. | AUTH-001/AUTH-002, EQ-006 |
+| UX-FLOW-001 | IN_PROGRESS | Product quality | Review flagship work as connected, role-aware user flows with recovery and shared-state checkpoints; prove the first-group activation journey end to end without expanding catalog scope. | PROD-002, PROD-003, PROD-005, EQ-006 |
 | TRUTH-001 | REVIEW | Launch | Remove unsupported landing claims, fake testimonials, dead links, and placeholder product states. | PROD-001, PROD-004, PROD-007 |
 | TRUTH-002 | TODO | Launch | Define and pass a launch-readiness checklist using a clean database and two real accounts. | SEC-002, PROD-008, EQ-003 |
 
@@ -57,6 +58,32 @@ Status values: `TODO`, `BLOCKED`, `IN_PROGRESS`, `REVIEW`, `DONE`.
 ## Claiming protocol
 
 Most recent claim:
+
+```text
+Task: UX-FLOW-001
+Owner: Codex
+Claimed: 2026-09-07
+
+Branch/worktree: main / shared workspace
+Scope: establish and apply connected, role-aware flow review to the flagship first-group activation journey, including recovery, refresh, shared-state, and destructive branches, without expanding catalog scope
+```
+
+Review: UX-FLOW-001
+
+Changed: Added `docs/ux-flows.md` as the product flow-review contract and
+recorded the first-group activation flow as the next end-to-end evidence gate.
+The existing screen-level collection, invitation, recommendation, and session
+coverage is intentionally not treated as proof of one connected user journey.
+
+Verified: Documentation links resolve; no application behavior or provider data
+was changed. The next implementation slice is the clean two-account connected
+journey and its missing handoffs.
+
+Known follow-ups: Keep AUTH-UX-001 open for invitation-registration browser
+coverage and human focus/screen-reader review. Do not expand catalog or
+standalone analytics scope.
+
+Previous most recent claim:
 
 ```text
 Task: AUTH-UX-001
