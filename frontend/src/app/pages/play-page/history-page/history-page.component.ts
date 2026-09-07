@@ -132,6 +132,21 @@ export class HistoryPageComponent {
         return game.titleTranslations.en || game.title || 'Untitled game'
     }
 
+    public getGameInitials(title: string): string {
+        return title
+            .split(/\s+/)
+            .filter(Boolean)
+            .map((word) => word[0])
+            .join('')
+            .slice(0, 2)
+            .toUpperCase()
+    }
+
+    public hideBrokenImage(event: Event): void {
+        const image = event.target
+        if (image instanceof HTMLImageElement) image.hidden = true
+    }
+
     private readGroupIdFilter(): number | null {
         const groupId = Number(this.route.snapshot.queryParamMap.get('groupId'))
         return Number.isInteger(groupId) && groupId > 0 ? groupId : null
