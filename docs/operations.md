@@ -37,7 +37,7 @@ Use the exact commands and current results in [AGENTS.md](AGENTS.md) and [testin
 
 - backend build passes;
 - frontend production build passes without Sass, selector, or Angular template warnings; route-level components are lazy-loaded and the initial raw bundle is 602.50 kB (136.20 kB estimated transfer), below the 650 kB warning budget. Clerk remains a separate 1.55 MB lazy chunk;
-- backend unit tests pass 48 suites and 263 tests, including profile-update, ownership, group/membership listing, collection route ownership, actor-identity, invitation visibility/lifecycle/expiry/atomic acceptance, owner-only legacy invitation creation, provider invitation listing/revocation boundaries, stable private-beta/Clerk/email provider diagnostic-code mapping, soft-deleted account exclusion, verified-user gating, deprecated-route removal, Clerk group invitations, invite-only join, notification ownership, meet-read, meet-account-game membership and per-game ownership validation, service-level session participation invariants, organizer lifecycle rules, atomic collection activation/removal/metadata/wishlist/review transitions, atomic deprecated bulk collection updates and proposal approval/rejection, rollback on mid-write collection/review/group-decision/proposal failures, atomic group acquisition interest/decision reopening, group acquisition ownership-race protection and owner decisions, admin reviewer, route-parameter, bounded list-query, request-size, bounded cache-key, and bounded social free-text validation, self-profile response privacy, cache maintenance endpoint protection, disabled-cache behavior, safe API error normalization, health/readiness probes, authentication path/query validation, global-user-list, deleted-account JWT, database-log, email-log, cache-log, auth-log, service-log redaction, non-destructive cache-diagnostic, and canonical session-read suites; broader remote integration coverage is still missing;
+- backend unit tests pass 48 suites and 265 tests, including profile-update, ownership, group/membership listing, collection route ownership, actor-identity, invitation visibility/lifecycle/expiry/atomic acceptance, owner-only legacy invitation creation, provider invitation listing/revocation boundaries, stable private-beta/Clerk/email provider diagnostic-code mapping across verification/reset/notification delivery, soft-deleted account exclusion, verified-user gating, deprecated-route removal, Clerk group invitations, invite-only join, notification ownership, meet-read, meet-account-game membership and per-game ownership validation, service-level session participation invariants, organizer lifecycle rules, atomic collection activation/removal/metadata/wishlist/review transitions, atomic deprecated bulk collection updates and proposal approval/rejection, rollback on mid-write collection/review/group-decision/proposal failures, atomic group acquisition interest/decision reopening, group acquisition ownership-race protection and owner decisions, admin reviewer, route-parameter, bounded list-query, request-size, bounded cache-key, and bounded social free-text validation, self-profile response privacy, cache maintenance endpoint protection, disabled-cache behavior, Redis health cooldown behavior, safe API error normalization, health/readiness probes, authentication path/query validation, global-user-list, deleted-account JWT, database-log, email-log, cache-log, auth-log, service-log redaction, non-destructive cache-diagnostic, and canonical session-read suites; broader remote integration coverage is still missing;
 - backend HTTP e2e now passes six environment-safe boundary tests, including fail-closed core social routes; broader seeded/integration coverage remains open;
 - the bootstrap installs a global strict `ValidationPipe` in addition to targeted controller pipes, so new DTO routes fail closed on unknown fields; request DTOs now bound the highest-risk free-text and bulk-array inputs, while client negative tests and a complete legacy DTO inventory remain open;
 - backend lint passes with no errors or warnings; the CI workflow now runs the
@@ -190,6 +190,36 @@ backend routes must be verified against a disposable database and a fresh
 backup before release.
 
 Deployment ownership, domain configuration, environment provisioning, provider scopes, and production traffic behavior are therefore unknown and must not be inferred from the committed URLs/config alone. A non-secret backend variable template is available at [`backend/.env.example`](../backend/.env.example). The API now exposes dependency-free `/health` liveness and coarse `/health/ready` readiness probes; readiness reports only `up`, `down`, or `disabled` states for Turso and Redis.
+
+## Provider degradation runbook
+
+Use this sequence when a deployment appears unhealthy. These checks are
+read-only and should be performed before retrying a user-facing mutation:
+
+1. Check `GET /health`. A non-200 response means the process is not serving
+   reliably; stop routing traffic and inspect the deployment logs.
+2. Check `GET /health/ready`. `database: down` means Turso connectivity must
+   be restored before trusting reads or writes. `cache: down` means Redis is
+   unavailable; cache reads and writes degrade safely, while the rate limiter
+   fails open, so treat this as an incident rather than a harmless warning.
+3. If email actions return `EMAIL_PROVIDER_UNAVAILABLE`, do not repeat the
+   action in a tight loop. The account/session write is not implied to have
+   succeeded; inspect the correlated `X-Request-Id`, provider status, and
+   application logs, then retry once delivery is healthy. The API intentionally
+   exposes a stable diagnostic code rather than provider payloads.
+4. For a Redis outage, do not use the cache reset endpoint as a recovery step.
+   Key inspection is diagnostic and non-destructive; the service applies a
+   short request timeout and a 30-second cooldown after failures. Restore the
+   provider or use the deployment rollback path if the outage persists.
+5. For a Turso outage or failed migration, keep the current deployment in
+   place only if `/health/ready` and read-only smoke checks are healthy. Do not
+   apply pending migrations directly to production from a local shell. Follow
+   [`database/operations.md`](../database/operations.md) with the designated
+   backup/recovery owner once that ownership and rollback target are recorded.
+
+The repository has local failure-injection tests for the email, Redis, HTTP
+error, and transaction boundaries. Production provider delivery, backup
+ownership, recovery targets, and remote monitoring remain launch gates.
 
 ## Operational risks and next steps
 
