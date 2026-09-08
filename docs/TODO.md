@@ -441,7 +441,9 @@ as TODO items here.
   showing a false zero-session pulse while shared history is loading, and its
   history loading state is announced. Successful group creation now returns
   the new group ID and opens that group workspace directly, where inviting
-  friends and planning the first session are visible next actions. Rendered
+  friends and planning the first session are visible next actions. The public
+  landing now sequences the social journey as join/create a group, add the
+  games people can bring, then choose and plan the next game night. Rendered
   and real-group validation remain open after implementation. The create form
   also keeps submission disabled with an explicit status while the local
   authenticated account profile is still loading, avoiding an ambiguous

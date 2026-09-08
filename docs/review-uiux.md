@@ -2,7 +2,17 @@
 
 This document tracks whether each frontend area has received a deliberate UI/UX review. It is a review register, not a claim that a route works. A source audit can identify risks, but an area is not considered fully reviewed until its states, interaction model, responsive behavior, accessibility basics, visual hierarchy, and real API behavior have been exercised.
 
-Reviewed: 2026-09-06
+Reviewed: 2026-09-08
+
+## PM/PO checkpoint — 2026-09-08
+
+The public landing sequence now matches the social product promise in both
+registration modes: join or create the group, add the games people can bring,
+then choose and plan the next game night. The visitor is not pushed toward a
+catalog or generic account workflow, and an invited friend is no longer told to
+“bring in your group” after the group already exists. Responsive and positioning
+regressions pass; human visual hierarchy, keyboard, contrast, screen-reader,
+and content review remain open.
 
 ## PM/PO checkpoint — 2026-09-06
 
@@ -110,7 +120,7 @@ For each area, review:
 
 | Area | Routes/components | Current status | Known review scope / next action |
 |---|---|---|---|
-| Landing page | `/`, `landing.component` | Partially reviewed | The copy now centers the group decision-and-memory loop and explains private-beta access by environment. Continue with rendered responsive, keyboard, focus, contrast, semantics, and visual-hierarchy review. |
+| Landing page | `/`, `landing.component` | Partially reviewed | The copy now centers the group decision-and-memory loop, explains private-beta access by environment, and sequences the journey as join/create a group → add games you can bring → choose the next game night. Continue with rendered responsive, keyboard, focus, contrast, semantics, and visual-hierarchy review. |
 | Header and public navigation | `header`, `/login`, `/register` links | Partially reviewed | Clerk production controls work, and public section links now route through the landing page from any shell location; navigation still needs a final signed-out/signed-in and mobile review. |
 | Login | `/login`, login form | Partially reviewed | Production Clerk login was manually verified; the preserved-account fallback now has responsive sizing, labels, autocomplete, and an honest submit state. Protected-route activation now waits for the local account profile after provider authentication, preventing direct-navigation actions from racing account readiness. Review error, loading, expired-session, keyboard, and legacy-UI behavior. |
 | Registration | `/register`, register form | Partially reviewed | Clerk signup/linking was manually verified; invited registration now uses an explicit username/password form, mounts the bot-protection target, activates the created session, and redirects to the dashboard. The degraded-mode fallback has responsive sizing, labels, and password-manager metadata. Review Smart CAPTCHA interaction, duplicate identity, errors, and whether legacy registration remains visible. |
