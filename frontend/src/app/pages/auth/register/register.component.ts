@@ -55,7 +55,9 @@ export class RegisterComponent {
             )
             await this.router.navigateByUrl('/dashboard')
         } catch {
-            this.invitationError.set('This invitation could not be completed. Ask the group owner to send a fresh link and try again.')
+            this.invitationError.set(
+                'We could not complete this invitation. The link may have expired, been used already, or the group may no longer be available. Ask the group owner for a fresh invitation and try again.',
+            )
         } finally {
             this.isInvitationSubmitting = false
         }
