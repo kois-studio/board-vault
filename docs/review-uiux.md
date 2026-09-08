@@ -14,6 +14,12 @@ catalog or generic account workflow, and an invited friend is no longer told to
 regressions pass; human visual hierarchy, keyboard, contrast, screen-reader,
 and content review remain open.
 
+The automated-auth boundary is now safer to exercise: the opt-in Clerk
+Testing Token fixture can bypass Development bot protection for a browser
+context without changing Production settings. This improves evidence for the
+new-person invitation path, but it does not replace the human CAPTCHA,
+delivery, or onboarding-comprehension review.
+
 ## PM/PO checkpoint — 2026-09-06
 
 The product remains a private social workspace for recurring board-game groups.
@@ -123,7 +129,7 @@ For each area, review:
 | Landing page | `/`, `landing.component` | Partially reviewed | The copy now centers the group decision-and-memory loop, explains private-beta access by environment, and sequences the journey as join/create a group → add games you can bring → choose the next game night. Continue with rendered responsive, keyboard, focus, contrast, semantics, and visual-hierarchy review. |
 | Header and public navigation | `header`, `/login`, `/register` links | Partially reviewed | Clerk production controls work, and public section links now route through the landing page from any shell location; navigation still needs a final signed-out/signed-in and mobile review. |
 | Login | `/login`, login form | Partially reviewed | Production Clerk login was manually verified; the preserved-account fallback now has responsive sizing, labels, autocomplete, and an honest submit state. Protected-route activation now waits for the local account profile after provider authentication, preventing direct-navigation actions from racing account readiness. Review error, loading, expired-session, keyboard, and legacy-UI behavior. |
-| Registration | `/register`, register form | Partially reviewed | Clerk signup/linking was manually verified; invited registration now uses an explicit username/password form, mounts the bot-protection target, activates the created session, and redirects to the dashboard. The degraded-mode fallback has responsive sizing, labels, and password-manager metadata. Review Smart CAPTCHA interaction, duplicate identity, errors, and whether legacy registration remains visible. |
+| Registration | `/register`, register form | Partially reviewed | Clerk signup/linking was manually verified; invited registration now uses an explicit username/password form, mounts the bot-protection target, activates the created session, and redirects to the dashboard. An opt-in `@clerk/testing` fixture now supports Development-only automated coverage without disabling Production protection. The degraded-mode fallback has responsive sizing, labels, and password-manager metadata. Review Smart CAPTCHA interaction, duplicate identity, errors, and whether legacy registration remains visible. |
 | Email verification/reset | `/verify-email/:token`, `/reset-password/*` | Partially reviewed | Preserved password recovery now uses immediate request/token states, explicit labels, live status/error announcements, safe email-provider guidance, and direct fresh-link/sign-in recovery. Decide whether these legacy pages remain reachable after Clerk and complete rendered mobile, keyboard, focus, and expired-link review. |
 | Footer | `footer.component` | Source-audited | Replace or remove placeholder links and review hierarchy, contrast, and mobile layout. |
 
