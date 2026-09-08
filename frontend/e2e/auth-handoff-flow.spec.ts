@@ -50,4 +50,20 @@ test.describe('authenticated Clerk handoff', () => {
         await expect(page.getByRole('heading', { name: /Connecting you to your Board Vault/i })).toBeVisible({ timeout: 5_000 })
         await expect(page.getByRole('heading', { name: 'Your game groups' })).toBeVisible({ timeout: 15_000 })
     })
+
+    test('preserves the requested protected route after a refresh', async ({ page }) => {
+        await page.route('**/auth/clerk/status', async (route) => {
+            await new Promise((resolve) => setTimeout(resolve, 900))
+            await route.continue()
+        })
+
+        await page.goto('/groups', { waitUntil: 'domcontentloaded' })
+        await expect(page.getByRole('heading', { name: /Connecting you to your Board Vault/i })).toBeVisible({ timeout: 15_000 })
+        await expect(page.getByRole('heading', { name: 'My Groups' })).toBeVisible({ timeout: 15_000 })
+
+        await page.reload({ waitUntil: 'domcontentloaded' })
+        await expect(page.getByRole('heading', { name: /Connecting you to your Board Vault/i })).toBeVisible({ timeout: 15_000 })
+        await expect(page).toHaveURL(/\/groups(?:\?.*)?$/)
+        await expect(page.getByRole('heading', { name: 'My Groups' })).toBeVisible({ timeout: 15_000 })
+    })
 })
