@@ -12,6 +12,7 @@ describe('RegisterComponent invitation onboarding', () => {
             isSelfRegistrationEnabled: signal(false),
             isInvitationFlow: signal(true),
             isInvitationSignIn: signal(invitationSignIn),
+            clearInvitationState: jasmine.createSpy('clearInvitationState'),
             completeInvitationSignUp: jasmine.createSpy('completeInvitationSignUp').and.resolveTo(undefined),
         }
         const router = { navigateByUrl: jasmine.createSpy('navigateByUrl').and.resolveTo(true) }
@@ -85,5 +86,15 @@ describe('RegisterComponent invitation onboarding', () => {
         }
 
         expect(component.isInvitationSubmitting).toBeFalse()
+    })
+
+    it('clears stale invitation state when returning to private-beta access', async () => {
+        const { fixture, clerkService, router } = createComponent(false)
+        const component = fixture.componentInstance
+
+        await component.returnToPrivateBeta()
+
+        expect(router.navigateByUrl).toHaveBeenCalledWith('/register')
+        expect(clerkService.clearInvitationState).toHaveBeenCalled()
     })
 })

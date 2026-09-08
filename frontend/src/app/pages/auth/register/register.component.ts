@@ -61,6 +61,11 @@ export class RegisterComponent {
         }
     }
 
+    public async returnToPrivateBeta(): Promise<void> {
+        await this.router.navigateByUrl('/register')
+        this.clerkService.clearInvitationState()
+    }
+
     private getInvitationErrorMessage(error: unknown): string {
         const errorCodes = this.getClerkErrorCodes(error)
 
