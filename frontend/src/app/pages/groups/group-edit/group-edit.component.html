@@ -85,6 +85,7 @@
                                 @if (usernameToInvite.touched && usernameToInvite.hasError('minlength')) { <p class="text-sm text-red-600 dark:text-red-300">Use at least 4 characters.</p> }
                                 @if (usernameToInvite.touched && usernameToInvite.hasError('maxlength')) { <p class="text-sm text-red-600 dark:text-red-300">Keep the username under 20 characters.</p> }
                             </div>
+                            @if (existingInvitationError()) { <p class="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-200" role="alert">{{ existingInvitationError() }}</p> }
                         </form>
 
                         <form class="rounded-3xl border border-indigo-100 bg-indigo-50 p-6 shadow-sm dark:border-indigo-900/60 dark:bg-indigo-950/30" (submit)="onInviteNewPersonSubmit($event)" novalidate>
@@ -103,6 +104,7 @@
                             <p class="mt-2 text-sm text-secondary">They join this private group after accepting and verifying their account.</p>
                             @if (emailToInvite.touched && emailToInvite.hasError('required')) { <p class="mt-2 text-sm text-red-600 dark:text-red-300">Enter an email address to continue.</p> }
                             @if (emailToInvite.touched && emailToInvite.hasError('email')) { <p class="mt-2 text-sm text-red-600 dark:text-red-300">Enter a valid email address.</p> }
+                            @if (newPersonInvitationError()) { <p class="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-200" role="alert">{{ newPersonInvitationError() }}</p> }
                             @if (clerkInvitation) {
                                 <div class="mt-5 rounded-2xl border border-emerald-300 bg-emerald-50 p-4 dark:border-emerald-900/60 dark:bg-emerald-950/30" role="status" aria-live="polite">
                                     <p class="font-semibold text-emerald-800 dark:text-emerald-200">Invitation sent to {{ clerkInvitation.emailAddress }}.</p>

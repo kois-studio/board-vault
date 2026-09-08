@@ -32,6 +32,9 @@
                         <p *ngIf="groupName.invalid && groupName.touched && groupName.hasError('maxlength')" class="mt-2 text-sm text-red-600 dark:text-red-300" role="alert">Keep the group name under 20 characters.</p>
                     </div>
                     <app-button class="mt-6" type="submit" [disabled]="disableCreateButton" [loading]="isLoading" variant="primary" [wide]="true">Create group</app-button>
+                    @if (createError()) {
+                        <p class="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-200" role="alert">{{ createError() }}</p>
+                    }
                 </form>
             </section>
 
