@@ -57,4 +57,20 @@ describe('RegisterComponent invitation onboarding', () => {
 
         expect(clerkService.completeInvitationSignUp).toHaveBeenCalledWith('new-invitee', 'a'.repeat(15))
     })
+
+    it('keeps invitation failure actionable when the ticket or group is no longer available', async () => {
+        const { fixture, clerkService } = createComponent(false)
+        clerkService.completeInvitationSignUp.and.rejectWith(new Error('expired'))
+        const component = fixture.componentInstance
+
+        component.invitationForm.setValue({
+            username: 'new-invitee',
+            password: 'a'.repeat(15),
+            confirmPassword: 'a'.repeat(15),
+        })
+        await component.completeInvitationSignUp()
+
+        expect(component.invitationError()).toContain('fresh invitation')
+        expect(component.isInvitationSubmitting).toBeFalse()
+    })
 })

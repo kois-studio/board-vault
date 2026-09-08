@@ -40,7 +40,10 @@ silently reveals partially authenticated navigation.
 
 The state map requires unit coverage for readiness gating and concurrent
 verification, plus authenticated browser coverage for sign-in and invitation
-registration. Rendered review must cover narrow mobile and desktop widths,
-keyboard focus, screen-reader announcements, provider delay/failure, retry,
-sign-out, refresh, and back navigation before the onboarding ticket is removed
-from `docs/TODO.md`.
+registration. A failed invitation ticket must remain actionable: the UI should
+explain that the link may be expired, already used, or attached to an
+unavailable group, and provide a route that clears the stale ticket before a
+fresh invitation is used. Rendered review must cover narrow mobile and desktop
+widths, keyboard focus, screen-reader announcements, provider delay/failure,
+retry, sign-out, refresh, and back navigation before the onboarding ticket is
+removed from `docs/TODO.md`.

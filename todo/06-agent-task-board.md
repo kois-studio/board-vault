@@ -90,8 +90,8 @@ continuation action instead of a new credential form. The default suite, lint,
 unit tests, and build remain green; no production data or provider settings
 were changed.
 
-Known follow-ups: Cover new-person/expired invitation and provider/legacy
-failure/retry variants. New-person registration now has a clear provider
+Known follow-ups: Cover new-person/expired invitation and legacy failure/retry
+variants. New-person registration now has a clear provider
 challenge boundary, but the headless rehearsal stopped at enabled Clerk Smart
 CAPTCHA and needs a human-capable completion. Then complete human
 focus/screen-reader review. Keep AUTH-UX-001 open for invitation-registration
