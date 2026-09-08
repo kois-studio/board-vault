@@ -285,7 +285,7 @@ remote CI, provider delivery, and operational recovery ownership.
 
 - **Status:** In progress
 - **Affected area:** `backend/test/`, backend `src`, frontend `src/**/*.spec.ts`
-- **Evidence:** Backend now has 48 focused suites and 266 passing unit tests plus 6 environment-safe HTTP E2E tests; frontend has 64 browser-based unit tests plus five passing public Playwright tests. The current default Playwright run discovers 30 tests, with 25 intentionally guarded without disposable Clerk/browser fixture state. The opt-in authenticated auth-handoff (including delayed success and fail → retry recovery), collection, first-group activation and recovery, invitation, session, recommendation, acquisition-decision, settings, destructive-flow, and rendered-core journeys remain available; a disposable provider-invitation rehearsal also proves create/list/revoke/removal. Email-provider failure mapping across verification/reset/notification paths, Redis health cooldown behavior, schema-aware readiness, disabled-cache behavior, rollback paths including the deprecated bulk collection and proposal approval/rejection boundaries, and fail-closed core social routes now have focused coverage.
+- **Evidence:** Backend now has 48 focused suites and 266 passing unit tests plus 6 environment-safe HTTP E2E tests; frontend has 64 browser-based unit tests plus five passing public Playwright tests. The current default Playwright run discovers 31 tests, with 26 intentionally guarded without disposable Clerk/browser fixture state. The opt-in authenticated auth-handoff (including delayed success and fail → retry recovery), collection, first-group activation and recovery, invitation and invitation-choice branches, session, recommendation, acquisition-decision, settings, destructive-flow, and rendered-core journeys remain available; a disposable provider-invitation rehearsal also proves create/list/revoke/removal. Email-provider failure mapping across verification/reset/notification paths, Redis health cooldown behavior, schema-aware readiness, disabled-cache behavior, rollback paths including the deprecated bulk collection and proposal approval/rejection boundaries, and fail-closed core social routes now have focused coverage.
 - **Risk:** Security and product regressions are invisible.
 - **Next action:** Add remaining negative authorization/contract cases and provider/cache boundary evidence, preserve the authenticated core-loop journeys as launch regression gates, and observe them in a disposable environment with real Clerk state.
 - **Dependencies:** READINESS-001, READINESS-002, READINESS-003.
@@ -392,10 +392,12 @@ as TODO items here.
   group creation through existing-account invitation and acceptance, collection
   activation, an explainable recommendation, first-session planning, and member
   leave back to the groups dashboard. The run also exposed and fixed missing
-  native submit handlers in group creation and group management. Screen-level
-  tests still do not satisfy this ticket on their own: new-person invitation,
-  declined/expired invitations, failure/retry branches, and human UX review
-  remain open.
+  native submit handlers in group creation and group management. Connected
+  recovery evidence now also covers temporary creation failure → durable alert
+  → retry, and invitation choice covers keep-it and explicit decline.
+  Screen-level tests still do not satisfy this ticket on their own: new-person
+  registration through the provider challenge, expiry/refresh/unavailable-group
+  variants, and human UX review remain open.
 
 - [ ] **P0 — Redesign authentication onboarding end to end (AUTH-UX-001).**
   The production path exposed a confusing handoff: after a signed-out visitor

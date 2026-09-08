@@ -82,10 +82,12 @@ group creation, existing-account invitation and acceptance, collection
 activation, explainable recommendation, first-session planning, and member
 leave back to the groups dashboard in 6.5 seconds. The run exposed and fixed
 missing native form-submit handlers in group creation and group management.
-The default suite, lint, unit tests, and build remain green; no production data
-or provider settings were changed.
+The recovery branch also passes a forced create failure → durable alert → retry,
+and the invitation branch passes keep-it → explicit decline. The default suite,
+lint, unit tests, and build remain green; no production data or provider
+settings were changed.
 
-Known follow-ups: Cover new-person/declined/expired invitation and
+Known follow-ups: Cover new-person/expired invitation and provider/legacy
 failure/retry variants. New-person registration now has a clear provider
 challenge boundary, but the headless rehearsal stopped at enabled Clerk Smart
 CAPTCHA and needs a human-capable completion. Then complete human
