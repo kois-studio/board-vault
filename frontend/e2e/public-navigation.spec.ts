@@ -46,4 +46,13 @@ test.describe('public navigation', () => {
         await expect(page.getByRole('heading', { name: /Join your Board Vault group/i })).toBeVisible()
         await expect(page.getByLabel('Choose a username')).toBeVisible()
     })
+
+    test('gives an existing invited account a continuation action instead of a new credential form', async ({ page }) => {
+        await page.goto('/register?__clerk_ticket=test-ticket&__clerk_status=sign_in')
+
+        await expect(page.getByRole('heading', { name: /Join your Board Vault group/i })).toBeVisible()
+        await expect(page.getByText('Your Board Vault account is already registered.')).toBeVisible()
+        await expect(page.getByRole('button', { name: 'Continue to the group' })).toBeVisible()
+        await expect(page.getByLabel('Choose a username')).toBeHidden()
+    })
 })
