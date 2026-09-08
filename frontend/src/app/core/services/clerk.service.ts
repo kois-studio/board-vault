@@ -97,6 +97,16 @@ export class ClerkService {
         await this.clerk.setActive({ session: signUp.createdSessionId })
     }
 
+    /**
+     * Clear invitation-derived UI state after a stale ticket is abandoned.
+     * Angular can reuse the register route when only its query string changes,
+     * so the signals cannot rely on component recreation to re-read the URL.
+     */
+    public clearInvitationState(): void {
+        this.isInvitationFlow.set(false)
+        this.isInvitationSignIn.set(false)
+    }
+
     public openUserProfile(): void {
         this.clerk?.openUserProfile()
     }
