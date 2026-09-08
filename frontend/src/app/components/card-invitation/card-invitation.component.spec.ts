@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing'
-import { of } from 'rxjs'
+import { of, throwError } from 'rxjs'
 import type { InvitationWithExtraData } from '../../api/api.types'
 import { DataService } from '../../core/services/data.service'
 import { CardInvitationComponent } from './card-invitation.component'
@@ -10,6 +10,7 @@ describe('CardInvitationComponent', () => {
     const dataService = {
         acceptInvitation: jasmine.createSpy('acceptInvitation').and.returnValue(of({ success: true })),
         rejectInvitation: jasmine.createSpy('rejectInvitation').and.returnValue(of({ success: true })),
+        retryUserInvitations: jasmine.createSpy('retryUserInvitations'),
     }
 
     const invitation = {
@@ -31,6 +32,9 @@ describe('CardInvitationComponent', () => {
     beforeEach(async () => {
         dataService.acceptInvitation.calls.reset()
         dataService.rejectInvitation.calls.reset()
+        dataService.retryUserInvitations.calls.reset()
+        dataService.acceptInvitation.and.returnValue(of({ success: true }))
+        dataService.rejectInvitation.and.returnValue(of({ success: true }))
         await TestBed.configureTestingModule({
             imports: [CardInvitationComponent],
             providers: [{ provide: DataService, useValue: dataService }],
@@ -68,5 +72,21 @@ describe('CardInvitationComponent', () => {
         await fixture.whenStable()
 
         expect(dataService.rejectInvitation).toHaveBeenCalledWith(invitation.id)
+    })
+
+    it('keeps an acceptance failure visible with an invitation refresh action', async () => {
+        dataService.acceptInvitation.and.returnValue(throwError(() => new Error('expired')))
+
+        await component.acceptInvitation()
+        fixture.detectChanges()
+
+        expect(fixture.nativeElement.querySelector('[role="alert"]')?.textContent).toContain('may have expired')
+        const refreshButton = Array.from(fixture.nativeElement.querySelectorAll('button')).find((button) =>
+            (button as HTMLButtonElement).textContent?.includes('Refresh invitations'),
+        ) as HTMLButtonElement
+        refreshButton.click()
+
+        expect(dataService.retryUserInvitations).toHaveBeenCalled()
+        expect(component.actionError()).toBeNull()
     })
 })

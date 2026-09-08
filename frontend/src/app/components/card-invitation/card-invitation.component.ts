@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core'
+import { Component, Input, signal } from '@angular/core'
 import { firstValueFrom } from 'rxjs'
 import { InvitationWithExtraData } from '../../api/api.types'
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
@@ -14,17 +14,21 @@ export class CardInvitationComponent {
     @Input({ required: true }) invitation: null | InvitationWithExtraData = null
     public isLoading = false
     public isConfirmingDecline = false
+    public readonly actionError = signal<string | null>(null)
 
     constructor(private readonly dataService: DataService) {}
 
     async acceptInvitation() {
         if (!this.invitation || this.isLoading) return
         this.isConfirmingDecline = false
+        this.actionError.set(null)
         this.isLoading = true
         try {
             await firstValueFrom(this.dataService.acceptInvitation(this.invitation.id))
         } catch {
-            // DataService presents the failure and leaves the invitation available for retry.
+            this.actionError.set(
+                'We could not accept this invitation. It may have expired or the group may no longer be available. Try again or refresh your invitations.',
+            )
         } finally {
             this.isLoading = false
         }
@@ -38,13 +42,19 @@ export class CardInvitationComponent {
             return
         }
 
+        this.actionError.set(null)
         this.isLoading = true
         try {
             await firstValueFrom(this.dataService.rejectInvitation(this.invitation.id))
         } catch {
-            // DataService presents the failure and leaves the invitation available for retry.
+            this.actionError.set('We could not decline this invitation right now. Try again or refresh your invitations.')
         } finally {
             this.isLoading = false
         }
+    }
+
+    public refreshInvitations(): void {
+        this.actionError.set(null)
+        this.dataService.retryUserInvitations()
     }
 }
