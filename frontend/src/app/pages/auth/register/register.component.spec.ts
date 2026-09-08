@@ -58,9 +58,8 @@ describe('RegisterComponent invitation onboarding', () => {
         expect(clerkService.completeInvitationSignUp).toHaveBeenCalledWith('new-invitee', 'a'.repeat(15))
     })
 
-    it('keeps invitation failure actionable when the ticket or group is no longer available', async () => {
+    it('maps provider failures to safe, actionable recovery copy', async () => {
         const { fixture, clerkService } = createComponent(false)
-        clerkService.completeInvitationSignUp.and.rejectWith(new Error('expired'))
         const component = fixture.componentInstance
 
         component.invitationForm.setValue({
@@ -68,9 +67,23 @@ describe('RegisterComponent invitation onboarding', () => {
             password: 'a'.repeat(15),
             confirmPassword: 'a'.repeat(15),
         })
-        await component.completeInvitationSignUp()
 
-        expect(component.invitationError()).toContain('fresh invitation')
+        const failures = [
+            [{ errors: [{ code: 'captcha_invalid' }] }, 'security check'],
+            [{ errors: [{ code: 'form_identifier_exists' }] }, 'username is unavailable'],
+            [{ errors: [{ code: 'form_password_pwned' }] }, 'secure sign-up requirements'],
+            [{ errors: [{ code: 'ticket_expired' }] }, 'fresh invitation'],
+            [new Error('provider unavailable'), 'Check the fields and security check'],
+        ] as const
+
+        for (const [failure, expectedCopy] of failures) {
+            clerkService.completeInvitationSignUp.and.rejectWith(failure)
+            await component.completeInvitationSignUp()
+
+            expect(component.invitationError()).toContain(expectedCopy)
+            component.invitationError.set(null)
+        }
+
         expect(component.isInvitationSubmitting).toBeFalse()
     })
 })
