@@ -1,7 +1,7 @@
 import { signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { Router } from '@angular/router'
-import { Subject, of } from 'rxjs'
+import { Subject, of, throwError } from 'rxjs'
 import { Api } from '../../api/api'
 import { ToastService } from '../../components/toast/toast.service'
 import { ClerkService } from './clerk.service'
@@ -49,7 +49,7 @@ describe('LoginService account readiness', () => {
                 },
                 {
                     provide: ClerkService,
-                    useValue: { isSignedIn: signal(true), userId: signal<string | null>(null), signOut },
+                    useValue: { isSignedIn: signal(true), userId: signal<string | null>(null), isInvitationFlow: signal(false), signOut },
                 },
                 { provide: DataService, useValue: dataService },
             ],
@@ -81,5 +81,55 @@ describe('LoginService account readiness', () => {
         expect(service.isAuthenticated()).toBeFalse()
         expect(service.clerkAuthHandoffState()).toBe('idle')
         expect(navigate).toHaveBeenCalledWith(['/'])
+    })
+
+    it('uses group-specific recovery copy for a failed invitation handoff', () => {
+        const api = {
+            clerkAuthStatus: jasmine.createSpy('clerkAuthStatus').and.returnValue(throwError(() => new Error('group unavailable'))),
+            getUserById: jasmine.createSpy('getUserById'),
+        }
+        const dataService = { currentUser: signal<null | { id: number }>(null) }
+
+        TestBed.configureTestingModule({
+            providers: [
+                LoginService,
+                { provide: Api, useValue: api },
+                { provide: Router, useValue: { navigate: jasmine.createSpy('navigate') } },
+                { provide: LogService, useValue: { log: jasmine.createSpy('log'), error: jasmine.createSpy('error') } },
+                { provide: ToastService, useValue: { error: jasmine.createSpy('error'), success: jasmine.createSpy('success') } },
+                {
+                    provide: LoadingService,
+                    useValue: {
+                        start: jasmine.createSpy('start'),
+                        finish: jasmine.createSpy('finish'),
+                        setAllLoadingTo: jasmine.createSpy('setAllLoadingTo'),
+                    },
+                },
+                {
+                    provide: LocalStorageService,
+                    useValue: {
+                        getItem: jasmine.createSpy('getItem'),
+                        setItem: jasmine.createSpy('setItem'),
+                        removeItem: jasmine.createSpy('removeItem'),
+                    },
+                },
+                {
+                    provide: ClerkService,
+                    useValue: {
+                        isSignedIn: signal(true),
+                        userId: signal<string | null>(null),
+                        isInvitationFlow: signal(true),
+                        signOut: jasmine.createSpy('signOut').and.resolveTo(),
+                    },
+                },
+                { provide: DataService, useValue: dataService },
+            ],
+        })
+
+        const service = TestBed.inject(LoginService)
+        service.verifyClerkSession().subscribe()
+
+        expect(service.clerkAuthHandoffError()).toContain('joining this group')
+        expect(service.clerkAuthHandoffError()).toContain('fresh invitation')
     })
 })

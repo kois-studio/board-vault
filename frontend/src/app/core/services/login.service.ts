@@ -244,8 +244,13 @@ export class LoginService {
         this.loadingService.setAllLoadingTo(true) // Reset all loading states
     }
 
-    private readonly clerkHandoffErrorMessage =
-        'We could not finish connecting this sign-in to Board Vault. Try again, or sign out and use your invitation link.'
+    private get clerkHandoffErrorMessage(): string {
+        if (this.clerkService.isInvitationFlow()) {
+            return 'We could not finish joining this group. The invitation may have expired, already been used, or the group may no longer be available. Try again, or sign out and ask the group owner for a fresh invitation.'
+        }
+
+        return 'We could not finish connecting this sign-in to Board Vault. Try again, or sign out and use your invitation link.'
+    }
 
     private shouldOpenDashboardAfterHandoff(): boolean {
         const path = this.router.url.split('?')[0]
