@@ -2,6 +2,14 @@ import { defineConfig, devices } from '@playwright/test'
 
 const baseURL = process.env['PLAYWRIGHT_BASE_URL'] ?? 'http://127.0.0.1:4300'
 const useExternalServer = Boolean(process.env['PLAYWRIGHT_BASE_URL'])
+const useClerkTesting = process.env['PLAYWRIGHT_CLERK_TESTING'] === '1'
+
+const chromiumProject = {
+    name: 'chromium',
+    testIgnore: useClerkTesting ? undefined : /clerk-testing\.setup\.ts/,
+    dependencies: useClerkTesting ? ['clerk-testing-setup'] : undefined,
+    use: { ...devices['Desktop Chrome'] },
+}
 
 export default defineConfig({
     testDir: './e2e',
@@ -16,12 +24,15 @@ export default defineConfig({
         screenshot: 'only-on-failure',
         video: 'retain-on-failure',
     },
-    projects: [
-        {
-            name: 'chromium',
-            use: { ...devices['Desktop Chrome'] },
-        },
-    ],
+    projects: useClerkTesting
+        ? [
+              {
+                  name: 'clerk-testing-setup',
+                  testMatch: /clerk-testing\.setup\.ts/,
+              },
+              chromiumProject,
+          ]
+        : [chromiumProject],
     webServer: useExternalServer
         ? undefined
         : {
