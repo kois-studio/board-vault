@@ -39,6 +39,8 @@ export class GroupEditComponent {
     public readonly clerkPendingInvitations = signal<Array<ClerkGroupInvitationSummaryType>>([])
     public readonly clerkInvitationsLoading = signal(false)
     public readonly clerkInvitationsError = signal(false)
+    public readonly existingInvitationError = signal<string | null>(null)
+    public readonly newPersonInvitationError = signal<string | null>(null)
     public readonly pendingClerkRevokeId = signal<string | null>(null)
     public readonly isDeleteDialogOpen = signal(false)
     public readonly isDeletingGroup = signal(false)
@@ -154,12 +156,13 @@ export class GroupEditComponent {
     async onInviteUser() {
         if (!this.isGroupOwner || !this.groupData || !this.usernameToInvite.value || this.isLoading) return
         this.isLoading = true
+        this.existingInvitationError.set(null)
 
         try {
             await firstValueFrom(this.dataService.addInvitedToGroup(this.groupData.id, this.usernameToInvite.value))
             this.usernameToInvite.reset()
         } catch {
-            // DataService presents the request error; keep the entered username available for retry.
+            this.existingInvitationError.set('We could not send this invite. Check the username and try again; your entry is still here.')
         } finally {
             this.isLoading = false
         }
@@ -170,6 +173,7 @@ export class GroupEditComponent {
         this.isLoading = true
         this.clerkInvitation = null
         this.copyLinkStatus = 'idle'
+        this.newPersonInvitationError.set(null)
 
         try {
             this.clerkInvitation = await firstValueFrom(
@@ -178,7 +182,9 @@ export class GroupEditComponent {
             this.emailToInvite.reset()
             await this.refreshClerkInvitations(this.groupData.id)
         } catch {
-            // DataService presents the request error; keep the entered email available for retry.
+            this.newPersonInvitationError.set(
+                'We could not send the email invitation. Check the address and try again; your entry is still here.',
+            )
         } finally {
             this.isLoading = false
         }

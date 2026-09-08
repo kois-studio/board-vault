@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, inject } from '@angular/core'
+import { Component, inject, signal } from '@angular/core'
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
@@ -19,6 +19,7 @@ export class GroupCreateComponent {
     // --------------------------------------------------------------------------
     public groupNameForm = new FormControl('', [Validators.required, Validators.minLength(4), Validators.maxLength(20)])
     public isLoading = false
+    public readonly createError = signal<string | null>(null)
     public readonly currentUser$ = this.dataService.currentUser
 
     get groupName() {
@@ -46,13 +47,14 @@ export class GroupCreateComponent {
         this.groupNameForm.markAsTouched()
         if (!this.groupNameForm.value || this.groupNameForm.invalid || this.isLoading) return
         this.isLoading = true
+        this.createError.set(null)
 
         try {
             const createdGroup = await firstValueFrom(this.dataService.createGroup(this.groupNameForm.value))
             this.groupNameForm.reset()
             await this.router.navigate(['/groups', createdGroup.groupId])
         } catch {
-            // DataService presents the request error; keep the form available for retry.
+            this.createError.set('We could not create the group. Check your connection and try again; your group name is still here.')
         } finally {
             this.isLoading = false
         }
