@@ -83,9 +83,12 @@ activation, explainable recommendation, first-session planning, and member
 leave back to the groups dashboard in 6.5 seconds. The run exposed and fixed
 missing native form-submit handlers in group creation and group management.
 The recovery branch also passes a forced create failure → durable alert → retry,
-and the invitation branch passes keep-it → explicit decline. The default suite,
-lint, unit tests, and build remain green; no production data or provider
-settings were changed.
+the invitation branch passes keep-it → explicit decline, and the provider
+invitation branch passes failure → preserved email → successful retry. The
+public navigation suite also proves that an existing invited account gets a
+continuation action instead of a new credential form. The default suite, lint,
+unit tests, and build remain green; no production data or provider settings
+were changed.
 
 Known follow-ups: Cover new-person/expired invitation and provider/legacy
 failure/retry variants. New-person registration now has a clear provider
@@ -112,7 +115,7 @@ Changed: Clerk-to-local-account readiness now lives in `LoginService`, concurren
 
 Verified: `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` passes 61/61, including account-readiness gating, deduplicated Clerk verification state, visible loading/error/retry handoff coverage, and Clerk-aware sign-out; `cd frontend && npm run build` passes with a 608.94 kB raw / 138.65 kB estimated-transfer initial bundle; `cd frontend && npx biome check src/app src/styles.css` passes; `git diff --check` passes; and disposable development Clerk browser rehearsals with delayed local `/auth/clerk/status` boundaries pass at 375px and 1280px, complete into the dashboard, show no header-only status or horizontal overflow, and recover from a deliberately aborted status request through the visible retry controls. Temporary development actor sessions were revoked after the runs. No deployment, push, provider mutation, or production data change was performed.
 
-Known follow-ups: Exercise the authenticated invitation-registration browser path; complete human sign-out, refresh/back, keyboard, and screen-reader checks; then remove AUTH-UX-001 from `docs/TODO.md` only when those acceptance criteria are evidenced. Do not expand catalog or analytics scope.
+Known follow-ups: Complete the authenticated invitation-registration browser path for a new person through the provider challenge; exercise sign-out, refresh/back, expiry/refresh/unavailable-group, keyboard, and screen-reader checks; then remove AUTH-UX-001 from `docs/TODO.md` only when those acceptance criteria are evidenced. Existing-account invitation continuation is now covered by a public browser branch, and provider invitation failure/retry is covered by a disposable local journey. Do not expand catalog or analytics scope.
 
 Previous most recent claim:
 
