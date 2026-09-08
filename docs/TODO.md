@@ -598,8 +598,8 @@ catalog/detail or analytics scope.
   identifiers. Fresh local browser evidence also proves owner invite, recipient
   refresh, existing-account acceptance, and post-acceptance group visibility.
   The custom ticket path proves disposable recipient acceptance, session
-  activation, and group-dashboard handoff with Smart CAPTCHA temporarily
-  disabled only in development. Human CAPTCHA, legacy expiry, provider
+  activation, and group-dashboard handoff with Smart CAPTCHA disabled on the
+  Development instance only. Human CAPTCHA, legacy expiry, provider
   delivery, legacy failure/retry behavior, and notification clarity still need
   real-data validation. The registration error state now explains expired/used
   tickets and unavailable groups and provides a route that clears the stale

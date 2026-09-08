@@ -90,6 +90,24 @@
 
 Tests must not depend on a developer’s real Turso, Redis, or Resend credentials. Use a disposable database or explicit provider fakes. Do not make a test pass by disabling authorization or using production data. Record any intentionally untested boundary as an explicit exception or deferred gap.
 
+## Clerk bot protection and automated tests
+
+Clerk bot protection is instance-scoped. The linked Development instance is
+currently configured with Smart CAPTCHA disabled for local disposable
+invitation rehearsals; the separate Production instance remains configured
+with Smart CAPTCHA enabled. Never copy the Development setting to Production.
+
+For automated Clerk browser tests, Clerk officially supports short-lived
+Testing Tokens through [`@clerk/testing`](https://clerk.com/docs/guides/development/testing/playwright/overview).
+The Playwright integration obtains a token with `clerkSetup()` and applies it
+with `setupClerkTestingToken({ page })`, bypassing bot detection for that test
+without disabling Production protection. The test runner needs the matching
+Development publishable and secret keys; keep the secret key and token in
+local/CI secret storage and never commit them. Our current authenticated suite
+still uses the documented CLI impersonation/storage-state workflow below; the
+Testing Token integration is the preferred next improvement for automated
+new-invitee coverage.
+
 ## Running authenticated browser journeys
 
 The Clerk CLI authenticates the developer account, not the application user.
