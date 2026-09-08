@@ -865,6 +865,29 @@ describe('DatabaseService logging', () => {
         expect(transaction.close).toHaveBeenCalledTimes(1)
     })
 
+    it('rolls back a Clerk invitation join when the group is no longer available', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const transaction = {
+            execute: jest.fn().mockResolvedValueOnce({ rows: [] }),
+            commit: jest.fn().mockResolvedValue(undefined),
+            rollback: jest.fn().mockResolvedValue(undefined),
+            close: jest.fn(),
+        }
+
+        ;(service as unknown as { tursoClient: unknown }).tursoClient = {
+            transaction: jest.fn().mockResolvedValue(transaction),
+        }
+
+        await expect(service.joinGroupFromClerkInvitation(9, { groupId: 404, inviterAccountId: 7, version: 1 })).rejects.toThrow(
+            'The group invitation is no longer valid',
+        )
+
+        expect(transaction.execute).toHaveBeenCalledTimes(1)
+        expect(transaction.commit).not.toHaveBeenCalled()
+        expect(transaction.rollback).toHaveBeenCalledTimes(1)
+        expect(transaction.close).toHaveBeenCalledTimes(1)
+    })
+
     it('creates a group and owner membership in one transaction', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
