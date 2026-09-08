@@ -1,6 +1,7 @@
 import { signal } from '@angular/core'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { provideRouter } from '@angular/router'
+import { ClerkService } from '../../core/services/clerk.service'
 import { LoginService } from '../../core/services/login.service'
 import { AuthHandoffComponent } from './auth-handoff.component'
 
@@ -10,12 +11,14 @@ describe('AuthHandoffComponent', () => {
     let error: ReturnType<typeof signal<string | null>>
     let retry: jasmine.Spy
     let signOut: jasmine.Spy
+    let invitationFlow: ReturnType<typeof signal<boolean>>
 
     beforeEach(() => {
         state = signal<'idle' | 'linking' | 'ready' | 'error'>('linking')
         error = signal<string | null>(null)
         retry = jasmine.createSpy('retry')
         signOut = jasmine.createSpy('signOut').and.resolveTo()
+        invitationFlow = signal(false)
 
         TestBed.configureTestingModule({
             imports: [AuthHandoffComponent],
@@ -30,6 +33,7 @@ describe('AuthHandoffComponent', () => {
                         signOutClerk: signOut,
                     },
                 },
+                { provide: ClerkService, useValue: { isInvitationFlow: invitationFlow } },
             ],
         })
 
@@ -62,5 +66,16 @@ describe('AuthHandoffComponent', () => {
 
         expect(retry).toHaveBeenCalled()
         expect(signOut).toHaveBeenCalled()
+    })
+
+    it('uses group language when the handoff follows an invitation', () => {
+        invitationFlow.set(true)
+        error.set('The group invitation is no longer valid.')
+        state.set('error')
+        fixture.detectChanges()
+
+        expect(fixture.nativeElement.textContent).toContain('We could not finish joining this group')
+        expect(fixture.nativeElement.textContent).toContain('Ask the group owner for a fresh invitation')
+        expect(fixture.nativeElement.textContent).not.toContain('setting up your sign-in')
     })
 })
