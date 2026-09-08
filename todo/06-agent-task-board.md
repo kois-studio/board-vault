@@ -82,7 +82,7 @@ human UX evidence.
 
 Verified: Dependency installation completed locally, the configuration keeps
 the setup project disabled unless `PLAYWRIGHT_CLERK_TESTING=1`, the default
-suite discovers 35 tests, and the full frontend gates pass with 69 unit tests,
+suite discovers 35 tests, and the full frontend gates pass with 70 unit tests,
 lint, build, and six public Playwright tests. The connected opt-in journey
 passed a real Development provider ticket, new-person signup, local account
 provisioning, two-member group visibility, and deterministic provider cleanup.
@@ -127,6 +127,18 @@ prove human-capable Smart CAPTCHA, real email delivery, or onboarding
 comprehension. Then complete human focus/screen-reader review. Keep AUTH-UX-001
 open for the remaining invitation-registration and human UX gates.
 Do not expand catalog or standalone analytics scope.
+
+Follow-up — stale invitation recovery handoff — 2026-09-08
+
+Changed: The invalid-ticket recovery action now uses an explicit button and
+clears Clerk invitation-derived signals after returning to `/register`. This
+handles Angular route reuse correctly, so an expired or already-used ticket
+cannot leave the visitor trapped in invitation mode while asking for a fresh
+invitation.
+
+Verified: The focused frontend suite passes 70/70 tests, including the stale
+invitation-state regression; Biome and `git diff --check` pass. No provider,
+database, deployment, or production state was changed.
 
 Previous most recent claim:
 
