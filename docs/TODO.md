@@ -418,8 +418,9 @@ as TODO items here.
   has now been rendered and visually reviewed at 375px and 1280px against a
   delayed local boundary, with both journeys completing into the dashboard; a
   separate disposable provider-failure rehearsal also reached the error state
-  and recovered through retry. The authentication contract and private-beta
-  policy remain unchanged.
+  and recovered through retry, while the opt-in flow asserts that a protected
+  `/groups` destination survives refresh. The authentication contract and
+  private-beta policy remain unchanged.
 
 - [ ] Complete responsive, keyboard, contrast, focus, and screen-reader
   behavior for the primary journeys. The core rendered audit now checks group,
