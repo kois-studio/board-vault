@@ -76,18 +76,18 @@ Changed: Added `@clerk/testing` as a frontend development dependency, an
 opt-in `clerk-testing-setup` Playwright project, and a reusable context fixture
 for short-lived Development Testing Tokens. The default public and
 storage-state suites ignore the setup file and remain secret-free. The
-fixture is intended for the pending new-person invitation test; it bypasses
-Clerk bot protection only and does not replace provider invitation, email,
-expiry, or human UX evidence.
+fixture now powers the connected new-person invitation test; it bypasses Clerk
+bot protection only and does not replace provider invitation, email, expiry, or
+human UX evidence.
 
 Verified: Dependency installation completed locally, the configuration keeps
 the setup project disabled unless `PLAYWRIGHT_CLERK_TESTING=1`, the default
-suite still discovers 34 tests, and the full frontend gates pass with 69 unit
-tests, lint, build, and six public Playwright tests. No production Clerk
-setting, account, invitation, database, deployment, or push was changed. The
-opt-in setup project also fetched a Development Testing Token and passed the
-same six public browser tests using credentials supplied only through the
-local environment.
+suite discovers 35 tests, and the full frontend gates pass with 69 unit tests,
+lint, build, and six public Playwright tests. The connected opt-in journey
+passed a real Development provider ticket, new-person signup, local account
+provisioning, two-member group visibility, and deterministic provider cleanup.
+No production Clerk setting, account, invitation, database, deployment, or
+push was changed.
 
 Changed: Added `docs/ux-flows.md` as the product flow-review contract and
 recorded the first-group activation flow as the next end-to-end evidence gate.
@@ -95,12 +95,15 @@ The existing screen-level collection, invitation, recommendation, and session
 coverage is intentionally not treated as proof of one connected user journey.
 
 Verified: Documentation links resolve; a fresh fixture-gated connected browser
-journey passed against disposable local SQLite and two development-only Clerk
+journey passed against disposable local SQLite and development-only Clerk
 identities with the browser host aligned to the saved Clerk state. It covered
 group creation, existing-account invitation and acceptance, collection
 activation, explainable recommendation, first-session planning, and member
-leave back to the groups dashboard in 6.5 seconds. The run exposed and fixed
-missing native form-submit handlers in group creation and group management.
+leave back to the groups dashboard in 6.5 seconds. The new-person journey now
+also follows a real Development provider ticket through Testing Token signup,
+local provisioning, two-member group visibility, and cleanup. The runs exposed
+and fixed missing native form-submit handlers in group creation and group
+management.
 The recovery branch also passes a forced create failure → durable alert → retry,
 the invitation branch passes keep-it → explicit decline, and the provider
 invitation branch passes failure → preserved email → successful retry. The
@@ -117,12 +120,12 @@ actionable copy for CAPTCHA/security checks, username conflicts, password
 policy failures, expired tickets, and unknown failures; raw provider details
 are not exposed to users.
 
-Known follow-ups: Cover new-person/expired invitation and legacy failure/retry
-variants. New-person registration now has a clear provider
-challenge boundary, but the headless rehearsal stopped at enabled Clerk Smart
-CAPTCHA and needs a human-capable completion. Then complete human
-focus/screen-reader review. Keep AUTH-UX-001 open for invitation-registration
-browser coverage and human focus/screen-reader review.
+Known follow-ups: Cover expired invitation and legacy failure/retry variants.
+The Testing Token-backed headless journey now proves new-person registration
+through provider ticket, local provisioning, and group membership; it does not
+prove human-capable Smart CAPTCHA, real email delivery, or onboarding
+comprehension. Then complete human focus/screen-reader review. Keep AUTH-UX-001
+open for the remaining invitation-registration and human UX gates.
 Do not expand catalog or standalone analytics scope.
 
 Previous most recent claim:

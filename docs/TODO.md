@@ -285,7 +285,7 @@ remote CI, provider delivery, and operational recovery ownership.
 
 - **Status:** In progress
 - **Affected area:** `backend/test/`, backend `src`, frontend `src/**/*.spec.ts`
-- **Evidence:** Backend now has 48 focused suites and 267 passing unit tests plus 6 environment-safe HTTP E2E tests; frontend has 69 browser-based unit tests plus six passing public Playwright tests. The current default Playwright run discovers 34 tests, with 28 intentionally guarded without disposable Clerk/browser fixture state. The opt-in authenticated auth-handoff (including delayed success, fail → recovery → retry, invitation-aware recovery copy, and protected-route preservation after refresh), collection, first-group activation and recovery, invitation, invitation-choice and invitation-recovery branches, session, recommendation, acquisition-decision, settings, destructive-flow, and rendered-core journeys remain available; a disposable provider-invitation rehearsal also proves create/list/revoke/removal, and an unavailable-group invitation join is covered by rollback regression. Email-provider failure mapping across verification/reset/notification paths, Redis health cooldown behavior, schema-aware readiness, disabled-cache behavior, rollback paths including the deprecated bulk collection and proposal approval/rejection boundaries, and fail-closed core social routes now have focused coverage.
+- **Evidence:** Backend now has 48 focused suites and 267 passing unit tests plus 6 environment-safe HTTP E2E tests; frontend has 69 browser-based unit tests plus six passing public Playwright tests. The current default Playwright run discovers 35 tests, with 29 intentionally guarded without disposable Clerk/browser fixture state. The opt-in authenticated auth-handoff (including delayed success, fail → recovery → retry, invitation-aware recovery copy, and protected-route preservation after refresh), collection, first-group activation and recovery, invitation, invitation-choice and invitation-recovery branches, session, recommendation, acquisition-decision, settings, destructive-flow, and rendered-core journeys remain available; a disposable provider-invitation rehearsal also proves create/list/revoke/removal, the Testing Token-backed new-person invitation journey proves provider-ticket signup/local provisioning/two-member visibility with cleanup, and an unavailable-group invitation join is covered by rollback regression. Email-provider failure mapping across verification/reset/notification paths, Redis health cooldown behavior, schema-aware readiness, disabled-cache behavior, rollback paths including the deprecated bulk collection and proposal approval/rejection boundaries, and fail-closed core social routes now have focused coverage.
 - **Risk:** Security and product regressions are invisible.
 - **Next action:** Add remaining negative authorization/contract cases and provider/cache boundary evidence, preserve the authenticated core-loop journeys as launch regression gates, and observe them in a disposable environment with real Clerk state.
 - **Dependencies:** READINESS-001, READINESS-002, READINESS-003.
@@ -396,9 +396,9 @@ as TODO items here.
   recovery evidence now also covers temporary creation failure → durable alert
   → retry, invitation choice covers keep-it and explicit decline, and provider
   invitation failure covers preserved email → successful retry.
-  Screen-level tests still do not satisfy this ticket on their own: new-person
-  registration through the provider challenge, expiry/refresh/unavailable-group
-  variants, and human UX review remain open.
+  Screen-level tests still do not satisfy this ticket on their own: the
+  Testing Token-backed connected new-person registration now passes, while
+  expiry/refresh/unavailable-group variants and human UX review remain open.
 
 - [ ] **P0 — Redesign authentication onboarding end to end (AUTH-UX-001).**
   The production path exposed a confusing handoff: after a signed-out visitor
@@ -411,10 +411,12 @@ as TODO items here.
   registration now distinguishes an already-registered recipient, who can
   continue without replacement credentials, from a new invitee who must
   create them. The state map is documented in
-  [`docs/authentication.md`](authentication.md). Remaining acceptance is
-  authenticated browser coverage for invitation registration through the
-  provider challenge, plus human checks of sign-out, refresh/back
-  navigation, keyboard focus, and screen-reader behavior. The sign-in handoff
+  [`docs/authentication.md`](authentication.md). Authenticated browser
+  coverage for invitation registration now passes through a real Development
+  provider ticket with Clerk's opt-in Testing Token setup. Human-capable
+  Smart CAPTCHA and delivery behavior, plus human checks of sign-out,
+  refresh/back navigation, keyboard focus, and screen-reader behavior remain
+  open. The sign-in handoff
   has now been rendered and visually reviewed at 375px and 1280px against a
   delayed local boundary, with both journeys completing into the dashboard; a
   separate disposable provider-failure rehearsal also reached the error state
@@ -587,12 +589,14 @@ context fixture. It fetches a short-lived Development Testing Token from the
 Development secret key and appends it only to that browser context's Clerk
 Frontend API requests. The default suite remains unchanged, no production
 configuration is touched, and no token or secret is committed. This removes
-CAPTCHA as an automation blocker for the future new-person invitation test,
-but it does not prove invitation creation, email delivery, expiry, or the
-human onboarding experience. Those remain explicit P0/P1/P2 evidence gates.
+CAPTCHA as an automation blocker for the new-person invitation test, and that
+test now proves provider-ticket acceptance, signup, local provisioning, group
+membership, and dashboard handoff with disposable cleanup. It does not prove
+Production-style CAPTCHA interaction, email delivery, expiry, or the human
+onboarding experience. Those remain explicit P0/P1/P2 evidence gates.
 The opt-in setup was exercised locally with Development credentials and the
-public browser suite passed; a connected new-person invitation test still
-needs to consume the fixture.
+public browser suite passed; the connected new-person invitation journey now
+consumes the fixture and passes with disposable provider cleanup.
 
 ## Collection and group activation
 
@@ -612,7 +616,8 @@ needs to consume the fixture.
   identifiers. Fresh local browser evidence also proves owner invite, recipient
   refresh, existing-account acceptance, and post-acceptance group visibility.
   The custom ticket path proves disposable recipient acceptance, session
-  activation, and group-dashboard handoff with Smart CAPTCHA disabled on the
+  activation, and group-dashboard handoff through the Testing Token-backed
+  Development browser journey, while Smart CAPTCHA remains disabled on the
   Development instance only. Human CAPTCHA, legacy expiry, provider
   delivery, legacy failure/retry behavior, and notification clarity still need
   real-data validation. The registration error state now explains expired/used
