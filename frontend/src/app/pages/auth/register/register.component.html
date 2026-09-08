@@ -7,7 +7,11 @@
                 </div>
                 <p class="mt-6 text-sm font-semibold uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400">You are invited</p>
                 <h1 class="mt-3 text-4xl font-bold tracking-tight text-zinc-900 dark:text-white">Join your Board Vault group</h1>
-                <p class="mt-5 text-lg leading-8 text-zinc-600 dark:text-zinc-300">Choose your Board Vault username and password to join the group that invited you.</p>
+                @if (isInvitationSignIn()) {
+                    <p class="mt-5 text-lg leading-8 text-zinc-600 dark:text-zinc-300">Use your existing Board Vault account to join the group that invited you.</p>
+                } @else {
+                    <p class="mt-5 text-lg leading-8 text-zinc-600 dark:text-zinc-300">Choose a Board Vault username and password to join the group that invited you.</p>
+                }
                 @if (clerkIsAvailable()) {
                     @if (isInvitationSignIn()) {
                         <div class="mt-8 rounded-2xl border border-indigo-200 bg-indigo-50 p-5 text-left dark:border-indigo-900/60 dark:bg-indigo-950/30" role="status">
@@ -48,7 +52,10 @@
                     <p class="mt-8 rounded-lg border border-amber-400/30 bg-amber-50 p-4 text-sm text-amber-800 dark:bg-amber-950/30 dark:text-amber-200">The secure sign-up service is still loading. Refresh this page to continue.</p>
                 }
                 @if (invitationError()) {
-                    <p class="mt-4 rounded-lg border border-red-400/30 bg-red-50 p-4 text-sm text-red-800 dark:bg-red-950/30 dark:text-red-200" role="alert">{{ invitationError() }}</p>
+                    <div class="mt-4 rounded-lg border border-red-400/30 bg-red-50 p-4 text-left text-sm text-red-800 dark:bg-red-950/30 dark:text-red-200" role="alert">
+                        <p>{{ invitationError() }}</p>
+                        <a routerLink="/register" class="mt-3 inline-block font-semibold underline">Return to private-beta access</a>
+                    </div>
                 }
                 <p class="mt-6 text-sm text-zinc-500 dark:text-zinc-400">This link is private and expires. Do not share it publicly.</p>
             </div>
