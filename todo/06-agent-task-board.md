@@ -84,7 +84,10 @@ Verified: Dependency installation completed locally, the configuration keeps
 the setup project disabled unless `PLAYWRIGHT_CLERK_TESTING=1`, the default
 suite still discovers 34 tests, and the full frontend gates pass with 69 unit
 tests, lint, build, and six public Playwright tests. No production Clerk
-setting, account, invitation, database, deployment, or push was changed.
+setting, account, invitation, database, deployment, or push was changed. The
+opt-in setup project also fetched a Development Testing Token and passed the
+same six public browser tests using credentials supplied only through the
+local environment.
 
 Changed: Added `docs/ux-flows.md` as the product flow-review contract and
 recorded the first-group activation flow as the next end-to-end evidence gate.

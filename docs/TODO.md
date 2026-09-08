@@ -590,6 +590,9 @@ configuration is touched, and no token or secret is committed. This removes
 CAPTCHA as an automation blocker for the future new-person invitation test,
 but it does not prove invitation creation, email delivery, expiry, or the
 human onboarding experience. Those remain explicit P0/P1/P2 evidence gates.
+The opt-in setup was exercised locally with Development credentials and the
+public browser suite passed; a connected new-person invitation test still
+needs to consume the fixture.
 
 ## Collection and group activation
 
