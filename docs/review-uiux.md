@@ -132,7 +132,7 @@ For each area, review:
 | Area | Routes/components | Current status | Known review scope / next action |
 |---|---|---|---|
 | Authenticated header | `header`, `top-bar` | Source-audited | Review information architecture, active states, mobile navigation, focus, and terminology. |
-| Profile menu | `profile-menu`, invitation/notification modals | Source-audited | Review account identity, unread states, modal behavior, errors, and small-screen usability. |
+| Profile menu | `profile-menu`, invitation/notification modals | Source-audited | Review account identity, unread states, modal behavior, errors, and small-screen usability. Pending invitation cards now keep accept/decline failures visible and offer a refresh action; real invitation expiry and notification clarity remain open. |
 | Basic/complete layouts | `layout-basic`, `layout-complete` | Source-audited | Validate distraction-free action pages versus browsing pages; review spacing, scroll, and responsive behavior. |
 | Shared controls | button, badge, page header, container, spinner, tooltip, image background | Partially reviewed | The theme toggle now has a state-aware accessible name, pressed state, and visible keyboard focus; the shared link/button/form baseline now exposes a consistent focus-visible ring; routed `app-button` hosts no longer create duplicate keyboard stops. Establish the remaining shared component conventions and accessibility; test loading and icon-only variants. |
 | Cards and sections | account, game, group, invitation, notification, card section | Source-audited | Review density, hierarchy, long content, actions, empty states, and mobile wrapping. |

@@ -285,7 +285,7 @@ remote CI, provider delivery, and operational recovery ownership.
 
 - **Status:** In progress
 - **Affected area:** `backend/test/`, backend `src`, frontend `src/**/*.spec.ts`
-- **Evidence:** Backend now has 48 focused suites and 267 passing unit tests plus 6 environment-safe HTTP E2E tests; frontend has 67 browser-based unit tests plus six passing public Playwright tests. The current default Playwright run discovers 34 tests, with 28 intentionally guarded without disposable Clerk/browser fixture state. The opt-in authenticated auth-handoff (including delayed success, fail → recovery → retry, invitation-aware recovery copy, and protected-route preservation after refresh), collection, first-group activation and recovery, invitation, invitation-choice and invitation-recovery branches, session, recommendation, acquisition-decision, settings, destructive-flow, and rendered-core journeys remain available; a disposable provider-invitation rehearsal also proves create/list/revoke/removal, and an unavailable-group invitation join is covered by rollback regression. Email-provider failure mapping across verification/reset/notification paths, Redis health cooldown behavior, schema-aware readiness, disabled-cache behavior, rollback paths including the deprecated bulk collection and proposal approval/rejection boundaries, and fail-closed core social routes now have focused coverage.
+- **Evidence:** Backend now has 48 focused suites and 267 passing unit tests plus 6 environment-safe HTTP E2E tests; frontend has 68 browser-based unit tests plus six passing public Playwright tests. The current default Playwright run discovers 34 tests, with 28 intentionally guarded without disposable Clerk/browser fixture state. The opt-in authenticated auth-handoff (including delayed success, fail → recovery → retry, invitation-aware recovery copy, and protected-route preservation after refresh), collection, first-group activation and recovery, invitation, invitation-choice and invitation-recovery branches, session, recommendation, acquisition-decision, settings, destructive-flow, and rendered-core journeys remain available; a disposable provider-invitation rehearsal also proves create/list/revoke/removal, and an unavailable-group invitation join is covered by rollback regression. Email-provider failure mapping across verification/reset/notification paths, Redis health cooldown behavior, schema-aware readiness, disabled-cache behavior, rollback paths including the deprecated bulk collection and proposal approval/rejection boundaries, and fail-closed core social routes now have focused coverage.
 - **Risk:** Security and product regressions are invisible.
 - **Next action:** Add remaining negative authorization/contract cases and provider/cache boundary evidence, preserve the authenticated core-loop journeys as launch regression gates, and observe them in a disposable environment with real Clerk state.
 - **Dependencies:** READINESS-001, READINESS-002, READINESS-003.
@@ -583,7 +583,9 @@ while these gates remain open.
   delivery, legacy failure/retry behavior, and notification clarity still need
   real-data validation. The registration error state now explains expired/used
   tickets and unavailable groups and provides a route that clears the stale
-  ticket before a fresh invitation is used.
+  ticket before a fresh invitation is used. Pending invitations now also keep
+  accept/decline failures visible in the card and offer an explicit invitation
+  refresh action.
 - [ ] Complete the group library decision surface. It now shows owners, member
   ratings, player range, duration, play count, and timezone-aware last-played
   context; the acquisition search and board now exclude games already owned by
