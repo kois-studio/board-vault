@@ -305,4 +305,24 @@ describe('Api response contracts', () => {
 
         await expectAsync(response).toBeRejected()
     })
+
+    it('rejects a malformed legacy user-invitation response at the API boundary', async () => {
+        const response = firstValueFrom(api.getUserInvitations(8))
+        const request = http.expectOne(`${environment.apiUrl}/profile/users/8/invitations`)
+
+        request.flush([
+            {
+                id: 12,
+                groupId: 7,
+                fromAccountId: 1,
+                toAccountId: 8,
+                sentAt: '2026-09-05T10:00:00.000Z',
+                expiresAt: '2026-10-05T10:00:00.000Z',
+                fromAccount: { id: 1, username: 'owner', displayName: 'Owner' },
+                group: { id: 7, name: 'Friday games', createdBy: 1, createdAt: '2026-09-01T10:00:00.000Z' },
+            },
+        ])
+
+        await expectAsync(response).toBeRejected()
+    })
 })
