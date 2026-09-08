@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core'
 import { ButtonComponent } from '../../components/ui/button/button.component'
 import { SpinnerComponent } from '../../components/ui/spinner/spinner.component'
+import { ClerkService } from '../../core/services/clerk.service'
 import { LoginService } from '../../core/services/login.service'
 
 @Component({
@@ -10,9 +11,11 @@ import { LoginService } from '../../core/services/login.service'
 })
 export class AuthHandoffComponent {
     private readonly loginService = inject(LoginService)
+    private readonly clerkService = inject(ClerkService)
 
     public readonly state = this.loginService.clerkAuthHandoffState
     public readonly error = this.loginService.clerkAuthHandoffError
+    public readonly isInvitationFlow = this.clerkService.isInvitationFlow
 
     public retry(): void {
         this.loginService.retryClerkSession()
