@@ -140,6 +140,23 @@ Verified: The focused frontend suite passes 70/70 tests, including the stale
 invitation-state regression; Biome and `git diff --check` pass. No provider,
 database, deployment, or production state was changed.
 
+Follow-up — production schema catch-up — 2026-09-08
+
+Changed: After the application deployment exposed that live Turso was still
+at migration `0005`, preserved a fresh production export outside the
+repository, verified it with integrity `ok` and no foreign-key violations, and
+applied migrations `0006`–`0009` transactionally to live `board-vault`.
+
+Verified: Live `SchemaMigrations` now reaches `0009`; the new group-interest,
+session-notes, invitation-expiry, and acquisition-decision structures exist;
+counts remain 16 accounts, 5 groups, 13 meets, and 1 invitation; and the
+backend health endpoint returns 200. The persistent pre-migration backup is
+under `/Users/dawichi/dumps/board-vault/`. No application code or provider
+configuration was changed during the repair. A direct authenticated browser
+probe could not be completed because Clerk’s temporary production sign-in
+ticket did not redirect to the application, so the user should recheck the
+previously failing routes in the deployed app.
+
 Previous most recent claim:
 
 ```text

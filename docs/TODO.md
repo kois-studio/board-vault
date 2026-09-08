@@ -619,7 +619,7 @@ consumes the fixture and passes with disposable provider cleanup.
   activation, and group-dashboard handoff through the Testing Token-backed
   Development browser journey, while Smart CAPTCHA remains disabled on the
   Development instance only. Human CAPTCHA, legacy expiry, provider
-  delivery, legacy failure/retry behavior, and notification clarity still need
+  delivery, expiry behavior, legacy failure/retry behavior, and notification clarity still need
   real-data validation. The registration error state now explains expired/used
   tickets and unavailable groups and provides a route that clears the stale
   ticket before a fresh invitation is used. Pending invitations now also keep
@@ -691,11 +691,11 @@ consumes the fixture and passes with disposable provider cleanup.
 
 - [ ] Document the real Turso backup/restore schedule, owner, recovery target,
   rollback procedure, and verify every pending migration against a clean
-  environment before production rollout. A fresh read-only production export
-  has now been integrity-checked and migrations 0006–0009 have been rehearsed
-  successfully against that copy; the schedule, owner, recovery target, and
-  live rollout/rollback procedure remain open. The synthetic restore rehearsal
-  is also passing locally.
+  environment before production rollout. Migrations 0006–0009 have now been
+  verified against a fresh export and applied to live Turso with integrity
+  `ok`, preserved counts, and a persistent pre-migration dump; the schedule,
+  owner, recovery target, and live rollout/rollback procedure remain open. The
+  synthetic restore rehearsal is also passing locally.
 - [ ] Complete the authorization, input-validation, API-contract,
   logging/redaction, cache, and provider-failure reviews.
 - [ ] Expand automated coverage for auth, authorization, collection activation,

@@ -19,6 +19,13 @@ It was applied to live `board-vault` on 2026-08-12. Post-migration checks
 reported integrity `ok`, 15 accounts, 13 meets, 101 meet/game links, and one
 linked Clerk account.
 
+The live database is now current through migration `0009`. On 2026-09-08, a
+fresh export was verified with integrity `ok` and no foreign-key violations,
+then migrations `0006`–`0009` were applied transactionally. The live counts
+remain 16 accounts, 5 groups, 13 meets, and 1 invitation. The persistent
+pre-migration export is retained outside the repository under
+`/Users/dawichi/dumps/board-vault/`.
+
 ## Execution rule
 
 Use `node database/scripts/migrate.mjs` to apply future migrations. The runner
@@ -83,7 +90,7 @@ selected attendee IDs as JSON text, and one of `interested`, `not_for_us`, or
 after disposable SQLite verification and a fresh live backup; record the live
 verification in the operations handoff.
 
-## Migration 0006 (pending deployment)
+## Migration 0006 (applied 2026-09-08)
 
 `0006-add-group-game-interest.sql` adds `GroupGameInterest`, an additive
 group-scoped relation that stores one explicit acquisition-interest signal per
@@ -91,20 +98,18 @@ member and catalog game. It deliberately does not reuse `WishlistedGame`,
 because a personal wishlist and a shared group purchase decision have different
 visibility and ownership semantics.
 
-This migration has been added to the local release work but has not been
-applied to live Turso. Apply it only together with the backend release that
-uses the acquisition-board routes, after disposable SQLite verification and a
-fresh live backup. Until then, do not deploy the backend/frontend acquisition
-changes independently.
+It was verified against a disposable production export and applied to live
+Turso on 2026-09-08 before the acquisition-board backend release was tested
+again. It created the table empty; no existing rows were changed.
 
-## Migration 0007 (pending deployment)
+## Migration 0007 (applied 2026-09-08)
 
 `0007-add-meet-notes.sql` adds nullable `Meet.notes` for a short group-facing
 reason, reminder, or outcome attached to a planned or completed session. It is
-additive and safe for existing history. Apply it only with the session release
-after disposable SQLite verification and a fresh live backup.
+additive and safe for existing history. It was applied to live Turso on
+2026-09-08 after disposable verification; existing rows received `NULL` notes.
 
-## Migration 0008 (pending deployment)
+## Migration 0008 (applied 2026-09-08)
 
 `0008-add-invitation-expiry.sql` adds nullable `Invitation.expiresAt` and
 backfills existing legacy invitations to expire 30 days after `sentAt`. New
@@ -112,15 +117,15 @@ legacy username invitations are written with a 30-day expiry; expired
 invitations are excluded from recipient and owner pending lists, and acceptance
 is rejected with a request to ask for a new invitation. The nullable shape keeps
 the migration compatible with any pre-0008 rows until the backfill completes.
-Apply it only with the invitation-lifecycle release after disposable SQLite
-verification and a fresh live backup.
+It was applied to live Turso on 2026-09-08 after disposable verification. The
+one existing invitation was backfilled to expire 30 days after `sentAt`.
 
-## Migration 0009 (pending deployment)
+## Migration 0009 (applied 2026-09-08)
 
 `0009-add-group-acquisition-decisions.sql` adds `GroupAcquisitionDecision`, a
 group-scoped owner decision for an acquisition candidate. It stores `open`,
 `planned`, or `not_now` plus the deciding owner, timestamp, and optional note.
 It does not represent a purchase; when any group member owns the game, the
 acquisition board hides it from the group because ownership is the terminal
-truth. Apply it only with the group-acquisition decision release after
-disposable SQLite verification and a fresh live backup.
+truth. It was applied to live Turso on 2026-09-08 after disposable verification
+and created the decision table empty.
