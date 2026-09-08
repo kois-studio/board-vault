@@ -6,6 +6,8 @@ test.describe('public navigation', () => {
 
         await expect(page).toHaveTitle(/Board Vault/i)
         await expect(page.getByRole('heading', { name: /Make the next game night easier/i })).toBeVisible()
+        await expect(page.getByRole('heading', { name: /Join your group|Create your account/ })).toBeVisible()
+        await expect(page.getByRole('heading', { name: 'Choose the next game night' })).toBeVisible()
         await expect(page.getByRole('link', { name: 'Home' })).toBeVisible()
         const navigation = page.getByRole('navigation')
         await expect(navigation.getByRole('link', { name: 'Features' })).toHaveAttribute('href', '/#features')
