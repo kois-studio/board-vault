@@ -99,14 +99,27 @@ with Smart CAPTCHA enabled. Never copy the Development setting to Production.
 
 For automated Clerk browser tests, Clerk officially supports short-lived
 Testing Tokens through [`@clerk/testing`](https://clerk.com/docs/guides/development/testing/playwright/overview).
-The Playwright integration obtains a token with `clerkSetup()` and applies it
-with `setupClerkTestingToken({ page })`, bypassing bot detection for that test
+The repository now includes an opt-in Playwright setup project and reusable
+fixture under `frontend/e2e/fixtures/clerk-testing.ts`. It obtains a token
+with `clerkSetup()` and applies it to a browser context with
+`setupClerkTestingToken({ context })`, bypassing bot detection for that test
 without disabling Production protection. The test runner needs the matching
 Development publishable and secret keys; keep the secret key and token in
-local/CI secret storage and never commit them. Our current authenticated suite
-still uses the documented CLI impersonation/storage-state workflow below; the
-Testing Token integration is the preferred next improvement for automated
-new-invitee coverage.
+local/CI secret storage and never commit them. Run a test that imports the
+fixture with:
+
+```shell
+CLERK_PUBLISHABLE_KEY=pk_test_... \
+CLERK_SECRET_KEY=sk_test_... \
+PLAYWRIGHT_CLERK_TESTING=1 \
+npx playwright test e2e/<clerk-test>.spec.ts
+```
+
+The default suite does not load this setup project. Existing authenticated
+journeys still use the documented CLI impersonation/storage-state workflow
+below; the Testing Token fixture is the safe path for the pending automated
+new-invitee/CAPTCHA journey. A token bypasses bot protection only; it does not
+create the invitation, deliver email, or replace the human product review.
 
 ## Running authenticated browser journeys
 

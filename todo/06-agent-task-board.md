@@ -70,6 +70,22 @@ Scope: establish and apply connected, role-aware flow review to the flagship fir
 
 Review: UX-FLOW-001
 
+Follow-up — Clerk automated-test boundary — 2026-09-08
+
+Changed: Added `@clerk/testing` as a frontend development dependency, an
+opt-in `clerk-testing-setup` Playwright project, and a reusable context fixture
+for short-lived Development Testing Tokens. The default public and
+storage-state suites ignore the setup file and remain secret-free. The
+fixture is intended for the pending new-person invitation test; it bypasses
+Clerk bot protection only and does not replace provider invitation, email,
+expiry, or human UX evidence.
+
+Verified: Dependency installation completed locally, the configuration keeps
+the setup project disabled unless `PLAYWRIGHT_CLERK_TESTING=1`, the default
+suite still discovers 34 tests, and the full frontend gates pass with 69 unit
+tests, lint, build, and six public Playwright tests. No production Clerk
+setting, account, invitation, database, deployment, or push was changed.
+
 Changed: Added `docs/ux-flows.md` as the product flow-review contract and
 recorded the first-group activation flow as the next end-to-end evidence gate.
 The existing screen-level collection, invitation, recommendation, and session

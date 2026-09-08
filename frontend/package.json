@@ -38,6 +38,7 @@
         "@angular/compiler-cli": "19.2.18",
         "@angular/localize": "19.2.18",
         "@biomejs/biome": "1.9.2",
+        "@clerk/testing": "^2.2.33",
         "@playwright/test": "^1.62.1",
         "@types/jasmine": "~5.1.4",
         "autoprefixer": "^10.4.20",

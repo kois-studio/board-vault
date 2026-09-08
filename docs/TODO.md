@@ -580,6 +580,17 @@ the group decisions feel useful. Continue deterministic expiry/refresh,
 contract, authorization, and operational checks in parallel; do not expand
 catalog/detail or analytics scope.
 
+### Tech-lead checkpoint — Clerk automated-test boundary — 2026-09-08
+
+The repository now has an opt-in `@clerk/testing` Playwright setup project and
+context fixture. It fetches a short-lived Development Testing Token from the
+Development secret key and appends it only to that browser context's Clerk
+Frontend API requests. The default suite remains unchanged, no production
+configuration is touched, and no token or secret is committed. This removes
+CAPTCHA as an automation blocker for the future new-person invitation test,
+but it does not prove invitation creation, email delivery, expiry, or the
+human onboarding experience. Those remain explicit P0/P1/P2 evidence gates.
+
 ## Collection and group activation
 
 - [ ] Let a person add their first five useful games quickly, with reliable
