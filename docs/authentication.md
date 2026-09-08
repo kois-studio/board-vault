@@ -22,6 +22,11 @@ account resolution and current-user loading state. The private-beta policy is
 unchanged: public self-registration remains closed unless explicitly enabled;
 an invitation is the supported new-account path.
 
+Invitation registration keeps provider details out of the rendered UI. Known
+provider codes become user-actionable guidance for the security check, username
+availability, password policy, or expired/used ticket; unknown failures use a
+safe retry message.
+
 ## Implementation boundary
 
 `LoginService` owns the Clerk-to-local readiness state and deduplicates

@@ -54,12 +54,42 @@ export class RegisterComponent {
                 this.isInvitationSignIn() ? '' : this.invitationForm.controls.password.value,
             )
             await this.router.navigateByUrl('/dashboard')
-        } catch {
-            this.invitationError.set(
-                'We could not complete this invitation. The link may have expired, been used already, or the group may no longer be available. Ask the group owner for a fresh invitation and try again.',
-            )
+        } catch (error) {
+            this.invitationError.set(this.getInvitationErrorMessage(error))
         } finally {
             this.isInvitationSubmitting = false
         }
+    }
+
+    private getInvitationErrorMessage(error: unknown): string {
+        const errorCodes = this.getClerkErrorCodes(error)
+
+        if (errorCodes.some((code) => /captcha|bot/.test(code))) {
+            return 'The security check could not be completed. Complete it and try again.'
+        }
+
+        if (errorCodes.some((code) => /identifier|username/.test(code))) {
+            return 'That username is unavailable. Choose a different username and try again.'
+        }
+
+        if (errorCodes.some((code) => /password/.test(code))) {
+            return 'That password does not meet the secure sign-up requirements. Use the guidance above and try again.'
+        }
+
+        if (errorCodes.some((code) => /invitation|ticket/.test(code))) {
+            return 'We could not complete this invitation. The link may have expired, been used already, or the group may no longer be available. Ask the group owner for a fresh invitation and try again.'
+        }
+
+        return 'We could not complete this invitation right now. Check the fields and security check, then try again.'
+    }
+
+    private getClerkErrorCodes(error: unknown): string[] {
+        if (!error || typeof error !== 'object' || !Array.isArray((error as { errors?: unknown }).errors)) return []
+
+        return (error as { errors: unknown[] }).errors.flatMap((entry) => {
+            if (!entry || typeof entry !== 'object' || typeof (entry as { code?: unknown }).code !== 'string') return []
+
+            return [(entry as { code: string }).code]
+        })
     }
 }

@@ -332,7 +332,7 @@ remote CI, provider delivery, and operational recovery ownership.
 
 - **Status:** Planned
 - **Affected area:** `frontend/src/styles.css`, component SCSS/templates, route surfaces
-- **Evidence:** Tailwind global styles now use plain CSS with a PostCSS nesting pass; route-level components are lazy-loaded; production build has no Sass/selector/bundle-budget or Angular template warnings and the latest initial raw bundle is 609.00 kB (138.68 kB estimated transfer) under the 650 kB warning budget. Shared theme-control semantics, consistent keyboard focus rings, explicit session input labels, the preserved-account auth fallback, migration-state copy, group/session empty states, owner-only invitation controls, invitation-decline confirmation, pending provider-invitation management, direct group-edit route loading/error states, the responsive group-management workspace, mobile session-progress behavior, attendee-selection handoff, recommendation attendee controls, explainable recommendation lenses, reversible group acquisition interest, invitation-link copy feedback, the personal/private collection boundary, the routed shared-button focus-order fix, removal of unused client compatibility adapters, the history-to-recommendation handoff, player names in shared-memory cards, group-oriented recommendation context, explicit groups-index social actions, status-specific upcoming-session prompts, group-first Play entry, empty-group activation guidance, focus return for contextual destructive dialogs, the min-width/truncation fix for narrow group-management member rows, the full-page Clerk account handoff, Clerk-aware sign-out, and distinct existing-account versus new-invitee invitation handoffs have been improved. The opt-in rendered core audit now checks overflow, visible control names, duplicate routed-button focus stops, and keyboard traversal at 375px, 768px, and 1280px across the primary authenticated routes; human contrast, screen-reader, content, broader route, and provider-failure review remain open.
+- **Evidence:** Tailwind global styles now use plain CSS with a PostCSS nesting pass; route-level components are lazy-loaded; production build has no Sass/selector/bundle-budget or Angular template warnings and the latest initial raw bundle is 611.00 kB (139.08 kB estimated transfer) under the 650 kB warning budget. Shared theme-control semantics, consistent keyboard focus rings, explicit session input labels, the preserved-account auth fallback, migration-state copy, group/session empty states, owner-only invitation controls, invitation-decline confirmation, pending provider-invitation management, direct group-edit route loading/error states, the responsive group-management workspace, mobile session-progress behavior, attendee-selection handoff, recommendation attendee controls, explainable recommendation lenses, reversible group acquisition interest, invitation-link copy feedback, the personal/private collection boundary, the routed shared-button focus-order fix, removal of unused client compatibility adapters, the history-to-recommendation handoff, player names in shared-memory cards, group-oriented recommendation context, explicit groups-index social actions, status-specific upcoming-session prompts, group-first Play entry, empty-group activation guidance, focus return for contextual destructive dialogs, the min-width/truncation fix for narrow group-management member rows, the full-page Clerk account handoff, Clerk-aware sign-out, distinct existing-account versus new-invitee invitation handoffs, and safe actionable invitation-registration provider-error feedback have been improved. The opt-in rendered core audit now checks overflow, visible control names, duplicate routed-button focus stops, and keyboard traversal at 375px, 768px, and 1280px across the primary authenticated routes; human contrast, screen-reader, content, broader route, and provider-failure review remain open.
 - **Risk:** Broken styles, poor mobile/accessibility behavior, and unsupported public claims.
 - **Next action:** Extend the audit only to the remaining high-value authenticated surfaces, perform human keyboard/screen-reader/content review, and link content-truth findings to `TRUTH-001`; keep catalog/detail expansion out of scope.
 - **Dependencies:** Product truth/brand decision where claims are involved.
@@ -420,7 +420,11 @@ as TODO items here.
   separate disposable provider-failure rehearsal also reached the error state
   and recovered through retry, while the opt-in flow asserts that a protected
   `/groups` destination survives refresh. The authentication contract and
-  private-beta policy remain unchanged.
+  private-beta policy remain unchanged. Invitation registration now also
+  normalizes provider failures into safe, actionable guidance for the security
+  check, unavailable username, password policy, expired ticket, and unknown
+  failure cases; raw provider diagnostics are never rendered. Real provider
+  behavior and human interaction remain open.
 
 - [ ] Complete responsive, keyboard, contrast, focus, and screen-reader
   behavior for the primary journeys. The core rendered audit now checks group,
@@ -560,6 +564,22 @@ and recommendation surfaces should be validated as one social loop during that
 rehearsal. Do not add catalog breadth, public discovery, or standalone analytics
 while these gates remain open.
 
+### Tech-lead checkpoint — safe invitation provider feedback — 2026-09-08
+
+Before human interaction, the remaining useful engineering work is bounded to
+making failure states honest and recoverable. Invitation registration now maps
+known Clerk provider failures to safe guidance for CAPTCHA/security checks,
+username conflicts, password policy failures, and expired tickets, with a
+neutral fallback for unknown errors. This improves the first-person experience
+without weakening the private-beta boundary or exposing provider diagnostics.
+
+The next gate is external by nature: complete a new-person invitation with
+Smart CAPTCHA and delivery enabled, then run the two-account social loop with
+real human judgment on focus, screen-reader announcements, copy, and whether
+the group decisions feel useful. Continue deterministic expiry/refresh,
+contract, authorization, and operational checks in parallel; do not expand
+catalog/detail or analytics scope.
+
 ## Collection and group activation
 
 - [ ] Let a person add their first five useful games quickly, with reliable
@@ -585,7 +605,9 @@ while these gates remain open.
   tickets and unavailable groups and provides a route that clears the stale
   ticket before a fresh invitation is used. Pending invitations now also keep
   accept/decline failures visible in the card and offer an explicit invitation
-  refresh action.
+  refresh action. Registration provider failures now produce distinct safe
+  recovery copy for CAPTCHA/security checks, username conflicts, password
+  policy failures, expired tickets, and unknown provider errors.
 - [ ] Complete the group library decision surface. It now shows owners, member
   ratings, player range, duration, play count, and timezone-aware last-played
   context; the acquisition search and board now exclude games already owned by

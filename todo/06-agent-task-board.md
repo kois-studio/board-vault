@@ -93,6 +93,11 @@ were changed.
 Pending invitation cards now keep accept/decline failures visible with
 expiry/group-unavailable guidance and an explicit invitation refresh action.
 
+Invitation registration provider failures are now normalized into safe,
+actionable copy for CAPTCHA/security checks, username conflicts, password
+policy failures, expired tickets, and unknown failures; raw provider details
+are not exposed to users.
+
 Known follow-ups: Cover new-person/expired invitation and legacy failure/retry
 variants. New-person registration now has a clear provider
 challenge boundary, but the headless rehearsal stopped at enabled Clerk Smart
