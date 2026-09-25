@@ -4,7 +4,7 @@ import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../api/api'
-import type { GameCompleteType, GameReviewDto, GroupWithMembersAndGames, PublicUserType } from '../../api/api.types'
+import type { GameCompleteType, GameReviewDto, GroupPersonWorkspaceType, GroupWithMembersAndGames, PublicUserType } from '../../api/api.types'
 import { ButtonComponent } from '../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'
@@ -104,6 +104,9 @@ export class LogSessionWizardComponent {
     //        STEP 1: GROUP SELECTION
     // --------------------------------------------------------------------------
     public selectedGroup = signal<GroupWithMembersAndGames | null>(null)
+    public groupPeople = signal<Array<GroupPersonWorkspaceType>>([])
+    public usesGroupPeople = signal(false)
+    private peopleLoadedForGroupId: number | null = null
 
     // --------------------------------------------------------------------------
     //        STEP 2: DATE SELECTION
@@ -251,6 +254,7 @@ export class LogSessionWizardComponent {
                         selected: false,
                     })),
                 )
+                this.loadGroupPeople(group)
 
                 // Initialize games from all group members' games (will be filtered later based on selected attendees)
                 const allGames = new Map<number, GameCompleteType>()
@@ -313,6 +317,59 @@ export class LogSessionWizardComponent {
                 }
             }
             this.matrix.set(newMatrix)
+        })
+    }
+
+    private loadGroupPeople(group: GroupWithMembersAndGames): void {
+        if (this.peopleLoadedForGroupId === group.id) return
+        this.peopleLoadedForGroupId = group.id
+
+        const loader = this.api.getGroupPeople
+        if (typeof loader !== 'function') return
+
+        loader.call(this.api, group.id).subscribe({
+            next: (response) => {
+                const activePeople = response.people.filter((person) => person.person.status === 'active')
+                if (activePeople.length === 0) return
+
+                const groupGames = new Map<number, GameCompleteType>()
+                for (const member of group.members) {
+                    for (const game of member.games) groupGames.set(game.id, game)
+                }
+
+                this.groupPeople.set(activePeople)
+                this.usesGroupPeople.set(true)
+                this.attendees.set(
+                    activePeople.map((person) => {
+                        const ownedGameIds = new Set(
+                            person.ownership.filter((ownership) => ownership.status === 'asserted').map((ownership) => ownership.gameId),
+                        )
+                        const games = [...groupGames.values()].filter((game) => ownedGameIds.has(game.id))
+                        return {
+                            user: {
+                                id: person.person.id,
+                                username: person.person.displayName.toLowerCase().replace(/\s+/g, '-'),
+                                displayName: person.person.displayName,
+                                avatar: person.person.avatar ?? {
+                                    backgroundColor: '#64748b',
+                                    iconName: null,
+                                    emoji: null,
+                                    type: 'initials' as const,
+                                    initials: person.person.displayName.slice(0, 2).toUpperCase(),
+                                },
+                                joinedAt: person.person.createdAt,
+                                games,
+                                reviews: [],
+                            },
+                            selected: false,
+                        }
+                    }),
+                )
+            },
+            error: () => {
+                this.groupPeople.set([])
+                this.usesGroupPeople.set(false)
+            },
         })
     }
 
@@ -559,8 +616,15 @@ export class LogSessionWizardComponent {
                     sessionDate: new Date(`${sessionDate}T12:00:00`).toISOString(),
                     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
                     notes: this.sessionNotes.value?.trim() || undefined,
-                    attendeeIds: selectedAttendees.map((attendee) => attendee.user.id),
-                    games,
+                    ...(this.usesGroupPeople()
+                        ? {
+                              groupPersonIds: selectedAttendees.map((attendee) => attendee.user.id),
+                              games: games.map((game) => ({ gameId: game.gameId, participantPersonIds: game.participantIds })),
+                          }
+                        : {
+                              attendeeIds: selectedAttendees.map((attendee) => attendee.user.id),
+                              games,
+                          }),
                 }),
             )
 

@@ -2219,6 +2219,7 @@ export class DatabaseService implements OnModuleInit {
         meetId: number,
         games: Array<{ gameId: number; participantIds: Array<number> }>,
         expectedStatus: 'scheduled' | 'active',
+        personGames: Array<{ gameId: number; participantIds: Array<number> }> = [],
     ): Promise<{
         applied: boolean
         playedGameIds: Array<number>
@@ -2282,6 +2283,19 @@ export class DatabaseService implements OnModuleInit {
             if (participantStatements.length > 0) {
                 await transaction.batch(participantStatements)
             }
+
+            await transaction.execute({ sql: 'DELETE FROM MeetPersonGame WHERE meetId = ?', args: [meetId] })
+            const personParticipantStatements: Array<InStatement> = []
+
+            for (const game of personGames) {
+                for (const groupPersonId of game.participantIds) {
+                    personParticipantStatements.push({
+                        sql: 'INSERT OR IGNORE INTO MeetPersonGame (meetId, groupPersonId, gameId) VALUES (?, ?, ?)',
+                        args: [meetId, groupPersonId, game.gameId],
+                    })
+                }
+            }
+            if (personParticipantStatements.length > 0) await transaction.batch(personParticipantStatements)
 
             const result = await transaction.execute({
                 sql: "SELECT gameId, gameStatus FROM MeetGame WHERE meetId = ? AND gameStatus IN ('played', 'skipped')",
@@ -2922,11 +2936,12 @@ export class DatabaseService implements OnModuleInit {
                 return false
             }
 
-            const placeholders = accountIds.map(() => '?').join(', ')
-
             await transaction.execute({
-                sql: `DELETE FROM MeetAttendee WHERE meetId = ? AND accountId NOT IN (${placeholders})`,
-                args: [meetId, ...accountIds],
+                sql:
+                    accountIds.length > 0
+                        ? `DELETE FROM MeetAttendee WHERE meetId = ? AND accountId NOT IN (${accountIds.map(() => '?').join(', ')})`
+                        : 'DELETE FROM MeetAttendee WHERE meetId = ?',
+                args: accountIds.length > 0 ? [meetId, ...accountIds] : [meetId],
             })
             await transaction.batch(
                 accountIds.map(accountId => ({
@@ -2965,11 +2980,12 @@ export class DatabaseService implements OnModuleInit {
                 return false
             }
 
-            const placeholders = groupPersonIds.map(() => '?').join(', ')
-
             await transaction.execute({
-                sql: `DELETE FROM MeetPersonAttendee WHERE meetId = ? AND groupPersonId NOT IN (${placeholders})`,
-                args: [meetId, ...groupPersonIds],
+                sql:
+                    groupPersonIds.length > 0
+                        ? `DELETE FROM MeetPersonAttendee WHERE meetId = ? AND groupPersonId NOT IN (${groupPersonIds.map(() => '?').join(', ')})`
+                        : 'DELETE FROM MeetPersonAttendee WHERE meetId = ?',
+                args: groupPersonIds.length > 0 ? [meetId, ...groupPersonIds] : [meetId],
             })
             await transaction.batch(
                 groupPersonIds.map(groupPersonId => ({

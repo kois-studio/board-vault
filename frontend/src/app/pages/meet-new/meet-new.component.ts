@@ -4,7 +4,7 @@ import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angu
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../api/api'
-import type { GameCompleteType } from '../../api/api.types'
+import type { GameCompleteType, GroupPersonWorkspaceType } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
 import { ButtonComponent } from '../../components/ui/button/button.component'
 import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
@@ -28,6 +28,8 @@ export class MeetNewComponent {
     //        DATA for this component
     // --------------------------------------------------------------------------
     public groupData: null | (typeof this.userGroups)[number] = null
+    public groupPeople: Array<GroupPersonWorkspaceType> = []
+    public useGroupPeople = false
     public selectedAttendeeIds: Array<number> = []
     public selectedPlannedGameIds: Array<number> = []
     public notes = ''
@@ -63,6 +65,8 @@ export class MeetNewComponent {
 
             if (Number.isNaN(groupId) || !this.userData || !groupData) {
                 this.groupData = null
+                this.groupPeople = []
+                this.useGroupPeople = false
                 this.selectedAttendeeIds = []
                 this.selectedPlannedGameIds = []
                 this.didInitializeSelections = false
@@ -71,7 +75,7 @@ export class MeetNewComponent {
 
             this.groupData = groupData
             if (!this.didInitializeSelections) {
-                const requestedAttendees = (this.route.snapshot.queryParamMap.get('attendeeIds') ?? '')
+                const requestedAttendees = (this.route.snapshot.queryParamMap.get('participantIds') ?? this.route.snapshot.queryParamMap.get('attendeeIds') ?? '')
                     .split(',')
                     .map(Number)
                     .filter((accountId) => groupData.members.some((member) => member.id === accountId))
@@ -84,6 +88,7 @@ export class MeetNewComponent {
                         ? [requestedGameId]
                         : []
                 this.didInitializeSelections = true
+                this.loadGroupPeople(groupId, requestedAttendees)
             }
         })
     }
@@ -104,8 +109,8 @@ export class MeetNewComponent {
     }
 
     get selectedAttendeesLabel(): string {
-        const total = this.groupData?.members.length ?? 0
-        return `${this.selectedAttendeeIds.length} of ${total} members invited`
+        const total = this.useGroupPeople ? this.groupPeople.length : (this.groupData?.members.length ?? 0)
+        return `${this.selectedAttendeeIds.length} of ${total} people invited`
     }
 
     get selectedGamesLabel(): string {
@@ -115,7 +120,9 @@ export class MeetNewComponent {
     }
 
     selectAllAttendees(): void {
-        this.selectedAttendeeIds = this.groupData?.members.map((member) => member.id) ?? []
+        this.selectedAttendeeIds = this.useGroupPeople
+            ? this.groupPeople.filter((person) => person.person.status === 'active').map((person) => person.person.id)
+            : this.groupData?.members.map((member) => member.id) ?? []
     }
 
     clearAttendees(): void {
@@ -140,6 +147,35 @@ export class MeetNewComponent {
         this.selectedAttendeeIds = this.selectedAttendeeIds.includes(accountId)
             ? this.selectedAttendeeIds.filter((id) => id !== accountId)
             : [...this.selectedAttendeeIds, accountId]
+    }
+
+    getGroupPersonName(person: GroupPersonWorkspaceType): string {
+        return person.person.displayName
+    }
+
+    getGroupPersonGameCount(person: GroupPersonWorkspaceType): number {
+        return person.ownership.filter((ownership) => ownership.status === 'asserted').length
+    }
+
+    private loadGroupPeople(groupId: number, requestedIds: Array<number>): void {
+        const loader = this.api.getGroupPeople
+        if (typeof loader !== 'function') return
+
+        loader.call(this.api, groupId).subscribe({
+            next: (response) => {
+                this.groupPeople = response.people
+                this.useGroupPeople = response.people.length > 0
+                if (!this.useGroupPeople) return
+
+                const activeIds = response.people.filter((person) => person.person.status === 'active').map((person) => person.person.id)
+                const selectedRequestedIds = requestedIds.filter((id) => activeIds.includes(id))
+                this.selectedAttendeeIds = selectedRequestedIds.length > 0 ? [...new Set(selectedRequestedIds)] : activeIds
+            },
+            error: () => {
+                this.groupPeople = []
+                this.useGroupPeople = false
+            },
+        })
     }
 
     get disableCreateButton() {
@@ -185,7 +221,7 @@ export class MeetNewComponent {
                 sessionDate: new Date(`${sessionDate}T${sessionTime}`).toISOString(),
                 timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
                 notes: this.notes.trim() || undefined,
-                attendeeIds: this.selectedAttendeeIds,
+                ...(this.useGroupPeople ? { groupPersonIds: this.selectedAttendeeIds } : { attendeeIds: this.selectedAttendeeIds }),
                 plannedGameIds: this.selectedPlannedGameIds,
             }),
         )

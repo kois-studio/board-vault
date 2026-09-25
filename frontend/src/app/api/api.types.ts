@@ -256,9 +256,9 @@ export type MeetWithAttendeesAndGamesType = MeetType & {
     plannedGames: Array<GameType['id']>
     skippedGames: Array<GameType['id']>
     playedGameParticipants: Array<MeetPlayedGameParticipantsType>
-    participants: Array<number>
-    participantStatuses: Array<MeetPersonAttendeeStatusType>
-    playedGamePersonParticipants: Array<MeetPlayedGameParticipantsType>
+    participants?: Array<number>
+    participantStatuses?: Array<MeetPersonAttendeeStatusType>
+    playedGamePersonParticipants?: Array<MeetPlayedGameParticipantsType>
 }
 
 export type CreatePlaySessionRequest = {
