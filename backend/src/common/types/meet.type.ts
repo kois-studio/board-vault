@@ -48,6 +48,17 @@ export class MeetPlayedGameParticipantsDto {
     participantIds: Array<number>
 }
 
+export class MeetPersonAttendeeStatusDto {
+    @ApiProperty({ example: 12345 })
+    groupPersonId: number
+
+    @ApiProperty({ example: 'accepted', enum: ['pending', 'accepted', 'declined'] })
+    rsvpStatus: 'pending' | 'accepted' | 'declined'
+
+    @ApiProperty({ example: 'unknown', enum: ['unknown', 'attended', 'absent'] })
+    attendanceStatus: 'unknown' | 'attended' | 'absent'
+}
+
 export class MeetWithAttendeesAndGames extends MeetDto {
     @ApiProperty({ type: [UserGetDto], description: 'The attendees of the meet.' })
     attendees: Array<UserGetDto['id']>
@@ -66,4 +77,13 @@ export class MeetWithAttendeesAndGames extends MeetDto {
 
     @ApiProperty({ type: [MeetPlayedGameParticipantsDto], description: 'The members recorded as participants for each played game.' })
     playedGameParticipants: Array<MeetPlayedGameParticipantsDto>
+
+    @ApiProperty({ type: [Number], description: 'GroupPerson IDs participating in this session.' })
+    participants: Array<number>
+
+    @ApiProperty({ type: [MeetPersonAttendeeStatusDto] })
+    participantStatuses: Array<MeetPersonAttendeeStatusDto>
+
+    @ApiProperty({ type: [MeetPlayedGameParticipantsDto] })
+    playedGamePersonParticipants: Array<MeetPlayedGameParticipantsDto>
 }
