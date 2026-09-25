@@ -17,6 +17,7 @@ import { GameTranslationModule } from './modules/core/game-translation/game-tran
 import { GamesModule } from './modules/core/games/games.module'
 import { GamesOwnedModule } from './modules/core/games-owned/games-owned.module'
 import { GroupMembershipsModule } from './modules/core/group-memberships/group-memberships.module'
+import { GroupPeopleModule } from './modules/core/group-people/group-people.module'
 import { GroupsModule } from './modules/core/groups/groups.module'
 import { InvitationsModule } from './modules/core/invitations/invitations.module'
 import { MeetAccountGamesModule } from './modules/core/meet-account-games/meet-account-games.module'
@@ -53,6 +54,7 @@ import { SessionsModule } from './modules/features/sessions/sessions.module'
         GamesModule,
         GamesOwnedModule,
         GroupMembershipsModule,
+        GroupPeopleModule,
         GroupsModule,
         InvitationsModule,
         MeetAccountGamesModule,
