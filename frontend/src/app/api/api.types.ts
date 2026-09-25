@@ -112,6 +112,44 @@ export type GroupWithMembersAndGames = GroupType & {
     >
 }
 
+export type GroupPersonType = {
+    id: number
+    groupId: number
+    accountId: number | null
+    kind: 'placeholder' | 'linked'
+    status: 'active' | 'archived'
+    displayName: string
+    avatar: PublicUserType['avatar'] | null
+    createdAt: string
+    updatedAt: string
+    claimedAt: string | null
+}
+
+export type GroupPersonOwnershipType = {
+    gameId: number
+    status: 'asserted' | 'rejected' | 'disputed'
+    source: 'placeholder_setup' | 'account_collection' | 'claimed_import'
+    enteredByAccountId: number
+    confirmedByAccountId: number | null
+    createdAt: string
+    updatedAt: string
+}
+
+export type GroupPersonPreferenceType = {
+    gameId: number
+    preference: 'favorite' | 'like' | 'neutral' | 'avoid'
+    source: 'placeholder_setup' | 'claimed_import' | 'account_profile'
+    enteredByAccountId: number
+    createdAt: string
+    updatedAt: string
+}
+
+export type GroupPersonWorkspaceType = {
+    person: GroupPersonType
+    ownership: Array<GroupPersonOwnershipType>
+    preferences: Array<GroupPersonPreferenceType>
+}
+
 export type GroupAcquisitionEntryType = {
     gameData: GameCompleteType
     interestedBy: Array<PublicUserType>
@@ -386,6 +424,7 @@ export type RecommendationSignalsType = {
 export type RecommendationsType = {
     groupId: number
     attendeeIds: Array<number>
+    participantIds?: Array<number>
     availableMinutes: number | null
     decisionLens: 'balanced' | 'fresh' | 'favorite'
     recommendations: Array<RecommendationType>

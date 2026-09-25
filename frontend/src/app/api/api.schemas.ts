@@ -15,6 +15,7 @@ import type {
     GameViewType,
     GameWithTagsAndTranslationsType,
     GroupAcquisitionEntryType,
+    GroupPersonWorkspaceType,
     GroupType,
     GroupWithMembersAndGames,
     HistoryRecordType,
@@ -286,6 +287,50 @@ const groupWithMembersAndGamesSchema: z.ZodType<GroupWithMembersAndGames> = z.ob
 
 export const userGroupsSchema = z.array(groupWithMembersAndGamesSchema)
 
+const groupPersonSchema = z.object({
+    id: z.number(),
+    groupId: z.number(),
+    accountId: z.number().nullable(),
+    kind: z.enum(['placeholder', 'linked']),
+    status: z.enum(['active', 'archived']),
+    displayName: z.string(),
+    avatar: avatarSchema.nullable(),
+    createdAt: z.string(),
+    updatedAt: z.string(),
+    claimedAt: z.string().nullable(),
+})
+
+const groupPersonOwnershipSchema = z.object({
+    gameId: z.number(),
+    status: z.enum(['asserted', 'rejected', 'disputed']),
+    source: z.enum(['placeholder_setup', 'account_collection', 'claimed_import']),
+    enteredByAccountId: z.number(),
+    confirmedByAccountId: z.number().nullable(),
+    createdAt: z.string(),
+    updatedAt: z.string(),
+})
+
+const groupPersonPreferenceSchema = z.object({
+    gameId: z.number(),
+    preference: z.enum(['favorite', 'like', 'neutral', 'avoid']),
+    source: z.enum(['placeholder_setup', 'claimed_import', 'account_profile']),
+    enteredByAccountId: z.number(),
+    createdAt: z.string(),
+    updatedAt: z.string(),
+})
+
+export const groupPeopleSchema: z.ZodType<{ people: Array<GroupPersonWorkspaceType> }> = z.object({
+    people: z.array(
+        z.object({
+            person: groupPersonSchema,
+            ownership: z.array(groupPersonOwnershipSchema),
+            preferences: z.array(groupPersonPreferenceSchema),
+        }),
+    ),
+})
+
+export const groupPersonSchemaResponse = groupPersonSchema
+
 export const groupInvitationsSchema: z.ZodType<Array<InvitationWithAccountsData>> = z.array(
     z.object({
         id: z.number(),
@@ -440,6 +485,7 @@ export const sessionPlayedGamesUpdatedSchema: z.ZodType<SessionPlayedGamesUpdate
 export const recommendationsSchema: z.ZodType<RecommendationsType> = z.object({
     groupId: z.number(),
     attendeeIds: z.array(z.number()),
+    participantIds: z.array(z.number()).optional(),
     availableMinutes: z.number().nullable(),
     decisionLens: z.enum(['balanced', 'fresh', 'favorite']),
     recommendations: z.array(

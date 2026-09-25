@@ -83,11 +83,84 @@
                 <div class="flex min-w-max gap-2">
                     <a href="#decide" class="rounded-xl px-3 py-2 text-sm font-medium text-indigo-700 transition hover:bg-indigo-50 dark:text-indigo-300 dark:hover:bg-indigo-950/40">Decide</a>
                     <a href="#acquire" class="rounded-xl px-3 py-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800">Games to acquire</a>
+                    <a href="#people" class="rounded-xl px-3 py-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800">People</a>
                     <a href="#sessions" class="rounded-xl px-3 py-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800">Sessions</a>
                     <a href="#library" class="rounded-xl px-3 py-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800">Group library</a>
                     <a href="#history" class="rounded-xl px-3 py-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800">History & insights</a>
                 </div>
             </nav>
+
+            <section id="people" class="scroll-mt-24 rounded-2xl border border-indigo-100 bg-indigo-50/60 p-6 dark:border-indigo-900/60 dark:bg-indigo-950/20" aria-labelledby="people-heading">
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Group people</p>
+                        <h2 id="people-heading" class="mt-1 text-2xl font-bold">Set up the people around your table</h2>
+                        <p class="mt-1 max-w-2xl text-secondary">Add friends as group profiles first. They do not need an account yet, and their history can be linked later.</p>
+                    </div>
+                    @if (isGroupOwnerComputed()) {
+                        <div class="flex w-full gap-2 sm:w-auto">
+                            <label class="sr-only" for="new-group-person-name">Person name</label>
+                            <input
+                                id="new-group-person-name"
+                                class="min-w-0 flex-1 rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900 sm:w-48"
+                                [value]="newGroupPersonName()"
+                                (input)="newGroupPersonName.set($any($event.target).value)"
+                                (keyup.enter)="addGroupPerson()"
+                                placeholder="Friend's name"
+                                maxlength="100"
+                            />
+                            <button type="button" class="app-btn-primary shrink-0" [disabled]="!newGroupPersonName().trim() || groupPersonMutationId() !== null" (click)="addGroupPerson()">Add person</button>
+                        </div>
+                    }
+                </div>
+
+                @if (groupPeopleLoading()) {
+                    <div class="mt-5 rounded-2xl border border-dashed border-indigo-200 p-6 text-center text-secondary dark:border-indigo-900" role="status">Loading group people…</div>
+                } @else if (groupPeopleError()) {
+                    <div class="mt-5 rounded-2xl border border-amber-200 bg-amber-50 p-6 text-center dark:border-amber-900/50 dark:bg-amber-950/30" role="alert">
+                        <p class="font-medium">Group people could not be loaded.</p>
+                        <button type="button" class="app-btn-secondary mt-4" (click)="retryGroupPeople()">Retry</button>
+                    </div>
+                } @else if (groupPeople$().length === 0) {
+                    <div class="mt-5 rounded-2xl border border-dashed border-indigo-200 p-6 text-center dark:border-indigo-900">
+                        <p class="font-medium">No group profiles yet.</p>
+                        <p class="mt-1 text-sm text-secondary">Add the people who usually play with you so recommendations and history can include them.</p>
+                    </div>
+                } @else {
+                    <div class="mt-5 grid gap-4 md:grid-cols-2">
+                        @for (person of groupPeople$(); track person.person.id) {
+                            <article class="rounded-2xl border border-white bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="min-w-0">
+                                        <div class="flex flex-wrap items-center gap-2">
+                                            <h3 class="font-semibold">{{ person.person.displayName }}</h3>
+                                            <span class="rounded-full bg-zinc-100 px-2 py-1 text-xs text-secondary dark:bg-zinc-800">{{ person.person.kind === 'linked' ? 'Account linked' : 'Placeholder' }}</span>
+                                        </div>
+                                        <p class="mt-1 text-xs text-secondary">{{ getGroupPersonOwnedGameCount(person) }} games · {{ person.preferences.length }} preferences</p>
+                                    </div>
+                                    @if (isGroupOwnerComputed() && person.person.kind === 'placeholder') {
+                                        <button type="button" class="text-xs text-secondary underline disabled:opacity-60" [disabled]="groupPersonMutationId() !== null" (click)="archiveGroupPerson(person.person.id)">Archive</button>
+                                    }
+                                </div>
+                                @if (totalUniqueGamesComputed().length > 0 && isGroupOwnerComputed()) {
+                                    <div class="mt-4 flex flex-wrap gap-2" aria-label="Games this person may own">
+                                        @for (game of totalUniqueGamesComputed(); track game.id) {
+                                            <button
+                                                type="button"
+                                                class="rounded-full border px-2.5 py-1 text-xs transition-colors"
+                                                [ngClass]="ownsGroupPersonGame(person, game.id) ? 'border-indigo-500 bg-indigo-100 text-indigo-800 dark:bg-indigo-950/50 dark:text-indigo-200' : 'border-zinc-200 text-secondary dark:border-zinc-700'"
+                                                [attr.aria-pressed]="ownsGroupPersonGame(person, game.id)"
+                                                [disabled]="groupPersonMutationId() !== null"
+                                                (click)="toggleGroupPersonGame(person, game.id)"
+                                            >{{ game.titleTranslations.en || game.title || 'Game' }}</button>
+                                        }
+                                    </div>
+                                }
+                            </article>
+                        }
+                    </div>
+                }
+            </section>
 
             <section class="grid gap-4 lg:grid-cols-3" aria-label="Group overview">
                 <article class="rounded-2xl bg-indigo-700 p-6 text-white shadow-lg lg:col-span-2">

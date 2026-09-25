@@ -24,6 +24,8 @@ import {
     gamesSchema,
     groupAcquisitionBoardSchema,
     groupInvitationsSchema,
+    groupPeopleSchema,
+    groupPersonSchemaResponse,
     meetDetailsSchema,
     meetSchema,
     messageSchema,
@@ -71,6 +73,8 @@ import type {
     GameViewType,
     GameWithTagsAndTranslationsType,
     GroupAcquisitionEntryType,
+    GroupPersonType,
+    GroupPersonWorkspaceType,
     GroupWithMembersAndGames,
     HistoryRecordType,
     InvitationWithAccountsData,
@@ -510,6 +514,42 @@ export class Api {
             .pipe(map((response) => groupAcquisitionBoardSchema.parse(response)))
     }
 
+    getGroupPeople(groupId: number) {
+        return this.http
+            .get<{ people: Array<GroupPersonWorkspaceType> }>(`${this.url}/groups/${groupId}/people`)
+            .pipe(map((response) => groupPeopleSchema.parse(response)))
+    }
+
+    createGroupPerson(groupId: number, displayName: string) {
+        return this.http
+            .post<GroupPersonType>(`${this.url}/groups/${groupId}/people`, { displayName })
+            .pipe(map((response) => groupPersonSchemaResponse.parse(response)))
+    }
+
+    updateGroupPerson(groupId: number, personId: number, body: { displayName?: string; status?: 'active' | 'archived' }) {
+        return this.http
+            .patch<GroupPersonType>(`${this.url}/groups/${groupId}/people/${personId}`, body)
+            .pipe(map((response) => groupPersonSchemaResponse.parse(response)))
+    }
+
+    updateGroupPersonOwnership(groupId: number, personId: number, gameId: number, status: 'asserted' | 'rejected' | 'disputed') {
+        return this.http
+            .put<{ success: true }>(`${this.url}/groups/${groupId}/people/${personId}/ownership`, { gameId, status })
+            .pipe(map((response) => successSchema.parse(response)))
+    }
+
+    updateGroupPersonPreference(groupId: number, personId: number, gameId: number, preference: 'favorite' | 'like' | 'neutral' | 'avoid') {
+        return this.http
+            .put<{ success: true }>(`${this.url}/groups/${groupId}/people/${personId}/preferences`, { gameId, preference })
+            .pipe(map((response) => successSchema.parse(response)))
+    }
+
+    deleteGroupPersonPreference(groupId: number, personId: number, gameId: number) {
+        return this.http
+            .delete<{ success: true }>(`${this.url}/groups/${groupId}/people/${personId}/preferences/${gameId}`)
+            .pipe(map((response) => successSchema.parse(response)))
+    }
+
     addGroupAcquisitionInterest(groupId: number, gameId: number) {
         return this.http
             .post<{ success: true }>(`${this.url}/groups/${groupId}/acquisition-board`, { gameId })
@@ -563,6 +603,17 @@ export class Api {
     }) {
         return this.http
             .post<RecommendationsType>(`${this.url}/play/recommendations`, body)
+            .pipe(map((response) => recommendationsSchema.parse(response)))
+    }
+
+    getParticipantRecommendations(body: {
+        groupId: number
+        groupPersonIds: Array<number>
+        availableMinutes?: number
+        decisionLens?: 'balanced' | 'fresh' | 'favorite'
+    }) {
+        return this.http
+            .post<RecommendationsType>(`${this.url}/play/recommendations/participants`, body)
             .pipe(map((response) => recommendationsSchema.parse(response)))
     }
 

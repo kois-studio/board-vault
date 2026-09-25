@@ -57,9 +57,22 @@
                     <div class="mb-3 flex flex-wrap items-center gap-3">
                         <button type="button" class="text-sm font-medium text-indigo-600 underline underline-offset-2 dark:text-indigo-400" (click)="selectAllAttendees()">Everyone</button>
                         <button type="button" class="text-sm text-secondary underline underline-offset-2" (click)="clearAttendees()">Clear</button>
-                        <span class="text-sm text-secondary" aria-live="polite">{{ selectedAttendeeIds().length }} of {{ group.members.length }} selected</span>
+                        <span class="text-sm text-secondary" aria-live="polite">{{ selectedAttendeeIds().length }} of {{ groupPeople().length || group.members.length }} selected</span>
                     </div>
-                    <div class="grid gap-2 sm:grid-cols-2">
+                    @if (groupPeopleLoading()) {
+                        <p class="text-sm text-secondary" role="status">Loading group people…</p>
+                    } @else if (groupPeople().length > 0) {
+                        <div class="grid gap-2 sm:grid-cols-2">
+                        @for (person of groupPeople(); track person.person.id) {
+                            <label class="flex items-center gap-3 rounded-lg border border-zinc-200 dark:border-zinc-700 p-3 cursor-pointer">
+                                <input type="checkbox" [checked]="isAttendeeSelected(person.person.id)" [attr.aria-label]="'Include ' + person.person.displayName" (change)="toggleAttendee(person.person.id)" />
+                                <span>{{ person.person.displayName }}</span>
+                                <span class="text-secondary text-sm ml-auto">{{ person.ownership.length }} games</span>
+                            </label>
+                        }
+                        </div>
+                    } @else {
+                        <div class="grid gap-2 sm:grid-cols-2">
                         @for (member of group.members; track member.id) {
                             <label class="flex items-center gap-3 rounded-lg border border-zinc-200 dark:border-zinc-700 p-3 cursor-pointer">
                                 <input type="checkbox" [checked]="isAttendeeSelected(member.id)" [attr.aria-label]="'Include ' + getMemberName(group, member.id)" (change)="toggleAttendee(member.id)" />
@@ -67,7 +80,8 @@
                                 <span class="text-secondary text-sm ml-auto">{{ member.games.length }} games</span>
                             </label>
                         }
-                    </div>
+                        </div>
+                    }
                 </fieldset>
             }
 
@@ -138,7 +152,7 @@
                                     <a
                                         class="app-btn-secondary inline-block mt-3 text-sm"
                                         [routerLink]="['/groups', result.groupId, 'sessions', 'new']"
-                                        [queryParams]="{ plannedGameId: recommendation.gameData.id, attendeeIds: result.attendeeIds.join(',') }"
+                                        [queryParams]="{ plannedGameId: recommendation.gameData.id, participantIds: getRecommendationParticipantIds(result) }"
                                     >Schedule with this game</a>
                                     <div class="mt-3 flex flex-wrap items-center gap-3">
                                         <button

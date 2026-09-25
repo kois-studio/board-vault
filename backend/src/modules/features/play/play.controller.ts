@@ -12,6 +12,7 @@ import {
     RecommendationFeedbackBody,
     RecommendationFeedbackDto,
     RecommendationRequestBody,
+    ParticipantRecommendationRequestBody,
     RecommendationSignalsDto,
     RecommendationsDto,
 } from './play.types'
@@ -29,6 +30,14 @@ export class PlayController {
     @ApiResponse({ status: 200, type: RecommendationsDto })
     getRecommendations(@Req() request: { user: { userId: number } }, @Body() body: RecommendationRequestBody) {
         return this.playService.getRecommendations(request.user.userId, body)
+    }
+
+    @Post('/recommendations/participants')
+    @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
+    @ApiOperation({ summary: 'Get deterministic recommendations for group people, including placeholders' })
+    @ApiResponse({ status: 200, type: RecommendationsDto })
+    getParticipantRecommendations(@Req() request: { user: { userId: number } }, @Body() body: ParticipantRecommendationRequestBody) {
+        return this.playService.getParticipantRecommendations(request.user.userId, body)
     }
 
     @Post('/recommendations/feedback')
