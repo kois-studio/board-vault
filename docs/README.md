@@ -39,6 +39,7 @@ This directory is the canonical operating manual for AI developer agents working
 - [Testing and verification](testing.md)
 - [Authentication and onboarding state map](authentication.md)
 - [End-to-end UX flow review](ux-flows.md)
+- [Production test guide](production-test-guide.md) — fillable manual acceptance checklist
 
 ### Existing project documentation and source-specific notes
 
