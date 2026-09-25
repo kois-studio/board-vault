@@ -52,17 +52,38 @@ export class SessionsService {
             throw new ForbiddenException('You must belong to the group to create a session')
         }
 
-        if (body.attendeeIds.length === 0) {
+        const attendeeIds = [...new Set(body.attendeeIds ?? [])]
+        const groupPersonIds = [...new Set(body.groupPersonIds ?? [])]
+        const usesGroupPeople = groupPersonIds.length > 0
+
+        if (attendeeIds.length === 0 && groupPersonIds.length === 0) {
             throw new BadRequestException('A completed session must have at least one attendee')
         }
 
-        if (body.attendeeIds.some(accountId => !memberIdSet.has(accountId))) {
+        if (attendeeIds.length > 0 && groupPersonIds.length > 0) {
+            throw new BadRequestException('Choose either account attendees or group people for a session')
+        }
+
+        if (attendeeIds.some(accountId => !memberIdSet.has(accountId))) {
             throw new BadRequestException('Every attendee must belong to the selected group')
+        }
+
+        if (usesGroupPeople) {
+            const people = await this.databaseService.getGroupPeople(body.groupId)
+            const activePeople = new Set(people.rows.filter(row => String(row[4]) === 'active').map(row => Number(row[0])))
+
+            if (groupPersonIds.some(groupPersonId => !activePeople.has(groupPersonId))) {
+                throw new BadRequestException('Every participant must be active in the selected group')
+            }
         }
 
         const games = body.games.map(game => ({
             gameId: game.gameId,
-            participantIds: [...new Set(game.participantIds)],
+            participantIds: [...new Set(game.participantIds ?? [])],
+        }))
+        const personGames = body.games.map(game => ({
+            gameId: game.gameId,
+            participantIds: [...new Set(game.participantPersonIds ?? [])],
         }))
         const gameIds = games.map(game => game.gameId)
 
@@ -70,21 +91,32 @@ export class SessionsService {
             throw new BadRequestException('Each game may only appear once in a session')
         }
 
-        if (games.some(game => game.participantIds.length === 0)) {
+        if (usesGroupPeople && personGames.some(game => game.participantIds.length === 0)) {
             throw new BadRequestException('Every played game must have at least one participant')
         }
 
-        const availableGameIds = new Set(await this.databaseService.getGroupAvailableGameIds(body.groupId))
+        if (!usesGroupPeople && games.some(game => game.participantIds.length === 0)) {
+            throw new BadRequestException('Every played game must have at least one participant')
+        }
+
+        const availableGameIds = new Set(
+            await (usesGroupPeople
+                ? this.databaseService.getGroupAvailableGameIdsForPeople(body.groupId, groupPersonIds)
+                : this.databaseService.getGroupAvailableGameIds(body.groupId)),
+        )
 
         if (gameIds.some(gameId => !availableGameIds.has(gameId))) {
             throw new BadRequestException('Every game must be owned by at least one group member')
         }
 
-        const attendeeIdSet = new Set(body.attendeeIds)
+        const selectedParticipantIds = new Set(usesGroupPeople ? groupPersonIds : attendeeIds)
+        const selectedGames = usesGroupPeople ? personGames : games
 
-        for (const game of games) {
-            if (game.participantIds.some(accountId => !attendeeIdSet.has(accountId))) {
-                throw new BadRequestException('Game participants must be selected attendees')
+        for (const game of selectedGames) {
+            if (game.participantIds.some(participantId => !selectedParticipantIds.has(participantId))) {
+                throw new BadRequestException(
+                    usesGroupPeople ? 'Game participants must be selected group people' : 'Game participants must be selected attendees',
+                )
             }
         }
 
@@ -94,8 +126,10 @@ export class SessionsService {
             sessionDate: body.sessionDate,
             timezone: body.timezone,
             notes: body.notes,
-            attendeeIds: body.attendeeIds,
+            attendeeIds,
+            groupPersonIds: usesGroupPeople ? groupPersonIds : undefined,
             games,
+            personGames: usesGroupPeople ? personGames : undefined,
         })
 
         return {
@@ -117,18 +151,38 @@ export class SessionsService {
             throw new ForbiddenException('You must belong to the group to schedule a session')
         }
 
-        const attendeeIds = [...new Set(body.attendeeIds ?? memberIds)]
+        const attendeeIds = [...new Set(body.attendeeIds ?? [])]
+        const groupPersonIds = [...new Set(body.groupPersonIds ?? [])]
+        const usesGroupPeople = groupPersonIds.length > 0
+        const selectedAccountIds = attendeeIds.length > 0 ? attendeeIds : usesGroupPeople ? [] : memberIds
 
-        if (attendeeIds.length === 0) {
+        if (selectedAccountIds.length === 0 && groupPersonIds.length === 0) {
             throw new BadRequestException('A scheduled session must have at least one attendee')
         }
 
-        if (attendeeIds.some(accountId => !memberIds.includes(accountId))) {
+        if (attendeeIds.length > 0 && groupPersonIds.length > 0) {
+            throw new BadRequestException('Choose either account attendees or group people for a session')
+        }
+
+        if (selectedAccountIds.some(accountId => !memberIds.includes(accountId))) {
             throw new BadRequestException('Every attendee must belong to the selected group')
         }
 
+        if (usesGroupPeople) {
+            const people = await this.databaseService.getGroupPeople(body.groupId)
+            const activePeople = new Set(people.rows.filter(row => String(row[4]) === 'active').map(row => Number(row[0])))
+
+            if (groupPersonIds.some(groupPersonId => !activePeople.has(groupPersonId))) {
+                throw new BadRequestException('Every participant must be active in the selected group')
+            }
+        }
+
         const plannedGameIds = [...new Set(body.plannedGameIds ?? [])]
-        const availableGameIds = new Set(await this.databaseService.getGroupAvailableGameIds(body.groupId))
+        const availableGameIds = new Set(
+            await (usesGroupPeople
+                ? this.databaseService.getGroupAvailableGameIdsForPeople(body.groupId, groupPersonIds)
+                : this.databaseService.getGroupAvailableGameIds(body.groupId)),
+        )
 
         if (plannedGameIds.some(gameId => !availableGameIds.has(gameId))) {
             throw new BadRequestException('Every planned game must be owned by at least one group member')
@@ -140,7 +194,8 @@ export class SessionsService {
             sessionDate: body.sessionDate,
             timezone: body.timezone,
             notes: body.notes,
-            attendeeIds,
+            attendeeIds: selectedAccountIds,
+            groupPersonIds: usesGroupPeople ? groupPersonIds : undefined,
             plannedGameIds,
         })
 
@@ -189,8 +244,15 @@ export class SessionsService {
             throw new ForbiddenException('Only the session organizer can manage attendees')
         }
 
-        if (body.attendeeIds.length === 0) {
+        const attendeeIds = [...new Set(body.attendeeIds ?? [])]
+        const groupPersonIds = [...new Set(body.groupPersonIds ?? [])]
+
+        if (attendeeIds.length === 0 && groupPersonIds.length === 0) {
             throw new BadRequestException('A session must retain at least one attendee')
+        }
+
+        if (attendeeIds.length > 0 && groupPersonIds.length > 0) {
+            throw new BadRequestException('Choose either account attendees or group people for a session')
         }
 
         const status = String(session.rows[0][5] ?? 'completed') as SessionStatusUpdatedDto['status']
@@ -202,23 +264,44 @@ export class SessionsService {
         const groupId = Number(session.rows[0][1])
         const memberIds = await this.databaseService.getGroupMemberIds(groupId)
 
-        if (body.attendeeIds.some(accountId => !memberIds.includes(accountId))) {
+        if (attendeeIds.some(accountId => !memberIds.includes(accountId))) {
             throw new BadRequestException('Every attendee must belong to the session group')
         }
 
-        const nextAttendeeIds = new Set(body.attendeeIds)
-        const playedGameParticipants = await this.databaseService.getMeetPlayedGameParticipants(sessionId)
+        const people = await this.databaseService.getGroupPeople(groupId)
+        const activePeople = new Set(people.rows.filter(row => String(row[4]) === 'active').map(row => Number(row[0])))
 
-        if (playedGameParticipants.some(game => game.participantIds.some(accountId => !nextAttendeeIds.has(accountId)))) {
+        if (groupPersonIds.some(groupPersonId => !activePeople.has(groupPersonId))) {
+            throw new BadRequestException('Every participant must be active in the session group')
+        }
+
+        const nextAttendeeIds = new Set(attendeeIds)
+        const nextPersonIds = new Set(groupPersonIds)
+        const existingPersonIds = await this.databaseService.getMeetPersonIds(sessionId)
+        const playedGameParticipants =
+            existingPersonIds.length > 0
+                ? await this.databaseService.getMeetPlayedGamePersonParticipants(sessionId)
+                : await this.databaseService.getMeetPlayedGameParticipants(sessionId)
+
+        if (
+            playedGameParticipants.some(game =>
+                game.participantIds.some(participantId =>
+                    existingPersonIds.length > 0 ? !nextPersonIds.has(participantId) : !nextAttendeeIds.has(participantId),
+                ),
+            )
+        ) {
             throw new BadRequestException('A member who played a recorded game cannot be removed from the session attendees')
         }
 
-        const applied = await this.databaseService.replaceMeetAttendees(sessionId, body.attendeeIds, status)
+        const applied =
+            existingPersonIds.length > 0
+                ? await this.databaseService.replaceMeetPersonAttendees(sessionId, groupPersonIds, status)
+                : await this.databaseService.replaceMeetAttendees(sessionId, attendeeIds, status)
 
         if (applied === false) {
             throw new ConflictException('The session changed while attendees were being updated. Reload and try again.')
         }
-        return { sessionId, attendeeIds: body.attendeeIds }
+        return { sessionId, attendeeIds, groupPersonIds: groupPersonIds.length > 0 ? groupPersonIds : undefined }
     }
 
     async updateSessionShortlist(
@@ -239,7 +322,12 @@ export class SessionsService {
         }
 
         const groupId = Number(session.rows[0][1])
-        const availableGameIds = new Set(await this.databaseService.getGroupAvailableGameIds(groupId))
+        const personIds = await this.databaseService.getMeetPersonIds(sessionId)
+        const availableGameIds = new Set(
+            await (personIds.length > 0
+                ? this.databaseService.getGroupAvailableGameIdsForPeople(groupId, personIds)
+                : this.databaseService.getGroupAvailableGameIds(groupId)),
+        )
         const plannedGameIds = [...new Set(body.plannedGameIds)]
 
         if (plannedGameIds.some(gameId => !availableGameIds.has(gameId))) {
@@ -272,7 +360,12 @@ export class SessionsService {
         }
 
         const groupId = Number(session.rows[0][1])
-        const availableGameIds = new Set(await this.databaseService.getGroupAvailableGameIds(groupId))
+        const personIds = await this.databaseService.getMeetPersonIds(sessionId)
+        const availableGameIds = new Set(
+            await (personIds.length > 0
+                ? this.databaseService.getGroupAvailableGameIdsForPeople(groupId, personIds)
+                : this.databaseService.getGroupAvailableGameIds(groupId)),
+        )
         const playedGameIds = [...new Set(body.playedGameIds)]
 
         if (playedGameIds.some(gameId => !availableGameIds.has(gameId))) {
@@ -280,9 +373,17 @@ export class SessionsService {
         }
 
         const attendees = new Set(await this.databaseService.getMeetAttendeeIds(sessionId))
-        const existingParticipants = body.games ? [] : await this.databaseService.getMeetPlayedGameParticipants(sessionId)
+        const personAttendees = new Set(personIds)
+        const existingParticipants = body.games
+            ? []
+            : personIds.length > 0
+              ? await this.databaseService.getMeetPlayedGamePersonParticipants(sessionId)
+              : await this.databaseService.getMeetPlayedGameParticipants(sessionId)
         const games = body.games
-            ? body.games.map(game => ({ gameId: game.gameId, participantIds: [...new Set(game.participantIds)] }))
+            ? body.games.map(game => ({
+                  gameId: game.gameId,
+                  participantIds: [...new Set(personIds.length > 0 ? (game.participantPersonIds ?? []) : (game.participantIds ?? []))],
+              }))
             : playedGameIds.map(gameId => ({
                   gameId,
                   participantIds: existingParticipants.find(existing => existing.gameId === gameId)?.participantIds ?? [],
@@ -306,12 +407,21 @@ export class SessionsService {
                 throw new BadRequestException('Every played game must include its participants')
             }
 
-            if (games.some(game => game.participantIds.some(accountId => !attendees.has(accountId)))) {
+            if (
+                games.some(game =>
+                    game.participantIds.some(
+                        participantId => !(personIds.length > 0 ? personAttendees.has(participantId) : attendees.has(participantId)),
+                    ),
+                )
+            ) {
                 throw new BadRequestException('Game participants must be invited session attendees')
             }
         }
 
-        const result = await this.databaseService.replaceMeetPlayedGames(sessionId, games, status)
+        const result =
+            personIds.length > 0
+                ? await this.databaseService.replaceMeetPlayedPersonGames(sessionId, games, status)
+                : await this.databaseService.replaceMeetPlayedGames(sessionId, games, status)
 
         if (result.applied === false) {
             throw new ConflictException('The session changed while played games were being updated. Reload and try again.')
@@ -326,23 +436,29 @@ export class SessionsService {
         return {
             sessionId,
             ...updatedSession,
+            ...(personIds.length > 0 ? { playedGamePersonParticipants: result.playedGameParticipants } : {}),
         }
     }
 
     async updateSessionRsvp(actorAccountId: number, sessionId: number, body: UpdateSessionRsvpBody): Promise<SessionRsvpUpdatedDto> {
         const attendee = await this.databaseService.getMeetAttendeeForAccount(sessionId, actorAccountId)
+        const personAttendee =
+            attendee.rows.length === 0 ? await this.databaseService.getMeetPersonAttendeeForAccount(sessionId, actorAccountId) : null
 
-        if (attendee.rows.length === 0) {
+        if (attendee.rows.length === 0 && (!personAttendee || personAttendee.rows.length === 0)) {
             throw new ForbiddenException('You are not invited to this session')
         }
 
-        const status = String(attendee.rows[0][5] ?? 'completed')
+        const status = String((attendee.rows[0] ?? personAttendee?.rows[0])?.[5] ?? 'completed')
 
         if (status !== 'scheduled' && status !== 'active') {
             throw new BadRequestException(`Cannot RSVP to a ${status} session`)
         }
 
-        const result = await this.databaseService.updateMeetAttendeeRsvp(sessionId, actorAccountId, body.rsvpStatus)
+        const result =
+            attendee.rows.length > 0
+                ? await this.databaseService.updateMeetAttendeeRsvp(sessionId, actorAccountId, body.rsvpStatus)
+                : await this.databaseService.updateMeetPersonAttendeeRsvp(sessionId, Number(personAttendee?.rows[0]?.[1]), body.rsvpStatus)
 
         if (result.rowsAffected !== 1) {
             throw new NotFoundException('Session invite not found')
@@ -369,12 +485,29 @@ export class SessionsService {
         }
 
         const invitedIds = new Set(await this.databaseService.getMeetAttendeeIds(sessionId))
+        const invitedPersonIds = new Set(await this.databaseService.getMeetPersonIds(sessionId))
 
-        if (body.attendedIds.some(accountId => !invitedIds.has(accountId))) {
+        const attendedIds = body.attendedIds ?? []
+        const attendedPersonIds = body.attendedPersonIds ?? []
+
+        if (attendedIds.length > 0 && attendedPersonIds.length > 0) {
+            throw new BadRequestException('Choose either account attendance or group-person attendance')
+        }
+
+        if (attendedIds.some(accountId => !invitedIds.has(accountId))) {
             throw new BadRequestException('Attendance can only be recorded for invited members')
         }
 
-        await this.databaseService.updateMeetAttendance(sessionId, body.attendedIds)
-        return { sessionId, attendedIds: body.attendedIds }
+        if (attendedPersonIds.some(groupPersonId => !invitedPersonIds.has(groupPersonId))) {
+            throw new BadRequestException('Attendance can only be recorded for invited group people')
+        }
+
+        if (invitedPersonIds.size > 0) {
+            await this.databaseService.updateMeetPersonAttendance(sessionId, attendedPersonIds)
+            return { sessionId, attendedIds: [], attendedPersonIds }
+        }
+
+        await this.databaseService.updateMeetAttendance(sessionId, attendedIds)
+        return { sessionId, attendedIds }
     }
 }

@@ -243,6 +243,12 @@ export type MeetPlayedGameParticipantsType = {
     participantIds: Array<number>
 }
 
+export type MeetPersonAttendeeStatusType = {
+    groupPersonId: number
+    rsvpStatus: 'pending' | 'accepted' | 'declined'
+    attendanceStatus: 'unknown' | 'attended' | 'absent'
+}
+
 export type MeetWithAttendeesAndGamesType = MeetType & {
     attendees: Array<UserType['id']>
     attendeeStatuses: Array<MeetAttendeeStatusType>
@@ -250,6 +256,9 @@ export type MeetWithAttendeesAndGamesType = MeetType & {
     plannedGames: Array<GameType['id']>
     skippedGames: Array<GameType['id']>
     playedGameParticipants: Array<MeetPlayedGameParticipantsType>
+    participants: Array<number>
+    participantStatuses: Array<MeetPersonAttendeeStatusType>
+    playedGamePersonParticipants: Array<MeetPlayedGameParticipantsType>
 }
 
 export type CreatePlaySessionRequest = {
@@ -257,10 +266,12 @@ export type CreatePlaySessionRequest = {
     sessionDate: string
     timezone: string
     notes?: string
-    attendeeIds: Array<number>
+    attendeeIds?: Array<number>
+    groupPersonIds?: Array<number>
     games: Array<{
         gameId: number
-        participantIds: Array<number>
+        participantIds?: Array<number>
+        participantPersonIds?: Array<number>
     }>
 }
 
@@ -274,7 +285,8 @@ export type ScheduleSessionRequest = {
     sessionDate: string
     timezone: string
     notes?: string
-    attendeeIds: Array<number>
+    attendeeIds?: Array<number>
+    groupPersonIds?: Array<number>
     plannedGameIds: Array<number>
 }
 
@@ -288,7 +300,8 @@ export type UpdateSessionStatusRequest = {
 }
 
 export type UpdateSessionAttendeesRequest = {
-    attendeeIds: Array<number>
+    attendeeIds?: Array<number>
+    groupPersonIds?: Array<number>
 }
 
 export type SessionStatusUpdatedType = {
@@ -299,6 +312,7 @@ export type SessionStatusUpdatedType = {
 export type SessionAttendeesUpdatedType = {
     sessionId: number
     attendeeIds: Array<number>
+    groupPersonIds?: Array<number>
 }
 
 export type UpdateSessionShortlistRequest = {
@@ -314,7 +328,8 @@ export type UpdateSessionPlayedGamesRequest = {
     playedGameIds: Array<number>
     games: Array<{
         gameId: number
-        participantIds: Array<number>
+        participantIds?: Array<number>
+        participantPersonIds?: Array<number>
     }>
 }
 
@@ -323,6 +338,7 @@ export type SessionPlayedGamesUpdatedType = {
     playedGameIds: Array<number>
     skippedGameIds: Array<number>
     playedGameParticipants: Array<MeetPlayedGameParticipantsType>
+    playedGamePersonParticipants?: Array<MeetPlayedGameParticipantsType>
 }
 
 export type UpdateSessionRsvpRequest = {
@@ -335,12 +351,14 @@ export type SessionRsvpUpdatedType = {
 }
 
 export type UpdateSessionAttendanceRequest = {
-    attendedIds: Array<number>
+    attendedIds?: Array<number>
+    attendedPersonIds?: Array<number>
 }
 
 export type SessionAttendanceUpdatedType = {
     sessionId: number
     attendedIds: Array<number>
+    attendedPersonIds?: Array<number>
 }
 
 export type UserStatsType = {

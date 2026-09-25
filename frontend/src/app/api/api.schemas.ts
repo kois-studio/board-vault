@@ -403,6 +403,24 @@ export const meetDetailsSchema: z.ZodType<MeetWithAttendeesAndGamesType> = meetF
             participantIds: z.array(z.number()),
         }),
     ),
+    participants: z.array(z.number()),
+    participantStatuses: z
+        .array(
+            z.object({
+                groupPersonId: z.number(),
+                rsvpStatus: z.enum(['pending', 'accepted', 'declined']),
+                attendanceStatus: z.enum(['unknown', 'attended', 'absent']),
+            }),
+        )
+        ,
+    playedGamePersonParticipants: z
+        .array(
+            z.object({
+                gameId: z.number(),
+                participantIds: z.array(z.number()),
+            }),
+        )
+        ,
 })
 
 const historyRecordSchema: z.ZodType<HistoryRecordType> = z.object({
@@ -432,6 +450,7 @@ export const sessionRsvpUpdatedSchema: z.ZodType<SessionRsvpUpdatedType> = z.obj
 export const sessionAttendanceUpdatedSchema: z.ZodType<SessionAttendanceUpdatedType> = z.object({
     sessionId: z.number(),
     attendedIds: z.array(z.number()),
+    attendedPersonIds: z.array(z.number()).optional(),
 })
 
 export const userNotificationsSchema: z.ZodType<Array<NotificationType>> = z.array(
@@ -463,6 +482,7 @@ export const sessionStatusUpdatedSchema: z.ZodType<SessionStatusUpdatedType> = z
 export const sessionAttendeesUpdatedSchema: z.ZodType<SessionAttendeesUpdatedType> = z.object({
     sessionId: z.number(),
     attendeeIds: z.array(z.number()),
+    groupPersonIds: z.array(z.number()).optional(),
 })
 
 export const sessionShortlistUpdatedSchema: z.ZodType<SessionShortlistUpdatedType> = z.object({
@@ -480,6 +500,14 @@ export const sessionPlayedGamesUpdatedSchema: z.ZodType<SessionPlayedGamesUpdate
             participantIds: z.array(z.number()),
         }),
     ),
+    playedGamePersonParticipants: z
+        .array(
+            z.object({
+                gameId: z.number(),
+                participantIds: z.array(z.number()),
+            }),
+        )
+        .optional(),
 })
 
 export const recommendationsSchema: z.ZodType<RecommendationsType> = z.object({
