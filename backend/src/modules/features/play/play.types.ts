@@ -161,6 +161,30 @@ export class RecommendationFeedbackBody {
     feedback: 'interested' | 'not_for_us' | 'played'
 }
 
+export class ParticipantRecommendationFeedbackBody {
+    @ApiProperty({ example: 7 })
+    @IsInt()
+    @Min(1)
+    groupId: number
+
+    @ApiProperty({ example: 42 })
+    @IsInt()
+    @Min(1)
+    gameId: number
+
+    @ApiProperty({ example: [12, 13] })
+    @IsArray()
+    @ArrayUnique()
+    @ArrayMinSize(1)
+    @IsInt({ each: true })
+    @Min(1, { each: true })
+    participantIds: Array<number>
+
+    @ApiProperty({ example: 'not_for_us', enum: ['interested', 'not_for_us', 'played'] })
+    @IsIn(['interested', 'not_for_us', 'played'])
+    feedback: 'interested' | 'not_for_us' | 'played'
+}
+
 export class RecommendationFeedbackDto {
     @ApiProperty({ example: true })
     success: true

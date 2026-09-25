@@ -238,12 +238,19 @@ export class RecommendationsPageComponent {
         this.feedbackState.update((state) => ({ ...state, [gameId]: 'saving' }))
         try {
             await firstValueFrom(
-                this.api.createRecommendationFeedback({
-                    groupId,
-                    gameId,
-                    attendeeIds,
-                    feedback,
-                }),
+                this.groupPeople().length > 0
+                    ? this.api.createParticipantRecommendationFeedback({
+                          groupId,
+                          gameId,
+                          participantIds: attendeeIds,
+                          feedback,
+                      })
+                    : this.api.createRecommendationFeedback({
+                          groupId,
+                          gameId,
+                          attendeeIds,
+                          feedback,
+                      }),
             )
             this.feedbackState.update((state) => ({ ...state, [gameId]: feedback }))
             void this.loadRecommendationSignals(groupId)

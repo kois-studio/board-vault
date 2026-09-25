@@ -404,23 +404,19 @@ export const meetDetailsSchema: z.ZodType<MeetWithAttendeesAndGamesType> = meetF
         }),
     ),
     participants: z.array(z.number()),
-    participantStatuses: z
-        .array(
-            z.object({
-                groupPersonId: z.number(),
-                rsvpStatus: z.enum(['pending', 'accepted', 'declined']),
-                attendanceStatus: z.enum(['unknown', 'attended', 'absent']),
-            }),
-        )
-        ,
-    playedGamePersonParticipants: z
-        .array(
-            z.object({
-                gameId: z.number(),
-                participantIds: z.array(z.number()),
-            }),
-        )
-        ,
+    participantStatuses: z.array(
+        z.object({
+            groupPersonId: z.number(),
+            rsvpStatus: z.enum(['pending', 'accepted', 'declined']),
+            attendanceStatus: z.enum(['unknown', 'attended', 'absent']),
+        }),
+    ),
+    playedGamePersonParticipants: z.array(
+        z.object({
+            gameId: z.number(),
+            participantIds: z.array(z.number()),
+        }),
+    ),
 })
 
 const historyRecordSchema: z.ZodType<HistoryRecordType> = z.object({

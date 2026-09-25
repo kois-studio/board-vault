@@ -12,6 +12,7 @@ import type {
     HistoryRecordDto,
     RecommendationDto,
     RecommendationFeedbackBody,
+    ParticipantRecommendationFeedbackBody,
     RecommendationFeedbackDto,
     RecommendationRequestBody,
     ParticipantRecommendationRequestBody,
@@ -138,13 +139,32 @@ export class PlayService {
             body.groupPersonIds.length,
             body.availableMinutes,
         )
+        const feedbackByGame = new Map<number, { interestedCount: number; notForUsCount: number }>()
+        const feedbackResult = await this.databaseService.getParticipantRecommendationFeedbackForGroup(body.groupId)
+        const selectedPeople = new Set(body.groupPersonIds)
+        const latestByPersonAndGame = new Set<string>()
+
+        for (const row of feedbackResult.rows) {
+            const gameId = Number(row[1])
+            const participantIds = this._parseIdList(row[3])
+            for (const participantId of participantIds) {
+                if (!selectedPeople.has(participantId)) continue
+                const key = `${gameId}:${participantId}`
+                if (latestByPersonAndGame.has(key)) continue
+                latestByPersonAndGame.add(key)
+                const current = feedbackByGame.get(gameId) ?? { interestedCount: 0, notForUsCount: 0 }
+                if (row[4] === 'interested') current.interestedCount += 1
+                if (row[4] === 'not_for_us') current.notForUsCount += 1
+                feedbackByGame.set(gameId, current)
+            }
+        }
         const recommendations = resultSet.rows
             .map(row =>
                 this._mapRecommendation(
                     row,
                     body.groupPersonIds.length,
                     body.availableMinutes,
-                    undefined,
+                    feedbackByGame.get(Number(row[0])),
                     decisionLens,
                     Number(row[10] ?? 0),
                 ),
@@ -161,6 +181,40 @@ export class PlayService {
             recommendations,
             noResultReason: recommendations.length === 0 ? 'No games are available from the selected group people.' : null,
         }
+    }
+
+    async createParticipantRecommendationFeedback(
+        actorAccountId: number,
+        body: ParticipantRecommendationFeedbackBody,
+    ): Promise<RecommendationFeedbackDto> {
+        const group = await this.databaseService.getGroupById(body.groupId)
+        if (group.rows.length === 0) throw new NotFoundException(`Group with id ${body.groupId} not found`)
+
+        const memberIds = await this.databaseService.getGroupMemberIds(body.groupId)
+        if (!memberIds.includes(actorAccountId)) {
+            throw new ForbiddenException('You must belong to the group to submit recommendation feedback')
+        }
+
+        const people = await this.databaseService.getGroupPeople(body.groupId)
+        const activePersonIds = new Set(people.rows.filter(row => String(row[4]) === 'active').map(row => Number(row[0])))
+        if (body.participantIds.some(personId => !activePersonIds.has(personId))) {
+            throw new BadRequestException('Every participant must belong to the selected group')
+        }
+
+        const availableGameIds = await this.databaseService.getGroupAvailableGameIdsForPeople(body.groupId, body.participantIds)
+        if (!availableGameIds.includes(body.gameId)) {
+            throw new BadRequestException('The selected group people do not own this game')
+        }
+
+        await this.databaseService.createParticipantRecommendationFeedback({
+            accountId: actorAccountId,
+            groupId: body.groupId,
+            gameId: body.gameId,
+            participantIds: JSON.stringify(body.participantIds),
+            feedback: body.feedback,
+        })
+
+        return { success: true }
     }
 
     private async _getNoResultReason(body: RecommendationRequestBody): Promise<string> {
@@ -268,6 +322,15 @@ export class PlayService {
                 interestedCount: feedback.interestedCount,
                 notForUsCount: feedback.notForUsCount,
             },
+        }
+    }
+
+    private _parseIdList(value: unknown): Array<number> {
+        try {
+            const parsed = JSON.parse(String(value))
+            return Array.isArray(parsed) ? parsed.map(Number).filter(Number.isInteger) : []
+        } catch {
+            return []
         }
     }
 
