@@ -21,14 +21,25 @@ export class PlaySessionGameBody {
     @Min(1)
     gameId: number
 
-    @ApiProperty({ example: [1, 2] })
+    @ApiProperty({ example: [1, 2], required: false })
+    @IsOptional()
     @IsArray()
     @ArrayUnique()
     @ArrayMinSize(1)
     @ArrayMaxSize(50)
     @IsInt({ each: true })
     @Min(1, { each: true })
-    participantIds: Array<number>
+    participantIds?: Array<number>
+
+    @ApiProperty({ example: [10, 11], required: false, description: 'GroupPerson IDs when the session uses group-scoped participants.' })
+    @IsOptional()
+    @IsArray()
+    @ArrayUnique()
+    @ArrayMinSize(1)
+    @ArrayMaxSize(50)
+    @IsInt({ each: true })
+    @Min(1, { each: true })
+    participantPersonIds?: Array<number>
 }
 
 export class CreatePlaySessionBody {
@@ -52,14 +63,25 @@ export class CreatePlaySessionBody {
     @MaxLength(1000)
     notes?: string
 
-    @ApiProperty({ example: [1, 2] })
+    @ApiProperty({ example: [1, 2], required: false })
+    @IsOptional()
     @IsArray()
     @ArrayUnique()
     @ArrayMinSize(1)
     @ArrayMaxSize(50)
     @IsInt({ each: true })
     @Min(1, { each: true })
-    attendeeIds: Array<number>
+    attendeeIds?: Array<number>
+
+    @ApiProperty({ example: [10, 11], required: false, description: 'GroupPerson IDs invited to the session.' })
+    @IsOptional()
+    @IsArray()
+    @ArrayUnique()
+    @ArrayMinSize(1)
+    @ArrayMaxSize(50)
+    @IsInt({ each: true })
+    @Min(1, { each: true })
+    groupPersonIds?: Array<number>
 
     @ApiProperty({ type: [PlaySessionGameBody] })
     @IsArray()
@@ -109,6 +131,16 @@ export class CreateScheduledSessionBody {
     @Min(1, { each: true })
     attendeeIds?: Array<number>
 
+    @ApiProperty({ example: [10, 11], required: false, description: 'Selected group people attending the session.' })
+    @IsOptional()
+    @IsArray()
+    @ArrayUnique()
+    @ArrayMinSize(1)
+    @ArrayMaxSize(50)
+    @IsInt({ each: true })
+    @Min(1, { each: true })
+    groupPersonIds?: Array<number>
+
     @ApiProperty({ example: [42, 84], required: false })
     @IsOptional()
     @IsArray()
@@ -134,14 +166,25 @@ export class UpdateSessionStatusBody {
 }
 
 export class UpdateSessionAttendeesBody {
-    @ApiProperty({ example: [1, 2] })
+    @ApiProperty({ example: [1, 2], required: false })
+    @IsOptional()
     @IsArray()
     @ArrayUnique()
     @ArrayMaxSize(50)
     @ArrayMinSize(1)
     @IsInt({ each: true })
     @Min(1, { each: true })
-    attendeeIds: Array<number>
+    attendeeIds?: Array<number>
+
+    @ApiProperty({ example: [10, 11], required: false })
+    @IsOptional()
+    @IsArray()
+    @ArrayUnique()
+    @ArrayMaxSize(50)
+    @ArrayMinSize(1)
+    @IsInt({ each: true })
+    @Min(1, { each: true })
+    groupPersonIds?: Array<number>
 }
 
 export class SessionStatusUpdatedDto {
@@ -158,6 +201,9 @@ export class SessionAttendeesUpdatedDto {
 
     @ApiProperty({ example: [1, 2] })
     attendeeIds: Array<number>
+
+    @ApiProperty({ example: [10, 11], required: false })
+    groupPersonIds?: Array<number>
 }
 
 export class UpdateSessionShortlistBody {
@@ -219,6 +265,9 @@ export class SessionPlayedGamesUpdatedDto {
 
     @ApiProperty({ type: [PlaySessionGameBody], description: 'The participants recorded for each played game.' })
     playedGameParticipants: Array<PlaySessionGameBody>
+
+    @ApiProperty({ type: [PlaySessionGameBody], required: false })
+    playedGamePersonParticipants?: Array<PlaySessionGameBody>
 }
 
 export class UpdateSessionRsvpBody {
@@ -245,7 +294,16 @@ export class UpdateSessionAttendanceBody {
     @ArrayMaxSize(50)
     @IsInt({ each: true })
     @Min(1, { each: true })
-    attendedIds: Array<number>
+    attendedIds?: Array<number>
+
+    @ApiProperty({ example: [10, 11], required: false })
+    @IsOptional()
+    @IsArray()
+    @ArrayUnique()
+    @ArrayMaxSize(50)
+    @IsInt({ each: true })
+    @Min(1, { each: true })
+    attendedPersonIds?: Array<number>
 }
 
 export class SessionAttendanceUpdatedDto {
@@ -254,4 +312,7 @@ export class SessionAttendanceUpdatedDto {
 
     @ApiProperty({ example: [1, 2] })
     attendedIds: Array<number>
+
+    @ApiProperty({ example: [10, 11], required: false })
+    attendedPersonIds?: Array<number>
 }
