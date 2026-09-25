@@ -54,16 +54,22 @@ try {
                 THEN 'group-interest: ok' ELSE 'group-interest: missing' END;
             SELECT CASE WHEN EXISTS (SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'GroupAcquisitionDecision')
                 THEN 'group-decision: ok' ELSE 'group-decision: missing' END;
+            SELECT CASE WHEN EXISTS (SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'GroupPerson')
+                THEN 'group-person: ok' ELSE 'group-person: missing' END;
+            SELECT CASE WHEN EXISTS (SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'GroupPersonGameOwnership')
+                THEN 'group-person-ownership: ok' ELSE 'group-person-ownership: missing' END;
+            SELECT CASE WHEN EXISTS (SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'GroupPersonGamePreference')
+                THEN 'group-person-preference: ok' ELSE 'group-person-preference: missing' END;
             SELECT CASE WHEN EXISTS (SELECT 1 FROM pragma_table_info('Meet') WHERE name = 'notes')
                 THEN 'meet-notes: ok' ELSE 'meet-notes: missing' END;
-            SELECT CASE WHEN (SELECT COUNT(*) FROM SchemaMigrations) = 9
-                AND (SELECT MAX(version) FROM SchemaMigrations) = '0009'
+            SELECT CASE WHEN (SELECT COUNT(*) FROM SchemaMigrations) = 10
+                AND (SELECT MAX(version) FROM SchemaMigrations) = '0010'
                 THEN 'migration-state: ok' ELSE 'migration-state: invalid' END;
             SELECT CASE WHEN EXISTS (SELECT 1 FROM pragma_table_info('Invitation') WHERE name = 'expiresAt')
                 THEN 'invitation-expiry: ok' ELSE 'invitation-expiry: missing' END;
         `,
     )
-    if (structure.code !== 0 || !structure.stdout.includes('group-interest: ok') || !structure.stdout.includes('group-decision: ok') || !structure.stdout.includes('meet-notes: ok') || !structure.stdout.includes('migration-state: ok') || !structure.stdout.includes('invitation-expiry: ok')) {
+    if (structure.code !== 0 || !structure.stdout.includes('group-interest: ok') || !structure.stdout.includes('group-decision: ok') || !structure.stdout.includes('group-person: ok') || !structure.stdout.includes('group-person-ownership: ok') || !structure.stdout.includes('group-person-preference: ok') || !structure.stdout.includes('meet-notes: ok') || !structure.stdout.includes('migration-state: ok') || !structure.stdout.includes('invitation-expiry: ok')) {
         throw new Error(`Migrated schema assertions failed.\n${structure.stdout}\n${structure.stderr}`)
     }
 
