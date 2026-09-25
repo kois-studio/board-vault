@@ -11,6 +11,12 @@ import type { GameOwnedDto, UpdateGameOwnedDto } from '../../../common/types/gam
 import type { SupportedLanguage } from '../../../common/types/game-translation.type'
 import type { GroupGameInterestBody } from '../../../common/types/group-game-interest.type'
 import type { CreateGroupMembershipBody } from '../../../common/types/group-membership.type'
+import type {
+    CreateGroupPersonBody,
+    GroupPersonGameOwnershipDto,
+    GroupPersonGamePreferenceDto,
+    UpdateGroupPersonBody,
+} from '../../../common/types/group-person.type'
 import type { CreateGroupBody, UpdateGroupBody } from '../../../common/types/group.type'
 import type { CreateInvitationBody, CreateInvitationByUsernameBody } from '../../../common/types/invitation.type'
 import type { CreateNotificationBody, UpdateNotificationBody } from '../../../common/types/notification.type'
@@ -37,7 +43,7 @@ type ScheduledSessionInput = {
     plannedGameIds: Array<number>
 }
 
-export const CURRENT_SCHEMA_VERSION = '0009'
+export const CURRENT_SCHEMA_VERSION = '0010'
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
@@ -679,6 +685,156 @@ export class DatabaseService implements OnModuleInit {
         })
 
         return resultSet.rows.map(row => Number(row[0]))
+    }
+
+    getGroupPeople(groupId: number, includeArchived = false) {
+        return this._tursoExecute({
+            sql: `
+                SELECT
+                    gp.id,
+                    gp.groupId,
+                    gp.accountId,
+                    gp.kind,
+                    gp.status,
+                    gp.displayName,
+                    gp.avatar,
+                    gp.createdAt,
+                    gp.updatedAt,
+                    gp.claimedAt
+                FROM GroupPerson gp
+                WHERE gp.groupId = ? ${includeArchived ? '' : "AND gp.status = 'active'"}
+                ORDER BY gp.status ASC, gp.displayName COLLATE NOCASE ASC, gp.id ASC
+            `,
+            args: [groupId],
+        })
+    }
+
+    getGroupPersonById(groupPersonId: number, groupId: number) {
+        return this._tursoExecute({
+            sql: 'SELECT id, groupId, accountId, kind, status, displayName, avatar, createdAt, updatedAt, claimedAt FROM GroupPerson WHERE id = ? AND groupId = ?',
+            args: [groupPersonId, groupId],
+        })
+    }
+
+    async createGroupPerson(groupId: number, createdByAccountId: number, body: CreateGroupPersonBody) {
+        return this._tursoExecute({
+            sql: `
+                INSERT INTO GroupPerson (groupId, kind, status, displayName, avatar, createdByAccountId)
+                VALUES (?, 'placeholder', 'active', ?, ?, ?)
+            `,
+            args: [groupId, body.displayName, body.avatar ? JSON.stringify(body.avatar) : null, createdByAccountId],
+        })
+    }
+
+    updateGroupPerson(groupPersonId: number, groupId: number, body: UpdateGroupPersonBody) {
+        const fields: Array<string> = []
+        const args: Array<string | number | null> = []
+
+        if (body.displayName !== undefined) {
+            fields.push('displayName = ?')
+            args.push(body.displayName)
+        }
+        if (body.avatar !== undefined) {
+            fields.push('avatar = ?')
+            args.push(body.avatar ? JSON.stringify(body.avatar) : null)
+        }
+        if (body.status !== undefined) {
+            fields.push('status = ?')
+            args.push(body.status)
+        }
+
+        if (fields.length === 0) {
+            throw new BadRequestException('No group person fields to update')
+        }
+
+        fields.push('updatedAt = CURRENT_TIMESTAMP')
+        args.push(groupPersonId, groupId)
+
+        return this._tursoExecute({
+            sql: `UPDATE GroupPerson SET ${fields.join(', ')} WHERE id = ? AND groupId = ?`,
+            args,
+        })
+    }
+
+    getGroupPersonOwnership(groupPersonId: number, groupId: number) {
+        return this._tursoExecute({
+            sql: `
+                SELECT o.gameId, o.status, o.source, o.enteredByAccountId,
+                       o.confirmedByAccountId, o.createdAt, o.updatedAt
+                FROM GroupPersonGameOwnership o
+                INNER JOIN GroupPerson gp ON gp.id = o.groupPersonId AND gp.groupId = ?
+                WHERE o.groupPersonId = ?
+                ORDER BY o.gameId ASC
+            `,
+            args: [groupId, groupPersonId],
+        })
+    }
+
+    upsertGroupPersonOwnership(
+        groupPersonId: number,
+        gameId: number,
+        enteredByAccountId: number,
+        status: GroupPersonGameOwnershipDto['status'],
+    ) {
+        return this._tursoExecute({
+            sql: `
+                INSERT INTO GroupPersonGameOwnership
+                    (groupPersonId, gameId, status, source, enteredByAccountId, updatedAt)
+                VALUES (?, ?, ?, 'placeholder_setup', ?, CURRENT_TIMESTAMP)
+                ON CONFLICT(groupPersonId, gameId) DO UPDATE SET
+                    status = excluded.status,
+                    source = excluded.source,
+                    enteredByAccountId = excluded.enteredByAccountId,
+                    updatedAt = CURRENT_TIMESTAMP
+            `,
+            args: [groupPersonId, gameId, status, enteredByAccountId],
+        })
+    }
+
+    getGroupPersonPreferences(groupPersonId: number, groupId: number) {
+        return this._tursoExecute({
+            sql: `
+                SELECT p.gameId, p.preference, p.source, p.enteredByAccountId, p.createdAt, p.updatedAt
+                FROM GroupPersonGamePreference p
+                INNER JOIN GroupPerson gp ON gp.id = p.groupPersonId AND gp.groupId = ?
+                WHERE p.groupPersonId = ?
+                ORDER BY p.gameId ASC
+            `,
+            args: [groupId, groupPersonId],
+        })
+    }
+
+    upsertGroupPersonPreference(
+        groupPersonId: number,
+        gameId: number,
+        enteredByAccountId: number,
+        preference: GroupPersonGamePreferenceDto['preference'],
+    ) {
+        return this._tursoExecute({
+            sql: `
+                INSERT INTO GroupPersonGamePreference
+                    (groupPersonId, gameId, preference, source, enteredByAccountId, updatedAt)
+                VALUES (?, ?, ?, 'placeholder_setup', ?, CURRENT_TIMESTAMP)
+                ON CONFLICT(groupPersonId, gameId) DO UPDATE SET
+                    preference = excluded.preference,
+                    source = excluded.source,
+                    enteredByAccountId = excluded.enteredByAccountId,
+                    updatedAt = CURRENT_TIMESTAMP
+            `,
+            args: [groupPersonId, gameId, preference, enteredByAccountId],
+        })
+    }
+
+    deleteGroupPersonPreference(groupPersonId: number, groupId: number, gameId: number) {
+        return this._tursoExecute({
+            sql: `
+                DELETE FROM GroupPersonGamePreference
+                WHERE groupPersonId = ?
+                  AND gameId = ?
+                  AND EXISTS (SELECT 1 FROM GroupPerson WHERE id = ? AND groupId = ?)
+            `,
+            args: [groupPersonId, gameId, groupPersonId, groupId],
+        })
     }
 
     getGroupAcquisitionBoard(groupId: number) {
