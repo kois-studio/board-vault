@@ -6,6 +6,7 @@ import { Api } from '../../api/api'
 import type {
     GameCompleteType,
     GroupAcquisitionEntryType,
+    GroupPersonWorkspaceType,
     HistoryRecordType,
     InvitationWithAccountsData,
     PublicUserType,
@@ -103,10 +104,16 @@ export class GroupViewComponent {
     public readonly acquisitionBoardError = signal(false)
     public readonly acquisitionMutationGameId = signal<number | null>(null)
     public readonly acquisitionDecisionMutationGameId = signal<number | null>(null)
+    public readonly groupPeople$ = signal<Array<GroupPersonWorkspaceType>>([])
+    public readonly groupPeopleLoading = signal(false)
+    public readonly groupPeopleError = signal(false)
+    public readonly newGroupPersonName = signal('')
+    public readonly groupPersonMutationId = signal<number | null>(null)
     public readonly isLeaveDialogOpen = signal(false)
     public readonly isLeavingGroup = signal(false)
     private activeSelectionGroupId: number | null = null
     private activeAcquisitionGroupId: number | null = null
+    private activePeopleGroupId: number | null = null
     private leaveDialogTrigger: HTMLElement | null = null
 
     // --------------------------------------------------------------------------
@@ -291,6 +298,9 @@ export class GroupViewComponent {
                 this.groupHistoryError.set(false)
                 this.acquisitionBoard$.set([])
                 this.acquisitionBoardError.set(false)
+                this.groupPeople$.set([])
+                this.groupPeopleError.set(false)
+                this.activePeopleGroupId = null
             }
 
             if (Number.isNaN(groupId) || !currentUser || !group) {
@@ -308,6 +318,11 @@ export class GroupViewComponent {
             if (this.activeAcquisitionGroupId !== groupId) {
                 this.activeAcquisitionGroupId = groupId
                 this.loadAcquisitionBoard(groupId)
+            }
+
+            if (this.activePeopleGroupId !== groupId) {
+                this.activePeopleGroupId = groupId
+                this.loadGroupPeople(groupId)
             }
 
             // get the group history
@@ -339,6 +354,69 @@ export class GroupViewComponent {
         if (!groupId) return
 
         this.loadAcquisitionBoard(groupId)
+    }
+
+    public retryGroupPeople(): void {
+        const groupId = this.groupData$()?.id
+        if (groupId) this.loadGroupPeople(groupId)
+    }
+
+    public async addGroupPerson(): Promise<void> {
+        const groupId = this.groupData$()?.id
+        const displayName = this.newGroupPersonName().trim()
+        if (!groupId || !this.isGroupOwnerComputed() || !displayName || this.groupPersonMutationId()) return
+
+        this.groupPersonMutationId.set(-1)
+        try {
+            await firstValueFrom(this.api.createGroupPerson(groupId, displayName))
+            this.newGroupPersonName.set('')
+            this.toastService.success(`${displayName} was added to the group.`)
+            this.loadGroupPeople(groupId)
+        } catch {
+            this.toastService.error('Could not add this person to the group.')
+        } finally {
+            this.groupPersonMutationId.set(null)
+        }
+    }
+
+    public async archiveGroupPerson(personId: number): Promise<void> {
+        const groupId = this.groupData$()?.id
+        if (!groupId || !this.isGroupOwnerComputed() || this.groupPersonMutationId()) return
+
+        this.groupPersonMutationId.set(personId)
+        try {
+            await firstValueFrom(this.api.updateGroupPerson(groupId, personId, { status: 'archived' }))
+            this.toastService.success('The group person was archived.')
+            this.loadGroupPeople(groupId)
+        } catch {
+            this.toastService.error('Could not archive this group person.')
+        } finally {
+            this.groupPersonMutationId.set(null)
+        }
+    }
+
+    public ownsGroupPersonGame(person: GroupPersonWorkspaceType, gameId: number): boolean {
+        return person.ownership.some((ownership) => ownership.gameId === gameId && ownership.status === 'asserted')
+    }
+
+    public getGroupPersonOwnedGameCount(person: GroupPersonWorkspaceType): number {
+        return person.ownership.filter((ownership) => ownership.status === 'asserted').length
+    }
+
+    public async toggleGroupPersonGame(person: GroupPersonWorkspaceType, gameId: number): Promise<void> {
+        const groupId = this.groupData$()?.id
+        if (!groupId || !this.isGroupOwnerComputed() || this.groupPersonMutationId()) return
+
+        this.groupPersonMutationId.set(person.person.id)
+        const nextStatus = this.ownsGroupPersonGame(person, gameId) ? 'rejected' : 'asserted'
+        try {
+            await firstValueFrom(this.api.updateGroupPersonOwnership(groupId, person.person.id, gameId, nextStatus))
+            this.loadGroupPeople(groupId)
+        } catch {
+            this.toastService.error('Could not update this person’s game ownership.')
+        } finally {
+            this.groupPersonMutationId.set(null)
+        }
     }
 
     public isCurrentUserInterested(entry: GroupAcquisitionEntryType): boolean {
@@ -407,6 +485,20 @@ export class GroupViewComponent {
                 this.acquisitionBoard$.set([])
             },
             complete: () => this.acquisitionBoardLoading.set(false),
+        })
+    }
+
+    private loadGroupPeople(groupId: number): void {
+        this.groupPeopleLoading.set(true)
+        this.groupPeopleError.set(false)
+        this.api.getGroupPeople(groupId).subscribe({
+            next: (response) => this.groupPeople$.set(response.people),
+            error: () => {
+                this.groupPeopleLoading.set(false)
+                this.groupPeopleError.set(true)
+                this.groupPeople$.set([])
+            },
+            complete: () => this.groupPeopleLoading.set(false),
         })
     }
 

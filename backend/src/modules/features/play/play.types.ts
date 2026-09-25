@@ -53,6 +53,33 @@ export class RecommendationRequestBody {
     decisionLens?: RecommendationDecisionLens
 }
 
+export class ParticipantRecommendationRequestBody {
+    @ApiProperty({ example: 7 })
+    @IsInt()
+    @Min(1)
+    groupId: number
+
+    @ApiProperty({ example: [12, 13, 14], type: [Number] })
+    @IsArray()
+    @ArrayUnique()
+    @ArrayMinSize(1)
+    @IsInt({ each: true })
+    @Min(1, { each: true })
+    groupPersonIds: Array<number>
+
+    @ApiProperty({ example: 120, required: false })
+    @IsOptional()
+    @IsInt()
+    @Min(1)
+    @Max(1440)
+    availableMinutes?: number
+
+    @ApiProperty({ example: 'balanced', enum: ['balanced', 'fresh', 'favorite'], required: false })
+    @IsOptional()
+    @IsIn(['balanced', 'fresh', 'favorite'])
+    decisionLens?: RecommendationDecisionLens
+}
+
 export class RecommendationExplanationDto {
     @ApiProperty({ example: ['Owned by 2 of 3 selected attendees', 'Fits 3 players'] })
     reasons: Array<string>
@@ -93,6 +120,9 @@ export class RecommendationsDto {
 
     @ApiProperty({ example: [1, 2] })
     attendeeIds: Array<number>
+
+    @ApiProperty({ example: [12, 13, 14], required: false })
+    participantIds?: Array<number>
 
     @ApiProperty({ example: 120, nullable: true })
     availableMinutes: number | null
