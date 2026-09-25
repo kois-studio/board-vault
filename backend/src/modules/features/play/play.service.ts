@@ -14,6 +14,7 @@ import type {
     RecommendationFeedbackBody,
     RecommendationFeedbackDto,
     RecommendationRequestBody,
+    ParticipantRecommendationRequestBody,
     RecommendationDecisionLens,
     RecommendationSignalsDto,
     RecommendationsDto,
@@ -110,6 +111,58 @@ export class PlayService {
         }
     }
 
+    async getParticipantRecommendations(actorAccountId: number, body: ParticipantRecommendationRequestBody): Promise<RecommendationsDto> {
+        const group = await this.databaseService.getGroupById(body.groupId)
+
+        if (group.rows.length === 0) {
+            throw new NotFoundException(`Group with id ${body.groupId} not found`)
+        }
+
+        const memberIds = await this.databaseService.getGroupMemberIds(body.groupId)
+
+        if (!memberIds.includes(actorAccountId)) {
+            throw new ForbiddenException('You must belong to the group to get recommendations')
+        }
+
+        const people = await this.databaseService.getGroupPeople(body.groupId)
+        const activePersonIds = new Set(people.rows.filter(row => String(row[4]) === 'active').map(row => Number(row[0])))
+
+        if (body.groupPersonIds.some(personId => !activePersonIds.has(personId))) {
+            throw new BadRequestException('Every selected person must belong to the group')
+        }
+
+        const decisionLens = body.decisionLens ?? 'balanced'
+        const resultSet = await this.databaseService.getGroupPersonRecommendationCandidates(
+            body.groupId,
+            body.groupPersonIds,
+            body.groupPersonIds.length,
+            body.availableMinutes,
+        )
+        const recommendations = resultSet.rows
+            .map(row =>
+                this._mapRecommendation(
+                    row,
+                    body.groupPersonIds.length,
+                    body.availableMinutes,
+                    undefined,
+                    decisionLens,
+                    Number(row[10] ?? 0),
+                ),
+            )
+            .sort((a, b) => b.score - a.score || a.gameData.id - b.gameData.id)
+            .slice(0, 10)
+
+        return {
+            groupId: body.groupId,
+            attendeeIds: [],
+            participantIds: body.groupPersonIds,
+            availableMinutes: body.availableMinutes ?? null,
+            decisionLens,
+            recommendations,
+            noResultReason: recommendations.length === 0 ? 'No games are available from the selected group people.' : null,
+        }
+    }
+
     private async _getNoResultReason(body: RecommendationRequestBody): Promise<string> {
         const counts = await this.databaseService.getRecommendationCandidateCounts(
             body.attendeeIds,
@@ -140,6 +193,7 @@ export class PlayService {
         availableMinutes?: number,
         feedback: { interestedCount: number; notForUsCount: number } = { interestedCount: 0, notForUsCount: 0 },
         decisionLens: RecommendationDecisionLens = 'balanced',
+        participantPreferenceScore = 0,
     ): RecommendationDto {
         const gameId = Number(row[0])
         const gameAvgDuration = row[2] === null || row[2] === undefined ? 0 : Number(row[2])
@@ -155,6 +209,7 @@ export class PlayService {
                 ? Math.round(20 * Math.max(0, 1 - Math.abs(availableMinutes - gameAvgDuration) / availableMinutes))
                 : 0
         const feedbackScore = Math.min(12, feedback.interestedCount * 4) - Math.min(12, feedback.notForUsCount * 6)
+        const participantPreferenceAdjustment = Math.max(-12, Math.min(12, participantPreferenceScore * 2))
         const decisionLensScore =
             decisionLens === 'fresh'
                 ? lastPlayedAt === null
@@ -197,7 +252,13 @@ export class PlayService {
                 maxPlayers,
                 titleTranslations: { en: titleEn, es: titleEs },
             },
-            score: Math.max(0, Math.min(100, 40 + ownershipScore + ratingScore + durationScore + feedbackScore + decisionLensScore)),
+            score: Math.max(
+                0,
+                Math.min(
+                    100,
+                    40 + ownershipScore + ratingScore + durationScore + feedbackScore + decisionLensScore + participantPreferenceAdjustment,
+                ),
+            ),
             explanation: {
                 reasons,
                 attendeeOwnerCount,
