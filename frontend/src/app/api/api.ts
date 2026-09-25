@@ -628,6 +628,17 @@ export class Api {
             .pipe(map((response) => successSchema.parse(response)))
     }
 
+    createParticipantRecommendationFeedback(body: {
+        groupId: number
+        gameId: number
+        participantIds: Array<number>
+        feedback: 'interested' | 'not_for_us' | 'played'
+    }) {
+        return this.http
+            .post<{ success: true }>(`${this.url}/play/recommendations/participants/feedback`, body)
+            .pipe(map((response) => successSchema.parse(response)))
+    }
+
     getRecommendationSignals(groupId: number) {
         return this.http
             .get<RecommendationSignalsType>(`${this.url}/play/recommendations/signals?groupId=${groupId}`)

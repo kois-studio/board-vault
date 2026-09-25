@@ -10,6 +10,7 @@ import { PlayService } from './play.service'
 import {
     HistoryRecordDto,
     RecommendationFeedbackBody,
+    ParticipantRecommendationFeedbackBody,
     RecommendationFeedbackDto,
     RecommendationRequestBody,
     ParticipantRecommendationRequestBody,
@@ -46,6 +47,17 @@ export class PlayController {
     @ApiResponse({ status: 201, type: RecommendationFeedbackDto })
     createRecommendationFeedback(@Req() request: { user: { userId: number } }, @Body() body: RecommendationFeedbackBody) {
         return this.playService.createRecommendationFeedback(request.user.userId, body)
+    }
+
+    @Post('/recommendations/participants/feedback')
+    @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
+    @ApiOperation({ summary: 'Record feedback for a participant-scoped recommendation' })
+    @ApiResponse({ status: 201, type: RecommendationFeedbackDto })
+    createParticipantRecommendationFeedback(
+        @Req() request: { user: { userId: number } },
+        @Body() body: ParticipantRecommendationFeedbackBody,
+    ) {
+        return this.playService.createParticipantRecommendationFeedback(request.user.userId, body)
     }
 
     @Get('/recommendations/signals')
