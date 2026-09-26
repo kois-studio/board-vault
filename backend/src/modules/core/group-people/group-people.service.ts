@@ -2,6 +2,7 @@ import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/commo
 
 import { DatabaseService } from '../../common/database/database.service'
 
+import type { GameCompleteDto } from '../../../common/types/game.type'
 import type {
     CreateGroupPersonBody,
     GroupPersonDto,
@@ -44,6 +45,21 @@ export class GroupPeopleService {
                 return { person, ownership, preferences, claimable: claimableIds.has(person.id) }
             }),
         )
+    }
+
+    async getCatalog(actorAccountId: number, groupId: number, search = ''): Promise<Array<GameCompleteDto>> {
+        await this.assertGroupMember(actorAccountId, groupId)
+        const result = await this.databaseService.getGroupPersonGameCatalog(search)
+
+        return result.rows.map(row => ({
+            id: Number(row[0]),
+            imageUrl: String(row[1]),
+            gameAvgDuration: Number(row[2]),
+            minPlayers: Number(row[3]),
+            maxPlayers: Number(row[4]),
+            title: String(row[5]),
+            titleTranslations: { en: String(row[6] ?? ''), es: String(row[7] ?? '') },
+        }))
     }
 
     async create(actorAccountId: number, groupId: number, body: CreateGroupPersonBody): Promise<GroupPersonDto> {

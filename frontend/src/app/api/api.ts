@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { map } from 'rxjs'
+import { z } from 'zod'
 import { environment } from '../../environments/environment'
 import {
     accessTokenSchema,
@@ -18,6 +19,7 @@ import {
     clerkGroupInvitationSchema,
     clerkGroupInvitationSummariesSchema,
     createdGroupSchema,
+    gameCompleteSchema,
     gameOwnedSchema,
     gameProposalSchema,
     gameViewSchema,
@@ -545,6 +547,12 @@ export class Api {
                 params: includeArchived ? { includeArchived: 'true' } : {},
             })
             .pipe(map((response) => groupPeopleSchema.parse(response)))
+    }
+
+    getGroupPersonCatalog(groupId: number, search = '') {
+        return this.http
+            .get<Array<GameCompleteType>>(`${this.url}/groups/${groupId}/people/catalog`, { params: { search } })
+            .pipe(map((response) => z.array(gameCompleteSchema).parse(response)))
     }
 
     createGroupPerson(groupId: number, displayName: string) {
