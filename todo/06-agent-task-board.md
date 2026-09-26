@@ -4080,8 +4080,7 @@ recommendation/session/history persistence, owner-managed ownership/preferences,
 targeted provider and legacy invitations, reviewed atomic claims, and the
 independent new-person branch. Added ADR-0010 and current-state documentation.
 
-Remaining evidence: live migration/backup and rollback rehearsal, authenticated
-browser proof of the complete claim/new-person journey, and human
+Remaining evidence: live migration/backup and rollback rehearsal, and human
 accessibility review. No deployment, push, provider mutation, or production
 data change was performed.
 
@@ -4106,5 +4105,9 @@ metadata after a successful claim.
 Verified: backend unit tests (283), backend E2E (7), backend build/lint,
 frontend unit tests (76), frontend build, Biome, default Playwright (6 passed,
 30 intentionally skipped), focused browser-test discovery, and empty-state
-migrations through 0014. No deployment, push, provider mutation, or
-production data change was performed.
+migrations through 0014. The real Development Clerk browser journey also
+passed in 8.1 seconds with temporary owner/invitee identities, provider
+invitation cleanup, impersonation-session revocation, and local SQLite
+cleanup. The journey exposed and fixed the claim page's stale `/games` API
+call and the test fixture's overlong group name. No deployment, push,
+Production provider mutation, or production data change was performed.
