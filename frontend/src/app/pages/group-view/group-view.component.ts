@@ -473,6 +473,21 @@ export class GroupViewComponent {
         return person.ownership.some((ownership) => ownership.gameId === gameId && ownership.status === 'asserted')
     }
 
+    public getGroupPersonOwnershipStatus(
+        person: GroupPersonWorkspaceType,
+        gameId: number,
+    ): GroupPersonWorkspaceType['ownership'][number]['status'] | null {
+        return person.ownership.find((ownership) => ownership.gameId === gameId)?.status ?? null
+    }
+
+    public getGroupPersonOwnershipSource(person: GroupPersonWorkspaceType, gameId: number): string | null {
+        const source = person.ownership.find((ownership) => ownership.gameId === gameId)?.source
+        if (source === 'account_collection') return 'synced from linked collection'
+        if (source === 'claimed_import') return 'accepted during claim'
+        if (source === 'placeholder_setup') return 'entered by organizer'
+        return null
+    }
+
     public getGroupPersonOwnedGameCount(person: GroupPersonWorkspaceType): number {
         return person.ownership.filter((ownership) => ownership.status === 'asserted').length
     }
@@ -482,7 +497,15 @@ export class GroupViewComponent {
         if (!groupId || !this.isGroupOwnerComputed() || this.groupPersonMutationId()) return
 
         this.groupPersonMutationId.set(person.person.id)
-        const nextStatus = this.ownsGroupPersonGame(person, gameId) ? 'rejected' : 'asserted'
+        const currentStatus = this.getGroupPersonOwnershipStatus(person, gameId)
+        const nextStatus: 'asserted' | 'rejected' | 'disputed' =
+            currentStatus === null
+                ? 'asserted'
+                : currentStatus === 'asserted'
+                  ? 'disputed'
+                  : currentStatus === 'disputed'
+                    ? 'rejected'
+                    : 'asserted'
         try {
             await firstValueFrom(this.api.updateGroupPersonOwnership(groupId, person.person.id, gameId, nextStatus))
             this.loadGroupPeople(groupId)
@@ -495,6 +518,14 @@ export class GroupViewComponent {
 
     public getGroupPersonPreference(person: GroupPersonWorkspaceType, gameId: number): GroupPersonPreferenceType['preference'] | null {
         return person.preferences.find((preference) => preference.gameId === gameId)?.preference ?? null
+    }
+
+    public getGroupPersonPreferenceSource(person: GroupPersonWorkspaceType, gameId: number): string | null {
+        const source = person.preferences.find((preference) => preference.gameId === gameId)?.source
+        if (source === 'account_profile') return 'synced from account profile'
+        if (source === 'claimed_import') return 'accepted during claim'
+        if (source === 'placeholder_setup') return 'entered by organizer'
+        return null
     }
 
     public async cycleGroupPersonPreference(person: GroupPersonWorkspaceType, gameId: number): Promise<void> {
