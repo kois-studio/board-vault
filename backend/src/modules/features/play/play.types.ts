@@ -99,7 +99,7 @@ export class ParticipantRecommendationRequestBody {
 }
 
 export class RecommendationExplanationDto {
-    @ApiProperty({ example: ['Owned by 2 of 3 selected attendees', 'Fits 3 players'] })
+    @ApiProperty({ example: ['Owned by 2 of 3 selected people (Carlos, Ana)', 'Fits 3 players'] })
     reasons: Array<string>
 
     @ApiProperty({ example: 2 })
