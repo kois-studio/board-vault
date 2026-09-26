@@ -178,7 +178,7 @@
                                                 type="button"
                                                 class="rounded-full border border-zinc-200 px-2.5 py-1 text-xs text-secondary transition-colors hover:border-indigo-400 dark:border-zinc-700"
                                                 [attr.aria-label]="'Preference for ' + (game.titleTranslations.en || game.title || 'Game')"
-                                                [attr.title]="getGroupPersonPreferenceSource(person, game.id) || 'Click to cycle preference: like, favorite, avoid, or clear.'"
+                                                [attr.title]="getGroupPersonPreferenceSource(person, game.id) || 'Click to cycle preference: like, favorite, neutral, avoid, or clear.'"
                                                 [disabled]="groupPersonMutationId() !== null"
                                                 (click)="cycleGroupPersonPreference(person, game.id)"
                                             >{{ game.titleTranslations.en || game.title || 'Game' }}: {{ getGroupPersonPreference(person, game.id) || 'none' }}<span class="ml-1 opacity-70">{{ getGroupPersonPreferenceSource(person, game.id) ? '· ' + getGroupPersonPreferenceSource(person, game.id) : '' }}</span></button>
