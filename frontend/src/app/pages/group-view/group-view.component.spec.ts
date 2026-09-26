@@ -1,5 +1,5 @@
 import { formatAttendeeSummary } from '../../core/utils/formatAttendeeSummary'
-import { shouldShowFirstGroupSetup } from './group-view.component'
+import { GroupViewComponent, shouldShowFirstGroupSetup } from './group-view.component'
 
 describe('formatAttendeeSummary', () => {
     it('uses an honest fallback when no attendance was recorded', () => {
@@ -38,5 +38,14 @@ describe('shouldShowFirstGroupSetup', () => {
         expect(shouldShowFirstGroupSetup({ ...emptyGroup, memberCount: 2 })).toBeFalse()
         expect(shouldShowFirstGroupSetup({ ...emptyGroup, gameCount: 1 })).toBeFalse()
         expect(shouldShowFirstGroupSetup({ ...emptyGroup, hasUpcomingSession: true })).toBeFalse()
+    })
+})
+
+describe('group participant history presentation', () => {
+    it('includes placeholder attendees and players in the same summaries as account members', () => {
+        const component = Object.create(GroupViewComponent.prototype) as GroupViewComponent
+        expect(component.getAttendeeSummary([{ displayName: 'Carlos', username: 'carlos' } as never], [{ displayName: 'Ana' }])).toBe(
+            'With Carlos, Ana',
+        )
     })
 })
