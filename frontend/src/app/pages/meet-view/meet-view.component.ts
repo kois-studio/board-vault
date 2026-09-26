@@ -543,11 +543,23 @@ export class MeetViewComponent {
         }
 
         if (this.isGroupPersonSession) {
+            const selectedPersonIds = new Set(this.meetData?.participants ?? [])
+            const availableGameIds = new Set<number>()
+            for (const person of this.groupPeople) {
+                if (!selectedPersonIds.has(person.person.id)) continue
+                for (const ownership of person.ownership) {
+                    if (ownership.status === 'asserted') availableGameIds.add(ownership.gameId)
+                }
+                if (person.person.accountId !== null) {
+                    const linkedMember = this.groupData.members.find((member) => member.id === person.person.accountId)
+                    for (const game of linkedMember?.games ?? []) availableGameIds.add(game.id)
+                }
+            }
             const personGames = new Map<number, GameCompleteType & { active: boolean }>()
-            for (const game of this.groupPersonCatalog) personGames.set(game.id, { ...game, active: true })
+            for (const game of this.groupPersonCatalog) personGames.set(game.id, { ...game, active: availableGameIds.has(game.id) })
             for (const member of this.groupData.members) {
                 for (const game of member.games) {
-                    if (!personGames.has(game.id)) personGames.set(game.id, { ...game, active: false })
+                    if (!personGames.has(game.id)) personGames.set(game.id, { ...game, active: availableGameIds.has(game.id) })
                 }
             }
             return [...personGames.values()].sort((a, b) => {
