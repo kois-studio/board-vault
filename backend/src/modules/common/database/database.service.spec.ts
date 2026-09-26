@@ -665,7 +665,8 @@ describe('DatabaseService logging', () => {
         const transaction = {
             execute: jest
                 .fn()
-                .mockResolvedValueOnce({ rows: [[42]] })
+                .mockResolvedValueOnce({ rows: [[42, null]] })
+                .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 }),
             commit: jest.fn().mockResolvedValue(undefined),
@@ -687,6 +688,10 @@ describe('DatabaseService logging', () => {
             args: [7, 12],
         })
         expect(transaction.execute).toHaveBeenNthCalledWith(3, {
+            sql: expect.stringContaining('INSERT INTO GroupPerson'),
+            args: [12, 12, 7, 12, 7],
+        })
+        expect(transaction.execute).toHaveBeenNthCalledWith(4, {
             sql: expect.stringContaining('DELETE FROM Invitation'),
             args: [42, 12, 7],
         })
@@ -884,6 +889,7 @@ describe('DatabaseService logging', () => {
             execute: jest
                 .fn()
                 .mockResolvedValueOnce({ rows: [[12]] })
+                .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 }),
             commit: jest.fn().mockResolvedValue(undefined),
             rollback: jest.fn().mockResolvedValue(undefined),
@@ -903,6 +909,10 @@ describe('DatabaseService logging', () => {
         expect(transaction.execute).toHaveBeenNthCalledWith(2, {
             sql: 'INSERT OR IGNORE INTO GroupMembership (accountId, groupId) VALUES (?, ?)',
             args: [9, 12],
+        })
+        expect(transaction.execute).toHaveBeenNthCalledWith(3, {
+            sql: expect.stringContaining('INSERT INTO GroupPerson'),
+            args: [12, 12, 9, 12, 9],
         })
         expect(transaction.commit).toHaveBeenCalledTimes(1)
         expect(transaction.close).toHaveBeenCalledTimes(1)
@@ -934,7 +944,11 @@ describe('DatabaseService logging', () => {
     it('creates a group and owner membership in one transaction', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: jest.fn().mockResolvedValueOnce({ lastInsertRowid: 77 }).mockResolvedValueOnce({ rowsAffected: 1 }),
+            execute: jest
+                .fn()
+                .mockResolvedValueOnce({ lastInsertRowid: 77 })
+                .mockResolvedValueOnce({ rowsAffected: 1 })
+                .mockResolvedValueOnce({ rowsAffected: 1 }),
             commit: jest.fn().mockResolvedValue(undefined),
             rollback: jest.fn().mockResolvedValue(undefined),
             close: jest.fn(),
@@ -953,6 +967,10 @@ describe('DatabaseService logging', () => {
         expect(transaction.execute).toHaveBeenNthCalledWith(2, {
             sql: 'INSERT INTO GroupMembership (accountId, groupId) VALUES (?, ?)',
             args: [7, 77],
+        })
+        expect(transaction.execute).toHaveBeenNthCalledWith(3, {
+            sql: expect.stringContaining('INSERT INTO GroupPerson'),
+            args: [77, 7, 7],
         })
         expect(transaction.commit).toHaveBeenCalledTimes(1)
         expect(transaction.rollback).not.toHaveBeenCalled()
