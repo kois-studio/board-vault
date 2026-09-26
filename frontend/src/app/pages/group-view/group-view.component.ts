@@ -533,7 +533,7 @@ export class GroupViewComponent {
         if (!groupId || !this.isGroupOwnerComputed() || this.groupPersonMutationId()) return
 
         const current = this.getGroupPersonPreference(person, gameId)
-        const next: Array<GroupPersonPreferenceType['preference'] | null> = [null, 'like', 'favorite', 'avoid']
+        const next: Array<GroupPersonPreferenceType['preference'] | null> = [null, 'like', 'favorite', 'neutral', 'avoid']
         const nextPreference = next[(next.indexOf(current) + 1) % next.length]
         this.groupPersonMutationId.set(person.person.id)
         try {
