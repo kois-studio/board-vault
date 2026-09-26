@@ -67,7 +67,7 @@
                             <label class="flex items-center gap-3 rounded-lg border border-zinc-200 dark:border-zinc-700 p-3 cursor-pointer">
                                 <input type="checkbox" [checked]="isAttendeeSelected(person.person.id)" [attr.aria-label]="'Include ' + person.person.displayName" (change)="toggleAttendee(person.person.id)" />
                                 <span>{{ person.person.displayName }}</span>
-                                <span class="text-secondary text-sm ml-auto">{{ person.ownership.length }} games</span>
+                            <span class="text-secondary text-sm ml-auto">{{ getGroupPersonGameCount(person) }} games</span>
                             </label>
                         }
                         </div>
@@ -87,7 +87,7 @@
 
             <div class="mt-6 flex items-center gap-4">
                 <app-button icon="lightbulb" [loading]="isLoading()" [disabled]="isLoading()" (click)="loadRecommendations()">Recommend games</app-button>
-                <span class="text-secondary text-sm">{{ selectedAttendeeIds().length }} attendee{{ selectedAttendeeIds().length === 1 ? '' : 's' }} selected</span>
+                <span class="text-secondary text-sm">{{ selectedAttendeeIds().length }} participant{{ selectedAttendeeIds().length === 1 ? '' : 's' }} selected</span>
             </div>
             @if (selectedGroup(); as group) {
                 <div class="mt-5 rounded-lg border border-indigo-200 bg-indigo-50 p-4 dark:border-indigo-900/60 dark:bg-indigo-950/30" aria-label="Recommendation decision context">

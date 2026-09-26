@@ -271,6 +271,10 @@ export class RecommendationsPageComponent {
         return member?.displayName || member?.username || 'Member'
     }
 
+    public getGroupPersonGameCount(person: GroupPersonWorkspaceType): number {
+        return person.ownership.filter((ownership) => ownership.status === 'asserted').length
+    }
+
     public selectedAttendeeNames(group: GroupWithMembersAndGames): string {
         return this.selectedAttendeeIds()
             .map((accountId) => this.getMemberName(group, accountId))
