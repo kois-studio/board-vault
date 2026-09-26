@@ -12,11 +12,11 @@ describe('GroupPeopleFeatureGuard', () => {
 
     it('keeps the participant surface enabled by default', () => {
         delete process.env.BOARD_VAULT_GROUP_PEOPLE_ENABLED
-        expect(new GroupPeopleFeatureGuard().canActivate({} as never)).toBe(true)
+        expect(new GroupPeopleFeatureGuard().canActivate()).toBe(true)
     })
 
     it('fails closed when the rollout kill switch is enabled', () => {
         process.env.BOARD_VAULT_GROUP_PEOPLE_ENABLED = 'false'
-        expect(() => new GroupPeopleFeatureGuard().canActivate({} as never)).toThrow(NotFoundException)
+        expect(() => new GroupPeopleFeatureGuard().canActivate()).toThrow(NotFoundException)
     })
 })
