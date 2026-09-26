@@ -11,6 +11,7 @@ This directory contains durable project decisions and explicitly marked proposal
 - [0007 — Invite-only group membership with owner/member roles](0007-group-membership-policy.md) — Accepted; public groups and richer roles are deferred
 - [0008 — Private-beta registration with preserved account access](0008-private-beta-registration.md) — Accepted; production sign-up is restricted until first-release completion criteria are met
 - [0009 — Group acquisition decisions are lightweight and group-owned](0009-group-acquisition-decisions.md) — Accepted; owner-controlled open/planned/not-now state remains separate from personal interest and ownership
+- [0010 — Group-scoped placeholder identities](0010-group-person-identities.md) — Accepted; organizers may represent unregistered people and later transfer the stable group history through reviewed claims
 
 Accepted ADRs are durable constraints unless a later ADR explicitly supersedes them.
 

@@ -207,6 +207,12 @@ export const routes: Routes = [
                 canActivate: [AuthOnlyGuard],
             },
             {
+                path: 'groups/:groupId/people/:personId/claim',
+                loadComponent: () =>
+                    import('./pages/group-person-claim/group-person-claim.component').then((m) => m.GroupPersonClaimComponent),
+                canActivate: [AuthOnlyGuard],
+            },
+            {
                 path: 'groups/:groupId/leave',
                 loadComponent: () => import('./pages/groups/group-action-redirect.component').then((m) => m.GroupActionRedirectComponent),
                 data: { target: 'leave' },

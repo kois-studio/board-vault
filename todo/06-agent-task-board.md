@@ -4064,3 +4064,23 @@ Acceptance: cache maintenance key parameters must be typed and bounded before re
 Changed: Cache maintenance deletion now validates a non-empty key capped at 256 characters before calling Redis, and disabled Redis mode has deterministic read/write/increment/readiness coverage without constructing a provider client.
 
 Verified: `cd backend && npx eslint "{src,apps,libs,test}/**/*.ts"`, `cd backend && npm test -- --runInBand` (46 suites / 241 tests), `cd backend && npm run build`, `cd backend && npm run lint:logs`, `cd backend && npm run docs:openapi`, and `git diff --check` pass. No deployment or push was performed.
+
+Continuation claim: UX-FLOW-001
+
+Owner: Codex
+
+Claimed: 2026-09-26
+
+Scope: implement the organizer-first single-user group participant model as a
+continuation of the connected group flow, preserving the existing invite-only
+authorization boundary.
+
+Changed: Added group-scoped placeholder/linkable identities, participant-aware
+recommendation/session/history persistence, owner-managed ownership/preferences,
+targeted provider and legacy invitations, reviewed atomic claims, and the
+independent new-person branch. Added ADR-0010 and current-state documentation.
+
+Remaining evidence: live migration/backup and rollback rehearsal, authenticated
+browser proof of the complete claim/new-person journey, and human
+accessibility review. No deployment, push, provider mutation, or production
+data change was performed.

@@ -92,7 +92,9 @@ export class GroupsController {
         @Req() request: { user: { userId: number } },
         @Body() body: CreateClerkGroupInvitationBody,
     ) {
-        return this.clerkIdentityService.createGroupInvitation(groupId, request.user.userId, body.emailAddress)
+        return body.groupPersonId === undefined
+            ? this.clerkIdentityService.createGroupInvitation(groupId, request.user.userId, body.emailAddress)
+            : this.clerkIdentityService.createGroupInvitation(groupId, request.user.userId, body.emailAddress, body.groupPersonId)
     }
 
     @UseGuards(GroupOwnerGuard)

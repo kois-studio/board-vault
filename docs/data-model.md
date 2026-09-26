@@ -51,6 +51,8 @@ The schema snapshot names these tables/entities:
 - `GameProposal`
 - `RecommendationFeedback`
 - `GroupGameInterest`
+- `GroupPerson`, `GroupPersonGameOwnership`, and `GroupPersonGamePreference`
+- `MeetPersonAttendee`, `MeetPersonGame`, and `RecommendationFeedbackParticipant`
 
 The backend source also has corresponding service/type/schema areas. The current product backlog identifies migration reproducibility, session transactions/API contracts, richer play events, and recommendation state as P0/P1 work.
 
@@ -75,6 +77,32 @@ The backend source also has corresponding service/type/schema areas. The current
   group member owns the game, board reads hide it because ownership is the
   terminal truth. The decision relation is separate from both member interest
   and personal wishlist rows.
+
+### Group-person identity
+
+`GroupPerson` is the stable identity for a person represented inside one group.
+It is either an unregistered `placeholder` or a `linked` person associated with
+one real `Account`. Existing real group members are backfilled as linked rows;
+new placeholder rows never create authentication accounts. Reads expose only
+group-safe display data and an actor-specific `claimable` flag—never the private
+claim email.
+
+`GroupPersonGameOwnership` records the group’s assertion that a person owns a
+game, including `placeholder_setup`, `account_collection`, or `claimed_import`
+source and asserted/rejected/disputed status. Preferences are separate rows
+with explicit favorite/like/neutral/avoid values. These relations are not a
+replacement for the authenticated account’s private `OwnedGame` collection.
+
+Migrations `0010` and `0011` create and backfill the identity/session relations.
+`0012` stores a private normalized email target for provider claims, and `0013`
+adds the same target to legacy account invitations. The repository empty-state
+verifier applies all four migrations from the documented baseline.
+
+Claiming is a transactional identity transition. The authenticated invitee can
+keep or remove each asserted ownership/preference, may opt into copying kept
+ownership into `OwnedGame`, and the existing `GroupPerson` ID remains attached
+to all historical sessions. The “join as new” branch creates an independent
+linked row and inherits no placeholder history.
 
 ## Repository reconciliation result
 
@@ -107,8 +135,9 @@ These findings are now split between resolved schema alignment and remaining API
 3. Continue `DATA-004`: apply the transaction policy to remaining multi-record mutations. Session lifecycle transitions and scheduled/active attendee, shortlist, and played-game replacement writes now use conditional transactional status gates; same-status stale overwrites and other legacy multi-write flows remain open.
 4. Execute `DATA-002`: observe the migration/empty-state checks in CI and document the real Turso backup/restore schedule, owner, recovery target, and rollback.
 5. Keep disposable integration data and the backup/restore rehearsal as launch gates.
-6. Apply and verify migration `0006-add-group-game-interest.sql` before
-   deploying the acquisition-board backend/frontend slice.
+6. Apply and verify migrations `0010`–`0013` with a fresh backup before
+   deploying the single-user group backend/frontend slice. Live rollout is not
+   claimed by repository tests alone.
 
 ## Source evidence
 

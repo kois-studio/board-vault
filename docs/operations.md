@@ -1,5 +1,24 @@
 # Operations, environments, and deployment
 
+## Single-user group rollout
+
+Migrations `0010-add-group-people.sql` through
+`0013-add-invitation-group-person.sql` are additive and must be applied with
+the documented migration runner. Before production rollout:
+
+1. capture and retain a fresh Turso backup;
+2. run `node database/scripts/verify-empty-state.mjs` locally;
+3. inspect the live `SchemaMigrations` version and apply the pending numbered
+   migrations transactionally;
+4. verify foreign keys, the backfilled linked `GroupPerson` count, and the new
+   participant/claim indexes; and
+5. rehearse restore/rollback ownership before enabling targeted invitations.
+
+The application is compatible with old account-only sessions through its
+participant adapters, but targeted claim and placeholder session writes require
+the new schema. Do not edit the live database manually or mark rollout complete
+from a local build alone.
+
 ## Local runtime
 
 Observed local toolchain: Node `v22.20.0`, npm `10.9.3`. The repository has tracked root, backend, and frontend package-lock files; installed dependencies are present in ignored `node_modules/` directories. Both package READMEs and verified commands use npm. The dependency-free root package exposes convenience wrappers for installation, build, unit tests, E2E tests, and migration verification; its lint wrapper calls package-local no-mutation `lint:check` scripts, while backend’s separate `lint` script still writes fixes and should not be used casually.

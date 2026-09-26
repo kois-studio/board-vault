@@ -23,8 +23,14 @@ export function mapMeetDetailsResult(resultSet: ResultSet): MeetWithAttendeesAnd
         status: String(row[11] ?? 'completed') as MeetWithAttendeesAndGames['status'],
         timezone: String(row[12] ?? 'UTC'),
         notes: row[13] == null ? null : String(row[13]),
-        participants: JSON.parse(String(row[14] ?? '[]')) as Array<number>,
-        participantStatuses: JSON.parse(String(row[15] ?? '[]')) as MeetWithAttendeesAndGames['participantStatuses'],
-        playedGamePersonParticipants: JSON.parse(String(row[16] ?? '[]')) as MeetWithAttendeesAndGames['playedGamePersonParticipants'],
+        ...(row.length > 14
+            ? {
+                  participants: JSON.parse(String(row[14] ?? '[]')) as Array<number>,
+                  participantStatuses: JSON.parse(String(row[15] ?? '[]')) as MeetWithAttendeesAndGames['participantStatuses'],
+                  playedGamePersonParticipants: JSON.parse(
+                      String(row[16] ?? '[]'),
+                  ) as MeetWithAttendeesAndGames['playedGamePersonParticipants'],
+              }
+            : {}),
     }
 }

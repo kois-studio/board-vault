@@ -28,6 +28,7 @@ This directory is the canonical operating manual for AI developer agents working
 - [ADR 0005 — Verification and password-reset token lifecycle](adr/0005-auth-token-lifecycle.md)
 - [ADR 0006 — Public nested-user response boundary](adr/0006-user-response-privacy.md)
 - [ADR 0007 — Invite-only group membership policy](adr/0007-group-membership-policy.md)
+- [ADR 0010 — Group-scoped placeholder identities](adr/0010-group-person-identities.md) — Accepted; organizer-entered participant profiles can later be claimed without rewriting history
 
 ### Current-state architecture and boundaries
 

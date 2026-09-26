@@ -15,7 +15,6 @@ import type {
     GameViewType,
     GameWithTagsAndTranslationsType,
     GroupAcquisitionEntryType,
-    GroupPersonWorkspaceType,
     GroupType,
     GroupWithMembersAndGames,
     HistoryRecordType,
@@ -319,12 +318,13 @@ const groupPersonPreferenceSchema = z.object({
     updatedAt: z.string(),
 })
 
-export const groupPeopleSchema: z.ZodType<{ people: Array<GroupPersonWorkspaceType> }> = z.object({
+export const groupPeopleSchema = z.object({
     people: z.array(
         z.object({
             person: groupPersonSchema,
             ownership: z.array(groupPersonOwnershipSchema),
             preferences: z.array(groupPersonPreferenceSchema),
+            claimable: z.boolean().default(false),
         }),
     ),
 })
@@ -428,10 +428,28 @@ export const meetDetailsSchema: z.ZodType<MeetWithAttendeesAndGamesType> = meetF
 const historyRecordSchema: z.ZodType<HistoryRecordType> = z.object({
     meetData: meetFields,
     attendedBy: z.array(publicUserSchema),
+    attendedByPeople: z
+        .array(
+            z.object({
+                id: z.number(),
+                displayName: z.string(),
+                avatar: avatarSchema.nullable(),
+            }),
+        )
+        .optional(),
     gamesPlayed: z.array(
         z.object({
             gameData: gameCompleteSchema,
             playedBy: z.array(publicUserSchema),
+            playedByPeople: z
+                .array(
+                    z.object({
+                        id: z.number(),
+                        displayName: z.string(),
+                        avatar: avatarSchema.nullable(),
+                    }),
+                )
+                .optional(),
         }),
     ),
 })

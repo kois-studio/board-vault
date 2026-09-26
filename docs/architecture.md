@@ -42,13 +42,20 @@ The frontend production environment points at `https://backend.board-vault.com`;
 - `backend/src/main.ts` validates selected environment variables, creates the Nest app with a global strict `ValidationPipe` and `ApiErrorFilter`, applies explicit 100 KB JSON/URL-encoded body limits, baseline security headers and the configured CORS allowlist, creates runtime Swagger, and listens on `PORT` or 3000. `HealthModule` exposes dependency-free liveness and coarse dependency readiness probes.
 - `backend/src/app.module.ts` imports global configuration, common modules (`auth`, `cache`, `database`, `email`, `health`), core entity modules, and feature modules; `ClerkSessionMiddleware` resolves verified Clerk sessions into the local request identity before compatibility JWT guards.
 - Common modules own cross-cutting auth/cache/database/email concerns.
-- The Clerk identity bridge also creates private-beta group invitations and
+- The Clerk identity bridge creates private-beta group invitations and
   consumes their server-created group context only after the invitee has a
-  verified Clerk identity; public registration remains closed independently.
+  verified Clerk identity; targeted invitations leave the claim decision to
+  the authenticated review screen, and public registration remains closed
+  independently.
 - Core modules own entity-oriented services such as users, groups, memberships, games, meets, invitations, reviews, tags, translations, notifications, and collection activity.
 - Feature modules orchestrate cross-domain flows for admin, collection, dashboard, play, and profile.
 - Controllers are mostly thin service delegators, but legacy/deprecated controllers and direct identity parameters create an inconsistent authorization surface. Operational cache endpoints are retained only behind authenticated administrator guards.
 - `DatabaseService` centralizes a large raw-SQL surface over a single libSQL client. It logs parameterized SQL templates without bound values. HTTP request logging is structured and correlated through `X-Request-Id` without query strings; auth/email/cache logging has targeted privacy fixes, while a repository-wide allow-list/redaction sweep remains open.
+- `GroupPeopleService` owns the group-person boundary. It authorizes member
+  reads, owner-only placeholder mutations, actor-specific claim eligibility,
+  and the idempotent “join as new person” branch. Session, recommendation,
+  and history services consume stable `GroupPerson` IDs while legacy account-ID
+  contracts remain compatibility adapters.
 
 ## Frontend boundaries
 
@@ -95,6 +102,11 @@ the next hosting deployment.
   future work.
 - API routes contain deprecated and newer feature paths without a versioning/compatibility contract. The obsolete dashboard meeting-creation path has been removed; legacy meet reads and `MeetAccountGame` history writes remain as explicit compatibility boundaries around the canonical sessions API, while new scheduled-session game state uses the canonical played-games route.
 - The frontend API schema file now establishes targeted runtime response validation for all current API adapter methods, including legacy invitation, attendee, and per-game played-participant writes; client-side negative coverage now includes the auth-status adapter, while future endpoints and broader malformed-response cases still require coverage.
+- The group workspace manages placeholder names, ownership assertions, and
+  preference cycles. A targeted invitation exposes a review route where the
+  invitee can deselect ownership/preferences and optionally import kept games
+  into the private collection; selecting “join as new” creates an independent
+  linked group person.
 - The backend bootstrap now installs a global strict `ValidationPipe` in addition to targeted controller pipes, and admin resource IDs use `ParseIntPipe` rather than arbitrary string coercion.
 
 ## Source evidence

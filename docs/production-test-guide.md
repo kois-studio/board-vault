@@ -1,5 +1,23 @@
 # Board Vault production test guide
 
+## Single-user group acceptance journey
+
+- [ ] Organizer creates one group and three placeholders without registering
+  the other people.
+- [ ] Organizer assigns ownership and preferences, refreshes, and confirms
+  the entries persist.
+- [ ] Organizer records a mixed real/placeholder session and confirms names in
+  group and personal history.
+- [ ] Organizer sends a targeted invitation and the invitee sees the correct
+  claim review after joining.
+- [ ] Invitee deselects at least one ownership and preference, leaves private
+  import disabled, and confirms the retained history remains linked.
+- [ ] A second invitee joins as a new person and does not receive the first
+  placeholder’s history.
+- [ ] Owner/member/non-member checks, wrong-email claim, expired/revoked
+  invitation, refresh, mobile, keyboard, and screen-reader behavior are
+  recorded.
+
 Use this checklist against the deployed production application. Use only a
 disposable test group for destructive actions. Do not write passwords, tokens,
 or other secrets in this file.

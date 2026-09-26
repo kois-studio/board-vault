@@ -21,6 +21,7 @@ export class InvitationsService {
             toAccountId: Number(row[3]),
             sentAt: String(row[4]),
             expiresAt: String(row[5]),
+            groupPersonId: row[6] === null || row[6] === undefined ? null : Number(row[6]),
         }))
         const result = invitationsSchema.safeParse(invitations)
 

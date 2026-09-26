@@ -1,5 +1,21 @@
 # Testing and verification
 
+## Single-user group coverage
+
+The participant identity slice is covered by backend service tests for
+group-member authorization, actor-derived email claim eligibility, filtered
+ownership/preference adoption, and idempotent “join as new” behavior. The
+database empty-state check applies migrations `0010` through `0013` and asserts
+the group-person, participant-session, claim-email, and legacy-invitation target
+structures. Frontend compilation covers the organizer workspace, mixed
+participant selectors, invitation target controls, and the claim review route.
+
+The remaining production evidence is a disposable authenticated browser
+journey with one organizer, at least two placeholders, a mixed session, a
+targeted invitation, deselection during claim, and a separate new-person join.
+It must be run against a backup and a live-schema verification before rollout;
+repository tests do not claim that live Turso has migrations `0010`–`0013`.
+
 ## Inventory at bootstrap
 
 - Backend: `backend/test/app.e2e-spec.ts` plus focused security, validation, persistence, recommendation, session, and provider-boundary suites under `backend/src/`.

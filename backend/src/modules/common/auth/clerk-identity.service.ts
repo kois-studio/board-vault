@@ -23,8 +23,26 @@ export class ClerkIdentityService {
         private readonly databaseService: DatabaseService,
     ) {}
 
-    async createGroupInvitation(groupId: number, inviterAccountId: number, emailAddress: string): Promise<ClerkGroupInvitationDto> {
+    async createGroupInvitation(
+        groupId: number,
+        inviterAccountId: number,
+        emailAddress: string,
+        groupPersonId?: number,
+    ): Promise<ClerkGroupInvitationDto> {
         await this.assertGroupOwner(groupId, inviterAccountId)
+
+        if (groupPersonId !== undefined) {
+            const person = await this.databaseService.getGroupPersonById(groupPersonId, groupId)
+
+            if (person.rows.length === 0 || String(person.rows[0][3]) !== 'placeholder' || person.rows[0][2] !== null) {
+                throw new NotFoundException('The selected placeholder is not available for claiming')
+            }
+            const claimTarget = await this.databaseService.setGroupPersonClaimEmail(groupPersonId, groupId, emailAddress)
+
+            if (claimTarget.rowsAffected !== 1) {
+                throw new NotFoundException('The selected placeholder is not available for claiming')
+            }
+        }
 
         const invitation = await this.withClerkProviderBoundary(() =>
             this.getClerkClient().invitations.createInvitation({
@@ -36,7 +54,8 @@ export class ClerkIdentityService {
                     [CLERK_GROUP_INVITATION_METADATA_KEY]: {
                         groupId,
                         inviterAccountId,
-                        version: 1,
+                        version: groupPersonId === undefined ? 1 : 2,
+                        ...(groupPersonId === undefined ? {} : { groupPersonId }),
                     },
                 },
             }),
@@ -129,6 +148,9 @@ export class ClerkIdentityService {
         }
 
         await this.withClerkProviderBoundary(() => this.getClerkClient().invitations.revokeInvitation(invitationId))
+        if (metadata.groupPersonId !== undefined) {
+            await this.databaseService.clearGroupPersonClaimEmail(metadata.groupPersonId, groupId, invitation.emailAddress)
+        }
         return { success: true }
     }
 
@@ -244,11 +266,12 @@ export class ClerkIdentityService {
         const candidate = metadata as Record<string, unknown>
 
         if (
-            candidate.version !== 1 ||
+            (candidate.version !== 1 && candidate.version !== 2) ||
             !Number.isInteger(candidate.groupId) ||
             Number(candidate.groupId) < 1 ||
             !Number.isInteger(candidate.inviterAccountId) ||
-            Number(candidate.inviterAccountId) < 1
+            Number(candidate.inviterAccountId) < 1 ||
+            (candidate.version === 2 && (!Number.isInteger(candidate.groupPersonId) || Number(candidate.groupPersonId) < 1))
         ) {
             throw new ForbiddenException('The Clerk invitation metadata is invalid')
         }
@@ -256,7 +279,8 @@ export class ClerkIdentityService {
         return {
             groupId: Number(candidate.groupId),
             inviterAccountId: Number(candidate.inviterAccountId),
-            version: 1,
+            version: Number(candidate.version),
+            ...(candidate.groupPersonId === undefined ? {} : { groupPersonId: Number(candidate.groupPersonId) }),
         }
     }
 

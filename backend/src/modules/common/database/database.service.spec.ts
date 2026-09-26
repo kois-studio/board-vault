@@ -729,7 +729,7 @@ describe('DatabaseService logging', () => {
         await expect(service.getDistinctCompletedMeetIdsForAccountHistory(7)).resolves.toEqual([12, 10])
         expect(execute).toHaveBeenCalledWith({
             sql: expect.stringContaining("m.status = 'completed'"),
-            args: [7, 7, 7],
+            args: [7, 7, 7, 7, 7],
         })
         expect(execute.mock.calls[0][0].sql).toContain("ma.attendanceStatus = 'attended'")
     })

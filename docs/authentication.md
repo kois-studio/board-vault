@@ -27,6 +27,13 @@ provider codes become user-actionable guidance for the security check, username
 availability, password policy, or expired/used ticket; unknown failures use a
 safe retry message.
 
+After the invitation joins the verified account to the group, a targeted
+placeholder is exposed only to that account as `claimable`. The group workspace
+offers a review screen with per-game ownership and preference checkboxes, an
+optional private collection import, and a separate “join as new person” action.
+Claiming changes the group-person link atomically; it does not rewrite old
+sessions or silently import private data.
+
 ## Implementation boundary
 
 `LoginService` owns the Clerk-to-local readiness state and deduplicates

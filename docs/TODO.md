@@ -14,6 +14,17 @@ technical decisions belong in [`docs/adr/`](adr/README.md).
 
 Reviewed: 2026-09-08
 
+## Single-user group / placeholder participants — In progress
+
+The organizer-first participant model is implemented in the repository through
+`GroupPerson` identities, participant-aware recommendations/sessions/history,
+targeted provider and legacy invitations, atomic claim review, and the
+independent new-person branch. Remaining release work is live migration and
+backup/rollback evidence, authenticated browser proof of the full journey,
+assistive-technology review, and any stale account-only endpoint cleanup found
+by that rehearsal. See the uncommitted root implementation checklist and
+[ADR-0010](adr/0010-group-person-identities.md).
+
 Readiness entries use `In progress`, `Planned`, `Blocked`, or `Deferred`.
 Product execution ownership remains in `/todo/`.
 

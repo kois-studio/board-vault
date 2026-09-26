@@ -206,9 +206,12 @@ export class Api {
             .pipe(map((response) => groupInvitationsSchema.parse(response)))
     }
 
-    createClerkGroupInvitation(groupId: number, emailAddress: string) {
+    createClerkGroupInvitation(groupId: number, emailAddress: string, groupPersonId?: number) {
         return this.http
-            .post<ClerkGroupInvitationType>(`${this.url}/groups/${groupId}/clerk-invitations`, { emailAddress })
+            .post<ClerkGroupInvitationType>(`${this.url}/groups/${groupId}/clerk-invitations`, {
+                emailAddress,
+                ...(groupPersonId === undefined ? {} : { groupPersonId }),
+            })
             .pipe(map((response) => clerkGroupInvitationSchema.parse(response)))
     }
 
@@ -222,6 +225,24 @@ export class Api {
         return this.http
             .delete<{ success: true }>(`${this.url}/groups/${groupId}/clerk-invitations/${invitationId}`)
             .pipe(map((response) => successSchema.parse(response)))
+    }
+
+    claimGroupPerson(
+        groupId: number,
+        personId: number,
+        body: {
+            ownershipGameIds?: Array<number>
+            preferenceGameIds?: Array<number>
+            importOwnershipToCollection?: boolean
+        },
+    ) {
+        return this.http
+            .post<{ success: true; alreadyClaimed: boolean }>(`${this.url}/groups/${groupId}/people/${personId}/claim`, body)
+            .pipe(map((response) => response))
+    }
+
+    joinGroupAsNewPerson(groupId: number) {
+        return this.http.post<GroupPersonType>(`${this.url}/groups/${groupId}/people/join`, {})
     }
 
     // #region games
@@ -244,9 +265,13 @@ export class Api {
             .pipe(map((response) => successSchema.parse(response)))
     }
 
-    createInvitation(groupId: number, username: string) {
+    createInvitation(groupId: number, username: string, groupPersonId?: number | null) {
         return this.http
-            .post<PublicUserType>(`${this.url}/invitations/byUsername`, { groupId, username })
+            .post<PublicUserType>(`${this.url}/invitations/byUsername`, {
+                groupId,
+                username,
+                ...(groupPersonId === undefined || groupPersonId === null ? {} : { groupPersonId }),
+            })
             .pipe(map((response) => publicUserSchema.parse(response)))
     }
 

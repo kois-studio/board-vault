@@ -525,7 +525,9 @@
             "name": "key",
             "required": true,
             "in": "path",
+            "description": "The cache key to delete.",
             "schema": {
+              "example": "user-proposal-stats:1",
               "type": "string"
             }
           }
@@ -731,6 +733,452 @@
         },
         "tags": [
           "memberships"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/groups/{groupId}/people": {
+      "get": {
+        "operationId": "GroupPeopleController_getPeople",
+        "summary": "List active people represented in a group",
+        "parameters": [
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupPeopleResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "group-people"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "GroupPeopleController_createPerson",
+        "summary": "Create a placeholder person in a group",
+        "parameters": [
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateGroupPersonBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupPersonDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "group-people"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/groups/{groupId}/people/{personId}": {
+      "patch": {
+        "operationId": "GroupPeopleController_updatePerson",
+        "summary": "Update or archive a group person",
+        "parameters": [
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "personId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateGroupPersonBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupPersonDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "group-people"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/groups/{groupId}/people/{personId}/claim": {
+      "post": {
+        "operationId": "GroupPeopleController_claimPerson",
+        "summary": "Claim a targeted placeholder as the authenticated account",
+        "parameters": [
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "personId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClaimGroupPersonBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "group-people"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/groups/{groupId}/people/join": {
+      "post": {
+        "operationId": "GroupPeopleController_joinAsNewPerson",
+        "summary": "Join a group as a new linked group person",
+        "parameters": [
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupPersonDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "group-people"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/groups/{groupId}/people/{personId}/ownership": {
+      "get": {
+        "operationId": "GroupPeopleController_getOwnership",
+        "summary": "List group-person game ownership assertions",
+        "parameters": [
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "personId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GroupPersonGameOwnershipDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "group-people"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "put": {
+        "operationId": "GroupPeopleController_updateOwnership",
+        "summary": "Set a group-person game ownership assertion",
+        "parameters": [
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "personId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateGroupPersonOwnershipBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ownership assertion saved"
+          }
+        },
+        "tags": [
+          "group-people"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/groups/{groupId}/people/{personId}/preferences": {
+      "get": {
+        "operationId": "GroupPeopleController_getPreferences",
+        "summary": "List group-person game preferences",
+        "parameters": [
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "personId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GroupPersonGamePreferenceDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "group-people"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "put": {
+        "operationId": "GroupPeopleController_updatePreference",
+        "summary": "Set a group-person game preference",
+        "parameters": [
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "personId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateGroupPersonPreferenceBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Preference saved"
+          }
+        },
+        "tags": [
+          "group-people"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/groups/{groupId}/people/{personId}/preferences/{gameId}": {
+      "delete": {
+        "operationId": "GroupPeopleController_deletePreference",
+        "summary": "Remove a group-person game preference",
+        "parameters": [
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "personId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "gameId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Preference removed"
+          }
+        },
+        "tags": [
+          "group-people"
         ],
         "security": [
           {
@@ -3410,6 +3858,43 @@
         ]
       }
     },
+    "/play/recommendations/participants": {
+      "post": {
+        "operationId": "PlayController_getParticipantRecommendations",
+        "summary": "Get deterministic recommendations for group people, including placeholders",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParticipantRecommendationRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecommendationsDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "play"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
     "/play/recommendations/feedback": {
       "post": {
         "operationId": "PlayController_createRecommendationFeedback",
@@ -3421,6 +3906,43 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/RecommendationFeedbackBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecommendationFeedbackDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "play"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/play/recommendations/participants/feedback": {
+      "post": {
+        "operationId": "PlayController_createParticipantRecommendationFeedback",
+        "summary": "Record feedback for a participant-scoped recommendation",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParticipantRecommendationFeedbackBody"
               }
             }
           }
@@ -4592,11 +5114,20 @@
               "down",
               "disabled"
             ]
+          },
+          "schema": {
+            "type": "string",
+            "example": "up",
+            "enum": [
+              "up",
+              "down"
+            ]
           }
         },
         "required": [
           "database",
-          "cache"
+          "cache",
+          "schema"
         ]
       },
       "ReadinessDto": {
@@ -4655,6 +5186,331 @@
         },
         "required": [
           "groupId"
+        ]
+      },
+      "GroupPersonDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 42
+          },
+          "groupId": {
+            "type": "number",
+            "example": 7
+          },
+          "accountId": {
+            "type": "object",
+            "example": null,
+            "nullable": true
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "placeholder",
+              "linked"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "archived"
+            ]
+          },
+          "displayName": {
+            "type": "string",
+            "example": "Ana"
+          },
+          "avatar": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AvatarDto"
+              }
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2026-09-25 12:00:00"
+          },
+          "updatedAt": {
+            "type": "string",
+            "example": "2026-09-25 12:00:00"
+          },
+          "claimedAt": {
+            "type": "object",
+            "example": null,
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "groupId",
+          "accountId",
+          "kind",
+          "status",
+          "displayName",
+          "createdAt",
+          "updatedAt",
+          "claimedAt"
+        ]
+      },
+      "GroupPersonGameOwnershipDto": {
+        "type": "object",
+        "properties": {
+          "gameId": {
+            "type": "number",
+            "example": 42
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "asserted",
+              "rejected",
+              "disputed"
+            ]
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "placeholder_setup",
+              "account_collection",
+              "claimed_import"
+            ]
+          },
+          "enteredByAccountId": {
+            "type": "number",
+            "example": 7
+          },
+          "confirmedByAccountId": {
+            "type": "object",
+            "example": null,
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2026-09-25 12:00:00"
+          },
+          "updatedAt": {
+            "type": "string",
+            "example": "2026-09-25 12:00:00"
+          }
+        },
+        "required": [
+          "gameId",
+          "status",
+          "source",
+          "enteredByAccountId",
+          "confirmedByAccountId",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "GroupPersonGamePreferenceDto": {
+        "type": "object",
+        "properties": {
+          "gameId": {
+            "type": "number",
+            "example": 42
+          },
+          "preference": {
+            "type": "string",
+            "enum": [
+              "favorite",
+              "like",
+              "neutral",
+              "avoid"
+            ]
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "placeholder_setup",
+              "claimed_import",
+              "account_profile"
+            ]
+          },
+          "enteredByAccountId": {
+            "type": "number",
+            "example": 7
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2026-09-25 12:00:00"
+          },
+          "updatedAt": {
+            "type": "string",
+            "example": "2026-09-25 12:00:00"
+          }
+        },
+        "required": [
+          "gameId",
+          "preference",
+          "source",
+          "enteredByAccountId",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "GroupPersonWorkspaceDto": {
+        "type": "object",
+        "properties": {
+          "person": {
+            "$ref": "#/components/schemas/GroupPersonDto"
+          },
+          "ownership": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GroupPersonGameOwnershipDto"
+            }
+          },
+          "preferences": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GroupPersonGamePreferenceDto"
+            }
+          },
+          "claimable": {
+            "type": "boolean",
+            "example": false,
+            "description": "Whether the authenticated account may claim this placeholder."
+          }
+        },
+        "required": [
+          "person",
+          "ownership",
+          "preferences",
+          "claimable"
+        ]
+      },
+      "GroupPeopleResponseDto": {
+        "type": "object",
+        "properties": {
+          "people": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GroupPersonWorkspaceDto"
+            }
+          }
+        },
+        "required": [
+          "people"
+        ]
+      },
+      "CreateGroupPersonBody": {
+        "type": "object",
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "example": "Ana"
+          },
+          "avatar": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AvatarDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "displayName"
+        ]
+      },
+      "UpdateGroupPersonBody": {
+        "type": "object",
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "example": "Ana"
+          },
+          "avatar": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AvatarDto"
+              }
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "archived"
+            ]
+          }
+        }
+      },
+      "ClaimGroupPersonBody": {
+        "type": "object",
+        "properties": {
+          "ownershipGameIds": {
+            "example": [
+              42,
+              84
+            ],
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "preferenceGameIds": {
+            "example": [
+              42
+            ],
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "importOwnershipToCollection": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "UpdateGroupPersonOwnershipBody": {
+        "type": "object",
+        "properties": {
+          "gameId": {
+            "type": "number",
+            "example": 42
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "asserted",
+              "rejected",
+              "disputed"
+            ]
+          }
+        },
+        "required": [
+          "gameId",
+          "status"
+        ]
+      },
+      "UpdateGroupPersonPreferenceBody": {
+        "type": "object",
+        "properties": {
+          "gameId": {
+            "type": "number",
+            "example": 42
+          },
+          "preference": {
+            "type": "string",
+            "enum": [
+              "favorite",
+              "like",
+              "neutral",
+              "avoid"
+            ]
+          }
+        },
+        "required": [
+          "gameId",
+          "preference"
         ]
       },
       "GroupDto": {
@@ -4737,6 +5593,12 @@
             "example": "2021-11-09T12:00:00Z",
             "description": "The invitation stops being actionable after this UTC timestamp."
           },
+          "groupPersonId": {
+            "type": "object",
+            "example": 42,
+            "nullable": true,
+            "description": "Placeholder targeted by this invitation, when applicable."
+          },
           "fromAccount": {
             "description": "The account data of the user who made the invitation.",
             "allOf": [
@@ -4771,6 +5633,11 @@
           "emailAddress": {
             "type": "string",
             "example": "friend@example.com"
+          },
+          "groupPersonId": {
+            "type": "number",
+            "example": 21,
+            "description": "Optional placeholder to offer the invitee for claiming."
           }
         },
         "required": [
@@ -5026,6 +5893,12 @@
             "type": "string",
             "example": "2021-11-09T12:00:00Z",
             "description": "The invitation stops being actionable after this UTC timestamp."
+          },
+          "groupPersonId": {
+            "type": "object",
+            "example": 42,
+            "nullable": true,
+            "description": "Placeholder targeted by this invitation, when applicable."
           }
         },
         "required": [
@@ -5047,6 +5920,12 @@
           "toAccountId": {
             "type": "number",
             "example": 12345
+          },
+          "groupPersonId": {
+            "type": "object",
+            "example": 42,
+            "nullable": true,
+            "description": "Placeholder targeted by this invitation, when applicable."
           }
         },
         "required": [
@@ -5060,6 +5939,12 @@
           "groupId": {
             "type": "number",
             "example": 12345
+          },
+          "groupPersonId": {
+            "type": "object",
+            "example": 42,
+            "nullable": true,
+            "description": "Placeholder targeted by this invitation, when applicable."
           },
           "username": {
             "type": "string",
@@ -5257,6 +6142,38 @@
           "participantIds"
         ]
       },
+      "MeetPersonAttendeeStatusDto": {
+        "type": "object",
+        "properties": {
+          "groupPersonId": {
+            "type": "number",
+            "example": 12345
+          },
+          "rsvpStatus": {
+            "type": "string",
+            "example": "accepted",
+            "enum": [
+              "pending",
+              "accepted",
+              "declined"
+            ]
+          },
+          "attendanceStatus": {
+            "type": "string",
+            "example": "unknown",
+            "enum": [
+              "unknown",
+              "attended",
+              "absent"
+            ]
+          }
+        },
+        "required": [
+          "groupPersonId",
+          "rsvpStatus",
+          "attendanceStatus"
+        ]
+      },
       "MeetWithAttendeesAndGames": {
         "type": "object",
         "properties": {
@@ -5340,6 +6257,25 @@
             "items": {
               "$ref": "#/components/schemas/MeetPlayedGameParticipantsDto"
             }
+          },
+          "participants": {
+            "description": "GroupPerson IDs participating in this session.",
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "participantStatuses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MeetPersonAttendeeStatusDto"
+            }
+          },
+          "playedGamePersonParticipants": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MeetPlayedGameParticipantsDto"
+            }
           }
         },
         "required": [
@@ -5355,7 +6291,10 @@
           "playedGames",
           "plannedGames",
           "skippedGames",
-          "playedGameParticipants"
+          "playedGameParticipants",
+          "participants",
+          "participantStatuses",
+          "playedGamePersonParticipants"
         ]
       },
       "NotificationDto": {
@@ -6376,6 +7315,32 @@
           "groupId"
         ]
       },
+      "HistoryPersonDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 42
+          },
+          "displayName": {
+            "type": "string",
+            "example": "Ana"
+          },
+          "avatar": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AvatarDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "displayName",
+          "avatar"
+        ]
+      },
       "GamePlayedDto": {
         "type": "object",
         "properties": {
@@ -6392,6 +7357,12 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/UserPublicDto"
+            }
+          },
+          "playedByPeople": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HistoryPersonDto"
             }
           }
         },
@@ -6423,6 +7394,12 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/UserPublicDto"
+            }
+          },
+          "attendedByPeople": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HistoryPersonDto"
             }
           }
         },
@@ -6558,6 +7535,17 @@
               "type": "string"
             }
           },
+          "participantIds": {
+            "example": [
+              12,
+              13,
+              14
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
           "availableMinutes": {
             "type": "object",
             "example": 120,
@@ -6591,6 +7579,43 @@
           "decisionLens",
           "recommendations",
           "noResultReason"
+        ]
+      },
+      "ParticipantRecommendationRequestBody": {
+        "type": "object",
+        "properties": {
+          "groupId": {
+            "type": "number",
+            "example": 7
+          },
+          "groupPersonIds": {
+            "example": [
+              12,
+              13,
+              14
+            ],
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "availableMinutes": {
+            "type": "number",
+            "example": 120
+          },
+          "decisionLens": {
+            "type": "string",
+            "example": "balanced",
+            "enum": [
+              "balanced",
+              "fresh",
+              "favorite"
+            ]
+          }
+        },
+        "required": [
+          "groupId",
+          "groupPersonIds"
         ]
       },
       "RecommendationFeedbackBody": {
@@ -6641,6 +7666,44 @@
         },
         "required": [
           "success"
+        ]
+      },
+      "ParticipantRecommendationFeedbackBody": {
+        "type": "object",
+        "properties": {
+          "groupId": {
+            "type": "number",
+            "example": 7
+          },
+          "gameId": {
+            "type": "number",
+            "example": 42
+          },
+          "participantIds": {
+            "example": [
+              12,
+              13
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "feedback": {
+            "type": "string",
+            "example": "not_for_us",
+            "enum": [
+              "interested",
+              "not_for_us",
+              "played"
+            ]
+          }
+        },
+        "required": [
+          "groupId",
+          "gameId",
+          "participantIds",
+          "feedback"
         ]
       },
       "RecommendationSignalDto": {
@@ -6775,6 +7838,12 @@
             "type": "string",
             "example": "2021-11-09T12:00:00Z",
             "description": "The invitation stops being actionable after this UTC timestamp."
+          },
+          "groupPersonId": {
+            "type": "object",
+            "example": 42,
+            "nullable": true,
+            "description": "Placeholder targeted by this invitation, when applicable."
           },
           "fromAccount": {
             "description": "The account data of the user who was invited.",
@@ -7024,11 +8093,21 @@
             "items": {
               "type": "string"
             }
+          },
+          "participantPersonIds": {
+            "example": [
+              10,
+              11
+            ],
+            "description": "GroupPerson IDs when the session uses group-scoped participants.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         },
         "required": [
-          "gameId",
-          "participantIds"
+          "gameId"
         ]
       },
       "CreatePlaySessionBody": {
@@ -7060,6 +8139,17 @@
               "type": "string"
             }
           },
+          "groupPersonIds": {
+            "example": [
+              10,
+              11
+            ],
+            "description": "GroupPerson IDs invited to the session.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
           "games": {
             "type": "array",
             "items": {
@@ -7071,7 +8161,6 @@
           "groupId",
           "sessionDate",
           "timezone",
-          "attendeeIds",
           "games"
         ]
       },
@@ -7117,6 +8206,17 @@
               2
             ],
             "description": "Selected group members attending the session.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "groupPersonIds": {
+            "example": [
+              10,
+              11
+            ],
+            "description": "Selected group people attending the session.",
             "type": "array",
             "items": {
               "type": "string"
@@ -7168,11 +8268,18 @@
             "items": {
               "type": "string"
             }
+          },
+          "groupPersonIds": {
+            "example": [
+              10,
+              11
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
-        },
-        "required": [
-          "attendeeIds"
-        ]
+        }
       },
       "SessionAttendeesUpdatedDto": {
         "type": "object",
@@ -7185,6 +8292,16 @@
             "example": [
               1,
               2
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "groupPersonIds": {
+            "example": [
+              10,
+              11
             ],
             "type": "array",
             "items": {
@@ -7297,6 +8414,12 @@
             "items": {
               "$ref": "#/components/schemas/PlaySessionGameBody"
             }
+          },
+          "playedGamePersonParticipants": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlaySessionGameBody"
+            }
           }
         },
         "required": [
@@ -7357,6 +8480,16 @@
             "items": {
               "type": "string"
             }
+          },
+          "attendedPersonIds": {
+            "example": [
+              10,
+              11
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         },
         "required": [
@@ -7374,6 +8507,16 @@
             "example": [
               1,
               2
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "attendedPersonIds": {
+            "example": [
+              10,
+              11
             ],
             "type": "array",
             "items": {

@@ -14,6 +14,15 @@ Known examples:
 
 The v1 decision is recorded in [ADR-0003](../docs/adr/0003-session-as-first-class-domain.md): keep `Meet` as the compatibility/session record, add explicit `MeetAttendee` and `MeetGame` relations, and preserve `MeetAccountGame` as the account-to-play relation.
 
+### Group-person extension
+
+The session participant model now also supports group-scoped `GroupPerson`
+identities. A group may represent unregistered people without synthetic
+accounts; `MeetPersonAttendee` and `MeetPersonGame` preserve their attendance
+and per-game participation. A later reviewed claim links the existing
+`GroupPerson` to an account without rewriting history. RSVP remains limited to
+linked real accounts, while organizers record placeholder attendance.
+
 Relevant areas:
 
 - `database/schema/schema.sql` (current Turso export)

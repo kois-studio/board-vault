@@ -1,5 +1,27 @@
 # End-to-end UX flow review
 
+## Organizer-first participant flow
+
+The intended connected journey is:
+
+1. Carlos creates a group and adds named group people without creating
+   accounts for them.
+2. He records ownership assertions and preferences, selects any mixture of
+   real and placeholder people for recommendations, and schedules/completes a
+   session with per-game participants.
+3. He sends either a provider email invitation or a legacy username invitation
+   targeted at one placeholder.
+4. The verified invitee enters the group, sees only an actor-specific claim
+   prompt, reviews and deselects imported items, and optionally imports kept
+   ownership into the private collection.
+5. Claiming preserves the same history; choosing “join as new person” creates a
+   separate linked identity with no placeholder history.
+
+The recovery branches are expired/revoked invitation, wrong-email claim,
+already-claimed placeholder, unavailable group, failed claim retry, and
+duplicate new-person join. These should remain visible and actionable without
+revealing claim emails or other private account fields.
+
 Board Vault is a social decision-and-memory product. Its UX must therefore be
 reviewed as journeys across screens, data states, and people—not as isolated
 component screenshots.
