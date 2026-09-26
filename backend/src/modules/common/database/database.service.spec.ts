@@ -3,6 +3,35 @@ import { DatabaseService } from './database.service'
 import type { ConfigService } from '@nestjs/config'
 
 describe('DatabaseService logging', () => {
+    it('expires targeted placeholder claims when a new invitation is bound', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const execute = jest.fn().mockResolvedValue({ rowsAffected: 1 })
+
+        ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
+
+        await service.setGroupPersonClaimEmail(21, 12, 'Ana@Example.com')
+
+        expect(execute).toHaveBeenCalledWith({
+            sql: expect.stringContaining("claimExpiresAt = datetime('now', '+30 days')"),
+            args: ['ana@example.com', 21, 12],
+        })
+    })
+
+    it('clears a legacy invitation claim target when its invitation is deleted', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const execute = jest
+            .fn()
+            .mockResolvedValueOnce({ rows: [[12, 21]] })
+            .mockResolvedValueOnce({ rowsAffected: 1 })
+            .mockResolvedValueOnce({ rowsAffected: 1 })
+
+        ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
+
+        await expect(service.deleteInvitationById(99)).resolves.toEqual({ rowsAffected: 1 })
+        expect(execute).toHaveBeenNthCalledWith(3, expect.objectContaining({ args: [21, 12, 21] }))
+        expect(execute).toHaveBeenNthCalledWith(3, expect.objectContaining({ sql: expect.stringContaining('claimExpiresAt = NULL') }))
+    })
+
     it('logs only the parameterized SQL template, never bound values', async () => {
         const service = new DatabaseService({} as ConfigService)
         const execute = jest.fn().mockResolvedValue({ rows: [] })
