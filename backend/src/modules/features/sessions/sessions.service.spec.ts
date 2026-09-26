@@ -112,6 +112,7 @@ describe('SessionsService', () => {
 
     it('creates a completed session with mixed account and group-person participants', async () => {
         const database = createDatabaseMock()
+
         database.getGroupPeople.mockResolvedValue({
             rows: [
                 [10, 7, null, 'placeholder', 'active', 'Ana'],
@@ -142,6 +143,7 @@ describe('SessionsService', () => {
 
     it('schedules a session with placeholder participants', async () => {
         const database = createDatabaseMock()
+
         database.getGroupPeople.mockResolvedValue({ rows: [[10, 7, null, 'placeholder', 'active', 'Ana']] })
         database.getGroupAvailableGameIdsForPeople.mockResolvedValue([84])
         const service = new SessionsService(database as unknown as DatabaseService)
@@ -421,13 +423,19 @@ describe('SessionsService', () => {
 
     it('records mixed account and group-person game participants and reports stale-write conflicts', async () => {
         const database = createDatabaseMock()
+
         database.getMeetByIdForCreator.mockResolvedValue({
             rows: [[13, 7, 1, '2026-08-21T19:30:00.000Z', 0, 'active', 'Europe/Madrid', null]],
         })
         database.getMeetAttendeeIds.mockResolvedValue([1])
         database.getMeetPersonIds.mockResolvedValue([10])
         database.getGroupAvailableGameIdsForPeople.mockResolvedValue([84])
-        database.replaceMeetPlayedGames.mockResolvedValue({ applied: false, playedGameIds: [], skippedGameIds: [], playedGameParticipants: [] })
+        database.replaceMeetPlayedGames.mockResolvedValue({
+            applied: false,
+            playedGameIds: [],
+            skippedGameIds: [],
+            playedGameParticipants: [],
+        })
         const service = new SessionsService(database as unknown as DatabaseService)
 
         await expect(
@@ -436,12 +444,9 @@ describe('SessionsService', () => {
                 games: [{ gameId: 84, participantIds: [1], participantPersonIds: [10] }],
             }),
         ).rejects.toThrow('The session changed while played games were being updated')
-        expect(database.replaceMeetPlayedGames).toHaveBeenCalledWith(
-            13,
-            [{ gameId: 84, participantIds: [1] }],
-            'active',
-            [{ gameId: 84, participantIds: [10] }],
-        )
+        expect(database.replaceMeetPlayedGames).toHaveBeenCalledWith(13, [{ gameId: 84, participantIds: [1] }], 'active', [
+            { gameId: 84, participantIds: [10] },
+        ])
     })
 
     it('validates per-game participants against the session attendees', async () => {
