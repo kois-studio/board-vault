@@ -17,6 +17,47 @@ targeted invitation, deselection during claim, and a separate new-person join.
 It must be run against a backup and a live-schema verification before rollout;
 repository tests do not claim that live Turso has migrations `0010`–`0014`.
 
+The deterministic version of that workflow is now covered by
+`backend/test/single-user-group-claim.e2e-spec.ts`. It creates a disposable
+SQLite database from the schema, applies migrations through `0014`, creates a
+group with three people, configures ownership and preference data, invites a
+second local account to claim one placeholder, deselects one imported item,
+and verifies the resulting linked `GroupPerson`, ownership decisions, private
+collection, invitation consumption, and untouched placeholder directly in the
+database. Run it with:
+
+```shell
+cd backend
+npm run test:e2e -- --runInBand test/single-user-group-claim.e2e-spec.ts
+```
+
+The corresponding browser journey is intentionally opt-in because it needs a
+disposable Development Clerk instance, two test identities, a local backend,
+and a local SQLite file. It creates the group and people through the UI,
+uses a real provider invitation and Testing Token signup, completes the claim
+review with a deselection, and checks the SQLite result. Run it only with
+disposable local data using the variables below (the exact game title must be
+present in the local catalog):
+
+```shell
+cd frontend
+PLAYWRIGHT_SINGLE_USER_GROUP_CLAIM=1 \
+PLAYWRIGHT_OWNER_STORAGE_STATE=/tmp/board-vault-clerk-owner.json \
+PLAYWRIGHT_SINGLE_USER_GROUP_INVITEE_EMAIL=invitee-<unique>@example.test \
+PLAYWRIGHT_SINGLE_USER_GROUP_INVITEE_USERNAME=invitee-<unique> \
+PLAYWRIGHT_SINGLE_USER_GROUP_INVITEE_PASSWORD=<disposable-password> \
+PLAYWRIGHT_SINGLE_USER_GROUP_GAME_TITLE=<exact-game-title> \
+PLAYWRIGHT_SINGLE_USER_GROUP_DB_PATH=/tmp/board-vault-clerk-F1T4x3/local.db \
+CLERK_PUBLISHABLE_KEY=pk_test_... \
+CLERK_SECRET_KEY=sk_test_... \
+PLAYWRIGHT_CLERK_TESTING=1 \
+npx playwright test e2e/single-user-group-claim-flow.spec.ts
+```
+
+The browser test deletes the disposable invitee and revokes the provider
+invitation during cleanup. It is skipped by the default Playwright run unless
+the explicit flag and every required fixture variable are present.
+
 ## Inventory at bootstrap
 
 - Backend: `backend/test/app.e2e-spec.ts` plus focused security, validation, persistence, recommendation, session, and provider-boundary suites under `backend/src/`.
@@ -32,7 +73,7 @@ repository tests do not claim that live Turso has migrations `0010`–`0014`.
 | `cd backend && npm run build` | Pass | TypeScript/Nest build currently compiles. |
 | `cd backend && npm test -- --runInBand` | Pass | 283 tests across 50 suites cover the Clerk, validation, authorization, privacy, logging, cache, migration-boundary, group-person claim, mixed participant session, recommendation, acquisition, rollout-guard, and legacy compatibility paths; broader remote integration remains open. |
 | `cd backend && npm test -- --runInBand src/common/middlewares/logger.middleware.spec.ts src/common/http/api-error.filter.spec.ts` | Pass | Focused regression coverage confirms request IDs are returned and reused, structured start/complete events use the real request path (including `/auth/clerk/status`), query strings and authorization values do not enter request logs, and unexpected failures remain safely normalized. |
-| `cd backend && npm run test:e2e -- --runInBand` | Pass | Six environment-safe HTTP tests cover unauthenticated Clerk status rejection, invalid public query validation, and fail-closed group acquisition, recommendation, session scheduling, and collection activation routes using a disposable SQLite URL and disabled Redis. |
+| `cd backend && npm run test:e2e -- --runInBand` | Pass | Seven environment-safe HTTP tests cover unauthenticated Clerk status rejection, invalid public query validation, fail-closed group acquisition, recommendation, session scheduling, and collection activation routes, plus the disposable single-user group claim workflow, using SQLite and disabled Redis. |
 | `cd backend && npx eslint "{src,apps,libs,test}/**/*.ts"` | Pass | No errors or warnings; CI runs the same no-mutation command. |
 | `cd backend && npm run lint:logs` | Pass | The source audit rejects dynamic logger fields unless they are explicitly allow-listed safe operational values such as error class, method name, port/path, or status. |
 | `cd frontend && npm run build` | Pass | PostCSS flattens Tailwind’s generated nesting, route-level components are lazy-loaded, and the latest initial raw bundle is 616.00 kB (139.74 kB estimated transfer) under the 650 kB warning budget with no Angular template warnings. |
@@ -40,7 +81,7 @@ repository tests do not claim that live Turso has migrations `0010`–`0014`.
 | `cd frontend && npm test -- --watch=false --browsers=ChromeHeadless` | Pass | 76 browser-based unit tests pass, including the group-person workspace, mixed attendee/player controls, targeted claim review with deselection and optional import, invitation contracts, loading/error/retry states, recommendation context, history/insight summaries, and legacy response contracts. |
 | `cd frontend && npx playwright test e2e/public-navigation.spec.ts` | Pass | On 2026-09-08, six public navigation tests passed with Playwright managing the local Angular server. The suite protects the social-loop landing promise at mobile/desktop widths, signed-out redirect, not-found route, invitation form entry point, and existing-account invitation continuation state. |
 | `CLERK_PUBLISHABLE_KEY=pk_test_… CLERK_SECRET_KEY=sk_test_… PLAYWRIGHT_CLERK_TESTING=1 npx playwright test e2e/public-navigation.spec.ts` | Pass | On 2026-09-08, the opt-in Clerk setup project fetched a Development Testing Token and the six public navigation tests passed. The keys were supplied only through the local environment; no token, account, invitation, database, production setting, deployment, or push was changed. |
-| `cd frontend && npm run e2e` | Pass | The current default run discovers 35 Playwright tests: six public tests pass and 29 fixture-gated tests are intentionally skipped without disposable Clerk state. The ten authenticated core-navigation tests cover dashboard, groups/collection entry points, unavailable-group recovery, session logging, upcoming sessions, history, and recommendations. The opt-in auth-handoff tests delay local account readiness at 375px and 1280px, cover fail → recovery → retry, and assert protected-route preservation after refresh; the rendered core audit checks group, collection, session, upcoming, and history routes at 375px, 768px, and 1280px for overflow and unnamed visible controls. Fixture-gated journeys cover collection activation, connected first-group activation and recovery, invitation acceptance and keep/decline branches, provider-invitation failure/retry, the Testing Token-backed new-person invitation flow, the two-account session loop, recommendation feedback/planning handoff, acquisition decisions, settings, and contextual destructive flows. |
+| `cd frontend && npm run e2e` | Pass | The current default run discovers 36 Playwright tests: six public tests pass and 30 fixture-gated tests are intentionally skipped without disposable Clerk state. The ten authenticated core-navigation tests cover dashboard, groups/collection entry points, unavailable-group recovery, session logging, upcoming sessions, history, and recommendations. The opt-in auth-handoff tests delay local account readiness at 375px and 1280px, cover fail → recovery → retry, and assert protected-route preservation after refresh; the rendered core audit checks group, collection, session, upcoming, and history routes at 375px, 768px, and 1280px for overflow and unnamed visible controls. Fixture-gated journeys cover collection activation, connected first-group activation and recovery, invitation acceptance and keep/decline branches, provider-invitation failure/retry, the Testing Token-backed new-person invitation flow, the single-user group claim workflow, the two-account session loop, recommendation feedback/planning handoff, acquisition decisions, settings, and contextual destructive flows. |
 | `cd frontend && npm run build`, `npx biome check src/app`, `npm test -- --watch=false --browsers=ChromeHeadless` after upcoming/scheduling UX slice | Pass | Production build, frontend Biome, and all 37 browser unit tests pass after adding truthful loading/unavailable-group states to the canonical schedule route, clearing stale schedule context on membership refresh, redesigning upcoming sessions around group-first planning, adding explicit history summary contracts, adding the history-to-recommendation handoff, making group creation land in the new workspace, waiting for local account readiness before protected-route activation, and making recommendations preserve group decision context. |
 | `cd frontend && npm run build`, `npx biome check src/app`, `npm test -- --watch=false --browsers=ChromeHeadless`, `PLAYWRIGHT_BASE_URL=http://127.0.0.1:4300 npm run e2e` | Pass | The core-route accessibility pass adds global keyboard focus-visible rings, explicit date/notes labels on session creation, alert semantics for history/upcoming failures, removes the duplicate tab stop exposed by routed shared buttons, retires unused client compatibility adapters, protects the landing promise at mobile/desktop widths, keeps history player names in shared-memory cards, preserves group context in recommendations, makes group entries expose explicit social actions instead of one opaque clickable card, adds honest group context/status prompts to upcoming sessions, makes Play group-first, gives genuinely empty new groups an invite → add games → plan first night handoff, restores focus after contextual leave/delete dialogs, keeps Dashboard/Collection recommendation links group-scoped, protects malformed group/history response boundaries, synchronizes deep-linked history filters, gives unavailable history images a readable fallback, redesigns preserved password recovery and email-verification states, reorganizes group management around social membership jobs, adds the explicit Clerk-to-local-account handoff state surface, distinguishes existing-account invitation continuation from new-invitee registration, gives invitation failures group-aware recovery copy, adds persistent invitation-card recovery with refresh, preserves a retryable group-creation flow after a temporary request failure, maps invitation-registration provider failures to safe actionable copy, rejects malformed legacy user-invitation responses, and resets stale invitation state when a recipient abandons an invalid ticket; the latest build is 616.00 kB raw (139.74 kB estimated transfer), Biome and all 76 browser unit tests pass, and six public Playwright tests pass with 29 fixture-gated tests intentionally skipped. |
 | Frontend core loading-state follow-up | Pass | Group-home pulse and history, standalone history, and upcoming-session loading states now announce progress and avoid presenting a transient zero-session count as settled data; production build, Biome, and all 43 browser unit tests remain green. |

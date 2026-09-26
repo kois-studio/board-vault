@@ -4084,3 +4084,27 @@ Remaining evidence: live migration/backup and rollback rehearsal, authenticated
 browser proof of the complete claim/new-person journey, and human
 accessibility review. No deployment, push, provider mutation, or production
 data change was performed.
+
+Continuation claim: UX-FLOW-001 / EQ-003
+
+Owner: Codex
+
+Claimed: 2026-09-26
+
+Scope: automate the single-user group journey from organizer-created phantom
+people through registered invitee claim and database verification.
+
+Changed: Added a disposable SQLite/Nest API E2E covering group creation,
+phantom people, ownership/preferences, targeted invitation, claim
+deselection, private collection import, idempotent replay, and untouched
+placeholders. Added an opt-in Playwright journey covering the same workflow
+through the Angular UI, Development Clerk provider ticket, Testing Token
+signup, and direct SQLite assertions. Corrected linked GroupPerson creation
+for new group owners and non-targeted membership joins, and cleared claim
+metadata after a successful claim.
+
+Verified: backend unit tests (283), backend E2E (7), backend build/lint,
+frontend unit tests (76), frontend build, Biome, default Playwright (6 passed,
+30 intentionally skipped), focused browser-test discovery, and empty-state
+migrations through 0014. No deployment, push, provider mutation, or
+production data change was performed.
