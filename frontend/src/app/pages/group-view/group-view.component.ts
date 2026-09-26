@@ -108,6 +108,7 @@ export class GroupViewComponent {
     public readonly groupPeople$ = signal<Array<GroupPersonWorkspaceType>>([])
     public readonly groupPeopleLoading = signal(false)
     public readonly groupPeopleError = signal(false)
+    public readonly includeArchivedGroupPeople = signal(false)
     public readonly newGroupPersonName = signal('')
     public readonly groupPersonMutationId = signal<number | null>(null)
     public readonly isLeaveDialogOpen = signal(false)
@@ -371,6 +372,13 @@ export class GroupViewComponent {
         if (groupId) this.loadGroupPeople(groupId)
     }
 
+    public toggleArchivedGroupPeople(): void {
+        const groupId = this.groupData$()?.id
+        if (!groupId) return
+        this.includeArchivedGroupPeople.update((value) => !value)
+        this.loadGroupPeople(groupId)
+    }
+
     public async addGroupPerson(): Promise<void> {
         const groupId = this.groupData$()?.id
         const displayName = this.newGroupPersonName().trim()
@@ -389,14 +397,15 @@ export class GroupViewComponent {
         }
     }
 
-    public async archiveGroupPerson(personId: number): Promise<void> {
+    public async archiveGroupPerson(person: GroupPersonWorkspaceType): Promise<void> {
         const groupId = this.groupData$()?.id
         if (!groupId || !this.isGroupOwnerComputed() || this.groupPersonMutationId()) return
 
-        this.groupPersonMutationId.set(personId)
+        this.groupPersonMutationId.set(person.person.id)
         try {
-            await firstValueFrom(this.api.updateGroupPerson(groupId, personId, { status: 'archived' }))
-            this.toastService.success('The group person was archived.')
+            const nextStatus = person.person.status === 'archived' ? 'active' : 'archived'
+            await firstValueFrom(this.api.updateGroupPerson(groupId, person.person.id, { status: nextStatus }))
+            this.toastService.success(nextStatus === 'active' ? 'The group person was restored.' : 'The group person was archived.')
             this.loadGroupPeople(groupId)
         } catch {
             this.toastService.error('Could not archive this group person.')
@@ -537,10 +546,10 @@ export class GroupViewComponent {
         })
     }
 
-    private loadGroupPeople(groupId: number): void {
+    public loadGroupPeople(groupId: number): void {
         this.groupPeopleLoading.set(true)
         this.groupPeopleError.set(false)
-        this.api.getGroupPeople(groupId).subscribe({
+        this.api.getGroupPeople(groupId, this.includeArchivedGroupPeople()).subscribe({
             next: (response) => this.groupPeople$.set(response.people),
             error: () => {
                 this.groupPeopleLoading.set(false)
