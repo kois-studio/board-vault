@@ -3,16 +3,24 @@
 ## Single-user group rollout
 
 Migrations `0010-add-group-people.sql` through
-`0013-add-invitation-group-person.sql` are additive and must be applied with
+`0014-expire-group-person-claims.sql` are additive and must be applied with
 the documented migration runner. Before production rollout:
 
 1. capture and retain a fresh Turso backup;
-2. run `node database/scripts/verify-empty-state.mjs` locally;
+2. run `node database/scripts/verify-empty-state.mjs` and
+   `node database/scripts/verify-restore-rehearsal.mjs` locally;
 3. inspect the live `SchemaMigrations` version and apply the pending numbered
    migrations transactionally;
 4. verify foreign keys, the backfilled linked `GroupPerson` count, and the new
    participant/claim indexes; and
 5. rehearse restore/rollback ownership before enabling targeted invitations.
+
+The participant route surface has a reversible kill switch:
+`BOARD_VAULT_GROUP_PEOPLE_ENABLED=false` makes the new group-person routes
+return a not-found response while preserving all migrated data and legacy
+account-only routes. Leave it unset or true for the participant rollout; if a
+post-deploy issue appears, disable it, route traffic to the previous compatible
+frontend/backend deployment, and keep the migration in place for diagnosis.
 
 The application is compatible with old account-only sessions through its
 participant adapters, but targeted claim and placeholder session writes require
