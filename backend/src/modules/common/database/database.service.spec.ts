@@ -588,7 +588,7 @@ describe('DatabaseService logging', () => {
 
         expect(execute).toHaveBeenCalledWith({
             sql: expect.stringContaining('WHERE NOT EXISTS'),
-            args: [7, 1, 42, 7, 42],
+            args: [7, 1, 42, 7, 42, 7, 42],
         })
     })
 
@@ -611,7 +611,7 @@ describe('DatabaseService logging', () => {
             1,
             expect.objectContaining({
                 sql: expect.stringContaining('INSERT OR IGNORE INTO GroupGameInterest'),
-                args: [7, 1, 42, 7, 42],
+                args: [7, 1, 42, 7, 42, 7, 42],
             }),
         )
         expect(transaction.execute).toHaveBeenNthCalledWith(
