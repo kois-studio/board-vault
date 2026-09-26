@@ -150,6 +150,9 @@ export class GroupPersonWorkspaceDto {
 
     @ApiProperty({ type: [GroupPersonGamePreferenceDto] })
     preferences: Array<GroupPersonGamePreferenceDto>
+
+    @ApiProperty({ example: false, description: 'Whether the authenticated account may claim this placeholder.' })
+    claimable: boolean
 }
 
 export class GroupPeopleResponseDto {
@@ -163,4 +166,24 @@ export class GroupPersonIdsBody {
     @IsInt({ each: true })
     @Min(1, { each: true })
     personIds: Array<number>
+}
+
+export class ClaimGroupPersonBody {
+    @ApiProperty({ example: [42, 84], type: [Number], required: false })
+    @IsOptional()
+    @IsArray()
+    @IsInt({ each: true })
+    @Min(1, { each: true })
+    ownershipGameIds?: Array<number>
+
+    @ApiProperty({ example: [42], type: [Number], required: false })
+    @IsOptional()
+    @IsArray()
+    @IsInt({ each: true })
+    @Min(1, { each: true })
+    preferenceGameIds?: Array<number>
+
+    @ApiProperty({ example: true, required: false })
+    @IsOptional()
+    importOwnershipToCollection?: boolean
 }

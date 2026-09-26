@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
-import { IsDateString, IsEmail, IsIn, IsInt, IsNotEmpty, IsString, IsUrl, Matches, MaxLength, Min } from 'class-validator'
+import { IsDateString, IsEmail, IsIn, IsInt, IsNotEmpty, IsOptional, IsString, IsUrl, Matches, MaxLength, Min } from 'class-validator'
 
 export const CLERK_GROUP_INVITATION_METADATA_KEY = 'boardVaultGroupInvitation'
 
@@ -19,6 +19,11 @@ export class ClerkGroupInvitationMetadata {
     @IsInt()
     @Min(1)
     version: number
+
+    @ApiProperty({ example: 21, required: false, nullable: true })
+    @IsInt()
+    @Min(1)
+    groupPersonId?: number
 }
 
 export class CreateClerkGroupInvitationBody {
@@ -28,6 +33,12 @@ export class CreateClerkGroupInvitationBody {
     @IsString()
     @MaxLength(320)
     emailAddress: string
+
+    @ApiProperty({ example: 21, required: false, description: 'Optional placeholder to offer the invitee for claiming.' })
+    @IsOptional()
+    @IsInt()
+    @Min(1)
+    groupPersonId?: number
 }
 
 export class ClerkGroupInvitationDto {

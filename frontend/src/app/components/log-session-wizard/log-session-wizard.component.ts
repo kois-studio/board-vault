@@ -4,7 +4,13 @@ import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../api/api'
-import type { GameCompleteType, GameReviewDto, GroupPersonWorkspaceType, GroupWithMembersAndGames, PublicUserType } from '../../api/api.types'
+import type {
+    GameCompleteType,
+    GameReviewDto,
+    GroupPersonWorkspaceType,
+    GroupWithMembersAndGames,
+    PublicUserType,
+} from '../../api/api.types'
 import { ButtonComponent } from '../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'

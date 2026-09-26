@@ -79,11 +79,11 @@ export class MeetWithAttendeesAndGames extends MeetDto {
     playedGameParticipants: Array<MeetPlayedGameParticipantsDto>
 
     @ApiProperty({ type: [Number], description: 'GroupPerson IDs participating in this session.' })
-    participants: Array<number>
+    participants?: Array<number>
 
     @ApiProperty({ type: [MeetPersonAttendeeStatusDto] })
-    participantStatuses: Array<MeetPersonAttendeeStatusDto>
+    participantStatuses?: Array<MeetPersonAttendeeStatusDto>
 
     @ApiProperty({ type: [MeetPlayedGameParticipantsDto] })
-    playedGamePersonParticipants: Array<MeetPlayedGameParticipantsDto>
+    playedGamePersonParticipants?: Array<MeetPlayedGameParticipantsDto>
 }

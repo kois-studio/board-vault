@@ -1,0 +1,66 @@
+<main class="min-h-[calc(100vh-8rem)] bg-zinc-50 px-4 py-8 dark:bg-zinc-950 sm:px-6 lg:px-8 lg:py-12">
+    <div class="mx-auto max-w-3xl">
+        <a class="text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400" [routerLink]="['/groups', route.snapshot.paramMap.get('groupId')]">← Back to group</a>
+
+        @if (isLoading()) {
+            <section class="mt-8 rounded-3xl border border-zinc-200 bg-white p-8 text-center shadow-sm dark:border-zinc-800 dark:bg-zinc-900" role="status" aria-live="polite">
+                <p class="text-lg font-semibold">Loading your group-person handoff…</p>
+            </section>
+        } @else if (error() && !person()) {
+            <section class="mt-8 rounded-3xl border border-amber-200 bg-amber-50 p-8 dark:border-amber-900/60 dark:bg-amber-950/30" role="alert">
+                <h1 class="text-2xl font-bold">This handoff is unavailable</h1>
+                <p class="mt-2 text-secondary">{{ error() }}</p>
+                <button type="button" class="app-btn-primary mt-5" (click)="joinAsNewPerson()">Join as a new person</button>
+            </section>
+        } @else {
+            @if (person(); as groupPerson) {
+            <header class="mt-8 rounded-3xl border border-indigo-100 bg-indigo-50 p-6 dark:border-indigo-900/60 dark:bg-indigo-950/30 sm:p-8">
+                <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Continue your group history</p>
+                <h1 class="mt-2 text-3xl font-bold text-zinc-900 dark:text-white">Is this {{ groupPerson.person.displayName }}?</h1>
+                <p class="mt-3 leading-7 text-secondary">Someone in this group prepared this profile before you joined. Keep the entries that are yours, remove mistakes, and your old sessions will stay connected to you.</p>
+            </header>
+
+            <section class="mt-6 rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900" aria-labelledby="ownership-heading">
+                <h2 id="ownership-heading" class="text-xl font-bold">Games they recorded for you</h2>
+                <p class="mt-1 text-sm text-secondary">Uncheck anything that is not yours.</p>
+                <div class="mt-4 grid gap-3 sm:grid-cols-2">
+                    @for (ownership of groupPerson.ownership; track ownership.gameId) {
+                        @if (ownership.status === 'asserted') {
+                            <label class="flex items-center gap-3 rounded-2xl border border-zinc-200 p-3 dark:border-zinc-700">
+                                <input type="checkbox" [checked]="selectedOwnership().has(ownership.gameId)" (change)="toggleOwnership(ownership.gameId)" />
+                                <span>{{ gameTitle(ownership.gameId) }}</span>
+                            </label>
+                        }
+                    }
+                </div>
+            </section>
+
+            <section class="mt-6 rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900" aria-labelledby="preferences-heading">
+                <h2 id="preferences-heading" class="text-xl font-bold">Games they recorded as favorites or interests</h2>
+                <p class="mt-1 text-sm text-secondary">Uncheck preferences you do not want to keep.</p>
+                <div class="mt-4 grid gap-3 sm:grid-cols-2">
+                    @for (preference of groupPerson.preferences; track preference.gameId) {
+                        <label class="flex items-center gap-3 rounded-2xl border border-zinc-200 p-3 dark:border-zinc-700">
+                            <input type="checkbox" [checked]="selectedPreferences().has(preference.gameId)" (change)="togglePreference(preference.gameId)" />
+                            <span>{{ gameTitle(preference.gameId) }} <span class="text-xs text-secondary">({{ preference.preference }})</span></span>
+                        </label>
+                    }
+                </div>
+            </section>
+
+            <section class="mt-6 rounded-3xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+                <label class="flex items-start gap-3">
+                    <input type="checkbox" class="mt-1" [checked]="importOwnership()" (change)="importOwnership.set($any($event.target).checked)" />
+                    <span><span class="font-semibold">Also add the kept games to my private collection</span><span class="mt-1 block text-sm text-secondary">This is optional. The group history remains linked either way.</span></span>
+                </label>
+            </section>
+
+            @if (error()) { <p class="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/30" role="alert">{{ error() }}</p> }
+            <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                <button type="button" class="app-btn-secondary" [disabled]="isSaving()" (click)="joinAsNewPerson()">No, join as new person</button>
+                <button type="button" class="app-btn-primary" [disabled]="isSaving()" (click)="claim()">{{ isSaving() ? 'Saving…' : 'Yes, claim this history' }}</button>
+            </div>
+            }
+        }
+    </div>
+</main>
