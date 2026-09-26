@@ -47,7 +47,9 @@ describe('GroupPersonClaimComponent', () => {
     async function createComponent() {
         const api = {
             getGroupPeople: jasmine.createSpy('getGroupPeople').and.returnValue(of({ people: [person] })),
-            getGames: jasmine.createSpy('getGames').and.returnValue(of([{ id: 42, title: 'Catan' }])),
+            getGroupPersonCatalog: jasmine
+                .createSpy('getGroupPersonCatalog')
+                .and.returnValue(of([{ id: 42, title: 'Catan', titleTranslations: { en: 'Catan', es: 'Catan' } }])),
             claimGroupPerson: jasmine.createSpy('claimGroupPerson').and.returnValue(of({ success: true, alreadyClaimed: false })),
             joinGroupAsNewPerson: jasmine.createSpy('joinGroupAsNewPerson').and.returnValue(of({ id: 22 })),
         }
