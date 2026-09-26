@@ -21,6 +21,8 @@ describe('ClerkIdentityService', () => {
     }
     const databaseService = {
         getGroupById: jest.fn(),
+        getGroupPersonById: jest.fn(),
+        setGroupPersonClaimEmail: jest.fn(),
         joinGroupFromClerkInvitation: jest.fn(),
     }
     const service = new ClerkIdentityService(configService as never, usersService as never, databaseService as never)
@@ -182,6 +184,33 @@ describe('ClerkIdentityService', () => {
                 boardVaultGroupInvitation: { groupId: 12, inviterAccountId: 7, version: 1 },
             },
         })
+    })
+
+    it('validates and binds a targeted placeholder to the invited email', async () => {
+        configService.get.mockImplementation((key: string) =>
+            key === 'BOARD_VAULT_CLERK_INVITATION_REDIRECT_URL' ? 'https://board-vault.test/register' : 'secret',
+        )
+        databaseService.getGroupById.mockResolvedValue({ rows: [[12, 'Friends', 7]] })
+        databaseService.getGroupPersonById.mockResolvedValue({ rows: [[21, 12, null, 'placeholder']] })
+        databaseService.setGroupPersonClaimEmail.mockResolvedValue({ rowsAffected: 1 })
+        const createInvitation = jest.fn().mockResolvedValue({
+            id: 'inv_targeted',
+            emailAddress: 'invite@example.com',
+            url: 'https://clerk.test/invite',
+        })
+
+        mockedCreateClerkClient.mockReturnValue({ invitations: { createInvitation } } as never)
+
+        await service.createGroupInvitation(12, 7, 'invite@example.com', 21)
+
+        expect(databaseService.setGroupPersonClaimEmail).toHaveBeenCalledWith(21, 12, 'invite@example.com')
+        expect(createInvitation).toHaveBeenCalledWith(
+            expect.objectContaining({
+                publicMetadata: {
+                    boardVaultGroupInvitation: { groupId: 12, inviterAccountId: 7, version: 2, groupPersonId: 21 },
+                },
+            }),
+        )
     })
 
     it('maps an unexpected Clerk provider failure to a stable safe code', async () => {
