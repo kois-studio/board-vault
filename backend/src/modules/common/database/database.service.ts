@@ -46,7 +46,7 @@ type ScheduledSessionInput = {
     plannedGameIds: Array<number>
 }
 
-export const CURRENT_SCHEMA_VERSION = '0013'
+export const CURRENT_SCHEMA_VERSION = '0014'
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
@@ -223,6 +223,24 @@ export class DatabaseService implements OnModuleInit {
                 sql: 'INSERT OR IGNORE INTO GroupMembership (accountId, groupId) VALUES (?, ?)',
                 args: [accountId, metadata.groupId],
             })
+
+            if (metadata.groupPersonId === undefined) {
+                await transaction.execute({
+                    sql: `
+                        INSERT INTO GroupPerson (groupId, accountId, kind, status, displayName, avatar, createdByAccountId, claimedAt)
+                        SELECT ?, a.id, 'linked', 'active', COALESCE(NULLIF(a.displayName, ''), a.username), a.avatar, ug.createdBy, CURRENT_TIMESTAMP
+                        FROM Account a
+                        INNER JOIN UserGroup ug ON ug.id = ?
+                        WHERE a.id = ?
+                          AND NOT EXISTS (
+                              SELECT 1
+                              FROM GroupPerson existing
+                              WHERE existing.groupId = ? AND existing.accountId = ?
+                          )
+                    `,
+                    args: [metadata.groupId, metadata.groupId, accountId, metadata.groupId, accountId],
+                })
+            }
 
             await transaction.commit()
         } catch (error) {
@@ -560,6 +578,16 @@ export class DatabaseService implements OnModuleInit {
             await transaction.execute({
                 sql: 'INSERT INTO GroupMembership (accountId, groupId) VALUES (?, ?)',
                 args: [groupDto.createdBy, groupId],
+            })
+
+            await transaction.execute({
+                sql: `
+                    INSERT INTO GroupPerson (groupId, accountId, kind, status, displayName, avatar, createdByAccountId, claimedAt)
+                    SELECT ?, a.id, 'linked', 'active', COALESCE(NULLIF(a.displayName, ''), a.username), a.avatar, ?, CURRENT_TIMESTAMP
+                    FROM Account a
+                    WHERE a.id = ?
+                `,
+                args: [groupId, groupDto.createdBy, groupDto.createdBy],
             })
 
             await transaction.commit()
@@ -921,7 +949,8 @@ export class DatabaseService implements OnModuleInit {
             const update = await transaction.execute({
                 sql: `
                     UPDATE GroupPerson
-                    SET accountId = ?, kind = 'linked', claimedAt = CURRENT_TIMESTAMP, updatedAt = CURRENT_TIMESTAMP
+                    SET accountId = ?, kind = 'linked', claimEmail = NULL, claimExpiresAt = NULL,
+                        claimedAt = CURRENT_TIMESTAMP, updatedAt = CURRENT_TIMESTAMP
                     WHERE id = ? AND groupId = ? AND kind = 'placeholder' AND accountId IS NULL
                 `,
                 args: [input.accountId, input.groupPersonId, input.groupId],
@@ -2183,7 +2212,7 @@ export class DatabaseService implements OnModuleInit {
         try {
             const invitation = await transaction.execute({
                 sql: `
-                    SELECT id
+                    SELECT id, groupPersonId
                     FROM Invitation
                     WHERE id = ?
                       AND groupId = ?
@@ -2201,6 +2230,24 @@ export class DatabaseService implements OnModuleInit {
                 sql: 'INSERT OR IGNORE INTO GroupMembership (accountId, groupId) VALUES (?, ?)',
                 args: [accountId, groupId],
             })
+
+            if (invitation.rows[0]?.[1] === null || invitation.rows[0]?.[1] === undefined) {
+                await transaction.execute({
+                    sql: `
+                        INSERT INTO GroupPerson (groupId, accountId, kind, status, displayName, avatar, createdByAccountId, claimedAt)
+                        SELECT ?, a.id, 'linked', 'active', COALESCE(NULLIF(a.displayName, ''), a.username), a.avatar, ug.createdBy, CURRENT_TIMESTAMP
+                        FROM Account a
+                        INNER JOIN UserGroup ug ON ug.id = ?
+                        WHERE a.id = ?
+                          AND NOT EXISTS (
+                              SELECT 1
+                              FROM GroupPerson existing
+                              WHERE existing.groupId = ? AND existing.accountId = ?
+                          )
+                    `,
+                    args: [groupId, groupId, accountId, groupId, accountId],
+                })
+            }
 
             const deletedInvitation = await transaction.execute({
                 sql: `
