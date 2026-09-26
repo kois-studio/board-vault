@@ -20,6 +20,7 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
 import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
+import { GameCompleteDto } from '../../../common/types/game.type'
 import {
     CreateGroupPersonBody,
     GroupPersonDto,
@@ -56,7 +57,7 @@ export class GroupPeopleController {
 
     @Get('groups/:groupId/people/catalog')
     @ApiOperation({ summary: 'List catalog games available for group-person assertions' })
-    @ApiResponse({ status: 200, type: [Object] })
+    @ApiResponse({ status: 200, type: [GameCompleteDto] })
     async getCatalog(
         @Req() request: { user: { userId: number } },
         @Param('groupId', ParseIntPipe) groupId: number,
