@@ -18,6 +18,7 @@ import {
 } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
+import { GroupPeopleFeatureGuard } from '../../../common/guards/group-people-feature.guard'
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
 import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
 import { GameCompleteDto } from '../../../common/types/game.type'
@@ -36,7 +37,7 @@ import {
 
 import { GroupPeopleService } from './group-people.service'
 
-@UseGuards(JwtAuthGuard, VerifiedUserGuard)
+@UseGuards(JwtAuthGuard, VerifiedUserGuard, GroupPeopleFeatureGuard)
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
 @ApiTags('group-people')
 @ApiBearerAuth()

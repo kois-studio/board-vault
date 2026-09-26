@@ -1193,7 +1193,7 @@ export class DatabaseService implements OnModuleInit {
                       AND ownedByGroupPerson.status = 'asserted'
                 )
             `,
-            args: [groupId, accountId, gameId, groupId, gameId, groupId, gameId],
+                args: [groupId, accountId, gameId, groupId, gameId, groupId, gameId],
             })
 
             if (interest.rowsAffected === 1) {
@@ -2156,6 +2156,7 @@ export class DatabaseService implements OnModuleInit {
 
         const groupPersonId = invitation.rows[0]?.[1]
         const groupId = invitation.rows[0]?.[0]
+
         if (result.rowsAffected === 1 && groupPersonId !== null && groupPersonId !== undefined) {
             await this._tursoExecute({
                 sql: `
