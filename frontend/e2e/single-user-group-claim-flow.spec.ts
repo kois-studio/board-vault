@@ -46,7 +46,7 @@ test.describe('single-user group claim flow', () => {
 
             await page.goto(`${baseURL}/dashboard`)
             await page.getByRole('link', { name: 'Create a group' }).first().click()
-            const groupName = `Phantom claim ${Date.now().toString().slice(-8)}`
+            const groupName = `Phantom-${Date.now().toString().slice(-8)}`
             await page.getByLabel('What should your group be called?').fill(groupName)
             await page.getByRole('button', { name: 'Create group', exact: true }).click()
             await expect(page).toHaveURL(/\/groups\/\d+$/)
