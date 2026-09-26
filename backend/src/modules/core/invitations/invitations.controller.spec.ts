@@ -27,6 +27,26 @@ describe('InvitationsController actor identity', () => {
         expect(createInvitationByUsername).toHaveBeenCalledWith({ groupId: 12, username: 'target-user', fromAccountId: 7 })
     })
 
+    it('preserves an owner-selected placeholder target while deriving the sender', async () => {
+        const createInvitationByUsername = jest.fn().mockResolvedValue({ id: 8 })
+        const controller = new InvitationsController({ createInvitationByUsername } as unknown as InvitationsService)
+        const body = {
+            groupId: 12,
+            username: 'target-user',
+            groupPersonId: 21,
+            fromAccountId: 999,
+        } as unknown as CreateInvitationByUsernameRequestBody
+
+        await controller.createInvitationByUsername({ user: { userId: 7 } }, body)
+
+        expect(createInvitationByUsername).toHaveBeenCalledWith({
+            groupId: 12,
+            username: 'target-user',
+            groupPersonId: 21,
+            fromAccountId: 7,
+        })
+    })
+
     it('requires group ownership for invitation creation', () => {
         const controller = InvitationsController.prototype as unknown as Record<string, unknown>
         const getGuards = (method: string) => Reflect.getMetadata(GUARDS_METADATA, controller[method] as object) as Array<unknown>
