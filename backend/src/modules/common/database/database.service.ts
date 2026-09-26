@@ -679,12 +679,20 @@ export class DatabaseService implements OnModuleInit {
     async getGroupAvailableGameIds(groupId: number): Promise<Array<number>> {
         const resultSet = await this._tursoExecute({
             sql: `
-                SELECT DISTINCT og.gameId
-                FROM OwnedGame og
-                INNER JOIN GroupMembership gm ON gm.accountId = og.accountId
-                WHERE gm.groupId = ?
+                SELECT DISTINCT gameId
+                FROM (
+                    SELECT og.gameId
+                    FROM OwnedGame og
+                    INNER JOIN GroupMembership gm ON gm.accountId = og.accountId
+                    WHERE gm.groupId = ?
+                    UNION
+                    SELECT gpo.gameId
+                    FROM GroupPersonGameOwnership gpo
+                    INNER JOIN GroupPerson gp ON gp.id = gpo.groupPersonId
+                    WHERE gp.groupId = ? AND gp.status = 'active' AND gpo.status = 'asserted'
+                ) available
             `,
-            args: [groupId],
+            args: [groupId, groupId],
         })
 
         return resultSet.rows.map(row => Number(row[0]))
@@ -1085,10 +1093,21 @@ export class DatabaseService implements OnModuleInit {
                         WHERE ggi_count.groupId = ? AND ggi_count.gameId = g.id
                     ) AS interestCount,
                     (
-                        SELECT COUNT(DISTINCT og.accountId)
-                        FROM OwnedGame og
-                        INNER JOIN GroupMembership gm ON gm.accountId = og.accountId
-                        WHERE gm.groupId = ? AND og.gameId = g.id
+                        SELECT COUNT(DISTINCT gp.id)
+                        FROM GroupPerson gp
+                        WHERE gp.groupId = ? AND gp.status = 'active'
+                          AND (
+                              EXISTS (
+                                  SELECT 1
+                                  FROM OwnedGame og
+                                  WHERE og.accountId = gp.accountId AND og.gameId = g.id
+                              )
+                              OR EXISTS (
+                                  SELECT 1
+                                  FROM GroupPersonGameOwnership gpo
+                                  WHERE gpo.groupPersonId = gp.id AND gpo.gameId = g.id AND gpo.status = 'asserted'
+                              )
+                          )
                     ) AS ownerCount,
                     gad.status,
                     gad.decidedAt,
@@ -1110,6 +1129,15 @@ export class DatabaseService implements OnModuleInit {
                         INNER JOIN GroupMembership groupMember ON groupMember.accountId = ownedByGroupMember.accountId
                         WHERE groupMember.groupId = ggi.groupId AND ownedByGroupMember.gameId = ggi.gameId
                     )
+                    AND NOT EXISTS (
+                        SELECT 1
+                        FROM GroupPersonGameOwnership ownedByGroupPerson
+                        INNER JOIN GroupPerson groupPerson ON groupPerson.id = ownedByGroupPerson.groupPersonId
+                        WHERE groupPerson.groupId = ggi.groupId
+                          AND groupPerson.status = 'active'
+                          AND ownedByGroupPerson.gameId = ggi.gameId
+                          AND ownedByGroupPerson.status = 'asserted'
+                    )
                 ORDER BY firstInterestedAt ASC, g.id ASC, a.displayName ASC
             `,
             args: [groupId, groupId, groupId, groupId],
@@ -1127,8 +1155,17 @@ export class DatabaseService implements OnModuleInit {
                     INNER JOIN GroupMembership groupMember ON groupMember.accountId = ownedByGroupMember.accountId
                     WHERE groupMember.groupId = ? AND ownedByGroupMember.gameId = ?
                 )
+                AND NOT EXISTS (
+                    SELECT 1
+                    FROM GroupPersonGameOwnership ownedByGroupPerson
+                    INNER JOIN GroupPerson groupPerson ON groupPerson.id = ownedByGroupPerson.groupPersonId
+                    WHERE groupPerson.groupId = ?
+                      AND groupPerson.status = 'active'
+                      AND ownedByGroupPerson.gameId = ?
+                      AND ownedByGroupPerson.status = 'asserted'
+                )
             `,
-            args: [groupId, accountId, body.gameId, groupId, body.gameId],
+            args: [groupId, accountId, body.gameId, groupId, body.gameId, groupId, body.gameId],
         })
     }
 
@@ -1140,14 +1177,23 @@ export class DatabaseService implements OnModuleInit {
                 sql: `
                     INSERT OR IGNORE INTO GroupGameInterest (groupId, accountId, gameId)
                     SELECT ?, ?, ?
-                    WHERE NOT EXISTS (
-                        SELECT 1
-                        FROM OwnedGame ownedByGroupMember
-                        INNER JOIN GroupMembership groupMember ON groupMember.accountId = ownedByGroupMember.accountId
-                        WHERE groupMember.groupId = ? AND ownedByGroupMember.gameId = ?
-                    )
-                `,
-                args: [groupId, accountId, gameId, groupId, gameId],
+                WHERE NOT EXISTS (
+                    SELECT 1
+                    FROM OwnedGame ownedByGroupMember
+                    INNER JOIN GroupMembership groupMember ON groupMember.accountId = ownedByGroupMember.accountId
+                    WHERE groupMember.groupId = ? AND ownedByGroupMember.gameId = ?
+                )
+                AND NOT EXISTS (
+                    SELECT 1
+                    FROM GroupPersonGameOwnership ownedByGroupPerson
+                    INNER JOIN GroupPerson groupPerson ON groupPerson.id = ownedByGroupPerson.groupPersonId
+                    WHERE groupPerson.groupId = ?
+                      AND groupPerson.status = 'active'
+                      AND ownedByGroupPerson.gameId = ?
+                      AND ownedByGroupPerson.status = 'asserted'
+                )
+            `,
+            args: [groupId, accountId, gameId, groupId, gameId, groupId, gameId],
             })
 
             if (interest.rowsAffected === 1) {
