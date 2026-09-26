@@ -6,6 +6,7 @@ import { Api } from '../../api/api'
 import type {
     GameCompleteType,
     GameType,
+    GroupPersonWorkspaceType,
     GroupWithMembersAndGames,
     MeetType,
     MeetWithAttendeesAndGamesType,
@@ -34,6 +35,8 @@ export class MeetViewComponent {
     public userData: ReturnType<typeof this.dataService.currentUser> = null
     private userGroups: ReturnType<typeof this.dataService.userGroups> = []
     public groupData: Nullable<(typeof this.userGroups)[number]> = null
+    public groupPeople: Array<GroupPersonWorkspaceType> = []
+    public groupPersonCatalog: Array<GameCompleteType> = []
     public meetData: Nullable<MeetWithAttendeesAndGamesType> = null
     public meetDataCopyOriginal: Nullable<MeetWithAttendeesAndGamesType> = null // to compare changes
 
@@ -107,6 +110,13 @@ export class MeetViewComponent {
 
             this.groupData = groupData
 
+            if (typeof this.api.getGroupPeople === 'function') {
+                this.groupPeople = (await firstValueFrom(this.api.getGroupPeople(this.meetData.groupId))).people
+            }
+            if (this.isGroupPersonSession && typeof this.api.getGroupPersonCatalog === 'function') {
+                this.groupPersonCatalog = await firstValueFrom(this.api.getGroupPersonCatalog(this.meetData.groupId))
+            }
+
             // After getting group data, index all reviews by gameId
             this.#indexReviews(groupData)
 
@@ -158,7 +168,11 @@ export class MeetViewComponent {
     }
 
     get attendeeCount(): number {
-        return this.meetData?.attendees.length ?? 0
+        return this.isGroupPersonSession ? (this.meetData?.participants?.length ?? 0) : (this.meetData?.attendees.length ?? 0)
+    }
+
+    get isGroupPersonSession(): boolean {
+        return (this.meetData?.participants?.length ?? 0) > 0
     }
 
     get playedGamesCount(): number {
@@ -166,7 +180,9 @@ export class MeetViewComponent {
     }
 
     get attendedCount(): number {
-        return this.meetData?.attendeeStatuses.filter((attendee) => attendee.attendanceStatus === 'attended').length ?? 0
+        return this.isGroupPersonSession
+            ? (this.meetData?.participantStatuses?.filter((attendee) => attendee.attendanceStatus === 'attended').length ?? 0)
+            : (this.meetData?.attendeeStatuses.filter((attendee) => attendee.attendanceStatus === 'attended').length ?? 0)
     }
 
     get sessionStatusDescription(): string {
@@ -250,6 +266,11 @@ export class MeetViewComponent {
         const currentUserId = this.userData?.id
         if (!currentUserId || !this.meetData) return null
 
+        if (this.isGroupPersonSession) {
+            const currentPersonId = this.groupPeople.find((person) => person.person.accountId === currentUserId)?.person.id
+            return this.meetData.participantStatuses?.find((attendee) => attendee.groupPersonId === currentPersonId)?.rsvpStatus ?? null
+        }
+
         return this.meetData.attendeeStatuses.find((attendee) => attendee.accountId === currentUserId)?.rsvpStatus ?? null
     }
 
@@ -267,6 +288,17 @@ export class MeetViewComponent {
     }
 
     get canLeaveFeedback(): boolean {
+        if (this.isGroupPersonSession) {
+            const currentPersonId = this.groupPeople.find((person) => person.person.accountId === this.userData?.id)?.person.id
+            return Boolean(
+                this.meetData?.status === 'completed' &&
+                    currentPersonId !== undefined &&
+                    this.meetData.participantStatuses?.some(
+                        (attendee) => attendee.groupPersonId === currentPersonId && attendee.attendanceStatus === 'attended',
+                    ),
+            )
+        }
+
         return Boolean(
             this.meetData?.status === 'completed' &&
                 this.userData &&
@@ -294,6 +326,16 @@ export class MeetViewComponent {
         return attendedIds && attendedIds.length > 0 ? attendedIds : [...(this.meetData?.attendees ?? [])]
     }
 
+    getGameParticipantPersonIds(gameId: number): Array<number> {
+        const recorded = this.meetData?.playedGamePersonParticipants?.find((game) => game.gameId === gameId)?.participantIds
+        if (recorded) return recorded
+
+        const attendedIds = this.meetData?.participantStatuses
+            ?.filter((attendee) => attendee.attendanceStatus === 'attended')
+            .map((attendee) => attendee.groupPersonId)
+        return attendedIds && attendedIds.length > 0 ? attendedIds : [...(this.meetData?.participants ?? [])]
+    }
+
     getGameParticipants(gameId: number): Array<PublicUserType> {
         const participantIds = new Set(this.getGameParticipantIds(gameId))
         return (this.groupData?.members ?? []).filter((member) => participantIds.has(member.id))
@@ -301,6 +343,10 @@ export class MeetViewComponent {
 
     isGameParticipant(gameId: number, memberId: number): boolean {
         return this.getGameParticipantIds(gameId).includes(memberId)
+    }
+
+    isGroupPersonGameParticipant(gameId: number, personId: number): boolean {
+        return this.getGameParticipantPersonIds(gameId).includes(personId)
     }
 
     getMyRating(gameId: number): number | null {
@@ -335,6 +381,43 @@ export class MeetViewComponent {
         if (attendanceStatus === 'attended') return 'Was there'
         if (attendanceStatus === 'absent') return 'Was absent'
         return 'Not recorded'
+    }
+
+    getGroupPersonRsvpStatus(personId: number): string {
+        const rsvpStatus = this.meetData?.participantStatuses?.find((attendee) => attendee.groupPersonId === personId)?.rsvpStatus
+        if (rsvpStatus === 'accepted') return 'Going'
+        if (rsvpStatus === 'declined') return 'Can’t make it'
+        return 'Organizer recorded'
+    }
+
+    getGroupPersonAttendanceStatus(personId: number): string {
+        const attendanceStatus = this.meetData?.participantStatuses?.find(
+            (attendee) => attendee.groupPersonId === personId,
+        )?.attendanceStatus
+        if (attendanceStatus === 'attended') return 'Was there'
+        if (attendanceStatus === 'absent') return 'Was absent'
+        return 'Not recorded'
+    }
+
+    isGroupPersonAttendeeRemovalBlocked(personId: number): boolean {
+        if (!this.meetData?.participants?.includes(personId)) return false
+        if (this.meetData.participants.length <= 1) return true
+        return Boolean(this.meetData.playedGamePersonParticipants?.some((game) => game.participantIds.includes(personId)))
+    }
+
+    getGroupPersonToggleLabel(personId: number): string {
+        const person = this.groupPeople.find((candidate) => candidate.person.id === personId)
+        const name = person?.person.displayName ?? 'this person'
+        if (!this.meetData?.participants?.includes(personId)) return `Add ${name} to session attendees`
+        if (this.meetData.participants.length <= 1) return `Keep ${name} as the session attendee`
+        if (this.meetData.playedGamePersonParticipants?.some((game) => game.participantIds.includes(personId))) {
+            return `Keep ${name} as an attendee because they are recorded for a played game`
+        }
+        return `Remove ${name} from session attendees`
+    }
+
+    getGroupPersonGameCount(person: GroupPersonWorkspaceType): number {
+        return person.ownership.filter((ownership) => ownership.status === 'asserted').length
     }
 
     isAttendeeRemovalBlocked(memberId: number): boolean {
@@ -386,8 +469,14 @@ export class MeetViewComponent {
         this.isUpdatingRsvp = true
         try {
             const result = await firstValueFrom(this.api.updateSessionRsvp(this.meetData.id, { rsvpStatus }))
-            const attendeeStatus = this.meetData.attendeeStatuses.find((attendee) => attendee.accountId === this.userData?.id)
-            if (attendeeStatus) attendeeStatus.rsvpStatus = result.rsvpStatus
+            if (this.isGroupPersonSession) {
+                const currentPersonId = this.groupPeople.find((person) => person.person.accountId === this.userData?.id)?.person.id
+                const attendeeStatus = this.meetData.participantStatuses?.find((attendee) => attendee.groupPersonId === currentPersonId)
+                if (attendeeStatus) attendeeStatus.rsvpStatus = result.rsvpStatus
+            } else {
+                const attendeeStatus = this.meetData.attendeeStatuses.find((attendee) => attendee.accountId === this.userData?.id)
+                if (attendeeStatus) attendeeStatus.rsvpStatus = result.rsvpStatus
+            }
             this.toastService.success(result.rsvpStatus === 'accepted' ? 'You are marked as going.' : 'Your RSVP was declined.')
         } catch {
             this.toastService.error('Could not save your RSVP.')
@@ -421,11 +510,51 @@ export class MeetViewComponent {
         }
     }
 
+    async toggleGroupPersonAttendance(personId: number): Promise<void> {
+        if (!this.meetData || !this.isGroupPersonSession || !this.canRecordAttendance || this.isUpdatingAttendance) return
+
+        const previousStatuses = (this.meetData.participantStatuses ?? []).map((attendee) => ({ ...attendee }))
+        const attendedIds = (this.meetData.participantStatuses ?? [])
+            .filter((attendee) => attendee.attendanceStatus === 'attended')
+            .map((attendee) => attendee.groupPersonId)
+        const nextAttendedIds = attendedIds.includes(personId) ? attendedIds.filter((id) => id !== personId) : [...attendedIds, personId]
+
+        for (const attendee of this.meetData.participantStatuses ?? []) {
+            attendee.attendanceStatus = nextAttendedIds.includes(attendee.groupPersonId) ? 'attended' : 'absent'
+        }
+
+        this.isUpdatingAttendance = true
+        try {
+            await firstValueFrom(this.api.updateSessionAttendance(this.meetData.id, { attendedPersonIds: nextAttendedIds }))
+            this.toastService.success('Attendance saved.')
+        } catch {
+            this.meetData.participantStatuses = previousStatuses
+            this.toastService.error('Could not save attendance.')
+        } finally {
+            this.isUpdatingAttendance = false
+        }
+    }
+
     get totalGames(): Array<GameCompleteType & { active: boolean }> {
         const games: Array<GameCompleteType & { active: boolean }> = []
 
         if (!this.groupData) {
             return []
+        }
+
+        if (this.isGroupPersonSession) {
+            const personGames = new Map<number, GameCompleteType & { active: boolean }>()
+            for (const game of this.groupPersonCatalog) personGames.set(game.id, { ...game, active: true })
+            for (const member of this.groupData.members) {
+                for (const game of member.games) {
+                    if (!personGames.has(game.id)) personGames.set(game.id, { ...game, active: false })
+                }
+            }
+            return [...personGames.values()].sort((a, b) => {
+                const aReview = this.avgReviewsIndex[a.id] ?? -1
+                const bReview = this.avgReviewsIndex[b.id] ?? -1
+                return bReview - aReview
+            })
         }
 
         for (const member of this.groupData.members) {
@@ -544,6 +673,33 @@ export class MeetViewComponent {
         }
     }
 
+    async onClickGroupPerson(personId: number): Promise<void> {
+        if (!this.meetData || !this.isGroupPersonSession || !this.canEditSession || this.isPersistingChanges) return
+
+        if (this.isGroupPersonAttendeeRemovalBlocked(personId)) {
+            this.toastService.error(
+                this.meetData.participants?.length === 1
+                    ? 'A session must retain at least one attendee.'
+                    : 'Remove this person from played games before removing them from the session.',
+            )
+            return
+        }
+
+        const previousParticipants = [...(this.meetData.participants ?? [])]
+        this.meetData.participants = this.meetData.participants?.includes(personId)
+            ? this.meetData.participants.filter((id) => id !== personId)
+            : [...(this.meetData.participants ?? []), personId]
+
+        this.isPersistingChanges = true
+        try {
+            await this.#saveAttendeesSelection()
+        } catch {
+            this.meetData.participants = previousParticipants
+        } finally {
+            this.isPersistingChanges = false
+        }
+    }
+
     async onClickGame(gameId: number): Promise<void> {
         if (!this.meetData || !this.canEditSession || this.isPersistingChanges) {
             return
@@ -554,15 +710,29 @@ export class MeetViewComponent {
             ...game,
             participantIds: [...game.participantIds],
         }))
+        const previousPersonParticipants = (this.meetData.playedGamePersonParticipants ?? []).map((game) => ({
+            ...game,
+            participantIds: [...game.participantIds],
+        }))
         if (this.meetData.playedGames.includes(gameId)) {
             this.meetData.playedGames = this.meetData.playedGames.filter((id) => id !== gameId)
             this.meetData.playedGameParticipants = this.meetData.playedGameParticipants.filter((game) => game.gameId !== gameId)
+            this.meetData.playedGamePersonParticipants = (this.meetData.playedGamePersonParticipants ?? []).filter(
+                (game) => game.gameId !== gameId,
+            )
         } else {
             this.meetData.playedGames.push(gameId)
-            this.meetData.playedGameParticipants = [
-                ...this.meetData.playedGameParticipants,
-                { gameId, participantIds: this.getGameParticipantIds(gameId) },
-            ]
+            if (this.isGroupPersonSession) {
+                this.meetData.playedGamePersonParticipants = [
+                    ...(this.meetData.playedGamePersonParticipants ?? []),
+                    { gameId, participantIds: this.getGameParticipantPersonIds(gameId) },
+                ]
+            } else {
+                this.meetData.playedGameParticipants = [
+                    ...this.meetData.playedGameParticipants,
+                    { gameId, participantIds: this.getGameParticipantIds(gameId) },
+                ]
+            }
         }
 
         this.isPersistingChanges = true
@@ -571,6 +741,7 @@ export class MeetViewComponent {
         } catch {
             this.meetData.playedGames = previousPlayedGames
             this.meetData.playedGameParticipants = previousParticipants
+            this.meetData.playedGamePersonParticipants = previousPersonParticipants
         } finally {
             this.isPersistingChanges = false
         }
@@ -608,17 +779,63 @@ export class MeetViewComponent {
         }
     }
 
-    // #region private methods
+    async toggleGroupPersonGameParticipant(gameId: number, personId: number): Promise<void> {
+        if (
+            !this.meetData ||
+            !this.isGroupPersonSession ||
+            !this.canEditSession ||
+            this.isPersistingChanges ||
+            !this.meetData.playedGames.includes(gameId)
+        )
+            return
 
-    async #saveAttendeesSelection(): Promise<void> {
-        if (!this.groupData || !this.meetData || !this.meetDataCopyOriginal) {
+        const currentParticipantIds = this.getGameParticipantPersonIds(gameId)
+        if (currentParticipantIds.includes(personId) && currentParticipantIds.length === 1) {
+            this.toastService.error('Keep at least one participant for each played game.')
             return
         }
 
-        await firstValueFrom(this.dataService.updateSessionAttendees(this.meetData.id, this.meetData.attendees))
+        const previousParticipants = (this.meetData.playedGamePersonParticipants ?? []).map((game) => ({
+            ...game,
+            participantIds: [...game.participantIds],
+        }))
+        const nextParticipantIds = currentParticipantIds.includes(personId)
+            ? currentParticipantIds.filter((id) => id !== personId)
+            : [...currentParticipantIds, personId]
+        this.meetData.playedGamePersonParticipants = [
+            ...(this.meetData.playedGamePersonParticipants ?? []).filter((game) => game.gameId !== gameId),
+            { gameId, participantIds: nextParticipantIds },
+        ]
+
+        this.isPersistingChanges = true
+        try {
+            await this.#saveGamesPlayedSelection()
+        } catch {
+            this.meetData.playedGamePersonParticipants = previousParticipants
+            this.toastService.error('Could not save the played game changes.')
+        } finally {
+            this.isPersistingChanges = false
+        }
+    }
+
+    // #region private methods
+
+    async #saveAttendeesSelection(): Promise<void> {
+        if (!this.meetData || !this.meetDataCopyOriginal) {
+            return
+        }
+
+        const result = await firstValueFrom(
+            this.api.updateSessionAttendees(
+                this.meetData.id,
+                this.isGroupPersonSession ? { groupPersonIds: this.meetData.participants ?? [] } : { attendeeIds: this.meetData.attendees },
+            ),
+        )
 
         // update the original copy for future comparisons
         this.meetDataCopyOriginal.attendees = [...this.meetData.attendees]
+        this.meetDataCopyOriginal.participants = [...(this.meetData.participants ?? [])]
+        if (result.groupPersonIds) this.meetData.participants = [...result.groupPersonIds]
     }
 
     async #saveGamesPlayedSelection(): Promise<void> {
@@ -629,12 +846,24 @@ export class MeetViewComponent {
         const result = await firstValueFrom(
             this.api.updateSessionPlayedGames(this.meetData.id, {
                 playedGameIds: this.meetData.playedGames,
-                games: this.meetData.playedGameParticipants,
+                games: this.meetData.playedGames.map((gameId) => ({
+                    gameId,
+                    participantIds: this.isGroupPersonSession
+                        ? []
+                        : (this.meetData?.playedGameParticipants.find((game) => game.gameId === gameId)?.participantIds ?? []),
+                    ...(this.isGroupPersonSession
+                        ? {
+                              participantPersonIds:
+                                  this.meetData?.playedGamePersonParticipants?.find((game) => game.gameId === gameId)?.participantIds ?? [],
+                          }
+                        : {}),
+                })),
             }),
         )
         this.meetData.playedGames = result.playedGameIds
         this.meetData.skippedGames = result.skippedGameIds
         this.meetData.playedGameParticipants = result.playedGameParticipants
+        this.meetData.playedGamePersonParticipants = result.playedGamePersonParticipants
         this.meetData.plannedGames = this.meetData.plannedGames.filter(
             (gameId) => !result.playedGameIds.includes(gameId) && !result.skippedGameIds.includes(gameId),
         )
@@ -642,6 +871,10 @@ export class MeetViewComponent {
         // Update the original copy for future comparisons after the server confirms the canonical state.
         this.meetDataCopyOriginal.playedGames = [...result.playedGameIds]
         this.meetDataCopyOriginal.playedGameParticipants = result.playedGameParticipants.map((game) => ({
+            ...game,
+            participantIds: [...game.participantIds],
+        }))
+        this.meetDataCopyOriginal.playedGamePersonParticipants = (result.playedGamePersonParticipants ?? []).map((game) => ({
             ...game,
             participantIds: [...game.participantIds],
         }))
