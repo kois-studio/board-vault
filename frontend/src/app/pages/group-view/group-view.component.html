@@ -496,7 +496,7 @@
                                 <div class="flex items-start justify-between gap-3">
                                     <div>
                                         <p class="font-semibold">{{ historyRecord.meetData.meetDate | customDate: true: historyRecord.meetData.timezone }}</p>
-                                        <p class="mt-1 text-sm text-secondary">{{ getAttendeeSummary(historyRecord.attendedBy) }}</p>
+                                        <p class="mt-1 text-sm text-secondary">{{ getAttendeeSummary(historyRecord.attendedBy, historyRecord.attendedByPeople ?? []) }}</p>
                                         <p class="mt-1 text-sm text-secondary">{{ historyRecord.gamesPlayed.length }} game{{ historyRecord.gamesPlayed.length === 1 ? '' : 's' }} played</p>
                                     </div>
                                     <a [routerLink]="['/sessions', historyRecord.meetData.id]" class="text-sm text-indigo-600 hover:underline dark:text-indigo-400">View</a>
@@ -509,8 +509,8 @@
                                         <li class="flex items-center gap-3">
                                             <img [src]="gamePlayed.gameData.imageUrl" [alt]="gamePlayed.gameData.titleTranslations.en" loading="lazy" class="h-10 w-10 rounded-lg object-cover" />
                                             <span class="min-w-0 flex-1 truncate text-sm font-medium">{{ gamePlayed.gameData.titleTranslations.en }}</span>
-                                            @if (gamePlayed.playedBy.length > 0) {
-                                                <span class="text-xs text-secondary">{{ gamePlayed.playedBy.length }} played</span>
+                                            @if (gamePlayed.playedBy.length + (gamePlayed.playedByPeople?.length ?? 0) > 0) {
+                                                <span class="text-xs text-secondary">{{ gamePlayed.playedBy.length + (gamePlayed.playedByPeople?.length ?? 0) }} played</span>
                                             } @else {
                                                 <span class="text-xs text-secondary">Players not recorded</span>
                                             }
@@ -557,9 +557,15 @@
                                 <p class="mt-3 text-sm text-secondary">Attendance will appear after the first completed session.</p>
                             } @else {
                                 <ol class="mt-4 space-y-3">
-                                    @for (item of memberParticipationComputed(); track item.member.id) {
+                                    @for (item of memberParticipationComputed(); track item.kind + ':' + item.id) {
                                         <li class="flex items-center gap-3">
-                                            <app-card-account [member]="item.member" class="min-w-0 flex-1" />
+                                            @if (item.kind === 'account') {
+                                                @if (item.member; as member) {
+                                                    <app-card-account [member]="member" class="min-w-0 flex-1" />
+                                                }
+                                            } @else {
+                                                <span class="min-w-0 flex-1 truncate font-medium">{{ item.name }} <span class="font-normal text-secondary">(group person)</span></span>
+                                            }
                                             <span class="text-right text-xs text-secondary">{{ item.sessionCount }} night{{ item.sessionCount === 1 ? '' : 's' }} · {{ item.gameCount }} game{{ item.gameCount === 1 ? '' : 's' }}</span>
                                         </li>
                                     }
