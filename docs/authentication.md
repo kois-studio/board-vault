@@ -28,7 +28,10 @@ availability, password policy, or expired/used ticket; unknown failures use a
 safe retry message.
 
 After the invitation joins the verified account to the group, a targeted
-placeholder is exposed only to that account as `claimable`. The group workspace
+placeholder is exposed only to that account as `claimable`. Targeted claims are
+bound to the verified invitee email and expire with the 30-day invitation
+window; revoking or deleting the legacy invitation clears the target when no
+other active invitation remains. The group workspace
 offers a review screen with per-game ownership and preference checkboxes, an
 optional private collection import, and a separate “join as new person” action.
 Claiming changes the group-person link atomically; it does not rewrite old

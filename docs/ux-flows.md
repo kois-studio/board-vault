@@ -22,6 +22,11 @@ already-claimed placeholder, unavailable group, failed claim retry, and
 duplicate new-person join. These should remain visible and actionable without
 revealing claim emails or other private account fields.
 
+The review screen is intentionally a consent boundary: ownership and preference
+items start selected, each can be removed independently, and private collection
+import is a separate unchecked option. “Join as a new person” is always
+available as the no-claim branch and creates no history inheritance.
+
 Board Vault is a social decision-and-memory product. Its UX must therefore be
 reviewed as journeys across screens, data states, and people—not as isolated
 component screenshots.

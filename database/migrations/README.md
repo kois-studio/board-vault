@@ -19,12 +19,11 @@ It was applied to live `board-vault` on 2026-08-12. Post-migration checks
 reported integrity `ok`, 15 accounts, 13 meets, 101 meet/game links, and one
 linked Clerk account.
 
-The live database is now current through migration `0009`. On 2026-09-08, a
-fresh export was verified with integrity `ok` and no foreign-key violations,
-then migrations `0006`–`0009` were applied transactionally. The live counts
-remain 16 accounts, 5 groups, 13 meets, and 1 invitation. The persistent
-pre-migration export is retained outside the repository under
-`/Users/dawichi/dumps/board-vault/`.
+The last documented live release was migration `0009`. The participant slice
+adds migrations `0010`–`0014`; local empty-state and synthetic restore checks
+apply the complete chain to `0014`, but no live deployment is claimed until a
+fresh authorized backup, representative-data rehearsal, schema probe, and
+rollback window are recorded.
 
 ## Execution rule
 
@@ -129,3 +128,30 @@ It does not represent a purchase; when any group member owns the game, the
 acquisition board hides it from the group because ownership is the terminal
 truth. It was applied to live Turso on 2026-09-08 after disposable verification
 and created the decision table empty.
+
+## Migrations 0010–0014 (organizer-first group people)
+
+`0010-add-group-people.sql` creates stable group-scoped placeholder/linked
+identities, ownership assertions, and explicit preferences, then backfills one
+linked row for every existing group membership. Its partial unique index keeps
+one linked person per account in a group while allowing duplicate display names.
+
+`0011-add-participant-session-data.sql` adds person attendance and per-game
+participation relations, backfills existing account participant links, and adds
+participant-scoped recommendation feedback. `0012` binds a private normalized
+claim email to a placeholder, `0013` lets legacy invitations target that
+placeholder, and `0014` adds a 30-day claim expiry with cleanup when a targeted
+legacy invitation is revoked or deleted. Claim data is reviewed transactionally
+and rejected selections remain group assertions rather than private imports.
+
+The disposable checks are:
+
+```shell
+node database/scripts/verify-empty-state.mjs
+node database/scripts/verify-restore-rehearsal.mjs
+```
+
+Both checks must pass before applying the chain to a real target. A production
+rollout must retain the backup, verify `SchemaMigrations` at `0014`, run
+integrity/foreign-key checks, and keep the previous deployment available for
+rollback until participant reads and claim invitations are smoke-tested.

@@ -1,5 +1,19 @@
 # API surface and contracts
 
+## Organizer-first group people
+
+Group-person routes use stable group-scoped participant IDs rather than
+synthetic accounts. `GET /groups/:groupId/people` returns group-safe display
+data, ownership assertions, preferences, and only the authenticated caller’s
+`claimable` flag; claim emails and private account fields are never returned.
+Owners manage placeholders and their assertions, while members can read and
+use active people in recommendations and sessions. Participant recommendation
+and session contracts accept group-person IDs alongside the legacy account-ID
+adapters. Claiming is an authenticated review action that preserves history,
+filters deselected assertions, and imports ownership into `OwnedGame` only when
+the invitee explicitly opts in. Joining as a new person creates an independent
+linked identity with no placeholder history.
+
 ## Current interface
 
 The backend is an HTTP NestJS API with no global prefix. `main.ts` creates runtime Swagger at `/swagger` using `@nestjs/swagger`, installs a global strict `ValidationPipe` as a DTO safety net, and exposes bearer auth metadata and decorated DTOs. The API is consumed by the Angular client through the `Api` service and `DataService`; the production frontend environment targets `https://backend.board-vault.com`.
