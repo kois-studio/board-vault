@@ -106,6 +106,7 @@ export class GroupViewComponent {
     public readonly acquisitionMutationGameId = signal<number | null>(null)
     public readonly acquisitionDecisionMutationGameId = signal<number | null>(null)
     public readonly groupPeople$ = signal<Array<GroupPersonWorkspaceType>>([])
+    public readonly groupPersonCatalog$ = signal<Array<GameCompleteType>>([])
     public readonly groupPeopleLoading = signal(false)
     public readonly groupPeopleError = signal(false)
     public readonly includeArchivedGroupPeople = signal(false)
@@ -121,6 +122,12 @@ export class GroupViewComponent {
             userId !== undefined &&
             this.groupPeople$().some((person) => person.person.accountId === userId && person.person.kind === 'linked')
         )
+    })
+    public readonly groupPersonAvailableGamesComputed = computed(() => {
+        const games = new Map<number, GameCompleteType>()
+        for (const game of this.totalUniqueGamesComputed()) games.set(game.id, game)
+        for (const game of this.groupPersonCatalog$()) games.set(game.id, game)
+        return [...games.values()]
     })
     private activeSelectionGroupId: number | null = null
     private activeAcquisitionGroupId: number | null = null
@@ -379,6 +386,11 @@ export class GroupViewComponent {
         this.loadGroupPeople(groupId)
     }
 
+    public retryGroupPersonCatalog(): void {
+        const groupId = this.groupData$()?.id
+        if (groupId) this.loadGroupPersonCatalog(groupId)
+    }
+
     public async addGroupPerson(): Promise<void> {
         const groupId = this.groupData$()?.id
         const displayName = this.newGroupPersonName().trim()
@@ -557,6 +569,14 @@ export class GroupViewComponent {
                 this.groupPeople$.set([])
             },
             complete: () => this.groupPeopleLoading.set(false),
+        })
+        this.loadGroupPersonCatalog(groupId)
+    }
+
+    private loadGroupPersonCatalog(groupId: number): void {
+        this.api.getGroupPersonCatalog(groupId).subscribe({
+            next: (games) => this.groupPersonCatalog$.set(games),
+            error: () => this.groupPersonCatalog$.set([]),
         })
     }
 

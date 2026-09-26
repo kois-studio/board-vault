@@ -160,6 +160,14 @@ export class GroupPeopleResponseDto {
     people: Array<GroupPersonWorkspaceDto>
 }
 
+export class GroupPersonCatalogQuery {
+    @ApiPropertyOptional({ example: 'catan', description: 'Optional title search for games that can be assigned to a group person.' })
+    @IsOptional()
+    @IsString()
+    @MaxLength(100)
+    search = ''
+}
+
 export class GroupPersonIdsBody {
     @ApiProperty({ example: [1, 2, 3], type: [Number] })
     @IsArray()

@@ -11,6 +11,7 @@ describe('GroupPeopleService participant boundaries', () => {
             getGroupById: jest.fn().mockResolvedValue({ rows: [[12, null, 7]] }),
             getUserById: jest.fn().mockResolvedValue({ rows: [[7, 'friend@example.com', null, 'friend', null, 'Friend']] }),
             getClaimableGroupPersonIds: jest.fn().mockResolvedValue({ rows: [[21]] }),
+            getGroupPersonGameCatalog: jest.fn().mockResolvedValue({ rows: [[42, 'image', 60, 2, 4, 'Catan', 'Catan', 'Catán']] }),
             getGroupPeople: jest.fn().mockResolvedValue({ rows: [personRow] }),
             getGroupPersonOwnership: jest.fn().mockResolvedValue({ rows: [[42, 'asserted', 'placeholder_setup', 7, null, 'a', 'b']] }),
             getGroupPersonPreferences: jest.fn().mockResolvedValue({ rows: [[42, 'favorite', 'placeholder_setup', 7, 'a', 'b']] }),
@@ -34,6 +35,15 @@ describe('GroupPeopleService participant boundaries', () => {
                 person: expect.objectContaining({ id: 21, kind: 'placeholder' }),
             }),
         ])
+    })
+
+    it('returns a group-scoped catalog for ownership assertions without exposing private collections', async () => {
+        const { service, databaseService } = createService()
+
+        await expect(service.getCatalog(7, 12, 'catan')).resolves.toEqual([
+            expect.objectContaining({ id: 42, title: 'Catan', titleTranslations: { en: 'Catan', es: 'Catán' } }),
+        ])
+        expect(databaseService.getGroupPersonGameCatalog).toHaveBeenCalledWith('catan')
     })
 
     it('uses the authenticated account email and never trusts claim selections as identity', async () => {

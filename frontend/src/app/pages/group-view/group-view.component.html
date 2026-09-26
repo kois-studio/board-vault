@@ -157,9 +157,9 @@
                                         <button type="button" class="text-xs text-secondary underline disabled:opacity-60" [disabled]="groupPersonMutationId() !== null" (click)="archiveGroupPerson(person)">{{ person.person.status === 'archived' ? 'Restore' : 'Archive' }}</button>
                                     }
                                 </div>
-                                @if (totalUniqueGamesComputed().length > 0 && isGroupOwnerComputed()) {
+                                @if (groupPersonAvailableGamesComputed().length > 0 && isGroupOwnerComputed()) {
                                     <div class="mt-4 flex flex-wrap gap-2" aria-label="Games this person may own">
-                                        @for (game of totalUniqueGamesComputed(); track game.id) {
+                                        @for (game of groupPersonAvailableGamesComputed(); track game.id) {
                                             <button
                                                 type="button"
                                                 class="rounded-full border px-2.5 py-1 text-xs transition-colors"
@@ -171,7 +171,7 @@
                                         }
                                     </div>
                                     <div class="mt-3 flex flex-wrap gap-2" aria-label="Games this person may prefer">
-                                        @for (game of totalUniqueGamesComputed(); track game.id) {
+                                        @for (game of groupPersonAvailableGamesComputed(); track game.id) {
                                             <button
                                                 type="button"
                                                 class="rounded-full border border-zinc-200 px-2.5 py-1 text-xs text-secondary transition-colors hover:border-indigo-400 dark:border-zinc-700"
