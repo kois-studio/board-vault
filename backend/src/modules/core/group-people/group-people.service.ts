@@ -11,6 +11,7 @@ import type {
     UpdateGroupPersonBody,
     UpdateGroupPersonOwnershipBody,
     UpdateGroupPersonPreferenceBody,
+    ClaimGroupPersonBody,
 } from '../../../common/types/group-person.type'
 import type { AvatarDto } from '../../../common/types/user.type'
 import type { ResultSet } from '@libsql/client/.'
@@ -21,6 +22,14 @@ export class GroupPeopleService {
 
     async getWorkspace(actorAccountId: number, groupId: number, includeArchived = false): Promise<Array<GroupPersonWorkspaceDto>> {
         await this.assertGroupMember(actorAccountId, groupId)
+        const account = await this.databaseService.getUserById(actorAccountId)
+        const claimableIds = new Set(
+            account.rows.length === 0
+                ? []
+                : (await this.databaseService.getClaimableGroupPersonIds(groupId, String(account.rows[0][1]))).rows.map(row =>
+                      Number(row[0]),
+                  ),
+        )
         const people = this.databaseService.getGroupPeople(groupId, includeArchived)
         const rows = await people
 
@@ -32,7 +41,7 @@ export class GroupPeopleService {
                     this.getPreferenceRows(person.id, groupId),
                 ])
 
-                return { person, ownership, preferences }
+                return { person, ownership, preferences, claimable: claimableIds.has(person.id) }
             }),
         )
     }
@@ -104,6 +113,52 @@ export class GroupPeopleService {
         }
 
         return { success: true }
+    }
+
+    async claim(actorAccountId: number, groupId: number, personId: number, body: ClaimGroupPersonBody) {
+        await this.assertGroupMember(actorAccountId, groupId)
+        const account = await this.databaseService.getUserById(actorAccountId)
+
+        if (account.rows.length === 0) throw new ForbiddenException('Account not found')
+
+        const ownership = await this.getOwnershipRows(personId, groupId)
+        const preferences = await this.getPreferenceRows(personId, groupId)
+        const ownershipIds = new Set(ownership.map(item => item.gameId))
+        const preferenceIds = new Set(preferences.map(item => item.gameId))
+        const keepOwnershipGameIds = (body.ownershipGameIds ?? [...ownershipIds]).filter(gameId => ownershipIds.has(gameId))
+        const keepPreferenceGameIds = (body.preferenceGameIds ?? [...preferenceIds]).filter(gameId => preferenceIds.has(gameId))
+        const result = await this.databaseService.claimGroupPerson({
+            groupId,
+            groupPersonId: personId,
+            accountId: actorAccountId,
+            email: String(account.rows[0][1]),
+            keepOwnershipGameIds,
+            keepPreferenceGameIds,
+            importOwnershipToCollection: body.importOwnershipToCollection === true,
+        })
+
+        if (result.alreadyClaimed) return { success: true, alreadyClaimed: true }
+        if (!result.claimed) throw new ForbiddenException('This placeholder is not assigned to your verified account')
+        return { success: true, alreadyClaimed: false }
+    }
+
+    async joinAsNewPerson(actorAccountId: number, groupId: number): Promise<GroupPersonDto> {
+        await this.assertGroupMember(actorAccountId, groupId)
+        const existing = await this.databaseService.getLinkedGroupPersonByAccount(groupId, actorAccountId)
+
+        if (existing.rows.length > 0) return this.mapPersonRow(existing.rows[0])
+
+        const account = await this.databaseService.getUserById(actorAccountId)
+
+        if (account.rows.length === 0) throw new ForbiddenException('Account not found')
+        const result = await this.databaseService.createLinkedGroupPerson(
+            groupId,
+            actorAccountId,
+            String(account.rows[5] ?? account.rows[1]),
+            typeof account.rows[4] === 'string' ? account.rows[4] : null,
+        )
+
+        return this.getPersonOrThrow(Number(result.lastInsertRowid), groupId)
     }
 
     private async assertGroupMember(accountId: number, groupId: number): Promise<void> {

@@ -75,7 +75,11 @@ export class MeetNewComponent {
 
             this.groupData = groupData
             if (!this.didInitializeSelections) {
-                const requestedAttendees = (this.route.snapshot.queryParamMap.get('participantIds') ?? this.route.snapshot.queryParamMap.get('attendeeIds') ?? '')
+                const requestedAttendees = (
+                    this.route.snapshot.queryParamMap.get('participantIds') ??
+                    this.route.snapshot.queryParamMap.get('attendeeIds') ??
+                    ''
+                )
                     .split(',')
                     .map(Number)
                     .filter((accountId) => groupData.members.some((member) => member.id === accountId))
@@ -122,7 +126,7 @@ export class MeetNewComponent {
     selectAllAttendees(): void {
         this.selectedAttendeeIds = this.useGroupPeople
             ? this.groupPeople.filter((person) => person.person.status === 'active').map((person) => person.person.id)
-            : this.groupData?.members.map((member) => member.id) ?? []
+            : (this.groupData?.members.map((member) => member.id) ?? [])
     }
 
     clearAttendees(): void {

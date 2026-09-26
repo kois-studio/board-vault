@@ -18,7 +18,7 @@ import type { SuccessDto } from '../../../common/types/auth.type'
 import type { CreatedGroupDto, GroupMemberWithGames, GroupWithMembersAndGames } from '../../../common/types/group.type'
 import type { UserStatsDto, UserProposalStatsDto } from '../../../common/types/stats.type'
 import type { UserPublicWithGames } from '../../../common/types/user.type'
-import type { HistoryRecordDto } from '../play/play.types'
+import type { HistoryPersonDto, HistoryRecordDto } from '../play/play.types'
 
 @Injectable()
 export class DashboardService {
@@ -122,12 +122,31 @@ export class DashboardService {
         return await Promise.all(
             groupMeetings.map(async meetData => {
                 const attendedByIds = await this.databaseService.getMeetAttendedAccountIds(meetData.id)
+                const attendedByPersonIds =
+                    typeof this.databaseService.getMeetAttendedPersonIds === 'function'
+                        ? await this.databaseService.getMeetAttendedPersonIds(meetData.id)
+                        : []
+                const groupPeople =
+                    typeof this.databaseService.getGroupPeople === 'function'
+                        ? await this.databaseService.getGroupPeople(groupId)
+                        : { rows: [] }
+                const peopleById = new Map(
+                    groupPeople.rows.map(row => [
+                        Number(row[0]),
+                        { id: Number(row[0]), displayName: String(row[5]), avatar: this.parseAvatar(row[6]) },
+                    ]),
+                )
                 const gameIds = await this.databaseService.getPlayedGameIdsByMeetId(meetData.id)
                 const gamesPlayed = await Promise.all(
                     gameIds.map(async gameId => {
                         const game = await this.gamesService.getGameById(gameId)
                         const gameTranslations = await this.gameTranslationService.getGameTranslations(gameId)
                         const playedByIds = await this.meetAccountGamesService.getDistinctAccountIdsByMeetIdAndGameId(meetData.id, gameId)
+                        const playedByPersonIds =
+                            (typeof this.databaseService.getMeetPlayedGamePersonParticipants === 'function'
+                                ? await this.databaseService.getMeetPlayedGamePersonParticipants(meetData.id)
+                                : []
+                            ).find(game => game.gameId === gameId)?.participantIds ?? []
                         const playedByData = await Promise.all(
                             playedByIds.map(async accountId => this.usersService.getPublicUserById(accountId)),
                         )
@@ -138,6 +157,9 @@ export class DashboardService {
                                 titleTranslations: gameTranslations,
                             },
                             playedBy: playedByData,
+                            playedByPeople: playedByPersonIds
+                                .map(personId => peopleById.get(personId))
+                                .filter((person): person is HistoryPersonDto => person !== undefined),
                         }
                     }),
                 )
@@ -146,9 +168,22 @@ export class DashboardService {
                     meetData,
                     gamesPlayed,
                     attendedBy: await Promise.all(attendedByIds.map(async accountId => this.usersService.getPublicUserById(accountId))),
+                    attendedByPeople: attendedByPersonIds
+                        .map(personId => peopleById.get(personId))
+                        .filter((person): person is HistoryPersonDto => person !== undefined),
                 }
             }),
         )
+    }
+
+    private parseAvatar(value: unknown) {
+        if (value === null || value === undefined || value === '') return null
+        if (typeof value === 'object') return value
+        try {
+            return JSON.parse(String(value))
+        } catch {
+            return null
+        }
     }
 
     @LogFeature(new Logger('DashboardService'))

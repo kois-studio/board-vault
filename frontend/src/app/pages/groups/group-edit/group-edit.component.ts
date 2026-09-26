@@ -4,7 +4,7 @@ import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../../api/api'
-import { ClerkGroupInvitationSummaryType, ClerkGroupInvitationType, GameType } from '../../../api/api.types'
+import { ClerkGroupInvitationSummaryType, ClerkGroupInvitationType, GameType, GroupPersonWorkspaceType } from '../../../api/api.types'
 import { CardAccountComponent } from '../../../components/card-account/card-account.component'
 import { ImageProfileComponent } from '../../../components/image-profile/image-profile.component'
 import { ToastService } from '../../../components/toast/toast.service'
@@ -42,6 +42,8 @@ export class GroupEditComponent {
     public readonly existingInvitationError = signal<string | null>(null)
     public readonly newPersonInvitationError = signal<string | null>(null)
     public readonly pendingClerkRevokeId = signal<string | null>(null)
+    public readonly groupPeople = signal<Array<GroupPersonWorkspaceType>>([])
+    public readonly selectedClaimPersonId = signal<number | null>(null)
     public readonly isDeleteDialogOpen = signal(false)
     public readonly isDeletingGroup = signal(false)
     public readonly isResolvingGroup = signal(true)
@@ -84,6 +86,7 @@ export class GroupEditComponent {
 
             if (this.isGroupOwner) {
                 this.loadClerkInvitations(groupData.id)
+                this.loadGroupPeople(groupData.id)
             }
         })
     }
@@ -159,7 +162,9 @@ export class GroupEditComponent {
         this.existingInvitationError.set(null)
 
         try {
-            await firstValueFrom(this.dataService.addInvitedToGroup(this.groupData.id, this.usernameToInvite.value))
+            await firstValueFrom(
+                this.dataService.addInvitedToGroup(this.groupData.id, this.usernameToInvite.value, this.selectedClaimPersonId()),
+            )
             this.usernameToInvite.reset()
         } catch {
             this.existingInvitationError.set('We could not send this invite. Check the username and try again; your entry is still here.')
@@ -177,7 +182,7 @@ export class GroupEditComponent {
 
         try {
             this.clerkInvitation = await firstValueFrom(
-                this.dataService.inviteNewPersonToGroup(this.groupData.id, this.emailToInvite.value),
+                this.dataService.inviteNewPersonToGroup(this.groupData.id, this.emailToInvite.value, this.selectedClaimPersonId()),
             )
             this.emailToInvite.reset()
             await this.refreshClerkInvitations(this.groupData.id)
@@ -188,6 +193,14 @@ export class GroupEditComponent {
         } finally {
             this.isLoading = false
         }
+    }
+
+    private loadGroupPeople(groupId: number): void {
+        const loader = this.api.getGroupPeople
+        if (typeof loader !== 'function') return
+        loader
+            .call(this.api, groupId)
+            .subscribe({ next: (response) => this.groupPeople.set(response.people), error: () => this.groupPeople.set([]) })
     }
 
     private async loadClerkInvitations(groupId: number): Promise<void> {

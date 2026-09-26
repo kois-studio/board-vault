@@ -463,8 +463,8 @@ export class DataService {
         )
     }
 
-    public addInvitedToGroup(groupId: number, invitedUsername: string) {
-        return this.api.createInvitation(groupId, invitedUsername).pipe(
+    public addInvitedToGroup(groupId: number, invitedUsername: string, groupPersonId?: number | null) {
+        return this.api.createInvitation(groupId, invitedUsername, groupPersonId).pipe(
             concatMap(() => this.api.getGroupInvitations(groupId)),
             tap((invitations) => {
                 this.invitationsGroupIndex.update((index) => ({
@@ -484,8 +484,8 @@ export class DataService {
         )
     }
 
-    public inviteNewPersonToGroup(groupId: number, emailAddress: string) {
-        return this.api.createClerkGroupInvitation(groupId, emailAddress).pipe(
+    public inviteNewPersonToGroup(groupId: number, emailAddress: string, groupPersonId?: number | null) {
+        return this.api.createClerkGroupInvitation(groupId, emailAddress, groupPersonId ?? undefined).pipe(
             tap(() => this.toastService.success('Clerk invitation sent')),
             catchError((error) => {
                 this.toastService.error(

@@ -62,9 +62,11 @@ try {
                 THEN 'group-person-preference: ok' ELSE 'group-person-preference: missing' END;
             SELECT CASE WHEN EXISTS (SELECT 1 FROM pragma_table_info('Meet') WHERE name = 'notes')
                 THEN 'meet-notes: ok' ELSE 'meet-notes: missing' END;
-            SELECT CASE WHEN (SELECT COUNT(*) FROM SchemaMigrations) = 11
-                AND (SELECT MAX(version) FROM SchemaMigrations) = '0011'
+            SELECT CASE WHEN (SELECT COUNT(*) FROM SchemaMigrations) = 13
+                AND (SELECT MAX(version) FROM SchemaMigrations) = '0013'
                 THEN 'migration-state: ok' ELSE 'migration-state: invalid' END;
+            SELECT CASE WHEN EXISTS (SELECT 1 FROM pragma_table_info('GroupPerson') WHERE name = 'claimEmail')
+                THEN 'group-person-claim-email: ok' ELSE 'group-person-claim-email: missing' END;
             SELECT CASE WHEN EXISTS (SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'MeetPersonAttendee')
                 THEN 'meet-person-attendee: ok' ELSE 'meet-person-attendee: missing' END;
             SELECT CASE WHEN EXISTS (SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'MeetPersonGame')
@@ -73,9 +75,11 @@ try {
                 THEN 'participant-feedback: ok' ELSE 'participant-feedback: missing' END;
             SELECT CASE WHEN EXISTS (SELECT 1 FROM pragma_table_info('Invitation') WHERE name = 'expiresAt')
                 THEN 'invitation-expiry: ok' ELSE 'invitation-expiry: missing' END;
+            SELECT CASE WHEN EXISTS (SELECT 1 FROM pragma_table_info('Invitation') WHERE name = 'groupPersonId')
+                THEN 'invitation-group-person: ok' ELSE 'invitation-group-person: missing' END;
         `,
     )
-    if (structure.code !== 0 || !structure.stdout.includes('group-interest: ok') || !structure.stdout.includes('group-decision: ok') || !structure.stdout.includes('group-person: ok') || !structure.stdout.includes('group-person-ownership: ok') || !structure.stdout.includes('group-person-preference: ok') || !structure.stdout.includes('meet-notes: ok') || !structure.stdout.includes('migration-state: ok') || !structure.stdout.includes('meet-person-attendee: ok') || !structure.stdout.includes('meet-person-game: ok') || !structure.stdout.includes('participant-feedback: ok') || !structure.stdout.includes('invitation-expiry: ok')) {
+    if (structure.code !== 0 || !structure.stdout.includes('group-interest: ok') || !structure.stdout.includes('group-decision: ok') || !structure.stdout.includes('group-person: ok') || !structure.stdout.includes('group-person-ownership: ok') || !structure.stdout.includes('group-person-preference: ok') || !structure.stdout.includes('meet-notes: ok') || !structure.stdout.includes('migration-state: ok') || !structure.stdout.includes('meet-person-attendee: ok') || !structure.stdout.includes('meet-person-game: ok') || !structure.stdout.includes('participant-feedback: ok') || !structure.stdout.includes('group-person-claim-email: ok') || !structure.stdout.includes('invitation-expiry: ok') || !structure.stdout.includes('invitation-group-person: ok')) {
         throw new Error(`Migrated schema assertions failed.\n${structure.stdout}\n${structure.stderr}`)
     }
 

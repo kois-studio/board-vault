@@ -1,5 +1,5 @@
-import { ApiProperty, OmitType } from '@nestjs/swagger'
-import { IsInt, IsNotEmpty, IsString, MaxLength, Min } from 'class-validator'
+import { ApiProperty, ApiPropertyOptional, OmitType } from '@nestjs/swagger'
+import { IsInt, IsNotEmpty, IsOptional, IsString, MaxLength, Min } from 'class-validator'
 
 import type { GroupDto } from './group.type'
 import type { UserPublicDto } from './user.type'
@@ -33,6 +33,12 @@ export class InvitationDto {
     @IsString()
     @IsNotEmpty()
     expiresAt: string
+
+    @ApiPropertyOptional({ example: 42, nullable: true, description: 'Placeholder targeted by this invitation, when applicable.' })
+    @IsOptional()
+    @IsInt()
+    @Min(1)
+    groupPersonId?: number | null
 }
 
 /**

@@ -4,8 +4,20 @@ import { ArrayMinSize, ArrayUnique, IsArray, IsIn, IsInt, IsOptional, Max, Min }
 import { GameCompleteDto } from '../../../common/types/game.type'
 import { MeetDto } from '../../../common/types/meet.type'
 import { UserPublicDto } from '../../../common/types/user.type'
+import { AvatarDto } from '../../../common/types/user.type'
 
 export type RecommendationDecisionLens = 'balanced' | 'fresh' | 'favorite'
+
+export class HistoryPersonDto {
+    @ApiProperty({ example: 42 })
+    id: number
+
+    @ApiProperty({ example: 'Ana' })
+    displayName: string
+
+    @ApiProperty({ type: AvatarDto, nullable: true })
+    avatar: AvatarDto | null
+}
 
 class GamePlayedDto {
     @ApiProperty({ type: GameCompleteDto, description: 'The game data.' })
@@ -13,6 +25,9 @@ class GamePlayedDto {
 
     @ApiProperty({ type: [UserPublicDto], description: 'The users who played the game in that meet.' })
     playedBy: Array<UserPublicDto>
+
+    @ApiProperty({ type: [HistoryPersonDto], required: false })
+    playedByPeople?: Array<HistoryPersonDto>
 }
 
 export class HistoryRecordDto {
@@ -24,6 +39,9 @@ export class HistoryRecordDto {
 
     @ApiProperty({ type: [UserPublicDto], description: 'The group members recorded as actually attending the session.' })
     attendedBy: Array<UserPublicDto>
+
+    @ApiProperty({ type: [HistoryPersonDto], required: false })
+    attendedByPeople?: Array<HistoryPersonDto>
 }
 
 export class RecommendationRequestBody {

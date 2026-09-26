@@ -148,6 +148,7 @@ export type GroupPersonWorkspaceType = {
     person: GroupPersonType
     ownership: Array<GroupPersonOwnershipType>
     preferences: Array<GroupPersonPreferenceType>
+    claimable: boolean
 }
 
 export type GroupAcquisitionEntryType = {
@@ -405,9 +406,11 @@ export type AdminGamesResultType = {
 export type HistoryRecordType = {
     meetData: MeetType
     attendedBy: Array<PublicUserType>
+    attendedByPeople?: Array<{ id: number; displayName: string; avatar: PublicUserType['avatar'] | null }>
     gamesPlayed: Array<{
         gameData: GameCompleteType
         playedBy: Array<PublicUserType>
+        playedByPeople?: Array<{ id: number; displayName: string; avatar: PublicUserType['avatar'] | null }>
     }>
 }
 

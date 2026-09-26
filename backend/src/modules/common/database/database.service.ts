@@ -46,7 +46,7 @@ type ScheduledSessionInput = {
     plannedGameIds: Array<number>
 }
 
-export const CURRENT_SCHEMA_VERSION = '0011'
+export const CURRENT_SCHEMA_VERSION = '0013'
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
@@ -739,6 +739,20 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    getClaimableGroupPersonIds(groupId: number, email: string) {
+        return this._tursoExecute({
+            sql: `
+                SELECT id
+                FROM GroupPerson
+                WHERE groupId = ? AND status = 'active' AND kind = 'placeholder'
+                  AND accountId IS NULL AND claimEmail IS NOT NULL
+                  AND lower(claimEmail) = lower(?)
+                ORDER BY id ASC
+            `,
+            args: [groupId, email],
+        })
+    }
+
     getGroupPersonById(groupPersonId: number, groupId: number) {
         return this._tursoExecute({
             sql: 'SELECT id, groupId, accountId, kind, status, displayName, avatar, createdAt, updatedAt, claimedAt FROM GroupPerson WHERE id = ? AND groupId = ?',
@@ -753,6 +767,25 @@ export class DatabaseService implements OnModuleInit {
                 VALUES (?, 'placeholder', 'active', ?, ?, ?)
             `,
             args: [groupId, body.displayName, body.avatar ? JSON.stringify(body.avatar) : null, createdByAccountId],
+        })
+    }
+
+    createLinkedGroupPerson(groupId: number, accountId: number, displayName: string, avatar: string | null) {
+        return this._tursoExecute({
+            sql: `
+                INSERT INTO GroupPerson (groupId, accountId, kind, status, displayName, avatar, createdByAccountId, claimedAt)
+                SELECT ?, ?, 'linked', 'active', ?, ?, ?, CURRENT_TIMESTAMP
+                WHERE EXISTS (SELECT 1 FROM GroupMembership WHERE groupId = ? AND accountId = ?)
+                  AND NOT EXISTS (SELECT 1 FROM GroupPerson WHERE groupId = ? AND accountId = ?)
+            `,
+            args: [groupId, accountId, displayName, avatar ?? null, accountId, groupId, accountId, groupId, accountId],
+        })
+    }
+
+    getLinkedGroupPersonByAccount(groupId: number, accountId: number) {
+        return this._tursoExecute({
+            sql: "SELECT id, groupId, accountId, kind, status, displayName, avatar, createdAt, updatedAt, claimedAt FROM GroupPerson WHERE groupId = ? AND accountId = ? AND kind = 'linked'",
+            args: [groupId, accountId],
         })
     }
 
@@ -784,6 +817,126 @@ export class DatabaseService implements OnModuleInit {
             sql: `UPDATE GroupPerson SET ${fields.join(', ')} WHERE id = ? AND groupId = ?`,
             args,
         })
+    }
+
+    setGroupPersonClaimEmail(groupPersonId: number, groupId: number, claimEmail: string) {
+        return this._tursoExecute({
+            sql: `UPDATE GroupPerson SET claimEmail = ?, updatedAt = CURRENT_TIMESTAMP WHERE id = ? AND groupId = ? AND kind = 'placeholder' AND accountId IS NULL`,
+            args: [claimEmail.toLowerCase(), groupPersonId, groupId],
+        })
+    }
+
+    clearGroupPersonClaimEmail(groupPersonId: number, groupId: number, claimEmail?: string) {
+        return this._tursoExecute({
+            sql: `
+                UPDATE GroupPerson
+                SET claimEmail = NULL, updatedAt = CURRENT_TIMESTAMP
+                WHERE id = ? AND groupId = ? AND kind = 'placeholder' AND accountId IS NULL
+                  ${claimEmail === undefined ? '' : 'AND lower(claimEmail) = lower(?)'}
+            `,
+            args: claimEmail === undefined ? [groupPersonId, groupId] : [groupPersonId, groupId, claimEmail],
+        })
+    }
+
+    async claimGroupPerson(input: {
+        groupId: number
+        groupPersonId: number
+        accountId: number
+        email: string
+        keepOwnershipGameIds: Array<number>
+        keepPreferenceGameIds: Array<number>
+        importOwnershipToCollection: boolean
+    }): Promise<{ claimed: boolean; alreadyClaimed: boolean }> {
+        const transaction = await this.tursoClient.transaction('write')
+
+        try {
+            const candidate = await transaction.execute({
+                sql: `
+                    SELECT id, accountId, kind
+                    FROM GroupPerson
+                    WHERE id = ? AND groupId = ? AND status = 'active'
+                      AND kind = 'placeholder' AND accountId IS NULL
+                      AND claimEmail IS NOT NULL AND lower(claimEmail) = lower(?)
+                `,
+                args: [input.groupPersonId, input.groupId, input.email],
+            })
+
+            if (candidate.rows.length === 0) {
+                const existing = await transaction.execute({
+                    sql: 'SELECT accountId FROM GroupPerson WHERE id = ? AND groupId = ?',
+                    args: [input.groupPersonId, input.groupId],
+                })
+
+                await transaction.commit()
+                return { claimed: false, alreadyClaimed: Number(existing.rows[0]?.[0] ?? 0) === input.accountId }
+            }
+
+            const ownership = await transaction.execute({
+                sql: "SELECT gameId FROM GroupPersonGameOwnership WHERE groupPersonId = ? AND status = 'asserted'",
+                args: [input.groupPersonId],
+            })
+            const preferences = await transaction.execute({
+                sql: 'SELECT gameId FROM GroupPersonGamePreference WHERE groupPersonId = ?',
+                args: [input.groupPersonId],
+            })
+            const keepOwnership = new Set(input.keepOwnershipGameIds)
+            const keepPreferences = new Set(input.keepPreferenceGameIds)
+
+            const update = await transaction.execute({
+                sql: `
+                    UPDATE GroupPerson
+                    SET accountId = ?, kind = 'linked', claimedAt = CURRENT_TIMESTAMP, updatedAt = CURRENT_TIMESTAMP
+                    WHERE id = ? AND groupId = ? AND kind = 'placeholder' AND accountId IS NULL
+                `,
+                args: [input.accountId, input.groupPersonId, input.groupId],
+            })
+
+            if (update.rowsAffected !== 1) {
+                await transaction.rollback()
+                return { claimed: false, alreadyClaimed: false }
+            }
+
+            await transaction.batch(
+                ownership.rows.map(row => ({
+                    sql: `
+                        UPDATE GroupPersonGameOwnership
+                        SET status = ?, source = 'claimed_import', enteredByAccountId = ?, updatedAt = CURRENT_TIMESTAMP
+                        WHERE groupPersonId = ? AND gameId = ?
+                    `,
+                    args: [
+                        keepOwnership.has(Number(row[0])) ? 'asserted' : 'rejected',
+                        input.accountId,
+                        input.groupPersonId,
+                        Number(row[0]),
+                    ],
+                })),
+            )
+            await transaction.batch(
+                preferences.rows
+                    .filter(row => !keepPreferences.has(Number(row[0])))
+                    .map(row => ({
+                        sql: 'DELETE FROM GroupPersonGamePreference WHERE groupPersonId = ? AND gameId = ?',
+                        args: [input.groupPersonId, Number(row[0])],
+                    })),
+            )
+
+            if (input.importOwnershipToCollection && input.keepOwnershipGameIds.length > 0) {
+                await transaction.batch(
+                    input.keepOwnershipGameIds.map(gameId => ({
+                        sql: 'INSERT OR IGNORE INTO OwnedGame (accountId, gameId) VALUES (?, ?)',
+                        args: [input.accountId, gameId],
+                    })),
+                )
+            }
+
+            await transaction.commit()
+            return { claimed: true, alreadyClaimed: false }
+        } catch (error) {
+            await transaction.rollback()
+            throw error
+        } finally {
+            transaction.close()
+        }
     }
 
     getGroupPersonOwnership(groupPersonId: number, groupId: number) {
@@ -1851,9 +2004,13 @@ export class DatabaseService implements OnModuleInit {
     }
 
     async createInvitation(invitationDto: CreateInvitationBody) {
+        if (invitationDto.groupPersonId !== undefined && invitationDto.groupPersonId !== null) {
+            await this.assertClaimableGroupPerson(invitationDto.groupId, invitationDto.groupPersonId, invitationDto.toAccountId)
+        }
+
         await this._tursoExecute({
-            sql: "INSERT INTO Invitation (groupId, fromAccountId, toAccountId, expiresAt) VALUES (?, ?, ?, datetime('now', '+30 days'))",
-            args: [invitationDto.groupId, invitationDto.fromAccountId, invitationDto.toAccountId],
+            sql: "INSERT INTO Invitation (groupId, fromAccountId, toAccountId, expiresAt, groupPersonId) VALUES (?, ?, ?, datetime('now', '+30 days'), ?)",
+            args: [invitationDto.groupId, invitationDto.fromAccountId, invitationDto.toAccountId, invitationDto.groupPersonId ?? null],
         })
     }
 
@@ -1867,13 +2024,39 @@ export class DatabaseService implements OnModuleInit {
             throw new NotFoundException('User not found')
         }
 
+        if (invitationDto.groupPersonId !== undefined && invitationDto.groupPersonId !== null) {
+            await this.assertClaimableGroupPerson(invitationDto.groupId, invitationDto.groupPersonId, Number(toAccount.rows[0][0]))
+        }
+
         await this._tursoExecute({
-            sql: "INSERT INTO Invitation (groupId, fromAccountId, toAccountId, expiresAt) VALUES (?, ?, ?, datetime('now', '+30 days'))",
-            args: [invitationDto.groupId, invitationDto.fromAccountId, toAccount.rows[0].id],
+            sql: "INSERT INTO Invitation (groupId, fromAccountId, toAccountId, expiresAt, groupPersonId) VALUES (?, ?, ?, datetime('now', '+30 days'), ?)",
+            args: [invitationDto.groupId, invitationDto.fromAccountId, toAccount.rows[0].id, invitationDto.groupPersonId ?? null],
         })
 
         // return the invited user
         return toAccount.rows[0]
+    }
+
+    private async assertClaimableGroupPerson(groupId: number, groupPersonId: number, accountId: number): Promise<void> {
+        const result = await this._tursoExecute({
+            sql: `
+                SELECT gp.id, a.email
+                FROM GroupPerson gp
+                INNER JOIN Account a ON a.id = ? AND a.isDeleted = 0
+                WHERE gp.id = ? AND gp.groupId = ? AND gp.kind = 'placeholder'
+                  AND gp.status = 'active' AND gp.accountId IS NULL
+            `,
+            args: [accountId, groupPersonId, groupId],
+        })
+
+        if (result.rows.length === 0) {
+            throw new NotFoundException('The selected placeholder is not available for claiming')
+        }
+
+        await this._tursoExecute({
+            sql: 'UPDATE GroupPerson SET claimEmail = ?, updatedAt = CURRENT_TIMESTAMP WHERE id = ? AND groupId = ?',
+            args: [String(result.rows[0][1]).toLowerCase(), groupPersonId, groupId],
+        })
     }
 
     deleteInvitationById(id: number) {
@@ -2704,10 +2887,22 @@ export class DatabaseService implements OnModuleInit {
                               WHERE ma.meetId = m.id AND ma.accountId = ?
                           )
                       )
+                      OR EXISTS (
+                          SELECT 1
+                          FROM MeetPersonAttendee mpa
+                          INNER JOIN GroupPerson gp ON gp.id = mpa.groupPersonId
+                          WHERE mpa.meetId = m.id AND gp.accountId = ? AND mpa.attendanceStatus = 'attended'
+                      )
+                      OR EXISTS (
+                          SELECT 1
+                          FROM MeetPersonGame mpg
+                          INNER JOIN GroupPerson gp ON gp.id = mpg.groupPersonId
+                          WHERE mpg.meetId = m.id AND gp.accountId = ?
+                      )
                   )
                 ORDER BY m.meetDate DESC, m.id DESC
             `,
-            args: [accountId, accountId, accountId],
+            args: [accountId, accountId, accountId, accountId, accountId],
         })
 
         return resultSet.rows.map(row => Number(row[0]))

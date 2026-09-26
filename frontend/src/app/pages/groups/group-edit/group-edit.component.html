@@ -80,6 +80,15 @@
                                 <input id="group-username-invite" type="text" [formControl]="usernameToInvite" placeholder="friend_username" class="app-input min-w-0 flex-1" [class]="usernameClass" autocomplete="username" />
                                 <button type="submit" class="app-btn-primary shrink-0" [disabled]="disableInviteButton">{{ isLoading ? 'Inviting…' : 'Send invite' }}</button>
                             </div>
+                            <label for="group-username-claim-person" class="mt-4 block text-sm font-semibold text-zinc-900 dark:text-white">Optional: link them to a group person</label>
+                            <select id="group-username-claim-person" class="app-input mt-2" [value]="selectedClaimPersonId() ?? ''" (change)="selectedClaimPersonId.set($any($event.target).value ? +$any($event.target).value : null)">
+                                <option value="">Join as a new group person</option>
+                                @for (person of groupPeople(); track person.person.id) {
+                                    @if (person.person.kind === 'placeholder' && person.person.status === 'active') {
+                                        <option [value]="person.person.id">Claim {{ person.person.displayName }}</option>
+                                    }
+                                }
+                            </select>
                             <div class="mt-2" aria-live="polite">
                                 @if (usernameToInvite.touched && usernameToInvite.hasError('required')) { <p class="text-sm text-red-600 dark:text-red-300">Enter a username to continue.</p> }
                                 @if (usernameToInvite.touched && usernameToInvite.hasError('minlength')) { <p class="text-sm text-red-600 dark:text-red-300">Use at least 4 characters.</p> }
@@ -97,6 +106,15 @@
                                 </div>
                             </div>
                             <label for="group-email-invite" class="mt-5 block text-sm font-semibold text-zinc-900 dark:text-white">Their email address</label>
+                            <label for="group-claim-person" class="mt-4 block text-sm font-semibold text-zinc-900 dark:text-white">Optional: invite them to claim a group person</label>
+                            <select id="group-claim-person" class="app-input mt-2" [value]="selectedClaimPersonId() ?? ''" (change)="selectedClaimPersonId.set($any($event.target).value ? +$any($event.target).value : null)">
+                                <option value="">Join as a new group person</option>
+                                @for (person of groupPeople(); track person.person.id) {
+                                    @if (person.person.kind === 'placeholder' && person.person.status === 'active') {
+                                        <option [value]="person.person.id">Claim {{ person.person.displayName }}</option>
+                                    }
+                                }
+                            </select>
                             <div class="mt-2 flex flex-col gap-3 sm:flex-row">
                                 <input id="group-email-invite" type="email" [formControl]="emailToInvite" placeholder="friend@example.com" class="app-input min-w-0 flex-1" [class.border-red-500]="emailToInvite.invalid && (emailToInvite.dirty || emailToInvite.touched)" autocomplete="email" />
                                 <button type="submit" class="app-btn-primary shrink-0" [disabled]="isLoading || emailToInvite.invalid">{{ isLoading ? 'Sending…' : 'Send email invite' }}</button>

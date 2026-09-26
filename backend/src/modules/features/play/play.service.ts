@@ -10,6 +10,7 @@ import { UsersService } from '../../core/users/users.service'
 
 import type {
     HistoryRecordDto,
+    HistoryPersonDto,
     RecommendationDto,
     RecommendationFeedbackBody,
     ParticipantRecommendationFeedbackBody,
@@ -147,12 +148,15 @@ export class PlayService {
         for (const row of feedbackResult.rows) {
             const gameId = Number(row[1])
             const participantIds = this._parseIdList(row[3])
+
             for (const participantId of participantIds) {
                 if (!selectedPeople.has(participantId)) continue
                 const key = `${gameId}:${participantId}`
+
                 if (latestByPersonAndGame.has(key)) continue
                 latestByPersonAndGame.add(key)
                 const current = feedbackByGame.get(gameId) ?? { interestedCount: 0, notForUsCount: 0 }
+
                 if (row[4] === 'interested') current.interestedCount += 1
                 if (row[4] === 'not_for_us') current.notForUsCount += 1
                 feedbackByGame.set(gameId, current)
@@ -188,20 +192,24 @@ export class PlayService {
         body: ParticipantRecommendationFeedbackBody,
     ): Promise<RecommendationFeedbackDto> {
         const group = await this.databaseService.getGroupById(body.groupId)
+
         if (group.rows.length === 0) throw new NotFoundException(`Group with id ${body.groupId} not found`)
 
         const memberIds = await this.databaseService.getGroupMemberIds(body.groupId)
+
         if (!memberIds.includes(actorAccountId)) {
             throw new ForbiddenException('You must belong to the group to submit recommendation feedback')
         }
 
         const people = await this.databaseService.getGroupPeople(body.groupId)
         const activePersonIds = new Set(people.rows.filter(row => String(row[4]) === 'active').map(row => Number(row[0])))
+
         if (body.participantIds.some(personId => !activePersonIds.has(personId))) {
             throw new BadRequestException('Every participant must belong to the selected group')
         }
 
         const availableGameIds = await this.databaseService.getGroupAvailableGameIdsForPeople(body.groupId, body.participantIds)
+
         if (!availableGameIds.includes(body.gameId)) {
             throw new BadRequestException('The selected group people do not own this game')
         }
@@ -328,6 +336,7 @@ export class PlayService {
     private _parseIdList(value: unknown): Array<number> {
         try {
             const parsed = JSON.parse(String(value))
+
             return Array.isArray(parsed) ? parsed.map(Number).filter(Number.isInteger) : []
         } catch {
             return []
@@ -472,12 +481,31 @@ export class PlayService {
                 }
 
                 const attendedByIds = await this.databaseService.getMeetAttendedAccountIds(meetId)
+                const attendedByPersonIds =
+                    typeof this.databaseService.getMeetAttendedPersonIds === 'function'
+                        ? await this.databaseService.getMeetAttendedPersonIds(meetId)
+                        : []
+                const groupPeople =
+                    typeof this.databaseService.getGroupPeople === 'function'
+                        ? await this.databaseService.getGroupPeople(meetData.groupId)
+                        : { rows: [] }
+                const peopleById = new Map(
+                    groupPeople.rows.map(row => [
+                        Number(row[0]),
+                        { id: Number(row[0]), displayName: String(row[5]), avatar: this.parseAvatar(row[6]) },
+                    ]),
+                )
                 const gameIds = await this.databaseService.getPlayedGameIdsByMeetId(meetId)
                 const gamesPlayed = await Promise.all(
                     gameIds.map(async gameId => {
                         const game = await this.gamesService.getGameById(gameId)
                         const gameTranslations = await this.gameTranslationService.getGameTranslations(gameId)
                         const playedByIds = await this.meetAccountGamesService.getDistinctAccountIdsByMeetIdAndGameId(meetId, gameId)
+                        const playedByPersonIds =
+                            (typeof this.databaseService.getMeetPlayedGamePersonParticipants === 'function'
+                                ? await this.databaseService.getMeetPlayedGamePersonParticipants(meetId)
+                                : []
+                            ).find(game => game.gameId === gameId)?.participantIds ?? []
                         const playedByData = await Promise.all(
                             playedByIds.map(async accountId => this.usersService.getPublicUserById(accountId)),
                         )
@@ -488,6 +516,9 @@ export class PlayService {
                                 titleTranslations: gameTranslations,
                             },
                             playedBy: playedByData,
+                            playedByPeople: playedByPersonIds
+                                .map(personId => peopleById.get(personId))
+                                .filter((person): person is HistoryPersonDto => person !== undefined),
                         }
                     }),
                 )
@@ -496,11 +527,14 @@ export class PlayService {
                     meetData,
                     gamesPlayed,
                     attendedBy: await Promise.all(attendedByIds.map(async accountId => this.usersService.getPublicUserById(accountId))),
+                    attendedByPeople: attendedByPersonIds
+                        .map(personId => peopleById.get(personId))
+                        .filter((person): person is HistoryPersonDto => person !== undefined),
                 }
             }),
         )
 
-        return history.filter((record): record is HistoryRecordDto => record !== null)
+        return history.filter(record => record !== null) as Array<HistoryRecordDto>
     }
 
     @LogFeature(new Logger('PlayService'))
@@ -508,5 +542,15 @@ export class PlayService {
         const meets = await this.meetsService.getMeetsForAccount(userId)
 
         return meets.sort((a, b) => new Date(b.meetDate).getTime() - new Date(a.meetDate).getTime())
+    }
+
+    private parseAvatar(value: unknown): AvatarDto | null {
+        if (value === null || value === undefined || value === '') return null
+        if (typeof value === 'object') return value as AvatarDto
+        try {
+            return JSON.parse(String(value)) as AvatarDto
+        } catch {
+            return null
+        }
     }
 }

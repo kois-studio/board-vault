@@ -26,6 +26,7 @@ import {
     UpdateGroupPersonBody,
     UpdateGroupPersonOwnershipBody,
     UpdateGroupPersonPreferenceBody,
+    ClaimGroupPersonBody,
 } from '../../../common/types/group-person.type'
 
 import { GroupPeopleService } from './group-people.service'
@@ -66,6 +67,24 @@ export class GroupPeopleController {
         @Body() body: UpdateGroupPersonBody,
     ) {
         return this.groupPeopleService.update(request.user.userId, groupId, personId, body)
+    }
+
+    @Post('groups/:groupId/people/:personId/claim')
+    @ApiOperation({ summary: 'Claim a targeted placeholder as the authenticated account' })
+    claimPerson(
+        @Req() request: { user: { userId: number } },
+        @Param('groupId', ParseIntPipe) groupId: number,
+        @Param('personId', ParseIntPipe) personId: number,
+        @Body() body: ClaimGroupPersonBody,
+    ) {
+        return this.groupPeopleService.claim(request.user.userId, groupId, personId, body)
+    }
+
+    @Post('groups/:groupId/people/join')
+    @ApiOperation({ summary: 'Join a group as a new linked group person' })
+    @ApiResponse({ status: 201, type: GroupPersonDto })
+    joinAsNewPerson(@Req() request: { user: { userId: number } }, @Param('groupId', ParseIntPipe) groupId: number) {
+        return this.groupPeopleService.joinAsNewPerson(request.user.userId, groupId)
     }
 
     @Get('groups/:groupId/people/:personId/ownership')
