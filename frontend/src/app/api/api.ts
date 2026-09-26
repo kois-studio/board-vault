@@ -539,9 +539,11 @@ export class Api {
             .pipe(map((response) => groupAcquisitionBoardSchema.parse(response)))
     }
 
-    getGroupPeople(groupId: number) {
+    getGroupPeople(groupId: number, includeArchived = false) {
         return this.http
-            .get<{ people: Array<GroupPersonWorkspaceType> }>(`${this.url}/groups/${groupId}/people`)
+            .get<{ people: Array<GroupPersonWorkspaceType> }>(`${this.url}/groups/${groupId}/people`, {
+                params: includeArchived ? { includeArchived: 'true' } : {},
+            })
             .pipe(map((response) => groupPeopleSchema.parse(response)))
     }
 
