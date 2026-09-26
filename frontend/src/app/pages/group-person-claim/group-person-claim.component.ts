@@ -4,7 +4,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 
 import { Api } from '../../api/api'
-import type { GameType, GroupPersonWorkspaceType } from '../../api/api.types'
+import type { GameCompleteType, GroupPersonWorkspaceType } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
 
 @Component({
@@ -21,7 +21,7 @@ export class GroupPersonClaimComponent {
     public readonly isSaving = signal(false)
     public readonly error = signal<string | null>(null)
     public readonly person = signal<GroupPersonWorkspaceType | null>(null)
-    public readonly games = signal<Array<GameType>>([])
+    public readonly games = signal<Array<GameCompleteType>>([])
     public readonly selectedOwnership = signal<Set<number>>(new Set())
     public readonly selectedPreferences = signal<Set<number>>(new Set())
     public readonly importOwnership = signal(false)
@@ -94,7 +94,7 @@ export class GroupPersonClaimComponent {
         try {
             const [peopleResponse, games] = await Promise.all([
                 firstValueFrom(this.api.getGroupPeople(groupId)),
-                firstValueFrom(this.api.getGames()),
+                firstValueFrom(this.api.getGroupPersonCatalog(groupId)),
             ])
             const candidate = peopleResponse.people.find((item) => item.person.id === personId)
             if (!candidate || !candidate.claimable || candidate.person.kind !== 'placeholder') {
