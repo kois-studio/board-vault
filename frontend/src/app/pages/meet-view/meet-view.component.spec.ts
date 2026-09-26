@@ -1,7 +1,7 @@
 import { signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { ActivatedRoute, convertToParamMap } from '@angular/router'
-import { throwError } from 'rxjs'
+import { of, throwError } from 'rxjs'
 import { Api } from '../../api/api'
 import type { MeetWithAttendeesAndGamesType } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
@@ -31,6 +31,8 @@ describe('MeetViewComponent participant safeguards', () => {
 
     const setup = async () => {
         const api = {
+            updateSessionAttendees: jasmine.createSpy('updateSessionAttendees'),
+            updateSessionAttendance: jasmine.createSpy('updateSessionAttendance'),
             updateSessionPlayedGames: jasmine.createSpy('updateSessionPlayedGames'),
         }
         const dataService = {
@@ -116,5 +118,64 @@ describe('MeetViewComponent participant safeguards', () => {
         expect(component.getGameParticipantIds(42)).toEqual([1, 2])
         expect(component.isPersistingChanges).toBeFalse()
         expect(toastService.error).toHaveBeenCalledWith('Could not save the played game changes.')
+    })
+
+    it('saves group-person attendee changes through the participant contract', async () => {
+        const { component, api } = await setup()
+        const meetData = component.meetData
+        expect(meetData).not.toBeNull()
+        if (!meetData) return
+
+        meetData.participants = [12, 13]
+        meetData.participantStatuses = [
+            { groupPersonId: 12, rsvpStatus: 'accepted', attendanceStatus: 'unknown' },
+            { groupPersonId: 13, rsvpStatus: 'pending', attendanceStatus: 'unknown' },
+        ]
+        meetData.playedGamePersonParticipants = []
+        component.groupPeople = [
+            { person: { id: 12, accountId: null, displayName: 'Ana' } as never, ownership: [], preferences: [], claimable: false },
+            { person: { id: 13, accountId: 1, displayName: 'Carlos' } as never, ownership: [], preferences: [], claimable: false },
+        ]
+        api.updateSessionAttendees.and.returnValue(of({ sessionId: 99, attendeeIds: [], groupPersonIds: [13] }))
+
+        await component.onClickGroupPerson(12)
+
+        expect(api.updateSessionAttendees).toHaveBeenCalledWith(99, { groupPersonIds: [13] })
+        expect(component.meetData?.participants).toEqual([13])
+    })
+
+    it('sends group-person participants for a played game and blocks the last one', async () => {
+        const { component, api, toastService } = await setup()
+        const meetData = component.meetData
+        expect(meetData).not.toBeNull()
+        if (!meetData) return
+
+        meetData.participants = [12, 13]
+        meetData.participantStatuses = [
+            { groupPersonId: 12, rsvpStatus: 'accepted', attendanceStatus: 'attended' },
+            { groupPersonId: 13, rsvpStatus: 'accepted', attendanceStatus: 'attended' },
+        ]
+        meetData.playedGamePersonParticipants = [{ gameId: 42, participantIds: [12, 13] }]
+        api.updateSessionPlayedGames.and.returnValue(
+            of({
+                sessionId: 99,
+                playedGameIds: [42],
+                skippedGameIds: [],
+                playedGameParticipants: [],
+                playedGamePersonParticipants: [{ gameId: 42, participantIds: [12] }],
+            }),
+        )
+
+        await component.toggleGroupPersonGameParticipant(42, 13)
+
+        expect(api.updateSessionPlayedGames).toHaveBeenCalledWith(99, {
+            playedGameIds: [42],
+            games: [{ gameId: 42, participantIds: [], participantPersonIds: [12] }],
+        })
+        expect(component.getGameParticipantPersonIds(42)).toEqual([12])
+
+        await component.toggleGroupPersonGameParticipant(42, 12)
+        expect(api.updateSessionPlayedGames).toHaveBeenCalledTimes(1)
+        expect(toastService.error).toHaveBeenCalledWith('Keep at least one participant for each played game.')
     })
 })
