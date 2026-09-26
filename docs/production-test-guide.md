@@ -339,6 +339,32 @@ Observed:
 
 
 
+### Step 23A — Configure group people and claim one later
+
+Use a disposable owner account, three real catalog games, one existing group
+member, and a second disposable invitee account/email.
+
+Expected:
+
+- The owner can create three named placeholders without creating accounts.
+- Ownership controls persist asserted, disputed, rejected, and corrected states
+  after refresh; preference controls include favorite, like, neutral, avoid, and
+  clear states.
+- Recommendations and session selectors can use the linked member plus the
+  placeholders. A scheduled and completed session can record per-game players
+  from that mixed selection, and history names remain stable after refresh.
+- A targeted invitation exposes the correct placeholder only to the intended
+  verified invitee. The claim review starts with group assertions selected,
+  allows ownership and preference deselection independently, and keeps private
+  collection import unchecked unless explicitly selected.
+- Claiming keeps the same history and stable participant identity. Joining as a
+  new group person creates no copied ownership, preferences, or history.
+- Wrong-email, expired, revoked, already-claimed, unavailable-group, non-member,
+  mobile, keyboard, and screen-reader outcomes are safe and actionable.
+
+Observed:
+
+
 ## 7. Plan and complete a game night
 
 ### Step 24 — Schedule a session
