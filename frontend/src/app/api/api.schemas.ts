@@ -56,7 +56,7 @@ export const accessTokenSchema = z.object({ access_token: z.string().min(1) })
 export const availabilitySchema = z.object({ isAvailable: z.boolean() })
 export const messageSchema = z.object({ message: z.string().min(1) })
 
-const gameCompleteSchema: z.ZodType<GameCompleteType> = z.object({
+export const gameCompleteSchema: z.ZodType<GameCompleteType> = z.object({
     id: z.number(),
     title: z.string().optional(),
     imageUrl: z.string(),

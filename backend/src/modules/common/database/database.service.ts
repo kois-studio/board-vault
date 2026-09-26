@@ -753,6 +753,32 @@ export class DatabaseService implements OnModuleInit {
         })
     }
 
+    getGroupPersonGameCatalog(search: string, limit = 100) {
+        const normalizedSearch = search.trim().toLowerCase()
+
+        return this._tursoExecute({
+            sql: `
+                SELECT
+                    g.id,
+                    g.imageUrl,
+                    g.gameAvgDuration,
+                    g.minPlayers,
+                    g.maxPlayers,
+                    COALESCE(gt_en.title, gt_es.title) AS title,
+                    COALESCE(gt_en.title, '') AS titleEn,
+                    COALESCE(gt_es.title, '') AS titleEs
+                FROM Game g
+                LEFT JOIN GameTranslation gt_en ON gt_en.gameId = g.id AND gt_en.languageCode = 'en'
+                LEFT JOIN GameTranslation gt_es ON gt_es.gameId = g.id AND gt_es.languageCode = 'es'
+                WHERE COALESCE(gt_en.title, gt_es.title) IS NOT NULL
+                  AND (? = '' OR lower(COALESCE(gt_en.normalizedTitle, gt_es.normalizedTitle, '')) LIKE ?)
+                ORDER BY lower(COALESCE(gt_en.title, gt_es.title)), g.id ASC
+                LIMIT ?
+            `,
+            args: [normalizedSearch, `%${normalizedSearch}%`, Math.min(Math.max(limit, 1), 100)],
+        })
+    }
+
     getGroupPersonById(groupPersonId: number, groupId: number) {
         return this._tursoExecute({
             sql: 'SELECT id, groupId, accountId, kind, status, displayName, avatar, createdAt, updatedAt, claimedAt FROM GroupPerson WHERE id = ? AND groupId = ?',

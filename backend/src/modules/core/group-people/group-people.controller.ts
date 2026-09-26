@@ -26,6 +26,7 @@ import {
     GroupPersonGameOwnershipDto,
     GroupPersonGamePreferenceDto,
     GroupPeopleResponseDto,
+    GroupPersonCatalogQuery,
     UpdateGroupPersonBody,
     UpdateGroupPersonOwnershipBody,
     UpdateGroupPersonPreferenceBody,
@@ -51,6 +52,17 @@ export class GroupPeopleController {
         @Query('includeArchived', new DefaultValuePipe(false), ParseBoolPipe) includeArchived: boolean,
     ) {
         return { people: await this.groupPeopleService.getWorkspace(request.user.userId, groupId, includeArchived) }
+    }
+
+    @Get('groups/:groupId/people/catalog')
+    @ApiOperation({ summary: 'List catalog games available for group-person assertions' })
+    @ApiResponse({ status: 200, type: [Object] })
+    async getCatalog(
+        @Req() request: { user: { userId: number } },
+        @Param('groupId', ParseIntPipe) groupId: number,
+        @Query() query: GroupPersonCatalogQuery,
+    ) {
+        return this.groupPeopleService.getCatalog(request.user.userId, groupId, query.search)
     }
 
     @Post('groups/:groupId/people')
