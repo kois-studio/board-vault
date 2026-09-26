@@ -99,6 +99,20 @@ describe('DatabaseService logging', () => {
         })
     })
 
+    it('projects linked private ownership with explicit account provenance', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const execute = jest.fn().mockResolvedValue({ rows: [] })
+
+        ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
+
+        await service.getGroupPersonOwnership(21, 12)
+
+        expect(execute).toHaveBeenCalledWith({
+            sql: expect.stringContaining("'account_collection'"),
+            args: [12, 21, 21, 12],
+        })
+    })
+
     it('updates the legacy bulk collection path in one idempotent transaction', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {

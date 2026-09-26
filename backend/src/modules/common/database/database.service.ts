@@ -975,9 +975,20 @@ export class DatabaseService implements OnModuleInit {
                 FROM GroupPersonGameOwnership o
                 INNER JOIN GroupPerson gp ON gp.id = o.groupPersonId AND gp.groupId = ?
                 WHERE o.groupPersonId = ?
-                ORDER BY o.gameId ASC
+                UNION ALL
+                SELECT og.gameId, 'asserted', 'account_collection', gp.accountId,
+                       NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+                FROM GroupPerson gp
+                INNER JOIN OwnedGame og ON og.accountId = gp.accountId
+                WHERE gp.id = ? AND gp.groupId = ? AND gp.kind = 'linked'
+                  AND NOT EXISTS (
+                      SELECT 1
+                      FROM GroupPersonGameOwnership existing
+                      WHERE existing.groupPersonId = gp.id AND existing.gameId = og.gameId
+                  )
+                ORDER BY gameId ASC
             `,
-            args: [groupId, groupPersonId],
+            args: [groupId, groupPersonId, groupPersonId, groupId],
         })
     }
 
