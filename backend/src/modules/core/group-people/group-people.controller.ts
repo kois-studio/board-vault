@@ -5,8 +5,11 @@ import {
     Get,
     Param,
     ParseIntPipe,
+    ParseBoolPipe,
+    DefaultValuePipe,
     Patch,
     Post,
+    Query,
     Put,
     Req,
     UseGuards,
@@ -42,8 +45,12 @@ export class GroupPeopleController {
     @Get('groups/:groupId/people')
     @ApiOperation({ summary: 'List active people represented in a group' })
     @ApiResponse({ status: 200, type: GroupPeopleResponseDto })
-    async getPeople(@Req() request: { user: { userId: number } }, @Param('groupId', ParseIntPipe) groupId: number) {
-        return { people: await this.groupPeopleService.getWorkspace(request.user.userId, groupId) }
+    async getPeople(
+        @Req() request: { user: { userId: number } },
+        @Param('groupId', ParseIntPipe) groupId: number,
+        @Query('includeArchived', new DefaultValuePipe(false), ParseBoolPipe) includeArchived: boolean,
+    ) {
+        return { people: await this.groupPeopleService.getWorkspace(request.user.userId, groupId, includeArchived) }
     }
 
     @Post('groups/:groupId/people')

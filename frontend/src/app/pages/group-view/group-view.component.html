@@ -111,6 +111,7 @@
                             />
                             <button type="button" class="app-btn-primary shrink-0" [disabled]="!newGroupPersonName().trim() || groupPersonMutationId() !== null" (click)="addGroupPerson()">Add person</button>
                         </div>
+                        <button type="button" class="app-btn-secondary shrink-0" (click)="toggleArchivedGroupPeople()">{{ includeArchivedGroupPeople() ? 'Hide archived' : 'Show archived' }}</button>
                     }
                 </div>
 
@@ -153,7 +154,7 @@
                                         <p class="mt-1 text-xs text-secondary">{{ getGroupPersonOwnedGameCount(person) }} games · {{ person.preferences.length }} preferences</p>
                                     </div>
                                     @if (isGroupOwnerComputed() && person.person.kind === 'placeholder') {
-                                        <button type="button" class="text-xs text-secondary underline disabled:opacity-60" [disabled]="groupPersonMutationId() !== null" (click)="archiveGroupPerson(person.person.id)">Archive</button>
+                                        <button type="button" class="text-xs text-secondary underline disabled:opacity-60" [disabled]="groupPersonMutationId() !== null" (click)="archiveGroupPerson(person)">{{ person.person.status === 'archived' ? 'Restore' : 'Archive' }}</button>
                                     }
                                 </div>
                                 @if (totalUniqueGamesComputed().length > 0 && isGroupOwnerComputed()) {
