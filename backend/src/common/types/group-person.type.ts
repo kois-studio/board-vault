@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
-import { IsArray, IsIn, IsInt, IsNotEmpty, IsOptional, IsString, MaxLength, Min, ValidateNested } from 'class-validator'
+import { ArrayMaxSize, IsArray, IsIn, IsInt, IsNotEmpty, IsOptional, IsString, MaxLength, Min, ValidateNested } from 'class-validator'
 
 import { AvatarDto } from './user.type'
 
@@ -171,6 +171,7 @@ export class GroupPersonCatalogQuery {
 export class GroupPersonIdsBody {
     @ApiProperty({ example: [1, 2, 3], type: [Number] })
     @IsArray()
+    @ArrayMaxSize(100)
     @IsInt({ each: true })
     @Min(1, { each: true })
     personIds: Array<number>
@@ -180,6 +181,7 @@ export class ClaimGroupPersonBody {
     @ApiProperty({ example: [42, 84], type: [Number], required: false })
     @IsOptional()
     @IsArray()
+    @ArrayMaxSize(100)
     @IsInt({ each: true })
     @Min(1, { each: true })
     ownershipGameIds?: Array<number>
@@ -187,6 +189,7 @@ export class ClaimGroupPersonBody {
     @ApiProperty({ example: [42], type: [Number], required: false })
     @IsOptional()
     @IsArray()
+    @ArrayMaxSize(100)
     @IsInt({ each: true })
     @Min(1, { each: true })
     preferenceGameIds?: Array<number>
