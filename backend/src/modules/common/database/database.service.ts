@@ -746,6 +746,7 @@ export class DatabaseService implements OnModuleInit {
                 FROM GroupPerson
                 WHERE groupId = ? AND status = 'active' AND kind = 'placeholder'
                   AND accountId IS NULL AND claimEmail IS NOT NULL
+                  AND claimExpiresAt > CURRENT_TIMESTAMP
                   AND lower(claimEmail) = lower(?)
                 ORDER BY id ASC
             `,
@@ -847,7 +848,7 @@ export class DatabaseService implements OnModuleInit {
 
     setGroupPersonClaimEmail(groupPersonId: number, groupId: number, claimEmail: string) {
         return this._tursoExecute({
-            sql: `UPDATE GroupPerson SET claimEmail = ?, updatedAt = CURRENT_TIMESTAMP WHERE id = ? AND groupId = ? AND kind = 'placeholder' AND accountId IS NULL`,
+            sql: `UPDATE GroupPerson SET claimEmail = ?, claimExpiresAt = datetime('now', '+30 days'), updatedAt = CURRENT_TIMESTAMP WHERE id = ? AND groupId = ? AND kind = 'placeholder' AND accountId IS NULL`,
             args: [claimEmail.toLowerCase(), groupPersonId, groupId],
         })
     }
@@ -856,7 +857,7 @@ export class DatabaseService implements OnModuleInit {
         return this._tursoExecute({
             sql: `
                 UPDATE GroupPerson
-                SET claimEmail = NULL, updatedAt = CURRENT_TIMESTAMP
+                SET claimEmail = NULL, claimExpiresAt = NULL, updatedAt = CURRENT_TIMESTAMP
                 WHERE id = ? AND groupId = ? AND kind = 'placeholder' AND accountId IS NULL
                   ${claimEmail === undefined ? '' : 'AND lower(claimEmail) = lower(?)'}
             `,
@@ -882,7 +883,8 @@ export class DatabaseService implements OnModuleInit {
                     FROM GroupPerson
                     WHERE id = ? AND groupId = ? AND status = 'active'
                       AND kind = 'placeholder' AND accountId IS NULL
-                      AND claimEmail IS NOT NULL AND lower(claimEmail) = lower(?)
+                      AND claimEmail IS NOT NULL AND claimExpiresAt > CURRENT_TIMESTAMP
+                      AND lower(claimEmail) = lower(?)
                 `,
                 args: [input.groupPersonId, input.groupId, input.email],
             })
@@ -2080,16 +2082,41 @@ export class DatabaseService implements OnModuleInit {
         }
 
         await this._tursoExecute({
-            sql: 'UPDATE GroupPerson SET claimEmail = ?, updatedAt = CURRENT_TIMESTAMP WHERE id = ? AND groupId = ?',
+            sql: "UPDATE GroupPerson SET claimEmail = ?, claimExpiresAt = datetime('now', '+30 days'), updatedAt = CURRENT_TIMESTAMP WHERE id = ? AND groupId = ?",
             args: [String(result.rows[0][1]).toLowerCase(), groupPersonId, groupId],
         })
     }
 
-    deleteInvitationById(id: number) {
-        return this._tursoExecute({
+    async deleteInvitationById(id: number) {
+        const invitation = await this._tursoExecute({
+            sql: 'SELECT groupId, groupPersonId FROM Invitation WHERE id = ?',
+            args: [id],
+        })
+        const result = await this._tursoExecute({
             sql: 'DELETE FROM Invitation WHERE id = ?',
             args: [id],
         })
+
+        const groupPersonId = invitation.rows[0]?.[1]
+        const groupId = invitation.rows[0]?.[0]
+        if (result.rowsAffected === 1 && groupPersonId !== null && groupPersonId !== undefined) {
+            await this._tursoExecute({
+                sql: `
+                    UPDATE GroupPerson
+                    SET claimEmail = NULL, claimExpiresAt = NULL, updatedAt = CURRENT_TIMESTAMP
+                    WHERE id = ? AND groupId = ? AND kind = 'placeholder' AND accountId IS NULL
+                      AND NOT EXISTS (
+                          SELECT 1
+                          FROM Invitation
+                          WHERE groupPersonId = ?
+                            AND (expiresAt IS NULL OR expiresAt > CURRENT_TIMESTAMP)
+                      )
+                `,
+                args: [Number(groupPersonId), Number(groupId), Number(groupPersonId)],
+            })
+        }
+
+        return result
     }
 
     async acceptInvitationAtomically(invitationId: number, accountId: number, groupId: number): Promise<{ success: true }> {
