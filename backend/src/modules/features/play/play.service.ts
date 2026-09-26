@@ -143,6 +143,10 @@ export class PlayService {
         const feedbackByGame = new Map<number, { interestedCount: number; notForUsCount: number }>()
         const feedbackResult = await this.databaseService.getParticipantRecommendationFeedbackForGroup(body.groupId)
         const selectedPeople = new Set(body.groupPersonIds)
+        const selectedPersonNames = body.groupPersonIds
+            .map(personId => people.rows.find(row => Number(row[0]) === personId))
+            .filter((row): row is (typeof people.rows)[number] => row !== undefined)
+            .map(row => String(row[5]))
         const latestByPersonAndGame = new Set<string>()
 
         for (const row of feedbackResult.rows) {
@@ -171,6 +175,7 @@ export class PlayService {
                     feedbackByGame.get(Number(row[0])),
                     decisionLens,
                     Number(row[10] ?? 0),
+                    selectedPersonNames,
                 ),
             )
             .sort((a, b) => b.score - a.score || a.gameData.id - b.gameData.id)
@@ -256,6 +261,7 @@ export class PlayService {
         feedback: { interestedCount: number; notForUsCount: number } = { interestedCount: 0, notForUsCount: 0 },
         decisionLens: RecommendationDecisionLens = 'balanced',
         participantPreferenceScore = 0,
+        participantNames: Array<string> = [],
     ): RecommendationDto {
         const gameId = Number(row[0])
         const gameAvgDuration = row[2] === null || row[2] === undefined ? 0 : Number(row[2])
@@ -282,7 +288,13 @@ export class PlayService {
                   : 0
         const ownershipScore = Math.round(20 * (attendeeOwnerCount / attendeeCount))
         const ratingScore = averageReview === null ? 0 : Math.round(20 * (averageReview / 10))
-        const reasons = [`Owned by ${attendeeOwnerCount} of ${attendeeCount} selected attendees`, `Fits ${attendeeCount} players`]
+        const participantLabel =
+            participantNames.length > 0 ? ` (${participantNames.slice(0, 3).join(', ')}${participantNames.length > 3 ? ', …' : ''})` : ''
+        const selectedLabel = participantNames.length > 0 ? 'selected people' : 'selected attendees'
+        const reasons = [
+            `Owned by ${attendeeOwnerCount} of ${attendeeCount} ${selectedLabel}${participantLabel}`,
+            `Fits ${attendeeCount} players`,
+        ]
 
         if (availableMinutes !== undefined) {
             reasons.push(gameAvgDuration > 0 ? `Estimated duration: ${gameAvgDuration} minutes` : 'Duration is not available')
@@ -296,7 +308,14 @@ export class PlayService {
             )
         }
         if (feedback.notForUsCount > 0) {
-            reasons.push(`${feedback.notForUsCount} selected attendee${feedback.notForUsCount === 1 ? '' : 's'} passed on this before`)
+            reasons.push(`${feedback.notForUsCount} selected participant${feedback.notForUsCount === 1 ? '' : 's'} passed on this before`)
+        }
+        if (participantPreferenceScore > 0) {
+            reasons.push(
+                `Preferences from ${participantNames.slice(0, 3).join(', ')}${participantNames.length > 3 ? ' and others' : ''} favor this game`,
+            )
+        } else if (participantPreferenceScore < 0) {
+            reasons.push(`Some selected people have marked this game to avoid`)
         }
         if (decisionLens === 'fresh') {
             reasons.push(lastPlayedAt === null ? 'Not played by this group yet' : 'Previously played by this group')

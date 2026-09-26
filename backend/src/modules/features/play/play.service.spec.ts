@@ -101,6 +101,49 @@ describe('PlayService history', () => {
         expect(database.getRecommendationCandidates).toHaveBeenCalledWith([1, 2], 2, 120)
     })
 
+    it('names selected group people when explaining participant recommendations', async () => {
+        const database = {
+            getGroupById: jest.fn().mockResolvedValue({ rows: [[7]] }),
+            getGroupMemberIds: jest.fn().mockResolvedValue([1]),
+            getGroupPeople: jest.fn().mockResolvedValue({
+                rows: [
+                    [12, 7, null, 'placeholder', 'active', 'Ana'],
+                    [13, 7, 1, 'linked', 'active', 'Carlos'],
+                ],
+            }),
+            getGroupPersonRecommendationCandidates: jest.fn().mockResolvedValue({
+                rows: [[42, 'image-42', 90, 2, 5, 'Shared Game', 'Juego compartido', 2, null, null, 2]],
+            }),
+            getParticipantRecommendationFeedbackForGroup: jest.fn().mockResolvedValue({ rows: [] }),
+        }
+        const service = new PlayService(
+            {} as UsersService,
+            database as unknown as DatabaseService,
+            {} as GamesService,
+            {} as MeetsService,
+            {} as MeetAccountGamesService,
+            {} as GameTranslationService,
+        )
+
+        await expect(
+            service.getParticipantRecommendations(1, {
+                groupId: 7,
+                groupPersonIds: [12, 13],
+            }),
+        ).resolves.toMatchObject({
+            recommendations: [
+                expect.objectContaining({
+                    explanation: expect.objectContaining({
+                        reasons: expect.arrayContaining([
+                            'Owned by 2 of 2 selected people (Ana, Carlos)',
+                            'Preferences from Ana, Carlos favor this game',
+                        ]),
+                    }),
+                }),
+            ],
+        })
+    })
+
     it('applies the selected decision lens and explains its effect', async () => {
         const database = {
             getGroupById: jest.fn().mockResolvedValue({ rows: [[7]] }),
