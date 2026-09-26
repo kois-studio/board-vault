@@ -80,6 +80,35 @@ describe('Api response contracts', () => {
         await expectAsync(response).toBeRejected()
     })
 
+    it('accepts the group-person workspace and its actor-specific claim flag', async () => {
+        const response = firstValueFrom(api.getGroupPeople(7))
+        const request = http.expectOne(`${environment.apiUrl}/groups/7/people`)
+
+        request.flush({
+            people: [
+                {
+                    person: {
+                        id: 21,
+                        groupId: 7,
+                        accountId: null,
+                        kind: 'placeholder',
+                        status: 'active',
+                        displayName: 'Ana',
+                        avatar: null,
+                        createdAt: '2026-09-26T10:00:00.000Z',
+                        updatedAt: '2026-09-26T10:00:00.000Z',
+                        claimedAt: null,
+                    },
+                    ownership: [],
+                    preferences: [],
+                    claimable: true,
+                },
+            ],
+        })
+
+        await expectAsync(response).toBeResolvedTo(jasmine.objectContaining({ people: [jasmine.objectContaining({ claimable: true })] }))
+    })
+
     it('rejects a malformed shared-history response at the API boundary', async () => {
         const response = firstValueFrom(api.getUserGamesHistory(7))
         const request = http.expectOne(`${environment.apiUrl}/play/users/7/history`)
