@@ -111,6 +111,7 @@ export class LogSessionWizardComponent {
     // --------------------------------------------------------------------------
     public selectedGroup = signal<GroupWithMembersAndGames | null>(null)
     public groupPeople = signal<Array<GroupPersonWorkspaceType>>([])
+    public groupPersonCatalog = signal<Array<GameCompleteType>>([])
     public usesGroupPeople = signal(false)
     private peopleLoadedForGroupId: number | null = null
 
@@ -260,6 +261,7 @@ export class LogSessionWizardComponent {
                         selected: false,
                     })),
                 )
+                this.groupPersonCatalog.set([])
                 this.loadGroupPeople(group)
 
                 // Initialize games from all group members' games (will be filtered later based on selected attendees)
@@ -343,34 +345,49 @@ export class LogSessionWizardComponent {
                     for (const game of member.games) groupGames.set(game.id, game)
                 }
 
-                this.groupPeople.set(activePeople)
-                this.usesGroupPeople.set(true)
-                this.attendees.set(
-                    activePeople.map((person) => {
-                        const ownedGameIds = new Set(
-                            person.ownership.filter((ownership) => ownership.status === 'asserted').map((ownership) => ownership.gameId),
-                        )
-                        const games = [...groupGames.values()].filter((game) => ownedGameIds.has(game.id))
-                        return {
-                            user: {
-                                id: person.person.id,
-                                username: person.person.displayName.toLowerCase().replace(/\s+/g, '-'),
-                                displayName: person.person.displayName,
-                                avatar: person.person.avatar ?? {
-                                    backgroundColor: '#64748b',
-                                    iconName: null,
-                                    emoji: null,
-                                    type: 'initials' as const,
-                                    initials: person.person.displayName.slice(0, 2).toUpperCase(),
+                const applyPeople = (catalog: Array<GameCompleteType>) => {
+                    for (const game of catalog) groupGames.set(game.id, game)
+                    this.groupPersonCatalog.set(catalog)
+                    this.groupPeople.set(activePeople)
+                    this.usesGroupPeople.set(true)
+                    this.attendees.set(
+                        activePeople.map((person) => {
+                            const ownedGameIds = new Set(
+                                person.ownership
+                                    .filter((ownership) => ownership.status === 'asserted')
+                                    .map((ownership) => ownership.gameId),
+                            )
+                            const games = [...groupGames.values()].filter((game) => ownedGameIds.has(game.id))
+                            return {
+                                user: {
+                                    id: person.person.id,
+                                    username: person.person.displayName.toLowerCase().replace(/\s+/g, '-'),
+                                    displayName: person.person.displayName,
+                                    avatar: person.person.avatar ?? {
+                                        backgroundColor: '#64748b',
+                                        iconName: null,
+                                        emoji: null,
+                                        type: 'initials' as const,
+                                        initials: person.person.displayName.slice(0, 2).toUpperCase(),
+                                    },
+                                    joinedAt: person.person.createdAt,
+                                    games,
+                                    reviews: [],
                                 },
-                                joinedAt: person.person.createdAt,
-                                games,
-                                reviews: [],
-                            },
-                            selected: false,
-                        }
-                    }),
-                )
+                                selected: false,
+                            }
+                        }),
+                    )
+                }
+
+                if (typeof this.api.getGroupPersonCatalog === 'function') {
+                    this.api.getGroupPersonCatalog(group.id).subscribe({
+                        next: (catalog) => applyPeople(catalog),
+                        error: () => applyPeople([]),
+                    })
+                } else {
+                    applyPeople([])
+                }
             },
             error: () => {
                 this.groupPeople.set([])
