@@ -94,9 +94,11 @@ with explicit favorite/like/neutral/avoid values. These relations are not a
 replacement for the authenticated account’s private `OwnedGame` collection.
 
 Migrations `0010` and `0011` create and backfill the identity/session relations.
-`0012` stores a private normalized email target for provider claims, and `0013`
-adds the same target to legacy account invitations. The repository empty-state
-verifier applies all four migrations from the documented baseline.
+`0012` stores a private normalized email target for provider claims, `0013`
+adds the same target to legacy account invitations, and `0014` adds the bounded
+30-day claim expiry and revocation cleanup. The repository empty-state verifier
+applies the complete participant chain through `0014` from the documented
+baseline.
 
 Claiming is a transactional identity transition. The authenticated invitee can
 keep or remove each asserted ownership/preference, may opt into copying kept
@@ -135,7 +137,7 @@ These findings are now split between resolved schema alignment and remaining API
 3. Continue `DATA-004`: apply the transaction policy to remaining multi-record mutations. Session lifecycle transitions and scheduled/active attendee, shortlist, and played-game replacement writes now use conditional transactional status gates; same-status stale overwrites and other legacy multi-write flows remain open.
 4. Execute `DATA-002`: observe the migration/empty-state checks in CI and document the real Turso backup/restore schedule, owner, recovery target, and rollback.
 5. Keep disposable integration data and the backup/restore rehearsal as launch gates.
-6. Apply and verify migrations `0010`–`0013` with a fresh backup before
+6. Apply and verify migrations `0010`–`0014` with a fresh backup before
    deploying the single-user group backend/frontend slice. Live rollout is not
    claimed by repository tests alone.
 

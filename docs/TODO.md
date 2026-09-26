@@ -12,7 +12,7 @@ checked boxes. Product direction that remains true after implementation belongs
 in [`todo/01-product-direction.md`](../todo/01-product-direction.md); durable
 technical decisions belong in [`docs/adr/`](adr/README.md).
 
-Reviewed: 2026-09-08
+Reviewed: 2026-09-26
 
 ## Single-user group / placeholder participants — In progress
 
