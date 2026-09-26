@@ -364,11 +364,13 @@ export class SessionsService {
 
         const groupId = Number(session.rows[0][1])
         const personIds = await this.getMeetPersonIds(sessionId)
-        const availableGameIds = new Set(
-            await (personIds.length > 0
-                ? this.getGroupAvailableGameIdsForPeople(groupId, personIds)
-                : this.databaseService.getGroupAvailableGameIds(groupId)),
-        )
+        const accountIds = await this.databaseService.getMeetAttendeeIds(sessionId)
+        const availableGameIds = new Set<number>()
+
+        if (accountIds.length > 0) {
+            for (const gameId of await this.databaseService.getGroupAvailableGameIds(groupId)) availableGameIds.add(gameId)
+        }
+        for (const gameId of await this.getGroupAvailableGameIdsForPeople(groupId, personIds)) availableGameIds.add(gameId)
         const playedGameIds = [...new Set(body.playedGameIds)]
 
         if (playedGameIds.some(gameId => !availableGameIds.has(gameId))) {

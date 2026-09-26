@@ -31,6 +31,9 @@ function createDatabaseMock() {
         getMeetAttendeeForAccount: jest.fn(),
         updateMeetAttendeeRsvp: jest.fn(),
         getMeetAttendeeIds: jest.fn().mockResolvedValue([1, 2]),
+        getMeetPersonIds: jest.fn().mockResolvedValue([]),
+        getGroupPeople: jest.fn().mockResolvedValue({ rows: [] }),
+        getGroupAvailableGameIdsForPeople: jest.fn().mockResolvedValue([]),
         updateMeetAttendance: jest.fn().mockResolvedValue(undefined),
         replaceMeetPlannedGames: jest.fn().mockResolvedValue(true),
         getMeetPlayedGameParticipants: jest.fn().mockResolvedValue([]),
@@ -104,6 +107,62 @@ describe('SessionsService', () => {
             timezone: body.timezone,
             attendeeIds: body.attendeeIds,
             games: body.games,
+        })
+    })
+
+    it('creates a completed session with mixed account and group-person participants', async () => {
+        const database = createDatabaseMock()
+        database.getGroupPeople.mockResolvedValue({
+            rows: [
+                [10, 7, null, 'placeholder', 'active', 'Ana'],
+                [11, 7, 2, 'linked', 'active', 'Bruno'],
+            ],
+        })
+        database.getGroupAvailableGameIdsForPeople.mockResolvedValue([84])
+        const mixedBody = {
+            ...body,
+            attendeeIds: [1],
+            groupPersonIds: [10, 11],
+            games: [{ gameId: 84, participantIds: [1], participantPersonIds: [10, 11] }],
+        }
+        const service = new SessionsService(database as unknown as DatabaseService)
+
+        await expect(service.createCompletedSession(1, mixedBody)).resolves.toEqual({ sessionId: 12, status: 'completed' })
+        expect(database.createCompletedSession).toHaveBeenCalledWith({
+            groupId: 7,
+            createdBy: 1,
+            sessionDate: body.sessionDate,
+            timezone: body.timezone,
+            attendeeIds: [1],
+            groupPersonIds: [10, 11],
+            games: [{ gameId: 84, participantIds: [1] }],
+            personGames: [{ gameId: 84, participantIds: [10, 11] }],
+        })
+    })
+
+    it('schedules a session with placeholder participants', async () => {
+        const database = createDatabaseMock()
+        database.getGroupPeople.mockResolvedValue({ rows: [[10, 7, null, 'placeholder', 'active', 'Ana']] })
+        database.getGroupAvailableGameIdsForPeople.mockResolvedValue([84])
+        const service = new SessionsService(database as unknown as DatabaseService)
+
+        await expect(
+            service.createScheduledSession(1, {
+                groupId: 7,
+                sessionDate: '2026-08-21T19:30:00.000Z',
+                timezone: 'Europe/Madrid',
+                groupPersonIds: [10],
+                plannedGameIds: [84],
+            }),
+        ).resolves.toEqual({ sessionId: 13, status: 'scheduled' })
+        expect(database.createScheduledSession).toHaveBeenCalledWith({
+            groupId: 7,
+            createdBy: 1,
+            sessionDate: '2026-08-21T19:30:00.000Z',
+            timezone: 'Europe/Madrid',
+            attendeeIds: [],
+            groupPersonIds: [10],
+            plannedGameIds: [84],
         })
     })
 
@@ -358,6 +417,31 @@ describe('SessionsService', () => {
         })
         expect(database.getMeetPlayedGameParticipants).toHaveBeenCalledWith(13)
         expect(database.replaceMeetPlayedGames).toHaveBeenCalledWith(13, [{ gameId: 42, participantIds: [1, 2] }], 'active')
+    })
+
+    it('records mixed account and group-person game participants and reports stale-write conflicts', async () => {
+        const database = createDatabaseMock()
+        database.getMeetByIdForCreator.mockResolvedValue({
+            rows: [[13, 7, 1, '2026-08-21T19:30:00.000Z', 0, 'active', 'Europe/Madrid', null]],
+        })
+        database.getMeetAttendeeIds.mockResolvedValue([1])
+        database.getMeetPersonIds.mockResolvedValue([10])
+        database.getGroupAvailableGameIdsForPeople.mockResolvedValue([84])
+        database.replaceMeetPlayedGames.mockResolvedValue({ applied: false, playedGameIds: [], skippedGameIds: [], playedGameParticipants: [] })
+        const service = new SessionsService(database as unknown as DatabaseService)
+
+        await expect(
+            service.updateSessionPlayedGames(1, 13, {
+                playedGameIds: [84],
+                games: [{ gameId: 84, participantIds: [1], participantPersonIds: [10] }],
+            }),
+        ).rejects.toThrow('The session changed while played games were being updated')
+        expect(database.replaceMeetPlayedGames).toHaveBeenCalledWith(
+            13,
+            [{ gameId: 84, participantIds: [1] }],
+            'active',
+            [{ gameId: 84, participantIds: [10] }],
+        )
     })
 
     it('validates per-game participants against the session attendees', async () => {
