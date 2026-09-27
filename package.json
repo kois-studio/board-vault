@@ -10,6 +10,7 @@
         "lint": "npm --prefix backend run lint:check && npm --prefix frontend run lint:check",
         "verify:migrations": "node database/scripts/verify-empty-state.mjs",
         "verify:restore": "node database/scripts/verify-restore-rehearsal.mjs",
+        "verify:rollback": "node database/scripts/verify-rollback-rehearsal.mjs",
         "seed:social-fixture": "node database/scripts/seed-social-fixture.mjs"
     }
 }

@@ -111,3 +111,5 @@ jobs:
               run: node database/scripts/verify-empty-state.mjs
             - name: Run synthetic backup and restore rehearsal
               run: node database/scripts/verify-restore-rehearsal.mjs
+            - name: Run synthetic rollback and recovery rehearsal
+              run: node database/scripts/verify-rollback-rehearsal.mjs
