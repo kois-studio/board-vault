@@ -14,6 +14,7 @@ belong in private operator notes.
 - [Authentication](authentication.md)
 - [User flows](ux-flows.md)
 - [Product glossary](glossary.md)
+- [Contributor setup](contributor-setup.md)
 - [Architecture decision records](adr/README.md)
 - [Public release checklist](release-checklist.md)
 - [Database workspace](../database/README.md)
