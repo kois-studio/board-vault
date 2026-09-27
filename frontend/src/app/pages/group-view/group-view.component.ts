@@ -1,4 +1,4 @@
-import { CommonModule, DOCUMENT } from '@angular/common'
+import { CommonModule } from '@angular/common'
 import { Component, computed, effect, inject, signal } from '@angular/core'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
@@ -17,6 +17,7 @@ import { SkeletonHistoryComponent } from '../../components/skeletons/skeleton-hi
 import { ToastService } from '../../components/toast/toast.service'
 import { ButtonComponent } from '../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
+import { DialogDirective } from '../../components/ui/dialog/dialog.directive'
 import { IconComponent } from '../../components/ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../../components/ui/image-background/image-background.component'
 import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'
@@ -67,6 +68,7 @@ export function shouldShowFirstGroupSetup(input: {
         ImageBackgroundComponent,
         IconComponent,
         ButtonComponent,
+        DialogDirective,
         SkeletonHistoryComponent,
         PageHeaderComponent,
     ],
@@ -74,7 +76,6 @@ export function shouldShowFirstGroupSetup(input: {
     styleUrls: ['group-view.component.scss'],
 })
 export class GroupViewComponent {
-    private readonly document = inject(DOCUMENT)
     private readonly api = inject(Api)
     private readonly router = inject(Router)
     private readonly route = inject(ActivatedRoute)
@@ -143,7 +144,6 @@ export class GroupViewComponent {
     private activeSelectionGroupId: number | null = null
     private activeAcquisitionGroupId: number | null = null
     private activePeopleGroupId: number | null = null
-    private leaveDialogTrigger: HTMLElement | null = null
 
     // --------------------------------------------------------------------------
     //        Computed
@@ -717,16 +717,12 @@ export class GroupViewComponent {
 
     onClickLeaveGroup() {
         if (this.isGroupOwnerComputed() || !this.groupData$()) return
-        this.leaveDialogTrigger = this.document.activeElement instanceof HTMLElement ? this.document.activeElement : null
         this.isLeaveDialogOpen.set(true)
-        queueMicrotask(() => this.document.getElementById('leave-group-dialog-cancel')?.focus())
     }
 
     public cancelLeaveGroup(): void {
         if (this.isLeavingGroup()) return
         this.isLeaveDialogOpen.set(false)
-        queueMicrotask(() => this.leaveDialogTrigger?.focus())
-        this.leaveDialogTrigger = null
     }
 
     public async confirmLeaveGroup(): Promise<void> {

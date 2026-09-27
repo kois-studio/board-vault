@@ -618,11 +618,11 @@
 </container-wrapper>
 
 @if (isLeaveDialogOpen()) {
-    <div class="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/70 p-4" role="presentation" (click)="cancelLeaveGroup()" (keydown.escape)="cancelLeaveGroup()">
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/70 p-4" role="presentation" (click)="cancelLeaveGroup()">
         <section
+            appDialog
+            (dialogClosed)="cancelLeaveGroup()"
             class="w-full max-w-md rounded-3xl border border-zinc-200 bg-white p-6 shadow-2xl dark:border-zinc-700 dark:bg-zinc-900"
-            role="dialog"
-            aria-modal="true"
             aria-labelledby="leave-group-dialog-title"
             aria-describedby="leave-group-dialog-description"
             (click)="$event.stopPropagation()"
