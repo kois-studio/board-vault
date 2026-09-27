@@ -53,7 +53,7 @@ export class ToastService {
         this._addToast(message, 'generic')
     }
 
-    removeToast(index: number): void {
-        this.toasts.splice(index, 1)
+    removeToast(id: string): void {
+        this.toasts = this.toasts.filter((toast) => toast.id !== id)
     }
 }

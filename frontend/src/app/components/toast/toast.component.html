@@ -1,8 +1,9 @@
-<div class="fixed bottom-5 right-5">
-    @for (toast of toastService.toasts; track $index) {
-    <div class="w-80 animate__animated animate__fadeIn bg-zinc-900 rounded-lg">
+<div class="fixed inset-x-4 bottom-5 z-50 flex flex-col items-end gap-3 sm:left-auto" aria-live="polite" aria-atomic="false">
+    @for (toast of toastService.toasts; track toast.id) {
+    <div class="animate-toast-enter w-full max-w-sm motion-reduce:animate-none">
         <div
-            class="text-white border-l-4 p-4 mb-4 rounded-lg shadow-lg relative"
+            class="relative rounded-lg border-l-4 p-4 text-white shadow-lg"
+            [attr.role]="toast.type === 'error' || toast.type === 'warning' ? 'alert' : 'status'"
             [ngClass]="{
                 'bg-red-500/80 border-red-700 shadow-red-700': toast.type === 'error',
                 'bg-yellow-500/80 border-yellow-700 shadow-yellow-700': toast.type === 'warning',
@@ -12,14 +13,10 @@
             }"
         >
             <div class="flex justify-between items-center">
-                <i *ngIf="toast.type === 'error'" class="bi bi-exclamation-triangle-fill"></i>
-                <i *ngIf="toast.type === 'warning'" class="bi bi-exclamation-circle-fill"></i>
-                <i *ngIf="toast.type === 'info'" class="bi bi-info-circle-fill"></i>
-                <i *ngIf="toast.type === 'success'" class="bi bi-check-circle-fill"></i>
-                <i *ngIf="toast.type === 'generic'" class="bi bi-info-circle-fill"></i>
+                <app-icon [name]="iconFor(toast.type)" [size]="20" />
 
-                <span class="px-4">{{ toast.message }}</span>
-                <button (click)="closeToast($index)" class="cursor-pointer">&times;</button>
+                <span class="flex-1 px-4">{{ toast.message }}</span>
+                <button type="button" (click)="closeToast(toast.id)" class="rounded p-1 text-lg leading-none text-white/80 hover:bg-white/10 hover:text-white" aria-label="Dismiss notification">&times;</button>
             </div>
             <div
                 class="h-1 absolute bottom-1 m-auto opacity-0 rounded-full bg-gradient-to-r origin-left animate-toast-progress"
