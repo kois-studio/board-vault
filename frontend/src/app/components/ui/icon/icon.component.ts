@@ -5,6 +5,7 @@ import {
     LucideArrowRight,
     LucideBan,
     LucideBell,
+    LucideCalendarHeart,
     LucideCheck,
     LucideCircleAlert,
     LucideCircleCheck,
@@ -12,8 +13,11 @@ import {
     LucideCircleQuestionMark,
     LucideCircleX,
     LucideClock,
+    LucideDices,
     LucideFileText,
+    LucideFilter,
     LucideGamepad2,
+    LucideGlobe2,
     LucideHeart,
     LucideHeartOff,
     LucideInfo,
@@ -25,6 +29,7 @@ import {
     LucideRefreshCw,
     LucideSettings,
     LucideShieldAlert,
+    LucideShoppingBag,
     LucideSparkles,
     LucideStar,
     LucideStarHalf,
@@ -48,9 +53,13 @@ const ICONS: Record<string, IconType> = {
     'circle-plus': LucideCirclePlus,
     'circle-x': LucideCircleX,
     clock: LucideClock,
+    'calendar-heart': LucideCalendarHeart,
     check: LucideCheck,
+    dice: LucideDices,
+    filter: LucideFilter,
     'file-text': LucideFileText,
     gamepad: LucideGamepad2,
+    globe: LucideGlobe2,
     heart: LucideHeart,
     'heart-off': LucideHeartOff,
     info: LucideInfo,
@@ -62,6 +71,7 @@ const ICONS: Record<string, IconType> = {
     refresh: LucideRefreshCw,
     settings: LucideSettings,
     'shield-alert': LucideShieldAlert,
+    'shopping-bag': LucideShoppingBag,
     sparkle: LucideSparkles,
     star: LucideStar,
     'star-half': LucideStarHalf,
@@ -93,6 +103,7 @@ export class IconComponent {
     @Input({ required: true }) name = 'circle-help'
     @Input() size: number | string = 20
     @Input() strokeWidth: number | string = 2
+    @Input() fill = 'none'
     @Input() label: string | null = null
     @Input() className = ''
 
@@ -105,6 +116,7 @@ export class IconComponent {
             class: this.className,
             size: this.size,
             strokeWidth: this.strokeWidth,
+            fill: this.fill,
             title: this.label,
         }
     }
