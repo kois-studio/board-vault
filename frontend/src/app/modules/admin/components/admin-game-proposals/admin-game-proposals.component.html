@@ -108,7 +108,7 @@
                                                 />
                                             } @else {
                                                 <div class="w-12 h-12 bg-zinc-200 dark:bg-zinc-600 rounded-lg flex items-center justify-center">
-                                                    <i class="bi bi-image text-zinc-400"></i>
+                                                    <app-icon name="image" [size]="20" className="text-zinc-400" />
                                                 </div>
                                             }
                                             <div>
@@ -167,21 +167,21 @@
                                                     class="px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
                                                     title="Approve proposal"
                                                 >
-                                                    <i class="bi bi-check-lg"></i>
+                                                    <app-icon name="check" [size]="16" />
                                                 </button>
                                                 <button
                                                     (click)="onRejectProposal(proposal.id)"
                                                     class="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
                                                     title="Reject proposal"
                                                 >
-                                                    <i class="bi bi-x-lg"></i>
+                                                    <app-icon name="x" [size]="16" />
                                                 </button>
                                                 <button
                                                     (click)="onMarkAsDuplicate(proposal.id)"
                                                     class="px-2 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors"
                                                     title="Mark as duplicate"
                                                 >
-                                                    <i class="bi bi-files"></i>
+                                                    <app-icon name="file-text" [size]="16" />
                                                 </button>
                                             }
                                             <button
@@ -189,7 +189,7 @@
                                                 class="px-2 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
                                                 title="Delete proposal"
                                             >
-                                                <i class="bi bi-trash"></i>
+                                                <app-icon name="trash" [size]="16" />
                                             </button>
                                         </div>
                                     </td>

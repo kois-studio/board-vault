@@ -3,9 +3,10 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import type { UserType } from '../../api/api.types'
 import { ImageProfileComponent } from '../image-profile/image-profile.component'
+import { IconComponent } from '../ui/icon/icon.component'
 @Component({
     selector: 'app-avatar-editor',
-    imports: [CommonModule, FormsModule, ImageProfileComponent],
+    imports: [CommonModule, FormsModule, ImageProfileComponent, IconComponent],
     templateUrl: './avatar-editor.component.html',
     styleUrls: ['./avatar-editor.component.scss'],
 })

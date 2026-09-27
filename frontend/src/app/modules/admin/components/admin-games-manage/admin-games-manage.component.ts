@@ -9,6 +9,7 @@ import { ModalEditGameTranslationsComponent } from '../../../../components/modal
 import { TagsComponent } from '../../../../components/tags/tags.component'
 import { ToastService } from '../../../../components/toast/toast.service'
 import { ButtonComponent } from '../../../../components/ui/button/button.component'
+import { IconComponent } from '../../../../components/ui/icon/icon.component'
 import { SpinnerComponent } from '../../../../components/ui/spinner/spinner.component'
 import { LogService } from '../../../../core/services/log.service'
 import { AdminTagsManageService } from '../admin-tags-manage/admin-tags-manage.service'
@@ -21,6 +22,7 @@ import { AdminGamesManageService } from './admin-games-manage.service'
         ButtonComponent,
         TagsComponent,
         SpinnerComponent,
+        IconComponent,
         ModalEditGameTranslationsComponent,
         ModalEditGameTagsComponent,
     ],

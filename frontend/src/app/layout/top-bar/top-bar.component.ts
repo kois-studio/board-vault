@@ -2,13 +2,14 @@ import { Component, OnInit, WritableSignal, computed, inject, signal } from '@an
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router'
 import { filter } from 'rxjs/operators'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
+import { IconComponent } from '../../components/ui/icon/icon.component'
 
 /**
  * Top bar - is like a second header under the main header
  * used to display user profile and other options
  */
 @Component({
-    imports: [RouterLink, RouterLinkActive, ContainerWrapperComponent],
+    imports: [RouterLink, RouterLinkActive, ContainerWrapperComponent, IconComponent],
     selector: 'app-layout-top-bar',
     templateUrl: 'top-bar.component.html',
 })

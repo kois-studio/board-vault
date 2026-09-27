@@ -14,12 +14,12 @@
                 class="group rounded-xl border border-zinc-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-primary-400 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:border-zinc-700 dark:bg-zinc-800 dark:focus:ring-offset-zinc-900"
             >
                 <span class="mb-5 flex h-12 w-12 items-center justify-center rounded-lg bg-primary-100 text-primary-700 dark:bg-primary-900/50 dark:text-primary-300" aria-hidden="true">
-                    <i class="bi bi-{{ area.icon }} text-2xl"></i>
+                    <app-icon [name]="area.icon" [size]="28" />
                 </span>
                 <h2 class="text-xl font-semibold text-zinc-900 group-hover:text-primary-700 dark:text-zinc-100 dark:group-hover:text-primary-300">{{ area.title }}</h2>
                 <p class="mt-2 text-sm leading-6 text-zinc-600 dark:text-zinc-300">{{ area.description }}</p>
                 <span class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-primary-700 dark:text-primary-300">
-                    Open area <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                    Open area <app-icon name="arrow-right" [size]="16" aria-hidden="true" />
                 </span>
             </a>
         }

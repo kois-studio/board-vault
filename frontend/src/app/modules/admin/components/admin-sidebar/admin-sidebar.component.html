@@ -19,7 +19,7 @@
             'justify-start': !collapsed
         }"
     >
-        <i class="bi bi-shield-lock text-2xl"></i>
+        <app-icon name="shield-lock" [size]="28" />
         @if (!collapsed) {
         <h2 class="text-xl font-semibold text-zinc-800 dark:text-zinc-100 truncate ml-2">Admin</h2>
         }
@@ -43,7 +43,7 @@
                     [title]="item.label"
                 >
                     <span class="block text-nowrap overflow-hidden">
-                        <i class="bi bi-{{ item.icon }} text-xl"></i>
+                        <app-icon [name]="item.icon" [size]="20" />
                         @if (!collapsed) {
                         <span class="transition-opacity duration-300 ease-in-out ml-2">{{ item.label }}</span>
                         }
@@ -66,7 +66,7 @@
             routerLink="/"
             class="w-full flex items-center justify-center p-2 rounded-md hover:bg-zinc-200 dark:hover:bg-zinc-700 cursor-pointer"
         >
-            <i class="bi bi-box-arrow-left"></i>
+            <app-icon name="logout" [size]="18" />
             <span class="ml-4">Exit</span>
         </button>
     </div>

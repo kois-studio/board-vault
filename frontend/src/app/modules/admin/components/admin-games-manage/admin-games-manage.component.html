@@ -18,11 +18,11 @@
                 [formControl]="searchControl"
             />
             <div class="absolute left-3 top-3">
-                <i class="bi bi-search text-zinc-400"></i>
+                <app-icon name="search" [size]="18" className="text-zinc-400" />
             </div>
             @if (isSearching$()) {
                 <div class="absolute right-3 top-3">
-                    <i class="bi bi-arrow-repeat spin text-zinc-400"></i>
+                <app-icon name="refresh" [size]="18" className="text-zinc-400 animate-spin" />
                 </div>
             }
         </div>
