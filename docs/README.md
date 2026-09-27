@@ -13,6 +13,7 @@ belong in private operator notes.
 - [Data model](data-model.md)
 - [Authentication](authentication.md)
 - [User flows](ux-flows.md)
+- [Product glossary](glossary.md)
 - [Architecture decision records](adr/README.md)
 - [Public release checklist](release-checklist.md)
 - [Database workspace](../database/README.md)
