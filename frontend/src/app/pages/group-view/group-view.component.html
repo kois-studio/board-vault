@@ -124,8 +124,8 @@
                 } @else if (!currentUserHasGroupPersonComputed() && !isGroupOwnerComputed()) {
                     <div class="mt-5 rounded-2xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
                         <p class="font-semibold">Represent yourself in this group</p>
-                        <p class="mt-1 text-sm text-secondary">Your account is a member, but is not yet represented in the group’s participant history.</p>
-                        <button type="button" class="app-btn-secondary mt-3" [disabled]="groupPersonMutationId() !== null" (click)="joinAsNewGroupPerson()">Join as a new group person</button>
+                        <p class="mt-1 text-sm text-secondary">Your account is already a member, but is not yet represented in this group’s participant history. This only adds a group-scoped person record; it does not grant access or invite anyone.</p>
+                        <button type="button" class="app-btn-secondary mt-3" [disabled]="groupPersonMutationId() !== null" (click)="joinAsNewGroupPerson()">Add me to group history</button>
                     </div>
                 }
 
