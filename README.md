@@ -46,3 +46,7 @@ Start with [`docs/README.md`](docs/README.md), then review the API contract in
 
 Do not commit credentials, tokens, local environment files, database exports,
 or personal data. See [`SECURITY.md`](SECURITY.md) for reporting guidance.
+
+## License
+
+MIT. See [`LICENSE`](LICENSE).
