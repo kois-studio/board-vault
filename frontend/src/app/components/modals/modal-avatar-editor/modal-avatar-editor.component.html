@@ -5,7 +5,7 @@
     <div class="bg-white dark:bg-zinc-800 rounded border border-zinc-700 w-full h-full sm:h-auto sm:w-3/4 max-w-xl relative pt-4" (click)="$event.stopPropagation()">
         <!-- Close button -->
         <button (click)="hideDialog()" class="py-2 px-4 rounded-lg hover:bg-zinc-200 hover:dark:bg-zinc-900 absolute top-2 right-2 cursor-pointer">
-            <i class="bi bi-x-lg"></i>
+            <app-icon name="x" [size]="18" />
         </button>
         <!-- Dialog content -->
         <app-avatar-editor

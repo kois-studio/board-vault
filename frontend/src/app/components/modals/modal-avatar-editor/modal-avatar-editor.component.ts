@@ -3,9 +3,10 @@ import { Api } from '../../../api/api'
 import type { UserType } from '../../../api/api.types'
 import { DataService } from '../../../core/services/data.service'
 import { AvatarEditorComponent } from '../../avatar-editor/avatar-editor.component'
+import { IconComponent } from '../../ui/icon/icon.component'
 
 @Component({
-    imports: [AvatarEditorComponent],
+    imports: [AvatarEditorComponent, IconComponent],
     selector: 'app-modal-avatar-editor',
     templateUrl: 'modal-avatar-editor.component.html',
 })
