@@ -28,7 +28,7 @@
         </div>
     } @else {
         @if (groupData$(); as group) {
-        <div class="space-y-8 py-6">
+        <div class="flex flex-col space-y-8 py-6">
             @if (needsFirstGroupSetup()) {
                 <section class="rounded-3xl border border-indigo-100 bg-indigo-50 p-6 dark:border-indigo-900/60 dark:bg-indigo-950/30 sm:p-8" aria-labelledby="first-group-setup-heading">
                     <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">First steps for this group</p>
@@ -90,7 +90,7 @@
                 </div>
             </nav>
 
-            <section id="people" class="scroll-mt-24 rounded-2xl border border-indigo-100 bg-indigo-50/60 p-6 dark:border-indigo-900/60 dark:bg-indigo-950/20" aria-labelledby="people-heading">
+            <section id="people" class="order-4 scroll-mt-24 rounded-2xl border border-indigo-100 bg-indigo-50/60 p-6 dark:border-indigo-900/60 dark:bg-indigo-950/20" aria-labelledby="people-heading">
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Group people</p>
@@ -191,7 +191,7 @@
                 }
             </section>
 
-            <section class="grid gap-4 lg:grid-cols-3" aria-label="Group overview">
+            <section class="order-1 grid gap-4 lg:grid-cols-3" aria-label="Group overview">
                 <article class="rounded-2xl bg-indigo-700 p-6 text-white shadow-lg lg:col-span-2">
                     <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-200">Next game night</p>
                     @if (nextMeetingComputed(); as nextMeeting) {
@@ -233,7 +233,7 @@
                 </article>
             </section>
 
-            <section id="decide" class="scroll-mt-24 rounded-2xl border border-indigo-100 bg-indigo-50 p-6 dark:border-indigo-900/60 dark:bg-indigo-950/30" aria-labelledby="decide-heading">
+            <section id="decide" class="order-2 scroll-mt-24 rounded-2xl border border-indigo-100 bg-indigo-50 p-6 dark:border-indigo-900/60 dark:bg-indigo-950/30" aria-labelledby="decide-heading">
                 <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Make the next decision easy</p>
@@ -252,7 +252,7 @@
                 </div>
             </section>
 
-            <section id="acquire" class="scroll-mt-24" aria-labelledby="acquisition-heading">
+            <section id="acquire" class="order-5 scroll-mt-24" aria-labelledby="acquisition-heading">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Group decisions</p>
@@ -337,7 +337,7 @@
                 }
             </section>
 
-            <section id="sessions" class="scroll-mt-24 rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900" aria-labelledby="members-heading">
+            <section id="sessions" class="order-3 scroll-mt-24 rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900" aria-labelledby="members-heading">
                 <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Session context</p>
@@ -384,7 +384,7 @@
                 </div>
             </section>
 
-            <section id="library" class="scroll-mt-24" aria-labelledby="library-heading">
+            <section id="library" class="order-6 scroll-mt-24" aria-labelledby="library-heading">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Shared library</p>
@@ -467,7 +467,7 @@
                 }
             </section>
 
-            <section id="history" class="scroll-mt-24" aria-labelledby="history-heading">
+            <section id="history" class="order-7 scroll-mt-24" aria-labelledby="history-heading">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Group memory</p>
@@ -530,7 +530,7 @@
             </section>
 
             @if (groupHistory$().length > 0) {
-                <section id="insights" class="scroll-mt-24" aria-labelledby="insights-heading">
+                <section id="insights" class="order-8 scroll-mt-24" aria-labelledby="insights-heading">
                     <div>
                         <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">What your group returns to</p>
                         <h2 id="insights-heading" class="mt-1 text-2xl font-bold">Small group insights</h2>
