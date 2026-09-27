@@ -5615,7 +5615,7 @@
           },
           "name": {
             "type": "string",
-            "example": "example-user's Group"
+            "example": "Example Group"
           },
           "createdBy": {
             "type": "number",
@@ -5638,7 +5638,7 @@
         "properties": {
           "name": {
             "type": "string",
-            "example": "example-user's Group"
+            "example": "Example Group"
           }
         },
         "required": [
@@ -5650,7 +5650,7 @@
         "properties": {
           "name": {
             "type": "string",
-            "example": "example-user's Group"
+            "example": "Example Group"
           }
         }
       },
@@ -7317,7 +7317,7 @@
           },
           "name": {
             "type": "string",
-            "example": "example-user's Group"
+            "example": "Example Group"
           },
           "createdBy": {
             "type": "number",
