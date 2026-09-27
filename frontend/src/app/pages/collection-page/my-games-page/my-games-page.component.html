@@ -39,14 +39,15 @@
         </section>
         <section class="flex flex-wrap gap-4" aria-label="Your private games">
             @for (game of userGames$(); track game.id) {
-                <app-card-game
-                    [routerLink]="['/games', game.id]"
-                    [title]="game.titleTranslations.en"
-                    [imageUrl]="game.imageUrl"
-                    [gameAvgDuration]="game.gameAvgDuration"
-                    [minPlayers]="game.minPlayers"
-                    [maxPlayers]="game.maxPlayers"
-                />
+                <a [routerLink]="['/games', game.id]" class="block rounded-lg focus-visible:outline-none">
+                    <app-card-game
+                        [title]="game.titleTranslations.en"
+                        [imageUrl]="game.imageUrl"
+                        [gameAvgDuration]="game.gameAvgDuration"
+                        [minPlayers]="game.minPlayers"
+                        [maxPlayers]="game.maxPlayers"
+                    />
+                </a>
             }
         </section>
     }

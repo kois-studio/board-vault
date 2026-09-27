@@ -63,14 +63,15 @@
         <section class="flex flex-wrap gap-4">
             @for (game of gamesListComputed(); track game.id) {
                 <div class="relative">
-                    <app-card-game
-                        [routerLink]="['/games', game.id]"
-                        [title]="game.titleTranslations.en"
-                        [imageUrl]="game.imageUrl"
-                        [gameAvgDuration]="game.gameAvgDuration"
-                        [minPlayers]="game.minPlayers"
-                        [maxPlayers]="game.maxPlayers"
-                    />
+                    <a [routerLink]="['/games', game.id]" class="block rounded-lg focus-visible:outline-none">
+                        <app-card-game
+                            [title]="game.titleTranslations.en"
+                            [imageUrl]="game.imageUrl"
+                            [gameAvgDuration]="game.gameAvgDuration"
+                            [minPlayers]="game.minPlayers"
+                            [maxPlayers]="game.maxPlayers"
+                        />
+                    </a>
                     @if (game.isInCollection) {
                         <div title="In my collection" class="absolute -top-1 right-1 text-blue-500 text-4xl" aria-label="In my collection">
                             <i class="bi bi-bookmark-check-fill"></i>

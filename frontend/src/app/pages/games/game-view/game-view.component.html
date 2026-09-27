@@ -224,7 +224,7 @@
 
             <div class="flex flex-wrap gap-4">
                 @for (similarGame of gameView$()?.similarGames ?? []; track similarGame.id) {
-                <button routerLink="/games/{{ similarGame.id }}" class="hover:scale-105 transition-transform">
+                <a [routerLink]="['/games', similarGame.id]" class="block rounded-lg motion-safe:transition-transform motion-safe:hover:scale-105 focus-visible:outline-none">
                     <app-card-game
                         [title]="similarGame.titleTranslations.en"
                         [imageUrl]="similarGame.imageUrl"
@@ -232,7 +232,7 @@
                         [minPlayers]="similarGame.minPlayers"
                         [maxPlayers]="similarGame.maxPlayers"
                     />
-                </button>
+                </a>
                 }
             </div>
         </div>
