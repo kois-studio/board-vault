@@ -37,4 +37,33 @@ describe('DashboardPageComponent decision handoff', () => {
         expect(fixture.nativeElement.querySelector('a[href="/play/recommendations?groupId=11"]')).not.toBeNull()
         expect(fixture.nativeElement.textContent).toContain('Choose for Sunday Crew')
     })
+
+    it('gives a new account clear next actions when no groups exist', async () => {
+        const dataService = {
+            userGroups: signal([]),
+            userMeets: signal([]),
+            userGroupsError: signal(false),
+            userMeetsError: signal(false),
+        }
+
+        await TestBed.configureTestingModule({
+            imports: [DashboardPageComponent],
+            providers: [
+                { provide: DataService, useValue: dataService },
+                {
+                    provide: LoadingService,
+                    useValue: { loadingStatesIndex: signal({ [LOADING_KEYS.USER_GROUPS]: false, [LOADING_KEYS.USER_MEETS]: false }) },
+                },
+                provideRouter([]),
+            ],
+        }).compileComponents()
+
+        const fixture = TestBed.createComponent(DashboardPageComponent)
+        fixture.detectChanges()
+
+        expect(fixture.nativeElement.textContent).toContain('Start with the people you play with')
+        const emptyState = fixture.nativeElement.querySelector('section[aria-labelledby="first-group-heading"]')
+        expect(emptyState?.querySelector('a[href="/create-group"]')?.textContent).toContain('Create your first group')
+        expect(emptyState?.querySelector('a[href="/groups"]')?.textContent).toContain('View invitations')
+    })
 })
