@@ -48,7 +48,7 @@
         </div>
     } @else if (upcomingSessions().length === 0) {
         <div class="rounded-3xl border border-dashed border-zinc-300 px-6 py-12 text-center dark:border-zinc-700">
-            <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-100 text-2xl text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-300" aria-hidden="true"><i class="bi bi-calendar-plus"></i></div>
+            <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-300" aria-hidden="true"><app-icon name="calendar-plus" [size]="28" /></div>
             <h2 class="mt-5 text-xl font-bold text-zinc-900 dark:text-white">Your next game night is not planned yet</h2>
             <p class="mx-auto mt-2 max-w-lg text-sm leading-6 text-secondary">Choose a group to coordinate the people, time, and games. The session stays editable until the night begins.</p>
             <app-button class="mt-6" icon="plus-lg" (click)="isSchedulingASession.set(true)">Plan a future session</app-button>

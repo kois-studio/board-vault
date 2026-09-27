@@ -1,10 +1,11 @@
 import { Component, Input, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { GameCompleteType } from '../../../../api/api.types'
+import { IconComponent } from '../../../../components/ui/icon/icon.component'
 import { DataService } from '../../../../core/services/data.service'
 
 @Component({
-    imports: [RouterLink],
+    imports: [RouterLink, IconComponent],
     selector: 'app-review-row',
     templateUrl: './review-row.component.html',
 })

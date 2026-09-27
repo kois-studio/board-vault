@@ -1,6 +1,7 @@
 import { Component, computed, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
+import { IconComponent } from '../../components/ui/icon/icon.component'
 import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'
 import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
@@ -8,7 +9,7 @@ import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
 
 @Component({
-    imports: [RouterLink, ContainerWrapperComponent, PageHeaderComponent, CustomDatePipe],
+    imports: [RouterLink, ContainerWrapperComponent, PageHeaderComponent, CustomDatePipe, IconComponent],
     templateUrl: 'dashboard-page.component.html',
 })
 export class DashboardPageComponent {
