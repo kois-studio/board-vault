@@ -29,6 +29,27 @@
     } @else {
         @if (groupData$(); as group) {
         <div class="flex flex-col space-y-8 py-6">
+            <nav class="flex flex-col gap-3 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 sm:flex-row sm:items-center sm:justify-between" aria-label="Current group context">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-secondary">Current group</p>
+                    <p class="mt-1 text-sm text-secondary">All decisions, games, and sessions stay scoped to this private group.</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-3">
+                    <label class="sr-only" for="current-group-switcher">Switch current group</label>
+                    <select
+                        id="current-group-switcher"
+                        class="min-h-11 min-w-48 rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm font-semibold text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white"
+                        [value]="group.id"
+                        (change)="onGroupSwitcherChange($event)"
+                    >
+                        @for (availableGroup of userGroups$(); track availableGroup.id) {
+                            <option [value]="availableGroup.id">{{ availableGroup.name }}</option>
+                        }
+                    </select>
+                    <a class="app-btn-secondary text-center" routerLink="/groups">All groups</a>
+                </div>
+            </nav>
+
             @if (needsFirstGroupSetup()) {
                 <section class="rounded-3xl border border-indigo-100 bg-indigo-50 p-6 dark:border-indigo-900/60 dark:bg-indigo-950/30 sm:p-8" aria-labelledby="first-group-setup-heading">
                     <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">First steps for this group</p>

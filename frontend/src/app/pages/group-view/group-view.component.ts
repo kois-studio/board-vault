@@ -412,6 +412,13 @@ export class GroupViewComponent {
         this.dataService.refreshUserGroups()
     }
 
+    public onGroupSwitcherChange(event: Event): void {
+        const groupId = Number((event.target as HTMLSelectElement).value)
+        if (!Number.isInteger(groupId) || groupId <= 0 || !this.userGroups$().some((group) => group.id === groupId)) return
+
+        void this.router.navigate(['/groups', groupId])
+    }
+
     public retryAcquisitionBoard(): void {
         const groupId = this.groupData$()?.id
         if (!groupId) return
