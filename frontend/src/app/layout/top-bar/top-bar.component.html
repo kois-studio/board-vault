@@ -4,7 +4,7 @@
             <a
                 [routerLink]="section.path"
                 routerLinkActive="border-b-2 border-black dark:border-white"
-                [attr.aria-current]="router.isActive(section.path, false) ? 'page' : null"
+                [attr.aria-current]="router.isActive('/' + section.path, false) ? 'page' : null"
                 class="block min-h-11 whitespace-nowrap px-4 py-3 text-sm font-medium"
             >{{ section.name }}</a>
         }
@@ -19,7 +19,7 @@
                 <a
                     [routerLink]="subsection.path"
                     routerLinkActive="border-b-2 border-black dark:border-white"
-                    [attr.aria-current]="router.isActive(subsection.path, false) ? 'page' : null"
+                    [attr.aria-current]="router.isActive('/' + subsection.path, false) ? 'page' : null"
                     class="flex min-h-11 items-center gap-2 whitespace-nowrap px-3 py-3 text-sm font-medium md:px-5"
                 >
                     <app-icon [name]="subsection.icon" [size]="16" />

@@ -28,7 +28,7 @@ export class LayoutHeaderComponent {
     public readonly isMobileNavigationOpen = signal(false)
 
     public readonly mobileNavigation = [
-        { path: '/dashboard', label: 'Home', icon: 'house' },
+        { path: '/dashboard', label: 'Home', icon: 'home' },
         { path: '/groups', label: 'Groups', icon: 'users' },
         { path: '/collection/games', label: 'My shelf', icon: 'library' },
         { path: '/play', label: 'Play', icon: 'dice' },
@@ -37,9 +37,9 @@ export class LayoutHeaderComponent {
     ]
 
     public readonly mobilePublicNavigation = [
-        { path: '/#features', label: 'Features', icon: 'sparkles' },
-        { path: '/#how-it-works', label: 'How it works', icon: 'list' },
-        { path: '/login', label: 'Log in', icon: 'log-in' },
+        { path: '/#features', label: 'Features', icon: 'sparkle' },
+        { path: '/#how-it-works', label: 'How it works', icon: 'file-text' },
+        { path: '/login', label: 'Log in', icon: 'arrow-right' },
         { path: '/register', label: 'Private beta', icon: 'mail' },
     ]
 
