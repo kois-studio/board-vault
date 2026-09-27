@@ -103,8 +103,8 @@
         @if (!gameView$()?.ownedGameData) {
         <div class="text-center px-4 py-8">
             <p class="text-secondary mb-4">Do you own this game?</p>
-            <app-button (click)="addToCollection()" color="primary" [loading]="PREVENT_SPAM.isLoadingAddToCollection">
-                <i class="fas fa-plus-circle mr-2"></i>Add to My Collection
+            <app-button icon="plus-lg" (click)="addToCollection()" [loading]="PREVENT_SPAM.isLoadingAddToCollection">
+                Add to My Collection
             </app-button>
         </div>
         }
@@ -115,7 +115,7 @@
             class="bg-green-200 dark:bg-green-900/50 text-green-800 dark:text-green-100 rounded-t-xl p-4 flex items-center justify-between"
         >
             <h3 class="font-semibold text-lg">This game is in your collection</h3>
-            <app-button variant="danger" icon="x-circle" size="small" (click)="removeFromCollection()">remove</app-button>
+            <app-button variant="danger" icon="x-circle" size="small" (click)="removeFromCollection()">Remove from collection</app-button>
         </div>
         <div class="p-4">
             <div class="flex items-center justify-between"></div>
