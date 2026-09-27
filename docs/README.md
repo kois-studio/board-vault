@@ -19,10 +19,12 @@ belong in private operator notes.
 
 ## Contribution workflow
 
-Never commit or push directly to `main`. Create a feature or fix branch from
-the latest `main`, develop and verify the change there, then open a pull
-request. A change may be merged only after the required CI checks pass and the
-pull request receives the required review.
+Contributors and AI agents working on their behalf must not commit or push
+directly to `main`. Create a feature or fix branch from the latest `main`,
+develop and verify the change there, then open a pull request. A contributor
+change may be merged only after the required CI checks pass and the pull
+request receives the required review. Repository administrators may work
+directly on `main` when intentionally supervising a change.
 
 ## Public documentation rules
 
