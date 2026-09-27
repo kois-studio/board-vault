@@ -1,4 +1,14 @@
-<div
-    class="rounded bg-contain bg-no-repeat bg-center h-full w-full overflow-hidden"
-    [style.backgroundImage]="'url(' + src + ')'"
-></div>
+<div class="flex h-full w-full items-center justify-center overflow-hidden rounded bg-zinc-100 dark:bg-zinc-800">
+    @if (src && !hasError) {
+        <img
+            class="h-full w-full object-contain"
+            [src]="src"
+            [alt]="alt"
+            [loading]="loading"
+            decoding="async"
+            (error)="handleImageError()"
+        />
+    } @else {
+        <span class="px-2 text-center text-xs text-zinc-500 dark:text-zinc-400">Artwork unavailable</span>
+    }
+</div>

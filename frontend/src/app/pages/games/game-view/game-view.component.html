@@ -15,7 +15,11 @@
     <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         <!-- Image, wishlist and -->
         <div class="relative aspect-square mb-6">
-            <image-background [src]="gameView$()?.gameData?.imageUrl ?? ''" />
+            <image-background
+                [src]="gameView$()?.gameData?.imageUrl ?? ''"
+                [alt]="gameView$()?.gameData?.titleTranslations?.en ?? 'Game cover'"
+                loading="eager"
+            />
             <!-- Action Buttons -->
             <div class="absolute top-2 right-2 flex gap-2">
                 <!-- Wishlist Button -->
