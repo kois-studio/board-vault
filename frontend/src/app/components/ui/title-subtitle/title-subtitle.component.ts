@@ -1,7 +1,8 @@
-import { Component, Input } from '@angular/core'
+import { Component, HostListener, Input } from '@angular/core'
+import { IconComponent } from '../icon/icon.component'
 
 @Component({
-    imports: [],
+    imports: [IconComponent],
     selector: 'title-subtitle',
     templateUrl: 'title-subtitle.component.html',
 })
@@ -17,5 +18,10 @@ export class TitleSubtitleComponent {
 
     closeHelp(): void {
         this.isHelpVisible = false
+    }
+
+    @HostListener('document:keydown.escape')
+    onEscape(): void {
+        this.closeHelp()
     }
 }
