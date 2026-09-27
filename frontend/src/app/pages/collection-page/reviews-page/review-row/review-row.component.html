@@ -1,4 +1,4 @@
-<div class="bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-800/50 hover:dark:bg-zinc-800/70 rounded-lg p-3 transition-all">
+<div class="bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-800/50 hover:dark:bg-zinc-800/70 rounded-lg p-3 transition-colors">
     <!-- Main content wrapper with flex-col on mobile -->
     <div class="flex flex-col sm:flex-row gap-3">
         <!-- First row wrapper -->
@@ -34,7 +34,7 @@
                     (mouseover)="hoverRating = star"
                     (mouseleave)="hoverRating = 0"
                     [attr.aria-label]="'Rate ' + star / 2 + ' out of 5 stars for ' + game.titleTranslations.en"
-                    class="p-0.5 hover:scale-110 transition-transform cursor-pointer"
+                    class="p-0.5 motion-safe:transition-transform motion-safe:hover:scale-110 cursor-pointer"
                 >
                     <app-icon
                         name="star"

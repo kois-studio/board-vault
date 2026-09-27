@@ -6,10 +6,10 @@
 <container-wrapper>
     @if (isLoadingOverview()) {
         <section class="space-y-5" aria-label="Loading your groups" aria-busy="true">
-            <div class="h-32 animate-pulse rounded-3xl bg-zinc-100 dark:bg-zinc-900" aria-hidden="true"></div>
+            <div class="h-32 motion-safe:animate-pulse rounded-3xl bg-zinc-100 dark:bg-zinc-900" aria-hidden="true"></div>
             <div class="grid gap-5 md:grid-cols-2">
                 @for (item of [1, 2]; track item) {
-                    <div class="h-56 animate-pulse rounded-2xl border border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900" aria-hidden="true"></div>
+                    <div class="h-56 motion-safe:animate-pulse rounded-2xl border border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900" aria-hidden="true"></div>
                 }
             </div>
         </section>

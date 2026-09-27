@@ -14,7 +14,7 @@
             @for (color of colorPalette; track color) {
             <button
                 [style.background-color]="color"
-                class="w-10 h-10 rounded-full hover:scale-110 transition-transform duration-200 shadow-sm"
+                class="w-10 h-10 rounded-full motion-safe:transition-transform motion-safe:hover:scale-110 duration-200 shadow-sm"
                 [class.ring-2]="color === avatar.backgroundColor"
                 [class.ring-offset-2]="color === avatar.backgroundColor"
                 [class.ring-blue-500]="color === avatar.backgroundColor"

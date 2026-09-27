@@ -44,7 +44,7 @@
                             title="Remove from wishlist"
                             (click)="toggleWishlist(game.id)"
                             [disabled]="preventSpamIsLoadingWishlist"
-                            class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-zinc-200 bg-white/90 p-2 text-rose-500 shadow-md transition-transform duration-300 ease-linear hover:scale-110 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none"
+                            class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-zinc-200 bg-white/90 p-2 text-rose-500 motion-safe:transition-transform motion-safe:hover:scale-110 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
                         >
                             <app-icon name="heart-off" [size]="18" />
                         </button>
