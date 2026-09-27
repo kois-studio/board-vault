@@ -3,8 +3,9 @@ import { ConflictException, Injectable, Logger, NotFoundException } from '@nestj
 
 import { usersSchema } from '../../../common/schemas'
 import { AvatarDto, CreateUserBody, UpdateUserBody, UserGetDto, UserPublicDto } from '../../../common/types/user.type'
-import type { UserRecord } from '../../../common/types/user.type'
 import { DatabaseService } from '../../common/database/database.service'
+
+import type { UserRecord } from '../../../common/types/user.type'
 
 @Injectable()
 export class UsersService {
@@ -132,6 +133,11 @@ export class UsersService {
 
     private _toUserGetDto(user: UserRecord): UserGetDto {
         const { password: _password, verification_token: _verificationToken, password_reset_token: _passwordResetToken, ...safeUser } = user
+
+        void _password
+        void _verificationToken
+        void _passwordResetToken
+
         return safeUser
     }
 

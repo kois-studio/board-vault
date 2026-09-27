@@ -12,7 +12,7 @@ import { AppModule } from './../src/app.module'
 
 const repositoryRoot = resolve(__dirname, '../..')
 const testDatabasePath = resolve(__dirname, 'single-user-group-claim.e2e.sqlite')
-const testPassword = 'single-user-group-password'
+const testPassword = 'test-password-for-synthetic-fixtures'
 
 const sqlLiteral = (value: string): string => `'${value.replaceAll("'", "''")}'`
 
@@ -42,21 +42,21 @@ describe('single-user group claim workflow (e2e)', () => {
             iconName: 'person-fill',
             emoji: null,
             type: 'initials',
-            initials: 'CA',
+            initials: 'OR',
         })
         const inviteeAvatar = JSON.stringify({
             backgroundColor: '#F97316',
             iconName: 'person-fill',
             emoji: null,
             type: 'initials',
-            initials: 'IN',
+            initials: 'ME',
         })
         const fixture = `
             PRAGMA foreign_keys = ON;
             INSERT INTO Account (id, email, username, password, avatar, displayName, email_verified)
             VALUES
-                (1, 'carlos@example.test', 'carlos', ${sqlLiteral(passwordHash)}, ${sqlLiteral(avatar)}, 'Carlos', TRUE),
-                (2, 'invitee@example.test', 'invitee', ${sqlLiteral(passwordHash)}, ${sqlLiteral(inviteeAvatar)}, 'Invitee', TRUE);
+                (1, 'organizer@example.test', 'organizer', ${sqlLiteral(passwordHash)}, ${sqlLiteral(avatar)}, 'Organizer', TRUE),
+                (2, 'member@example.test', 'member', ${sqlLiteral(passwordHash)}, ${sqlLiteral(inviteeAvatar)}, 'Member', TRUE);
             INSERT INTO Game (id, imageUrl, gameAvgDuration, minPlayers, maxPlayers)
             VALUES
                 (10, 'https://example.test/game-10.png', 60, 2, 4),
@@ -99,12 +99,12 @@ describe('single-user group claim workflow (e2e)', () => {
     const withAuth = (token: string) => ({ Authorization: `Bearer ${token}` })
 
     it('creates phantom people, targets one invitation, and preserves the reviewed claim in the database', async () => {
-        const carlosToken = await login('carlos@example.test')
-        const inviteeToken = await login('invitee@example.test')
+        const organizerToken = await login('organizer@example.test')
+        const memberToken = await login('member@example.test')
 
         const createdGroup = await request(app.getHttpServer())
-            .post('/dashboard/users/1/groups/create/Single%20User%20Crew')
-            .set(withAuth(carlosToken))
+            .post('/dashboard/users/1/groups/create/group_example')
+            .set(withAuth(organizerToken))
             .send({})
             .expect(201)
         const groupId = Number(createdGroup.body.groupId)
@@ -113,41 +113,41 @@ describe('single-user group claim workflow (e2e)', () => {
 
         const anaResponse = await request(app.getHttpServer())
             .post(`/groups/${groupId}/people`)
-            .set(withAuth(carlosToken))
-            .send({ displayName: 'Ana' })
+            .set(withAuth(organizerToken))
+            .send({ displayName: 'person_one' })
             .expect(201)
         const anaId = Number(anaResponse.body.id)
 
-        const example-memberResponse = await request(app.getHttpServer())
+        const exampleMemberResponse = await request(app.getHttpServer())
             .post(`/groups/${groupId}/people`)
-            .set(withAuth(carlosToken))
-            .send({ displayName: 'example-member' })
+            .set(withAuth(organizerToken))
+            .send({ displayName: 'person_two' })
             .expect(201)
-        const example-memberId = Number(example-memberResponse.body.id)
+        const exampleMemberId = Number(exampleMemberResponse.body.id)
 
         await request(app.getHttpServer())
             .put(`/groups/${groupId}/people/${anaId}/ownership`)
-            .set(withAuth(carlosToken))
+            .set(withAuth(organizerToken))
             .send({ gameId: 10, status: 'asserted' })
             .expect(200)
         await request(app.getHttpServer())
             .put(`/groups/${groupId}/people/${anaId}/ownership`)
-            .set(withAuth(carlosToken))
+            .set(withAuth(organizerToken))
             .send({ gameId: 11, status: 'asserted' })
             .expect(200)
         await request(app.getHttpServer())
             .put(`/groups/${groupId}/people/${anaId}/preferences`)
-            .set(withAuth(carlosToken))
+            .set(withAuth(organizerToken))
             .send({ gameId: 10, preference: 'favorite' })
             .expect(200)
 
         const invitationTarget = await request(app.getHttpServer())
             .post('/invitations/byUsername')
-            .set(withAuth(carlosToken))
-            .send({ groupId, username: 'invitee', groupPersonId: anaId })
+            .set(withAuth(organizerToken))
+            .send({ groupId, username: 'member', groupPersonId: anaId })
             .expect(201)
 
-        expect(invitationTarget.body.username).toBe('invitee')
+        expect(invitationTarget.body.username).toBe('member')
 
         const pendingInvitation = await database.execute({
             sql: 'SELECT id, groupPersonId FROM Invitation WHERE groupId = ? AND toAccountId = ?',
@@ -157,21 +157,21 @@ describe('single-user group claim workflow (e2e)', () => {
         expect(pendingInvitation.rows).toEqual([expect.objectContaining({ id: expect.any(Number), groupPersonId: anaId })])
         const invitationId = Number(pendingInvitation.rows[0].id)
 
-        await request(app.getHttpServer()).post('/memberships').set(withAuth(inviteeToken)).send({ groupId }).expect(201)
+        await request(app.getHttpServer()).post('/memberships').set(withAuth(memberToken)).send({ groupId }).expect(201)
 
-        const inviteeWorkspace = await request(app.getHttpServer()).get(`/groups/${groupId}/people`).set(withAuth(inviteeToken)).expect(200)
-        const claimablePerson = inviteeWorkspace.body.people.find((person: { person: { id: number } }) => person.person.id === anaId)
+        const memberWorkspace = await request(app.getHttpServer()).get(`/groups/${groupId}/people`).set(withAuth(memberToken)).expect(200)
+        const claimablePerson = memberWorkspace.body.people.find((person: { person: { id: number } }) => person.person.id === anaId)
 
         expect(claimablePerson).toEqual(
             expect.objectContaining({
                 claimable: true,
-                person: expect.objectContaining({ id: anaId, kind: 'placeholder', accountId: null, displayName: 'Ana' }),
+                person: expect.objectContaining({ id: anaId, kind: 'placeholder', accountId: null, displayName: 'person_one' }),
             }),
         )
 
         await request(app.getHttpServer())
             .post(`/groups/${groupId}/people/${anaId}/claim`)
-            .set(withAuth(inviteeToken))
+            .set(withAuth(memberToken))
             .send({ ownershipGameIds: [10], preferenceGameIds: [], importOwnershipToCollection: true })
             .expect(201)
 
@@ -228,16 +228,16 @@ describe('single-user group claim workflow (e2e)', () => {
 
         await request(app.getHttpServer())
             .post(`/groups/${groupId}/people/${anaId}/claim`)
-            .set(withAuth(inviteeToken))
+            .set(withAuth(memberToken))
             .send({ ownershipGameIds: [10], preferenceGameIds: [], importOwnershipToCollection: true })
             .expect(201)
             .expect({ success: true, alreadyClaimed: true })
 
         const remainingPlaceholder = await database.execute({
             sql: "SELECT id FROM GroupPerson WHERE id = ? AND accountId IS NULL AND kind = 'placeholder'",
-            args: [example-memberId],
+            args: [exampleMemberId],
         })
 
-        expect(remainingPlaceholder.rows).toEqual([{ id: example-memberId }])
+        expect(remainingPlaceholder.rows).toEqual([{ id: exampleMemberId }])
     })
 })
