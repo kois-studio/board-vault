@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { Component, HostBinding, Input } from '@angular/core'
 import { RouterLink } from '@angular/router'
+import { IconComponent } from '../icon/icon.component'
 
 /**
  * @description
@@ -20,7 +21,7 @@ import { RouterLink } from '@angular/router'
 @Component({
     selector: 'app-button',
     templateUrl: './button.component.html',
-    imports: [CommonModule, RouterLink],
+    imports: [CommonModule, RouterLink, IconComponent],
 })
 export class ButtonComponent {
     /**
