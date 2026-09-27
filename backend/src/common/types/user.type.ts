@@ -123,14 +123,14 @@ export type CreateUserBody = Pick<UserRecord, 'email' | 'password' | 'username' 
  * PUT /users/:userId requests --> safe profile fields only
  */
 export class UpdateUserBody {
-    @ApiProperty({ example: 'joseantonio', required: false })
+    @ApiProperty({ example: 'sample-user', required: false })
     @IsOptional()
     @IsString()
     @IsNotEmpty()
     @MaxLength(50)
     username?: string
 
-    @ApiProperty({ example: 'Jose Antonio', required: false })
+    @ApiProperty({ example: 'Sample User', required: false })
     @IsOptional()
     @IsString()
     @IsNotEmpty()
@@ -172,11 +172,11 @@ export type UpdateUserRecord = Partial<
  * POST /auth/register
  */
 export class RegisterUserDto {
-    @ApiProperty({ example: 'jose@email.com' })
+    @ApiProperty({ example: 'user@example.test' })
     @IsEmail()
     email: string
 
-    @ApiProperty({ example: 'joseantonio' })
+    @ApiProperty({ example: 'sample-user' })
     @IsString()
     @IsNotEmpty()
     @MaxLength(50)
@@ -193,7 +193,7 @@ export class RegisterUserDto {
  * POST /auth/login
  */
 export class LoginUserDto {
-    @ApiProperty({ example: 'jose@email.com' })
+    @ApiProperty({ example: 'user@example.test' })
     @IsEmail()
     email: string
 
