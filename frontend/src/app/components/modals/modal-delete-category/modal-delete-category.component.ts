@@ -6,10 +6,11 @@ import { LogService } from '../../../core/services/log.service'
 import { TagsComponent } from '../../tags/tags.component'
 import { ToastService } from '../../toast/toast.service'
 import { ButtonComponent } from '../../ui/button/button.component'
+import { DialogDirective } from '../../ui/dialog/dialog.directive'
 import { IconComponent } from '../../ui/icon/icon.component'
 
 @Component({
-    imports: [CommonModule, ButtonComponent, TagsComponent, IconComponent],
+    imports: [CommonModule, ButtonComponent, DialogDirective, TagsComponent, IconComponent],
     selector: 'app-modal-delete-category',
     templateUrl: './modal-delete-category.component.html',
 })

@@ -1,6 +1,8 @@
 @if (isVisible()) {
     <div
         class="fixed inset-0 z-50 overflow-y-auto"
+        appDialog
+        (dialogClosed)="hideDialog()"
         aria-labelledby="modal-title"
         role="dialog"
         aria-modal="true"

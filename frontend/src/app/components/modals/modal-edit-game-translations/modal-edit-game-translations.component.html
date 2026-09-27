@@ -1,6 +1,6 @@
 @if (isVisible()) {
     <div class="fixed inset-0 bg-zinc-900/60 flex items-center justify-center z-50" (click)="hideDialog()">
-        <div class="bg-white dark:bg-zinc-800 rounded-lg shadow-xl max-w-md w-full mx-4" (click)="$event.stopPropagation()">
+        <div appDialog (dialogClosed)="hideDialog()" class="bg-white dark:bg-zinc-800 rounded-lg shadow-xl max-w-md w-full mx-4" (click)="$event.stopPropagation()">
             <!-- Header -->
             <div class="flex items-center justify-between p-6 border-b border-zinc-200 dark:border-zinc-700">
                 <h2 class="text-xl font-semibold text-zinc-900 dark:text-zinc-100">

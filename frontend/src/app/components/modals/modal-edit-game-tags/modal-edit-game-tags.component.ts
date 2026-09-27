@@ -6,11 +6,12 @@ import type { GameWithTagsAndTranslationsType, TagCategoryType, TagType } from '
 import { LogService } from '../../../core/services/log.service'
 import { ToastService } from '../../toast/toast.service'
 import { ButtonComponent } from '../../ui/button/button.component'
+import { DialogDirective } from '../../ui/dialog/dialog.directive'
 import { IconComponent } from '../../ui/icon/icon.component'
 
 @Component({
     selector: 'app-modal-edit-game-tags',
-    imports: [CommonModule, ButtonComponent, IconComponent],
+    imports: [CommonModule, ButtonComponent, DialogDirective, IconComponent],
     templateUrl: './modal-edit-game-tags.component.html',
 })
 export class ModalEditGameTagsComponent {
