@@ -1,17 +1,9 @@
 @if (notification) {
-    <div class="rounded-lg p-4 text-sm flex items-center justify-between bg-zinc-200 dark:bg-zinc-800 {{notification.isRead ? 'opacity-50' : ''}}">
+    <div class="flex items-center justify-between rounded-lg bg-zinc-200 p-4 text-sm dark:bg-zinc-800" [class.opacity-50]="notification.isRead">
     <!-- LEFF: icon + text -->
     <div>
         <div class="flex items-center justify-start gap-x-2">
-            <i
-                class="text-xl"
-                [ngClass]="{
-                    'bi bi-person-fill-add': notification.type === 'invitation_accepted',
-                    'fa fa-ban': notification.type === 'expulsion',
-                    'fa fa-sign-out-alt': notification.type === 'member_left',
-                    'fa fa-gamepad': notification.type === 'new_games'
-                }"
-            ></i>
+            <app-icon [name]="iconFor(notification.type)" [size]="20" />
             <p>{{ notification.message }}</p>
         </div>
         <p>{{ notificationDate }}</p>
@@ -19,12 +11,12 @@
     <!-- RIGHT: buttons -->
     <div class="text-lg">
         @if(!notification.isRead){
-            <button class="app-button p-2 mr-2" (click)="markAsRead()">
-                <i class="bi bi-check"></i>
+            <button type="button" class="app-button mr-2 p-2" (click)="markAsRead()" aria-label="Mark notification as read">
+                <app-icon name="check" [size]="18" />
             </button>
         }
-        <button class="app-button p-2" (click)="deleteNotification()">
-            <i class="bi bi-trash"></i>
+        <button type="button" class="app-button p-2" (click)="deleteNotification()" aria-label="Delete notification">
+            <app-icon name="trash" [size]="18" />
         </button>
     </div>
 </div>

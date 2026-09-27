@@ -2,14 +2,14 @@
 @if (isVisible) {
 <div class="fixed inset-0 bg-zinc-900/60 flex justify-center items-center" role="presentation" (click)="hideDialog()">
     <!-- Dialog box -->
-    <div class="bg-zinc-900 rounded border border-zinc-700 w-3/4 max-w-xl relative" role="dialog" aria-modal="true" aria-labelledby="invitations-dialog-title" (click)="$event.stopPropagation()">
+    <div class="relative max-h-[90vh] w-[calc(100%-2rem)] max-w-xl overflow-y-auto rounded border border-zinc-700 bg-zinc-900" role="dialog" aria-modal="true" aria-labelledby="invitations-dialog-title" (click)="$event.stopPropagation()" (keydown)="trapFocus($event)">
         <!-- Close button -->
-        <button type="button" (click)="hideDialog()" aria-label="Close invitations" class="py-2 px-4 rounded-lg hover:bg-zinc-800 absolute top-2 right-2">
-            <i class="bi bi-x-lg" aria-hidden="true"></i>
+        <button #dialogClose type="button" (click)="hideDialog()" aria-label="Close invitations" class="absolute right-2 top-2 rounded-lg px-4 py-2 hover:bg-zinc-800">
+            <app-icon name="x" [size]="18" />
         </button>
         <!-- Dialog content -->
         <div class="p-8">
-            <h2 id="invitations-dialog-title" class="text-2xl font-bold tracking-wider"><i class="bi bi-envelope" aria-hidden="true"></i> Invitations</h2>
+            <h2 id="invitations-dialog-title" class="text-2xl font-bold tracking-wider"><app-icon name="mail" [size]="20" /> Invitations</h2>
             <h3 class="text-gray-400 text-sm border-b border-zinc-500 py-4">
                 Accept or decline invitations to groups.
             </h3>
