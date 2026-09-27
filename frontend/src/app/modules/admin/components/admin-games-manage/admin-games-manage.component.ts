@@ -10,6 +10,7 @@ import { TagsComponent } from '../../../../components/tags/tags.component'
 import { ToastService } from '../../../../components/toast/toast.service'
 import { ButtonComponent } from '../../../../components/ui/button/button.component'
 import { IconComponent } from '../../../../components/ui/icon/icon.component'
+import { ImageBackgroundComponent } from '../../../../components/ui/image-background/image-background.component'
 import { SpinnerComponent } from '../../../../components/ui/spinner/spinner.component'
 import { LogService } from '../../../../core/services/log.service'
 import { AdminTagsManageService } from '../admin-tags-manage/admin-tags-manage.service'
@@ -23,6 +24,7 @@ import { AdminGamesManageService } from './admin-games-manage.service'
         TagsComponent,
         SpinnerComponent,
         IconComponent,
+        ImageBackgroundComponent,
         ModalEditGameTranslationsComponent,
         ModalEditGameTagsComponent,
     ],

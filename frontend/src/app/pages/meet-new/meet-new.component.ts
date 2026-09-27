@@ -7,12 +7,13 @@ import { Api } from '../../api/api'
 import type { GameCompleteType, GroupPersonWorkspaceType } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
 import { ButtonComponent } from '../../components/ui/button/button.component'
+import { ImageBackgroundComponent } from '../../components/ui/image-background/image-background.component'
 import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
 import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
 
 @Component({
-    imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterLink, ButtonComponent],
+    imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterLink, ButtonComponent, ImageBackgroundComponent],
     templateUrl: 'meet-new.component.html',
 })
 export class MeetNewComponent {

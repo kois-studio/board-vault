@@ -13,6 +13,7 @@ import type {
 } from '../../../api/api.types'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
+import { ImageBackgroundComponent } from '../../../components/ui/image-background/image-background.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
 import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
 import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
@@ -22,7 +23,16 @@ import { LoadingService } from '../../../core/services/loading.service'
 type RecommendationDecisionLens = 'balanced' | 'fresh' | 'favorite'
 
 @Component({
-    imports: [CommonModule, FormsModule, RouterLink, ButtonComponent, ContainerWrapperComponent, PageHeaderComponent, CustomDatePipe],
+    imports: [
+        CommonModule,
+        FormsModule,
+        RouterLink,
+        ButtonComponent,
+        ContainerWrapperComponent,
+        ImageBackgroundComponent,
+        PageHeaderComponent,
+        CustomDatePipe,
+    ],
     templateUrl: 'recommendations-page.component.html',
 })
 export class RecommendationsPageComponent {

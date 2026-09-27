@@ -195,7 +195,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     @for (game of plannedGames; track game.id) {
                         <a [routerLink]="['/games', game.id]" class="flex items-center gap-3 rounded-lg border border-indigo-400/60 bg-indigo-50/50 p-3 hover:border-indigo-600 dark:bg-indigo-900/20">
-                            <image-background [src]="game.imageUrl" class="h-14 w-14 shrink-0" />
+                            <image-background [src]="game.imageUrl" [alt]="(game.titleTranslations.en || game.title || 'Game') + ' cover'" class="h-14 w-14 shrink-0" />
                             <span class="font-medium">{{ game.titleTranslations.en || game.title || 'Untitled game' }}</span>
                         </a>
                     }
@@ -234,7 +234,7 @@
                                 [attr.aria-pressed]="meetData?.playedGames?.includes(game.id)"
                                 class="w-full flex items-center text-left disabled:cursor-not-allowed"
                             >
-                                <image-background [src]="game.imageUrl" class="h-16 w-16 shrink-0" />
+                            <image-background [src]="game.imageUrl" [alt]="(game.titleTranslations.en || game.title || 'Game') + ' cover'" class="h-16 w-16 shrink-0" />
                                 <div class="ml-3 min-w-0">
                                     <p class="font-semibold truncate">{{ game.titleTranslations.en || game.title || 'Untitled game' }}</p>
                                     <p class="text-secondary text-sm mt-1">{{ game.gameAvgDuration }} mins · {{ game.minPlayers }}–{{ game.maxPlayers }} players</p>
@@ -298,7 +298,7 @@
                 <div class="grid gap-3 sm:grid-cols-2">
                     @for (game of playedGameDetails; track game.id) {
                         <label class="flex items-center gap-3 rounded-lg border border-zinc-200 p-3 dark:border-zinc-700">
-                            <image-background [src]="game.imageUrl" class="h-12 w-12 shrink-0" />
+                            <image-background [src]="game.imageUrl" [alt]="(game.titleTranslations.en || game.title || 'Game') + ' cover'" class="h-12 w-12 shrink-0" />
                             <span class="min-w-0 flex-1 truncate font-medium">{{ game.titleTranslations.en || game.title || 'Untitled game' }}</span>
                             <select class="app-input w-24" [disabled]="savingPostSessionRatings[game.id]" [value]="getMyRating(game.id) ?? ''" [attr.aria-label]="'Your rating for ' + (game.titleTranslations.en || game.title || 'this game')" (change)="savePostSessionRating(game.id, +$any($event.target).value)">
                                 <option value="">Rate</option>
@@ -319,7 +319,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     @for (game of skippedGames; track game.id) {
                         <a [routerLink]="['/games', game.id]" class="flex items-center gap-3 rounded-lg border border-zinc-300 bg-zinc-50 p-3 opacity-75 dark:border-zinc-700 dark:bg-zinc-800/50">
-                            <image-background [src]="game.imageUrl" class="h-14 w-14 shrink-0" />
+                            <image-background [src]="game.imageUrl" [alt]="(game.titleTranslations.en || game.title || 'Game') + ' cover'" class="h-14 w-14 shrink-0" />
                             <span class="font-medium">{{ game.titleTranslations.en || game.title || 'Untitled game' }}</span>
                         </a>
                     }

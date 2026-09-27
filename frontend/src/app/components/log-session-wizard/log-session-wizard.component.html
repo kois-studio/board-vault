@@ -227,7 +227,7 @@
                     <div class="flex items-center justify-between w-full">
                         <div class="flex items-center gap-2 ml-2">
                             <div class="h-20 w-20 rounded-lg relative">
-                                <image-background [src]="game.game.imageUrl" class="h-24" />
+                                <image-background [src]="game.game.imageUrl" [alt]="(game.game.titleTranslations.en || game.game.title || 'Game') + ' cover'" class="h-24" />
                             </div>
                             <div class="ml-3 text-nowrap overflow-hidden text-ellipsis whitespace-nowrap">
                                 <p class="font-semibold">{{ game.game.titleTranslations.en || game.game.title }}</p>
@@ -258,7 +258,7 @@
                     <legend class="sr-only">Players for {{ game.game.titleTranslations.en || game.game.title || 'Untitled game' }}</legend>
                     <div class="flex flex-wrap items-start justify-between gap-3">
                         <div class="flex min-w-0 items-center gap-3">
-                            <image-background [src]="game.game.imageUrl" class="h-12 w-12 shrink-0" />
+                            <image-background [src]="game.game.imageUrl" [alt]="(game.game.titleTranslations.en || game.game.title || 'Game') + ' cover'" class="h-12 w-12 shrink-0" />
                             <div class="min-w-0">
                                 <h3 class="truncate font-semibold text-gray-900 dark:text-white">{{ game.game.titleTranslations.en || game.game.title || 'Untitled game' }}</h3>
                                 <p class="text-sm text-gray-600 dark:text-gray-400" aria-live="polite">{{ getSelectedParticipantCount(game.game.id) }} player{{ getSelectedParticipantCount(game.game.id) === 1 ? '' : 's' }}</p>

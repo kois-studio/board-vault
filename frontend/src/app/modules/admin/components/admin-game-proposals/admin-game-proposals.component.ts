@@ -3,11 +3,12 @@ import { Component, OnInit, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ButtonComponent } from '../../../../components/ui/button/button.component'
 import { IconComponent } from '../../../../components/ui/icon/icon.component'
+import { ImageBackgroundComponent } from '../../../../components/ui/image-background/image-background.component'
 import { SpinnerComponent } from '../../../../components/ui/spinner/spinner.component'
 import { AdminGameProposalsService } from './admin-game-proposals.service'
 
 @Component({
-    imports: [CommonModule, FormsModule, SpinnerComponent, IconComponent],
+    imports: [CommonModule, FormsModule, ImageBackgroundComponent, SpinnerComponent, IconComponent],
     providers: [AdminGameProposalsService],
     selector: 'app-admin-game-proposals',
     templateUrl: './admin-game-proposals.component.html',

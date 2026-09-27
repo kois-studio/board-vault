@@ -1,4 +1,8 @@
-<div class="flex h-full w-full items-center justify-center overflow-hidden rounded bg-zinc-100 dark:bg-zinc-800">
+<div
+    class="flex h-full w-full items-center justify-center overflow-hidden rounded bg-zinc-100 dark:bg-zinc-800"
+    [attr.role]="src && !hasError ? null : 'img'"
+    [attr.aria-label]="src && !hasError ? null : alt + ' unavailable'"
+>
     @if (src && !hasError) {
         <img
             class="h-full w-full object-contain"

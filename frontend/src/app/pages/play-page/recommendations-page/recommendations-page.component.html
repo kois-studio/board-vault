@@ -118,7 +118,7 @@
                         @for (recommendation of result.recommendations; track recommendation.gameData.id) {
                             <article class="app-bg-secondary rounded-lg p-4 flex gap-4">
                                 <a [routerLink]="['/games', recommendation.gameData.id]" class="shrink-0">
-                                    <img [src]="recommendation.gameData.imageUrl" [alt]="recommendation.gameData.titleTranslations.en || recommendation.gameData.titleTranslations.es" class="h-24 w-24 rounded object-cover" />
+                                    <image-background class="block h-24 w-24 shrink-0 rounded" [src]="recommendation.gameData.imageUrl" [alt]="(recommendation.gameData.titleTranslations.en || recommendation.gameData.titleTranslations.es) + ' cover'" />
                                 </a>
                                 <div class="min-w-0">
                                     <div class="flex items-start justify-between gap-3">

@@ -3,6 +3,7 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core'
 @Component({
     imports: [],
     selector: 'image-background',
+    host: { class: 'block' },
     templateUrl: 'image-background.component.html',
 })
 export class ImageBackgroundComponent implements OnChanges {

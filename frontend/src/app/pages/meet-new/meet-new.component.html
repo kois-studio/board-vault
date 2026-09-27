@@ -116,7 +116,7 @@
                         @for (game of availableGames; track game.id) {
                             <label class="flex items-center gap-3 rounded-lg border border-zinc-200 dark:border-zinc-700 p-3 cursor-pointer has-[:checked]:border-indigo-500">
                                 <input type="checkbox" [checked]="selectedPlannedGameIds.includes(game.id)" (change)="togglePlannedGame(game.id)" />
-                                <img [src]="game.imageUrl" [alt]="game.titleTranslations.en || game.title" class="h-12 w-12 rounded object-cover" />
+                                <image-background class="block h-12 w-12 shrink-0 rounded" [src]="game.imageUrl" [alt]="(game.titleTranslations.en || game.title) + ' cover'" />
                                 <span class="font-medium">{{ game.titleTranslations.en || game.title }}</span>
                             </label>
                         }

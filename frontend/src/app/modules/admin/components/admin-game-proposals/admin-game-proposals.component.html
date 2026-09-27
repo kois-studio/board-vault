@@ -100,12 +100,7 @@
                                     <td class="px-4 py-4">
                                         <div class="flex items-center space-x-3">
                                             @if (proposal.imageUrl) {
-                                                <img 
-                                                    [src]="proposal.imageUrl" 
-                                                    [alt]="proposal.title"
-                                                    class="w-12 h-12 rounded-lg object-cover"
-                                                    onerror="this.src='/images/games/default.jpg'"
-                                                />
+                                                <image-background class="block h-12 w-12 rounded-lg" [src]="proposal.imageUrl" [alt]="proposal.title + ' cover'" />
                                             } @else {
                                                 <div class="w-12 h-12 bg-zinc-200 dark:bg-zinc-600 rounded-lg flex items-center justify-center">
                                                     <app-icon name="image" [size]="20" className="text-zinc-400" />

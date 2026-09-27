@@ -285,7 +285,7 @@
                                     class="block h-20 w-20 shrink-0"
                                     [attr.aria-label]="'View ' + (entry.gameData.titleTranslations.en || entry.gameData.title || 'game')"
                                 >
-                                    <image-background [src]="entry.gameData.imageUrl" class="block h-full w-full rounded-xl" />
+                                    <image-background [src]="entry.gameData.imageUrl" [alt]="(entry.gameData.titleTranslations.en || entry.gameData.title || 'Game') + ' cover'" class="block h-full w-full rounded-xl" />
                                 </a>
                                 <div class="min-w-0 flex-1">
                                     <div class="flex items-start justify-between gap-3">
@@ -431,7 +431,7 @@
                                     class="block h-24 w-24 shrink-0"
                                     [attr.aria-label]="'View ' + (game.titleTranslations.en || game.title || 'game')"
                                 >
-                                    <image-background [src]="game.imageUrl" class="block h-full w-full rounded-xl" />
+                                    <image-background [src]="game.imageUrl" [alt]="(game.titleTranslations.en || game.title || 'Game') + ' cover'" class="block h-full w-full rounded-xl" />
                                 </a>
                                 <div class="min-w-0 flex-1">
                                     <div class="flex items-start justify-between gap-3">
@@ -510,7 +510,7 @@
                                 <ul class="mt-4 space-y-3">
                                     @for (gamePlayed of historyRecord.gamesPlayed; track gamePlayed.gameData.id) {
                                         <li class="flex items-center gap-3">
-                                            <img [src]="gamePlayed.gameData.imageUrl" [alt]="gamePlayed.gameData.titleTranslations.en" loading="lazy" class="h-10 w-10 rounded-lg object-cover" />
+                                            <image-background class="block h-10 w-10 shrink-0 rounded-lg" [src]="gamePlayed.gameData.imageUrl" [alt]="gamePlayed.gameData.titleTranslations.en + ' cover'" />
                                             <span class="min-w-0 flex-1 truncate text-sm font-medium">{{ gamePlayed.gameData.titleTranslations.en }}</span>
                                             @if (gamePlayed.playedBy.length + (gamePlayed.playedByPeople?.length ?? 0) > 0) {
                                                 <span class="text-xs text-secondary">{{ gamePlayed.playedBy.length + (gamePlayed.playedByPeople?.length ?? 0) }} played</span>
@@ -546,7 +546,7 @@
                                     @for (item of mostPlayedGamesComputed(); track item.gameData.id) {
                                         <li class="flex items-center gap-3">
                                             <span class="w-5 text-sm text-secondary">{{ $index + 1 }}</span>
-                                            <image-background [src]="item.gameData.imageUrl" class="h-10 w-10 rounded-lg" />
+                                            <image-background [src]="item.gameData.imageUrl" [alt]="(item.gameData.titleTranslations.en || item.gameData.title || 'Game') + ' cover'" class="h-10 w-10 rounded-lg" />
                                             <span class="min-w-0 flex-1 truncate text-sm font-medium">{{ item.gameData.titleTranslations.en || item.gameData.title || 'Untitled game' }}</span>
                                             <span class="text-right text-xs text-secondary">{{ item.sessionCount }} session{{ item.sessionCount === 1 ? '' : 's' }}</span>
                                         </li>
@@ -584,7 +584,7 @@
                                 <ul class="mt-4 space-y-3">
                                     @for (item of recentlyPlayedGamesComputed(); track item.gameData.id) {
                                         <li class="flex items-center gap-3">
-                                            <image-background [src]="item.gameData.imageUrl" class="h-10 w-10 rounded-lg" />
+                                            <image-background [src]="item.gameData.imageUrl" [alt]="(item.gameData.titleTranslations.en || item.gameData.title || 'Game') + ' cover'" class="h-10 w-10 rounded-lg" />
                                             <span class="min-w-0 flex-1 truncate text-sm font-medium">{{ item.gameData.titleTranslations.en || item.gameData.title || 'Untitled game' }}</span>
                                             <span class="text-right text-xs text-secondary">{{ item.lastPlayedAt | customDate }}<br />{{ item.participantCount || 'No' }} played</span>
                                         </li>
@@ -601,7 +601,7 @@
                                 <ul class="mt-4 space-y-3">
                                     @for (item of revisitGamesComputed(); track item.gameData.id) {
                                         <li class="flex items-center gap-3">
-                                            <image-background [src]="item.gameData.imageUrl" class="h-10 w-10 rounded-lg" />
+                                            <image-background [src]="item.gameData.imageUrl" [alt]="(item.gameData.titleTranslations.en || item.gameData.title || 'Game') + ' cover'" class="h-10 w-10 rounded-lg" />
                                             <span class="min-w-0 flex-1 truncate text-sm font-medium">{{ item.gameData.titleTranslations.en || item.gameData.title || 'Untitled game' }}</span>
                                             <span class="text-right text-xs text-secondary">{{ item.sessionCount }} previous session{{ item.sessionCount === 1 ? '' : 's' }}</span>
                                         </li>
