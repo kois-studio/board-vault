@@ -16,7 +16,9 @@
                 <app-icon [name]="iconFor(toast.type)" [size]="20" />
 
                 <span class="flex-1 px-4">{{ toast.message }}</span>
-                <button type="button" (click)="closeToast(toast.id)" class="rounded p-1 text-lg leading-none text-white/80 hover:bg-white/10 hover:text-white" aria-label="Dismiss notification">&times;</button>
+                <button type="button" (click)="closeToast(toast.id)" class="rounded p-1 text-white/80 hover:bg-white/10 hover:text-white" aria-label="Dismiss notification">
+                    <app-icon name="x" [size]="16" aria-hidden="true" />
+                </button>
             </div>
             <div
                 class="h-1 absolute bottom-1 m-auto opacity-0 rounded-full bg-gradient-to-r origin-left animate-toast-progress"
