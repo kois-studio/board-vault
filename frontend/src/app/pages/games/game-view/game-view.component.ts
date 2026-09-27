@@ -94,7 +94,6 @@ export class GameViewPageComponent implements OnDestroy {
     private _routeSub: Subscription | undefined
     private lastLoadedGameKey: string | null = null
     public wishlistAnimation = false // used for a little scale animation
-    public reviewHoverValue = 0
     public isLoadingGameData = true // initial loading state
     public readonly gameLoadError = signal(false)
     // ownership form
