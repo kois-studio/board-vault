@@ -41,6 +41,7 @@
                     [routerLinkActiveOptions]="{ exact: item.exactMatch }"
                     class="flex items-center p-1 my-1 rounded-md hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors duration-150 ease-in-out text-zinc-700 dark:text-zinc-300 group mx-auto"
                     [title]="item.label"
+                    [attr.aria-label]="item.label"
                 >
                     <span class="block text-nowrap overflow-hidden">
                         <app-icon [name]="item.icon" [size]="20" />
@@ -64,6 +65,7 @@
         
         <button
             routerLink="/"
+            aria-label="Exit admin panel"
             class="w-full flex items-center justify-center p-2 rounded-md hover:bg-zinc-200 dark:hover:bg-zinc-700 cursor-pointer"
         >
             <app-icon name="logout" [size]="18" />

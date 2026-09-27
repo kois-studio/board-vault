@@ -166,6 +166,7 @@
                                                     (click)="onApproveProposal(proposal.id)"
                                                     class="px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
                                                     title="Approve proposal"
+                                                    aria-label="Approve proposal"
                                                 >
                                                     <app-icon name="check" [size]="16" />
                                                 </button>
@@ -173,6 +174,7 @@
                                                     (click)="onRejectProposal(proposal.id)"
                                                     class="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
                                                     title="Reject proposal"
+                                                    aria-label="Reject proposal"
                                                 >
                                                     <app-icon name="x" [size]="16" />
                                                 </button>
@@ -180,6 +182,7 @@
                                                     (click)="onMarkAsDuplicate(proposal.id)"
                                                     class="px-2 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors"
                                                     title="Mark as duplicate"
+                                                    aria-label="Mark proposal as duplicate"
                                                 >
                                                     <app-icon name="file-text" [size]="16" />
                                                 </button>
@@ -188,6 +191,7 @@
                                                 (click)="onDeleteProposal(proposal.id)"
                                                 class="px-2 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
                                                 title="Delete proposal"
+                                                aria-label="Delete proposal"
                                             >
                                                 <app-icon name="trash" [size]="16" />
                                             </button>

@@ -33,6 +33,7 @@
                     (click)="setReview(game.id, star)"
                     (mouseover)="hoverRating = star"
                     (mouseleave)="hoverRating = 0"
+                    [attr.aria-label]="'Rate ' + star / 2 + ' out of 5 stars for ' + game.titleTranslations.en"
                     class="p-0.5 hover:scale-110 transition-transform cursor-pointer"
                 >
                     <app-icon

@@ -26,6 +26,7 @@
                 @if (!gameView$()?.ownedGameData) {
                 <button
                     title="Add to wishlist"
+                    [attr.aria-label]="isWishlistedComputed() ? 'Remove ' + gameView$()?.gameData?.titleTranslations?.en + ' from wishlist' : 'Add ' + gameView$()?.gameData?.titleTranslations?.en + ' to wishlist'"
                     (click)="toggleWishlist()"
                     class="p-2 rounded-full bg-white/90 shadow-md border border-zinc-200 w-10 h-10 cursor-pointer transition-transform duration-300 ease-linear hover:scale-110"
                     [ngClass]="{
@@ -74,6 +75,7 @@
                     <button
                         (click)="saveGameReview(star)"
                         (mouseover)="reviewHoverValue = star"
+                        [attr.aria-label]="'Rate ' + star / 2 + ' out of 5 stars'"
                         class="p-0.5 hover:scale-110 transition-transform cursor-pointer"
                     >
                         <app-icon
