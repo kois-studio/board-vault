@@ -3,7 +3,7 @@
         @if (isInvitationFlow()) {
             <div class="text-center">
                 <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-100 text-3xl text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-300" aria-hidden="true">
-                    <i class="bi bi-envelope-check-fill"></i>
+                    <app-icon name="mail" [size]="30" />
                 </div>
                 <p class="mt-6 text-sm font-semibold uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400">You are invited</p>
                 <h1 class="mt-3 text-4xl font-bold tracking-tight text-zinc-900 dark:text-white">Join your Board Vault group</h1>
@@ -62,7 +62,7 @@
         } @else if (!selfRegistrationEnabled()) {
             <div class="text-center">
                 <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-100 text-3xl text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-300" aria-hidden="true">
-                    <i class="bi bi-people-fill"></i>
+                    <app-icon name="users" [size]="30" />
                 </div>
                 <p class="mt-6 text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400">Private beta</p>
                 <h1 class="mt-3 text-4xl font-bold tracking-tight text-zinc-900 dark:text-white">Board Vault is still invite-only</h1>
@@ -91,7 +91,7 @@
         } @else if (clerkIsConfigured()) {
             <div class="text-center">
                 <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-100 text-3xl text-amber-600 dark:bg-amber-950/60 dark:text-amber-300" aria-hidden="true">
-                    <i class="bi bi-shield-exclamation"></i>
+                    <app-icon name="shield-alert" [size]="30" />
                 </div>
                 <p class="mt-6 text-sm font-semibold uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400">Secure sign-up unavailable</p>
                 <h1 class="mt-3 text-4xl font-bold tracking-tight text-zinc-900 dark:text-white">We are reconnecting the sign-up service</h1>

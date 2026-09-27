@@ -5,13 +5,14 @@ import { Router, RouterLink } from '@angular/router'
 import { Api } from '../../../../api/api'
 import { ToastService } from '../../../../components/toast/toast.service'
 import { ButtonComponent } from '../../../../components/ui/button/button.component'
+import { IconComponent } from '../../../../components/ui/icon/icon.component'
 import { DataService } from '../../../../core/services/data.service'
 import { LocalStorageService } from '../../../../core/services/local-storage.service'
 import { LogService } from '../../../../core/services/log.service'
 import { LoginService } from '../../../../core/services/login.service'
 
 @Component({
-    imports: [ReactiveFormsModule, CommonModule, RouterLink, ButtonComponent],
+    imports: [ReactiveFormsModule, CommonModule, RouterLink, ButtonComponent, IconComponent],
     selector: 'app-form-login',
     templateUrl: 'form-login.component.html',
 })

@@ -4,11 +4,12 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ActivatedRoute } from '@angular/router'
 import { RouterLink } from '@angular/router'
 import { Api } from '../../../api/api'
+import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { SpinnerComponent } from '../../../components/ui/spinner/spinner.component'
 import { TitleSubtitleComponent } from '../../../components/ui/title-subtitle/title-subtitle.component'
 
 @Component({
-    imports: [SpinnerComponent, TitleSubtitleComponent, CommonModule, ReactiveFormsModule, RouterLink],
+    imports: [SpinnerComponent, TitleSubtitleComponent, CommonModule, ReactiveFormsModule, RouterLink, IconComponent],
     templateUrl: 'reset-password-token.component.html',
 })
 export class ResetPasswordTokenComponent {

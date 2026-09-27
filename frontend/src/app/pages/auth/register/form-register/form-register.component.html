@@ -1,7 +1,7 @@
 @if (isFinished) {
     <div class="text-center py-4">
         <p class="text-green-400">
-            <i class="bi bi-check-circle mr-2"></i> We have sent you an email.
+            <app-icon name="circle-check" [size]="18" class="mr-2" /> We have sent you an email.
         </p>
         <p class="text-secondary">
             Please check <span class="font-bold">{{ email?.value || 'your email' }}</span> for a verification link.
@@ -27,21 +27,21 @@
         />
         <div *ngIf="!email?.invalid && (email?.dirty || email?.touched) && !isCheckingEmail">
             <div *ngIf="isEmailAvailable" class="text-sm text-green-500 py-1">
-                <i class="bi bi-check-lg"></i> Email is available.
+                <app-icon name="check" [size]="16" /> Email is available.
             </div>
             <div *ngIf="!isEmailAvailable" class="text-sm text-red-500 py-1">
-                <i class="bi bi-x-lg"></i> Email is not available.
+                <app-icon name="x" [size]="16" /> Email is not available.
             </div>
         </div>
         <div *ngIf="email?.invalid && (email?.dirty || email?.touched)">
             <div *ngIf="email?.hasError('required')" class="text-sm text-red-500 py-1">
-                <i class="bi bi-exclamation-circle-fill"></i> Email is required.
+                <app-icon name="circle-alert" [size]="16" /> Email is required.
             </div>
             <div *ngIf="email?.hasError('email')" class="text-sm text-red-500 py-1">
-                <i class="bi bi-exclamation-circle-fill"></i> Email format is wrong.
+                <app-icon name="circle-alert" [size]="16" /> Email format is wrong.
             </div>
             <div *ngIf="email?.hasError('maxlength')" class="text-sm text-red-500 py-1">
-                <i class="bi bi-exclamation-circle-fill"></i> Email is too long.
+                <app-icon name="circle-alert" [size]="16" /> Email is too long.
             </div>
         </div>
     </div>
@@ -60,21 +60,21 @@
         />
         <div *ngIf="!username?.invalid && (username?.dirty || username?.touched) && !isCheckingUsername">
             <div *ngIf="isUsernameAvailable" class="text-sm text-green-500 py-1">
-                <i class="bi bi-check-lg"></i> Username is available.
+                <app-icon name="check" [size]="16" /> Username is available.
             </div>
             <div *ngIf="!isUsernameAvailable" class="text-sm text-red-500 py-1">
-                <i class="bi bi-x-lg"></i> Username is not available.
+                <app-icon name="x" [size]="16" /> Username is not available.
             </div>
         </div>
         <div *ngIf="username?.invalid && (username?.dirty || username?.touched)">
             <div *ngIf="username?.hasError('required')" class="text-sm text-red-500 py-1">
-                <i class="bi bi-exclamation-circle-fill"></i> Username is required.
+                <app-icon name="circle-alert" [size]="16" /> Username is required.
             </div>
             <div *ngIf="username?.hasError('minlength')" class="text-sm text-red-500 py-1">
-                <i class="bi bi-exclamation-circle-fill"></i> Username is too short.
+                <app-icon name="circle-alert" [size]="16" /> Username is too short.
             </div>
             <div *ngIf="username?.hasError('maxlength')" class="text-sm text-red-500 py-1">
-                <i class="bi bi-exclamation-circle-fill"></i> Username is too long.
+                <app-icon name="circle-alert" [size]="16" /> Username is too long.
             </div>
         </div>
     </div>
@@ -93,13 +93,13 @@
         />
         <div *ngIf="password?.invalid && (password?.dirty || password?.touched)">
             <div *ngIf="password?.hasError('required')" class="text-sm text-red-500 py-1">
-                <i class="bi bi-exclamation-circle-fill"></i> Password is required.
+                <app-icon name="circle-alert" [size]="16" /> Password is required.
             </div>
             <div *ngIf="password?.hasError('minlength')" class="text-sm text-red-500 py-1">
-                <i class="bi bi-exclamation-circle-fill"></i> Password is too short.
+                <app-icon name="circle-alert" [size]="16" /> Password is too short.
             </div>
             <div *ngIf="password?.hasError('maxlength')" class="text-sm text-red-500 py-1">
-                <i class="bi bi-exclamation-circle-fill"></i> Password is too long.
+                <app-icon name="circle-alert" [size]="16" /> Password is too long.
             </div>
         </div>
     </div>
@@ -118,7 +118,7 @@
         />
         <div *ngIf="confirmPassword?.dirty || confirmPassword?.touched">
             <div *ngIf="passwordsDoNotMatch" class="text-sm text-red-500 py-1">
-                <i class="bi bi-exclamation-circle-fill"></i> Passwords do not match.
+                <app-icon name="circle-alert" [size]="16" /> Passwords do not match.
             </div>
         </div>
     </div>
