@@ -4898,11 +4898,11 @@
         "properties": {
           "email": {
             "type": "string",
-            "example": "jose@email.com"
+            "example": "user@example.test"
           },
           "username": {
             "type": "string",
-            "example": "joseantonio"
+            "example": "sample-user"
           },
           "password": {
             "type": "string",
@@ -4933,7 +4933,7 @@
         "properties": {
           "email": {
             "type": "string",
-            "example": "jose@email.com"
+            "example": "user@example.test"
           },
           "password": {
             "type": "string",
@@ -5023,7 +5023,7 @@
           },
           "email": {
             "type": "string",
-            "example": "jose@email.com"
+            "example": "user@example.test"
           },
           "createdAt": {
             "type": "string",
@@ -5031,11 +5031,11 @@
           },
           "username": {
             "type": "string",
-            "example": "joseantonio"
+            "example": "sample-user"
           },
           "displayName": {
             "type": "string",
-            "example": "Jose Antonio"
+            "example": "Sample User"
           },
           "avatar": {
             "description": "The avatar of the user.",
@@ -5075,11 +5075,11 @@
         "properties": {
           "username": {
             "type": "string",
-            "example": "joseantonio"
+            "example": "sample-user"
           },
           "displayName": {
             "type": "string",
-            "example": "Jose Antonio"
+            "example": "Sample User"
           },
           "avatar": {
             "$ref": "#/components/schemas/AvatarDto"
@@ -5798,11 +5798,11 @@
           },
           "username": {
             "type": "string",
-            "example": "joseantonio"
+            "example": "sample-user"
           },
           "displayName": {
             "type": "string",
-            "example": "Jose Antonio"
+            "example": "Sample User"
           },
           "avatar": {
             "description": "The avatar of the user.",
@@ -7264,11 +7264,11 @@
           },
           "username": {
             "type": "string",
-            "example": "joseantonio"
+            "example": "sample-user"
           },
           "displayName": {
             "type": "string",
-            "example": "Jose Antonio"
+            "example": "Sample User"
           },
           "avatar": {
             "description": "The avatar of the user.",
@@ -7826,7 +7826,7 @@
           },
           "email": {
             "type": "string",
-            "example": "jose@email.com"
+            "example": "user@example.test"
           },
           "createdAt": {
             "type": "string",
@@ -7834,11 +7834,11 @@
           },
           "username": {
             "type": "string",
-            "example": "joseantonio"
+            "example": "sample-user"
           },
           "displayName": {
             "type": "string",
-            "example": "Jose Antonio"
+            "example": "Sample User"
           },
           "avatar": {
             "description": "The avatar of the user.",
