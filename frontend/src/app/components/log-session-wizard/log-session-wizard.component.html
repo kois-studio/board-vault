@@ -238,10 +238,10 @@
                             <div class="ml-3 text-nowrap overflow-hidden text-ellipsis whitespace-nowrap">
                                 <p class="font-semibold">{{ game.game.titleTranslations.en || game.game.title }}</p>
                                 <p class="text-secondary text-sm text-start w-full">
-                                    <i class="bi bi-clock-fill"></i> {{ game.game.gameAvgDuration }} mins
+                                    <app-icon name="clock" [size]="14" /> {{ game.game.gameAvgDuration }} mins
                                 </p>
                                 <p class="text-secondary text-sm text-start">
-                                    <i class="bi bi-people-fill"></i> {{ game.game.minPlayers }} - {{ game.game.maxPlayers }}
+                                    <app-icon name="users" [size]="14" /> {{ game.game.minPlayers }} - {{ game.game.maxPlayers }}
                                 </p>
                             </div>
                         </div>

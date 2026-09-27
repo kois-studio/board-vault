@@ -3,10 +3,11 @@ import { ActivatedRoute, Router } from '@angular/router'
 import { FormGameSubmissionComponent } from '../../../components/forms/form-game-submission/form-game-submission.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
+import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
 
 @Component({
-    imports: [FormGameSubmissionComponent, ContainerWrapperComponent, PageHeaderComponent, ButtonComponent],
+    imports: [FormGameSubmissionComponent, ContainerWrapperComponent, PageHeaderComponent, ButtonComponent, IconComponent],
     templateUrl: 'propose-game-page.component.html',
 })
 export class ProposeGamePageComponent implements OnInit {

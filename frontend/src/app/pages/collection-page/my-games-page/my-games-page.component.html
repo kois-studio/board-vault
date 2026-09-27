@@ -24,7 +24,7 @@
         </div>
     } @else if (userGames$().length === 0) {
         <section class="rounded-2xl border border-dashed border-zinc-300 p-8 text-center dark:border-zinc-700" aria-labelledby="empty-collection-heading">
-            <i class="bi bi-collection text-4xl text-indigo-500" aria-hidden="true"></i>
+            <app-icon name="library" [size]="40" className="text-indigo-500" aria-hidden="true" />
             <h2 id="empty-collection-heading" class="mt-3 text-xl font-semibold">Start with the games you actually bring to the table</h2>
             <p class="mx-auto mt-2 max-w-xl text-secondary">A few real games make group suggestions useful. Add your first five, then invite friends or choose what to play together.</p>
             <div class="mt-5 flex flex-wrap justify-center gap-3">

@@ -5,6 +5,7 @@ import { CardInvitationComponent } from '../../../components/card-invitation/car
 import { SkeletonCardGroupComponent } from '../../../components/skeletons/skeleton-card-group/skeleton-card-group.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
+import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
 import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
 import { DataService } from '../../../core/services/data.service'
@@ -19,6 +20,7 @@ import { LoadingService } from '../../../core/services/loading.service'
         PageHeaderComponent,
         ButtonComponent,
         ContainerWrapperComponent,
+        IconComponent,
     ],
     templateUrl: 'groups-page.component.html',
 })

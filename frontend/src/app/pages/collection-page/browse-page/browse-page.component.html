@@ -19,11 +19,11 @@
                 autocomplete="off"
             />
             <div class="absolute left-3 top-2.5">
-                <i class="bi bi-search text-gray-400"></i>
+                <app-icon name="search" [size]="18" className="text-gray-400" />
             </div>
             @if (isSearching$()) {
                 <div class="absolute right-3 top-2.5">
-                    <i class="bi bi-arrow-repeat spin text-gray-400"></i>
+                    <app-icon name="refresh" [size]="18" className="text-gray-400 animate-spin" />
                 </div>
             }
         </div>
@@ -74,7 +74,7 @@
                     </a>
                     @if (game.isInCollection) {
                         <div title="In my collection" class="absolute -top-1 right-1 text-blue-500 text-4xl" aria-label="In my collection">
-                            <i class="bi bi-bookmark-check-fill"></i>
+                            <app-icon name="bookmark-check" [size]="18" />
                         </div>
                     }
                     @if (!acquisitionGroupId()) {

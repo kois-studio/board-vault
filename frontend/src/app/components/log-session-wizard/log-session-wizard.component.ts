@@ -13,6 +13,7 @@ import type {
 } from '../../api/api.types'
 import { ButtonComponent } from '../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
+import { IconComponent } from '../../components/ui/icon/icon.component'
 import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'
 import { SpinnerComponent } from '../../components/ui/spinner/spinner.component'
 import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
@@ -60,6 +61,7 @@ interface StepInfo {
         SpinnerComponent,
         PageHeaderComponent,
         ContainerWrapperComponent,
+        IconComponent,
         CardAccountComponent,
         ImageBackgroundComponent,
         ButtonComponent,
