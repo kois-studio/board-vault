@@ -9,6 +9,10 @@ application boundary. HTTP failures use a safe envelope containing a status,
 stable code, human-readable message, optional details, and a request ID.
 Unexpected provider and exception details are not returned to clients.
 
+The committed snapshot is a review artifact, not a second source of truth. CI
+builds the backend with disposable local provider values, regenerates the
+snapshot, and fails if the generated contract differs from `api/openapi.json`.
+
 Sensitive routes must derive the acting account from the authenticated request.
 Group, collection, invitation, session, notification, and administrative
 operations must authorize the target object server-side; client-supplied owner
