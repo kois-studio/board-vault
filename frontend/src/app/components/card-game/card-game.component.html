@@ -3,8 +3,8 @@
 
     <div class="overflow-hidden px-4 py-2">
         <h3 class="font-medium overflow-hidden text-ellipsis whitespace-nowrap">{{ title }}</h3>
-        <p class="text-secondary text-sm"><i class="bi bi-clock-fill"></i> {{ gameAvgDuration }} mins</p>
-        <p class="text-secondary text-sm"><i class="bi bi-people-fill"></i> {{ minPlayers }} - {{ maxPlayers }}</p>
+        <p class="text-secondary flex items-center gap-1 text-sm"><app-icon name="clock" [size]="14" /> {{ gameAvgDuration }} mins</p>
+        <p class="text-secondary flex items-center gap-1 text-sm"><app-icon name="users" [size]="14" /> {{ minPlayers }} - {{ maxPlayers }}</p>
         @if (review) {
         <review-display [review]="review" />
         }

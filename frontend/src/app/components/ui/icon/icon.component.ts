@@ -8,6 +8,7 @@ import {
     LucideCirclePlus,
     LucideCircleQuestionMark,
     LucideCircleX,
+    LucideClock,
     LucideHeart,
     LucideHeartOff,
     LucideInfo,
@@ -20,6 +21,7 @@ import {
     LucideStar,
     LucideStarHalf,
     LucideSun,
+    LucideUsers,
     LucideX,
 } from '@lucide/angular'
 
@@ -33,6 +35,7 @@ const ICONS: Record<string, IconType> = {
     'circle-help': LucideCircleQuestionMark,
     'circle-plus': LucideCirclePlus,
     'circle-x': LucideCircleX,
+    clock: LucideClock,
     heart: LucideHeart,
     'heart-off': LucideHeartOff,
     info: LucideInfo,
@@ -45,6 +48,7 @@ const ICONS: Record<string, IconType> = {
     star: LucideStar,
     'star-half': LucideStarHalf,
     sun: LucideSun,
+    users: LucideUsers,
     x: LucideX,
 }
 
@@ -53,6 +57,8 @@ const LEGACY_ALIASES: Record<string, string> = {
     'box-arrow-right': 'arrow-right',
     'gear-fill': 'settings',
     lightbulb: 'sparkle',
+    'clock-fill': 'clock',
+    'people-fill': 'users',
     'plus-lg': 'plus',
     'x-circle': 'circle-x',
 }
