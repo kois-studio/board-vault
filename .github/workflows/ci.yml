@@ -20,8 +20,14 @@ jobs:
         steps:
             - name: Check out repository
               uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
             - name: Check patch whitespace
               run: git diff --check
+            - name: Scan repository history for secrets
+              uses: gitleaks/gitleaks-action@v2
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     backend:
         name: Backend tests and build
