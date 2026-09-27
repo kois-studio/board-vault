@@ -4,11 +4,12 @@ import type { GameProposalType } from '../../../api/api.types'
 import { ModalGameSubmissionComponent } from '../../../components/modals/modal-game-submission/modal-game-submission.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
+import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
 import { DataService } from '../../../core/services/data.service'
 
 @Component({
-    imports: [PageHeaderComponent, ButtonComponent, ContainerWrapperComponent, ModalGameSubmissionComponent],
+    imports: [PageHeaderComponent, ButtonComponent, ContainerWrapperComponent, ModalGameSubmissionComponent, IconComponent],
     templateUrl: 'submissions-page.component.html',
 })
 export class SubmissionsPageComponent {

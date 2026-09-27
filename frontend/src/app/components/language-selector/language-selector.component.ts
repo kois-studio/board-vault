@@ -1,8 +1,9 @@
 import { Component } from '@angular/core'
+import { IconComponent } from '../ui/icon/icon.component'
 import { language_titles } from './translations'
 
 @Component({
-    imports: [],
+    imports: [IconComponent],
     selector: 'language-selector',
     templateUrl: 'language-selector.component.html',
 })
