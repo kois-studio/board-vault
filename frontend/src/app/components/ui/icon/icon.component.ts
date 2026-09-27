@@ -15,6 +15,8 @@ import {
     LucideRefreshCw,
     LucideSettings,
     LucideSparkles,
+    LucideStar,
+    LucideStarHalf,
     LucideSun,
     LucideX,
 } from '@lucide/angular'
@@ -36,6 +38,8 @@ const ICONS: Record<string, IconType> = {
     refresh: LucideRefreshCw,
     settings: LucideSettings,
     sparkle: LucideSparkles,
+    star: LucideStar,
+    'star-half': LucideStarHalf,
     sun: LucideSun,
     x: LucideX,
 }
