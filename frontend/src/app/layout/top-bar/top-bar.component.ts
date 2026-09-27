@@ -14,7 +14,7 @@ import { IconComponent } from '../../components/ui/icon/icon.component'
     templateUrl: 'top-bar.component.html',
 })
 export class LayoutTopBarComponent implements OnInit {
-    private readonly router = inject(Router)
+    public readonly router = inject(Router)
 
     // --------------------------------------------------------------------------
     //        Signals
@@ -53,7 +53,7 @@ export class LayoutTopBarComponent implements OnInit {
         },
         {
             path: 'collection',
-            name: 'Collection',
+            name: 'My shelf',
             subsections: [
                 { path: 'collection/games', icon: 'collection-fill', name: 'My Games' },
                 { path: 'collection/browse', icon: 'search', name: 'Browse' },
@@ -69,6 +69,10 @@ export class LayoutTopBarComponent implements OnInit {
                 { path: 'play/history', icon: 'clock-history', name: 'History' },
                 { path: 'play/recommendations', icon: 'hand-thumbs-up', name: 'Discover' },
             ],
+        },
+        {
+            path: 'groups',
+            name: 'Groups',
         },
     ]
 
