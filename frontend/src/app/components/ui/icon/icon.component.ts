@@ -9,10 +9,12 @@ import {
     LucideCircleQuestionMark,
     LucideCircleX,
     LucideLoaderCircle,
+    LucideMoon,
     LucidePlus,
     LucideRefreshCw,
     LucideSettings,
     LucideSparkles,
+    LucideSun,
     LucideX,
 } from '@lucide/angular'
 
@@ -27,10 +29,12 @@ const ICONS: Record<string, IconType> = {
     'circle-plus': LucideCirclePlus,
     'circle-x': LucideCircleX,
     loader: LucideLoaderCircle,
+    moon: LucideMoon,
     plus: LucidePlus,
     refresh: LucideRefreshCw,
     settings: LucideSettings,
     sparkle: LucideSparkles,
+    sun: LucideSun,
     x: LucideX,
 }
 
