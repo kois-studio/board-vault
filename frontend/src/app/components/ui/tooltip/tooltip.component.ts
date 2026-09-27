@@ -22,8 +22,10 @@ export class TooltipComponent {
         this.isVisible = false
     }
 
-    @HostListener('focusin')
-    public onFocusIn(): void {
+    @HostListener('focusin', ['$event'])
+    public onFocusIn(event: FocusEvent): void {
+        const target = event.target
+        if (target instanceof HTMLElement) target.setAttribute('aria-describedby', this.tooltipId)
         this.showTooltip()
     }
 
@@ -31,6 +33,8 @@ export class TooltipComponent {
     public onFocusOut(event: FocusEvent): void {
         const nextTarget = event.relatedTarget as Node | null
         if (!nextTarget || !(event.currentTarget as HTMLElement).contains(nextTarget)) {
+            const target = event.target
+            if (target instanceof HTMLElement) target.removeAttribute('aria-describedby')
             this.hideTooltip()
         }
     }
