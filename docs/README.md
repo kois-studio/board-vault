@@ -17,6 +17,13 @@ belong in private operator notes.
 - [Public release checklist](release-checklist.md)
 - [Database workspace](../database/README.md)
 
+## Contribution workflow
+
+Never commit or push directly to `main`. Create a feature or fix branch from
+the latest `main`, develop and verify the change there, then open a pull
+request. A change may be merged only after the required CI checks pass and the
+pull request receives the required review.
+
 ## Public documentation rules
 
 Examples use reserved domains or clearly synthetic values. Environment files,
