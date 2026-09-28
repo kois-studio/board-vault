@@ -1,6 +1,16 @@
-<app-icon
-    name="loader"
-    [size]="size === 'small' ? 20 : size === 'medium' ? 32 : 48"
-    className="motion-safe:animate-spin text-zinc-900 dark:text-white"
-    aria-hidden="true"
-/> 
+<span
+    class="inline-flex items-center gap-2"
+    [attr.role]="label ? 'status' : null"
+    [attr.aria-label]="label"
+    aria-live="polite"
+>
+    <app-icon
+        name="loader"
+        [size]="size === 'small' ? 20 : size === 'medium' ? 32 : 48"
+        className="motion-safe:animate-spin text-zinc-900 dark:text-white"
+        aria-hidden="true"
+    />
+    @if (text) {
+        <span>{{ text }}</span>
+    }
+</span>

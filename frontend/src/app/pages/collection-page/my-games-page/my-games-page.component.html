@@ -35,7 +35,7 @@
     } @else {
         <section class="mb-5 flex flex-wrap items-center justify-between gap-3" aria-label="Collection summary">
             <p class="text-secondary">Only you manage this shelf. Open a group to see shared ownership, play memory, and decisions.</p>
-            <a class="text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400" routerLink="/groups">Open group workspace →</a>
+            <a class="text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400" routerLink="/groups">Open group workspace</a>
         </section>
         <section class="flex flex-wrap gap-4" aria-label="Your private games">
             @for (game of userGames$(); track game.id) {

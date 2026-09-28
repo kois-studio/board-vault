@@ -24,6 +24,8 @@ jobs:
                   fetch-depth: 0
             - name: Check patch whitespace
               run: git diff --check
+            - name: Check public tree boundary
+              run: npm run check:public-tree
 
     backend:
         name: Backend tests and build

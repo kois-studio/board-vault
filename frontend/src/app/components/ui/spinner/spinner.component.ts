@@ -9,4 +9,6 @@ import { IconComponent } from '../icon/icon.component'
 })
 export class SpinnerComponent {
     @Input() size: 'small' | 'medium' | 'large' = 'small'
+    @Input() label: string | null = 'Loading'
+    @Input() text: string | null = null
 }

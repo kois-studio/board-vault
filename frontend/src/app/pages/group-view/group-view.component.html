@@ -69,7 +69,7 @@
                                     <h3 class="font-semibold text-zinc-900 dark:text-white">Bring in your people</h3>
                                     @if (isGroupOwnerComputed()) {
                                         <p class="mt-1 text-sm leading-6 text-secondary">Invite the friends who make this a real game night.</p>
-                                        <a class="mt-3 inline-block text-sm font-semibold text-indigo-600 hover:underline dark:text-indigo-400" [routerLink]="['/groups', group.id, 'edit']">Invite friends →</a>
+                                        <a class="mt-3 inline-block text-sm font-semibold text-indigo-600 hover:underline dark:text-indigo-400" [routerLink]="['/groups', group.id, 'edit']">Invite friends</a>
                                     } @else {
                                         <p class="mt-1 text-sm leading-6 text-secondary">Ask the group owner to invite the rest of your table.</p>
                                     }
@@ -82,7 +82,7 @@
                                 <div>
                                     <h3 class="font-semibold text-zinc-900 dark:text-white">Add useful games</h3>
                                     <p class="mt-1 text-sm leading-6 text-secondary">Add the games you actually own so the shared shelf reflects reality.</p>
-                                    <a class="mt-3 inline-block text-sm font-semibold text-indigo-600 hover:underline dark:text-indigo-400" routerLink="/collection/browse">Add games →</a>
+                                    <a class="mt-3 inline-block text-sm font-semibold text-indigo-600 hover:underline dark:text-indigo-400" routerLink="/collection/browse">Add games</a>
                                 </div>
                             </div>
                         </li>
@@ -92,7 +92,7 @@
                                 <div>
                                     <h3 class="font-semibold text-zinc-900 dark:text-white">Plan the first night</h3>
                                     <p class="mt-1 text-sm leading-6 text-secondary">Choose a date and let the group turn this space into a memory.</p>
-                                    <a class="mt-3 inline-block text-sm font-semibold text-indigo-600 hover:underline dark:text-indigo-400" [routerLink]="['/groups', group.id, 'sessions', 'new']">Plan a session →</a>
+                                    <a class="mt-3 inline-block text-sm font-semibold text-indigo-600 hover:underline dark:text-indigo-400" [routerLink]="['/groups', group.id, 'sessions', 'new']">Plan a session</a>
                                 </div>
                             </div>
                         </li>
@@ -583,7 +583,7 @@
                         }
                     </div>
                     @if (groupHistory$().length > 3) {
-                        <a routerLink="/play/history" [queryParams]="{ groupId: group.id }" class="mt-5 inline-block text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400">See all {{ group.name }} sessions →</a>
+                        <a routerLink="/play/history" [queryParams]="{ groupId: group.id }" class="mt-5 inline-block text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400">See all {{ group.name }} sessions</a>
                     }
                 }
             </section>

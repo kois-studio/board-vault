@@ -23,7 +23,7 @@
     'bg-stone-200   dark:bg-stone-900/50    text-stone-800   dark:text-stone-100   ': color === 'stone',
 }">
     @if (showIndicator) {
-        <span class="w-2 h-2 rounded-full mr-1 block bg-{{color}}-500"></span>
+        <span class="mr-1 block h-2 w-2 rounded-full" [ngClass]="indicatorClass" aria-hidden="true"></span>
     }
     {{ text }}
 </span>

@@ -3,7 +3,6 @@ import { Component, Input, OnChanges, Type, signal } from '@angular/core'
 
 type LucideModule = typeof import('@lucide/angular')
 type IconType = Type<unknown>
-
 const LUCIDE_MODULE = import('@lucide/angular')
 
 const ICON_EXPORTS: Record<string, keyof LucideModule> = {
@@ -15,6 +14,7 @@ const ICON_EXPORTS: Record<string, keyof LucideModule> = {
     bookmark: 'LucideBookmark',
     'bookmark-check': 'LucideBookmarkCheck',
     'calendar-heart': 'LucideCalendarHeart',
+    calendar: 'LucideCalendar',
     'calendar-plus': 'LucideCalendarPlus',
     camera: 'LucideCamera',
     check: 'LucideCheck',
@@ -27,6 +27,8 @@ const ICON_EXPORTS: Record<string, keyof LucideModule> = {
     'circle-x': 'LucideCircleX',
     clock: 'LucideClock',
     dice: 'LucideDices',
+    dices: 'LucideDices',
+    'dice-5': 'LucideDice5',
     filter: 'LucideFilter',
     'file-text': 'LucideFileText',
     gamepad: 'LucideGamepad2',
@@ -45,6 +47,7 @@ const ICON_EXPORTS: Record<string, keyof LucideModule> = {
     logout: 'LucideLogOut',
     mail: 'LucideMail',
     'mail-plus': 'LucideMailPlus',
+    menu: 'LucideMenu',
     moon: 'LucideMoon',
     music: 'LucideMusic2',
     'panel-left': 'LucidePanelLeft',
@@ -76,11 +79,14 @@ const LEGACY_ALIASES: Record<string, string> = {
     'arrow-repeat': 'refresh',
     'box-arrow-left': 'logout',
     'box-arrow-right': 'arrow-right',
+    calendar3: 'calendar',
     'calendar-check-fill': 'calendar-plus',
     'camera-fill': 'camera',
     'clock-fill': 'clock',
     'clock-history': 'history',
     'collection-fill': 'library',
+    dice: 'dices',
+    'dice-5-fill': 'dice-5',
     'file-earmark-plus': 'file-text',
     files: 'file-text',
     grid: 'library',
@@ -146,6 +152,11 @@ export class IconComponent implements OnChanges {
         }
     }
 
+    private get normalizedName(): string {
+        const value = String(this.name).replace(/^bi-/, '').replace(/^fa-/, '')
+        return LEGACY_ALIASES[value] ?? value
+    }
+
     private async loadIcon(): Promise<void> {
         const normalizedName = this.normalizedName
         if (this.loadedName === normalizedName && this.iconComponent()) return
@@ -158,10 +169,5 @@ export class IconComponent implements OnChanges {
         if (this.normalizedName === normalizedName) {
             this.iconComponent.set(icon)
         }
-    }
-
-    private get normalizedName(): string {
-        const value = String(this.name).replace(/^bi-/, '').replace(/^fa-/, '')
-        return LEGACY_ALIASES[value] ?? value
     }
 }

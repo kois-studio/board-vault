@@ -13,6 +13,11 @@ Before making a repository or release public:
 - obtain owner approval for visibility, licensing, contributors' attribution,
   and deployment/recovery ownership.
 
+Run `npm run check:public-tree` before staging a public change. It fails if the
+tracked tree or staged patch contains environment files, generated runtime
+configuration, build/test artifacts, browser state, database artifacts, or the
+private UI review document.
+
 This checklist does not replace the private operator release and rollback
 procedure.
 
