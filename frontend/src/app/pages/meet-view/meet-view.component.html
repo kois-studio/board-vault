@@ -50,9 +50,16 @@
                     </div>
                 </div>
             }
+
+            @if (actionError(); as actionErrorMessage) {
+                <div class="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-200" role="alert">
+                    <span>{{ actionErrorMessage }}</span>
+                    <button type="button" class="font-medium underline" (click)="actionError.set(null)">Dismiss</button>
+                </div>
+            }
         </header>
 
-        <section class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 mt-6" aria-label="Session summary">
+        <section class="grid gap-3 sm:grid-cols-2 lg:grid-cols-5 mt-6" aria-label="Session summary">
             <div class="app-bg-secondary rounded-lg p-4">
                 <p class="text-secondary text-sm">{{ meetData?.status === 'scheduled' || meetData?.status === 'active' ? 'Expected players' : 'Invited players' }}</p>
                 <p class="text-2xl font-bold mt-1">{{ attendeeCount }}</p>
@@ -69,6 +76,21 @@
                 <p class="text-secondary text-sm">Actually attended</p>
                 <p class="text-2xl font-bold mt-1">{{ attendedCount }}</p>
             </div>
+            <div class="app-bg-secondary rounded-lg p-4">
+                <p class="text-secondary text-sm">Skipped</p>
+                <p class="text-2xl font-bold mt-1">{{ skippedGamesCount }}</p>
+            </div>
+        </section>
+
+        <section class="app-bg-secondary rounded-lg p-6 mt-6" aria-labelledby="lifecycle-heading">
+            <h2 id="lifecycle-heading" class="text-xl font-semibold">Session lifecycle</h2>
+            <p class="text-secondary text-sm mt-1">These are different records: RSVP is intention, attendance is who was there, played is what happened, and skipped is what stayed on the shortlist for another night.</p>
+            <dl class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <div class="rounded-lg border border-zinc-200 p-3 dark:border-zinc-700"><dt class="text-sm font-medium">RSVP</dt><dd class="mt-1 text-sm text-secondary">Each invitee’s going or can’t-make-it response.</dd></div>
+                <div class="rounded-lg border border-zinc-200 p-3 dark:border-zinc-700"><dt class="text-sm font-medium">Attendance</dt><dd class="mt-1 text-sm text-secondary">The organizer’s final record of who was there.</dd></div>
+                <div class="rounded-lg border border-zinc-200 p-3 dark:border-zinc-700"><dt class="text-sm font-medium">Played</dt><dd class="mt-1 text-sm text-secondary">Games recorded as part of this group’s memory.</dd></div>
+                <div class="rounded-lg border border-zinc-200 p-3 dark:border-zinc-700"><dt class="text-sm font-medium">Skipped</dt><dd class="mt-1 text-sm text-secondary">Shortlisted games not played, kept visible for later.</dd></div>
+            </dl>
         </section>
 
         <section class="app-bg-secondary rounded-lg p-6 mt-6" aria-labelledby="attendees-heading">
