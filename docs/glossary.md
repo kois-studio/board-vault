@@ -20,3 +20,9 @@ product decisions.
 When a phrase must be shortened, prefer “person in this group” in explanatory
 copy and “group person” in labels, API names, and documentation. Keep “my
 shelf” for the private account view and “shared shelf” for the group view.
+
+## Pricing and currency boundary
+
+Board Vault does not currently display purchase prices or claim to support a marketplace currency model. The group acquisition board records shared interest and a group decision only; it never represents a price, payment, retailer offer, or purchase commitment.
+
+Any future price UI must first define the supported locale and currency, the authoritative price source, the timestamp/expiry semantics, tax and shipping treatment, and the fallback when a price is unavailable. Until that decision is documented and implemented, product surfaces must not show a hard-coded currency symbol or purchase amount.
