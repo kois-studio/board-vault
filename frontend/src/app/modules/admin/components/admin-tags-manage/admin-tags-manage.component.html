@@ -9,6 +9,13 @@
 		</p>
 	</header>
 
+	@if (errorMessage(); as error) {
+	<div class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-200" role="alert">
+		<span>{{ error }}</span>
+		<button type="button" class="font-medium underline" (click)="retryData()">Retry</button>
+	</div>
+	}
+
 	<!-- Section for Tag Categories -->
 	<section class="bg-white dark:bg-zinc-800 shadow-lg rounded-lg p-6">
 		<div class="flex justify-between items-center mb-4">
@@ -79,7 +86,7 @@
 						>
 							<button
 								(click)="onEditCategory(category)"
-								class="text-primary-600 hover:text-primary-900 dark:text-primary-400 dark:hover:text-primary-200 cursor-pointer"
+								class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200 cursor-pointer"
 							>
 								Edit
 							</button>
@@ -177,7 +184,7 @@
 						>
 							<button
 								(click)="onEditTag(tag)"
-								class="text-primary-600 hover:text-primary-900 dark:text-primary-400 dark:hover:text-primary-200 cursor-pointer"
+								class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200 cursor-pointer"
 							>
 								Edit
 							</button>

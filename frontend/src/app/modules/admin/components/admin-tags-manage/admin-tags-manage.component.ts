@@ -50,6 +50,15 @@ export class AdminTagsManageComponent implements OnInit {
     public readonly isLoadingCategories = this.adminTagsManageService.isLoadingCategories
     public readonly isLoadingTags = this.adminTagsManageService.isLoadingTags
     public readonly tagsWithCategory = this.adminTagsManageService.tagsWithCategory
+    public readonly errorMessage = this.adminTagsManageService.errorMessage
+
+    public async retryData(): Promise<void> {
+        try {
+            await this.adminTagsManageService.refreshData()
+        } catch {
+            this.toastService.error('Could not refresh data.')
+        }
+    }
 
     async ngOnInit(): Promise<void> {
         try {

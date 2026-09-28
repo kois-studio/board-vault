@@ -37,9 +37,9 @@
             >
                 <a
                     [routerLink]="item.routerLink"
-                    routerLinkActive="bg-primary-500 text-white dark:bg-primary-600"
+                    routerLinkActive="bg-indigo-600 text-white dark:bg-indigo-500"
                     [routerLinkActiveOptions]="{ exact: item.exactMatch }"
-                    class="flex items-center p-1 my-1 rounded-md hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors duration-150 ease-in-out text-zinc-700 dark:text-zinc-300 group mx-auto"
+                    class="flex min-h-11 items-center rounded-md p-2 my-1 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors duration-150 ease-in-out text-zinc-700 dark:text-zinc-300 group mx-auto"
                     [title]="item.label"
                     [attr.aria-label]="item.label"
                 >
@@ -64,6 +64,7 @@
         </div>
         
         <button
+            type="button"
             routerLink="/"
             aria-label="Exit admin panel"
             class="w-full flex items-center justify-center p-2 rounded-md hover:bg-zinc-200 dark:hover:bg-zinc-700 cursor-pointer"
