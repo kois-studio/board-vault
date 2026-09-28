@@ -117,6 +117,8 @@ export class GroupViewComponent {
     public readonly acquisitionBoardError = signal(false)
     public readonly acquisitionMutationGameId = signal<number | null>(null)
     public readonly acquisitionDecisionMutationGameId = signal<number | null>(null)
+    public readonly acquisitionMutationErrors = signal<Record<number, string>>({})
+    public readonly acquisitionDecisionErrors = signal<Record<number, string>>({})
     public readonly groupPeople$ = signal<Array<GroupPersonWorkspaceType>>([])
     public readonly groupPersonCatalog$ = signal<Array<GameCompleteType>>([])
     public readonly groupPeopleLoading = signal(false)
@@ -605,14 +607,42 @@ export class GroupViewComponent {
         if (!groupId || !this.isGroupOwnerComputed() || this.acquisitionDecisionMutationGameId()) return
 
         this.acquisitionDecisionMutationGameId.set(gameId)
+        this.acquisitionDecisionErrors.update((errors) => {
+            const nextErrors = { ...errors }
+            delete nextErrors[gameId]
+            return nextErrors
+        })
         try {
             await firstValueFrom(this.api.updateGroupAcquisitionDecision(groupId, gameId, status))
             this.toastService.success(`Acquisition decision updated: ${this.getAcquisitionDecisionLabel(status)}.`)
             this.loadAcquisitionBoard(groupId)
         } catch {
+            this.acquisitionDecisionErrors.update((errors) => ({ ...errors, [gameId]: 'Could not update this group decision. Try again.' }))
             this.toastService.error('Could not update the group acquisition decision.')
         } finally {
             this.acquisitionDecisionMutationGameId.set(null)
+        }
+    }
+
+    public async addAcquisitionInterest(gameId: number): Promise<void> {
+        const groupId = this.groupData$()?.id
+        if (!groupId || this.acquisitionMutationGameId()) return
+
+        this.acquisitionMutationGameId.set(gameId)
+        this.acquisitionMutationErrors.update((errors) => {
+            const nextErrors = { ...errors }
+            delete nextErrors[gameId]
+            return nextErrors
+        })
+        try {
+            await firstValueFrom(this.api.addGroupAcquisitionInterest(groupId, gameId))
+            this.toastService.success('Your interest was added to the group shortlist.')
+            this.loadAcquisitionBoard(groupId)
+        } catch {
+            this.acquisitionMutationErrors.update((errors) => ({ ...errors, [gameId]: 'Could not add your interest. Try again.' }))
+            this.toastService.error('Could not add your interest to the group board.')
+        } finally {
+            this.acquisitionMutationGameId.set(null)
         }
     }
 
@@ -621,12 +651,18 @@ export class GroupViewComponent {
         if (!groupId || this.acquisitionMutationGameId()) return
 
         this.acquisitionMutationGameId.set(gameId)
+        this.acquisitionMutationErrors.update((errors) => {
+            const nextErrors = { ...errors }
+            delete nextErrors[gameId]
+            return nextErrors
+        })
         try {
             await firstValueFrom(this.api.removeGroupAcquisitionInterest(groupId, gameId))
             this.loadAcquisitionBoard(groupId)
         } catch {
             // Keep the last known board visible: a failed removal is an
             // action-level error, not evidence that the board itself vanished.
+            this.acquisitionMutationErrors.update((errors) => ({ ...errors, [gameId]: 'Could not remove your interest. Try again.' }))
             this.toastService.error('Could not remove your interest from the group board.')
         } finally {
             this.acquisitionMutationGameId.set(null)

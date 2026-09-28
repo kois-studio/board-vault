@@ -55,6 +55,7 @@ export class RecommendationsPageComponent {
     public readonly isLoading = signal(false)
     public readonly errorMessage = signal<string | null>(null)
     public readonly feedbackState = signal<Record<number, 'saving' | 'interested' | 'not_for_us'>>({})
+    public readonly feedbackErrors = signal<Record<number, string>>({})
     public readonly selectedGroup = computed(() => this.userGroups().find((group) => group.id === this.selectedGroupId()) ?? null)
     public readonly pageTitle = computed(() => this.getDecisionTitle(this.selectedGroup()))
 
@@ -94,6 +95,7 @@ export class RecommendationsPageComponent {
         this.recommendations.set(null)
         this.recommendationSignals.set(null)
         this.feedbackState.set({})
+        this.feedbackErrors.set({})
         this.errorMessage.set(null)
     }
 
@@ -250,6 +252,11 @@ export class RecommendationsPageComponent {
         }
 
         this.feedbackState.update((state) => ({ ...state, [gameId]: 'saving' }))
+        this.feedbackErrors.update((state) => {
+            const nextState = { ...state }
+            delete nextState[gameId]
+            return nextState
+        })
         try {
             await firstValueFrom(
                 this.groupPeople().length > 0
@@ -274,7 +281,7 @@ export class RecommendationsPageComponent {
                 delete nextState[gameId]
                 return nextState
             })
-            this.errorMessage.set('Feedback could not be saved. Please try again.')
+            this.feedbackErrors.update((state) => ({ ...state, [gameId]: 'Feedback could not be saved. Try again.' }))
         }
     }
 
