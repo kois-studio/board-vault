@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common'
 import { Component, Input } from '@angular/core'
+import { IconComponent } from '../icon/icon.component'
 
 @Component({
-    imports: [CommonModule],
+    imports: [CommonModule, IconComponent],
     selector: 'review-display',
     templateUrl: 'review-display.component.html',
 })
@@ -26,5 +27,13 @@ export class ReviewDisplayComponent {
 
     public parseReview(review: number): string {
         return (review / 2).toFixed(2)
+    }
+
+    public get hasRating(): boolean {
+        return this.review > 0
+    }
+
+    public get ratingLabel(): string {
+        return this.hasRating ? `Rating ${this.parseReview(this.review)} out of 5` : 'Not rated yet'
     }
 }

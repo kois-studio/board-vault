@@ -20,6 +20,7 @@ export class AdminTagsManageService {
     public readonly isLoadingCategories = signal<boolean>(false)
     public readonly isLoadingTags = signal<boolean>(false)
     public readonly isInitialized = signal<boolean>(false)
+    public readonly errorMessage = signal<string | null>(null)
 
     // --------------------------------------------------------------------------
     //        Computed signals
@@ -42,12 +43,14 @@ export class AdminTagsManageService {
         }
 
         this.logger.log('Initializing admin tags manage service')
+        this.errorMessage.set(null)
         await Promise.all([this._fetchTagCategories(), this._fetchTags()])
         this.isInitialized.set(true)
     }
 
     public async refreshData(): Promise<void> {
         this.logger.log('Refreshing admin tags manage data')
+        this.errorMessage.set(null)
         await Promise.all([this._fetchTagCategories(), this._fetchTags()])
     }
 
@@ -60,6 +63,7 @@ export class AdminTagsManageService {
             this.logger.log('Fetched tag categories successfully')
         } catch (error) {
             this.logger.error('Error fetching tag categories', error)
+            this.errorMessage.set('Tag categories could not be loaded. Try again.')
             throw error
         } finally {
             this.isLoadingCategories.set(false)
@@ -75,6 +79,7 @@ export class AdminTagsManageService {
             this.logger.log('Fetched tags successfully')
         } catch (error) {
             this.logger.error('Error fetching tags', error)
+            this.errorMessage.set('Tags could not be loaded. Try again.')
             throw error
         } finally {
             this.isLoadingTags.set(false)

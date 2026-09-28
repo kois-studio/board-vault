@@ -6,10 +6,10 @@
 <container-wrapper>
     @if (isLoadingOverview()) {
         <section class="space-y-5" aria-label="Loading your groups" aria-busy="true">
-            <div class="h-32 animate-pulse rounded-3xl bg-zinc-100 dark:bg-zinc-900" aria-hidden="true"></div>
+            <div class="h-32 motion-safe:animate-pulse rounded-3xl bg-zinc-100 dark:bg-zinc-900" aria-hidden="true"></div>
             <div class="grid gap-5 md:grid-cols-2">
                 @for (item of [1, 2]; track item) {
-                    <div class="h-56 animate-pulse rounded-2xl border border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900" aria-hidden="true"></div>
+                    <div class="h-56 motion-safe:animate-pulse rounded-2xl border border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900" aria-hidden="true"></div>
                 }
             </div>
         </section>
@@ -30,7 +30,7 @@
         } @else if (groupSummaries().length === 0) {
             <section class="rounded-3xl border border-dashed border-indigo-300 bg-indigo-50 p-8 text-center dark:border-indigo-800 dark:bg-indigo-950/30" aria-labelledby="first-group-heading">
                 <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-600 text-2xl text-white" aria-hidden="true">
-                    <i class="bi bi-people-fill"></i>
+                    <app-icon name="users" [size]="18" />
                 </div>
                 <h2 id="first-group-heading" class="mt-5 text-2xl font-bold">Start with the people you play with</h2>
                 <p class="mx-auto mt-2 max-w-xl leading-7 text-secondary">Create a private group or accept an invitation. Once your group has games and members, Board Vault can help you choose the next game night.</p>
@@ -47,7 +47,7 @@
                         <h2 id="groups-heading" class="mt-1 text-2xl font-bold text-zinc-900 dark:text-white">Pick up where your group left off</h2>
                         <p class="mt-1 text-secondary">Every group has its own library, decisions, sessions, and shared memory.</p>
                     </div>
-                    <a routerLink="/groups" class="text-sm font-semibold text-indigo-600 hover:underline dark:text-indigo-400">Manage all groups →</a>
+                    <a routerLink="/groups" class="text-sm font-semibold text-indigo-600 hover:underline dark:text-indigo-400">Manage all groups</a>
                 </div>
 
                 <div class="grid gap-5 md:grid-cols-2">
@@ -94,7 +94,7 @@
                                     <a class="app-btn-secondary flex-1 text-center" [routerLink]="['/groups', summary.group.id, 'sessions', 'new']">Plan a session</a>
                                 }
                             </div>
-                            <a class="mt-4 text-center text-sm font-semibold text-indigo-600 hover:underline dark:text-indigo-400" routerLink="/play/recommendations" [queryParams]="{ groupId: summary.group.id }">Find a game for this group →</a>
+                            <a class="mt-4 text-center text-sm font-semibold text-indigo-600 hover:underline dark:text-indigo-400" routerLink="/play/recommendations" [queryParams]="{ groupId: summary.group.id }">Find a game for this group</a>
                         </article>
                     }
                 </div>
@@ -108,30 +108,30 @@
                 </div>
                 <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     <a routerLink="/collection/browse" class="rounded-2xl border border-zinc-200 bg-white p-5 transition hover:border-indigo-300 hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-indigo-700">
-                        <span class="text-2xl text-indigo-600 dark:text-indigo-400" aria-hidden="true"><i class="bi bi-plus-circle-fill"></i></span>
+                        <span class="text-indigo-600 dark:text-indigo-400" aria-hidden="true"><app-icon name="circle-plus" [size]="28" /></span>
                         <h3 class="mt-4 font-semibold">Add games you own</h3>
                         <p class="mt-2 text-sm leading-6 text-secondary">Games become recommendable when the people attending a night own them.</p>
-                        <span class="mt-4 block text-sm font-semibold text-indigo-600 dark:text-indigo-400">Browse the catalog →</span>
+                            <span class="mt-4 block text-sm font-semibold text-indigo-600 dark:text-indigo-400">Browse the catalog</span>
                     </a>
                     <a routerLink="/play/history" class="rounded-2xl border border-zinc-200 bg-white p-5 transition hover:border-indigo-300 hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-indigo-700">
-                        <span class="text-2xl text-indigo-600 dark:text-indigo-400" aria-hidden="true"><i class="bi bi-clock-history"></i></span>
+                        <span class="text-indigo-600 dark:text-indigo-400" aria-hidden="true"><app-icon name="history" [size]="28" /></span>
                         <h3 class="mt-4 font-semibold">Remember what you played</h3>
                         <p class="mt-2 text-sm leading-6 text-secondary">Record actual games and participants so future suggestions reflect your group.</p>
-                        <span class="mt-4 block text-sm font-semibold text-indigo-600 dark:text-indigo-400">Open history →</span>
+                            <span class="mt-4 block text-sm font-semibold text-indigo-600 dark:text-indigo-400">Open history</span>
                     </a>
                     @if (decisionGroup(); as decisionGroup) {
                         <a routerLink="/play/recommendations" [queryParams]="{ groupId: decisionGroup.group.id }" class="rounded-2xl border border-zinc-200 bg-white p-5 transition hover:border-indigo-300 hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-indigo-700">
-                            <span class="text-2xl text-indigo-600 dark:text-indigo-400" aria-hidden="true"><i class="bi bi-stars"></i></span>
+                            <span class="text-indigo-600 dark:text-indigo-400" aria-hidden="true"><app-icon name="sparkle" [size]="28" /></span>
                             <h3 class="mt-4 font-semibold">Make the next decision</h3>
                             <p class="mt-2 text-sm leading-6 text-secondary">Compare explainable suggestions for {{ decisionGroup.group.name }} and the people attending.</p>
-                            <span class="mt-4 block text-sm font-semibold text-indigo-600 dark:text-indigo-400">Choose for {{ decisionGroup.group.name }} →</span>
+                            <span class="mt-4 block text-sm font-semibold text-indigo-600 dark:text-indigo-400">Choose for {{ decisionGroup.group.name }}</span>
                         </a>
                     } @else {
                         <a routerLink="/groups" class="rounded-2xl border border-zinc-200 bg-white p-5 transition hover:border-indigo-300 hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-indigo-700">
-                            <span class="text-2xl text-indigo-600 dark:text-indigo-400" aria-hidden="true"><i class="bi bi-stars"></i></span>
+                            <span class="text-indigo-600 dark:text-indigo-400" aria-hidden="true"><app-icon name="sparkle" [size]="28" /></span>
                             <h3 class="mt-4 font-semibold">Choose a group first</h3>
                             <p class="mt-2 text-sm leading-6 text-secondary">Pick the people and shared games before asking what fits the next night.</p>
-                            <span class="mt-4 block text-sm font-semibold text-indigo-600 dark:text-indigo-400">Open your groups →</span>
+                            <span class="mt-4 block text-sm font-semibold text-indigo-600 dark:text-indigo-400">Open your groups</span>
                         </a>
                     }
                 </div>

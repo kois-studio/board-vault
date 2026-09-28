@@ -2,7 +2,7 @@
 @if (isVisible()) {
 <div class="fixed inset-0 bg-zinc-900/60 flex justify-center items-center z-50" (click)="hideDialog()">
     <!-- Dialog box -->
-    <div class="bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700 w-full max-w-2xl mx-4 relative" (click)="$event.stopPropagation()">
+    <div appDialog (dialogClosed)="hideDialog()" class="bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700 w-full max-w-2xl mx-4 relative" (click)="$event.stopPropagation()">
         <!-- Header -->
         <div class="flex items-center justify-between p-6 border-b border-zinc-200 dark:border-zinc-700">
             <h3 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
@@ -10,9 +10,10 @@
             </h3>
             <button 
                 (click)="hideDialog()" 
+                aria-label="Close delete category dialog"
                 class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors cursor-pointer"
             >
-                <i class="bi bi-x-lg"></i>
+                <app-icon name="x" [size]="18" />
             </button>
         </div>
 
@@ -22,7 +23,7 @@
                 <!-- Warning Icon -->
                 <div class="flex justify-center">
                     <div class="w-12 h-12 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center">
-                        <i class="bi bi-exclamation-triangle-fill text-red-600 dark:text-red-400 text-xl"></i>
+                        <app-icon name="triangle-alert" [size]="22" className="text-red-600 dark:text-red-400" />
                     </div>
                 </div>
 
@@ -63,7 +64,7 @@
                 <!-- Warning Note -->
                 <div class="bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 rounded-lg p-3">
                     <p class="text-sm text-red-700 dark:text-red-300">
-                        <i class="bi bi-exclamation-circle-fill mr-1"></i>
+                        <app-icon name="circle-alert" [size]="16" className="mr-1" />
                         This action cannot be undone. All tags in this category will also be deleted.
                     </p>
                 </div>

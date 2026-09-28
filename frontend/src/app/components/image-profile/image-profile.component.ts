@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common'
 import { Component, Input } from '@angular/core'
 import { UserType } from '../../api/api.types'
+import { IconComponent } from '../ui/icon/icon.component'
 
 @Component({
-    imports: [CommonModule],
+    imports: [CommonModule, IconComponent],
     selector: 'app-image-profile',
     templateUrl: 'image-profile.component.html',
 })

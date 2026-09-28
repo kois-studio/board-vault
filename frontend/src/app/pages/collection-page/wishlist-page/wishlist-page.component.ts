@@ -7,6 +7,7 @@ import { SkeletonCardGameComponent } from '../../../components/skeletons/skeleto
 import { ToastService } from '../../../components/toast/toast.service'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
+import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
 import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
 import { DataService } from '../../../core/services/data.service'
@@ -20,10 +21,10 @@ import { LoadingService } from '../../../core/services/loading.service'
         RouterLink,
         PageHeaderComponent,
         ButtonComponent,
+        IconComponent,
         SkeletonCardGameComponent,
     ],
     templateUrl: 'wishlist-page.component.html',
-    styleUrls: ['wishlist-page.component.scss'],
 })
 export class WishlistPageComponent {
     private readonly api = inject(Api)

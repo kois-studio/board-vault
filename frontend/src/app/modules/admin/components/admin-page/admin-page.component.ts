@@ -1,8 +1,9 @@
 import { Component } from '@angular/core'
 import { RouterLink } from '@angular/router'
+import { IconComponent } from '../../../../components/ui/icon/icon.component'
 
 @Component({
-    imports: [RouterLink],
+    imports: [RouterLink, IconComponent],
     templateUrl: './admin-page.component.html',
 })
 export class AdminPageComponent {

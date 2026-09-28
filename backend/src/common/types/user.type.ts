@@ -1,4 +1,4 @@
-import { ApiProperty, OmitType, PickType } from '@nestjs/swagger'
+import { ApiProperty, PickType } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
 import {
     ArrayMaxSize,
@@ -47,25 +47,45 @@ export class AvatarDto {
 }
 
 /**
- * base User as it comes from db
+ * Internal account record as it comes from the database.
+ *
+ * This is deliberately a type rather than a decorated Swagger class. Password
+ * hashes and one-time tokens must stay inside backend services and must never
+ * become part of an HTTP response schema by inheritance.
  */
-export class UserCompleteDto {
+export type UserRecord = {
+    id: number
+    email: string
+    password: string
+    createdAt: string
+    username: string
+    displayName: string
+    avatar: AvatarDto
+    isDeleted: boolean
+    isAdmin: boolean
+    email_verified: boolean
+    verification_token: string | null
+    password_reset_token: string | null
+}
+
+/**
+ * Safe account response. Sensitive database-only fields are intentionally
+ * declared nowhere on this HTTP DTO.
+ */
+export class UserGetDto {
     @ApiProperty({ example: 1 })
     id: number
 
-    @ApiProperty({ example: 'jose@email.com' })
+    @ApiProperty({ example: 'user@example.test' })
     email: string
-
-    @ApiProperty({ example: '12345678' })
-    password: string
 
     @ApiProperty({ example: '2024-09-28 10:02:39' })
     createdAt: string
 
-    @ApiProperty({ example: 'joseantonio' })
+    @ApiProperty({ example: 'sample-user' })
     username: string
 
-    @ApiProperty({ example: 'Jose Antonio' })
+    @ApiProperty({ example: 'Sample User' })
     displayName: string
 
     @ApiProperty({ type: AvatarDto, description: 'The avatar of the user.' })
@@ -79,18 +99,7 @@ export class UserCompleteDto {
 
     @ApiProperty({ example: false })
     email_verified: boolean
-
-    @ApiProperty({ example: null })
-    verification_token: string | null
-
-    @ApiProperty({ example: null })
-    password_reset_token: string | null
 }
-
-/**
- * GET requests --> no password hash included
- */
-export class UserGetDto extends OmitType(UserCompleteDto, ['password', 'verification_token', 'password_reset_token']) {}
 
 /**
  * Authenticated self-profile response. Account state and administrator flags
@@ -105,30 +114,23 @@ export class UserSelfDto extends PickType(UserGetDto, ['id', 'email', 'username'
 export class UserPublicDto extends PickType(UserGetDto, ['id', 'username', 'displayName', 'avatar']) {}
 
 /**
- * POST requests --> no db generated props
+ * Internal account creation input. This is not an HTTP DTO; public
+ * registration uses RegisterUserDto below.
  */
-export class CreateUserBody extends OmitType(UserCompleteDto, [
-    'id',
-    'createdAt',
-    'isDeleted',
-    'isAdmin',
-    'email_verified',
-    'verification_token',
-    'password_reset_token',
-]) {}
+export type CreateUserBody = Pick<UserRecord, 'email' | 'password' | 'username' | 'displayName' | 'avatar'>
 
 /**
  * PUT /users/:userId requests --> safe profile fields only
  */
 export class UpdateUserBody {
-    @ApiProperty({ example: 'joseantonio', required: false })
+    @ApiProperty({ example: 'sample-user', required: false })
     @IsOptional()
     @IsString()
     @IsNotEmpty()
     @MaxLength(50)
     username?: string
 
-    @ApiProperty({ example: 'Jose Antonio', required: false })
+    @ApiProperty({ example: 'Sample User', required: false })
     @IsOptional()
     @IsString()
     @IsNotEmpty()
@@ -148,7 +150,7 @@ export class UpdateUserBody {
  */
 export type UpdateUserRecord = Partial<
     Pick<
-        UserCompleteDto,
+        UserRecord,
         | 'email'
         | 'username'
         | 'password'
@@ -170,11 +172,11 @@ export type UpdateUserRecord = Partial<
  * POST /auth/register
  */
 export class RegisterUserDto {
-    @ApiProperty({ example: 'jose@email.com' })
+    @ApiProperty({ example: 'user@example.test' })
     @IsEmail()
     email: string
 
-    @ApiProperty({ example: 'joseantonio' })
+    @ApiProperty({ example: 'sample-user' })
     @IsString()
     @IsNotEmpty()
     @MaxLength(50)
@@ -191,7 +193,7 @@ export class RegisterUserDto {
  * POST /auth/login
  */
 export class LoginUserDto {
-    @ApiProperty({ example: 'jose@email.com' })
+    @ApiProperty({ example: 'user@example.test' })
     @IsEmail()
     email: string
 

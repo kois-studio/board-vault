@@ -2,44 +2,37 @@
     [type]="type"
     [disabled]="disabled || loading"
     [routerLink]="routerLink"
-    class="rounded shadow tracking-wide transition-colors disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
+    class="rounded-lg shadow-sm tracking-wide transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:cursor-not-allowed disabled:opacity-50 dark:focus-visible:ring-offset-zinc-950"
+    [attr.aria-busy]="loading"
     [ngClass]="{
         'px-2 py-1 font-semibold text-sm': size === 'small',
         'px-4 py-2 font-semibold text-base': size === 'medium',
         'px-6 py-4 font-bold text-lg': size === 'large',
-        'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-500/50 text-white': variant === 'primary',
-        'bg-gray-200 hover:bg-gray-300 dark:bg-zinc-700 dark:hover:bg-zinc-800 shadow-gray-500/50 dark:shadow-zinc-500/50 text-white': variant === 'secondary',
-        'bg-red-500 hover:bg-red-800 shadow-red-500/50 text-white': variant === 'danger',
-        'bg-green-600 hover:bg-green-800 shadow-green-500/50 text-white': variant === 'success',
+        'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-500/50': variant === 'primary',
+        'bg-zinc-100 hover:bg-zinc-200 shadow-zinc-300/50 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:shadow-zinc-950/50': variant === 'secondary',
+        'bg-red-500 hover:bg-red-800 shadow-red-500/50': variant === 'danger',
+        'bg-green-600 hover:bg-green-800 shadow-green-500/50': variant === 'success',
+        'text-white': variant === 'primary' || variant === 'danger' || variant === 'success',
+        'text-zinc-900 dark:text-zinc-100': variant === 'secondary',
         'block w-full mx-auto': wide,
     }"
 >
-    <div class="flex items-center justify-center text-white">
+    <div class="flex items-center justify-center">
         @if (!loading) {
             <ng-container>
                 @if (icon) {
-                    <i
-                        class="bi bi-{{ icon }} mr-2 text-white"
-                        [ngClass]="{
-                            'text-sm': size === 'small',
-                            'text-base': size === 'medium',
-                            'text-lg': size === 'large'
-                        }"
-                    ></i>
+                    <app-icon
+                        [name]="icon"
+                        className="mr-2 shrink-0"
+                        [size]="size === 'small' ? 16 : size === 'large' ? 21 : 18"
+                    />
                 }
                 <ng-content></ng-content>
             </ng-container>
         } @else {
-            <span class="inline-flex items-center text-white">
-                <svg class="animate-spin -ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path
-                        class="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                </svg>
-                Loading...
+            <span class="inline-flex items-center">
+                <app-icon name="loader" className="mr-2 shrink-0 motion-safe:animate-spin" [size]="16" />
+                Working…
             </span>
         }
         

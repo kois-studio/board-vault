@@ -7,17 +7,12 @@
     [title]="modeLabel"
 >
     <span
-        class="pointer-events-none flex h-[30px] w-[30px] translate-x-[0px] transform items-center justify-center rounded-full bg-orange-200 ring-0 transition duration-700 ease-in-out"
+        class="pointer-events-none flex h-[30px] w-[30px] translate-x-[0px] transform items-center justify-center rounded-full bg-orange-200 ring-0 transition-transform duration-300 ease-out motion-reduce:transition-none"
         [ngClass]="{
             'translate-x-[0px] bg-orange-200': !isDarkMode,
             'translate-x-[24px] bg-zinc-700': isDarkMode
         }"
     >
-        <i
-            [ngClass]="{
-                'bi bi-moon-fill animate__animated animate__rotateIn text-white': isDarkMode,
-                'bi bi-sun-fill animate__animated animate__rotateInUpRight text-black': !isDarkMode
-            }"
-        ></i>
+        <app-icon [name]="isDarkMode ? 'moon' : 'sun'" [size]="16" className="motion-reduce:animate-none" />
     </span>
 </button>

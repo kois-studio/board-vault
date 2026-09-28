@@ -1,4 +1,4 @@
-import { CommonModule, DOCUMENT } from '@angular/common'
+import { CommonModule } from '@angular/common'
 import { Component, computed, effect, inject, signal } from '@angular/core'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
@@ -17,6 +17,8 @@ import { SkeletonHistoryComponent } from '../../components/skeletons/skeleton-hi
 import { ToastService } from '../../components/toast/toast.service'
 import { ButtonComponent } from '../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
+import { DialogDirective } from '../../components/ui/dialog/dialog.directive'
+import { IconComponent } from '../../components/ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../../components/ui/image-background/image-background.component'
 import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'
 import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
@@ -64,7 +66,9 @@ export function shouldShowFirstGroupSetup(input: {
         CommonModule,
         CustomDatePipe,
         ImageBackgroundComponent,
+        IconComponent,
         ButtonComponent,
+        DialogDirective,
         SkeletonHistoryComponent,
         PageHeaderComponent,
     ],
@@ -72,7 +76,6 @@ export function shouldShowFirstGroupSetup(input: {
     styleUrls: ['group-view.component.scss'],
 })
 export class GroupViewComponent {
-    private readonly document = inject(DOCUMENT)
     private readonly api = inject(Api)
     private readonly router = inject(Router)
     private readonly route = inject(ActivatedRoute)
@@ -114,6 +117,8 @@ export class GroupViewComponent {
     public readonly acquisitionBoardError = signal(false)
     public readonly acquisitionMutationGameId = signal<number | null>(null)
     public readonly acquisitionDecisionMutationGameId = signal<number | null>(null)
+    public readonly acquisitionMutationErrors = signal<Record<number, string>>({})
+    public readonly acquisitionDecisionErrors = signal<Record<number, string>>({})
     public readonly groupPeople$ = signal<Array<GroupPersonWorkspaceType>>([])
     public readonly groupPersonCatalog$ = signal<Array<GameCompleteType>>([])
     public readonly groupPeopleLoading = signal(false)
@@ -141,7 +146,6 @@ export class GroupViewComponent {
     private activeSelectionGroupId: number | null = null
     private activeAcquisitionGroupId: number | null = null
     private activePeopleGroupId: number | null = null
-    private leaveDialogTrigger: HTMLElement | null = null
 
     // --------------------------------------------------------------------------
     //        Computed
@@ -410,6 +414,13 @@ export class GroupViewComponent {
         this.dataService.refreshUserGroups()
     }
 
+    public onGroupSwitcherChange(event: Event): void {
+        const groupId = Number((event.target as HTMLSelectElement).value)
+        if (!Number.isInteger(groupId) || groupId <= 0 || !this.userGroups$().some((group) => group.id === groupId)) return
+
+        void this.router.navigate(['/groups', groupId])
+    }
+
     public retryAcquisitionBoard(): void {
         const groupId = this.groupData$()?.id
         if (!groupId) return
@@ -492,22 +503,18 @@ export class GroupViewComponent {
         return person.ownership.filter((ownership) => ownership.status === 'asserted').length
     }
 
-    public async toggleGroupPersonGame(person: GroupPersonWorkspaceType, gameId: number): Promise<void> {
+    public async setGroupPersonOwnership(person: GroupPersonWorkspaceType, gameId: number, event: Event): Promise<void> {
         const groupId = this.groupData$()?.id
         if (!groupId || !this.isGroupOwnerComputed() || this.groupPersonMutationId()) return
 
+        const status = (event.target as HTMLSelectElement).value
+        if (!['asserted', 'rejected', 'disputed'].includes(status)) return
+
         this.groupPersonMutationId.set(person.person.id)
-        const currentStatus = this.getGroupPersonOwnershipStatus(person, gameId)
-        const nextStatus: 'asserted' | 'rejected' | 'disputed' =
-            currentStatus === null
-                ? 'asserted'
-                : currentStatus === 'asserted'
-                  ? 'disputed'
-                  : currentStatus === 'disputed'
-                    ? 'rejected'
-                    : 'asserted'
         try {
-            await firstValueFrom(this.api.updateGroupPersonOwnership(groupId, person.person.id, gameId, nextStatus))
+            await firstValueFrom(
+                this.api.updateGroupPersonOwnership(groupId, person.person.id, gameId, status as 'asserted' | 'rejected' | 'disputed'),
+            )
             this.loadGroupPeople(groupId)
         } catch {
             this.toastService.error('Could not update this person’s game ownership.')
@@ -528,17 +535,27 @@ export class GroupViewComponent {
         return null
     }
 
-    public async cycleGroupPersonPreference(person: GroupPersonWorkspaceType, gameId: number): Promise<void> {
+    public async setGroupPersonPreference(person: GroupPersonWorkspaceType, gameId: number, event: Event): Promise<void> {
         const groupId = this.groupData$()?.id
         if (!groupId || !this.isGroupOwnerComputed() || this.groupPersonMutationId()) return
 
-        const current = this.getGroupPersonPreference(person, gameId)
-        const next: Array<GroupPersonPreferenceType['preference'] | null> = [null, 'like', 'favorite', 'neutral', 'avoid']
-        const nextPreference = next[(next.indexOf(current) + 1) % next.length]
+        const preference = (event.target as HTMLSelectElement).value
+        if (!['', 'favorite', 'like', 'neutral', 'avoid'].includes(preference)) return
+
         this.groupPersonMutationId.set(person.person.id)
         try {
-            if (nextPreference === null) await firstValueFrom(this.api.deleteGroupPersonPreference(groupId, person.person.id, gameId))
-            else await firstValueFrom(this.api.updateGroupPersonPreference(groupId, person.person.id, gameId, nextPreference))
+            if (preference === '') {
+                await firstValueFrom(this.api.deleteGroupPersonPreference(groupId, person.person.id, gameId))
+            } else {
+                await firstValueFrom(
+                    this.api.updateGroupPersonPreference(
+                        groupId,
+                        person.person.id,
+                        gameId,
+                        preference as GroupPersonPreferenceType['preference'],
+                    ),
+                )
+            }
             this.loadGroupPeople(groupId)
         } catch {
             this.toastService.error('Could not update this person’s game preference.')
@@ -590,14 +607,42 @@ export class GroupViewComponent {
         if (!groupId || !this.isGroupOwnerComputed() || this.acquisitionDecisionMutationGameId()) return
 
         this.acquisitionDecisionMutationGameId.set(gameId)
+        this.acquisitionDecisionErrors.update((errors) => {
+            const nextErrors = { ...errors }
+            delete nextErrors[gameId]
+            return nextErrors
+        })
         try {
             await firstValueFrom(this.api.updateGroupAcquisitionDecision(groupId, gameId, status))
             this.toastService.success(`Acquisition decision updated: ${this.getAcquisitionDecisionLabel(status)}.`)
             this.loadAcquisitionBoard(groupId)
         } catch {
+            this.acquisitionDecisionErrors.update((errors) => ({ ...errors, [gameId]: 'Could not update this group decision. Try again.' }))
             this.toastService.error('Could not update the group acquisition decision.')
         } finally {
             this.acquisitionDecisionMutationGameId.set(null)
+        }
+    }
+
+    public async addAcquisitionInterest(gameId: number): Promise<void> {
+        const groupId = this.groupData$()?.id
+        if (!groupId || this.acquisitionMutationGameId()) return
+
+        this.acquisitionMutationGameId.set(gameId)
+        this.acquisitionMutationErrors.update((errors) => {
+            const nextErrors = { ...errors }
+            delete nextErrors[gameId]
+            return nextErrors
+        })
+        try {
+            await firstValueFrom(this.api.addGroupAcquisitionInterest(groupId, gameId))
+            this.toastService.success('Your interest was added to the group shortlist.')
+            this.loadAcquisitionBoard(groupId)
+        } catch {
+            this.acquisitionMutationErrors.update((errors) => ({ ...errors, [gameId]: 'Could not add your interest. Try again.' }))
+            this.toastService.error('Could not add your interest to the group board.')
+        } finally {
+            this.acquisitionMutationGameId.set(null)
         }
     }
 
@@ -606,12 +651,18 @@ export class GroupViewComponent {
         if (!groupId || this.acquisitionMutationGameId()) return
 
         this.acquisitionMutationGameId.set(gameId)
+        this.acquisitionMutationErrors.update((errors) => {
+            const nextErrors = { ...errors }
+            delete nextErrors[gameId]
+            return nextErrors
+        })
         try {
             await firstValueFrom(this.api.removeGroupAcquisitionInterest(groupId, gameId))
             this.loadAcquisitionBoard(groupId)
         } catch {
             // Keep the last known board visible: a failed removal is an
             // action-level error, not evidence that the board itself vanished.
+            this.acquisitionMutationErrors.update((errors) => ({ ...errors, [gameId]: 'Could not remove your interest. Try again.' }))
             this.toastService.error('Could not remove your interest from the group board.')
         } finally {
             this.acquisitionMutationGameId.set(null)
@@ -715,16 +766,12 @@ export class GroupViewComponent {
 
     onClickLeaveGroup() {
         if (this.isGroupOwnerComputed() || !this.groupData$()) return
-        this.leaveDialogTrigger = this.document.activeElement instanceof HTMLElement ? this.document.activeElement : null
         this.isLeaveDialogOpen.set(true)
-        queueMicrotask(() => this.document.getElementById('leave-group-dialog-cancel')?.focus())
     }
 
     public cancelLeaveGroup(): void {
         if (this.isLeavingGroup()) return
         this.isLeaveDialogOpen.set(false)
-        queueMicrotask(() => this.leaveDialogTrigger?.focus())
-        this.leaveDialogTrigger = null
     }
 
     public async confirmLeaveGroup(): Promise<void> {

@@ -15,29 +15,27 @@
     <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         <!-- Image, wishlist and -->
         <div class="relative aspect-square mb-6">
-            <image-background [src]="gameView$()?.gameData?.imageUrl ?? ''" />
+            <image-background
+                [src]="gameView$()?.gameData?.imageUrl ?? ''"
+                [alt]="gameView$()?.gameData?.titleTranslations?.en ?? 'Game cover'"
+                loading="eager"
+            />
             <!-- Action Buttons -->
             <div class="absolute top-2 right-2 flex gap-2">
                 <!-- Wishlist Button -->
                 @if (!gameView$()?.ownedGameData) {
                 <button
                     title="Add to wishlist"
+                    [attr.aria-label]="isWishlistedComputed() ? 'Remove ' + gameView$()?.gameData?.titleTranslations?.en + ' from wishlist' : 'Add ' + gameView$()?.gameData?.titleTranslations?.en + ' to wishlist'"
                     (click)="toggleWishlist()"
-                    class="p-2 rounded-full bg-white/90 shadow-md border border-zinc-200 w-10 h-10 cursor-pointer transition-transform duration-300 ease-linear hover:scale-110"
+                    class="p-2 rounded-full bg-white/90 shadow-md border border-zinc-200 w-10 h-10 cursor-pointer motion-safe:transition-transform motion-safe:hover:scale-110 duration-300 ease-linear"
                     [ngClass]="{
                         'text-rose-500': isWishlistedComputed(),
                         'text-gray-400': !isWishlistedComputed(),
                         'scale-130': wishlistAnimation,
                     }"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" stroke="currentColor">
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                        />
-                    </svg>
+                    <app-icon name="heart" [size]="24" [fill]="isWishlistedComputed() ? 'currentColor' : 'none'" aria-hidden="true" />
                 </button>
                 }
             </div>
@@ -47,22 +45,22 @@
         <div class="px-4">
             <h1 class="text-2xl md:text-3xl font-bold mb-1">{{ gameView$()?.gameData?.titleTranslations?.en }}</h1>
             <p class="text-secondary text-start w-full">
-                <i class="bi bi-clock-fill"></i> {{ gameView$()?.gameData?.gameAvgDuration }} mins
+                <app-icon name="clock" [size]="16" /> {{ gameView$()?.gameData?.gameAvgDuration }} mins
             </p>
             <p class="text-secondary text-start w-full">
-                <i class="bi bi-people-fill"></i> {{ gameView$()?.gameData?.minPlayers }}-{{ gameView$()?.gameData?.maxPlayers }} players
+                <app-icon name="users" [size]="16" /> {{ gameView$()?.gameData?.minPlayers }}-{{ gameView$()?.gameData?.maxPlayers }} players
             </p>
             <div class="flex gap-4">
                 <review-display [review]="gameView$()?.ratingData?.avgGlobalRating?.review ?? 0" />
                 <span class="text-secondary">
-                    <i title="Global avg" class="bi bi-globe2 text-secondary"></i>
+                    <app-icon name="globe" [size]="16" label="Global average" className="text-secondary" />
                     {{ gameView$()?.ratingData?.avgGlobalRating?.count ?? 0 }} votes
                 </span>
             </div>
             <div class="flex gap-4">
                 <review-display [review]="gameView$()?.ratingData?.avgGroupsRating?.review ?? 0" />
                 <span class="text-secondary">
-                    <i title="Your Friends avg" class="bi bi-people-fill text-secondary"></i>
+                    <app-icon name="users" [size]="16" label="Your friends average" className="text-secondary" />
                     {{ gameView$()?.ratingData?.avgGroupsRating?.count ?? 0 }} votes
                 </span>
             </div>
@@ -76,16 +74,16 @@
                     @for (star of [2, 4, 6, 8, 10]; track $index) {
                     <button
                         (click)="saveGameReview(star)"
-                        (mouseover)="reviewHoverValue = star"
-                        class="p-0.5 hover:scale-110 transition-transform cursor-pointer"
+                        [attr.aria-label]="'Rate ' + star / 2 + ' out of 5 stars'"
+                        [attr.aria-pressed]="gameUserReviewComputed() === star"
+                        class="p-0.5 motion-safe:transition-transform motion-safe:hover:scale-110 cursor-pointer"
                     >
-                        <i
-                            class="text-lg"
-                            [ngClass]="{
-                            'bi bi-star-fill text-yellow-400': star <= gameUserReviewComputed(),
-                            'bi bi-star text-zinc-500': star > gameUserReviewComputed(),
-                        }"
-                        ></i>
+                        <app-icon
+                            name="star"
+                            [size]="20"
+                            [fill]="star <= gameUserReviewComputed() ? 'currentColor' : 'none'"
+                            [className]="star <= gameUserReviewComputed() ? 'text-yellow-400' : 'text-zinc-500'"
+                        />
                     </button>
                     }
                 </div>
@@ -99,8 +97,8 @@
         @if (!gameView$()?.ownedGameData) {
         <div class="text-center px-4 py-8">
             <p class="text-secondary mb-4">Do you own this game?</p>
-            <app-button (click)="addToCollection()" color="primary" [loading]="PREVENT_SPAM.isLoadingAddToCollection">
-                <i class="fas fa-plus-circle mr-2"></i>Add to My Collection
+            <app-button icon="plus-lg" (click)="addToCollection()" [loading]="PREVENT_SPAM.isLoadingAddToCollection">
+                Add to My Collection
             </app-button>
         </div>
         }
@@ -111,7 +109,7 @@
             class="bg-green-200 dark:bg-green-900/50 text-green-800 dark:text-green-100 rounded-t-xl p-4 flex items-center justify-between"
         >
             <h3 class="font-semibold text-lg">This game is in your collection</h3>
-            <app-button variant="danger" icon="x-circle" size="small" (click)="removeFromCollection()">remove</app-button>
+            <app-button variant="danger" icon="x-circle" size="small" (click)="removeFromCollection()">Remove from collection</app-button>
         </div>
         <div class="p-4">
             <div class="flex items-center justify-between"></div>
@@ -224,7 +222,7 @@
 
             <div class="flex flex-wrap gap-4">
                 @for (similarGame of gameView$()?.similarGames ?? []; track similarGame.id) {
-                <button routerLink="/games/{{ similarGame.id }}" class="hover:scale-105 transition-transform">
+                <a [routerLink]="['/games', similarGame.id]" class="block rounded-lg motion-safe:transition-transform motion-safe:hover:scale-105 focus-visible:outline-none">
                     <app-card-game
                         [title]="similarGame.titleTranslations.en"
                         [imageUrl]="similarGame.imageUrl"
@@ -232,7 +230,7 @@
                         [minPlayers]="similarGame.minPlayers"
                         [maxPlayers]="similarGame.maxPlayers"
                     />
-                </button>
+                </a>
                 }
             </div>
         </div>

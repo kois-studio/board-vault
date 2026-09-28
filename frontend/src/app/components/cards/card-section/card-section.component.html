@@ -61,7 +61,7 @@
                     'bg-stone-200   dark:bg-stone-900/30    text-stone-600   dark:text-stone-400    group-hover:bg-stone-300    dark:group-hover:bg-stone-900/50': color === 'stone',
                 }"
             >
-                <i class="bi bi-{{ icon }} text-2xl text-{{ color }}-600 dark:text-{{ color }}-400"></i>
+                <app-icon [name]="icon" [size]="28" [className]="'text-' + color + '-600 dark:text-' + color + '-400'" />
             </div>
 
             <!-- Title and description -->

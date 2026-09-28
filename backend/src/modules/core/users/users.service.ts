@@ -2,8 +2,10 @@ import { ResultSet } from '@libsql/client/.'
 import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { usersSchema } from '../../../common/schemas'
-import { AvatarDto, CreateUserBody, UpdateUserBody, UserCompleteDto, UserGetDto, UserPublicDto } from '../../../common/types/user.type'
+import { AvatarDto, CreateUserBody, UpdateUserBody, UserGetDto, UserPublicDto } from '../../../common/types/user.type'
 import { DatabaseService } from '../../common/database/database.service'
+
+import type { UserRecord } from '../../../common/types/user.type'
 
 @Injectable()
 export class UsersService {
@@ -11,7 +13,7 @@ export class UsersService {
 
     constructor(private readonly databaseService: DatabaseService) {}
 
-    private _parseResultSet(resultSet: ResultSet): Array<UserCompleteDto> {
+    private _parseResultSet(resultSet: ResultSet): Array<UserRecord> {
         const users = resultSet.rows.map(row => ({
             id: Number(row[0]),
             email: String(row[1]),
@@ -42,10 +44,7 @@ export class UsersService {
         const resultSet = await this.databaseService.getUsers()
         const users = this._parseResultSet(resultSet)
 
-        return users.map(user => ({
-            ...user,
-            password: undefined,
-        }))
+        return users.map(user => this._toUserGetDto(user))
     }
 
     async getUserById(id: number): Promise<UserGetDto> {
@@ -56,11 +55,7 @@ export class UsersService {
         if (users.length === 0) {
             throw new NotFoundException(`User with id ${id} not found`)
         }
-        users[0].password = undefined!
-        users[0].verification_token = undefined!
-        users[0].password_reset_token = undefined!
-
-        return users[0]
+        return this._toUserGetDto(users[0])
     }
 
     async getPublicUserById(id: number): Promise<UserPublicDto> {
@@ -78,7 +73,9 @@ export class UsersService {
      * password is needed for auth.service,
      * thats why `include_password` option available
      */
-    async getUserByEmail(email: string, include_password = false): Promise<UserGetDto | UserCompleteDto> {
+    async getUserByEmail(email: string, include_password: true): Promise<UserRecord>
+    async getUserByEmail(email: string, include_password?: false): Promise<UserGetDto>
+    async getUserByEmail(email: string, include_password = false): Promise<UserGetDto | UserRecord> {
         this.LOGGER.log('Getting user by email')
         const resultSet = await this.databaseService.getUserByEmail(email)
         const users = this._parseResultSet(resultSet)
@@ -87,13 +84,7 @@ export class UsersService {
             throw new NotFoundException(`User with email ${email} not found`)
         }
 
-        users[0].verification_token = undefined!
-        users[0].password_reset_token = undefined!
-
-        return {
-            ...users[0],
-            password: include_password ? users[0].password : undefined!,
-        }
+        return include_password ? users[0] : this._toUserGetDto(users[0])
     }
 
     async getUserByUsername(username: string): Promise<UserGetDto> {
@@ -105,10 +96,7 @@ export class UsersService {
             throw new NotFoundException(`User with username ${username} not found`)
         }
 
-        users[0].password = undefined!
-        users[0].verification_token = undefined!
-        users[0].password_reset_token = undefined!
-        return users[0]
+        return this._toUserGetDto(users[0])
     }
 
     async getUserByClerkId(clerkUserId: string): Promise<UserGetDto> {
@@ -120,10 +108,7 @@ export class UsersService {
             throw new NotFoundException(`No user linked to Clerk identity ${clerkUserId}`)
         }
 
-        users[0].password = undefined!
-        users[0].verification_token = undefined!
-        users[0].password_reset_token = undefined!
-        return users[0]
+        return this._toUserGetDto(users[0])
     }
 
     async linkClerkUser(accountId: number, clerkUserId: string): Promise<UserGetDto> {
@@ -144,6 +129,16 @@ export class UsersService {
         })
 
         return { success: true }
+    }
+
+    private _toUserGetDto(user: UserRecord): UserGetDto {
+        const { password: _password, verification_token: _verificationToken, password_reset_token: _passwordResetToken, ...safeUser } = user
+
+        void _password
+        void _verificationToken
+        void _passwordResetToken
+
+        return safeUser
     }
 
     async createUser(userDto: CreateUserBody, verificationToken: string, verificationTokenExpiresAt?: number) {

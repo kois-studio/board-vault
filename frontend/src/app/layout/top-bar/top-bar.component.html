@@ -1,29 +1,32 @@
 <container-wrapper>
-    <div class="border-b border-zinc-200 dark:border-zinc-700 flex items-center justify-center gap-4">
+    <nav class="flex items-center justify-start gap-2 overflow-x-auto border-b border-zinc-200 dark:border-zinc-700 md:justify-center md:gap-4" aria-label="Section navigation">
         @for (section of sections; track $index) {
             <a
                 [routerLink]="section.path"
                 routerLinkActive="border-b-2 border-black dark:border-white"
-                class="block px-5 py-3 text-sm font-medium whitespace-nowrap"
+                [routerLinkActiveOptions]="{ exact: section.path === 'dashboard' || section.path === 'play' || section.path === 'play/history' || section.path === 'settings' }"
+                [attr.aria-current]="isSectionActive(section.path) ? 'page' : null"
+                class="block min-h-11 whitespace-nowrap px-4 py-3 text-sm font-medium"
             >{{ section.name }}</a>
         }
-    </div>
+    </nav>
 </container-wrapper>
 
 <!-- 0 is "no subsections" mode -->
 @if (topBarModeComputed() > 0) {
     <div class="container mx-auto max-w-6xl px-4">
-        <div class="flex items-center justify-center gap-4 animate__animated animate__fadeInDown animate__faster">
+        <nav class="flex items-center justify-start gap-2 overflow-x-auto md:justify-center md:gap-4" aria-label="Subsection navigation">
             @for (subsection of sections[topBarModeComputed() - 1].subsections; track $index) {
                 <a
                     [routerLink]="subsection.path"
                     routerLinkActive="border-b-2 border-black dark:border-white"
-                    class="block md:px-5 py-3 text-sm font-medium whitespace-nowrap"
+                    [attr.aria-current]="router.isActive('/' + subsection.path, false) ? 'page' : null"
+                    class="flex min-h-11 items-center gap-2 whitespace-nowrap px-3 py-3 text-sm font-medium md:px-5"
                 >
-                    <i class="bi bi-{{ subsection.icon }}"></i>
+                    <app-icon [name]="subsection.icon" [size]="16" />
                     {{ subsection.name }}
                 </a>
             }
-        </div>
+        </nav>
     </div>
 }

@@ -7,12 +7,14 @@ import type { GameWithTagsAndTranslationsType } from '../../../api/api.types'
 import { LogService } from '../../../core/services/log.service'
 import { ToastService } from '../../toast/toast.service'
 import { ButtonComponent } from '../../ui/button/button.component'
+import { DialogDirective } from '../../ui/dialog/dialog.directive'
+import { IconComponent } from '../../ui/icon/icon.component'
 
 type SupportedLanguage = 'en' | 'es'
 
 @Component({
     selector: 'app-modal-edit-game-translations',
-    imports: [CommonModule, ReactiveFormsModule, ButtonComponent],
+    imports: [CommonModule, ReactiveFormsModule, ButtonComponent, DialogDirective, IconComponent],
     templateUrl: './modal-edit-game-translations.component.html',
 })
 export class ModalEditGameTranslationsComponent {

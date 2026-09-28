@@ -33,12 +33,14 @@ export class AdminGameProposalsService {
     public readonly currentStatus = signal<'pending' | 'approved' | 'rejected' | 'duplicate' | null>(null)
     public readonly currentPage = signal<number>(1)
     public readonly itemsPerPage = signal<number>(10)
+    public readonly errorMessage = signal<string | null>(null)
 
     // --------------------------------------------------------------------------
     //        Methods
     // --------------------------------------------------------------------------
     public async loadProposals(status?: 'pending' | 'approved' | 'rejected' | 'duplicate', page = 1, limit = 10): Promise<void> {
         this.isLoading.set(true)
+        this.errorMessage.set(null)
         this.currentStatus.set(status || null)
         this.currentPage.set(page)
 
@@ -50,6 +52,7 @@ export class AdminGameProposalsService {
             }
         } catch (error) {
             this.logger.error('Error loading game proposals:', error)
+            this.errorMessage.set('Game proposals could not be loaded. Try again.')
             this.toastService.error('Failed to load game proposals')
         } finally {
             this.isLoading.set(false)

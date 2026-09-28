@@ -29,7 +29,7 @@ describe('PlayService history', () => {
             getPlayedGameIdsByMeetId: jest.fn().mockResolvedValue([42]),
         } as unknown as DatabaseService
         const service = new PlayService(
-            { getPublicUserById: jest.fn().mockResolvedValue({ id: 1, username: 'dawichi' }) } as unknown as UsersService,
+            { getPublicUserById: jest.fn().mockResolvedValue({ id: 1, username: 'organizer' }) } as unknown as UsersService,
             database,
             { getGameById: jest.fn().mockResolvedValue({ id: 42, imageUrl: 'image' }) } as unknown as GamesService,
             meets as unknown as MeetsService,
@@ -325,14 +325,14 @@ describe('PlayService history', () => {
     })
 
     it('returns the latest group recommendation signals per member and game', async () => {
-        const avatar = JSON.stringify({ backgroundColor: '#000', iconName: null, emoji: '🎲', type: 'emoji', initials: 'D' })
+        const avatar = JSON.stringify({ backgroundColor: '#000', iconName: null, emoji: '🎲', type: 'emoji', initials: 'O' })
         const database = {
             getGroupById: jest.fn().mockResolvedValue({ rows: [[7]] }),
             getGroupMemberIds: jest.fn().mockResolvedValue([1, 2]),
             getRecommendationFeedbackForGroup: jest.fn().mockResolvedValue({
                 rows: [
-                    [5, 42, 1, 'not_for_us', '2026-09-03 20:02:00', 'dawichi', 'David', avatar],
-                    [4, 42, 1, 'interested', '2026-09-03 20:01:00', 'dawichi', 'David', avatar],
+                    [5, 42, 1, 'not_for_us', '2026-09-03 20:02:00', 'organizer', 'Organizer', avatar],
+                    [4, 42, 1, 'interested', '2026-09-03 20:01:00', 'organizer', 'Organizer', avatar],
                     [3, 42, 2, 'interested', '2026-09-03 20:00:00', 'friend', 'Friend', avatar],
                 ],
             }),

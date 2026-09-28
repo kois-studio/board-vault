@@ -38,7 +38,7 @@ export class GroupDto {
     @ApiProperty({ example: 12345 })
     id: number
 
-    @ApiProperty({ example: "David's Group" })
+    @ApiProperty({ example: 'Example Group' })
     @IsString()
     @IsNotEmpty()
     @MaxLength(100)

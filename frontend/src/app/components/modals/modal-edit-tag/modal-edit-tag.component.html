@@ -2,7 +2,7 @@
 @if (isVisible()) {
 <div class="fixed inset-0 bg-zinc-900/60 flex justify-center items-center z-50" (click)="hideDialog()">
     <!-- Dialog box -->
-    <div class="bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700 w-full max-w-md mx-4 relative" (click)="$event.stopPropagation()">
+    <div appDialog (dialogClosed)="hideDialog()" class="bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700 w-full max-w-md mx-4 relative" (click)="$event.stopPropagation()">
         <!-- Header -->
         <div class="flex items-center justify-between p-6 border-b border-zinc-200 dark:border-zinc-700">
             <h3 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
@@ -10,9 +10,10 @@
             </h3>
             <button 
                 (click)="hideDialog()" 
+                aria-label="Close edit tag dialog"
                 class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors cursor-pointer"
             >
-                <i class="bi bi-x-lg"></i>
+                <app-icon name="x" [size]="18" />
             </button>
         </div>
 
@@ -29,7 +30,7 @@
                             id="tagName"
                             type="text"
                             formControlName="name"
-                            class="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-zinc-700 dark:text-zinc-100"
+                            class="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-zinc-700 dark:text-zinc-100"
                             [class]="nameClass"
                             placeholder="Enter tag name"
                             required
@@ -39,13 +40,13 @@
                         @if (nameControl?.invalid && (nameControl?.dirty || nameControl?.touched)) {
                             <div class="mt-1 text-sm text-red-600 dark:text-red-400">
                                 @if (nameControl?.hasError('required')) {
-                                    <div><i class="bi bi-exclamation-circle-fill"></i> Tag name is required.</div>
+                                    <div><app-icon name="circle-alert" [size]="16" /> Tag name is required.</div>
                                 }
                                 @if (nameControl?.hasError('minlength')) {
-                                    <div><i class="bi bi-exclamation-circle-fill"></i> Tag name must be at least 2 characters.</div>
+                                    <div><app-icon name="circle-alert" [size]="16" /> Tag name must be at least 2 characters.</div>
                                 }
                                 @if (nameControl?.hasError('maxlength')) {
-                                    <div><i class="bi bi-exclamation-circle-fill"></i> Tag name cannot exceed 50 characters.</div>
+                                    <div><app-icon name="circle-alert" [size]="16" /> Tag name cannot exceed 50 characters.</div>
                                 }
                             </div>
                         }
@@ -59,7 +60,7 @@
                         <select
                             id="categorySelect"
                             formControlName="categoryId"
-                            class="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-zinc-700 dark:text-zinc-100"
+                            class="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-zinc-700 dark:text-zinc-100"
                             [class]="categoryIdClass"
                             required
                         >
@@ -73,7 +74,7 @@
                         @if (categoryIdControl?.invalid && (categoryIdControl?.dirty || categoryIdControl?.touched)) {
                             <div class="mt-1 text-sm text-red-600 dark:text-red-400">
                                 @if (categoryIdControl?.hasError('required')) {
-                                    <div><i class="bi bi-exclamation-circle-fill"></i> Please select a category.</div>
+                                    <div><app-icon name="circle-alert" [size]="16" /> Please select a category.</div>
                                 }
                             </div>
                         }

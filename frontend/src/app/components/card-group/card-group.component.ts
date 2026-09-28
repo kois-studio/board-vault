@@ -5,9 +5,10 @@ import type { GameType, GroupWithMembersAndGames, InvitationWithAccountsData } f
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { DataService } from '../../core/services/data.service'
 import { CardAccountComponent } from '../card-account/card-account.component'
+import { IconComponent } from '../ui/icon/icon.component'
 
 @Component({
-    imports: [CommonModule, CardAccountComponent, RouterLink, CustomDatePipe],
+    imports: [CommonModule, CardAccountComponent, RouterLink, CustomDatePipe, IconComponent],
     selector: 'app-card-group',
     templateUrl: 'card-group.component.html',
 })

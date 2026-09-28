@@ -6,9 +6,11 @@ import type { TagCategoryType, TagType } from '../../../api/api.types'
 import { LogService } from '../../../core/services/log.service'
 import { ToastService } from '../../toast/toast.service'
 import { ButtonComponent } from '../../ui/button/button.component'
+import { DialogDirective } from '../../ui/dialog/dialog.directive'
+import { IconComponent } from '../../ui/icon/icon.component'
 
 @Component({
-    imports: [CommonModule, ReactiveFormsModule, ButtonComponent],
+    imports: [CommonModule, ReactiveFormsModule, ButtonComponent, DialogDirective, IconComponent],
     selector: 'app-modal-add-tag',
     templateUrl: './modal-add-tag.component.html',
 })

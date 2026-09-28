@@ -11,15 +11,23 @@
         <!-- Primary Meta Tags -->
         <title>Board Vault</title>
         <meta name="title" content="Board Vault" />
-        <meta name="description" content="Store and organize your tabletop games" />
+        <meta name="description" content="A private workspace for recurring board-game groups to decide, play, and remember together." />
+        <meta name="robots" content="noindex, nofollow, noarchive" />
+        <meta property="og:title" content="Board Vault — Game night, remembered" />
+        <meta property="og:description" content="A private workspace for recurring board-game groups to decide, play, and remember together." />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="https://board-vault.com/images/logo.webp" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="Board Vault — Game night, remembered" />
+        <meta name="twitter:description" content="A private workspace for recurring board-game groups to decide, play, and remember together." />
 
-        <!-- Bootstrap & Icons -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
-
-        <!-- Animate CSS -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+        <script>
+            const savedTheme = localStorage.getItem('theme')
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) document.documentElement.classList.add('dark')
+        </script>
     </head>
-    <body class="app-bg-primary dark:text-white transition-all duration-300">
+    <body class="app-bg-primary dark:text-white">
         <app-root></app-root>
     </body>
 </html>

@@ -3,7 +3,8 @@
 
     @if (isVisible) {
     <div
-        class="absolute z-10 bg-gray-800 text-white text-sm rounded py-1 px-2 transition-opacity duration-200 whitespace-nowrap"
+        [id]="tooltipId"
+        class="absolute z-10 whitespace-nowrap rounded bg-zinc-800 px-2 py-1 text-sm text-white transition-opacity duration-200 motion-reduce:transition-none"
         [ngClass]="{
             'bottom-full': position === 'top',
             'top-full': position === 'bottom',

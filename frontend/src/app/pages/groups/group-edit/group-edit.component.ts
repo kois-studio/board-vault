@@ -1,4 +1,4 @@
-import { CommonModule, DOCUMENT } from '@angular/common'
+import { CommonModule } from '@angular/common'
 import { Component, effect, inject, signal } from '@angular/core'
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
@@ -8,17 +8,27 @@ import { ClerkGroupInvitationSummaryType, ClerkGroupInvitationType, GameType, Gr
 import { CardAccountComponent } from '../../../components/card-account/card-account.component'
 import { ImageProfileComponent } from '../../../components/image-profile/image-profile.component'
 import { ToastService } from '../../../components/toast/toast.service'
+import { DialogDirective } from '../../../components/ui/dialog/dialog.directive'
+import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
 import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
 
 @Component({
-    imports: [CommonModule, RouterLink, ImageProfileComponent, ReactiveFormsModule, CardAccountComponent, CustomDatePipe],
+    imports: [
+        CommonModule,
+        RouterLink,
+        ImageProfileComponent,
+        ReactiveFormsModule,
+        CardAccountComponent,
+        CustomDatePipe,
+        DialogDirective,
+        IconComponent,
+    ],
     templateUrl: 'group-edit.component.html',
 })
 export class GroupEditComponent {
-    private readonly document = inject(DOCUMENT)
     private readonly api = inject(Api)
     private readonly toastService = inject(ToastService)
     // --------------------------------------------------------------------------
@@ -51,7 +61,6 @@ export class GroupEditComponent {
     public copyLinkStatus: 'idle' | 'copied' | 'unavailable' | 'failed' = 'idle'
     public isLoading = false
     private loadedClerkInvitationsGroupId: number | null = null
-    private deleteDialogTrigger: HTMLElement | null = null
 
     constructor(
         private readonly router: Router,
@@ -283,16 +292,12 @@ export class GroupEditComponent {
 
     onDeleteGroup() {
         if (!this.isGroupOwner || !this.groupData) return
-        this.deleteDialogTrigger = this.document.activeElement instanceof HTMLElement ? this.document.activeElement : null
         this.isDeleteDialogOpen.set(true)
-        queueMicrotask(() => this.document.getElementById('delete-group-dialog-cancel')?.focus())
     }
 
     public cancelDeleteGroup(): void {
         if (this.isDeletingGroup()) return
         this.isDeleteDialogOpen.set(false)
-        queueMicrotask(() => this.deleteDialogTrigger?.focus())
-        this.deleteDialogTrigger = null
     }
 
     public async confirmDeleteGroup(): Promise<void> {

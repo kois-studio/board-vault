@@ -19,7 +19,7 @@
         <!-- RIGHT COL: buttons -->
         <div class="flex flex-wrap gap-3" [attr.aria-busy]="isLoading">
             <button type="button" (click)="acceptInvitation()" class="app-btn-primary" [disabled]="isLoading" [attr.aria-label]="'Accept invitation to ' + invitation.group.name">
-                <i class="bi bi-check"></i> {{ isLoading ? 'Working…' : 'Accept' }}
+                <app-icon name="check" [size]="16" /> {{ isLoading ? 'Working…' : 'Accept' }}
             </button>
             @if (isConfirmingDecline) {
                 <div class="flex flex-wrap items-center gap-2 rounded-lg border border-red-300/50 bg-red-50 px-3 py-2 text-sm dark:border-red-900/60 dark:bg-red-950/30" role="group" aria-label="Confirm invitation decline">
@@ -29,7 +29,7 @@
                 </div>
             } @else {
                 <button type="button" (click)="rejectInvitation()" class="app-btn-danger" [disabled]="isLoading" [attr.aria-label]="'Decline invitation to ' + invitation.group.name">
-                    <i class="bi bi-x"></i> Decline
+                    <app-icon name="x" [size]="16" /> Decline
                 </button>
             }
         </div>

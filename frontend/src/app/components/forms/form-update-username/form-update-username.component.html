@@ -11,13 +11,13 @@
                 />
                 <div *ngIf="username?.invalid && (username?.dirty || username?.touched)">
                     <div *ngIf="username?.hasError('required')" class="text-sm text-red-500 py-1">
-                        <i class="bi bi-exclamation-circle-fill"></i> username is required.
+                        <app-icon name="circle-alert" [size]="16" /> username is required.
                     </div>
                     <div *ngIf="username?.hasError('minlength')" class="text-sm text-red-500 py-1">
-                        <i class="bi bi-exclamation-circle-fill"></i> username is too short.
+                        <app-icon name="circle-alert" [size]="16" /> username is too short.
                     </div>
                     <div *ngIf="username?.hasError('maxlength')" class="text-sm text-red-500 py-1">
-                        <i class="bi bi-exclamation-circle-fill"></i> username is too long.
+                        <app-icon name="circle-alert" [size]="16" /> username is too long.
                     </div>
                 </div>
             </div>

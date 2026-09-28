@@ -53,7 +53,7 @@ test.describe('single-user group claim flow', () => {
             const groupId = page.url().match(/\/groups\/(\d+)$/)?.[1]
             expect(groupId).toBeTruthy()
 
-            for (const displayName of ['Ana', 'Bruno', 'Carla']) {
+            for (const displayName of ['Ana', 'example-member', 'Carla']) {
                 await page.getByLabel("Person name").fill(displayName)
                 await page.getByRole('button', { name: 'Add person', exact: true }).click()
                 await expect(page.getByRole('heading', { name: displayName, exact: true })).toBeVisible()

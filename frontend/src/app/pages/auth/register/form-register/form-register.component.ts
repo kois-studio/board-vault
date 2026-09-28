@@ -5,9 +5,10 @@ import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs'
 import { Api } from '../../../../api/api'
 import { ToastService } from '../../../../components/toast/toast.service'
 import { ButtonComponent } from '../../../../components/ui/button/button.component'
+import { IconComponent } from '../../../../components/ui/icon/icon.component'
 
 @Component({
-    imports: [ReactiveFormsModule, CommonModule, ButtonComponent],
+    imports: [ReactiveFormsModule, CommonModule, ButtonComponent, IconComponent],
     selector: 'app-form-register',
     templateUrl: 'form-register.component.html',
 })

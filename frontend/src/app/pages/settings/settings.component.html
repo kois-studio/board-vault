@@ -1,27 +1,30 @@
 <container-wrapper>
+    <h1 class="sr-only">Settings</h1>
     <div class="flex flex-col md:flex-row">
         <!-- Left sidebar -->
         <div class="lg:w-1/4 border-b-4 border-r-0 md:border-r-4 md:border-b-0 border-zinc-200 dark:border-zinc-700 p-4 md:min-h-[30rem]">
             <app-card-account [member]="currentUser$()" />
 
-            <div class="pt-4 grid gap-2">
+            <nav class="pt-4 grid gap-2" aria-label="Settings sections">
                 <a
                     routerLink="/settings/account"
                     [routerLinkActive]="['bg-zinc-200', 'dark:bg-indigo-800']"
-                    class="flex gap-2 py-2 px-4 rounded-lg hover:bg-zinc-300 dark:hover:bg-indigo-600 w-full"
+                    [attr.aria-current]="router.isActive('/settings/account', false) ? 'page' : null"
+                    class="flex min-h-11 items-center gap-2 rounded-lg px-4 py-2 hover:bg-zinc-300 dark:hover:bg-indigo-600 w-full"
                 >
-                    <i class="bi bi-person-circle"></i>
+                    <app-icon name="user-circle" [size]="18" aria-hidden="true" />
                     <span>Profile</span>
                 </a>
                 <a
                     routerLink="/settings/security"
                     [routerLinkActive]="['bg-zinc-200', 'dark:bg-indigo-800']"
-                    class="flex gap-2 py-2 px-4 rounded-lg hover:bg-zinc-300 dark:hover:bg-indigo-600 w-full"
+                    [attr.aria-current]="router.isActive('/settings/security', false) ? 'page' : null"
+                    class="flex min-h-11 items-center gap-2 rounded-lg px-4 py-2 hover:bg-zinc-300 dark:hover:bg-indigo-600 w-full"
                 >
-                    <i class="bi bi-shield-lock-fill"></i>
+                    <app-icon name="shield-lock" [size]="18" aria-hidden="true" />
                     <span>Security</span>
                 </a>
-            </div>
+            </nav>
         </div>
         <!-- Right content area -->
         <div class="md:w-3/4 p-8">

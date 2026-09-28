@@ -1,13 +1,14 @@
-import { Component, ElementRef, Renderer2, ViewChild, computed, inject } from '@angular/core'
+import { Component, ElementRef, HostListener, Renderer2, ViewChild, computed, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
+import { IconComponent } from '../../components/ui/icon/icon.component'
 import { DataService } from '../../core/services/data.service'
 import { LoginService } from '../../core/services/login.service'
 import { ModalProfileInvitationsComponent } from './modals/modal-profile-invitations/modal-profile-invitations.component'
 import { ModalProfileNotificationsComponent } from './modals/modal-profile-notifications/modal-profile-notifications.component'
 
 @Component({
-    imports: [ImageProfileComponent, ModalProfileInvitationsComponent, ModalProfileNotificationsComponent, RouterLink],
+    imports: [ImageProfileComponent, IconComponent, ModalProfileInvitationsComponent, ModalProfileNotificationsComponent, RouterLink],
     selector: 'app-profile-menu',
     templateUrl: 'profile-menu.component.html',
 })
@@ -45,17 +46,26 @@ export class ProfileMenuComponent {
     @ViewChild(ModalProfileInvitationsComponent) modalProfileInvitationsComponent!: ModalProfileInvitationsComponent
     @ViewChild(ModalProfileNotificationsComponent) modalProfileNotificationsComponent!: ModalProfileNotificationsComponent
 
+    @ViewChild('profileTrigger') private profileTrigger?: ElementRef<HTMLButtonElement>
+
     // Method to toggle the dropdown
     toggleDropdown() {
-        this.isDropdownVisible = !this.isDropdownVisible
+        this.isDropdownVisible ? this.closeDropdown() : this.openDropdown()
+    }
 
-        // If dropdown is visible, attach the click listener
-        if (this.isDropdownVisible) {
-            this.clickListener = this.renderer.listen('document', 'click', (event: MouseEvent) => {
-                this.handleOutsideClick(event)
-            })
-        } else {
-            this.removeClickListener()
+    private openDropdown(): void {
+        this.isDropdownVisible = true
+
+        this.clickListener = this.renderer.listen('document', 'click', (event: MouseEvent) => this.handleOutsideClick(event))
+        setTimeout(() => (this.elementRef.nativeElement as HTMLElement).querySelector<HTMLElement>('[role="menuitem"]')?.focus())
+    }
+
+    private closeDropdown(restoreFocus = true): void {
+        this.isDropdownVisible = false
+        this.removeClickListener()
+
+        if (restoreFocus) {
+            setTimeout(() => this.profileTrigger?.nativeElement.focus())
         }
     }
 
@@ -63,8 +73,14 @@ export class ProfileMenuComponent {
     handleOutsideClick(event: MouseEvent) {
         const clickedInside = this.elementRef.nativeElement.contains(event.target)
         if (!clickedInside) {
-            this.isDropdownVisible = false
-            this.removeClickListener()
+            this.closeDropdown(false)
+        }
+    }
+
+    @HostListener('document:keydown.escape')
+    public onEscape(): void {
+        if (this.isDropdownVisible) {
+            this.closeDropdown()
         }
     }
 
@@ -78,21 +94,21 @@ export class ProfileMenuComponent {
 
     // #region Methods
     public onClickProfileSettings() {
-        this.isDropdownVisible = false
+        this.closeDropdown(false)
     }
 
     public onClickInvitations() {
         this.modalProfileInvitationsComponent.showDialog()
-        this.isDropdownVisible = false
+        this.closeDropdown(false)
     }
 
     public onClickNotifications() {
         this.modalProfileNotificationsComponent.showDialog()
-        this.isDropdownVisible = false
+        this.closeDropdown(false)
     }
 
     public onClickSubmissions() {
-        this.isDropdownVisible = false
+        this.closeDropdown(false)
     }
 
     public async onClickSignOut(): Promise<void> {

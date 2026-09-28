@@ -116,7 +116,7 @@ describe('SessionsService', () => {
         database.getGroupPeople.mockResolvedValue({
             rows: [
                 [10, 7, null, 'placeholder', 'active', 'Ana'],
-                [11, 7, 2, 'linked', 'active', 'Bruno'],
+                [11, 7, 2, 'linked', 'active', 'example-member'],
             ],
         })
         database.getGroupAvailableGameIdsForPeople.mockResolvedValue([84])

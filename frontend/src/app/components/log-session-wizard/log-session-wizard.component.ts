@@ -13,6 +13,7 @@ import type {
 } from '../../api/api.types'
 import { ButtonComponent } from '../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
+import { IconComponent } from '../../components/ui/icon/icon.component'
 import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'
 import { SpinnerComponent } from '../../components/ui/spinner/spinner.component'
 import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
@@ -22,7 +23,7 @@ import { CardAccountComponent } from '../card-account/card-account.component'
 import { ToastService } from '../toast/toast.service'
 import { ImageBackgroundComponent } from '../ui/image-background/image-background.component'
 
-type SessionStep = 'group' | 'date' | 'attendees' | 'games' | 'matrix' | 'notes'
+type SessionStep = 'group' | 'date' | 'attendees' | 'games' | 'matrix' | 'notes' | 'review'
 
 interface AttendeeSelection {
     user: PublicUserType & {
@@ -60,6 +61,7 @@ interface StepInfo {
         SpinnerComponent,
         PageHeaderComponent,
         ContainerWrapperComponent,
+        IconComponent,
         CardAccountComponent,
         ImageBackgroundComponent,
         ButtonComponent,
@@ -104,6 +106,7 @@ export class LogSessionWizardComponent {
         { key: 'games', label: 'Games', description: 'Select which games were played' },
         { key: 'matrix', label: 'Who played what?', description: 'Tell the group who played each game' },
         { key: 'notes', label: 'Notes', description: 'Add a note about this session (optional)' },
+        { key: 'review', label: 'Review', description: 'Check the memory before saving it' },
     ]
 
     // --------------------------------------------------------------------------
@@ -167,6 +170,8 @@ export class LogSessionWizardComponent {
                     return this.hasParticipantsForEveryGame()
                 case 'notes':
                     return true
+                case 'review':
+                    return this.selectedGroup() !== null && this.hasParticipantsForEveryGame()
                 default:
                     return false
             }
@@ -181,7 +186,7 @@ export class LogSessionWizardComponent {
             }
 
             // Check if user has navigated past this step
-            const stepOrder = ['group', 'date', 'attendees', 'games', 'matrix', 'notes']
+            const stepOrder = ['group', 'date', 'attendees', 'games', 'matrix', 'notes', 'review']
             const currentStepIndex = stepOrder.indexOf(this.currentStep())
             const stepIndex = stepOrder.indexOf(step)
 
@@ -222,6 +227,8 @@ export class LogSessionWizardComponent {
             }
             case 'notes':
                 return this.sessionNotes.value?.trim() ? 'Added' : 'Optional'
+            case 'review':
+                return 'Ready to save'
             default:
                 return ''
         }
@@ -450,6 +457,10 @@ export class LogSessionWizardComponent {
                 this.markStepAsInteracted('matrix')
                 break
             case 'notes':
+                this.currentStep.set('review')
+                this.markStepAsInteracted('notes')
+                break
+            case 'review':
                 this.submitSession()
                 break
         }
@@ -471,6 +482,9 @@ export class LogSessionWizardComponent {
                 break
             case 'notes':
                 this.currentStep.set('matrix')
+                break
+            case 'review':
+                this.currentStep.set('notes')
                 break
         }
     }
@@ -675,6 +689,12 @@ export class LogSessionWizardComponent {
 
     public getSelectedAttendees(): AttendeeSelection[] {
         return this.attendees().filter((a) => a.selected)
+    }
+
+    public getSelectedAttendeeNames(): string {
+        return this.getSelectedAttendees()
+            .map((attendee) => attendee.user.displayName || attendee.user.username)
+            .join(', ')
     }
 
     public getSelectedGames(): GameSelection[] {

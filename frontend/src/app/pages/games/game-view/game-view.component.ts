@@ -11,6 +11,7 @@ import { TagsComponent } from '../../../components/tags/tags.component'
 import { ToastService } from '../../../components/toast/toast.service'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
+import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../../../components/ui/image-background/image-background.component'
 import { ReviewDisplayComponent } from '../../../components/ui/review-display/review-display.component'
 import { SpinnerComponent } from '../../../components/ui/spinner/spinner.component'
@@ -24,6 +25,7 @@ import { DataService } from '../../../core/services/data.service'
         RouterLink,
         ContainerWrapperComponent,
         ImageBackgroundComponent,
+        IconComponent,
         ReviewDisplayComponent,
         TagsComponent,
         ButtonComponent,
@@ -92,7 +94,6 @@ export class GameViewPageComponent implements OnDestroy {
     private _routeSub: Subscription | undefined
     private lastLoadedGameKey: string | null = null
     public wishlistAnimation = false // used for a little scale animation
-    public reviewHoverValue = 0
     public isLoadingGameData = true // initial loading state
     public readonly gameLoadError = signal(false)
     // ownership form

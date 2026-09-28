@@ -8,7 +8,7 @@
                 </h2>
                 <p class="mt-2 text-sm text-indigo-100">{{ group.members.length }} people · {{ totalGames.length }} shared games</p>
             </div>
-            <i class="bi bi-people-fill mt-1 text-2xl text-indigo-200" aria-hidden="true"></i>
+            <app-icon name="users" [size]="24" className="mt-1 text-indigo-200" aria-hidden="true" />
         </div>
     </header>
 
@@ -53,7 +53,7 @@
 
         @if (invitations && invitations.length > 0) {
             <p class="flex items-center gap-2 border-t border-zinc-200 pt-4 text-sm text-secondary dark:border-zinc-700">
-                <i class="bi bi-envelope" aria-hidden="true"></i>
+                <app-icon name="mail" [size]="16" aria-hidden="true" />
                 {{ invitations.length }} pending invitation{{ invitations.length === 1 ? '' : 's' }}
                 <a [routerLink]="['/groups', group.id, 'edit']" class="text-indigo-700 underline hover:no-underline dark:text-indigo-300">Manage invitations</a>
             </p>
