@@ -1,4 +1,4 @@
-<app-page-header titleText="My Games" [showActionButton]="true">
+<app-page-header titleText="Private shelf" [showActionButton]="true">
     Your private shelf — games you can bring into group decisions
 
     <app-button class="action-button" icon="plus-lg" routerLink="/collection/browse">Explore Games</app-button>
@@ -24,7 +24,7 @@
         </div>
     } @else if (userGames$().length === 0) {
         <section class="rounded-2xl border border-dashed border-zinc-300 p-8 text-center dark:border-zinc-700" aria-labelledby="empty-collection-heading">
-            <i class="bi bi-collection text-4xl text-indigo-500" aria-hidden="true"></i>
+            <app-icon name="library" [size]="40" className="text-indigo-500" aria-hidden="true" />
             <h2 id="empty-collection-heading" class="mt-3 text-xl font-semibold">Start with the games you actually bring to the table</h2>
             <p class="mx-auto mt-2 max-w-xl text-secondary">A few real games make group suggestions useful. Add your first five, then invite friends or choose what to play together.</p>
             <div class="mt-5 flex flex-wrap justify-center gap-3">
@@ -35,18 +35,19 @@
     } @else {
         <section class="mb-5 flex flex-wrap items-center justify-between gap-3" aria-label="Collection summary">
             <p class="text-secondary">Only you manage this shelf. Open a group to see shared ownership, play memory, and decisions.</p>
-            <a class="text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400" routerLink="/groups">Open group workspace →</a>
+            <a class="text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400" routerLink="/groups">Open group workspace</a>
         </section>
         <section class="flex flex-wrap gap-4" aria-label="Your private games">
             @for (game of userGames$(); track game.id) {
-                <app-card-game
-                    [routerLink]="['/games', game.id]"
-                    [title]="game.titleTranslations.en"
-                    [imageUrl]="game.imageUrl"
-                    [gameAvgDuration]="game.gameAvgDuration"
-                    [minPlayers]="game.minPlayers"
-                    [maxPlayers]="game.maxPlayers"
-                />
+                <a [routerLink]="['/games', game.id]" class="block rounded-lg focus-visible:outline-none">
+                    <app-card-game
+                        [title]="game.titleTranslations.en"
+                        [imageUrl]="game.imageUrl"
+                        [gameAvgDuration]="game.gameAvgDuration"
+                        [minPlayers]="game.minPlayers"
+                        [maxPlayers]="game.maxPlayers"
+                    />
+                </a>
             }
         </section>
     }

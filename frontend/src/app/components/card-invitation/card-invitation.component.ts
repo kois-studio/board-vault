@@ -4,9 +4,10 @@ import { InvitationWithExtraData } from '../../api/api.types'
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { DataService } from '../../core/services/data.service'
 import { CardAccountComponent } from '../card-account/card-account.component'
+import { IconComponent } from '../ui/icon/icon.component'
 
 @Component({
-    imports: [CardAccountComponent, CustomDatePipe],
+    imports: [CardAccountComponent, CustomDatePipe, IconComponent],
     selector: 'app-card-invitation',
     templateUrl: 'card-invitation.component.html',
 })

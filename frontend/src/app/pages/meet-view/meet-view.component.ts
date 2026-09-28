@@ -16,13 +16,22 @@ import type {
 import { CardAccountComponent } from '../../components/card-account/card-account.component'
 import { ToastService } from '../../components/toast/toast.service'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
+import { DialogDirective } from '../../components/ui/dialog/dialog.directive'
 import { ImageBackgroundComponent } from '../../components/ui/image-background/image-background.component'
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { DataService } from '../../core/services/data.service'
 import type { Nullable } from '../../core/types/commons.type'
 
 @Component({
-    imports: [CommonModule, RouterLink, CustomDatePipe, CardAccountComponent, ImageBackgroundComponent, ContainerWrapperComponent],
+    imports: [
+        CommonModule,
+        RouterLink,
+        CustomDatePipe,
+        CardAccountComponent,
+        ImageBackgroundComponent,
+        ContainerWrapperComponent,
+        DialogDirective,
+    ],
     templateUrl: 'meet-view.component.html',
 })
 export class MeetViewComponent {
@@ -49,6 +58,8 @@ export class MeetViewComponent {
     public isUpdatingAttendance = false
     public isUpdatingShortlist = false
     public isPersistingChanges = false
+    public readonly actionError = signal<string | null>(null)
+    public readonly pendingStatus = signal<'completed' | 'cancelled' | null>(null)
     public plannedGameIdsDraft: Array<number> = []
     public postSessionRatings: Record<number, number> = {}
     public savingPostSessionRatings: Record<number, boolean> = {}
@@ -179,6 +190,15 @@ export class MeetViewComponent {
         return this.meetData?.playedGames.length ?? 0
     }
 
+    get skippedGamesCount(): number {
+        return this.meetData?.skippedGames.length ?? 0
+    }
+
+    get remainingPlannedGamesCount(): number {
+        if (!this.meetData) return 0
+        return this.meetData.plannedGames.filter((gameId) => !this.meetData?.playedGames.includes(gameId)).length
+    }
+
     get attendedCount(): number {
         return this.isGroupPersonSession
             ? (this.meetData?.participantStatuses?.filter((attendee) => attendee.attendanceStatus === 'attended').length ?? 0)
@@ -260,6 +280,23 @@ export class MeetViewComponent {
             default:
                 return ''
         }
+    }
+
+    public requestStatusUpdate(status: 'completed' | 'cancelled'): void {
+        if (!this.canManageLifecycle || !this.canEditSession || this.isUpdatingStatus) return
+        this.pendingStatus.set(status)
+    }
+
+    public cancelStatusUpdate(): void {
+        this.pendingStatus.set(null)
+    }
+
+    public confirmStatusUpdate(): void {
+        const status = this.pendingStatus()
+        if (!status) return
+
+        this.pendingStatus.set(null)
+        void this.updateStatus(status)
     }
 
     get currentRsvpStatus(): 'pending' | 'accepted' | 'declined' | null {
@@ -449,6 +486,7 @@ export class MeetViewComponent {
     async updateStatus(status: 'active' | 'completed' | 'cancelled'): Promise<void> {
         if (!this.meetData || !this.canManageLifecycle || !this.canEditSession) return
 
+        this.actionError.set(null)
         this.isUpdatingStatus = true
         try {
             const result = await firstValueFrom(this.api.updateSessionStatus(this.meetData.id, { status }))
@@ -457,6 +495,7 @@ export class MeetViewComponent {
             this.dataService.refreshUserMeets()
             this.toastService.success(`Session marked as ${status}.`)
         } catch {
+            this.actionError.set('Could not update the session status. Try again from this page.')
             this.toastService.error('Could not update the session status.')
         } finally {
             this.isUpdatingStatus = false
@@ -466,6 +505,7 @@ export class MeetViewComponent {
     async updateRsvp(rsvpStatus: 'accepted' | 'declined'): Promise<void> {
         if (!this.meetData || !this.canRespondToRsvp || this.isUpdatingRsvp) return
 
+        this.actionError.set(null)
         this.isUpdatingRsvp = true
         try {
             const result = await firstValueFrom(this.api.updateSessionRsvp(this.meetData.id, { rsvpStatus }))
@@ -479,6 +519,7 @@ export class MeetViewComponent {
             }
             this.toastService.success(result.rsvpStatus === 'accepted' ? 'You are marked as going.' : 'Your RSVP was declined.')
         } catch {
+            this.actionError.set('Could not save your RSVP. Try again from this page.')
             this.toastService.error('Could not save your RSVP.')
         } finally {
             this.isUpdatingRsvp = false
@@ -488,6 +529,7 @@ export class MeetViewComponent {
     async toggleAttendance(memberId: number): Promise<void> {
         if (!this.meetData || !this.canRecordAttendance || this.isUpdatingAttendance) return
 
+        this.actionError.set(null)
         const previousStatuses = this.meetData.attendeeStatuses.map((attendee) => ({ ...attendee }))
         const attendedIds = this.meetData.attendeeStatuses
             .filter((attendee) => attendee.attendanceStatus === 'attended')
@@ -504,6 +546,7 @@ export class MeetViewComponent {
             this.toastService.success('Attendance saved.')
         } catch {
             this.meetData.attendeeStatuses = previousStatuses
+            this.actionError.set('Could not save attendance. Your previous attendance state was restored; try again.')
             this.toastService.error('Could not save attendance.')
         } finally {
             this.isUpdatingAttendance = false
@@ -513,6 +556,7 @@ export class MeetViewComponent {
     async toggleGroupPersonAttendance(personId: number): Promise<void> {
         if (!this.meetData || !this.isGroupPersonSession || !this.canRecordAttendance || this.isUpdatingAttendance) return
 
+        this.actionError.set(null)
         const previousStatuses = (this.meetData.participantStatuses ?? []).map((attendee) => ({ ...attendee }))
         const attendedIds = (this.meetData.participantStatuses ?? [])
             .filter((attendee) => attendee.attendanceStatus === 'attended')
@@ -529,6 +573,7 @@ export class MeetViewComponent {
             this.toastService.success('Attendance saved.')
         } catch {
             this.meetData.participantStatuses = previousStatuses
+            this.actionError.set('Could not save attendance. Your previous attendance state was restored; try again.')
             this.toastService.error('Could not save attendance.')
         } finally {
             this.isUpdatingAttendance = false
@@ -626,6 +671,7 @@ export class MeetViewComponent {
     async savePlannedGames(): Promise<void> {
         if (!this.meetData || !this.canManageLifecycle || !this.canEditSession || this.isUpdatingShortlist) return
 
+        this.actionError.set(null)
         const previousIds = [...this.meetData.plannedGames]
         this.isUpdatingShortlist = true
         try {
@@ -637,6 +683,7 @@ export class MeetViewComponent {
             this.toastService.success('Shortlist saved.')
         } catch {
             this.plannedGameIdsDraft = previousIds
+            this.actionError.set('Could not save the shortlist. Your previous shortlist is still active; try again.')
             this.toastService.error('Could not save the shortlist.')
         } finally {
             this.isUpdatingShortlist = false
@@ -717,6 +764,7 @@ export class MeetViewComponent {
             return
         }
 
+        this.actionError.set(null)
         const previousPlayedGames = [...this.meetData.playedGames]
         const previousParticipants = this.meetData.playedGameParticipants.map((game) => ({
             ...game,
@@ -754,6 +802,7 @@ export class MeetViewComponent {
             this.meetData.playedGames = previousPlayedGames
             this.meetData.playedGameParticipants = previousParticipants
             this.meetData.playedGamePersonParticipants = previousPersonParticipants
+            this.actionError.set('Could not save the played-game state. Your previous state was restored; try again.')
         } finally {
             this.isPersistingChanges = false
         }
@@ -768,6 +817,7 @@ export class MeetViewComponent {
             return
         }
 
+        this.actionError.set(null)
         const previousParticipants = this.meetData.playedGameParticipants.map((game) => ({
             ...game,
             participantIds: [...game.participantIds],
@@ -785,6 +835,7 @@ export class MeetViewComponent {
             await this.#saveGamesPlayedSelection()
         } catch {
             this.meetData.playedGameParticipants = previousParticipants
+            this.actionError.set('Could not save the played-game participants. Your previous state was restored; try again.')
             this.toastService.error('Could not save the played game changes.')
         } finally {
             this.isPersistingChanges = false
@@ -807,6 +858,7 @@ export class MeetViewComponent {
             return
         }
 
+        this.actionError.set(null)
         const previousParticipants = (this.meetData.playedGamePersonParticipants ?? []).map((game) => ({
             ...game,
             participantIds: [...game.participantIds],
@@ -824,6 +876,7 @@ export class MeetViewComponent {
             await this.#saveGamesPlayedSelection()
         } catch {
             this.meetData.playedGamePersonParticipants = previousParticipants
+            this.actionError.set('Could not save the played-game participants. Your previous state was restored; try again.')
             this.toastService.error('Could not save the played game changes.')
         } finally {
             this.isPersistingChanges = false

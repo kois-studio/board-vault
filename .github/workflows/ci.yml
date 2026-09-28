@@ -24,6 +24,8 @@ jobs:
                   fetch-depth: 0
             - name: Check patch whitespace
               run: git diff --check
+            - name: Check public tree boundary
+              run: npm run check:public-tree
 
     backend:
         name: Backend tests and build
@@ -111,3 +113,5 @@ jobs:
               run: node database/scripts/verify-empty-state.mjs
             - name: Run synthetic backup and restore rehearsal
               run: node database/scripts/verify-restore-rehearsal.mjs
+            - name: Run synthetic rollback and recovery rehearsal
+              run: node database/scripts/verify-rollback-rehearsal.mjs

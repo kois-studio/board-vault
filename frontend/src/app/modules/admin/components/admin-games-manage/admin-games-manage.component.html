@@ -11,22 +11,30 @@
     <!-- Search Bar -->
     <div class="search-container mb-6">
         <div class="relative">
-            <input 
+            <label for="admin-game-search" class="sr-only">Search games to manage</label>
+            <input
+                id="admin-game-search"
                 type="text" 
                 placeholder="Search games..." 
-                class="w-full p-3 pl-10 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-zinc-700 dark:text-zinc-100"
+                class="w-full p-3 pl-10 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-zinc-700 dark:text-zinc-100"
                 [formControl]="searchControl"
             />
             <div class="absolute left-3 top-3">
-                <i class="bi bi-search text-zinc-400"></i>
+                <app-icon name="search" [size]="18" className="text-zinc-400" />
             </div>
             @if (isSearching$()) {
                 <div class="absolute right-3 top-3">
-                    <i class="bi bi-arrow-repeat spin text-zinc-400"></i>
+                <app-icon name="refresh" [size]="18" className="text-zinc-400 motion-safe:animate-spin" />
                 </div>
             }
         </div>
     </div>
+
+    @if (searchError(); as error) {
+        <div class="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-200" role="alert">
+            {{ error }} Search again to retry.
+        </div>
+    }
 
     <!-- Loading state -->
     @if (isSearching$()) {
@@ -51,11 +59,7 @@
                     <div class="flex items-start justify-between">
                         <div class="flex-1">
                             <div class="flex items-center gap-3 mb-2">
-                                <img 
-                                    [src]="game.imageUrl" 
-                                    [alt]="game.title"
-                                    class="w-12 h-12 rounded-md object-cover"
-                                />
+                                <image-background class="block h-12 w-12 rounded-md" [src]="game.imageUrl" [alt]="game.title + ' cover'" />
                                 <div>
                                     <h3 class="font-medium text-zinc-900 dark:text-zinc-100">{{ game.title }}</h3>
                                     <p class="text-sm text-zinc-500 dark:text-zinc-400">
@@ -110,6 +114,16 @@
                 </div>
             }
         </div>
+    }
+
+    @if (pagination(); as page) {
+        <nav class="flex flex-wrap items-center justify-between gap-3 border-t border-zinc-200 pt-4 dark:border-zinc-700" aria-label="Game management pagination">
+            <p class="text-sm text-zinc-500 dark:text-zinc-400">Showing {{ (page.currentPage - 1) * page.itemsPerPage + 1 }}–{{ Math.min(page.currentPage * page.itemsPerPage, page.totalItems) }} of {{ page.totalItems }}</p>
+            <div class="flex gap-2">
+                <button type="button" class="app-btn-secondary" [disabled]="page.currentPage <= 1 || isSearching$()" (click)="onPageChange(page.currentPage - 1)">Previous</button>
+                <button type="button" class="app-btn-secondary" [disabled]="page.currentPage >= page.totalPages || isSearching$()" (click)="onPageChange(page.currentPage + 1)">Next</button>
+            </div>
+        </nav>
     }
 
     <!-- Modals -->

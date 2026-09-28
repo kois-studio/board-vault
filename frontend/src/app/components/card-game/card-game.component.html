@@ -1,10 +1,10 @@
-<div class="flex flex-col rounded-lg bg-zinc-100 dark:bg-zinc-800 shadow-md hover:shadow-lg transition-shadow cursor-pointer w-42 animate__animated animate__fadeIn animate__faster">
-    <image-background class="aspect-square rounded-t-lg overflow-hidden" [src]="imageUrl" />
+<div class="flex w-42 flex-col rounded-lg bg-zinc-100 shadow-md transition-shadow hover:shadow-lg motion-reduce:transition-none dark:bg-zinc-800">
+    <image-background class="aspect-square overflow-hidden rounded-t-lg" [src]="imageUrl" [alt]="title + ' cover'" />
 
     <div class="overflow-hidden px-4 py-2">
         <h3 class="font-medium overflow-hidden text-ellipsis whitespace-nowrap">{{ title }}</h3>
-        <p class="text-secondary text-sm"><i class="bi bi-clock-fill"></i> {{ gameAvgDuration }} mins</p>
-        <p class="text-secondary text-sm"><i class="bi bi-people-fill"></i> {{ minPlayers }} - {{ maxPlayers }}</p>
+        <p class="text-secondary flex items-center gap-1 text-sm"><app-icon name="clock" [size]="14" /> {{ gameAvgDuration }} mins</p>
+        <p class="text-secondary flex items-center gap-1 text-sm"><app-icon name="users" [size]="14" /> {{ minPlayers }} - {{ maxPlayers }}</p>
         @if (review) {
         <review-display [review]="review" />
         }

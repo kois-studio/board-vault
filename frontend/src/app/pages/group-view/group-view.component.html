@@ -28,7 +28,28 @@
         </div>
     } @else {
         @if (groupData$(); as group) {
-        <div class="space-y-8 py-6">
+        <div class="flex flex-col space-y-8 py-6">
+            <nav class="flex flex-col gap-3 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 sm:flex-row sm:items-center sm:justify-between" aria-label="Current group context">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-secondary">Current group</p>
+                    <p class="mt-1 text-sm text-secondary">All decisions, games, and sessions stay scoped to this private group.</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-3">
+                    <label class="sr-only" for="current-group-switcher">Switch current group</label>
+                    <select
+                        id="current-group-switcher"
+                        class="min-h-11 min-w-48 rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm font-semibold text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white"
+                        [value]="group.id"
+                        (change)="onGroupSwitcherChange($event)"
+                    >
+                        @for (availableGroup of userGroups$(); track availableGroup.id) {
+                            <option [value]="availableGroup.id">{{ availableGroup.name }}</option>
+                        }
+                    </select>
+                    <a class="app-btn-secondary text-center" routerLink="/groups">All groups</a>
+                </div>
+            </nav>
+
             @if (needsFirstGroupSetup()) {
                 <section class="rounded-3xl border border-indigo-100 bg-indigo-50 p-6 dark:border-indigo-900/60 dark:bg-indigo-950/30 sm:p-8" aria-labelledby="first-group-setup-heading">
                     <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">First steps for this group</p>
@@ -48,7 +69,7 @@
                                     <h3 class="font-semibold text-zinc-900 dark:text-white">Bring in your people</h3>
                                     @if (isGroupOwnerComputed()) {
                                         <p class="mt-1 text-sm leading-6 text-secondary">Invite the friends who make this a real game night.</p>
-                                        <a class="mt-3 inline-block text-sm font-semibold text-indigo-600 hover:underline dark:text-indigo-400" [routerLink]="['/groups', group.id, 'edit']">Invite friends →</a>
+                                        <a class="mt-3 inline-block text-sm font-semibold text-indigo-600 hover:underline dark:text-indigo-400" [routerLink]="['/groups', group.id, 'edit']">Invite friends</a>
                                     } @else {
                                         <p class="mt-1 text-sm leading-6 text-secondary">Ask the group owner to invite the rest of your table.</p>
                                     }
@@ -61,7 +82,7 @@
                                 <div>
                                     <h3 class="font-semibold text-zinc-900 dark:text-white">Add useful games</h3>
                                     <p class="mt-1 text-sm leading-6 text-secondary">Add the games you actually own so the shared shelf reflects reality.</p>
-                                    <a class="mt-3 inline-block text-sm font-semibold text-indigo-600 hover:underline dark:text-indigo-400" routerLink="/collection/browse">Add games →</a>
+                                    <a class="mt-3 inline-block text-sm font-semibold text-indigo-600 hover:underline dark:text-indigo-400" routerLink="/collection/browse">Add games</a>
                                 </div>
                             </div>
                         </li>
@@ -71,7 +92,7 @@
                                 <div>
                                     <h3 class="font-semibold text-zinc-900 dark:text-white">Plan the first night</h3>
                                     <p class="mt-1 text-sm leading-6 text-secondary">Choose a date and let the group turn this space into a memory.</p>
-                                    <a class="mt-3 inline-block text-sm font-semibold text-indigo-600 hover:underline dark:text-indigo-400" [routerLink]="['/groups', group.id, 'sessions', 'new']">Plan a session →</a>
+                                    <a class="mt-3 inline-block text-sm font-semibold text-indigo-600 hover:underline dark:text-indigo-400" [routerLink]="['/groups', group.id, 'sessions', 'new']">Plan a session</a>
                                 </div>
                             </div>
                         </li>
@@ -90,7 +111,7 @@
                 </div>
             </nav>
 
-            <section id="people" class="scroll-mt-24 rounded-2xl border border-indigo-100 bg-indigo-50/60 p-6 dark:border-indigo-900/60 dark:bg-indigo-950/20" aria-labelledby="people-heading">
+            <section id="people" class="order-4 scroll-mt-24 rounded-2xl border border-indigo-100 bg-indigo-50/60 p-6 dark:border-indigo-900/60 dark:bg-indigo-950/20" aria-labelledby="people-heading">
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Group people</p>
@@ -124,8 +145,8 @@
                 } @else if (!currentUserHasGroupPersonComputed() && !isGroupOwnerComputed()) {
                     <div class="mt-5 rounded-2xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
                         <p class="font-semibold">Represent yourself in this group</p>
-                        <p class="mt-1 text-sm text-secondary">Your account is a member, but is not yet represented in the group’s participant history.</p>
-                        <button type="button" class="app-btn-secondary mt-3" [disabled]="groupPersonMutationId() !== null" (click)="joinAsNewGroupPerson()">Join as a new group person</button>
+                        <p class="mt-1 text-sm text-secondary">Your account is already a member, but is not yet represented in this group’s participant history. This only adds a group-scoped person record; it does not grant access or invite anyone.</p>
+                        <button type="button" class="app-btn-secondary mt-3" [disabled]="groupPersonMutationId() !== null" (click)="joinAsNewGroupPerson()">Add me to group history</button>
                     </div>
                 }
 
@@ -158,30 +179,53 @@
                                     }
                                 </div>
                                 @if (groupPersonAvailableGamesComputed().length > 0 && isGroupOwnerComputed()) {
-                                    <div class="mt-4 flex flex-wrap gap-2" aria-label="Games this person may own">
+                                    <div class="mt-4 grid gap-3 sm:grid-cols-2" aria-label="Games this person may own">
                                         @for (game of groupPersonAvailableGamesComputed(); track game.id) {
-                                            <button
-                                                type="button"
-                                                class="rounded-full border px-2.5 py-1 text-xs transition-colors"
-                                                [ngClass]="getGroupPersonOwnershipStatus(person, game.id) === 'asserted' ? 'border-indigo-500 bg-indigo-100 text-indigo-800 dark:bg-indigo-950/50 dark:text-indigo-200' : getGroupPersonOwnershipStatus(person, game.id) === 'disputed' ? 'border-amber-500 bg-amber-100 text-amber-800 dark:bg-amber-950/50 dark:text-amber-200' : 'border-zinc-200 text-secondary dark:border-zinc-700'"
-                                                [attr.aria-pressed]="ownsGroupPersonGame(person, game.id)"
-                                                [attr.aria-label]="(getGroupPersonOwnershipStatus(person, game.id) || 'not recorded') + ' ownership for ' + (game.titleTranslations.en || game.title || 'Game')"
-                                                [attr.title]="getGroupPersonOwnershipSource(person, game.id) || 'Click to record ownership; click again to mark disputed, rejected, or asserted.'"
-                                                [disabled]="groupPersonMutationId() !== null"
-                                                (click)="toggleGroupPersonGame(person, game.id)"
-                                            >{{ game.titleTranslations.en || game.title || 'Game' }}<span class="ml-1 opacity-70">{{ getGroupPersonOwnershipStatus(person, game.id) === 'disputed' ? '· disputed' : getGroupPersonOwnershipStatus(person, game.id) === 'rejected' ? '· rejected' : '' }}</span></button>
+                                            <div class="min-w-0">
+                                                <label class="text-xs font-medium text-secondary" [for]="'group-person-ownership-' + person.person.id + '-' + game.id">
+                                                    {{ game.titleTranslations.en || game.title || 'Game' }} ownership
+                                                </label>
+                                                <select
+                                                    class="mt-1 min-h-11 w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+                                                    [id]="'group-person-ownership-' + person.person.id + '-' + game.id"
+                                                    [value]="getGroupPersonOwnershipStatus(person, game.id) ?? ''"
+                                                    [disabled]="groupPersonMutationId() !== null"
+                                                    (change)="setGroupPersonOwnership(person, game.id, $event)"
+                                                >
+                                                    <option value="" [disabled]="getGroupPersonOwnershipStatus(person, game.id) !== null">Not recorded</option>
+                                                    <option value="asserted">Asserted ownership</option>
+                                                    <option value="disputed">Disputed</option>
+                                                    <option value="rejected">Rejected</option>
+                                                </select>
+                                                @if (getGroupPersonOwnershipSource(person, game.id); as source) {
+                                                    <p class="mt-1 text-xs text-secondary">{{ source }}</p>
+                                                }
+                                            </div>
                                         }
                                     </div>
-                                    <div class="mt-3 flex flex-wrap gap-2" aria-label="Games this person may prefer">
+                                    <div class="mt-4 grid gap-3 sm:grid-cols-2" aria-label="Games this person may prefer">
                                         @for (game of groupPersonAvailableGamesComputed(); track game.id) {
-                                            <button
-                                                type="button"
-                                                class="rounded-full border border-zinc-200 px-2.5 py-1 text-xs text-secondary transition-colors hover:border-indigo-400 dark:border-zinc-700"
-                                                [attr.aria-label]="'Preference for ' + (game.titleTranslations.en || game.title || 'Game')"
-                                                [attr.title]="getGroupPersonPreferenceSource(person, game.id) || 'Click to cycle preference: like, favorite, neutral, avoid, or clear.'"
-                                                [disabled]="groupPersonMutationId() !== null"
-                                                (click)="cycleGroupPersonPreference(person, game.id)"
-                                            >{{ game.titleTranslations.en || game.title || 'Game' }}: {{ getGroupPersonPreference(person, game.id) || 'none' }}<span class="ml-1 opacity-70">{{ getGroupPersonPreferenceSource(person, game.id) ? '· ' + getGroupPersonPreferenceSource(person, game.id) : '' }}</span></button>
+                                            <div class="min-w-0">
+                                                <label class="text-xs font-medium text-secondary" [for]="'group-person-preference-' + person.person.id + '-' + game.id">
+                                                    {{ game.titleTranslations.en || game.title || 'Game' }} preference
+                                                </label>
+                                                <select
+                                                    class="mt-1 min-h-11 w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+                                                    [id]="'group-person-preference-' + person.person.id + '-' + game.id"
+                                                    [value]="getGroupPersonPreference(person, game.id) ?? ''"
+                                                    [disabled]="groupPersonMutationId() !== null"
+                                                    (change)="setGroupPersonPreference(person, game.id, $event)"
+                                                >
+                                                    <option value="">Not recorded</option>
+                                                    <option value="favorite">Favorite</option>
+                                                    <option value="like">Like</option>
+                                                    <option value="neutral">Neutral</option>
+                                                    <option value="avoid">Avoid</option>
+                                                </select>
+                                                @if (getGroupPersonPreferenceSource(person, game.id); as source) {
+                                                    <p class="mt-1 text-xs text-secondary">{{ source }}</p>
+                                                }
+                                            </div>
                                         }
                                     </div>
                                 }
@@ -191,7 +235,7 @@
                 }
             </section>
 
-            <section class="grid gap-4 lg:grid-cols-3" aria-label="Group overview">
+            <section class="order-1 grid gap-4 lg:grid-cols-3" aria-label="Group overview">
                 <article class="rounded-2xl bg-indigo-700 p-6 text-white shadow-lg lg:col-span-2">
                     <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-200">Next game night</p>
                     @if (nextMeetingComputed(); as nextMeeting) {
@@ -233,7 +277,7 @@
                 </article>
             </section>
 
-            <section id="decide" class="scroll-mt-24 rounded-2xl border border-indigo-100 bg-indigo-50 p-6 dark:border-indigo-900/60 dark:bg-indigo-950/30" aria-labelledby="decide-heading">
+            <section id="decide" class="order-2 scroll-mt-24 rounded-2xl border border-indigo-100 bg-indigo-50 p-6 dark:border-indigo-900/60 dark:bg-indigo-950/30" aria-labelledby="decide-heading">
                 <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Make the next decision easy</p>
@@ -252,7 +296,7 @@
                 </div>
             </section>
 
-            <section id="acquire" class="scroll-mt-24" aria-labelledby="acquisition-heading">
+            <section id="acquire" class="order-5 scroll-mt-24" aria-labelledby="acquisition-heading">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Group decisions</p>
@@ -271,7 +315,7 @@
                     </div>
                 } @else if (acquisitionBoard$().length === 0) {
                     <div class="mt-5 rounded-2xl border border-dashed border-zinc-300 p-8 text-center dark:border-zinc-700">
-                        <i class="bi bi-bag-heart text-4xl text-indigo-500"></i>
+                        <app-icon name="shopping-bag" [size]="40" className="text-indigo-500" />
                         <h3 class="mt-3 text-lg font-semibold">No group acquisition ideas yet</h3>
                         <p class="mt-2 text-secondary">Browse the catalog and add games that would make a good next group purchase.</p>
                         <a class="app-btn-primary mt-5 inline-block" [routerLink]="['/collection/browse']" [queryParams]="{ groupId: group.id }">Find a game to add</a>
@@ -285,14 +329,11 @@
                                     class="block h-20 w-20 shrink-0"
                                     [attr.aria-label]="'View ' + (entry.gameData.titleTranslations.en || entry.gameData.title || 'game')"
                                 >
-                                    <image-background [src]="entry.gameData.imageUrl" class="block h-full w-full rounded-xl" />
+                                    <image-background [src]="entry.gameData.imageUrl" [alt]="(entry.gameData.titleTranslations.en || entry.gameData.title || 'Game') + ' cover'" class="block h-full w-full rounded-xl" />
                                 </a>
                                 <div class="min-w-0 flex-1">
                                     <div class="flex items-start justify-between gap-3">
                                         <a [routerLink]="['/games', entry.gameData.id]" class="font-semibold hover:underline">{{ entry.gameData.titleTranslations.en }}</a>
-                                        @if (isCurrentUserInterested(entry)) {
-                                            <button type="button" class="shrink-0 text-xs text-secondary underline" [disabled]="acquisitionMutationGameId() === entry.gameData.id" (click)="removeAcquisitionInterest(entry.gameData.id)">Remove my interest</button>
-                                        }
                                     </div>
                                     <p class="mt-2 text-sm text-secondary">{{ entry.gameData.gameAvgDuration }} min · {{ entry.gameData.minPlayers }}–{{ entry.gameData.maxPlayers }} players</p>
                                         <div class="mt-3 flex flex-wrap gap-2 text-xs text-secondary">
@@ -302,7 +343,19 @@
                                             [ngClass]="entry.decisionStatus === 'planned' ? 'bg-green-100 text-green-800 dark:bg-green-950/40 dark:text-green-300' : entry.decisionStatus === 'not_now' ? 'bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300' : 'bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300'"
                                         >{{ getAcquisitionDecisionLabel(entry.decisionStatus) }}</span>
                                     </div>
-                                    <p class="mt-3 text-xs text-secondary">Interested: {{ getInterestNames(entry) }}</p>
+                                    <p class="mt-3 text-xs text-secondary">Interested: {{ getInterestNames(entry) || 'No one yet' }}</p>
+                                    <p class="mt-2 text-xs text-secondary">Your interest is personal; the group owner controls the shared acquisition decision.</p>
+                                    <div class="mt-3 flex flex-wrap items-center gap-3">
+                                        @if (isCurrentUserInterested(entry)) {
+                                            <span class="text-xs font-medium text-emerald-700 dark:text-emerald-300" role="status">You are interested</span>
+                                            <button type="button" class="shrink-0 text-xs text-secondary underline" [disabled]="acquisitionMutationGameId() === entry.gameData.id" (click)="removeAcquisitionInterest(entry.gameData.id)">Remove my interest</button>
+                                        } @else {
+                                            <button type="button" class="app-btn-secondary text-xs" [disabled]="acquisitionMutationGameId() === entry.gameData.id" (click)="addAcquisitionInterest(entry.gameData.id)">{{ acquisitionMutationGameId() === entry.gameData.id ? 'Saving…' : 'Add my interest' }}</button>
+                                        }
+                                    </div>
+                                    @if (acquisitionMutationErrors()[entry.gameData.id]; as interestError) {
+                                        <p class="mt-2 text-xs text-red-700 dark:text-red-300" role="alert">{{ interestError }}</p>
+                                    }
                                     @if (entry.decisionBy; as decisionBy) {
                                         <p class="mt-2 text-xs text-secondary">Last decision by {{ decisionBy.displayName || decisionBy.username }}</p>
                                     }
@@ -329,6 +382,12 @@
                                                 >Reopen</button>
                                             }
                                         </div>
+                                        <p class="mt-2 text-xs text-secondary" role="status">Only the group owner can change this decision.</p>
+                                    } @else {
+                                        <p class="mt-3 text-xs text-secondary">The group owner sets whether this stays open, is planned, or is not wanted now.</p>
+                                    }
+                                    @if (acquisitionDecisionErrors()[entry.gameData.id]; as decisionError) {
+                                        <p class="mt-2 text-xs text-red-700 dark:text-red-300" role="alert">{{ decisionError }}</p>
                                     }
                                 </div>
                             </article>
@@ -337,7 +396,7 @@
                 }
             </section>
 
-            <section id="sessions" class="scroll-mt-24 rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900" aria-labelledby="members-heading">
+            <section id="sessions" class="order-3 scroll-mt-24 rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900" aria-labelledby="members-heading">
                 <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Session context</p>
@@ -365,7 +424,7 @@
                                 aria-hidden="true"
                             >
                                 @if (selectedMembers$().includes(member.id)) {
-                                    <i class="bi bi-check text-xs"></i>
+                                    <app-icon name="check" [size]="12" />
                                 }
                             </span>
                             <app-card-account [member]="member" [isOwner]="group.createdBy === member.id" class="min-w-0 flex-1" />
@@ -379,12 +438,12 @@
                         {{ selectedMembers$().length === group.members.length ? 'Clear selection' : 'Select everyone' }}
                     </app-button>
                     @if (invitationsList.length > 0) {
-                        <span class="text-sm text-secondary"><i class="bi bi-envelope mr-1"></i>{{ invitationsList.length }} invitation{{ invitationsList.length === 1 ? '' : 's' }} pending</span>
+                        <span class="text-sm text-secondary"><app-icon name="mail" [size]="16" className="mr-1" />{{ invitationsList.length }} invitation{{ invitationsList.length === 1 ? '' : 's' }} pending</span>
                     }
                 </div>
             </section>
 
-            <section id="library" class="scroll-mt-24" aria-labelledby="library-heading">
+            <section id="library" class="order-6 scroll-mt-24" aria-labelledby="library-heading">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Shared library</p>
@@ -398,27 +457,27 @@
                             [ngClass]="isRecalculatingReviews$() ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30' : 'border-zinc-200 dark:border-zinc-700'"
                             [attr.aria-pressed]="isRecalculatingReviews$()"
                             (click)="toggleRecalculateReviews()"
-                        ><i class="bi bi-star mr-1"></i>Selected ratings</button>
+                        ><app-icon name="star" [size]="16" className="mr-1" />Selected ratings</button>
                         <button
                             type="button"
                             class="rounded-lg border px-3 py-2 text-sm transition-colors"
                             [ngClass]="isHidingMaxPlayers$() ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30' : 'border-zinc-200 dark:border-zinc-700'"
                             [attr.aria-pressed]="isHidingMaxPlayers$()"
                             (click)="toggleMaxPlayersFilter()"
-                        ><i class="bi bi-people mr-1"></i>Fit {{ selectedMembers$().length }} players</button>
+                        ><app-icon name="users" [size]="16" className="mr-1" />Fit {{ selectedMembers$().length }} players</button>
                         <button
                             type="button"
                             class="rounded-lg border px-3 py-2 text-sm transition-colors"
                             [ngClass]="isFilteringGames$() ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30' : 'border-zinc-200 dark:border-zinc-700'"
                             [attr.aria-pressed]="isFilteringGames$()"
                             (click)="toggleGamesFilter()"
-                        ><i class="bi bi-filter mr-1"></i>Only playable</button>
+                        ><app-icon name="filter" [size]="16" className="mr-1" />Only playable</button>
                     </div>
                 </div>
 
                 @if (totalUniqueGamesComputed().length === 0) {
                     <div class="mt-5 rounded-2xl border border-dashed border-zinc-300 p-8 text-center dark:border-zinc-700">
-                        <i class="bi bi-dice-3 text-4xl text-indigo-500"></i>
+                        <app-icon name="dice" [size]="40" className="text-indigo-500" />
                         <h3 class="mt-3 text-lg font-semibold">No games match this context yet</h3>
                         <p class="mt-2 text-secondary">Select more members, clear a filter, or add games to a member’s collection.</p>
                     </div>
@@ -431,7 +490,7 @@
                                     class="block h-24 w-24 shrink-0"
                                     [attr.aria-label]="'View ' + (game.titleTranslations.en || game.title || 'game')"
                                 >
-                                    <image-background [src]="game.imageUrl" class="block h-full w-full rounded-xl" />
+                                    <image-background [src]="game.imageUrl" [alt]="(game.titleTranslations.en || game.title || 'Game') + ' cover'" class="block h-full w-full rounded-xl" />
                                 </a>
                                 <div class="min-w-0 flex-1">
                                     <div class="flex items-start justify-between gap-3">
@@ -467,7 +526,7 @@
                 }
             </section>
 
-            <section id="history" class="scroll-mt-24" aria-labelledby="history-heading">
+            <section id="history" class="order-7 scroll-mt-24" aria-labelledby="history-heading">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Group memory</p>
@@ -487,7 +546,7 @@
                     </div>
                 } @else if (groupHistory$().length === 0) {
                     <div class="mt-5 rounded-2xl border border-dashed border-zinc-300 p-8 text-center dark:border-zinc-700">
-                        <i class="bi bi-calendar-heart text-4xl text-indigo-500"></i>
+                        <app-icon name="calendar-heart" [size]="40" className="text-indigo-500" />
                         <h3 class="mt-3 text-lg font-semibold">Your group history starts here</h3>
                         <p class="mt-2 text-secondary">Record the next game night so recommendations can learn from what you really play.</p>
                         <app-button class="mt-5" icon="plus-lg" (click)="onClickNewMeet()">Plan a session</app-button>
@@ -510,7 +569,7 @@
                                 <ul class="mt-4 space-y-3">
                                     @for (gamePlayed of historyRecord.gamesPlayed; track gamePlayed.gameData.id) {
                                         <li class="flex items-center gap-3">
-                                            <img [src]="gamePlayed.gameData.imageUrl" [alt]="gamePlayed.gameData.titleTranslations.en" loading="lazy" class="h-10 w-10 rounded-lg object-cover" />
+                                            <image-background class="block h-10 w-10 shrink-0 rounded-lg" [src]="gamePlayed.gameData.imageUrl" [alt]="gamePlayed.gameData.titleTranslations.en + ' cover'" />
                                             <span class="min-w-0 flex-1 truncate text-sm font-medium">{{ gamePlayed.gameData.titleTranslations.en }}</span>
                                             @if (gamePlayed.playedBy.length + (gamePlayed.playedByPeople?.length ?? 0) > 0) {
                                                 <span class="text-xs text-secondary">{{ gamePlayed.playedBy.length + (gamePlayed.playedByPeople?.length ?? 0) }} played</span>
@@ -524,13 +583,13 @@
                         }
                     </div>
                     @if (groupHistory$().length > 3) {
-                        <a routerLink="/play/history" [queryParams]="{ groupId: group.id }" class="mt-5 inline-block text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400">See all {{ group.name }} sessions →</a>
+                        <a routerLink="/play/history" [queryParams]="{ groupId: group.id }" class="mt-5 inline-block text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400">See all {{ group.name }} sessions</a>
                     }
                 }
             </section>
 
             @if (groupHistory$().length > 0) {
-                <section id="insights" class="scroll-mt-24" aria-labelledby="insights-heading">
+                <section id="insights" class="order-8 scroll-mt-24" aria-labelledby="insights-heading">
                     <div>
                         <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">What your group returns to</p>
                         <h2 id="insights-heading" class="mt-1 text-2xl font-bold">Small group insights</h2>
@@ -546,7 +605,7 @@
                                     @for (item of mostPlayedGamesComputed(); track item.gameData.id) {
                                         <li class="flex items-center gap-3">
                                             <span class="w-5 text-sm text-secondary">{{ $index + 1 }}</span>
-                                            <image-background [src]="item.gameData.imageUrl" class="h-10 w-10 rounded-lg" />
+                                            <image-background [src]="item.gameData.imageUrl" [alt]="(item.gameData.titleTranslations.en || item.gameData.title || 'Game') + ' cover'" class="h-10 w-10 rounded-lg" />
                                             <span class="min-w-0 flex-1 truncate text-sm font-medium">{{ item.gameData.titleTranslations.en || item.gameData.title || 'Untitled game' }}</span>
                                             <span class="text-right text-xs text-secondary">{{ item.sessionCount }} session{{ item.sessionCount === 1 ? '' : 's' }}</span>
                                         </li>
@@ -584,7 +643,7 @@
                                 <ul class="mt-4 space-y-3">
                                     @for (item of recentlyPlayedGamesComputed(); track item.gameData.id) {
                                         <li class="flex items-center gap-3">
-                                            <image-background [src]="item.gameData.imageUrl" class="h-10 w-10 rounded-lg" />
+                                            <image-background [src]="item.gameData.imageUrl" [alt]="(item.gameData.titleTranslations.en || item.gameData.title || 'Game') + ' cover'" class="h-10 w-10 rounded-lg" />
                                             <span class="min-w-0 flex-1 truncate text-sm font-medium">{{ item.gameData.titleTranslations.en || item.gameData.title || 'Untitled game' }}</span>
                                             <span class="text-right text-xs text-secondary">{{ item.lastPlayedAt | customDate }}<br />{{ item.participantCount || 'No' }} played</span>
                                         </li>
@@ -601,7 +660,7 @@
                                 <ul class="mt-4 space-y-3">
                                     @for (item of revisitGamesComputed(); track item.gameData.id) {
                                         <li class="flex items-center gap-3">
-                                            <image-background [src]="item.gameData.imageUrl" class="h-10 w-10 rounded-lg" />
+                                            <image-background [src]="item.gameData.imageUrl" [alt]="(item.gameData.titleTranslations.en || item.gameData.title || 'Game') + ' cover'" class="h-10 w-10 rounded-lg" />
                                             <span class="min-w-0 flex-1 truncate text-sm font-medium">{{ item.gameData.titleTranslations.en || item.gameData.title || 'Untitled game' }}</span>
                                             <span class="text-right text-xs text-secondary">{{ item.sessionCount }} previous session{{ item.sessionCount === 1 ? '' : 's' }}</span>
                                         </li>
@@ -618,18 +677,18 @@
 </container-wrapper>
 
 @if (isLeaveDialogOpen()) {
-    <div class="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/70 p-4" role="presentation" (click)="cancelLeaveGroup()" (keydown.escape)="cancelLeaveGroup()">
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/70 p-4" role="presentation" (click)="cancelLeaveGroup()">
         <section
+            appDialog
+            (dialogClosed)="cancelLeaveGroup()"
             class="w-full max-w-md rounded-3xl border border-zinc-200 bg-white p-6 shadow-2xl dark:border-zinc-700 dark:bg-zinc-900"
-            role="dialog"
-            aria-modal="true"
             aria-labelledby="leave-group-dialog-title"
             aria-describedby="leave-group-dialog-description"
             (click)="$event.stopPropagation()"
         >
             <div class="flex items-start gap-4">
                 <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-amber-100 text-xl text-amber-700 dark:bg-amber-950/60 dark:text-amber-300" aria-hidden="true">
-                    <i class="bi bi-box-arrow-right"></i>
+                    <app-icon name="arrow-right" [size]="20" />
                 </div>
                 <div>
                     <h2 id="leave-group-dialog-title" class="text-xl font-bold text-zinc-900 dark:text-white">Leave {{ groupData$()?.name }}?</h2>

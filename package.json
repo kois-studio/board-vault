@@ -1,15 +1,17 @@
 {
     "name": "board-vault",
-    "version": "0.0.0",
+    "version": "0.1.0-beta.1",
     "private": true,
     "scripts": {
         "install:all": "cd backend && npm ci --ignore-scripts && cd ../frontend && npm ci --ignore-scripts",
         "build": "npm --prefix backend run build && npm --prefix frontend run build",
+        "check:public-tree": "node scripts/check-public-tree.mjs",
         "test:unit": "npm --prefix backend test -- --runInBand && npm --prefix frontend test -- --watch=false --browsers=ChromeHeadless",
         "test:e2e": "npm --prefix backend run test:e2e -- --runInBand && npm --prefix frontend run e2e",
         "lint": "npm --prefix backend run lint:check && npm --prefix frontend run lint:check",
         "verify:migrations": "node database/scripts/verify-empty-state.mjs",
         "verify:restore": "node database/scripts/verify-restore-rehearsal.mjs",
+        "verify:rollback": "node database/scripts/verify-rollback-rehearsal.mjs",
         "seed:social-fixture": "node database/scripts/seed-social-fixture.mjs"
     }
 }

@@ -59,5 +59,7 @@ describe('CollectionPageComponent activation guidance', () => {
         expect(component.activationComplete()).toBeTrue()
         expect(component.groupDecisionReady()).toBeFalse()
         expect(fixture.nativeElement.textContent).toContain('Add games to your group’s shared shelf')
+        expect(fixture.nativeElement.textContent).toContain('Group acquisition')
+        expect(fixture.nativeElement.textContent).toContain('Private shelf')
     })
 })

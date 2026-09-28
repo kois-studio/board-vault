@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /
+
+# Board Vault is invitation-only during the private beta. There is intentionally
+# no sitemap until public discovery is a supported product decision.

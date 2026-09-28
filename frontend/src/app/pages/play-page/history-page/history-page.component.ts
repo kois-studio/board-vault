@@ -5,6 +5,7 @@ import { ImageProfileComponent } from '../../../components/image-profile/image-p
 import { SkeletonHistoryComponent } from '../../../components/skeletons/skeleton-history/skeleton-history.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
+import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
 import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
 import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
@@ -17,6 +18,7 @@ import { formatAttendeeSummary } from '../../../core/utils/formatAttendeeSummary
         CommonModule,
         RouterLink,
         ContainerWrapperComponent,
+        IconComponent,
         CustomDatePipe,
         SkeletonHistoryComponent,
         ImageProfileComponent,

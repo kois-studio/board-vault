@@ -3,9 +3,10 @@ import { Component, Input, OnInit } from '@angular/core'
 import type { NotificationType } from '../../api/api.types'
 import { DataService } from '../../core/services/data.service'
 import { formatDate } from '../../core/utils/formatDate'
+import { IconComponent } from '../ui/icon/icon.component'
 
 @Component({
-    imports: [CommonModule],
+    imports: [CommonModule, IconComponent],
     selector: 'app-card-notification',
     templateUrl: 'card-notification.component.html',
 })
@@ -34,5 +35,16 @@ export class CardNotificationComponent implements OnInit {
             const notificationId = this.notification.id
             this.dataService.deleteNotification(notificationId)
         }
+    }
+
+    public iconFor(type: NotificationType['type']): string {
+        return (
+            {
+                invitation_accepted: 'user-check',
+                expulsion: 'ban',
+                member_left: 'logout',
+                new_games: 'gamepad',
+            }[type] ?? 'info'
+        )
     }
 }

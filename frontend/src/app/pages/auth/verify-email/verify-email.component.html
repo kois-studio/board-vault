@@ -8,7 +8,7 @@
             </p>
         } @else if (state === 'error') {
             <div class="mt-6 flex flex-col items-center justify-center gap-3 text-red-600 dark:text-red-300" role="alert">
-                <i class="bi bi-x-circle text-3xl" aria-hidden="true"></i>
+                <app-icon name="circle-x" [size]="30" aria-hidden="true" />
                 <span>This verification link is invalid or expired.</span>
                 <span class="text-sm text-secondary">Ask for a fresh invitation or sign in if your account is already verified.</span>
                 <a routerLink="/login" class="app-btn-primary mt-2">Back to sign in</a>
@@ -16,7 +16,7 @@
         } @else if (state === 'success') {
             <div class="mt-6 text-center" role="status" aria-live="polite">
                 <p class="mb-4 text-green-600 dark:text-green-300">
-                    <i class="bi bi-check-circle mr-2"></i> Your email has been verified successfully!
+                    <app-icon name="circle-check" [size]="18" class="mr-2" /> Your email has been verified successfully!
                 </p>
                 <p class="mb-5 text-sm text-secondary">You can sign in now and continue to your Board Vault groups.</p>
                 <a routerLink="/login" class="app-btn-primary">Continue to sign in</a>

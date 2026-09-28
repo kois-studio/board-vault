@@ -14,6 +14,24 @@ describe('AppComponent', () => {
         expect(app).toBeTruthy()
     })
 
+    it('publishes private-beta metadata and a canonical URL', () => {
+        TestBed.createComponent(AppComponent)
+
+        expect(document.title).toBe('Board Vault — Game night, remembered')
+        expect(document.querySelector('meta[name="robots"]')?.getAttribute('content')).toBe('noindex, nofollow, noarchive')
+        expect(document.querySelector('meta[property="og:title"]')?.getAttribute('content')).toBe('Board Vault — Game night, remembered')
+        expect(document.querySelector('meta[property="og:image"]')?.getAttribute('content')).toContain('/images/logo.webp')
+        expect(document.querySelector('link[rel="canonical"]')?.getAttribute('href')).toContain(window.location.origin)
+    })
+
+    it('provides a keyboard skip link for routed content', () => {
+        const fixture = TestBed.createComponent(AppComponent)
+        fixture.detectChanges()
+
+        const skipLink = fixture.nativeElement.querySelector('a[href="#main-content"]') as HTMLAnchorElement
+        expect(skipLink?.textContent).toContain('Skip to main content')
+    })
+
     // it(`should have the 'frontend' title`, () => {
     //     const fixture = TestBed.createComponent(AppComponent);
     //     const app = fixture.componentInstance;

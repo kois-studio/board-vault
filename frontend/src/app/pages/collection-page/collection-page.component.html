@@ -1,5 +1,5 @@
-<app-page-header titleText="Collection" [showActionButton]="true">
-    Manage your board games, wishlist and reviews
+<app-page-header titleText="My shelf" [showActionButton]="true">
+    Your private shelf for games, wishlist intent, and personal reviews
     <app-button class="action-button" icon="plus-lg" routerLink="/collection/browse">Add New Game</app-button>
 </app-page-header>
 
@@ -18,7 +18,7 @@
         <section class="app-bg-secondary rounded-xl p-6 mb-8 border border-indigo-400/40">
             <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div>
-                    <p class="text-sm uppercase tracking-wide text-indigo-400">Build a useful shelf</p>
+            <p class="text-sm uppercase tracking-wide text-indigo-400">Build your private shelf</p>
                     <h2 class="text-2xl font-semibold mt-1">Add your first five games</h2>
                     <p class="text-secondary mt-2">Five games is a helpful starting point for better suggestions, but you can start making group decisions as soon as your group has games to play.</p>
                 </div>
@@ -32,7 +32,7 @@
                         [attr.aria-valuemin]="0"
                         [attr.aria-valuemax]="activationTarget"
                     >
-                        <div class="h-full bg-indigo-500 transition-all" [style.width.%]="activationProgress()"></div>
+                        <div class="h-full bg-indigo-500 transition-[width] motion-reduce:transition-none" [style.width.%]="activationProgress()"></div>
                     </div>
                 </div>
             </div>
@@ -49,7 +49,7 @@
         <section class="app-bg-secondary rounded-xl p-6 mb-8 border border-emerald-400/40" aria-labelledby="collection-ready-heading">
             <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div>
-                    <p class="text-sm uppercase tracking-wide text-emerald-600 dark:text-emerald-400">Collection ready</p>
+            <p class="text-sm uppercase tracking-wide text-emerald-600 dark:text-emerald-400">Private shelf ready</p>
                     <h2 id="collection-ready-heading" class="text-2xl font-semibold mt-1">Your games are ready for group decisions</h2>
                     <p class="text-secondary mt-2">You have {{ userGames$().length }} games saved. Now bring your group together so Board Vault can help choose what to play.</p>
                 </div>
@@ -75,8 +75,8 @@
         <app-card-section
             icon="collection-fill"
             color="blue"
-            titleText="My Games"
-            description="Browse and manage your board game collection"
+            titleText="Private shelf"
+            description="Games only you own and manage"
             cardLink="/collection/games"
         >
             <!-- Badge -->
@@ -95,8 +95,8 @@
         <app-card-section
             icon="search"
             color="green"
-            titleText="Browse and discover"
-            description="Find new games to add to your collection"
+            titleText="Browse for your shelf"
+            description="Find games to add privately or shortlist with a group"
             cardLink="/collection/browse"
         >
             <!-- Content -->
@@ -134,8 +134,8 @@
         <app-card-section
             icon="suit-heart-fill"
             color="red"
-            titleText="Wishlist"
-            description="Keep track of games you want to add to your collection"
+            titleText="Personal wishlist"
+            description="Games you may want to add to your private shelf"
             cardLink="/collection/wishlist"
         >
             <!-- Badge -->
@@ -146,6 +146,16 @@
 
             <!-- View all highlight -->
             <span class="text-red-600 dark:text-red-400 group-hover:underline flex items-center text-sm font-medium"> View all > </span>
+        </app-card-section>
+
+        <app-card-section
+            icon="shopping-bag"
+            color="purple"
+            titleText="Group acquisition"
+            description="Shared game ideas and decisions belong to each private group"
+            cardLink="/groups"
+        >
+            <span class="text-purple-600 dark:text-purple-400 group-hover:underline flex items-center text-sm font-medium">Open group decisions</span>
         </app-card-section>
 
 

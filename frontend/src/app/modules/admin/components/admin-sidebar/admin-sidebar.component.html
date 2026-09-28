@@ -5,7 +5,7 @@
 -->
 <aside
     id="admin-navigation"
-    class="bg-zinc-100 dark:bg-zinc-800 h-full shadow-md flex flex-col transition-all duration-300 ease-in-out p-4"
+    class="bg-zinc-100 dark:bg-zinc-800 h-full shadow-md flex flex-col transition-[width,padding] duration-300 ease-in-out motion-reduce:transition-none p-4"
     [ngClass]="{
         'absolute inset-y-0 left-0 z-30 w-0 overflow-hidden p-0 md:relative md:w-16 md:p-4': collapsed,
         'absolute inset-y-0 left-0 z-30 w-64 md:relative md:w-64': !collapsed
@@ -19,7 +19,7 @@
             'justify-start': !collapsed
         }"
     >
-        <i class="bi bi-shield-lock text-2xl"></i>
+        <app-icon name="shield-lock" [size]="28" />
         @if (!collapsed) {
         <h2 class="text-xl font-semibold text-zinc-800 dark:text-zinc-100 truncate ml-2">Admin</h2>
         }
@@ -37,13 +37,14 @@
             >
                 <a
                     [routerLink]="item.routerLink"
-                    routerLinkActive="bg-primary-500 text-white dark:bg-primary-600"
+                    routerLinkActive="bg-indigo-600 text-white dark:bg-indigo-500"
                     [routerLinkActiveOptions]="{ exact: item.exactMatch }"
-                    class="flex items-center p-1 my-1 rounded-md hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors duration-150 ease-in-out text-zinc-700 dark:text-zinc-300 group mx-auto"
+                    class="flex min-h-11 items-center rounded-md p-2 my-1 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors duration-150 ease-in-out text-zinc-700 dark:text-zinc-300 group mx-auto"
                     [title]="item.label"
+                    [attr.aria-label]="item.label"
                 >
                     <span class="block text-nowrap overflow-hidden">
-                        <i class="bi bi-{{ item.icon }} text-xl"></i>
+                        <app-icon [name]="item.icon" [size]="20" />
                         @if (!collapsed) {
                         <span class="transition-opacity duration-300 ease-in-out ml-2">{{ item.label }}</span>
                         }
@@ -63,10 +64,12 @@
         </div>
         
         <button
+            type="button"
             routerLink="/"
+            aria-label="Exit admin panel"
             class="w-full flex items-center justify-center p-2 rounded-md hover:bg-zinc-200 dark:hover:bg-zinc-700 cursor-pointer"
         >
-            <i class="bi bi-box-arrow-left"></i>
+            <app-icon name="logout" [size]="18" />
             <span class="ml-4">Exit</span>
         </button>
     </div>

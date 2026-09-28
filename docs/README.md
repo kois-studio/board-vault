@@ -13,18 +13,13 @@ belong in private operator notes.
 - [Data model](data-model.md)
 - [Authentication](authentication.md)
 - [User flows](ux-flows.md)
+- [Design system](design-system.md)
+- [Product glossary](glossary.md)
+- [Contributor setup](contributor-setup.md)
 - [Architecture decision records](adr/README.md)
 - [Public release checklist](release-checklist.md)
+- [Changelog](../CHANGELOG.md)
 - [Database workspace](../database/README.md)
-
-## Contribution workflow
-
-Contributors and AI agents working on their behalf must not commit or push
-directly to `main`. Create a feature or fix branch from the latest `main`,
-develop and verify the change there, then open a pull request. A contributor
-change may be merged only after the required CI checks pass and the pull
-request receives the required review. Repository administrators may work
-directly on `main` when intentionally supervising a change.
 
 ## Public documentation rules
 

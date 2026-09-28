@@ -13,6 +13,7 @@ import type {
 } from '../../../api/api.types'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
+import { ImageBackgroundComponent } from '../../../components/ui/image-background/image-background.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
 import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
 import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
@@ -22,7 +23,16 @@ import { LoadingService } from '../../../core/services/loading.service'
 type RecommendationDecisionLens = 'balanced' | 'fresh' | 'favorite'
 
 @Component({
-    imports: [CommonModule, FormsModule, RouterLink, ButtonComponent, ContainerWrapperComponent, PageHeaderComponent, CustomDatePipe],
+    imports: [
+        CommonModule,
+        FormsModule,
+        RouterLink,
+        ButtonComponent,
+        ContainerWrapperComponent,
+        ImageBackgroundComponent,
+        PageHeaderComponent,
+        CustomDatePipe,
+    ],
     templateUrl: 'recommendations-page.component.html',
 })
 export class RecommendationsPageComponent {
@@ -45,6 +55,7 @@ export class RecommendationsPageComponent {
     public readonly isLoading = signal(false)
     public readonly errorMessage = signal<string | null>(null)
     public readonly feedbackState = signal<Record<number, 'saving' | 'interested' | 'not_for_us'>>({})
+    public readonly feedbackErrors = signal<Record<number, string>>({})
     public readonly selectedGroup = computed(() => this.userGroups().find((group) => group.id === this.selectedGroupId()) ?? null)
     public readonly pageTitle = computed(() => this.getDecisionTitle(this.selectedGroup()))
 
@@ -84,6 +95,7 @@ export class RecommendationsPageComponent {
         this.recommendations.set(null)
         this.recommendationSignals.set(null)
         this.feedbackState.set({})
+        this.feedbackErrors.set({})
         this.errorMessage.set(null)
     }
 
@@ -119,7 +131,11 @@ export class RecommendationsPageComponent {
     }
 
     public get decisionLensLabel(): string {
-        switch (this.decisionLens()) {
+        return this.getDecisionLensLabel(this.decisionLens())
+    }
+
+    public getDecisionLensLabel(lens: RecommendationsType['decisionLens']): string {
+        switch (lens) {
             case 'fresh':
                 return 'Something new'
             case 'favorite':
@@ -236,6 +252,11 @@ export class RecommendationsPageComponent {
         }
 
         this.feedbackState.update((state) => ({ ...state, [gameId]: 'saving' }))
+        this.feedbackErrors.update((state) => {
+            const nextState = { ...state }
+            delete nextState[gameId]
+            return nextState
+        })
         try {
             await firstValueFrom(
                 this.groupPeople().length > 0
@@ -260,7 +281,7 @@ export class RecommendationsPageComponent {
                 delete nextState[gameId]
                 return nextState
             })
-            this.errorMessage.set('Feedback could not be saved. Please try again.')
+            this.feedbackErrors.update((state) => ({ ...state, [gameId]: 'Feedback could not be saved. Try again.' }))
         }
     }
 

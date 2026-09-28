@@ -82,6 +82,26 @@ describe('MeetViewComponent participant safeguards', () => {
         expect(toastService.error).toHaveBeenCalledWith('Keep at least one participant for each played game.')
     })
 
+    it('keeps skipped games distinct from the played count', async () => {
+        const { component } = await setup()
+        const meetData = component.meetData
+        expect(meetData).not.toBeNull()
+        if (!meetData) return
+        meetData.skippedGames = [43, 44]
+
+        expect(component.playedGamesCount).toBe(1)
+        expect(component.skippedGamesCount).toBe(2)
+    })
+
+    it('requires an explicit review before completing or cancelling', async () => {
+        const { component } = await setup()
+
+        component.requestStatusUpdate('completed')
+        expect(component.pendingStatus()).toBe('completed')
+        component.cancelStatusUpdate()
+        expect(component.pendingStatus()).toBeNull()
+    })
+
     it('blocks removing the only attendee before sending an invalid request', async () => {
         const { component, dataService, toastService } = await setup()
         const meetData = component.meetData

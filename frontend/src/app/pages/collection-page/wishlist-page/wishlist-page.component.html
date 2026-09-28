@@ -1,5 +1,5 @@
 <app-page-header titleText="Wishlist" [showActionButton]="true">
-    Keep track of games you want to add to your collection
+    Personal intent for games you may want to add to your private shelf — not a group purchase request
 
     <app-button class="action-button" icon="plus-lg" routerLink="/collection/browse">Explore Games</app-button>
 </app-page-header>
@@ -27,23 +27,26 @@
         <section class="flex flex-wrap gap-4">
             @for (game of userWishlist$(); track $index) {
                 <div class="relative">
-                    <app-card-game
-                        [routerLink]="['/games', game.id]"
-                        [title]="game.titleTranslations.en"
-                        [imageUrl]="game.imageUrl"
-                        [gameAvgDuration]="game.gameAvgDuration"
-                        [minPlayers]="game.minPlayers"
-                        [maxPlayers]="game.maxPlayers"
-                    />
+                    <a [routerLink]="['/games', game.id]" class="block rounded-lg focus-visible:outline-none">
+                        <app-card-game
+                            [title]="game.titleTranslations.en"
+                            [imageUrl]="game.imageUrl"
+                            [gameAvgDuration]="game.gameAvgDuration"
+                            [minPlayers]="game.minPlayers"
+                            [maxPlayers]="game.maxPlayers"
+                        />
+                    </a>
                     <div class="absolute -top-2 -right-2 flex gap-2">
                         <!-- Wishlist Button -->
                         <button
+                            type="button"
+                            aria-label="Remove this game from your wishlist"
                             title="Remove from wishlist"
                             (click)="toggleWishlist(game.id)"
-                            class="p-2 rounded-full bg-white/90 shadow-md border border-zinc-200 w-10 h-10 cursor-pointer transition-transform duration-300 ease-linear hover:scale-110 text-rose-500"
+                            [disabled]="preventSpamIsLoadingWishlist"
+                            class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-zinc-200 bg-white/90 p-2 text-rose-500 motion-safe:transition-transform motion-safe:hover:scale-110 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
                         >
-                            <i class="bi bi-heart-fill icon-heart-fill"></i>
-                            <i class="bi bi-heartbreak icon-heartbreak"></i>
+                            <app-icon name="heart-off" [size]="18" />
                         </button>
                     </div>
                 </div>

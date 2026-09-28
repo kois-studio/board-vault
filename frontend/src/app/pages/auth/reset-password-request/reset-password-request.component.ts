@@ -3,11 +3,12 @@ import { Component } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { RouterLink } from '@angular/router'
 import { Api } from '../../../api/api'
+import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { SpinnerComponent } from '../../../components/ui/spinner/spinner.component'
 import { TitleSubtitleComponent } from '../../../components/ui/title-subtitle/title-subtitle.component'
 
 @Component({
-    imports: [CommonModule, ReactiveFormsModule, RouterLink, TitleSubtitleComponent, SpinnerComponent],
+    imports: [CommonModule, ReactiveFormsModule, RouterLink, TitleSubtitleComponent, SpinnerComponent, IconComponent],
     templateUrl: 'reset-password-request.component.html',
 })
 export class ResetPasswordRequestComponent {

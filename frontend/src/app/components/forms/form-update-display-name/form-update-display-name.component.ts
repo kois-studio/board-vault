@@ -3,9 +3,10 @@ import { Component, effect, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { DataService } from '../../../core/services/data.service'
 import { ButtonComponent } from '../../ui/button/button.component'
+import { IconComponent } from '../../ui/icon/icon.component'
 
 @Component({
-    imports: [ReactiveFormsModule, CommonModule, ButtonComponent],
+    imports: [ReactiveFormsModule, CommonModule, ButtonComponent, IconComponent],
     selector: 'form-update-display-name',
     templateUrl: 'form-update-display-name.component.html',
 })

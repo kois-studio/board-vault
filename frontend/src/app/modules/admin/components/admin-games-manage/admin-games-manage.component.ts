@@ -3,12 +3,14 @@ import { Component, OnInit, ViewChild, inject, signal } from '@angular/core'
 import { ReactiveFormsModule } from '@angular/forms'
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
 import { Api } from '../../../../api/api'
-import type { GameWithTagsAndTranslationsType, TagCategoryType, TagType } from '../../../../api/api.types'
+import type { AdminGamesResultType, GameWithTagsAndTranslationsType, TagCategoryType, TagType } from '../../../../api/api.types'
 import { ModalEditGameTagsComponent } from '../../../../components/modals/modal-edit-game-tags/modal-edit-game-tags.component'
 import { ModalEditGameTranslationsComponent } from '../../../../components/modals/modal-edit-game-translations/modal-edit-game-translations.component'
 import { TagsComponent } from '../../../../components/tags/tags.component'
 import { ToastService } from '../../../../components/toast/toast.service'
 import { ButtonComponent } from '../../../../components/ui/button/button.component'
+import { IconComponent } from '../../../../components/ui/icon/icon.component'
+import { ImageBackgroundComponent } from '../../../../components/ui/image-background/image-background.component'
 import { SpinnerComponent } from '../../../../components/ui/spinner/spinner.component'
 import { LogService } from '../../../../core/services/log.service'
 import { AdminTagsManageService } from '../admin-tags-manage/admin-tags-manage.service'
@@ -21,12 +23,15 @@ import { AdminGamesManageService } from './admin-games-manage.service'
         ButtonComponent,
         TagsComponent,
         SpinnerComponent,
+        IconComponent,
+        ImageBackgroundComponent,
         ModalEditGameTranslationsComponent,
         ModalEditGameTagsComponent,
     ],
     templateUrl: './admin-games-manage.component.html',
 })
 export class AdminGamesManageComponent implements OnInit {
+    protected readonly Math = Math
     private readonly api = inject(Api)
     private readonly logger = inject(LogService)
     private readonly toastService = inject(ToastService)
@@ -47,6 +52,8 @@ export class AdminGamesManageComponent implements OnInit {
     public readonly searchTermIsValid$ = this.adminGamesManageService.searchTermIsValidComputed
     public readonly isSearching$ = this.adminGamesManageService.isSearching
     public readonly searchControl = this.adminGamesManageService.searchControl
+    public readonly pagination = signal<AdminGamesResultType['pagination'] | null>(null)
+    public readonly searchError = signal<string | null>(null)
 
     // --------------------------------------------------------------------------
     //        Service signals
@@ -84,7 +91,7 @@ export class AdminGamesManageComponent implements OnInit {
     //        Search Methods
     // --------------------------------------------------------------------------
 
-    private _searchGames() {
+    private _searchGames(page = 1) {
         if (!this.searchTermIsValid$()) {
             return
         }
@@ -96,13 +103,14 @@ export class AdminGamesManageComponent implements OnInit {
 
         // set the loading state
         this.isSearching$.set(true)
+        this.searchError.set(null)
         this.gamesList$.set([])
 
         // Fetch games with search term
         this.api
             .getAdminGames(
                 this.searchTerm$().trim(),
-                1, // Always start from page 1
+                page,
                 10, // limit
             )
             .subscribe({
@@ -113,9 +121,11 @@ export class AdminGamesManageComponent implements OnInit {
                         result.games.map((g) => g.id),
                     )
                     this.gamesList$.set(result.games)
+                    this.pagination.set(result.pagination)
                 },
                 error: (error) => {
                     this.logger.error('Error searching games', error)
+                    this.searchError.set('Games could not be loaded. Try the search again.')
                     this.toastService.error('Could not search games.')
                 },
                 complete: () => {
@@ -151,9 +161,11 @@ export class AdminGamesManageComponent implements OnInit {
                         result.games.map((g) => g.id),
                     )
                     this.gamesList$.set(result.games)
+                    this.pagination.set(result.pagination)
                 },
                 error: (error) => {
                     this.logger.error('Error refreshing games list', error)
+                    this.searchError.set('Games could not be refreshed. Try again.')
                     this.toastService.error('Could not refresh games list.')
                 },
                 complete: () => {
@@ -187,6 +199,10 @@ export class AdminGamesManageComponent implements OnInit {
         this.logger.log('Tags updated, refreshing games list:', update)
         // Refresh the games list to ensure we have the most up-to-date data
         this._refreshGamesList()
+    }
+
+    public onPageChange(page: number): void {
+        this._searchGames(page)
     }
 
     // --------------------------------------------------------------------------

@@ -2,9 +2,10 @@ import { CommonModule } from '@angular/common'
 import { Component, OnInit, computed, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { DataService } from '../../core/services/data.service'
+import { IconComponent } from '../ui/icon/icon.component'
 
 @Component({
-    imports: [CommonModule, RouterLink],
+    imports: [CommonModule, RouterLink, IconComponent],
     selector: 'app-collection-activity',
     templateUrl: 'collection-activity.component.html',
 })
@@ -27,6 +28,19 @@ export class CollectionActivityComponent {
     // --------------------------------------------------------------------------
     // Track whether to show all activities or just 5
     public showAllActivity = false
+
+    public getActivityIcon(actionType: string): string {
+        return (
+            {
+                added: 'bookmark',
+                rated: 'star',
+                removed: 'x',
+                updated: 'pencil',
+                wishlisted: 'heart',
+                unwishlisted: 'heart-off',
+            }[actionType] ?? 'circle-help'
+        )
+    }
 
     // Helper method to format date as relative time
     formatTimeAgo(dateString: string): string {

@@ -1,58 +1,70 @@
 <!-- Profile Picture and Dropdown Trigger -->
 <div class="relative">
-    <button (click)="toggleDropdown()" class="relative cursor-pointer">
+    <button
+        #profileTrigger
+        type="button"
+        (click)="toggleDropdown()"
+        class="relative cursor-pointer rounded-full focus-visible:outline-none"
+        aria-label="Open profile menu"
+        aria-haspopup="menu"
+        aria-controls="profile-menu"
+        [attr.aria-expanded]="isDropdownVisible"
+    >
         @if (currentUser$()) {
             <app-image-profile [avatar]="currentUser$()!.avatar" />
         }
         @if (userInvitations$().length + userUnreadNotificationsComputed().length) {
-            <div class="absolute -bottom-1 -right-1 bg-blue-600 rounded-full h-5 w-5 flex items-center justify-center text-white">
-                <span class="text-sm">{{ userInvitations$().length + userUnreadNotificationsComputed().length }}</span>
+            <div
+                class="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-white"
+                [attr.aria-label]="userInvitations$().length + userUnreadNotificationsComputed().length + ' unread profile items'"
+            >
+                <span class="text-sm" aria-hidden="true">{{ userInvitations$().length + userUnreadNotificationsComputed().length }}</span>
             </div>
         }
     </button>
 
     <!-- Dropdown Menu -->
     @if (isDropdownVisible) {
-    <div class="absolute right-0 mt-2 w-56 bg-zinc-900 border border-zinc-700 rounded-lg shadow-xl">
+    <div id="profile-menu" role="menu" class="absolute right-0 z-50 mt-2 w-64 rounded-lg border border-zinc-200 bg-white shadow-xl dark:border-zinc-700 dark:bg-zinc-900">
         @if (currentUser$()) {
             <div class="flex items-center p-4">
                 <app-image-profile [avatar]="currentUser$()!.avatar" />
                 <div class="ml-3">
-                    <p class="font-semibold text-white">{{ currentUser$()!.displayName }}</p>
-                    <p class="text-gray-400 text-sm">{{ currentUser$()!.username }}</p>
+                    <p class="font-semibold text-zinc-900 dark:text-white">{{ currentUser$()!.displayName }}</p>
+                    <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ currentUser$()!.username }}</p>
                 </div>
             </div>
         }
         <div class="border-t border-zinc-700">
-            <button routerLink="/settings" (click)="onClickProfileSettings()" class="flex items-center gap-2 w-full px-4 py-2 text-left text-white hover:bg-zinc-800 border-b border-zinc-700 cursor-pointer">
-                <i class="bi bi-gear"></i> Manage account
-            </button>
-            <button (click)="onClickInvitations()" class="flex items-center gap-2 w-full px-4 py-2 text-left text-white hover:bg-zinc-800 border-b border-zinc-700 cursor-pointer">
-                <i class="bi bi-envelope"></i> Group Invitations
+            <a routerLink="/settings" role="menuitem" (click)="onClickProfileSettings()" class="flex w-full items-center gap-2 border-b border-zinc-200 px-4 py-3 text-left text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800">
+                <app-icon name="settings" [size]="17" /> Manage account
+            </a>
+            <button type="button" role="menuitem" (click)="onClickInvitations()" class="flex w-full items-center gap-2 border-b border-zinc-200 px-4 py-3 text-left text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800">
+                <app-icon name="mail" [size]="17" /> Group Invitations
                 @if (userInvitations$().length) {
-                    <div class="bg-blue-600 rounded-full h-5 w-5 flex items-center justify-center">
-                        <span class="text-sm">{{ userInvitations$().length }}</span>
+                    <div class="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-white">
+                        <span class="text-sm" aria-hidden="true">{{ userInvitations$().length }}</span>
                     </div>
                 }
             </button>
-            <button (click)="onClickNotifications()" class="flex items-center gap-2 w-full px-4 py-2 text-left text-white hover:bg-zinc-800 border-b border-zinc-700 cursor-pointer">
-                <i class="bi bi-bell"></i> Notifications
+            <button type="button" role="menuitem" (click)="onClickNotifications()" class="flex w-full items-center gap-2 border-b border-zinc-200 px-4 py-3 text-left text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800">
+                <app-icon name="bell" [size]="17" /> Notifications
                 @if (userUnreadNotificationsComputed().length > 0) {
-                    <div class="bg-blue-600 rounded-full h-5 w-5 flex items-center justify-center">
-                        <span class="text-sm">{{ userUnreadNotificationsComputed().length }}</span>
+                    <div class="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-white">
+                        <span class="text-sm" aria-hidden="true">{{ userUnreadNotificationsComputed().length }}</span>
                     </div>
                 }
             </button>
-            <button routerLink="/submissions" (click)="onClickSubmissions()" class="flex items-center gap-2 w-full px-4 py-2 text-left text-white hover:bg-zinc-800 border-b border-zinc-700 cursor-pointer">
-                <i class="bi bi-file-earmark-text"></i> My Submissions
+            <a routerLink="/submissions" role="menuitem" (click)="onClickSubmissions()" class="flex w-full items-center gap-2 border-b border-zinc-200 px-4 py-3 text-left text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800">
+                <app-icon name="file-text" [size]="17" /> My Submissions
                 @if (userProposalStats$().totalProposals > 0) {
-                    <div class="bg-purple-600 rounded-full h-5 w-5 flex items-center justify-center">
-                        <span class="text-sm">{{ userProposalStats$().totalProposals }}</span>
+                    <div class="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-purple-600 text-white">
+                        <span class="text-sm" aria-hidden="true">{{ userProposalStats$().totalProposals }}</span>
                     </div>
                 }
-            </button>
-            <button (click)="onClickSignOut()" class="flex items-center gap-2 w-full px-4 py-2 text-left text-white hover:bg-zinc-800 cursor-pointer">
-                <i class="bi bi-box-arrow-right"></i> Sign out
+            </a>
+            <button type="button" role="menuitem" (click)="onClickSignOut()" class="flex w-full items-center gap-2 px-4 py-3 text-left text-zinc-700 hover:bg-zinc-50 dark:text-zinc-200 dark:hover:bg-zinc-800">
+                <app-icon name="arrow-right" [size]="17" /> Sign out
             </button>
         </div>
     </div>

@@ -1,18 +1,14 @@
-<div class="flex items-center gap-x-2" [ngClass]="{
-    'flex-col': flexCol,
-}">
-    <!-- Number -->
-    <span class="font-medium">{{ parseReview(review) }}</span>
-    <!-- Stars -->
-    <div class="flex items-center">
-        <ng-container *ngFor="let star of fullStars">
-            <i class="bi bi-star-fill text-yellow-400"></i>
-        </ng-container>
-        <ng-container *ngFor="let star of halfStars">
-            <i class="bi bi-star-half text-yellow-400"></i>
-        </ng-container>
-        <ng-container *ngFor="let star of emptyStars">
-            <i class="bi bi-star text-yellow-400"></i>
-        </ng-container>
+<div class="flex items-center gap-x-2" [ngClass]="{ 'flex-col': flexCol }">
+    <span class="font-medium">{{ hasRating ? parseReview(review) : '—' }}</span>
+    <div class="flex items-center" role="img" [attr.aria-label]="ratingLabel">
+        @for (star of fullStars; track $index) {
+            <app-icon name="star" [size]="16" className="fill-yellow-400 text-yellow-500" />
+        }
+        @for (star of halfStars; track $index) {
+            <app-icon name="star-half" [size]="16" className="fill-yellow-400 text-yellow-500" />
+        }
+        @for (star of emptyStars; track $index) {
+            <app-icon name="star" [size]="16" className="text-zinc-300 dark:text-zinc-600" />
+        }
     </div>
 </div>

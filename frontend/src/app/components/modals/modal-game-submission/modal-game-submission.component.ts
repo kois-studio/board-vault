@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common'
 import { Component, EventEmitter, Output, signal } from '@angular/core'
 import { FormGameSubmissionComponent } from '../../forms/form-game-submission/form-game-submission.component'
+import { DialogDirective } from '../../ui/dialog/dialog.directive'
 
 @Component({
-    imports: [FormGameSubmissionComponent],
+    imports: [DialogDirective, FormGameSubmissionComponent],
     selector: 'app-modal-game-submission',
     templateUrl: './modal-game-submission.component.html',
 })
