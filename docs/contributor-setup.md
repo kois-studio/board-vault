@@ -69,7 +69,8 @@ those journeys rather than contacting a real account or service.
 
 ## Product and privacy boundaries
 
-Use the [product glossary](glossary.md) for copy and API terminology. Account
+Use the [product glossary](glossary.md) for copy and API terminology, and the
+[design system](design-system.md) for shared UI language. Account
 shelves are private; a shared shelf is group context; and a group person is a
 group-scoped participant record, not an authentication account. Backend
 authorization remains authoritative even when a route is hidden in the UI.
