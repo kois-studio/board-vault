@@ -90,6 +90,13 @@ describe('GroupPersonClaimComponent', () => {
             preferenceGameIds: [42],
             importOwnershipToCollection: true,
         })
+        expect(component.claimSummary()).toEqual({
+            ownershipKept: 0,
+            ownershipDiscarded: 1,
+            preferencesKept: 1,
+            preferencesDiscarded: 0,
+            importedOwnership: true,
+        })
     })
 
     it('does not expose a non-claimable placeholder as claimable data', async () => {

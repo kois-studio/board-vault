@@ -7,6 +7,14 @@ import { Api } from '../../api/api'
 import type { GameCompleteType, GroupPersonWorkspaceType } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
 
+type ClaimSummary = {
+    ownershipKept: number
+    ownershipDiscarded: number
+    preferencesKept: number
+    preferencesDiscarded: number
+    importedOwnership: boolean
+}
+
 @Component({
     imports: [CommonModule, RouterLink],
     templateUrl: './group-person-claim.component.html',
@@ -25,6 +33,23 @@ export class GroupPersonClaimComponent {
     public readonly selectedOwnership = signal<Set<number>>(new Set())
     public readonly selectedPreferences = signal<Set<number>>(new Set())
     public readonly importOwnership = signal(false)
+    public readonly claimSummary = signal<ClaimSummary | null>(null)
+
+    public readonly ownershipKeptCount = () => this.selectedOwnership().size
+    public readonly preferencesKeptCount = () => this.selectedPreferences().size
+
+    public ownershipDiscardedCount(groupPerson: GroupPersonWorkspaceType): number {
+        const availableOwnership = this.assertedOwnershipCount(groupPerson)
+        return Math.max(availableOwnership - this.ownershipKeptCount(), 0)
+    }
+
+    public assertedOwnershipCount(groupPerson: GroupPersonWorkspaceType): number {
+        return groupPerson.ownership.filter((item) => item.status === 'asserted').length
+    }
+
+    public preferencesDiscardedCount(groupPerson: GroupPersonWorkspaceType): number {
+        return Math.max(groupPerson.preferences.length - this.preferencesKeptCount(), 0)
+    }
 
     constructor() {
         void this.load()
@@ -46,19 +71,30 @@ export class GroupPersonClaimComponent {
     public async claim(): Promise<void> {
         const groupId = Number.parseInt(this.route.snapshot.paramMap.get('groupId') || '')
         const personId = Number.parseInt(this.route.snapshot.paramMap.get('personId') || '')
-        if (Number.isNaN(groupId) || Number.isNaN(personId) || !this.person() || this.isSaving()) return
+        const groupPerson = this.person()
+        if (Number.isNaN(groupId) || Number.isNaN(personId) || !groupPerson || this.isSaving()) return
+
+        const ownershipGameIds = [...this.selectedOwnership()]
+        const preferenceGameIds = [...this.selectedPreferences()]
+        const claimSummary: ClaimSummary = {
+            ownershipKept: ownershipGameIds.length,
+            ownershipDiscarded: this.ownershipDiscardedCount(groupPerson),
+            preferencesKept: preferenceGameIds.length,
+            preferencesDiscarded: this.preferencesDiscardedCount(groupPerson),
+            importedOwnership: this.importOwnership(),
+        }
 
         this.isSaving.set(true)
         try {
             await firstValueFrom(
                 this.api.claimGroupPerson(groupId, personId, {
-                    ownershipGameIds: [...this.selectedOwnership()],
-                    preferenceGameIds: [...this.selectedPreferences()],
+                    ownershipGameIds,
+                    preferenceGameIds,
                     importOwnershipToCollection: this.importOwnership(),
                 }),
             )
             this.toastService.success('Your group history is now linked to your account.')
-            await this.router.navigate(['/groups', groupId])
+            this.claimSummary.set(claimSummary)
         } catch {
             this.error.set('This claim could not be completed. The invitation may have expired or already been used.')
         } finally {
