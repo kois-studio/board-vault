@@ -24,6 +24,14 @@ describe('AppComponent', () => {
         expect(document.querySelector('link[rel="canonical"]')?.getAttribute('href')).toContain(window.location.origin)
     })
 
+    it('provides a keyboard skip link for routed content', () => {
+        const fixture = TestBed.createComponent(AppComponent)
+        fixture.detectChanges()
+
+        const skipLink = fixture.nativeElement.querySelector('a[href="#main-content"]') as HTMLAnchorElement
+        expect(skipLink?.textContent).toContain('Skip to main content')
+    })
+
     // it(`should have the 'frontend' title`, () => {
     //     const fixture = TestBed.createComponent(AppComponent);
     //     const app = fixture.componentInstance;
