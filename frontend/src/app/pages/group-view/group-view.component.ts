@@ -501,22 +501,18 @@ export class GroupViewComponent {
         return person.ownership.filter((ownership) => ownership.status === 'asserted').length
     }
 
-    public async toggleGroupPersonGame(person: GroupPersonWorkspaceType, gameId: number): Promise<void> {
+    public async setGroupPersonOwnership(person: GroupPersonWorkspaceType, gameId: number, event: Event): Promise<void> {
         const groupId = this.groupData$()?.id
         if (!groupId || !this.isGroupOwnerComputed() || this.groupPersonMutationId()) return
 
+        const status = (event.target as HTMLSelectElement).value
+        if (!['asserted', 'rejected', 'disputed'].includes(status)) return
+
         this.groupPersonMutationId.set(person.person.id)
-        const currentStatus = this.getGroupPersonOwnershipStatus(person, gameId)
-        const nextStatus: 'asserted' | 'rejected' | 'disputed' =
-            currentStatus === null
-                ? 'asserted'
-                : currentStatus === 'asserted'
-                  ? 'disputed'
-                  : currentStatus === 'disputed'
-                    ? 'rejected'
-                    : 'asserted'
         try {
-            await firstValueFrom(this.api.updateGroupPersonOwnership(groupId, person.person.id, gameId, nextStatus))
+            await firstValueFrom(
+                this.api.updateGroupPersonOwnership(groupId, person.person.id, gameId, status as 'asserted' | 'rejected' | 'disputed'),
+            )
             this.loadGroupPeople(groupId)
         } catch {
             this.toastService.error('Could not update this person’s game ownership.')
@@ -537,17 +533,27 @@ export class GroupViewComponent {
         return null
     }
 
-    public async cycleGroupPersonPreference(person: GroupPersonWorkspaceType, gameId: number): Promise<void> {
+    public async setGroupPersonPreference(person: GroupPersonWorkspaceType, gameId: number, event: Event): Promise<void> {
         const groupId = this.groupData$()?.id
         if (!groupId || !this.isGroupOwnerComputed() || this.groupPersonMutationId()) return
 
-        const current = this.getGroupPersonPreference(person, gameId)
-        const next: Array<GroupPersonPreferenceType['preference'] | null> = [null, 'like', 'favorite', 'neutral', 'avoid']
-        const nextPreference = next[(next.indexOf(current) + 1) % next.length]
+        const preference = (event.target as HTMLSelectElement).value
+        if (!['', 'favorite', 'like', 'neutral', 'avoid'].includes(preference)) return
+
         this.groupPersonMutationId.set(person.person.id)
         try {
-            if (nextPreference === null) await firstValueFrom(this.api.deleteGroupPersonPreference(groupId, person.person.id, gameId))
-            else await firstValueFrom(this.api.updateGroupPersonPreference(groupId, person.person.id, gameId, nextPreference))
+            if (preference === '') {
+                await firstValueFrom(this.api.deleteGroupPersonPreference(groupId, person.person.id, gameId))
+            } else {
+                await firstValueFrom(
+                    this.api.updateGroupPersonPreference(
+                        groupId,
+                        person.person.id,
+                        gameId,
+                        preference as GroupPersonPreferenceType['preference'],
+                    ),
+                )
+            }
             this.loadGroupPeople(groupId)
         } catch {
             this.toastService.error('Could not update this person’s game preference.')
