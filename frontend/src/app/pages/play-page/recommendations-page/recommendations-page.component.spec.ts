@@ -16,6 +16,14 @@ describe('RecommendationsPageComponent history context', () => {
         expect(component.getRecommendationHistoryLabel(null)).toBe('Not played by this group yet')
     })
 
+    it('uses plain-language labels for the decision lens shown with results', () => {
+        const component = Object.create(RecommendationsPageComponent.prototype) as RecommendationsPageComponent
+
+        expect(component.getDecisionLensLabel('balanced')).toBe('Balanced')
+        expect(component.getDecisionLensLabel('fresh')).toBe('Something new')
+        expect(component.getDecisionLensLabel('favorite')).toBe('Group favorite')
+    })
+
     it('can restore or clear the attendee context without retaining stale results', () => {
         const component = Object.create(RecommendationsPageComponent.prototype) as RecommendationsPageComponent
         const selectedAttendeeIds = signal([2])

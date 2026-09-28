@@ -129,7 +129,11 @@ export class RecommendationsPageComponent {
     }
 
     public get decisionLensLabel(): string {
-        switch (this.decisionLens()) {
+        return this.getDecisionLensLabel(this.decisionLens())
+    }
+
+    public getDecisionLensLabel(lens: RecommendationsType['decisionLens']): string {
+        switch (lens) {
             case 'fresh':
                 return 'Something new'
             case 'favorite':
