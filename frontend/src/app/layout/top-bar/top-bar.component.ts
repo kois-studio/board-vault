@@ -25,7 +25,7 @@ export class LayoutTopBarComponent implements OnInit {
         // 1 -> shows sections[0] and its subsections (dashboard doesn't have any)
         // 2 -> shows sections[1] and its subsections
         // 3-> shows sections[2] and its subsections
-        const currentUrl = this.currentUrl$()
+        const currentUrl = this.currentUrl$()?.split(/[?#]/)[0]
         if (!currentUrl) {
             return 0
         }
@@ -40,8 +40,9 @@ export class LayoutTopBarComponent implements OnInit {
                 '/collection/wishlist': 2,
                 '/play': 0,
                 '/play/upcoming-sessions': 3,
-                '/play/history': 3,
                 '/play/recommendations': 3,
+                '/play/history': 0,
+                '/settings': 0,
             }[currentUrl] ?? 0
         )
     })
@@ -50,6 +51,10 @@ export class LayoutTopBarComponent implements OnInit {
         {
             path: 'dashboard',
             name: 'Home',
+        },
+        {
+            path: 'groups',
+            name: 'Groups',
         },
         {
             path: 'collection',
@@ -66,15 +71,25 @@ export class LayoutTopBarComponent implements OnInit {
             name: 'Play',
             subsections: [
                 { path: 'play/upcoming-sessions', icon: 'calendar-check-fill', name: 'Upcoming' },
-                { path: 'play/history', icon: 'clock-history', name: 'History' },
                 { path: 'play/recommendations', icon: 'hand-thumbs-up', name: 'Discover' },
             ],
         },
         {
-            path: 'groups',
-            name: 'Groups',
+            path: 'play/history',
+            name: 'Memories',
+        },
+        {
+            path: 'settings',
+            name: 'Settings',
         },
     ]
+
+    public isSectionActive(path: string): boolean {
+        const currentUrl = this.currentUrl$()?.split(/[?#]/)[0] ?? ''
+        if (path === 'play') return currentUrl === '/play' || (currentUrl.startsWith('/play/') && !currentUrl.startsWith('/play/history'))
+        if (path === 'collection' || path === 'groups') return currentUrl === `/${path}` || currentUrl.startsWith(`/${path}/`)
+        return currentUrl === `/${path}`
+    }
 
     ngOnInit() {
         // Initialize based on current route
