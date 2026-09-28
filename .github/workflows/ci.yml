@@ -109,6 +109,10 @@ jobs:
             - name: Install database client dependency
               working-directory: backend
               run: npm ci --ignore-scripts
+            - name: Verify isolated local setup and fixture seed
+              run: |
+                  npm run local:setup
+                  git check-ignore -q data/board-vault.local.db
             - name: Verify empty-state schema and migration baseline
               run: node database/scripts/verify-empty-state.mjs
             - name: Run synthetic backup and restore rehearsal

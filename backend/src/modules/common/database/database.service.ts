@@ -56,9 +56,12 @@ export class DatabaseService implements OnModuleInit {
     constructor(private readonly configService: ConfigService) {}
 
     onModuleInit() {
+        const url = String(this.configService.get<string>('TURSO_DATABASE_URL'))
+        const authToken = this.configService.get<string>('TURSO_AUTH_TOKEN')?.trim()
+
         this.tursoClient = createClient({
-            url: String(this.configService.get<string>('TURSO_DATABASE_URL')),
-            authToken: String(this.configService.get<string>('TURSO_AUTH_TOKEN')),
+            url,
+            ...(!url.startsWith('file:') && authToken ? { authToken } : {}),
         })
     }
 

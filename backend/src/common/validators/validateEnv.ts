@@ -14,9 +14,12 @@ export function validateEnv(): void {
         err.push('Example value: "libsql://<db-name>-<username>.turso.io"\n')
     }
 
-    if (!process.env.TURSO_AUTH_TOKEN) {
+    const databaseUrl = process.env.TURSO_DATABASE_URL ?? ''
+    const isLocalSqlite = databaseUrl.startsWith('file:')
+
+    if (!isLocalSqlite && !process.env.TURSO_AUTH_TOKEN) {
         err.push('Missing in .env file: TURSO_AUTH_TOKEN')
-        err.push('Example value: "eyJfdjsbrEzr..."\n')
+        err.push('Remote libSQL databases require an auth token. Local file: databases do not.\n')
     }
 
     if (!process.env.JWT_SECRET) {

@@ -1,3 +1,10 @@
+# Local secrets and disposable databases
+/.env
+/.env.*
+!/.env.example
+/data/
+/backend/data/
+
 # Administrator-only local runbooks
 /docs/environment-runbook.md
 

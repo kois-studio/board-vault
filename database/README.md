@@ -16,6 +16,12 @@ them to any shared environment, and retain a recoverable backup privately.
 
 ## Local verification
 
+For a ready-to-use per-checkout SQLite database with synthetic application
+fixtures, run `npm run local:setup` from the repository root. It creates only
+`data/board-vault.local.db`; rerun it to discard and recreate that local state.
+This command never reads developer environment variables for its target and
+cannot connect to Turso.
+
 The migration runner reads `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` from the
 environment. For a fresh copy of the current snapshot, use the documented
 baseline before applying pending migrations:

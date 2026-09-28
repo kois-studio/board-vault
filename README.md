@@ -6,11 +6,11 @@ recommendations, invitations, and session history.
 
 ## Current status
 
-This is a public codebase under active development. The product is still a
+This is a public repository under active development. The product is still a
 private, invitation-only beta: this repository does not promise a hosted
 service, open self-registration, or production support. Run it locally with
-synthetic data and disposable development credentials until the deployment and
-privacy model is explicitly documented.
+synthetic data and disposable development credentials. The deployed service
+and production data are separate from this local setup.
 
 Board Vault is not a complete board-game catalogue, marketplace, social
 network, or managed SaaS. It is a group decision-and-memory tool: a private
@@ -27,22 +27,25 @@ The repository contains:
 
 ## Development
 
-Install the workspace dependencies and copy the example environment files:
+Install the backend and frontend dependencies, then prepare the local SQLite
+database:
 
 ```shell
-npm ci
+npm run install:all
 cp backend/.env.example backend/.env
-cp frontend/.env.example frontend/.env
+npm run local:setup
 ```
 
-Fill the local files with disposable development values. Never commit them.
-The variable names and provider boundaries are documented in
-[`docs/README.md`](docs/README.md).
+The backend example is ready for local-only development. The reset creates a
+disposable database and synthetic accounts; it does not connect to Turso,
+Clerk, Resend, or Upstash. Keep `backend/.env` private. See
+[`docs/contributor-setup.md`](docs/contributor-setup.md) for login details,
+optional Clerk development setup, and the parallel contribution workflow.
 
 Run the main checks from the repository root:
 
 ```shell
-npm test
+npm run test:unit
 npm run build
 ```
 

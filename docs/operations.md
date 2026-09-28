@@ -39,10 +39,12 @@ public Clerk publishable key only when the Clerk controls are enabled. Clerk
 secret keys, database tokens, email keys, and Redis tokens are backend/operator
 secrets and must never enter browser code.
 
-For local development, keep the database disposable where practical, use
-synthetic accounts, and disable provider integrations that are not being
-tested. The API exposes `/health` for liveness and `/health/ready` for coarse
-dependency/schema readiness.
+For local development, use `npm run local:setup` to create an isolated SQLite
+database with synthetic accounts and scenario data. Redis is disabled by
+default, and the local email key is a nonfunctional placeholder. The API
+exposes `/health` for liveness and `/health/ready` for coarse dependency/schema
+readiness. Use the shared development services only for provider or
+multi-developer integration checks.
 
 ## Configuration boundaries
 

@@ -12,6 +12,8 @@
         "verify:migrations": "node database/scripts/verify-empty-state.mjs",
         "verify:restore": "node database/scripts/verify-restore-rehearsal.mjs",
         "verify:rollback": "node database/scripts/verify-rollback-rehearsal.mjs",
+        "local:setup": "node database/scripts/reset-local.mjs",
+        "local:reset": "node database/scripts/reset-local.mjs",
         "seed:social-fixture": "node database/scripts/seed-social-fixture.mjs"
     }
 }

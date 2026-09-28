@@ -13,6 +13,7 @@ deployment-specific evidence, live data, credentials, and personal details.
 - [0008 — Private-beta registration](0008-private-beta-registration.md)
 - [0009 — Group acquisition decisions](0009-group-acquisition-decisions.md)
 - [0010 — Group-scoped placeholder identities](0010-group-person-identities.md)
+- [0011 — Isolated local development and shared integration](0011-isolated-local-development.md)
 
 Accepted ADRs are durable constraints unless a later ADR explicitly supersedes
 them. Create an ADR when a decision changes architecture, persistence,

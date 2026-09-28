@@ -16,6 +16,7 @@ belong in private operator notes.
 - [Design system](design-system.md)
 - [Product glossary](glossary.md)
 - [Contributor setup](contributor-setup.md)
+- [Parallel development workflow](contributor-setup.md#parallel-contribution-workflow)
 - [Architecture decision records](adr/README.md)
 - [Public release checklist](release-checklist.md)
 - [Changelog](../CHANGELOG.md)
@@ -35,3 +36,7 @@ The package manifests are the source of truth for commands. At minimum, run
 the backend build and focused tests for a backend change, the frontend build
 and tests for a frontend change, and the disposable database verification for
 a migration change.
+
+Routine feature work should use the local SQLite setup in
+[`contributor-setup.md`](contributor-setup.md). The shared development services
+are reserved for integration checks and are not reset by local commands.
