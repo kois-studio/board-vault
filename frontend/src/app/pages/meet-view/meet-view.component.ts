@@ -16,13 +16,22 @@ import type {
 import { CardAccountComponent } from '../../components/card-account/card-account.component'
 import { ToastService } from '../../components/toast/toast.service'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
+import { DialogDirective } from '../../components/ui/dialog/dialog.directive'
 import { ImageBackgroundComponent } from '../../components/ui/image-background/image-background.component'
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { DataService } from '../../core/services/data.service'
 import type { Nullable } from '../../core/types/commons.type'
 
 @Component({
-    imports: [CommonModule, RouterLink, CustomDatePipe, CardAccountComponent, ImageBackgroundComponent, ContainerWrapperComponent],
+    imports: [
+        CommonModule,
+        RouterLink,
+        CustomDatePipe,
+        CardAccountComponent,
+        ImageBackgroundComponent,
+        ContainerWrapperComponent,
+        DialogDirective,
+    ],
     templateUrl: 'meet-view.component.html',
 })
 export class MeetViewComponent {
@@ -50,6 +59,7 @@ export class MeetViewComponent {
     public isUpdatingShortlist = false
     public isPersistingChanges = false
     public readonly actionError = signal<string | null>(null)
+    public readonly pendingStatus = signal<'completed' | 'cancelled' | null>(null)
     public plannedGameIdsDraft: Array<number> = []
     public postSessionRatings: Record<number, number> = {}
     public savingPostSessionRatings: Record<number, boolean> = {}
@@ -184,6 +194,11 @@ export class MeetViewComponent {
         return this.meetData?.skippedGames.length ?? 0
     }
 
+    get remainingPlannedGamesCount(): number {
+        if (!this.meetData) return 0
+        return this.meetData.plannedGames.filter((gameId) => !this.meetData?.playedGames.includes(gameId)).length
+    }
+
     get attendedCount(): number {
         return this.isGroupPersonSession
             ? (this.meetData?.participantStatuses?.filter((attendee) => attendee.attendanceStatus === 'attended').length ?? 0)
@@ -265,6 +280,23 @@ export class MeetViewComponent {
             default:
                 return ''
         }
+    }
+
+    public requestStatusUpdate(status: 'completed' | 'cancelled'): void {
+        if (!this.canManageLifecycle || !this.canEditSession || this.isUpdatingStatus) return
+        this.pendingStatus.set(status)
+    }
+
+    public cancelStatusUpdate(): void {
+        this.pendingStatus.set(null)
+    }
+
+    public confirmStatusUpdate(): void {
+        const status = this.pendingStatus()
+        if (!status) return
+
+        this.pendingStatus.set(null)
+        void this.updateStatus(status)
     }
 
     get currentRsvpStatus(): 'pending' | 'accepted' | 'declined' | null {

@@ -93,6 +93,15 @@ describe('MeetViewComponent participant safeguards', () => {
         expect(component.skippedGamesCount).toBe(2)
     })
 
+    it('requires an explicit review before completing or cancelling', async () => {
+        const { component } = await setup()
+
+        component.requestStatusUpdate('completed')
+        expect(component.pendingStatus()).toBe('completed')
+        component.cancelStatusUpdate()
+        expect(component.pendingStatus()).toBeNull()
+    })
+
     it('blocks removing the only attendee before sending an invalid request', async () => {
         const { component, dataService, toastService } = await setup()
         const meetData = component.meetData

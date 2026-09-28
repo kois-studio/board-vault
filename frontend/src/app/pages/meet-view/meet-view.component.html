@@ -34,9 +34,9 @@
                         <button type="button" class="app-btn-primary" [disabled]="isUpdatingStatus" (click)="updateStatus('active')">Start game night</button>
                         <p class="basis-full text-sm text-secondary">Start the session when the group is playing. Then record attendance and the games you actually play before saving the memory.</p>
                     } @else if (meetData?.status === 'active') {
-                        <button type="button" class="app-btn-primary" [disabled]="isUpdatingStatus" (click)="updateStatus('completed')">Finish and save memory</button>
+                        <button type="button" class="app-btn-primary" [disabled]="isUpdatingStatus" (click)="requestStatusUpdate('completed')">Finish and save memory</button>
                     }
-                    <button type="button" class="app-btn-danger" [disabled]="isUpdatingStatus" (click)="updateStatus('cancelled')">Cancel session</button>
+                    <button type="button" class="app-btn-danger" [disabled]="isUpdatingStatus" (click)="requestStatusUpdate('cancelled')">Cancel session</button>
                 </div>
             }
 
@@ -58,6 +58,39 @@
                 </div>
             }
         </header>
+
+        @if (pendingStatus(); as requestedStatus) {
+            <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" (click)="cancelStatusUpdate()">
+                <section
+                    appDialog
+                    (dialogClosed)="cancelStatusUpdate()"
+                    class="w-full max-w-lg rounded-3xl border border-zinc-200 bg-white p-6 shadow-2xl dark:border-zinc-700 dark:bg-zinc-900"
+                    aria-labelledby="session-status-confirmation-title"
+                    aria-describedby="session-status-confirmation-description"
+                    (click)="$event.stopPropagation()"
+                >
+                    <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Review session change</p>
+                    <h2 id="session-status-confirmation-title" class="mt-2 text-2xl font-bold">{{ requestedStatus === 'completed' ? 'Finish this game night?' : 'Cancel this session?' }}</h2>
+                    <p id="session-status-confirmation-description" class="mt-2 text-secondary">
+                        @if (requestedStatus === 'completed') {
+                            Saving completion makes this session read-only and keeps the recorded games in group memory.
+                        } @else {
+                            Cancelling keeps the session for context but prevents later RSVP, attendance, shortlist, and played-game edits.
+                        }
+                    </p>
+                    <dl class="mt-5 grid gap-3 sm:grid-cols-3">
+                        <div class="rounded-2xl bg-zinc-50 p-3 dark:bg-zinc-800"><dt class="text-xs text-secondary">Played</dt><dd class="mt-1 text-xl font-bold">{{ playedGamesCount }}</dd></div>
+                        <div class="rounded-2xl bg-zinc-50 p-3 dark:bg-zinc-800"><dt class="text-xs text-secondary">Still planned</dt><dd class="mt-1 text-xl font-bold">{{ remainingPlannedGamesCount }}</dd></div>
+                        <div class="rounded-2xl bg-zinc-50 p-3 dark:bg-zinc-800"><dt class="text-xs text-secondary">Already skipped</dt><dd class="mt-1 text-xl font-bold">{{ skippedGamesCount }}</dd></div>
+                    </dl>
+                    <p class="mt-4 text-sm text-secondary">Remaining planned games will not be recorded as played. They stay unplayed so the group can revisit the shortlist later.</p>
+                    <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                        <button type="button" class="app-btn-secondary" (click)="cancelStatusUpdate()">Keep editing</button>
+                        <button type="button" class="app-btn-danger" [disabled]="isUpdatingStatus" (click)="confirmStatusUpdate()">{{ requestedStatus === 'completed' ? 'Finish and save memory' : 'Cancel session' }}</button>
+                    </div>
+                </section>
+            </div>
+        }
 
         <section class="grid gap-3 sm:grid-cols-2 lg:grid-cols-5 mt-6" aria-label="Session summary">
             <div class="app-bg-secondary rounded-lg p-4">
