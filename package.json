@@ -1,6 +1,6 @@
 {
     "name": "board-vault",
-    "version": "0.0.0",
+    "version": "0.1.0-beta.1",
     "private": true,
     "scripts": {
         "install:all": "cd backend && npm ci --ignore-scripts && cd ../frontend && npm ci --ignore-scripts",

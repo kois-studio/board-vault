@@ -18,6 +18,7 @@ belong in private operator notes.
 - [Contributor setup](contributor-setup.md)
 - [Architecture decision records](adr/README.md)
 - [Public release checklist](release-checklist.md)
+- [Changelog](../CHANGELOG.md)
 - [Database workspace](../database/README.md)
 
 ## Public documentation rules
