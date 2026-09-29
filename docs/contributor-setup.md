@@ -111,9 +111,20 @@ Use the shared development Clerk instance and `board-vault-development` Turso
 database only for work that specifically needs provider or multi-user
 integration. These services are shared. Normal local reset never touches them.
 Get current development-only credentials from the repository owner through an
-approved private channel; do not commit or copy them into a PR. Production
-Clerk, Turso, Resend, Redis, and deployment credentials are not needed for
-contribution work.
+approved private channel. Save the supplied environment file as
+`backend/.env` and restrict it to your account:
+
+```shell
+chmod 600 backend/.env
+```
+
+The backend reads that file for its development Clerk and Turso settings. The
+frontend startup/build script also reads it to create the ignored
+`frontend/public/runtime-config.js`; it writes only the Clerk publishable key
+and public feature flags there, never the Clerk secret or Turso token. Restart
+the frontend after changing the file. Do not commit or copy the file into a PR.
+Production Clerk, Turso, Resend, Redis, and deployment credentials are not
+needed for contribution work.
 
 Do not reset or refresh the shared Turso database as part of ordinary feature
 development. Its reset/refresh is an owner-run operation because it destroys
