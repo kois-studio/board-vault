@@ -1,0 +1,42 @@
+name: Update visual baselines
+
+# Run manually from the Actions tab (choose the branch). It renders the
+# landing page on the same runner image as CI and uploads the new PNGs as an
+# artifact. Review the images, then commit them to
+# frontend/e2e/visual-regression.spec.ts-snapshots/.
+
+on:
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+jobs:
+    update:
+        name: Render Linux visual baselines
+        runs-on: ubuntu-24.04
+        timeout-minutes: 20
+        defaults:
+            run:
+                working-directory: frontend
+        steps:
+            - name: Check out repository
+              uses: actions/checkout@v4
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version-file: .nvmrc
+                  cache: npm
+                  cache-dependency-path: frontend/package-lock.json
+            - name: Install dependencies
+              run: npm ci --ignore-scripts
+            - name: Install Playwright browser
+              run: npx playwright install --with-deps chromium
+            - name: Render baselines
+              run: npx playwright test e2e/visual-regression.spec.ts --update-snapshots
+            - name: Upload baselines
+              uses: actions/upload-artifact@v4
+              with:
+                  name: visual-baselines
+                  path: frontend/e2e/visual-regression.spec.ts-snapshots/*-linux.png
+                  if-no-files-found: error
