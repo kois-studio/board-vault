@@ -7,6 +7,9 @@ belong in private operator notes.
 
 ## Start here
 
+- [Agent instructions](AGENTS.md)
+- [Project standards contract and initial assessment](project-standards.yml)
+- [Tracked work queue](work/TODO.md)
 - [API contract](api/openapi.json)
 - [Operations and local configuration](operations.md)
 - [Architecture overview](architecture.md)

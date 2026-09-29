@@ -2,6 +2,8 @@
 
 Before making changes, read [`README.md`](README.md),
 [`CONTRIBUTING.md`](CONTRIBUTING.md), and [`docs/README.md`](docs/README.md).
+Then read [`docs/AGENTS.md`](docs/AGENTS.md) for the project-specific source of
+truth and safe-change guidance.
 For product boundaries, read the Board Vault entry in the private Kois context
 repository when it is available. The implementation repository is the source
 of truth for technical behavior.
@@ -23,8 +25,12 @@ of truth for technical behavior.
 
 ## Parallel work
 
-- Work in a focused feature branch or separate Git worktree and open a PR to
-  `main`; do not push task changes directly to `main`.
+- Contributors should work in focused branches or separate Git worktrees and
+  open a PR to `main`.
+- For owner-directed maintenance, follow the repository owner's explicit
+  instructions about committing directly. An administrative bypass of a
+  required review or check is not evidence that the review happened or that
+  the check passed; report any bypassed requirement.
 - Keep local configuration and database state inside the worktree that owns
   them. Coordinate overlapping API, DTO, migration, and OpenAPI snapshot edits
   with other contributors.
@@ -50,4 +56,4 @@ npm run verify:rollback
 ```
 
 Run checks relevant to the changed packages and database contract. GitHub
-requires all four CI jobs and one approval before merging to `main`.
+requires all four CI jobs and one approval to merge contributor PRs to `main`.

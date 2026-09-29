@@ -1,0 +1,102 @@
+contract_version: 0.2.0
+standards_version: 0.4.0
+
+standards_source:
+  repository: https://github.com/kois-studio/engineering-standards
+  revision: f86132fea80126008895b65f76342aaa095e98be
+
+project:
+  name: Board Vault
+  lifecycle: existing
+  maturity: public-beta
+
+standards:
+  - documentation
+  - testing
+  - typescript
+  - security
+  - dependencies
+  - ci-cd
+  - operations
+  - api
+  - data
+  - web
+  - identity
+
+profiles:
+  - angular-application
+  - nestjs-backend
+  - clerk-identity
+
+assessment_scope: >-
+  Initial AI-readiness assessment focused on documentation, safe parallel work,
+  CI, local data isolation, and known security/dependency risks. Rules not listed
+  below have not been assessed and must not be treated as compliant. Continue the
+  rule-by-rule assessment in docs/work/TODO.md.
+
+compliance:
+  rules:
+    - id: DOC-001
+      status: compliant
+      evidence: docs/AGENTS.md; AGENTS.md
+      priority: high
+      next_action: Keep the canonical agent instructions current.
+    - id: DOC-002
+      status: compliant
+      evidence: docs/README.md
+      priority: high
+      next_action: Add new maintained documentation to the index.
+    - id: DOC-011
+      status: compliant
+      evidence: docs/work/TODO.md; docs/AGENTS.md
+      priority: high
+      next_action: Keep unfinished work in the tracked queue.
+    - id: TEST-006
+      status: compliant
+      evidence: package.json; .github/workflows/ci.yml
+      priority: high
+      next_action: Keep documented test commands aligned with CI.
+    - id: SEC-002
+      status: compliant
+      evidence: .gitignore; backend/.env.example; docs/contributor-setup.md
+      priority: high
+      next_action: Preserve secret and local-data exclusions.
+    - id: DEP-006
+      status: deferred
+      evidence: npm audit reported existing backend and frontend dependency advisories on 2026-09-28; GitHub reported 179 default-branch alerts.
+      priority: high
+      next_action: Review the advisories and plan compatible upgrades in focused dependency work.
+    - id: CI-002
+      status: partial
+      evidence: The post-commit run https://github.com/kois-studio/board-vault/actions/runs/36483379661 passed backend, database, and repository checks but failed four existing frontend visual snapshots.
+      priority: high
+      next_action: Refresh or correct the Linux screenshot baselines and restore a passing frontend check.
+    - id: CI-004
+      status: exception
+      evidence: GitHub main protection requires review and four checks for PR merges; the owner-authorized direct commit on 2026-09-28 bypassed one missing approval and a failing frontend check.
+      priority: high
+      next_action: Keep the exception limited to explicitly owner-directed work and report every bypass; contributor PRs remain subject to required review and checks.
+    - id: DATA-002
+      status: compliant
+      evidence: database/migrations; database/scripts/verify-migrations.mjs; docs/operations.md
+      priority: high
+      next_action: Add future schema changes as ordered migrations and retain disposable verification.
+
+exceptions:
+  - id: CI-004
+    rationale: The repository owner may explicitly direct an administrative push to main. Such a push can bypass branch protection and does not imply that skipped reviews or failing checks passed. Contributor PRs remain governed by the configured requirements.
+    scope: Explicitly owner-directed maintainer commits only.
+
+deferred_work:
+  - id: BOARD-001
+    title: Complete the rule-by-rule standards assessment
+    priority: medium
+    next_action: Assess the remaining selected standards and profiles using repository evidence and record gaps in docs/work/TODO.md.
+  - id: BOARD-002
+    title: Resolve the failing Linux visual regression snapshots
+    priority: high
+    next_action: Regenerate or correct the four landing-page baselines in the matching Linux Playwright environment, then confirm the frontend CI job passes.
+  - id: BOARD-003
+    title: Review dependency advisories
+    priority: high
+    next_action: Triage current npm and GitHub advisories, prioritize reachable critical/high issues, and propose compatible upgrades.
