@@ -40,7 +40,7 @@
         "@angular/cli": "22.2.0",
         "@angular/compiler-cli": "22.2.0",
         "@angular/localize": "22.2.0",
-        "@biomejs/biome": "1.9.2",
+        "@biomejs/biome": "2.5.14",
         "@clerk/backend": "^3.17.1",
         "@clerk/testing": "^2.2.33",
         "@playwright/test": "^1.62.1",
