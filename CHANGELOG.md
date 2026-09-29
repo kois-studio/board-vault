@@ -23,3 +23,8 @@ Changes after `0.1.0-beta.1` are recorded here until the next owner-approved
 tag. Release notes must describe product boundaries honestly and must not
 include credentials, personal data, provider identifiers, or private
 operational details.
+
+- Made local checks reproducible on Windows: LF line endings are enforced
+  through `.gitattributes`, the Playwright web server pins self-registration
+  off to match CI, and backend e2e cleanup tolerates the SQLite file lock that
+  the native libsql driver holds until the test process exits.

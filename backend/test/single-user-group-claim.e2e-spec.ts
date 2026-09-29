@@ -9,6 +9,7 @@ import * as bcrypt from 'bcryptjs'
 import * as request from 'supertest'
 
 import { AppModule } from './../src/app.module'
+import { removeTestDatabase } from './remove-test-database'
 
 const repositoryRoot = resolve(__dirname, '../..')
 const testDatabasePath = resolve(__dirname, 'single-user-group-claim.e2e.sqlite')
@@ -87,7 +88,7 @@ describe('single-user group claim workflow (e2e)', () => {
     afterAll(async () => {
         await app?.close()
         database?.close()
-        rmSync(testDatabasePath, { force: true })
+        removeTestDatabase(testDatabasePath)
     })
 
     async function login(email: string) {

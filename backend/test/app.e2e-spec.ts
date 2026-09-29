@@ -1,10 +1,9 @@
-import { rm } from 'node:fs/promises'
-
 import { INestApplication } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
 import * as request from 'supertest'
 
 import { AppModule } from './../src/app.module'
+import { removeTestDatabase } from './remove-test-database'
 
 const testDatabasePath = './test/.e2e.sqlite'
 
@@ -29,7 +28,7 @@ describe('HTTP security boundary (e2e)', () => {
 
     afterAll(async () => {
         await app?.close()
-        await rm(testDatabasePath, { force: true })
+        removeTestDatabase(testDatabasePath)
     })
 
     it('rejects an unauthenticated Clerk status request', () => {

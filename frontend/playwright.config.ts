@@ -37,6 +37,8 @@ export default defineConfig({
         ? undefined
         : {
               command: 'npm run start -- --host 127.0.0.1 --port 4300',
+              // Match CI instead of the contributor's backend/.env, which enables self-registration locally.
+              env: { BOARD_VAULT_SELF_REGISTRATION_ENABLED: 'false' },
               url: baseURL,
               reuseExistingServer: false,
               timeout: 120_000,
