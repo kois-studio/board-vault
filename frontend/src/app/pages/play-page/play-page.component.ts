@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import { Component, computed, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { CardSectionComponent } from '../../components/cards/card-section/card-section.component'
@@ -13,7 +12,6 @@ import { LoadingService } from '../../core/services/loading.service'
 
 @Component({
     imports: [
-        CommonModule,
         PageHeaderComponent,
         ButtonComponent,
         ContainerWrapperComponent,

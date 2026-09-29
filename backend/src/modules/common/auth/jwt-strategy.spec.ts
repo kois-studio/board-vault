@@ -7,7 +7,7 @@ import { JwtStrategy } from './jwt-strategy'
 
 describe('JwtStrategy account availability', () => {
     const configService = {
-        get: jest.fn().mockReturnValue('test-secret'),
+        getOrThrow: jest.fn().mockReturnValue('test-secret'),
     } as unknown as ConfigService
 
     it('accepts an active account and keeps the admin claim', async () => {

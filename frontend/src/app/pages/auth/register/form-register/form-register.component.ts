@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import { Component, OnInit } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs'
@@ -8,7 +7,7 @@ import { ButtonComponent } from '../../../../components/ui/button/button.compone
 import { IconComponent } from '../../../../components/ui/icon/icon.component'
 
 @Component({
-    imports: [ReactiveFormsModule, CommonModule, ButtonComponent, IconComponent],
+    imports: [ReactiveFormsModule, ButtonComponent, IconComponent],
     selector: 'app-form-register',
     templateUrl: 'form-register.component.html',
 })

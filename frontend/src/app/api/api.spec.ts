@@ -1,4 +1,4 @@
-import { provideHttpClient } from '@angular/common/http'
+import { provideHttpClient, withXhr } from '@angular/common/http'
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing'
 import { TestBed } from '@angular/core/testing'
 import { firstValueFrom } from 'rxjs'
@@ -13,7 +13,7 @@ describe('Api response contracts', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [Api, provideHttpClient(), provideHttpClientTesting()],
+            providers: [Api, provideHttpClient(withXhr()), provideHttpClientTesting()],
         })
 
         api = TestBed.inject(Api)

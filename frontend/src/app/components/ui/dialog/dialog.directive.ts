@@ -1,5 +1,4 @@
-import { DOCUMENT } from '@angular/common'
-import { Directive, ElementRef, EventEmitter, HostListener, NgZone, OnDestroy, Output, Renderer2, inject } from '@angular/core'
+import { DOCUMENT, Directive, ElementRef, EventEmitter, HostListener, NgZone, OnDestroy, Output, Renderer2, inject } from '@angular/core'
 
 const FOCUSABLE_SELECTOR =
     'a[href], area[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
@@ -37,7 +36,7 @@ export class DialogDirective implements OnDestroy {
     }
 
     @HostListener('document:keydown.escape', ['$event'])
-    onEscape(event: KeyboardEvent): void {
+    onEscape(event: Event): void {
         event.preventDefault()
         event.stopPropagation()
         this.dialogClosed.emit()

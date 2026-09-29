@@ -4,7 +4,6 @@
     "/auth/clerk/status": {
       "get": {
         "operationId": "AuthController_getClerkStatus",
-        "summary": "Verify a Clerk session during the migration",
         "parameters": [],
         "responses": {
           "200": {
@@ -14,20 +13,20 @@
             "description": "Clerk session is invalid or expired"
           }
         },
-        "tags": [
-          "auth"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Verify a Clerk session during the migration",
+        "tags": [
+          "auth"
         ]
       }
     },
     "/auth/status": {
       "get": {
         "operationId": "AuthController_getTokenStatus",
-        "summary": "Validate JWT token and get user status",
         "parameters": [],
         "responses": {
           "200": {
@@ -44,20 +43,20 @@
             "description": "Unauthorized - Token is invalid or expired"
           }
         },
-        "tags": [
-          "auth"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Validate JWT token and get user status",
+        "tags": [
+          "auth"
         ]
       }
     },
     "/auth/register": {
       "post": {
         "operationId": "AuthController_createUser",
-        "summary": "Create a new user",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -81,6 +80,7 @@
             }
           }
         },
+        "summary": "Create a new user",
         "tags": [
           "auth"
         ]
@@ -89,7 +89,6 @@
     "/auth/login": {
       "post": {
         "operationId": "AuthController_loginUser",
-        "summary": "Log in a user",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -116,6 +115,7 @@
             "description": "Invalid credentials"
           }
         },
+        "summary": "Log in a user",
         "tags": [
           "auth"
         ]
@@ -124,7 +124,6 @@
     "/auth/check-email": {
       "get": {
         "operationId": "AuthController_checkEmail",
-        "summary": "Check if an email exists",
         "parameters": [
           {
             "name": "email",
@@ -144,6 +143,7 @@
             "description": "Email is required"
           }
         },
+        "summary": "Check if an email exists",
         "tags": [
           "auth"
         ]
@@ -152,7 +152,6 @@
     "/auth/check-username": {
       "get": {
         "operationId": "AuthController_checkUsername",
-        "summary": "Check if a username exists",
         "parameters": [
           {
             "name": "username",
@@ -172,6 +171,7 @@
             "description": "Username is required"
           }
         },
+        "summary": "Check if a username exists",
         "tags": [
           "auth"
         ]
@@ -180,7 +180,6 @@
     "/auth/verify-email/{token}": {
       "get": {
         "operationId": "AuthController_verifyEmail",
-        "summary": "Verify user email",
         "parameters": [
           {
             "name": "token",
@@ -199,6 +198,7 @@
             "description": "Invalid or expired token"
           }
         },
+        "summary": "Verify user email",
         "tags": [
           "auth"
         ]
@@ -207,7 +207,6 @@
     "/auth/forgot-password": {
       "post": {
         "operationId": "AuthController_forgotPassword",
-        "summary": "Request a password reset",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -227,6 +226,7 @@
             "description": "Email is required"
           }
         },
+        "summary": "Request a password reset",
         "tags": [
           "auth"
         ]
@@ -235,7 +235,6 @@
     "/auth/reset-password/{token}": {
       "post": {
         "operationId": "AuthController_resetPassword",
-        "summary": "Reset user password",
         "parameters": [
           {
             "name": "token",
@@ -264,6 +263,7 @@
             "description": "Invalid or expired token"
           }
         },
+        "summary": "Reset user password",
         "tags": [
           "auth"
         ]
@@ -271,9 +271,8 @@
     },
     "/users": {
       "get": {
-        "operationId": "UsersController_getUsers",
-        "summary": "Get all users",
         "deprecated": true,
+        "operationId": "UsersController_getUsers",
         "parameters": [],
         "responses": {
           "200": {
@@ -293,21 +292,21 @@
             "description": "Administrator access required"
           }
         },
-        "tags": [
-          "users"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Get all users",
+        "tags": [
+          "users"
         ]
       }
     },
     "/users/{userId}": {
       "get": {
-        "operationId": "UsersController_getUserById",
-        "summary": "Get user by id",
         "deprecated": true,
+        "operationId": "UsersController_getUserById",
         "parameters": [
           {
             "name": "userId",
@@ -333,18 +332,18 @@
             "description": "User not found"
           }
         },
-        "tags": [
-          "users"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Get user by id",
+        "tags": [
+          "users"
         ]
       },
       "put": {
         "operationId": "UsersController_updateUser",
-        "summary": "Update a user by ID",
         "parameters": [
           {
             "name": "userId",
@@ -373,19 +372,19 @@
             "description": "User not found."
           }
         },
-        "tags": [
-          "users"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Update a user by ID",
+        "tags": [
+          "users"
         ]
       },
       "delete": {
-        "operationId": "UsersController_deleteUserById",
-        "summary": "Delete a user by Id",
         "deprecated": true,
+        "operationId": "UsersController_deleteUserById",
         "parameters": [
           {
             "name": "userId",
@@ -401,20 +400,20 @@
             "description": "The user has been succesfully deleted"
           }
         },
-        "tags": [
-          "users"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Delete a user by Id",
+        "tags": [
+          "users"
         ]
       }
     },
     "/users/{userId}/games": {
       "put": {
         "operationId": "UsersController_updateUserGames",
-        "summary": "Modify games owned by user",
         "parameters": [
           {
             "name": "userId",
@@ -450,20 +449,20 @@
             "description": "User not found."
           }
         },
-        "tags": [
-          "users"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Modify games owned by user",
+        "tags": [
+          "users"
         ]
       }
     },
     "/cache/print": {
       "get": {
         "operationId": "CacheController_printAll",
-        "summary": "Print all keys stored in the database",
         "parameters": [],
         "responses": {
           "200": {
@@ -477,22 +476,22 @@
             }
           }
         },
-        "tags": [
-          "cache"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Print all keys stored in the database",
+        "tags": [
+          "cache"
         ]
       }
     },
     "/cache/reset": {
       "delete": {
-        "operationId": "CacheController_reset",
-        "summary": "Clear all data | try to avoid!",
-        "description": "It flushes the whole Redis database, use it only if needed",
         "deprecated": true,
+        "description": "It flushes the whole Redis database, use it only if needed",
+        "operationId": "CacheController_reset",
         "parameters": [],
         "responses": {
           "200": {
@@ -506,20 +505,20 @@
             }
           }
         },
-        "tags": [
-          "cache"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Clear all data | try to avoid!",
+        "tags": [
+          "cache"
         ]
       }
     },
     "/cache/delete/{key}": {
       "delete": {
         "operationId": "CacheController_delete",
-        "summary": "Delete all data from a key",
         "parameters": [
           {
             "name": "key",
@@ -544,20 +543,20 @@
             }
           }
         },
-        "tags": [
-          "cache"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Delete all data from a key",
+        "tags": [
+          "cache"
         ]
       }
     },
     "/health": {
       "get": {
         "operationId": "HealthController_getLiveness",
-        "summary": "Check whether the API process is alive",
         "parameters": [],
         "responses": {
           "200": {
@@ -571,6 +570,7 @@
             }
           }
         },
+        "summary": "Check whether the API process is alive",
         "tags": [
           "health"
         ]
@@ -579,7 +579,6 @@
     "/health/ready": {
       "get": {
         "operationId": "HealthController_getReadiness",
-        "summary": "Check whether the API dependencies are ready",
         "parameters": [],
         "responses": {
           "200": {
@@ -593,6 +592,7 @@
             }
           }
         },
+        "summary": "Check whether the API dependencies are ready",
         "tags": [
           "health"
         ]
@@ -600,9 +600,8 @@
     },
     "/memberships": {
       "get": {
-        "operationId": "GroupMembershipsController_getGroupMemberships",
-        "summary": "Get all memberships",
         "deprecated": true,
+        "operationId": "GroupMembershipsController_getGroupMemberships",
         "parameters": [],
         "responses": {
           "200": {
@@ -619,19 +618,19 @@
             }
           }
         },
-        "tags": [
-          "memberships"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Get all memberships",
+        "tags": [
+          "memberships"
         ]
       },
       "post": {
-        "operationId": "GroupMembershipsController_createGroupMembership",
-        "summary": "Create a new membership",
         "deprecated": true,
+        "operationId": "GroupMembershipsController_createGroupMembership",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -648,21 +647,21 @@
             "description": "The membership has been succesfully created"
           }
         },
-        "tags": [
-          "memberships"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Create a new membership",
+        "tags": [
+          "memberships"
         ]
       }
     },
     "/memberships/{accountId}/{groupId}": {
       "get": {
-        "operationId": "GroupMembershipsController_getGroupMembershipById",
-        "summary": "Get membership by id",
         "deprecated": true,
+        "operationId": "GroupMembershipsController_getGroupMembershipById",
         "parameters": [
           {
             "name": "accountId",
@@ -696,18 +695,18 @@
             "description": "Membership not found"
           }
         },
-        "tags": [
-          "memberships"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Get membership by id",
+        "tags": [
+          "memberships"
         ]
       },
       "delete": {
         "operationId": "GroupMembershipsController_deleteGroupMembershipById",
-        "summary": "Delete a membership by Id",
         "parameters": [
           {
             "name": "accountId",
@@ -731,20 +730,20 @@
             "description": "The membership has been succesfully deleted"
           }
         },
-        "tags": [
-          "memberships"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Delete a membership by Id",
+        "tags": [
+          "memberships"
         ]
       }
     },
     "/groups/{groupId}/people": {
       "get": {
         "operationId": "GroupPeopleController_getPeople",
-        "summary": "List active people represented in a group",
         "parameters": [
           {
             "name": "groupId",
@@ -775,18 +774,18 @@
             }
           }
         },
-        "tags": [
-          "group-people"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "List active people represented in a group",
+        "tags": [
+          "group-people"
         ]
       },
       "post": {
         "operationId": "GroupPeopleController_createPerson",
-        "summary": "Create a placeholder person in a group",
         "parameters": [
           {
             "name": "groupId",
@@ -819,20 +818,20 @@
             }
           }
         },
-        "tags": [
-          "group-people"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Create a placeholder person in a group",
+        "tags": [
+          "group-people"
         ]
       }
     },
     "/groups/{groupId}/people/catalog": {
       "get": {
         "operationId": "GroupPeopleController_getCatalog",
-        "summary": "List catalog games available for group-person assertions",
         "parameters": [
           {
             "name": "groupId",
@@ -840,6 +839,16 @@
             "in": "path",
             "schema": {
               "type": "number"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Optional title search for games that can be assigned to a group person.",
+            "schema": {
+              "example": "catan",
+              "type": "string"
             }
           }
         ],
@@ -858,20 +867,20 @@
             }
           }
         },
-        "tags": [
-          "group-people"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "List catalog games available for group-person assertions",
+        "tags": [
+          "group-people"
         ]
       }
     },
     "/groups/{groupId}/people/{personId}": {
       "patch": {
         "operationId": "GroupPeopleController_updatePerson",
-        "summary": "Update or archive a group person",
         "parameters": [
           {
             "name": "groupId",
@@ -912,20 +921,20 @@
             }
           }
         },
-        "tags": [
-          "group-people"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Update or archive a group person",
+        "tags": [
+          "group-people"
         ]
       }
     },
     "/groups/{groupId}/people/{personId}/claim": {
       "post": {
         "operationId": "GroupPeopleController_claimPerson",
-        "summary": "Claim a targeted placeholder as the authenticated account",
         "parameters": [
           {
             "name": "groupId",
@@ -959,20 +968,20 @@
             "description": ""
           }
         },
-        "tags": [
-          "group-people"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Claim a targeted placeholder as the authenticated account",
+        "tags": [
+          "group-people"
         ]
       }
     },
     "/groups/{groupId}/people/join": {
       "post": {
         "operationId": "GroupPeopleController_joinAsNewPerson",
-        "summary": "Join a group as a new linked group person",
         "parameters": [
           {
             "name": "groupId",
@@ -995,20 +1004,20 @@
             }
           }
         },
-        "tags": [
-          "group-people"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Join a group as a new linked group person",
+        "tags": [
+          "group-people"
         ]
       }
     },
     "/groups/{groupId}/people/{personId}/ownership": {
       "get": {
         "operationId": "GroupPeopleController_getOwnership",
-        "summary": "List group-person game ownership assertions",
         "parameters": [
           {
             "name": "groupId",
@@ -1042,18 +1051,18 @@
             }
           }
         },
-        "tags": [
-          "group-people"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "List group-person game ownership assertions",
+        "tags": [
+          "group-people"
         ]
       },
       "put": {
         "operationId": "GroupPeopleController_updateOwnership",
-        "summary": "Set a group-person game ownership assertion",
         "parameters": [
           {
             "name": "groupId",
@@ -1087,20 +1096,20 @@
             "description": "Ownership assertion saved"
           }
         },
-        "tags": [
-          "group-people"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Set a group-person game ownership assertion",
+        "tags": [
+          "group-people"
         ]
       }
     },
     "/groups/{groupId}/people/{personId}/preferences": {
       "get": {
         "operationId": "GroupPeopleController_getPreferences",
-        "summary": "List group-person game preferences",
         "parameters": [
           {
             "name": "groupId",
@@ -1134,18 +1143,18 @@
             }
           }
         },
-        "tags": [
-          "group-people"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "List group-person game preferences",
+        "tags": [
+          "group-people"
         ]
       },
       "put": {
         "operationId": "GroupPeopleController_updatePreference",
-        "summary": "Set a group-person game preference",
         "parameters": [
           {
             "name": "groupId",
@@ -1179,20 +1188,20 @@
             "description": "Preference saved"
           }
         },
-        "tags": [
-          "group-people"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Set a group-person game preference",
+        "tags": [
+          "group-people"
         ]
       }
     },
     "/groups/{groupId}/people/{personId}/preferences/{gameId}": {
       "delete": {
         "operationId": "GroupPeopleController_deletePreference",
-        "summary": "Remove a group-person game preference",
         "parameters": [
           {
             "name": "groupId",
@@ -1224,21 +1233,21 @@
             "description": "Preference removed"
           }
         },
-        "tags": [
-          "group-people"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Remove a group-person game preference",
+        "tags": [
+          "group-people"
         ]
       }
     },
     "/groups": {
       "get": {
-        "operationId": "GroupsController_getGroups",
-        "summary": "Get all groups",
         "deprecated": true,
+        "operationId": "GroupsController_getGroups",
         "parameters": [],
         "responses": {
           "200": {
@@ -1255,19 +1264,19 @@
             }
           }
         },
-        "tags": [
-          "groups"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Get all groups",
+        "tags": [
+          "groups"
         ]
       },
       "post": {
-        "operationId": "GroupsController_createGroup",
-        "summary": "Create a new group",
         "deprecated": true,
+        "operationId": "GroupsController_createGroup",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -1284,21 +1293,21 @@
             "description": "The group has been succesfully created"
           }
         },
-        "tags": [
-          "groups"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Create a new group",
+        "tags": [
+          "groups"
         ]
       }
     },
     "/groups/{groupId}": {
       "get": {
-        "operationId": "GroupsController_getGroupById",
-        "summary": "Get group by id",
         "deprecated": true,
+        "operationId": "GroupsController_getGroupById",
         "parameters": [
           {
             "name": "groupId",
@@ -1324,19 +1333,19 @@
             "description": "Group not found"
           }
         },
-        "tags": [
-          "groups"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Get group by id",
+        "tags": [
+          "groups"
         ]
       },
       "put": {
-        "operationId": "GroupsController_updateGroup",
-        "summary": "Update a group by ID",
         "deprecated": true,
+        "operationId": "GroupsController_updateGroup",
         "parameters": [
           {
             "name": "groupId",
@@ -1365,19 +1374,19 @@
             "description": "Group not found."
           }
         },
-        "tags": [
-          "groups"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Update a group by ID",
+        "tags": [
+          "groups"
         ]
       },
       "delete": {
-        "operationId": "GroupsController_deleteGroupById",
-        "summary": "Delete a group by Id",
         "deprecated": true,
+        "operationId": "GroupsController_deleteGroupById",
         "parameters": [
           {
             "name": "groupId",
@@ -1393,20 +1402,20 @@
             "description": "The group has been succesfully deleted"
           }
         },
-        "tags": [
-          "groups"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Delete a group by Id",
+        "tags": [
+          "groups"
         ]
       }
     },
     "/groups/{groupId}/invitations": {
       "get": {
         "operationId": "GroupsController_getGroupInvitations",
-        "summary": "Get pending invitations for a group (owner only)",
         "parameters": [
           {
             "name": "groupId",
@@ -1432,20 +1441,20 @@
             }
           }
         },
-        "tags": [
-          "groups"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Get pending invitations for a group (owner only)",
+        "tags": [
+          "groups"
         ]
       }
     },
     "/groups/{groupId}/clerk-invitations": {
       "post": {
         "operationId": "GroupsController_createClerkInvitation",
-        "summary": "Invite a new person to the group by email through Clerk",
         "parameters": [
           {
             "name": "groupId",
@@ -1478,18 +1487,18 @@
             }
           }
         },
-        "tags": [
-          "groups"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Invite a new person to the group by email through Clerk",
+        "tags": [
+          "groups"
         ]
       },
       "get": {
         "operationId": "GroupsController_getClerkInvitations",
-        "summary": "List pending Clerk invitations for a group (owner only)",
         "parameters": [
           {
             "name": "groupId",
@@ -1515,20 +1524,20 @@
             }
           }
         },
-        "tags": [
-          "groups"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "List pending Clerk invitations for a group (owner only)",
+        "tags": [
+          "groups"
         ]
       }
     },
     "/groups/{groupId}/clerk-invitations/{invitationId}": {
       "delete": {
         "operationId": "GroupsController_revokeClerkInvitation",
-        "summary": "Revoke a pending Clerk invitation for a group (owner only)",
         "parameters": [
           {
             "name": "groupId",
@@ -1553,20 +1562,20 @@
             "description": "The Clerk invitation was revoked"
           }
         },
-        "tags": [
-          "groups"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Revoke a pending Clerk invitation for a group (owner only)",
+        "tags": [
+          "groups"
         ]
       }
     },
     "/groups/{groupId}/acquisition-board": {
       "get": {
         "operationId": "GroupsController_getAcquisitionBoard",
-        "summary": "Get the group acquisition board",
         "parameters": [
           {
             "name": "groupId",
@@ -1592,18 +1601,18 @@
             }
           }
         },
-        "tags": [
-          "groups"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Get the group acquisition board",
+        "tags": [
+          "groups"
         ]
       },
       "post": {
         "operationId": "GroupsController_addAcquisitionInterest",
-        "summary": "Express interest in a game for the group",
         "parameters": [
           {
             "name": "groupId",
@@ -1629,20 +1638,20 @@
             "description": "Interest saved"
           }
         },
-        "tags": [
-          "groups"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Express interest in a game for the group",
+        "tags": [
+          "groups"
         ]
       }
     },
     "/groups/{groupId}/acquisition-board/{gameId}": {
       "delete": {
         "operationId": "GroupsController_removeAcquisitionInterest",
-        "summary": "Remove the current member’s acquisition interest",
         "parameters": [
           {
             "name": "groupId",
@@ -1666,20 +1675,20 @@
             "description": "Interest removed"
           }
         },
-        "tags": [
-          "groups"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Remove the current member’s acquisition interest",
+        "tags": [
+          "groups"
         ]
       }
     },
     "/groups/{groupId}/acquisition-board/{gameId}/decision": {
       "put": {
         "operationId": "GroupsController_updateAcquisitionDecision",
-        "summary": "Update the group acquisition decision (owner only)",
         "parameters": [
           {
             "name": "groupId",
@@ -1713,21 +1722,21 @@
             "description": "Group acquisition decision updated"
           }
         },
-        "tags": [
-          "groups"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Update the group acquisition decision (owner only)",
+        "tags": [
+          "groups"
         ]
       }
     },
     "/invitations": {
       "get": {
-        "operationId": "InvitationsController_getInvitations",
-        "summary": "Get all invitations",
         "deprecated": true,
+        "operationId": "InvitationsController_getInvitations",
         "parameters": [],
         "responses": {
           "200": {
@@ -1744,19 +1753,19 @@
             }
           }
         },
-        "tags": [
-          "invitations"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Get all invitations",
+        "tags": [
+          "invitations"
         ]
       },
       "post": {
-        "operationId": "InvitationsController_createInvitation",
-        "summary": "Create a new invitation",
         "deprecated": true,
+        "operationId": "InvitationsController_createInvitation",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -1780,21 +1789,21 @@
             }
           }
         },
-        "tags": [
-          "invitations"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Create a new invitation",
+        "tags": [
+          "invitations"
         ]
       }
     },
     "/invitations/{invitationId}": {
       "get": {
-        "operationId": "InvitationsController_getInvitationById",
-        "summary": "Get invitation by id",
         "deprecated": true,
+        "operationId": "InvitationsController_getInvitationById",
         "parameters": [
           {
             "name": "invitationId",
@@ -1820,18 +1829,18 @@
             "description": "Invitation not found"
           }
         },
-        "tags": [
-          "invitations"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Get invitation by id",
+        "tags": [
+          "invitations"
         ]
       },
       "delete": {
         "operationId": "InvitationsController_deleteInvitationById",
-        "summary": "Delete a invitation by Id",
         "parameters": [
           {
             "name": "invitationId",
@@ -1854,20 +1863,20 @@
             }
           }
         },
-        "tags": [
-          "invitations"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Delete a invitation by Id",
+        "tags": [
+          "invitations"
         ]
       }
     },
     "/invitations/byUsername": {
       "post": {
         "operationId": "InvitationsController_createInvitationByUsername",
-        "summary": "Create a new invitation",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -1894,20 +1903,20 @@
             "description": "User not found"
           }
         },
-        "tags": [
-          "invitations"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Create a new invitation",
+        "tags": [
+          "invitations"
         ]
       }
     },
     "/invitations/{invitationId}/reject": {
       "post": {
         "operationId": "InvitationsController_rejectInvitation",
-        "summary": "Reject -> add to group -> notify",
         "parameters": [
           {
             "name": "invitationId",
@@ -1930,21 +1939,21 @@
             }
           }
         },
-        "tags": [
-          "invitations"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Reject -> add to group -> notify",
+        "tags": [
+          "invitations"
         ]
       }
     },
     "/meetAccountGames/{accountId}/{meetId}/{gameId}": {
       "post": {
-        "operationId": "MeetAccountGamesController_createMeetAccountGame",
-        "summary": "Create a legacy per-account played-game link",
         "deprecated": true,
+        "operationId": "MeetAccountGamesController_createMeetAccountGame",
         "parameters": [
           {
             "name": "meetId",
@@ -1978,19 +1987,19 @@
             "description": "MeetId not found."
           }
         },
-        "tags": [
-          "meetAccountGames"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Create a legacy per-account played-game link",
+        "tags": [
+          "meetAccountGames"
         ]
       },
       "delete": {
-        "operationId": "MeetAccountGamesController_updateMeetAccountGame",
-        "summary": "Delete a legacy per-account played-game link",
         "deprecated": true,
+        "operationId": "MeetAccountGamesController_updateMeetAccountGame",
         "parameters": [
           {
             "name": "meetId",
@@ -2024,21 +2033,21 @@
             "description": "MeetId not found."
           }
         },
-        "tags": [
-          "meetAccountGames"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Delete a legacy per-account played-game link",
+        "tags": [
+          "meetAccountGames"
         ]
       }
     },
     "/meetAttendees/{meetId}/{accountId}": {
       "post": {
-        "operationId": "MeetAttendeesController_createMeetAttendee",
-        "summary": "Add a group member to a legacy meet compatibility record",
         "deprecated": true,
+        "operationId": "MeetAttendeesController_createMeetAttendee",
         "parameters": [
           {
             "name": "meetId",
@@ -2072,19 +2081,19 @@
             "description": "Only the meeting creator may manage attendees."
           }
         },
-        "tags": [
-          "meetAttendees"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Add a group member to a legacy meet compatibility record",
+        "tags": [
+          "meetAttendees"
         ]
       },
       "delete": {
-        "operationId": "MeetAttendeesController_deleteMeetAttendee",
-        "summary": "Remove a group member from a legacy meet compatibility record",
         "deprecated": true,
+        "operationId": "MeetAttendeesController_deleteMeetAttendee",
         "parameters": [
           {
             "name": "meetId",
@@ -2118,21 +2127,21 @@
             "description": "Only the meeting creator may manage attendees."
           }
         },
-        "tags": [
-          "meetAttendees"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Remove a group member from a legacy meet compatibility record",
+        "tags": [
+          "meetAttendees"
         ]
       }
     },
     "/meets": {
       "get": {
-        "operationId": "MeetsController_getMeets",
-        "summary": "Get all meets",
         "deprecated": true,
+        "operationId": "MeetsController_getMeets",
         "parameters": [],
         "responses": {
           "200": {
@@ -2149,21 +2158,21 @@
             }
           }
         },
-        "tags": [
-          "meets"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Get all meets",
+        "tags": [
+          "meets"
         ]
       }
     },
     "/meets/{meetId}": {
       "get": {
-        "operationId": "MeetsController_getMeetById",
-        "summary": "Get meet by id",
         "deprecated": true,
+        "operationId": "MeetsController_getMeetById",
         "parameters": [
           {
             "name": "meetId",
@@ -2189,21 +2198,21 @@
             "description": "Meet not found"
           }
         },
-        "tags": [
-          "meets"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Get meet by id",
+        "tags": [
+          "meets"
         ]
       }
     },
     "/meets/{meetId}/details": {
       "get": {
-        "operationId": "MeetsController_getMeetDetailsById",
-        "summary": "Get legacy meet details by id",
         "deprecated": true,
+        "operationId": "MeetsController_getMeetDetailsById",
         "parameters": [
           {
             "name": "meetId",
@@ -2229,21 +2238,21 @@
             "description": "Meet details not found"
           }
         },
-        "tags": [
-          "meets"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Get legacy meet details by id",
+        "tags": [
+          "meets"
         ]
       }
     },
     "/notifications": {
       "get": {
-        "operationId": "NotificationsController_getNotifications",
-        "summary": "Get all notifications",
         "deprecated": true,
+        "operationId": "NotificationsController_getNotifications",
         "parameters": [],
         "responses": {
           "200": {
@@ -2260,19 +2269,19 @@
             }
           }
         },
-        "tags": [
-          "notifications"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Get all notifications",
+        "tags": [
+          "notifications"
         ]
       },
       "post": {
-        "operationId": "NotificationsController_createNotification",
-        "summary": "Create a new notification",
         "deprecated": true,
+        "operationId": "NotificationsController_createNotification",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -2289,21 +2298,21 @@
             "description": "The notification has been succesfully created"
           }
         },
-        "tags": [
-          "notifications"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Create a new notification",
+        "tags": [
+          "notifications"
         ]
       }
     },
     "/notifications/{notificationId}": {
       "get": {
-        "operationId": "NotificationsController_getNotificationById",
-        "summary": "Get notification by id",
         "deprecated": true,
+        "operationId": "NotificationsController_getNotificationById",
         "parameters": [
           {
             "name": "notificationId",
@@ -2329,18 +2338,18 @@
             "description": "Notification not found"
           }
         },
-        "tags": [
-          "notifications"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Get notification by id",
+        "tags": [
+          "notifications"
         ]
       },
       "put": {
         "operationId": "NotificationsController_updateNotification",
-        "summary": "Update a notification by ID",
         "parameters": [
           {
             "name": "notificationId",
@@ -2369,18 +2378,18 @@
             "description": "Notification not found."
           }
         },
-        "tags": [
-          "notifications"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Update a notification by ID",
+        "tags": [
+          "notifications"
         ]
       },
       "delete": {
         "operationId": "NotificationsController_deleteNotificationById",
-        "summary": "Delete a notification by Id",
         "parameters": [
           {
             "name": "notificationId",
@@ -2396,21 +2405,21 @@
             "description": "The notification has been succesfully deleted"
           }
         },
-        "tags": [
-          "notifications"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Delete a notification by Id",
+        "tags": [
+          "notifications"
         ]
       }
     },
     "/admin/tag-categories": {
       "get": {
-        "operationId": "AdminController_getTagCategories",
-        "summary": "Get all tag categories",
         "deprecated": false,
+        "operationId": "AdminController_getTagCategories",
         "parameters": [],
         "responses": {
           "200": {
@@ -2427,19 +2436,19 @@
             }
           }
         },
-        "tags": [
-          "admin"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Get all tag categories",
+        "tags": [
+          "admin"
         ]
       },
       "post": {
-        "operationId": "AdminController_createTagCategory",
-        "summary": "Create a new tag category",
         "deprecated": false,
+        "operationId": "AdminController_createTagCategory",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -2463,21 +2472,21 @@
             }
           }
         },
-        "tags": [
-          "admin"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Create a new tag category",
+        "tags": [
+          "admin"
         ]
       }
     },
     "/admin/tag-categories/{id}": {
       "put": {
-        "operationId": "AdminController_updateTagCategory",
-        "summary": "Update a tag category",
         "deprecated": false,
+        "operationId": "AdminController_updateTagCategory",
         "parameters": [
           {
             "name": "id",
@@ -2510,19 +2519,19 @@
             }
           }
         },
-        "tags": [
-          "admin"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Update a tag category",
+        "tags": [
+          "admin"
         ]
       },
       "delete": {
-        "operationId": "AdminController_deleteTagCategory",
-        "summary": "Delete a tag category",
         "deprecated": false,
+        "operationId": "AdminController_deleteTagCategory",
         "parameters": [
           {
             "name": "id",
@@ -2538,21 +2547,21 @@
             "description": "Tag category deleted"
           }
         },
-        "tags": [
-          "admin"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Delete a tag category",
+        "tags": [
+          "admin"
         ]
       }
     },
     "/admin/tags": {
       "get": {
-        "operationId": "AdminController_getTags",
-        "summary": "Get all tags",
         "deprecated": false,
+        "operationId": "AdminController_getTags",
         "parameters": [],
         "responses": {
           "200": {
@@ -2569,19 +2578,19 @@
             }
           }
         },
-        "tags": [
-          "admin"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Get all tags",
+        "tags": [
+          "admin"
         ]
       },
       "post": {
-        "operationId": "AdminController_createTag",
-        "summary": "Create a new tag",
         "deprecated": false,
+        "operationId": "AdminController_createTag",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -2605,21 +2614,21 @@
             }
           }
         },
-        "tags": [
-          "admin"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Create a new tag",
+        "tags": [
+          "admin"
         ]
       }
     },
     "/admin/tags/{id}": {
       "put": {
-        "operationId": "AdminController_updateTag",
-        "summary": "Update a tag",
         "deprecated": false,
+        "operationId": "AdminController_updateTag",
         "parameters": [
           {
             "name": "id",
@@ -2652,19 +2661,19 @@
             }
           }
         },
-        "tags": [
-          "admin"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Update a tag",
+        "tags": [
+          "admin"
         ]
       },
       "delete": {
-        "operationId": "AdminController_deleteTag",
-        "summary": "Delete a tag",
         "deprecated": false,
+        "operationId": "AdminController_deleteTag",
         "parameters": [
           {
             "name": "id",
@@ -2680,21 +2689,21 @@
             "description": "Tag deleted"
           }
         },
-        "tags": [
-          "admin"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Delete a tag",
+        "tags": [
+          "admin"
         ]
       }
     },
     "/admin/games": {
       "get": {
-        "operationId": "AdminController_getGames",
-        "summary": "Get games with translations and tags (paginated and searchable)",
         "deprecated": false,
+        "operationId": "AdminController_getGames",
         "parameters": [
           {
             "name": "search",
@@ -2704,6 +2713,29 @@
             "schema": {
               "example": "catan",
               "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "example": 10,
+              "type": "number"
             }
           }
         ],
@@ -2719,21 +2751,21 @@
             }
           }
         },
-        "tags": [
-          "admin"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Get games with translations and tags (paginated and searchable)",
+        "tags": [
+          "admin"
         ]
       }
     },
     "/admin/games/{id}/translations": {
       "put": {
-        "operationId": "AdminController_updateGameTranslations",
-        "summary": "Update game translations",
         "deprecated": false,
+        "operationId": "AdminController_updateGameTranslations",
         "parameters": [
           {
             "name": "id",
@@ -2766,21 +2798,21 @@
             }
           }
         },
-        "tags": [
-          "admin"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Update game translations",
+        "tags": [
+          "admin"
         ]
       }
     },
     "/admin/games/{id}/tags": {
       "put": {
-        "operationId": "AdminController_updateGameTags",
-        "summary": "Update game tags",
         "deprecated": false,
+        "operationId": "AdminController_updateGameTags",
         "parameters": [
           {
             "name": "id",
@@ -2813,34 +2845,57 @@
             }
           }
         },
-        "tags": [
-          "admin"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Update game tags",
+        "tags": [
+          "admin"
         ]
       }
     },
     "/admin/proposals": {
       "get": {
-        "operationId": "AdminController_getGameProposals",
-        "summary": "Get game proposals (paginated and filterable by status)",
         "deprecated": false,
+        "operationId": "AdminController_getGameProposals",
         "parameters": [
           {
             "name": "status",
             "required": false,
             "in": "query",
             "schema": {
+              "type": "string",
               "enum": [
                 "pending",
                 "approved",
                 "rejected",
                 "duplicate"
-              ],
-              "type": "string"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "example": 10,
+              "type": "number"
             }
           }
         ],
@@ -2856,21 +2911,21 @@
             }
           }
         },
-        "tags": [
-          "admin"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Get game proposals (paginated and filterable by status)",
+        "tags": [
+          "admin"
         ]
       }
     },
     "/admin/proposals/{id}": {
       "get": {
-        "operationId": "AdminController_getGameProposal",
-        "summary": "Get a specific game proposal",
         "deprecated": false,
+        "operationId": "AdminController_getGameProposal",
         "parameters": [
           {
             "name": "id",
@@ -2893,19 +2948,19 @@
             }
           }
         },
-        "tags": [
-          "admin"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Get a specific game proposal",
+        "tags": [
+          "admin"
         ]
       },
       "delete": {
-        "operationId": "AdminController_deleteGameProposal",
-        "summary": "Delete a game proposal",
         "deprecated": false,
+        "operationId": "AdminController_deleteGameProposal",
         "parameters": [
           {
             "name": "id",
@@ -2928,21 +2983,21 @@
             }
           }
         },
-        "tags": [
-          "admin"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Delete a game proposal",
+        "tags": [
+          "admin"
         ]
       }
     },
     "/admin/proposals/{id}/approve": {
       "post": {
-        "operationId": "AdminController_approveGameProposal",
-        "summary": "Approve a game proposal and create the game",
         "deprecated": false,
+        "operationId": "AdminController_approveGameProposal",
         "parameters": [
           {
             "name": "id",
@@ -2983,21 +3038,21 @@
             }
           }
         },
-        "tags": [
-          "admin"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Approve a game proposal and create the game",
+        "tags": [
+          "admin"
         ]
       }
     },
     "/admin/proposals/{id}/reject": {
       "post": {
-        "operationId": "AdminController_rejectGameProposal",
-        "summary": "Reject a game proposal",
         "deprecated": false,
+        "operationId": "AdminController_rejectGameProposal",
         "parameters": [
           {
             "name": "id",
@@ -3030,21 +3085,21 @@
             }
           }
         },
-        "tags": [
-          "admin"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Reject a game proposal",
+        "tags": [
+          "admin"
         ]
       }
     },
     "/admin/proposals/{id}/duplicate": {
       "post": {
-        "operationId": "AdminController_markGameProposalAsDuplicate",
-        "summary": "Mark a game proposal as duplicate",
         "deprecated": false,
+        "operationId": "AdminController_markGameProposalAsDuplicate",
         "parameters": [
           {
             "name": "id",
@@ -3076,21 +3131,21 @@
             }
           }
         },
-        "tags": [
-          "admin"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Mark a game proposal as duplicate",
+        "tags": [
+          "admin"
         ]
       }
     },
     "/collection/users/{userId}/games": {
       "get": {
-        "operationId": "CollectionController_getGamesOwnedByUser",
-        "summary": "Get all games owned by a user",
         "deprecated": false,
+        "operationId": "CollectionController_getGamesOwnedByUser",
         "parameters": [
           {
             "name": "userId",
@@ -3116,21 +3171,21 @@
             }
           }
         },
-        "tags": [
-          "collection"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Get all games owned by a user",
+        "tags": [
+          "collection"
         ]
       }
     },
     "/collection/users/{userId}/games/{gameId}": {
       "get": {
-        "operationId": "CollectionController_getGameViewByUserId",
-        "summary": "Game view for a user (not owned necessarily)",
         "deprecated": false,
+        "operationId": "CollectionController_getGameViewByUserId",
         "parameters": [
           {
             "name": "userId",
@@ -3161,19 +3216,19 @@
             }
           }
         },
-        "tags": [
-          "collection"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Game view for a user (not owned necessarily)",
+        "tags": [
+          "collection"
         ]
       },
       "post": {
-        "operationId": "CollectionController_addGameToUserCollection",
-        "summary": "Add a game to a user's collection",
         "deprecated": false,
+        "operationId": "CollectionController_addGameToUserCollection",
         "parameters": [
           {
             "name": "userId",
@@ -3204,19 +3259,19 @@
             }
           }
         },
-        "tags": [
-          "collection"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Add a game to a user's collection",
+        "tags": [
+          "collection"
         ]
       },
       "delete": {
-        "operationId": "CollectionController_removeGameFromUserCollection",
-        "summary": "Remove a game from a user's collection",
         "deprecated": false,
+        "operationId": "CollectionController_removeGameFromUserCollection",
         "parameters": [
           {
             "name": "userId",
@@ -3247,21 +3302,21 @@
             }
           }
         },
-        "tags": [
-          "collection"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Remove a game from a user's collection",
+        "tags": [
+          "collection"
         ]
       }
     },
     "/collection/users/{userId}/games/{gameId}/ownership": {
       "patch": {
-        "operationId": "CollectionController_updateGameOwnership",
-        "summary": "Update ownership details of a game",
         "deprecated": false,
+        "operationId": "CollectionController_updateGameOwnership",
         "parameters": [
           {
             "name": "userId",
@@ -3302,21 +3357,21 @@
             }
           }
         },
-        "tags": [
-          "collection"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Update ownership details of a game",
+        "tags": [
+          "collection"
         ]
       }
     },
     "/collection/users/{userId}/games/{gameId}/wishlist": {
       "put": {
-        "operationId": "CollectionController_toggleWishlist",
-        "summary": "Toggle the wishlist status of the game",
         "deprecated": false,
+        "operationId": "CollectionController_toggleWishlist",
         "parameters": [
           {
             "name": "userId",
@@ -3347,27 +3402,60 @@
             }
           }
         },
-        "tags": [
-          "collection"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Toggle the wishlist status of the game",
+        "tags": [
+          "collection"
         ]
       }
     },
     "/collection/users/{userId}/browse/games": {
       "get": {
-        "operationId": "CollectionController_getGamesNotOwnedByUser",
-        "summary": "Browse games not owned by a user",
         "deprecated": false,
+        "operationId": "CollectionController_getGamesNotOwnedByUser",
         "parameters": [
           {
             "name": "userId",
             "required": true,
             "in": "path",
             "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Title search across supported translations.",
+            "schema": {
+              "example": "catan",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 20,
+              "default": 20,
+              "example": 20,
               "type": "number"
             }
           }
@@ -3387,21 +3475,21 @@
             }
           }
         },
-        "tags": [
-          "collection"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Browse games not owned by a user",
+        "tags": [
+          "collection"
         ]
       }
     },
     "/collection/users/{userId}/reviews": {
       "get": {
-        "operationId": "CollectionController_getReviewsOfUser",
-        "summary": "Get all reviews of a user",
         "deprecated": false,
+        "operationId": "CollectionController_getReviewsOfUser",
         "parameters": [
           {
             "name": "userId",
@@ -3427,21 +3515,21 @@
             }
           }
         },
-        "tags": [
-          "collection"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Get all reviews of a user",
+        "tags": [
+          "collection"
         ]
       }
     },
     "/collection/users/{userId}/reviews/{gameId}": {
       "post": {
-        "operationId": "CollectionController_saveGameReview",
-        "summary": "Save a game review",
         "deprecated": false,
+        "operationId": "CollectionController_saveGameReview",
         "parameters": [
           {
             "name": "userId",
@@ -3482,21 +3570,21 @@
             }
           }
         },
-        "tags": [
-          "collection"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Save a game review",
+        "tags": [
+          "collection"
         ]
       }
     },
     "/collection/users/{userId}/wishlist": {
       "get": {
-        "operationId": "CollectionController_getUserWishlist",
-        "summary": "Get all wishlist of a user",
         "deprecated": false,
+        "operationId": "CollectionController_getUserWishlist",
         "parameters": [
           {
             "name": "userId",
@@ -3522,21 +3610,21 @@
             }
           }
         },
-        "tags": [
-          "collection"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Get all wishlist of a user",
+        "tags": [
+          "collection"
         ]
       }
     },
     "/collection/users/{userId}/recent-activity": {
       "get": {
-        "operationId": "CollectionController_getUserCollectionActivities",
-        "summary": "Get all recent activity of a user's collection",
         "deprecated": false,
+        "operationId": "CollectionController_getUserCollectionActivities",
         "parameters": [
           {
             "name": "userId",
@@ -3562,21 +3650,21 @@
             }
           }
         },
-        "tags": [
-          "collection"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Get all recent activity of a user's collection",
+        "tags": [
+          "collection"
         ]
       }
     },
     "/dashboard/users/{userId}/stats": {
       "get": {
-        "operationId": "DashboardController_getStatsOfUser",
-        "summary": "Get all stats of a user",
         "deprecated": false,
+        "operationId": "DashboardController_getStatsOfUser",
         "parameters": [
           {
             "name": "userId",
@@ -3599,21 +3687,21 @@
             }
           }
         },
-        "tags": [
-          "dashboard"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Get all stats of a user",
+        "tags": [
+          "dashboard"
         ]
       }
     },
     "/dashboard/users/{userId}/groups": {
       "get": {
-        "operationId": "DashboardController_getGroupsOfUser",
-        "summary": "Get all groups of a user with members and games",
         "deprecated": false,
+        "operationId": "DashboardController_getGroupsOfUser",
         "parameters": [
           {
             "name": "userId",
@@ -3639,21 +3727,21 @@
             }
           }
         },
-        "tags": [
-          "dashboard"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Get all groups of a user with members and games",
+        "tags": [
+          "dashboard"
         ]
       }
     },
     "/dashboard/users/{userId}/groups/create/{groupName}": {
       "post": {
-        "operationId": "DashboardController_createGroup",
-        "summary": "Create a new group",
         "deprecated": false,
+        "operationId": "DashboardController_createGroup",
         "parameters": [
           {
             "name": "userId",
@@ -3688,21 +3776,21 @@
             }
           }
         },
-        "tags": [
-          "dashboard"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Create a new group",
+        "tags": [
+          "dashboard"
         ]
       }
     },
     "/dashboard/users/{userId}/groups/{groupId}": {
       "delete": {
-        "operationId": "DashboardController_deleteGroup",
-        "summary": "Delete a group (owner only)",
         "deprecated": false,
+        "operationId": "DashboardController_deleteGroup",
         "parameters": [
           {
             "name": "userId",
@@ -3726,21 +3814,21 @@
             "description": "Group deleted successfully"
           }
         },
-        "tags": [
-          "dashboard"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Delete a group (owner only)",
+        "tags": [
+          "dashboard"
         ]
       }
     },
     "/dashboard/users/{userId}/groups/{groupId}/meetings": {
       "get": {
-        "operationId": "DashboardController_getGroupMeetings",
-        "summary": "Get all meetings of a group",
         "deprecated": false,
+        "operationId": "DashboardController_getGroupMeetings",
         "parameters": [
           {
             "name": "userId",
@@ -3774,21 +3862,21 @@
             }
           }
         },
-        "tags": [
-          "dashboard"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Get all meetings of a group",
+        "tags": [
+          "dashboard"
         ]
       }
     },
     "/dashboard/users/{userId}/groups/{groupId}/members": {
       "delete": {
-        "operationId": "DashboardController_leaveGroup",
-        "summary": "Leaves a group",
         "deprecated": false,
+        "operationId": "DashboardController_leaveGroup",
         "parameters": [
           {
             "name": "userId",
@@ -3812,21 +3900,21 @@
             "description": "Member left successfully"
           }
         },
-        "tags": [
-          "dashboard"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Leaves a group",
+        "tags": [
+          "dashboard"
         ]
       }
     },
     "/dashboard/users/{userId}/groups/{groupId}/members/{memberId}": {
       "delete": {
-        "operationId": "DashboardController_deleteMemberFromGroup",
-        "summary": "Removes a member from a group",
         "deprecated": false,
+        "operationId": "DashboardController_deleteMemberFromGroup",
         "parameters": [
           {
             "name": "userId",
@@ -3858,20 +3946,20 @@
             "description": "Member removed successfully"
           }
         },
-        "tags": [
-          "dashboard"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Removes a member from a group",
+        "tags": [
+          "dashboard"
         ]
       }
     },
     "/play/recommendations": {
       "post": {
         "operationId": "PlayController_getRecommendations",
-        "summary": "Get deterministic recommendations for selected group attendees",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -3895,20 +3983,20 @@
             }
           }
         },
-        "tags": [
-          "play"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Get deterministic recommendations for selected group attendees",
+        "tags": [
+          "play"
         ]
       }
     },
     "/play/recommendations/participants": {
       "post": {
         "operationId": "PlayController_getParticipantRecommendations",
-        "summary": "Get deterministic recommendations for group people, including placeholders",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -3932,20 +4020,20 @@
             }
           }
         },
-        "tags": [
-          "play"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Get deterministic recommendations for group people, including placeholders",
+        "tags": [
+          "play"
         ]
       }
     },
     "/play/recommendations/feedback": {
       "post": {
         "operationId": "PlayController_createRecommendationFeedback",
-        "summary": "Record feedback for a recommendation",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -3969,20 +4057,20 @@
             }
           }
         },
-        "tags": [
-          "play"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Record feedback for a recommendation",
+        "tags": [
+          "play"
         ]
       }
     },
     "/play/recommendations/participants/feedback": {
       "post": {
         "operationId": "PlayController_createParticipantRecommendationFeedback",
-        "summary": "Record feedback for a participant-scoped recommendation",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -4006,20 +4094,20 @@
             }
           }
         },
-        "tags": [
-          "play"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Record feedback for a participant-scoped recommendation",
+        "tags": [
+          "play"
         ]
       }
     },
     "/play/recommendations/signals": {
       "get": {
         "operationId": "PlayController_getRecommendationSignals",
-        "summary": "View the latest group-level recommendation signals",
         "parameters": [
           {
             "name": "groupId",
@@ -4045,21 +4133,21 @@
             "description": "The current user does not belong to the group."
           }
         },
-        "tags": [
-          "play"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "View the latest group-level recommendation signals",
+        "tags": [
+          "play"
         ]
       }
     },
     "/play/users/{userId}/history": {
       "get": {
-        "operationId": "PlayController_getUserGamesHistory",
-        "summary": "List of all games played by the user",
         "deprecated": false,
+        "operationId": "PlayController_getUserGamesHistory",
         "parameters": [
           {
             "name": "userId",
@@ -4085,21 +4173,21 @@
             }
           }
         },
-        "tags": [
-          "play"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "List of all games played by the user",
+        "tags": [
+          "play"
         ]
       }
     },
     "/play/users/{userId}/meets": {
       "get": {
-        "operationId": "PlayController_getUserMeets",
-        "summary": "List of all meets of the user",
         "deprecated": false,
+        "operationId": "PlayController_getUserMeets",
         "parameters": [
           {
             "name": "userId",
@@ -4125,21 +4213,21 @@
             }
           }
         },
-        "tags": [
-          "play"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "List of all meets of the user",
+        "tags": [
+          "play"
         ]
       }
     },
     "/profile/users/{userId}": {
       "get": {
-        "operationId": "ProfileController_getUserById",
-        "summary": "Get user by id",
         "deprecated": false,
+        "operationId": "ProfileController_getUserById",
         "parameters": [
           {
             "name": "userId",
@@ -4165,21 +4253,21 @@
             "description": "User not found"
           }
         },
-        "tags": [
-          "profile"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Get user by id",
+        "tags": [
+          "profile"
         ]
       }
     },
     "/profile/users/{userId}/notifications": {
       "get": {
-        "operationId": "ProfileController_getNotificationsByAccountId",
-        "summary": "Get notifications by user id",
         "deprecated": false,
+        "operationId": "ProfileController_getNotificationsByAccountId",
         "parameters": [
           {
             "name": "userId",
@@ -4205,21 +4293,21 @@
             "description": "Notifications not found"
           }
         },
-        "tags": [
-          "profile"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Get notifications by user id",
+        "tags": [
+          "profile"
         ]
       }
     },
     "/profile/users/{userId}/invitations": {
       "get": {
-        "operationId": "ProfileController_getUserInvitations",
-        "summary": "Get invitations received",
         "deprecated": false,
+        "operationId": "ProfileController_getUserInvitations",
         "parameters": [
           {
             "name": "userId",
@@ -4245,21 +4333,21 @@
             }
           }
         },
-        "tags": [
-          "profile"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Get invitations received",
+        "tags": [
+          "profile"
         ]
       }
     },
     "/profile/users/{userId}/invitations/{invitationId}/accept": {
       "post": {
-        "operationId": "ProfileController_acceptInvitation",
-        "summary": "Accept invitation",
         "deprecated": false,
+        "operationId": "ProfileController_acceptInvitation",
         "parameters": [
           {
             "name": "userId",
@@ -4293,21 +4381,21 @@
             "description": "Invitation not found"
           }
         },
-        "tags": [
-          "profile"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Accept invitation",
+        "tags": [
+          "profile"
         ]
       }
     },
     "/profile/users/{userId}/proposals": {
       "get": {
-        "operationId": "ProfileController_getUserProposals",
-        "summary": "Get user proposals",
         "deprecated": false,
+        "operationId": "ProfileController_getUserProposals",
         "parameters": [
           {
             "name": "userId",
@@ -4336,19 +4424,19 @@
             "description": "User not found"
           }
         },
-        "tags": [
-          "profile"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Get user proposals",
+        "tags": [
+          "profile"
         ]
       },
       "post": {
-        "operationId": "ProfileController_createGameProposal",
-        "summary": "Create a new game proposal",
         "deprecated": false,
+        "operationId": "ProfileController_createGameProposal",
         "parameters": [
           {
             "name": "userId",
@@ -4384,21 +4472,21 @@
             "description": "Invalid proposal data"
           }
         },
-        "tags": [
-          "profile"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Create a new game proposal",
+        "tags": [
+          "profile"
         ]
       }
     },
     "/profile/users/{userId}/proposal-stats": {
       "get": {
-        "operationId": "ProfileController_getUserProposalStats",
-        "summary": "Get user proposal statistics",
         "deprecated": false,
+        "operationId": "ProfileController_getUserProposalStats",
         "parameters": [
           {
             "name": "userId",
@@ -4424,20 +4512,20 @@
             "description": "User not found"
           }
         },
-        "tags": [
-          "profile"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Get user proposal statistics",
+        "tags": [
+          "profile"
         ]
       }
     },
     "/sessions/{sessionId}": {
       "get": {
         "operationId": "SessionsController_getSessionDetails",
-        "summary": "Get a session with attendees and planned/played games",
         "parameters": [
           {
             "name": "sessionId",
@@ -4463,20 +4551,20 @@
             "description": "Session not found or not visible to the current member."
           }
         },
-        "tags": [
-          "sessions"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Get a session with attendees and planned/played games",
+        "tags": [
+          "sessions"
         ]
       }
     },
     "/sessions": {
       "post": {
         "operationId": "SessionsController_createCompletedSession",
-        "summary": "Create a completed play session from selected attendees and games",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -4503,20 +4591,20 @@
             "description": "The selected group, attendees, games, or participants are invalid."
           }
         },
-        "tags": [
-          "sessions"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Create a completed play session from selected attendees and games",
+        "tags": [
+          "sessions"
         ]
       }
     },
     "/sessions/scheduled": {
       "post": {
         "operationId": "SessionsController_createScheduledSession",
-        "summary": "Schedule a session for a group",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -4540,20 +4628,20 @@
             }
           }
         },
-        "tags": [
-          "sessions"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Schedule a session for a group",
+        "tags": [
+          "sessions"
         ]
       }
     },
     "/sessions/{sessionId}/attendees": {
       "patch": {
         "operationId": "SessionsController_updateSessionAttendees",
-        "summary": "Replace the attendees of an editable session",
         "parameters": [
           {
             "name": "sessionId",
@@ -4592,20 +4680,20 @@
             "description": "Only the session organizer may manage attendees."
           }
         },
-        "tags": [
-          "sessions"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Replace the attendees of an editable session",
+        "tags": [
+          "sessions"
         ]
       }
     },
     "/sessions/{sessionId}/shortlist": {
       "patch": {
         "operationId": "SessionsController_updateSessionShortlist",
-        "summary": "Replace the planned games of an editable session",
         "parameters": [
           {
             "name": "sessionId",
@@ -4644,20 +4732,20 @@
             "description": "Only the session organizer may manage the shortlist."
           }
         },
-        "tags": [
-          "sessions"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Replace the planned games of an editable session",
+        "tags": [
+          "sessions"
         ]
       }
     },
     "/sessions/{sessionId}/played-games": {
       "patch": {
         "operationId": "SessionsController_updateSessionPlayedGames",
-        "summary": "Replace the games actually played in an editable session",
         "parameters": [
           {
             "name": "sessionId",
@@ -4696,20 +4784,20 @@
             "description": "Only the session organizer may record games played."
           }
         },
-        "tags": [
-          "sessions"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Replace the games actually played in an editable session",
+        "tags": [
+          "sessions"
         ]
       }
     },
     "/sessions/{sessionId}/rsvp": {
       "patch": {
         "operationId": "SessionsController_updateSessionRsvp",
-        "summary": "Respond to the current user’s session invitation",
         "parameters": [
           {
             "name": "sessionId",
@@ -4745,20 +4833,20 @@
             "description": "The current user is not invited to this session."
           }
         },
-        "tags": [
-          "sessions"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Respond to the current user’s session invitation",
+        "tags": [
+          "sessions"
         ]
       }
     },
     "/sessions/{sessionId}/attendance": {
       "patch": {
         "operationId": "SessionsController_updateSessionAttendance",
-        "summary": "Record which invited members actually attended a session",
         "parameters": [
           {
             "name": "sessionId",
@@ -4794,20 +4882,20 @@
             "description": "Only the session organizer can record attendance."
           }
         },
-        "tags": [
-          "sessions"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Record which invited members actually attended a session",
+        "tags": [
+          "sessions"
         ]
       }
     },
     "/sessions/{sessionId}/status": {
       "patch": {
         "operationId": "SessionsController_updateSessionStatus",
-        "summary": "Transition a session lifecycle status",
         "parameters": [
           {
             "name": "sessionId",
@@ -4843,13 +4931,14 @@
             "description": "The requested lifecycle transition is invalid."
           }
         },
-        "tags": [
-          "sessions"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Transition a session lifecycle status",
+        "tags": [
+          "sessions"
         ]
       }
     }
@@ -5271,6 +5360,7 @@
           },
           "avatar": {
             "nullable": true,
+            "type": "object",
             "allOf": [
               {
                 "$ref": "#/components/schemas/AvatarDto"
@@ -5500,6 +5590,7 @@
           },
           "avatar": {
             "nullable": true,
+            "type": "object",
             "allOf": [
               {
                 "$ref": "#/components/schemas/AvatarDto"
@@ -5520,6 +5611,7 @@
           },
           "avatar": {
             "nullable": true,
+            "type": "object",
             "allOf": [
               {
                 "$ref": "#/components/schemas/AvatarDto"
@@ -5860,6 +5952,7 @@
           },
           "decisionBy": {
             "nullable": true,
+            "type": "object",
             "allOf": [
               {
                 "$ref": "#/components/schemas/UserPublicDto"
@@ -6968,6 +7061,7 @@
           },
           "avgGroupsRating": {
             "nullable": true,
+            "type": "object",
             "allOf": [
               {
                 "$ref": "#/components/schemas/GameViewRatingSummaryDto"
@@ -6976,6 +7070,7 @@
           },
           "avgGlobalRating": {
             "nullable": true,
+            "type": "object",
             "allOf": [
               {
                 "$ref": "#/components/schemas/GameViewRatingSummaryDto"
@@ -6997,6 +7092,7 @@
           },
           "ownedGameData": {
             "nullable": true,
+            "type": "object",
             "allOf": [
               {
                 "$ref": "#/components/schemas/GameOwnershipDto"
@@ -7011,6 +7107,7 @@
           },
           "wishlistedGameData": {
             "nullable": true,
+            "type": "object",
             "allOf": [
               {
                 "$ref": "#/components/schemas/GameWishlistDto"
@@ -7375,6 +7472,7 @@
           },
           "avatar": {
             "nullable": true,
+            "type": "object",
             "allOf": [
               {
                 "$ref": "#/components/schemas/AvatarDto"

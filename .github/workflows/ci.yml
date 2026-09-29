@@ -45,6 +45,8 @@ jobs:
                   cache-dependency-path: backend/package-lock.json
             - name: Install dependencies
               run: npm ci --ignore-scripts
+            - name: Audit dependencies
+              run: npm audit --audit-level=low
             - name: Run unit tests
               run: npm test -- --runInBand
             - name: Run backend lint
@@ -84,6 +86,8 @@ jobs:
                   cache-dependency-path: frontend/package-lock.json
             - name: Install dependencies
               run: npm ci --ignore-scripts
+            - name: Audit dependencies
+              run: npm audit --audit-level=low
             - name: Build frontend
               run: npm run build
             - name: Check frontend formatting and lint

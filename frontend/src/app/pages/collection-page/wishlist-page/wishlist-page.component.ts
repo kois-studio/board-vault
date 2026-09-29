@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import { Component, computed, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { Api } from '../../../api/api'
@@ -15,7 +14,6 @@ import { LoadingService } from '../../../core/services/loading.service'
 
 @Component({
     imports: [
-        CommonModule,
         CardGameComponent,
         ContainerWrapperComponent,
         RouterLink,

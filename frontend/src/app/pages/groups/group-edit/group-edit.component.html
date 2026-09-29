@@ -1,6 +1,6 @@
 <main class="min-h-[calc(100vh-8rem)] bg-zinc-50 px-4 py-8 dark:bg-zinc-950 sm:px-6 lg:px-8 lg:py-12">
     <div class="mx-auto max-w-6xl">
-        <a class="inline-flex items-center gap-2 text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400" [routerLink]="['/groups', groupData?.id]">
+        <a class="inline-flex items-center gap-2 text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400" [routerLink]="['/groups', $safeNavigationMigration(groupData?.id)]">
             <app-icon name="arrow-left" [size]="18" aria-hidden="true" />
             Back to group workspace
         </a>

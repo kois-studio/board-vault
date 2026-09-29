@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import { Component } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { RouterLink } from '@angular/router'
@@ -8,7 +7,7 @@ import { SpinnerComponent } from '../../../components/ui/spinner/spinner.compone
 import { TitleSubtitleComponent } from '../../../components/ui/title-subtitle/title-subtitle.component'
 
 @Component({
-    imports: [CommonModule, ReactiveFormsModule, RouterLink, TitleSubtitleComponent, SpinnerComponent, IconComponent],
+    imports: [ReactiveFormsModule, RouterLink, TitleSubtitleComponent, SpinnerComponent, IconComponent],
     templateUrl: 'reset-password-request.component.html',
 })
 export class ResetPasswordRequestComponent {

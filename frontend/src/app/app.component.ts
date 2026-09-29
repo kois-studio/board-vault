@@ -1,5 +1,4 @@
-import { DOCUMENT } from '@angular/common'
-import { Component, DestroyRef, inject } from '@angular/core'
+import { Component, DOCUMENT, DestroyRef, inject } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { Meta, Title } from '@angular/platform-browser'
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router'

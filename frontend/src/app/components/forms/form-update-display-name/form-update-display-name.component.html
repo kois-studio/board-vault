@@ -1,35 +1,43 @@
 <div class="w-full flex flex-col md:flex-row justify-between items-start gap-4">
-    <div class="flex items-center">
-        <form [formGroup]="updateProfileFormGroup">
-            <div>
-                <input
-                    type="text"
-                    formControlName="displayName"
-                    class="app-input"
-                    [class]="displayNameClass"
-                    required
-                />
-                <div *ngIf="displayName?.invalid && (displayName?.dirty || displayName?.touched)">
-                    <div *ngIf="displayName?.hasError('required')" class="text-sm text-red-500 py-1">
-                        <app-icon name="circle-alert" [size]="16" /> display name is required.
-                    </div>
-                    <div *ngIf="displayName?.hasError('minlength')" class="text-sm text-red-500 py-1">
-                        <app-icon name="circle-alert" [size]="16" /> display name is too short.
-                    </div>
-                    <div *ngIf="displayName?.hasError('maxlength')" class="text-sm text-red-500 py-1">
-                        <app-icon name="circle-alert" [size]="16" /> display name is too long.
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
+  <div class="flex items-center">
+    <form [formGroup]="updateProfileFormGroup">
+      <div>
+        <input
+          type="text"
+          formControlName="displayName"
+          class="app-input"
+          [class]="displayNameClass"
+          required
+          />
+        @if (displayName?.invalid && (displayName?.dirty || displayName?.touched)) {
+          <div>
+            @if (displayName?.hasError('required')) {
+              <div class="text-sm text-red-500 py-1">
+                <app-icon name="circle-alert" [size]="16" /> display name is required.
+              </div>
+            }
+            @if (displayName?.hasError('minlength')) {
+              <div class="text-sm text-red-500 py-1">
+                <app-icon name="circle-alert" [size]="16" /> display name is too short.
+              </div>
+            }
+            @if (displayName?.hasError('maxlength')) {
+              <div class="text-sm text-red-500 py-1">
+                <app-icon name="circle-alert" [size]="16" /> display name is too long.
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </form>
+  </div>
 
-    @if (!isEditing){
-        <app-button variant="secondary" (click)="toggleEditing()">Change display name</app-button>
+  @if (!isEditing){
+    <app-button variant="secondary" (click)="toggleEditing()">Change display name</app-button>
     }@else {
-        <div class="flex gap-4">
-            <app-button variant="secondary" (click)="onCancel()">Cancel</app-button>
-            <app-button variant="primary" [disabled]="disableSubmit" (click)="onSave()">Save</app-button>
-        </div>
-    }
+    <div class="flex gap-4">
+      <app-button variant="secondary" (click)="onCancel()">Cancel</app-button>
+      <app-button variant="primary" [disabled]="disableSubmit" (click)="onSave()">Save</app-button>
+    </div>
+  }
 </div>

@@ -1,239 +1,243 @@
 @if (isLoadingGameData) {
-<p class="flex flex-col items-center justify-center text-gray-500 gap-x-2 min-h-[50vh]">
+  <p class="flex flex-col items-center justify-center text-gray-500 gap-x-2 min-h-[50vh]">
     <app-spinner size="large" />
     Loading game data...
-</p>
+  </p>
 } @else if (gameLoadError()) {
-<div class="flex flex-col items-center justify-center text-center text-secondary gap-3 min-h-[50vh] px-4">
+  <div class="flex flex-col items-center justify-center text-center text-secondary gap-3 min-h-[50vh] px-4">
     <h1 class="text-xl font-semibold">Game data could not be loaded.</h1>
     <p>Check your connection and try again.</p>
     <app-button icon="arrow-repeat" (click)="retryGameLoad()">Retry</app-button>
-</div>
+  </div>
 } @else {
-<container-wrapper>
+  <container-wrapper>
     <!-- Game data (image, title, etc) -->
     <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-        <!-- Image, wishlist and -->
-        <div class="relative aspect-square mb-6">
-            <image-background
-                [src]="gameView$()?.gameData?.imageUrl ?? ''"
-                [alt]="gameView$()?.gameData?.titleTranslations?.en ?? 'Game cover'"
-                loading="eager"
-            />
-            <!-- Action Buttons -->
-            <div class="absolute top-2 right-2 flex gap-2">
-                <!-- Wishlist Button -->
-                @if (!gameView$()?.ownedGameData) {
-                <button
-                    title="Add to wishlist"
-                    [attr.aria-label]="isWishlistedComputed() ? 'Remove ' + gameView$()?.gameData?.titleTranslations?.en + ' from wishlist' : 'Add ' + gameView$()?.gameData?.titleTranslations?.en + ' to wishlist'"
-                    (click)="toggleWishlist()"
-                    class="p-2 rounded-full bg-white/90 shadow-md border border-zinc-200 w-10 h-10 cursor-pointer motion-safe:transition-transform motion-safe:hover:scale-110 duration-300 ease-linear"
+      <!-- Image, wishlist and -->
+      <div class="relative aspect-square mb-6">
+        <image-background
+          [src]="gameView$()?.gameData?.imageUrl ?? ''"
+          [alt]="gameView$()?.gameData?.titleTranslations?.en ?? 'Game cover'"
+          loading="eager"
+          />
+        <!-- Action Buttons -->
+        <div class="absolute top-2 right-2 flex gap-2">
+          <!-- Wishlist Button -->
+          @if (!gameView$()?.ownedGameData) {
+            <button
+              title="Add to wishlist"
+              [attr.aria-label]="isWishlistedComputed() ? 'Remove ' + gameView$()?.gameData?.titleTranslations?.en + ' from wishlist' : 'Add ' + gameView$()?.gameData?.titleTranslations?.en + ' to wishlist'"
+              (click)="toggleWishlist()"
+              class="p-2 rounded-full bg-white/90 shadow-md border border-zinc-200 w-10 h-10 cursor-pointer motion-safe:transition-transform motion-safe:hover:scale-110 duration-300 ease-linear"
                     [ngClass]="{
                         'text-rose-500': isWishlistedComputed(),
                         'text-gray-400': !isWishlistedComputed(),
                         'scale-130': wishlistAnimation,
                     }"
+              >
+              <app-icon name="heart" [size]="24" [fill]="isWishlistedComputed() ? 'currentColor' : 'none'" aria-hidden="true" />
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Game data (title, avg duration, players, reviews) -->
+      <div class="px-4">
+        <h1 class="text-2xl md:text-3xl font-bold mb-1">{{ gameView$()?.gameData?.titleTranslations?.en }}</h1>
+        <p class="text-secondary text-start w-full">
+          <app-icon name="clock" [size]="16" /> {{ gameView$()?.gameData?.gameAvgDuration }} mins
+        </p>
+        <p class="text-secondary text-start w-full">
+          <app-icon name="users" [size]="16" /> {{ gameView$()?.gameData?.minPlayers }}-{{ gameView$()?.gameData?.maxPlayers }} players
+        </p>
+        <div class="flex gap-4">
+          <review-display [review]="gameView$()?.ratingData?.avgGlobalRating?.review ?? 0" />
+          <span class="text-secondary">
+            <app-icon name="globe" [size]="16" label="Global average" className="text-secondary" />
+            {{ gameView$()?.ratingData?.avgGlobalRating?.count ?? 0 }} votes
+          </span>
+        </div>
+        <div class="flex gap-4">
+          <review-display [review]="gameView$()?.ratingData?.avgGroupsRating?.review ?? 0" />
+          <span class="text-secondary">
+            <app-icon name="users" [size]="16" label="Your friends average" className="text-secondary" />
+            {{ gameView$()?.ratingData?.avgGroupsRating?.count ?? 0 }} votes
+          </span>
+        </div>
+        <app-tags [tags]="gameView$()?.tags ?? []" />
+
+        <div class="bg-gray-50 dark:bg-zinc-800 rounded-xl py-2 px-4 mt-4 border border-gray-200">
+          @if (gameUserReviewComputed() > 0) {
+            <h4 class="font-semibold">Your review</h4>
+          }
+          @if (gameUserReviewComputed() === 0) {
+            <h4 class="font-semibold">Rate this game</h4>
+          }
+
+          <div class="flex items-center gap-0.5">
+            @for (star of [2, 4, 6, 8, 10]; track $index) {
+              <button
+                (click)="saveGameReview(star)"
+                [attr.aria-label]="'Rate ' + star / 2 + ' out of 5 stars'"
+                [attr.aria-pressed]="gameUserReviewComputed() === star"
+                class="p-0.5 motion-safe:transition-transform motion-safe:hover:scale-110 cursor-pointer"
                 >
-                    <app-icon name="heart" [size]="24" [fill]="isWishlistedComputed() ? 'currentColor' : 'none'" aria-hidden="true" />
-                </button>
-                }
-            </div>
+                <app-icon
+                  name="star"
+                  [size]="20"
+                  [fill]="star <= gameUserReviewComputed() ? 'currentColor' : 'none'"
+                  [className]="star <= gameUserReviewComputed() ? 'text-yellow-400' : 'text-zinc-500'"
+                  />
+              </button>
+            }
+          </div>
         </div>
-
-        <!-- Game data (title, avg duration, players, reviews) -->
-        <div class="px-4">
-            <h1 class="text-2xl md:text-3xl font-bold mb-1">{{ gameView$()?.gameData?.titleTranslations?.en }}</h1>
-            <p class="text-secondary text-start w-full">
-                <app-icon name="clock" [size]="16" /> {{ gameView$()?.gameData?.gameAvgDuration }} mins
-            </p>
-            <p class="text-secondary text-start w-full">
-                <app-icon name="users" [size]="16" /> {{ gameView$()?.gameData?.minPlayers }}-{{ gameView$()?.gameData?.maxPlayers }} players
-            </p>
-            <div class="flex gap-4">
-                <review-display [review]="gameView$()?.ratingData?.avgGlobalRating?.review ?? 0" />
-                <span class="text-secondary">
-                    <app-icon name="globe" [size]="16" label="Global average" className="text-secondary" />
-                    {{ gameView$()?.ratingData?.avgGlobalRating?.count ?? 0 }} votes
-                </span>
-            </div>
-            <div class="flex gap-4">
-                <review-display [review]="gameView$()?.ratingData?.avgGroupsRating?.review ?? 0" />
-                <span class="text-secondary">
-                    <app-icon name="users" [size]="16" label="Your friends average" className="text-secondary" />
-                    {{ gameView$()?.ratingData?.avgGroupsRating?.count ?? 0 }} votes
-                </span>
-            </div>
-            <app-tags [tags]="gameView$()?.tags ?? []" />
-
-            <div class="bg-gray-50 dark:bg-zinc-800 rounded-xl py-2 px-4 mt-4 border border-gray-200">
-                <h4 class="font-semibold" *ngIf="gameUserReviewComputed() > 0">Your review</h4>
-                <h4 class="font-semibold" *ngIf="gameUserReviewComputed() === 0">Rate this game</h4>
-
-                <div class="flex items-center gap-0.5">
-                    @for (star of [2, 4, 6, 8, 10]; track $index) {
-                    <button
-                        (click)="saveGameReview(star)"
-                        [attr.aria-label]="'Rate ' + star / 2 + ' out of 5 stars'"
-                        [attr.aria-pressed]="gameUserReviewComputed() === star"
-                        class="p-0.5 motion-safe:transition-transform motion-safe:hover:scale-110 cursor-pointer"
-                    >
-                        <app-icon
-                            name="star"
-                            [size]="20"
-                            [fill]="star <= gameUserReviewComputed() ? 'currentColor' : 'none'"
-                            [className]="star <= gameUserReviewComputed() ? 'text-yellow-400' : 'text-zinc-500'"
-                        />
-                    </button>
-                    }
-                </div>
-            </div>
-        </div>
+      </div>
     </section>
 
     <!-- Ownership Section -->
     <section class="app-bg-secondary rounded-xl mt-12">
-        <!-- When User DOESN'T OWN the game -->
-        @if (!gameView$()?.ownedGameData) {
+      <!-- When User DOESN'T OWN the game -->
+      @if (!gameView$()?.ownedGameData) {
         <div class="text-center px-4 py-8">
-            <p class="text-secondary mb-4">Do you own this game?</p>
-            <app-button icon="plus-lg" (click)="addToCollection()" [loading]="PREVENT_SPAM.isLoadingAddToCollection">
-                Add to My Collection
-            </app-button>
+          <p class="text-secondary mb-4">Do you own this game?</p>
+          <app-button icon="plus-lg" (click)="addToCollection()" [loading]="PREVENT_SPAM.isLoadingAddToCollection">
+            Add to My Collection
+          </app-button>
         </div>
-        }
+      }
 
-        <!-- When User OWNS the game -->
-        @if (gameView$()?.ownedGameData) {
+      <!-- When User OWNS the game -->
+      @if (gameView$()?.ownedGameData) {
         <div
-            class="bg-green-200 dark:bg-green-900/50 text-green-800 dark:text-green-100 rounded-t-xl p-4 flex items-center justify-between"
-        >
-            <h3 class="font-semibold text-lg">This game is in your collection</h3>
-            <app-button variant="danger" icon="x-circle" size="small" (click)="removeFromCollection()">Remove from collection</app-button>
+          class="bg-green-200 dark:bg-green-900/50 text-green-800 dark:text-green-100 rounded-t-xl p-4 flex items-center justify-between"
+          >
+          <h3 class="font-semibold text-lg">This game is in your collection</h3>
+          <app-button variant="danger" icon="x-circle" size="small" (click)="removeFromCollection()">Remove from collection</app-button>
         </div>
         <div class="p-4">
-            <div class="flex items-center justify-between"></div>
+          <div class="flex items-center justify-between"></div>
 
-            <form [formGroup]="ownershipFormGroup" class="grid grid-cols-2 gap-6" (ngSubmit)="saveOwnedGameDetails()">
-                <!-- Purchase Date -->
-                <div>
-                    <label class="block text-sm font-medium mb-1">
-                        Purchase Date <span class="text-secondary text-xs">(optional)</span>
-                    </label>
-                    <input
-                        type="date"
-                        formControlName="purchaseDate"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                    />
-                </div>
-
-                <!-- Purchase Price -->
-                <div>
-                    <label class="block text-sm font-medium mb-1">
-                        Purchase Price <span class="text-secondary text-xs">(optional)</span>
-                    </label>
-                    <div class="relative rounded-md shadow-sm">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <span class="text-secondary sm:text-sm">$</span>
-                        </div>
-                        <input
-                            type="number"
-                            formControlName="purchasePrice"
-                            class="w-full pl-7 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                            placeholder="0.00"
-                            min="0"
-                            step="0.01"
-                        />
-                    </div>
-                    @if (ownershipFormGroup.get('purchasePrice')?.errors?.['positiveNumber']) {
-                    <p class="text-red-500 text-sm mt-1">Please enter a valid positive number</p>
-                    }
-                </div>
-
-                <!-- Notes and Buttons -->
-                <div class="col-span-2">
-                    <div>
-                        <label class="block text-sm font-medium mb-1">
-                            Purchase Notes <span class="text-secondary text-xs">(optional)</span>
-                        </label>
-                        <textarea
-                            formControlName="purchaseNotes"
-                            rows="3"
-                            maxlength="128"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                            placeholder="Add notes about your purchase (e.g., 'Gift from John')"
-                            style="resize: none"
-                        ></textarea>
-                    </div>
-
-                    <div class="flex justify-end gap-2 pt-2">
-                        <app-button type="submit" [loading]="PREVENT_SPAM.isLoadingUpdateOwnership" [disabled]="ownershipFormGroup.invalid"
-                            >Save Details</app-button
-                        >
-                    </div>
-                </div>
-            </form>
-        </div>
-        }
-    </section>
-
-    <!-- History Section -->
-    <section class="mt-12">
-        @if (userHistoryFilteredComputed().length) {
-        <h2 class="text-xl font-bold mb-4">Your Play History</h2>
-
-        <div class="border border-gray-200 dark:border-zinc-800 rounded-lg overflow-hidden">
-            <table class="min-w-full">
-                <thead class="app-bg-secondary">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Group</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Players</th>
-                    </tr>
-                </thead>
-                <tbody class="app-bg-primary">
-                    @for (session of userHistoryFilteredComputed(); track session.meetData.id) {
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ session.meetData.meetDate | customDate: true: session.meetData.timezone }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ getGroupName(session.meetData.groupId) }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            <div class="flex -space-x-2 overflow-hidden">
-                                @for (player of session.gamePlayed?.playedBy ?? []; track player.id) {
-                                <app-image-profile
-                                    [title]="player.username"
-                                    class="border-2 rounded-full border-indigo-100 dark:border-zinc-800"
-                                    [avatar]="player.avatar"
-                                />
-                                }
-                            </div>
-                        </td>
-                    </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-        }
-    </section>
-
-    <!-- Similar Games Section -->
-    <section class="mt-12">
-        <div>
-            <h2 class="text-xl font-bold mb-4">Similar Games You Might Like</h2>
-
-            <div class="flex flex-wrap gap-4">
-                @for (similarGame of gameView$()?.similarGames ?? []; track similarGame.id) {
-                <a [routerLink]="['/games', similarGame.id]" class="block rounded-lg motion-safe:transition-transform motion-safe:hover:scale-105 focus-visible:outline-none">
-                    <app-card-game
-                        [title]="similarGame.titleTranslations.en"
-                        [imageUrl]="similarGame.imageUrl"
-                        [gameAvgDuration]="similarGame.gameAvgDuration"
-                        [minPlayers]="similarGame.minPlayers"
-                        [maxPlayers]="similarGame.maxPlayers"
-                    />
-                </a>
-                }
+          <form [formGroup]="ownershipFormGroup" class="grid grid-cols-2 gap-6" (ngSubmit)="saveOwnedGameDetails()">
+            <!-- Purchase Date -->
+            <div>
+              <label class="block text-sm font-medium mb-1">
+                Purchase Date <span class="text-secondary text-xs">(optional)</span>
+              </label>
+              <input
+                type="date"
+                formControlName="purchaseDate"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                />
             </div>
+
+            <!-- Purchase Price -->
+            <div>
+              <label class="block text-sm font-medium mb-1">
+                Purchase Price <span class="text-secondary text-xs">(optional)</span>
+              </label>
+              <div class="relative rounded-md shadow-sm">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <span class="text-secondary sm:text-sm">$</span>
+                </div>
+                <input
+                  type="number"
+                  formControlName="purchasePrice"
+                  class="w-full pl-7 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="0.00"
+                  min="0"
+                  step="0.01"
+                  />
+              </div>
+              @if (ownershipFormGroup.get('purchasePrice')?.errors?.['positiveNumber']) {
+                <p class="text-red-500 text-sm mt-1">Please enter a valid positive number</p>
+              }
+            </div>
+
+            <!-- Notes and Buttons -->
+            <div class="col-span-2">
+              <div>
+                <label class="block text-sm font-medium mb-1">
+                  Purchase Notes <span class="text-secondary text-xs">(optional)</span>
+                </label>
+                <textarea
+                  formControlName="purchaseNotes"
+                  rows="3"
+                  maxlength="128"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="Add notes about your purchase (e.g., 'Gift from John')"
+                  style="resize: none"
+                ></textarea>
+              </div>
+
+              <div class="flex justify-end gap-2 pt-2">
+                <app-button type="submit" [loading]="PREVENT_SPAM.isLoadingUpdateOwnership" [disabled]="ownershipFormGroup.invalid"
+                  >Save Details</app-button
+                  >
+                </div>
+              </div>
+            </form>
+          </div>
+        }
+      </section>
+
+      <!-- History Section -->
+      <section class="mt-12">
+        @if (userHistoryFilteredComputed().length) {
+          <h2 class="text-xl font-bold mb-4">Your Play History</h2>
+
+          <div class="border border-gray-200 dark:border-zinc-800 rounded-lg overflow-hidden">
+            <table class="min-w-full">
+              <thead class="app-bg-secondary">
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Group</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Players</th>
+                </tr>
+              </thead>
+              <tbody class="app-bg-primary">
+                @for (session of userHistoryFilteredComputed(); track session.meetData.id) {
+                  <tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ session.meetData.meetDate | customDate: true: session.meetData.timezone }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ getGroupName(session.meetData.groupId) }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <div class="flex -space-x-2 overflow-hidden">
+                        @for (player of session.gamePlayed?.playedBy ?? []; track player.id) {
+                          <app-image-profile
+                            [title]="player.username"
+                            class="border-2 rounded-full border-indigo-100 dark:border-zinc-800"
+                            [avatar]="player.avatar"
+                            />
+                        }
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </section>
+
+      <!-- Similar Games Section -->
+      <section class="mt-12">
+        <div>
+          <h2 class="text-xl font-bold mb-4">Similar Games You Might Like</h2>
+
+          <div class="flex flex-wrap gap-4">
+            @for (similarGame of gameView$()?.similarGames ?? []; track similarGame.id) {
+              <a [routerLink]="['/games', similarGame.id]" class="block rounded-lg motion-safe:transition-transform motion-safe:hover:scale-105 focus-visible:outline-none">
+                <app-card-game
+                  [title]="similarGame.titleTranslations.en"
+                  [imageUrl]="similarGame.imageUrl"
+                  [gameAvgDuration]="similarGame.gameAvgDuration"
+                  [minPlayers]="similarGame.minPlayers"
+                  [maxPlayers]="similarGame.maxPlayers"
+                  />
+              </a>
+            }
+          </div>
         </div>
-    </section>
-</container-wrapper>
-}
+      </section>
+    </container-wrapper>
+  }

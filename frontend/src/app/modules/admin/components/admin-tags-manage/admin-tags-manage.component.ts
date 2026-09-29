@@ -1,6 +1,5 @@
 // src/app/pages/admin/tags-manage/admin-tags-manage.component.ts
 
-import { CommonModule } from '@angular/common'
 import { Component, OnInit, ViewChild, inject } from '@angular/core'
 import type { TagCategoryType, TagType } from '../../../../api/api.types'
 import { ModalAddCategoryComponent } from '../../../../components/modals/modal-add-category/modal-add-category.component'
@@ -16,7 +15,6 @@ import { AdminTagsManageService } from './admin-tags-manage.service'
 
 @Component({
     imports: [
-        CommonModule,
         ButtonComponent,
         SpinnerComponent,
         ModalEditCategoryComponent,

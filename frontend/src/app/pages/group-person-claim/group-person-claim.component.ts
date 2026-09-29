@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import { Component, inject, signal } from '@angular/core'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
@@ -16,7 +15,7 @@ type ClaimSummary = {
 }
 
 @Component({
-    imports: [CommonModule, RouterLink],
+    imports: [RouterLink],
     templateUrl: './group-person-claim.component.html',
 })
 export class GroupPersonClaimComponent {

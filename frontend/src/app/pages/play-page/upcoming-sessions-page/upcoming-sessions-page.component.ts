@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import { Component, computed, inject, signal } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import type { MeetType } from '../../../api/api.types'
@@ -12,7 +11,7 @@ import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
 
 @Component({
-    imports: [CommonModule, RouterLink, ContainerWrapperComponent, CustomDatePipe, PageHeaderComponent, ButtonComponent, IconComponent],
+    imports: [RouterLink, ContainerWrapperComponent, CustomDatePipe, PageHeaderComponent, ButtonComponent, IconComponent],
     templateUrl: 'upcoming-sessions-page.component.html',
 })
 export class UpcomingSessionsPageComponent {

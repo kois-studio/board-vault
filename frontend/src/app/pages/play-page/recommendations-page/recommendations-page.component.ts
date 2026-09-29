@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import { Component, computed, effect, inject, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute } from '@angular/router'
@@ -24,7 +23,6 @@ type RecommendationDecisionLens = 'balanced' | 'fresh' | 'favorite'
 
 @Component({
     imports: [
-        CommonModule,
         FormsModule,
         RouterLink,
         ButtonComponent,

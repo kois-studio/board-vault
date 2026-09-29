@@ -62,10 +62,10 @@ compliance:
       priority: high
       next_action: Preserve secret and local-data exclusions.
     - id: DEP-006
-      status: deferred
-      evidence: npm audit reported existing backend and frontend dependency advisories on 2026-09-28; GitHub reported 179 default-branch alerts.
+      status: partial
+      evidence: Backend and frontend `npm audit --audit-level=low` report zero vulnerabilities after the lockfile updates; GitHub reported 180 open default-branch Dependabot alerts on 2026-09-29 before the updates were pushed.
       priority: high
-      next_action: Review the advisories and plan compatible upgrades in focused dependency work.
+      next_action: Push the remediation and verify the GitHub Dependabot rescan closes the resolved alerts.
     - id: CI-002
       status: partial
       evidence: The post-commit run https://github.com/kois-studio/board-vault/actions/runs/36483379661 passed backend, database, and repository checks but failed four existing frontend visual snapshots.
@@ -97,6 +97,6 @@ deferred_work:
     priority: high
     next_action: Regenerate or correct the four landing-page baselines in the matching Linux Playwright environment, then confirm the frontend CI job passes.
   - id: BOARD-003
-    title: Review dependency advisories
+    title: Confirm dependency advisory remediation
     priority: high
-    next_action: Triage current npm and GitHub advisories, prioritize reachable critical/high issues, and propose compatible upgrades.
+    next_action: Verify GitHub Dependabot alert closure, all required CI checks, and the deployment after the dependency remediation push.

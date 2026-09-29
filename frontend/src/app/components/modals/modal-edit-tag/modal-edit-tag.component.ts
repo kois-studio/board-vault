@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import { Component, EventEmitter, Output, inject, signal } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Api } from '../../../api/api'
@@ -10,7 +9,7 @@ import { DialogDirective } from '../../ui/dialog/dialog.directive'
 import { IconComponent } from '../../ui/icon/icon.component'
 
 @Component({
-    imports: [CommonModule, ReactiveFormsModule, ButtonComponent, DialogDirective, IconComponent],
+    imports: [ReactiveFormsModule, ButtonComponent, DialogDirective, IconComponent],
     selector: 'app-modal-edit-tag',
     templateUrl: './modal-edit-tag.component.html',
 })

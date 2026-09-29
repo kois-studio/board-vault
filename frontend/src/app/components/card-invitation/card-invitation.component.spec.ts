@@ -42,7 +42,7 @@ describe('CardInvitationComponent', () => {
 
         fixture = TestBed.createComponent(CardInvitationComponent)
         component = fixture.componentInstance
-        component.invitation = invitation
+        fixture.componentRef.setInput('invitation', invitation)
         fixture.detectChanges()
     })
 
@@ -62,7 +62,10 @@ describe('CardInvitationComponent', () => {
     })
 
     it('declines only after the confirmation action', async () => {
-        component.isConfirmingDecline = true
+        const declineButton = fixture.nativeElement.querySelector(
+            'button[aria-label="Decline invitation to Friday games"]',
+        ) as HTMLButtonElement
+        declineButton.click()
         fixture.detectChanges()
 
         const confirmButton = Array.from(fixture.nativeElement.querySelectorAll('button')).find((button) =>

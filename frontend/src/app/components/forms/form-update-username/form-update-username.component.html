@@ -1,35 +1,43 @@
 <div class="w-full flex flex-col md:flex-row justify-between items-start gap-4">
-    <div class="flex items-center">
-        <form [formGroup]="updateUsernameFormGroup">
-            <div>
-                <input
-                    type="text"
-                    formControlName="username"
-                    class="app-input"
-                    [class]="usernameClass"
-                    required
-                />
-                <div *ngIf="username?.invalid && (username?.dirty || username?.touched)">
-                    <div *ngIf="username?.hasError('required')" class="text-sm text-red-500 py-1">
-                        <app-icon name="circle-alert" [size]="16" /> username is required.
-                    </div>
-                    <div *ngIf="username?.hasError('minlength')" class="text-sm text-red-500 py-1">
-                        <app-icon name="circle-alert" [size]="16" /> username is too short.
-                    </div>
-                    <div *ngIf="username?.hasError('maxlength')" class="text-sm text-red-500 py-1">
-                        <app-icon name="circle-alert" [size]="16" /> username is too long.
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
+  <div class="flex items-center">
+    <form [formGroup]="updateUsernameFormGroup">
+      <div>
+        <input
+          type="text"
+          formControlName="username"
+          class="app-input"
+          [class]="usernameClass"
+          required
+          />
+        @if (username?.invalid && (username?.dirty || username?.touched)) {
+          <div>
+            @if (username?.hasError('required')) {
+              <div class="text-sm text-red-500 py-1">
+                <app-icon name="circle-alert" [size]="16" /> username is required.
+              </div>
+            }
+            @if (username?.hasError('minlength')) {
+              <div class="text-sm text-red-500 py-1">
+                <app-icon name="circle-alert" [size]="16" /> username is too short.
+              </div>
+            }
+            @if (username?.hasError('maxlength')) {
+              <div class="text-sm text-red-500 py-1">
+                <app-icon name="circle-alert" [size]="16" /> username is too long.
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </form>
+  </div>
 
-    @if (!isEditing){
-        <app-button variant="secondary" (click)="toggleEditing()">Change username</app-button>
+  @if (!isEditing){
+    <app-button variant="secondary" (click)="toggleEditing()">Change username</app-button>
     }@else {
-        <div class="flex gap-4">
-            <app-button variant="secondary" (click)="onCancel()">Cancel</app-button>
-            <app-button variant="primary" [disabled]="disableSubmit" (click)="onSave()">Save</app-button>
-        </div>
-    }
+    <div class="flex gap-4">
+      <app-button variant="secondary" (click)="onCancel()">Cancel</app-button>
+      <app-button variant="primary" [disabled]="disableSubmit" (click)="onSave()">Save</app-button>
+    </div>
+  }
 </div>

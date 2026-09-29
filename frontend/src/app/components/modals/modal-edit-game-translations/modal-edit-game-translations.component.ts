@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import { Component, EventEmitter, Output, inject, signal } from '@angular/core'
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { firstValueFrom } from 'rxjs'
@@ -14,7 +13,7 @@ type SupportedLanguage = 'en' | 'es'
 
 @Component({
     selector: 'app-modal-edit-game-translations',
-    imports: [CommonModule, ReactiveFormsModule, ButtonComponent, DialogDirective, IconComponent],
+    imports: [ReactiveFormsModule, ButtonComponent, DialogDirective, IconComponent],
     templateUrl: './modal-edit-game-translations.component.html',
 })
 export class ModalEditGameTranslationsComponent {

@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import { Component, Input, OnInit } from '@angular/core'
 import type { NotificationType } from '../../api/api.types'
 import { DataService } from '../../core/services/data.service'
@@ -6,7 +5,7 @@ import { formatDate } from '../../core/utils/formatDate'
 import { IconComponent } from '../ui/icon/icon.component'
 
 @Component({
-    imports: [CommonModule, IconComponent],
+    imports: [IconComponent],
     selector: 'app-card-notification',
     templateUrl: 'card-notification.component.html',
 })

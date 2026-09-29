@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { firstValueFrom } from 'rxjs'
@@ -9,7 +8,7 @@ import { ToastService } from '../../toast/toast.service'
 import { ButtonComponent } from '../../ui/button/button.component'
 
 @Component({
-    imports: [ReactiveFormsModule, CommonModule],
+    imports: [ReactiveFormsModule],
     selector: 'form-game-submission',
     templateUrl: 'form-game-submission.component.html',
 })

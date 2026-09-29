@@ -23,7 +23,7 @@ describe('ButtonComponent accessibility states', () => {
         ]
 
         for (const variant of variants) {
-            fixture.componentInstance.variant = variant.name
+            fixture.componentRef.setInput('variant', variant.name)
             fixture.detectChanges()
             const button = fixture.nativeElement.querySelector('button') as HTMLButtonElement
 
@@ -36,7 +36,7 @@ describe('ButtonComponent accessibility states', () => {
     })
 
     it('exposes disabled and loading state to native controls', () => {
-        fixture.componentInstance.loading = true
+        fixture.componentRef.setInput('loading', true)
         fixture.detectChanges()
 
         const button = fixture.nativeElement.querySelector('button') as HTMLButtonElement

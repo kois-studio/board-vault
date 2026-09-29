@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import { Component, computed, inject, signal } from '@angular/core'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { ImageProfileComponent } from '../../../components/image-profile/image-profile.component'
@@ -15,7 +14,6 @@ import { formatAttendeeSummary } from '../../../core/utils/formatAttendeeSummary
 
 @Component({
     imports: [
-        CommonModule,
         RouterLink,
         ContainerWrapperComponent,
         IconComponent,

@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import { Component, EventEmitter, Output, inject, signal } from '@angular/core'
 import { Api } from '../../../api/api'
 import type { TagType } from '../../../api/api.types'
@@ -9,7 +8,7 @@ import { DialogDirective } from '../../ui/dialog/dialog.directive'
 import { IconComponent } from '../../ui/icon/icon.component'
 
 @Component({
-    imports: [CommonModule, ButtonComponent, DialogDirective, IconComponent],
+    imports: [ButtonComponent, DialogDirective, IconComponent],
     selector: 'app-modal-delete-tag',
     templateUrl: './modal-delete-tag.component.html',
 })

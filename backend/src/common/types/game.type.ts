@@ -117,20 +117,20 @@ export class GameViewRatingDto {
 }
 
 export class BrowseGamesQuery {
-    @ApiPropertyOptional({ example: 'catan', description: 'Title search across supported translations.' })
+    @ApiPropertyOptional({ type: String, example: 'catan', description: 'Title search across supported translations.' })
     @IsOptional()
     @IsString()
     @MaxLength(100)
     search = ''
 
-    @ApiPropertyOptional({ example: 1, default: 1, minimum: 1 })
+    @ApiPropertyOptional({ type: Number, example: 1, default: 1, minimum: 1 })
     @IsOptional()
     @Type(() => Number)
     @IsInt()
     @Min(1)
     page = 1
 
-    @ApiPropertyOptional({ example: 20, default: 20, minimum: 1, maximum: 20 })
+    @ApiPropertyOptional({ type: Number, example: 20, default: 20, minimum: 1, maximum: 20 })
     @IsOptional()
     @Type(() => Number)
     @IsInt()

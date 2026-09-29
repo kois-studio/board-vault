@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import { Component, Input, computed, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import type { GameType, GroupWithMembersAndGames, InvitationWithAccountsData } from '../../api/api.types'
@@ -8,7 +7,7 @@ import { CardAccountComponent } from '../card-account/card-account.component'
 import { IconComponent } from '../ui/icon/icon.component'
 
 @Component({
-    imports: [CommonModule, CardAccountComponent, RouterLink, CustomDatePipe, IconComponent],
+    imports: [CardAccountComponent, RouterLink, CustomDatePipe, IconComponent],
     selector: 'app-card-group',
     templateUrl: 'card-group.component.html',
 })

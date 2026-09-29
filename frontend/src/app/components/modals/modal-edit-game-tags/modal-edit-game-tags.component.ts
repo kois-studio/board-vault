@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import { Component, EventEmitter, Output, inject, signal } from '@angular/core'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../../api/api'
@@ -11,7 +10,7 @@ import { IconComponent } from '../../ui/icon/icon.component'
 
 @Component({
     selector: 'app-modal-edit-game-tags',
-    imports: [CommonModule, ButtonComponent, DialogDirective, IconComponent],
+    imports: [ButtonComponent, DialogDirective, IconComponent],
     templateUrl: './modal-edit-game-tags.component.html',
 })
 export class ModalEditGameTagsComponent {

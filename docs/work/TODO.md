@@ -47,23 +47,23 @@ and [standards contract](../project-standards.yml) for the continuation rules.
 - **Owner:** Frontend maintainer.
 - **Last updated:** 2026-09-29
 
-### [BOARD-003] [P1] [security] Triage dependency advisories
+### [BOARD-003] [P1] [security] Remediate dependency advisories
 
-- **Status:** Ready
+- **Status:** In Progress
 - **Origin:** npm and GitHub security audit notices observed during the local-development workflow work.
-- **Goal:** Identify and remediate reachable critical and high-severity dependency vulnerabilities without destabilizing the application.
-- **Why now:** GitHub reported 179 default-branch alerts; the local production dependency audit also reported existing advisories.
-- **Scope:** Refresh current audit data, identify affected direct/transitive packages and reachability, group compatible upgrades, and implement focused updates with regression coverage.
-- **Non-goals:** Blind bulk upgrades or major framework migrations without compatibility analysis.
+- **Goal:** Remediate dependency vulnerabilities in the backend and frontend while preserving application behavior.
+- **Why now:** GitHub reported 180 open default-branch Dependabot alerts (4 critical, 96 high, 65 medium, 15 low) on 2026-09-29; both local npm audits also reported vulnerabilities.
+- **Scope:** Upgrade affected direct and transitive dependencies, migrate incompatible framework major versions, add lockfile audits to CI, and enable scheduled Dependabot updates.
+- **Non-goals:** Dismissing alerts without verified fixes or making unrelated product changes as part of the framework migration.
 - **Acceptance criteria:**
-  - Current advisories are triaged by severity, reachability, and exploitability.
-  - Critical/high findings have a fix, mitigation, or documented reason and owner for deferral.
-  - Relevant build, lint, unit, and E2E checks pass after upgrades.
-- **Verification:** `npm audit` in backend and frontend, GitHub Dependabot review, and package-specific validation.
-- **Affected areas:** `backend/package-lock.json`, `frontend/package-lock.json`, and potentially application code.
-- **Dependencies:** None.
-- **Risks:** Broad dependency changes can introduce behavior or compatibility regressions.
+-  - Backend and frontend `npm audit --audit-level=low` report no vulnerabilities.
+-  - GitHub Dependabot alerts close after the updated lockfiles reach the default branch and GitHub rescans them.
+  - Required CI checks pass and the deployment completes.
+- **Verification:** Backend and frontend npm audits; repository lint, build, unit and E2E checks; database migration, restore and rollback checks; GitHub Dependabot and Actions status.
+- **Affected areas:** `.github/dependabot.yml`, `.github/workflows/ci.yml`, `.nvmrc`, backend/frontend manifests and lockfiles, Angular compatibility changes, Nest configuration, and `docs/api/openapi.json`.
+- **Dependencies:** GitHub default-branch Dependabot rescan and push-triggered CI/deployment.
+- **Risks:** Framework major upgrades can introduce compatibility regressions. Angular 22's default `OnPush` strategy is intentionally accepted across existing components; address any observed behavior regressions if they arise. GitHub alert totals may take time to refresh after push.
 - **Blocker or question:** None.
-- **Next action:** Refresh audit output and map critical/high advisories to affected packages.
+- **Next action:** Push the validated remediation, then confirm the alert rescan, required CI checks, and deployment result.
 - **Owner:** Maintainer.
 - **Last updated:** 2026-09-29

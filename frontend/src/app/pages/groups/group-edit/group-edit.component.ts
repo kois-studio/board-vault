@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import { Component, effect, inject, signal } from '@angular/core'
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
@@ -16,16 +15,7 @@ import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
 
 @Component({
-    imports: [
-        CommonModule,
-        RouterLink,
-        ImageProfileComponent,
-        ReactiveFormsModule,
-        CardAccountComponent,
-        CustomDatePipe,
-        DialogDirective,
-        IconComponent,
-    ],
+    imports: [RouterLink, ImageProfileComponent, ReactiveFormsModule, CardAccountComponent, CustomDatePipe, DialogDirective, IconComponent],
     templateUrl: 'group-edit.component.html',
 })
 export class GroupEditComponent {

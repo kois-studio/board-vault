@@ -161,7 +161,11 @@ export class GroupPeopleResponseDto {
 }
 
 export class GroupPersonCatalogQuery {
-    @ApiPropertyOptional({ example: 'catan', description: 'Optional title search for games that can be assigned to a group person.' })
+    @ApiPropertyOptional({
+        type: String,
+        example: 'catan',
+        description: 'Optional title search for games that can be assigned to a group person.',
+    })
     @IsOptional()
     @IsString()
     @MaxLength(100)

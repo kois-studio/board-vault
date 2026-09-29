@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router, RouterLink } from '@angular/router'
@@ -12,7 +11,7 @@ import { LogService } from '../../../../core/services/log.service'
 import { LoginService } from '../../../../core/services/login.service'
 
 @Component({
-    imports: [ReactiveFormsModule, CommonModule, RouterLink, ButtonComponent, IconComponent],
+    imports: [ReactiveFormsModule, RouterLink, ButtonComponent, IconComponent],
     selector: 'app-form-login',
     templateUrl: 'form-login.component.html',
 })

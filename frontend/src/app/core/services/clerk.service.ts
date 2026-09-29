@@ -79,8 +79,13 @@ export class ClerkService {
             throw new Error('Invitation ticket is missing')
         }
 
+        const client = this.clerk.client
+        if (!client) {
+            throw new Error('Clerk client is unavailable')
+        }
+
         if (this.getInvitationStatus() === 'sign_in') {
-            const signIn = await this.clerk.client.signIn.create({ strategy: 'ticket', ticket })
+            const signIn = await client.signIn.create({ strategy: 'ticket', ticket })
             if (signIn.status !== 'complete' || !signIn.createdSessionId) {
                 throw new Error('Invitation sign-in is incomplete')
             }
@@ -89,7 +94,7 @@ export class ClerkService {
             return
         }
 
-        const signUp = await this.clerk.client.signUp.create({ strategy: 'ticket', ticket, username, password })
+        const signUp = await client.signUp.create({ strategy: 'ticket', ticket, username, password })
         if (signUp.status !== 'complete' || !signUp.createdSessionId) {
             throw new Error('Invitation sign-up is incomplete')
         }

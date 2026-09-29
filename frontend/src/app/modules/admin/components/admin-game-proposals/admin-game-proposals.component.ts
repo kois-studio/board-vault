@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import { Component, OnInit, inject, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ButtonComponent } from '../../../../components/ui/button/button.component'
@@ -9,7 +8,7 @@ import { SpinnerComponent } from '../../../../components/ui/spinner/spinner.comp
 import { AdminGameProposalsService } from './admin-game-proposals.service'
 
 @Component({
-    imports: [CommonModule, FormsModule, ImageBackgroundComponent, SpinnerComponent, IconComponent, DialogDirective],
+    imports: [FormsModule, ImageBackgroundComponent, SpinnerComponent, IconComponent, DialogDirective],
     providers: [AdminGameProposalsService],
     selector: 'app-admin-game-proposals',
     templateUrl: './admin-game-proposals.component.html',

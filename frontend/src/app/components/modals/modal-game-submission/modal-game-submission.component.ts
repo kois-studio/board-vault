@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import { Component, EventEmitter, Output, signal } from '@angular/core'
 import { FormGameSubmissionComponent } from '../../forms/form-game-submission/form-game-submission.component'
 import { DialogDirective } from '../../ui/dialog/dialog.directive'

@@ -6,7 +6,7 @@
     <div class="lg:items-center flex justify-start items-center pt-3">
     <div class="relative border-4 border-white rounded-full">
         <!-- Original Image Profile Component -->
-        <app-image-profile [avatar]="currentUser$()?.avatar" size="large" />
+        <app-image-profile [avatar]="$safeNavigationMigration(currentUser$()?.avatar)" size="large" />
 
         <!-- Edit button overlay -->
         <button

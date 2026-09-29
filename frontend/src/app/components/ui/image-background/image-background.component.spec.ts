@@ -1,4 +1,4 @@
-import { Component } from '@angular/core'
+import { Component, Input } from '@angular/core'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { ImageBackgroundComponent } from './image-background.component'
 
@@ -7,8 +7,8 @@ import { ImageBackgroundComponent } from './image-background.component'
     template: '<image-background [src]="src" [alt]="alt" />',
 })
 class ImageHostComponent {
-    src = ''
-    alt = 'Example game cover'
+    @Input() src = ''
+    @Input() alt = 'Example game cover'
 }
 
 describe('ImageBackgroundComponent', () => {
@@ -28,7 +28,7 @@ describe('ImageBackgroundComponent', () => {
     })
 
     it('replaces broken artwork with the same accessible fallback', () => {
-        fixture.componentInstance.src = 'https://images.example.test/game.webp'
+        fixture.componentRef.setInput('src', 'https://images.example.test/game.webp')
         fixture.detectChanges()
 
         const image = fixture.nativeElement.querySelector('img') as HTMLImageElement

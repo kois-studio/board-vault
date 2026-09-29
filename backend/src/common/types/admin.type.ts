@@ -9,20 +9,20 @@ import { GameWithTagsAndTranslationsDto, BrowseGamesPaginationDto } from './game
 const ADMIN_PAGE_SIZE_MAX = 100
 
 export class AdminGamesQuery {
-    @ApiPropertyOptional({ example: 'catan', description: 'Title search, across supported translations.' })
+    @ApiPropertyOptional({ type: String, example: 'catan', description: 'Title search, across supported translations.' })
     @IsOptional()
     @IsString()
     @MaxLength(100)
     search?: string
 
-    @ApiPropertyOptional({ example: 1, default: 1, minimum: 1 })
+    @ApiPropertyOptional({ type: Number, example: 1, default: 1, minimum: 1 })
     @IsOptional()
     @Type(() => Number)
     @IsInt()
     @Min(1)
     page = 1
 
-    @ApiPropertyOptional({ example: 10, default: 10, minimum: 1, maximum: ADMIN_PAGE_SIZE_MAX })
+    @ApiPropertyOptional({ type: Number, example: 10, default: 10, minimum: 1, maximum: ADMIN_PAGE_SIZE_MAX })
     @IsOptional()
     @Type(() => Number)
     @IsInt()
@@ -37,14 +37,14 @@ export class AdminProposalsQuery {
     @IsIn(['pending', 'approved', 'rejected', 'duplicate'])
     status?: 'pending' | 'approved' | 'rejected' | 'duplicate'
 
-    @ApiPropertyOptional({ example: 1, default: 1, minimum: 1 })
+    @ApiPropertyOptional({ type: Number, example: 1, default: 1, minimum: 1 })
     @IsOptional()
     @Type(() => Number)
     @IsInt()
     @Min(1)
     page = 1
 
-    @ApiPropertyOptional({ example: 10, default: 10, minimum: 1, maximum: ADMIN_PAGE_SIZE_MAX })
+    @ApiPropertyOptional({ type: Number, example: 10, default: 10, minimum: 1, maximum: ADMIN_PAGE_SIZE_MAX })
     @IsOptional()
     @Type(() => Number)
     @IsInt()
