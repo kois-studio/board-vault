@@ -1,6 +1,7 @@
 import { Logger, ValidationPipe } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { NestFactory } from '@nestjs/core'
+import { NestExpressApplication } from '@nestjs/platform-express'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 
 import { AppModule } from './app.module'
@@ -26,7 +27,14 @@ async function bootstrap() {
     }
 
     // Create the Nest application
-    const app = await NestFactory.create(AppModule, { bodyParser: false })
+    const app = await NestFactory.create<NestExpressApplication>(AppModule, { bodyParser: false })
+
+    // Vercel sits in front of the function and overwrites X-Forwarded-For with
+    // the real client IP. Trust exactly that one hop so request.ip (used by
+    // RateLimitGuard) is the client, not Vercel's internal address.
+    if (process.env.VERCEL) {
+        app.set('trust proxy', 1)
+    }
 
     app.useGlobalFilters(new ApiErrorFilter())
 
@@ -53,18 +61,21 @@ async function bootstrap() {
         maxAge: 86400,
     })
 
-    // Create the swagger documentation
-    const swaggerConfig = new DocumentBuilder()
-        .setTitle('Board Vault API')
-        .setDescription('Versioned contract snapshot for the Board Vault social group workspace API.')
-        .setVersion('1.0')
-        .addBearerAuth()
-        .build()
-    const document = SwaggerModule.createDocument(app, swaggerConfig)
+    // Serve the interactive API docs outside production only. The committed
+    // contract lives in docs/api/openapi.json.
+    if (process.env.NODE_ENV !== 'production' && process.env.VERCEL_ENV !== 'production') {
+        const swaggerConfig = new DocumentBuilder()
+            .setTitle('Board Vault API')
+            .setDescription('Versioned contract snapshot for the Board Vault social group workspace API.')
+            .setVersion('1.0')
+            .addBearerAuth()
+            .build()
+        const document = SwaggerModule.createDocument(app, swaggerConfig)
 
-    SwaggerModule.setup('swagger', app, document)
+        SwaggerModule.setup('swagger', app, document)
+        logger.verbose(`Swagger running http://localhost:${port}/swagger`)
+    }
     logger.verbose(`NestJS is running on http://localhost:${port}`)
-    logger.verbose(`Swagger running http://localhost:${port}/swagger`)
 
     // Start the application
     await app.listen(port)

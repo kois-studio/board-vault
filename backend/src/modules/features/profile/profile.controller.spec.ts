@@ -4,6 +4,7 @@ import * as request from 'supertest'
 
 import { AuthGuard } from '../../../common/guards/auth.guard'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
+import { RateLimitGuard } from '../../../common/guards/rate-limit.guard'
 
 import { ProfileController } from './profile.controller'
 import { ProfileService } from './profile.service'
@@ -22,6 +23,8 @@ describe('ProfileController proposal validation', () => {
             .overrideGuard(AuthGuard)
             .useValue({ canActivate: () => true })
             .overrideGuard(UserOwnershipGuard)
+            .useValue({ canActivate: () => true })
+            .overrideGuard(RateLimitGuard)
             .useValue({ canActivate: () => true })
             .compile()
 

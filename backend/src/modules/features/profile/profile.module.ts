@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common'
 
+import { CacheModule } from '../../common/cache/cache.module'
 import { DatabaseModule } from '../../common/database/database.module'
 import { GameProposalModule } from '../../core/game-proposal/game-proposal.module'
 import { GroupsModule } from '../../core/groups/groups.module'
@@ -11,7 +12,7 @@ import { ProfileController } from './profile.controller'
 import { ProfileService } from './profile.service'
 
 @Module({
-    imports: [DatabaseModule, UsersModule, NotificationsModule, GroupsModule, InvitationsModule, GameProposalModule],
+    imports: [CacheModule, DatabaseModule, UsersModule, NotificationsModule, GroupsModule, InvitationsModule, GameProposalModule],
     providers: [ProfileService],
     exports: [ProfileService],
     controllers: [ProfileController],

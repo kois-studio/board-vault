@@ -3,6 +3,7 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 
 import { AuthGuard } from '../../../common/guards/auth.guard'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
+import { RateLimit, RateLimitGuard } from '../../../common/guards/rate-limit.guard'
 import { SuccessDto } from '../../../common/types/auth.type'
 import { CreateGameProposalBody, GameProposalDto } from '../../../common/types/game-proposal.type'
 import { InvitationWithExtraData } from '../../../common/types/invitation.type'
@@ -72,7 +73,8 @@ export class ProfileController {
         return this.profileService.getUserProposalStats(userId)
     }
 
-    @UseGuards(UserOwnershipGuard)
+    @UseGuards(UserOwnershipGuard, RateLimitGuard)
+    @RateLimit(30, 3600)
     @Post('/users/:userId/proposals')
     @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
     @ApiOperation({ summary: 'Create a new game proposal', deprecated: false })

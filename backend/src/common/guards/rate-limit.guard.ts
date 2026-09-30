@@ -30,14 +30,21 @@ export class RateLimitGuard implements CanActivate {
 
         const request = context.switchToHttp().getRequest<{
             ip?: string
+            user?: { userId?: number }
             path?: string
             route?: { path?: string }
             socket?: { remoteAddress?: string }
         }>()
-        const clientAddress = request.ip ?? request.socket?.remoteAddress ?? 'unknown'
+        // Signed-in callers share one budget per account across devices and
+        // networks. Anonymous callers are keyed by client address, which is the
+        // real client IP on Vercel because main.ts trusts its proxy hop.
+        const caller =
+            request.user?.userId !== undefined
+                ? `account:${request.user.userId}`
+                : `ip:${request.ip ?? request.socket?.remoteAddress ?? 'unknown'}`
         const endpoint = request.route?.path ?? request.path ?? 'unknown'
         const bucket = Math.floor(Date.now() / 1000 / options.windowSeconds)
-        const identifier = createHash('sha256').update(`${endpoint}:${clientAddress}:${bucket}`).digest('hex')
+        const identifier = createHash('sha256').update(`${endpoint}:${caller}:${bucket}`).digest('hex')
         const count = await this.cacheService.increment(`rate-limit:${identifier}`, options.windowSeconds)
 
         // Redis is intentionally optional for local development. Production must

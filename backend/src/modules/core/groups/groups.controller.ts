@@ -3,6 +3,7 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 
 import { AuthGuard } from '../../../common/guards/auth.guard'
 import { GroupOwnerGuard } from '../../../common/guards/group-owner.guard'
+import { RateLimit, RateLimitGuard } from '../../../common/guards/rate-limit.guard'
 import { UserInGroupGuard } from '../../../common/guards/user-in-group.guard'
 import {
     ClerkGroupInvitationDto,
@@ -82,7 +83,9 @@ export class GroupsController {
         return this.groupsService.getGroupInvitations(groupId)
     }
 
-    @UseGuards(GroupOwnerGuard)
+    // Each call makes Clerk send an email to an arbitrary address.
+    @UseGuards(GroupOwnerGuard, RateLimitGuard)
+    @RateLimit(20, 3600)
     @Post('/:groupId/clerk-invitations')
     @ApiOperation({ summary: 'Invite a new person to the group by email through Clerk' })
     @ApiResponse({ status: 201, type: ClerkGroupInvitationDto, description: 'The Clerk invitation was created and emailed' })

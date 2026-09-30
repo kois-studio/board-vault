@@ -4,6 +4,7 @@ import * as request from 'supertest'
 
 import { AuthGuard } from '../../common/guards/auth.guard'
 import { GroupOwnerGuard } from '../../common/guards/group-owner.guard'
+import { RateLimitGuard } from '../../common/guards/rate-limit.guard'
 import { UserInGroupGuard } from '../../common/guards/user-in-group.guard'
 import { ClerkIdentityService } from '../common/auth/clerk-identity.service'
 
@@ -46,6 +47,8 @@ describe('Legacy write DTO validation', () => {
             .overrideGuard(UserInGroupGuard)
             .useValue({ canActivate: () => true })
             .overrideGuard(GroupOwnerGuard)
+            .useValue({ canActivate: () => true })
+            .overrideGuard(RateLimitGuard)
             .useValue({ canActivate: () => true })
             .compile()
 

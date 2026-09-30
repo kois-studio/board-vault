@@ -3,6 +3,7 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 
 import { AuthGuard } from '../../../common/guards/auth.guard'
 import { GroupOwnerGuard } from '../../../common/guards/group-owner.guard'
+import { RateLimit, RateLimitGuard } from '../../../common/guards/rate-limit.guard'
 import { SuccessDto } from '../../../common/types/auth.type'
 import {
     CreateInvitationBody,
@@ -30,7 +31,8 @@ export class InvitationsController {
         return this.invitationsService.getInvitations(request.user.userId)
     }
 
-    @UseGuards(GroupOwnerGuard)
+    @UseGuards(GroupOwnerGuard, RateLimitGuard)
+    @RateLimit(60, 3600)
     @Post('/')
     @ApiOperation({ summary: 'Create a new invitation', deprecated: true })
     @ApiResponse({ status: 201, type: SuccessDto, description: 'The invitation has been succesfully created' })
@@ -49,7 +51,8 @@ export class InvitationsController {
         return this.invitationsService.getInvitationByIdForAccount(invitationId, request.user.userId)
     }
 
-    @UseGuards(GroupOwnerGuard)
+    @UseGuards(GroupOwnerGuard, RateLimitGuard)
+    @RateLimit(60, 3600)
     @Post('/byUsername')
     @ApiOperation({ summary: 'Create a new invitation' })
     @ApiResponse({ status: 201, type: UserPublicDto, description: 'The invitation has been succesfully created' })
