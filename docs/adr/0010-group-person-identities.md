@@ -1,8 +1,9 @@
-# ADR-0010 — Group-scoped placeholder identities
+# ADR: Group-scoped placeholder identities
 
-## Status
-
-Accepted — 2026-09-26
+- **Status:** Accepted
+- **Date:** 2026-09-26
+- **Supersedes:** None
+- **Superseded by:** None
 
 ## Context
 

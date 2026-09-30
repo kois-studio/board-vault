@@ -1,7 +1,9 @@
 # ADR: Verification and password-reset token lifecycle
 
-- **Status:** Superseded by [0012](0012-clerk-only-authentication.md); the tokens and their columns were removed
+- **Status:** Superseded
 - **Date:** 2026-08-15
+- **Supersedes:** None
+- **Superseded by:** [0012](0012-clerk-only-authentication.md); the tokens and their columns were removed
 
 ## Context
 

@@ -1,0 +1,50 @@
+name: Work item
+description: A planned change, improvement, or piece of research.
+labels: ["needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        One outcome per issue. Keep it small enough for one pull request when possible.
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: The outcome, in one or two sentences.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why now
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: What is included. Name the files, routes, or tables you expect to touch.
+    validations:
+      required: true
+  - type: textarea
+    id: non-goals
+    attributes:
+      label: Non-goals
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true
+  - type: textarea
+    id: verification
+    attributes:
+      label: Verification
+      description: The commands or manual checks that prove it works.
+    validations:
+      required: true
+  - type: textarea
+    id: risks
+    attributes:
+      label: Dependencies and risks

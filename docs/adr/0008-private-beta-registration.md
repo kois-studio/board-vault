@@ -2,6 +2,8 @@
 
 - **Status:** Accepted
 - **Date:** 2026-09-03
+- **Supersedes:** None
+- **Superseded by:** None
 
 ## Context
 

@@ -31,8 +31,8 @@ profiles:
 assessment_scope: >-
   Initial AI-readiness assessment focused on documentation, safe parallel work,
   CI, local data isolation, and known security/dependency risks. Rules not listed
-  below have not been assessed and must not be treated as compliant. Continue the
-  rule-by-rule assessment in docs/work/TODO.md.
+  below have not been assessed and must not be treated as compliant. The
+  rule-by-rule assessment continues in a GitHub issue.
 
 compliance:
   rules:
@@ -48,9 +48,9 @@ compliance:
       next_action: Add new maintained documentation to the index.
     - id: DOC-011
       status: compliant
-      evidence: docs/work/TODO.md; docs/AGENTS.md
+      evidence: GitHub Issues is the equivalent tracked queue (issue templates in .github/ISSUE_TEMPLATE mirror the work-item fields); docs/work/TODO.md points to it; docs/AGENTS.md routes work there.
       priority: high
-      next_action: Keep unfinished work in the tracked queue.
+      next_action: Keep unfinished work in GitHub Issues.
     - id: TEST-006
       status: compliant
       evidence: package.json; .github/workflows/ci.yml
@@ -58,14 +58,14 @@ compliance:
       next_action: Keep documented test commands aligned with CI.
     - id: SEC-002
       status: compliant
-      evidence: .gitignore; backend/.env.example; docs/contributor-setup.md
+      evidence: .gitignore; backend/.env.example; scripts/check-public-tree.mjs; docs/environments.md
       priority: high
       next_action: Preserve secret and local-data exclusions.
     - id: DEP-006
-      status: partial
-      evidence: Backend and frontend `npm audit --audit-level=low` report zero vulnerabilities after the lockfile updates; GitHub reported 180 open default-branch Dependabot alerts on 2026-09-29 before the updates were pushed.
+      status: compliant
+      evidence: Backend and frontend `npm audit --audit-level=low` report zero vulnerabilities (CI audits both on every run). Dependabot runs monthly with at most three open PRs per ecosystem; the 2026-09-30 backlog was applied in one tested batch.
       priority: high
-      next_action: Push the remediation and verify the GitHub Dependabot rescan closes the resolved alerts.
+      next_action: Review the monthly Dependabot PRs; security updates arrive outside the schedule.
     - id: CI-002
       status: partial
       evidence: Linux landing baselines were refreshed on 2026-09-30 and the frontend job passes. The backend job then failed on the new js-yaml advisory GHSA-r3ph-w7gj-g6xm, which the Clerk-only push fixes with a scoped override.
@@ -78,7 +78,7 @@ compliance:
       next_action: Keep the exception limited to explicitly owner-directed work and report every bypass; contributor PRs remain subject to required review and checks.
     - id: DATA-002
       status: compliant
-      evidence: database/migrations; database/scripts/verify-migrations.mjs; docs/operations.md
+      evidence: database/migrations; database/scripts/verify-empty-state.mjs; docs/how-to/add-migration.md
       priority: high
       next_action: Add future schema changes as ordered migrations and retain disposable verification.
 
@@ -88,15 +88,8 @@ exceptions:
     scope: Explicitly owner-directed maintainer commits only.
 
 deferred_work:
+  # Tracked as GitHub Issues since 2026-09-30.
   - id: BOARD-001
     title: Complete the rule-by-rule standards assessment
     priority: medium
-    next_action: Assess the remaining selected standards and profiles using repository evidence and record gaps in docs/work/TODO.md.
-  - id: BOARD-003
-    title: Confirm dependency advisory remediation
-    priority: high
-    next_action: Verify GitHub Dependabot alert closure, all required CI checks, and the deployment after the dependency remediation push.
-  - id: BOARD-004
-    title: Refresh the stale authenticated browser journeys
-    priority: medium
-    next_action: Decide the intended auth-handoff behavior, then update the auth-handoff, authenticated-core, and new-person invitation specs.
+    next_action: See the GitHub issue "Complete the shared standards assessment".

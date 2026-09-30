@@ -20,8 +20,8 @@ path.
 Clerk is the only way to sign in to Board Vault.
 
 - The backend accepts only Clerk session tokens. It verifies each Bearer token
-  with `CLERK_SECRET_KEY` and `CLERK_AUTHORIZED_PARTIES`, which are required in
-  every environment.
+  with `CLERK_SECRET_KEY` (required in every environment) and
+  `CLERK_AUTHORIZED_PARTIES` (required in production).
 - The local `Account` row remains the profile and authorization boundary
   (ADR-0004). Collections, groups, and history keep their account foreign keys.
 - A Clerk user reaches an account in one of two ways: the account is already

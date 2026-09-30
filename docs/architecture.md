@@ -1,33 +1,116 @@
-# Architecture overview
-
-Board Vault is a browser client backed by a NestJS HTTP API and a SQLite/libSQL
-database adapter.
+# Architecture
 
 ```text
-Angular browser
-    │ HTTP + safe response schemas
-    ▼
-NestJS API
-    ├── authentication and authorization
-    ├── groups, collections, recommendations, and sessions
-    ├── provider adapters for identity, email, and cache
-    └── parameterized database service
-             ▼
-       SQLite/libSQL database
+Browser ── Angular app (frontend/) ──► NestJS API (backend/) ──► libSQL: SQLite locally, Turso in production
+               │                          ├──► Clerk (verify sessions, invitations)
+               └── Clerk JS (sign-in UI)  └──► Upstash Redis (cache, rate limits; optional)
 ```
 
-The backend is authoritative for authentication, authorization, validation,
-privacy, and persistence. Browser guards and hidden controls are UX aids, not
-security boundaries. Provider secret keys and database credentials are backend
-configuration; browser configuration is limited to values explicitly designed
-to be public.
+The API is the security boundary. It authenticates, authorizes, validates, and
+persists. Frontend guards and hidden buttons are UX only.
 
-Database changes use numbered migrations. Multi-record domain operations define
-transaction and authorization boundaries in the service layer. The API emits
-safe errors with correlation identifiers and does not expose SQL, provider
-payloads, credentials, or stack traces.
+## Request lifecycle
 
-The frontend uses route-level Angular features and a hand-written API adapter
-with response validation. The backend publishes a machine-readable contract in
-[`api/openapi.json`](api/openapi.json). Package manifests and tests are the
-source of truth for supported local commands.
+1. The Angular [`auth.interceptor.ts`](../frontend/src/app/core/interceptors/auth.interceptor.ts)
+   adds the Clerk session token as `Authorization: Bearer …`.
+2. [`LoggerMiddleware`](../backend/src/common/middlewares/logger.middleware.ts) assigns a request ID;
+   [`ClerkSessionMiddleware`](../backend/src/common/middlewares/clerk-session.middleware.ts)
+   verifies the token and resolves the local account into `request.user`
+   (see [authentication.md](authentication.md)). Both run for every route
+   ([`app.module.ts`](../backend/src/app.module.ts)).
+3. Guards on the controller decide access (table below).
+4. The global `ValidationPipe` ([`main.ts`](../backend/src/main.ts)) rejects
+   unknown or malformed DTO fields.
+5. The controller calls a service, which calls
+   [`DatabaseService`](../backend/src/modules/common/database/database.service.ts)
+   for SQL. Queries are parameterized. Services map rows to DTOs.
+6. Errors go through [`ApiErrorFilter`](../backend/src/common/http/api-error.filter.ts),
+   which returns `{ statusCode, code, message, requestId }` and never leaks SQL
+   or provider payloads.
+7. The frontend [`Api`](../frontend/src/app/api/api.ts) adapter validates every
+   response with the zod schemas in [`api.schemas.ts`](../frontend/src/app/api/api.schemas.ts).
+
+## Backend map (`backend/src/`)
+
+| Path | Responsibility |
+| --- | --- |
+| `main.ts` | Bootstrap: validation pipe, body limits, security headers, CORS, `trust proxy` on Vercel, Swagger outside production. |
+| `app.module.ts` | Registers every module and the two global middlewares. |
+| `common/guards/` | Route guards (table below). |
+| `common/middlewares/` | Request logging and Clerk session resolution. |
+| `common/http/` | Error envelope (`api-error.ts`), CORS, hardening. |
+| `common/types/` | DTOs with `class-validator` decorators; they define the OpenAPI contract. |
+| `common/schemas/` | zod schemas that parse database rows. |
+| `common/validators/validateEnv.ts` | Startup environment checks. |
+| `modules/common/auth/` | Clerk token verification, account resolution, Clerk invitations, `GET /auth/clerk/status`. |
+| `modules/common/database/` | `DatabaseService`: all SQL, one method per query. |
+| `modules/common/cache/` | Upstash Redis wrapper and the admin cache endpoints. |
+| `modules/common/health/` | `/health` (liveness) and `/health/ready` (database, cache, schema version). |
+| `modules/core/*` | One module per domain entity: games, tags, translations, owned games, wishlist, reviews, collection activity, game proposals, groups (`UserGroup`), memberships, group people, invitations, notifications, meets (sessions), attendees, users. |
+| `modules/features/admin` | `/admin`: catalogue tags, categories, translations, and game proposals (admins only). |
+| `modules/features/collection` | `/collection/users/:userId/…`: private shelf, wishlist, reviews, activity. |
+| `modules/features/dashboard` | `/dashboard/users/:userId/…`: stats, groups, group creation and membership management. |
+| `modules/features/play` | `/play`: recommendations, recommendation feedback, play history. |
+| `modules/features/profile` | `/profile/users/:userId/…`: own profile, notifications, received invitations, game proposals. |
+| `modules/features/sessions` | `/sessions`: scheduled sessions, RSVP, attendance, shortlist, played games, status. |
+| `test/` | Backend e2e tests; `fake-clerk-token-verifier.ts` replaces Clerk. |
+
+`core` modules own an entity; `features` modules compose several of them for a
+screen of the app. New routes usually belong in a `features` module.
+
+### Guards
+
+| Guard | Purpose |
+| --- | --- |
+| `AuthGuard` | Requires a resolved account. Rethrows the middleware's error (for example `409 ACCOUNT_EMAIL_CONFLICT`), otherwise 401. On every controller except `health`. |
+| `UserOwnershipGuard` | The `:userId` route parameter must be the caller. |
+| `AdminGuard` | Requires `Account.isAdmin`. |
+| `UserInGroupGuard` | The caller must be a member of `:groupId`. |
+| `GroupOwnerGuard` | The caller must own `:groupId`. |
+| `GroupPeopleFeatureGuard` | 404 when `BOARD_VAULT_GROUP_PEOPLE_ENABLED=false`. |
+| `RateLimitGuard` | `@RateLimit(limit, seconds)` per endpoint and account (or IP when anonymous). Used on invitation and game-proposal creation. Fails open without Redis. |
+
+List `AuthGuard` first; the others read `request.user`.
+
+## Frontend map (`frontend/src/app/`)
+
+| Path | Responsibility |
+| --- | --- |
+| `app.routes.ts` | All routes and their guards. |
+| `app.config.ts` | Providers; initializes Clerk before the first route. |
+| `api/` | `Api` (every HTTP call), zod response schemas, shared types. |
+| `core/services/clerk.service.ts` | Clerk lifecycle, sign-in and sign-up modals, invitation tickets, session token. |
+| `core/services/login.service.ts` | Board Vault session state: verifies Clerk sessions with `/auth/clerk/status` and loads the current user. |
+| `core/services/data.service.ts` | Shared signals for the current user and loaded data. |
+| `core/guards/` | `AuthOnlyGuard`, `GuestOnlyGuard`, `AdminGuard`. |
+| `core/interceptors/auth.interceptor.ts` | Adds the Clerk token; on 401 signs out and redirects to `/login`. |
+| `pages/` | One folder per route (landing, auth, dashboard, groups, group view, collection, games, play, sessions, settings, errors). |
+| `components/` | Reusable UI: cards, modals, forms, `ui/` primitives (button, icon, dialog). |
+| `layout/` | `layout-complete` (header, footer, handoff) and `layout-basic` (focused actions). |
+| `modules/admin/` | Lazy-loaded admin area. |
+
+### Routes
+
+| Route | Guard | Page |
+| --- | --- | --- |
+| `/` | none | Landing |
+| `/login`, `/register` | `GuestOnlyGuard` | Clerk sign-in; invitations and the private-beta notice |
+| `/dashboard` | `AuthOnlyGuard` | Home |
+| `/groups`, `/groups/:groupId` | `AuthOnlyGuard` | Group list and workspace |
+| `/create-group`, `/groups/:groupId/edit` | `AuthOnlyGuard` | Group create and settings (invitations) |
+| `/groups/:groupId/people/:personId/claim` | `AuthOnlyGuard` | Claim a group person |
+| `/groups/:groupId/sessions/new`, `/sessions/:sessionId` | `AuthOnlyGuard` | Plan and view sessions |
+| `/collection/…` | `AuthOnlyGuard` | Shelf, browse, reviews, wishlist, propose a game |
+| `/games/:gameId` | `AuthOnlyGuard` | Game detail |
+| `/play/…` | `AuthOnlyGuard` | Recommendations, log a session, upcoming, history |
+| `/settings/account`, `/settings/security` | `AuthOnlyGuard` | Profile and Clerk account security |
+| `/admin/…` | `AdminGuard` | Catalogue administration |
+
+`LayoutCompleteComponent` wraps browsing pages; `LayoutBasicComponent` wraps
+focused actions (create, edit, claim, propose) without navigation.
+
+## Contracts and decisions
+
+- API contract: [api.md](api.md) and [`api/openapi.json`](api/openapi.json).
+- Tables and relations: [data-model.md](data-model.md).
+- Why things are the way they are: [ADRs](adr/README.md).

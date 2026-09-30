@@ -1,80 +1,87 @@
 # Board Vault agent instructions
 
-## Read first
+Board Vault is a group-centered board-game companion: an Angular app
+(`frontend/`), a NestJS API (`backend/`), and a libSQL/SQLite database
+(`database/`). Sign-in is Clerk-only. Production runs on Vercel, Turso, Clerk,
+and Upstash.
 
-Start with the root [README](../README.md), [contribution guide](../CONTRIBUTING.md),
-and this [documentation index](README.md). Then consult the relevant current-state
-documents below before changing behavior:
+## Routing: doing X? read Y
 
-- [Project standards contract](project-standards.yml) for selected standards,
-  the pinned shared standards revision, and assessed gaps;
-- [Architecture overview](architecture.md), [data model](data-model.md), and
-  [authentication](authentication.md) for system boundaries;
-- [Contributor setup](contributor-setup.md) and [operations](operations.md)
-  for local configuration and environment boundaries;
-- the relevant [ADR](adr/README.md) for durable product, API, privacy, identity,
-  and data decisions; and
-- [work queue](work/TODO.md) for unfinished implementation, review, and
-  readiness work.
+| Task | Read first |
+| --- | --- |
+| Set up a machine or run the app | [onboarding.md](onboarding.md) |
+| Find where something lives | [architecture.md](architecture.md) |
+| Add or change an API route or DTO | [how-to/add-endpoint.md](how-to/add-endpoint.md), [api.md](api.md) |
+| Change the database schema | [how-to/add-migration.md](how-to/add-migration.md), [data-model.md](data-model.md) |
+| Add a page or change a frontend flow | [how-to/add-page.md](how-to/add-page.md), [design-system.md](design-system.md), [ux-flows.md](ux-flows.md) |
+| Touch sign-in, sessions, or account resolution | [authentication.md](authentication.md), [ADR-0012](adr/0012-clerk-only-authentication.md) |
+| Sign in locally or run Clerk browser tests | [how-to/run-with-clerk.md](how-to/run-with-clerk.md) |
+| Add or read an environment variable | [environments.md](environments.md) |
+| Run with local Redis | [how-to/run-with-redis.md](how-to/run-with-redis.md) |
+| Update Playwright screenshots | [how-to/update-screenshots.md](how-to/update-screenshots.md) |
+| Make a durable decision | [adr/README.md](adr/README.md) |
+| Pick up or file work | [GitHub Issues](https://github.com/kois-studio/board-vault/issues) (`gh issue list`) |
 
-## Source of truth
+Product terms are in [glossary.md](glossary.md). Product boundaries live in the
+private `kois-context` repository when you have access; it is never needed to
+run the app.
 
-- This repository owns implementation, API, data, and operational facts.
-- The private `kois-context` repository owns shared Kois strategy and access
-  context. It is supplementary and must not be required to run local development.
-- `docs/project-standards.yml` records the shared standards version and the
-  currently assessed rules. Unassessed rules are unknown, not compliant.
-- `docs/work/TODO.md` is the repository's authoritative unfinished-work queue.
-  GitHub issues may link to items but do not replace the queue unless that
-  policy is changed here.
-- ADRs record durable decisions; they are not task lists. Update the relevant
-  current-state documentation when an accepted decision changes.
+## Hard rules
 
-## Safe change boundaries
+1. **No secrets or real data in Git.** Never stage `.env` files, database
+   files, dumps, browser storage state, or `frontend/public/runtime-config.js`.
+   `npm run check:public-tree` enforces the file patterns.
+2. **Never use production credentials or data** for development or tests. Use
+   the local SQLite database and the development Clerk instance
+   (`pk_test_`/`sk_test_` keys, `+clerk_test` accounts).
+3. **The shared Turso development database is not a scratch database.** Do not
+   reset or refresh it; that is an owner operation.
+4. **Never delete `Account` rows or drop the `Account` table.** Almost every
+   table cascades from it (see [data-model.md](data-model.md)). Accounts are
+   soft-deleted with `isDeleted`.
+5. **Migrations are additive and numbered.** Never edit an applied migration.
+   Assign the number when you integrate with `main`.
+6. **The backend is the security boundary.** Derive the acting account from
+   `request.user`, authorize the target object server-side, and never trust
+   client-supplied owner IDs or Clerk claims for authorization.
+7. **Keep the API contract in sync.** Regenerate `docs/api/openapi.json` after
+   any route or DTO change; CI fails on a stale snapshot.
+8. **Update the docs you invalidate.** Changing code, configuration, or
+   operations means updating the matching page here; durable architecture,
+   security, data, identity, or privacy decisions need an ADR.
 
-- Routine development uses the checkout-local SQLite database and synthetic
-  `+clerk_test` fixture accounts from `npm run local:setup`.
-- Never use production credentials or data for development or tests. Keep
-  `.env`, database files, generated runtime config, browser state, and private
-  operator notes out of commits.
-- Sign-in is Clerk-only (ADR-0012). Local work uses the development Clerk
-  instance; production Clerk keys never belong in a development environment.
-- The shared Turso development database is integration infrastructure, not a
-  disposable developer database. Do not reset or refresh it casually.
-- Redis integration expects Upstash HTTP REST; a native Redis service is not a
-  compatible substitute.
-- Keep API, DTO, migration, and generated OpenAPI changes coordinated. Add
-  migrations rather than editing already-applied migrations, and regenerate
-  `docs/api/openapi.json` when the API contract changes.
-- Preserve accepted ADR boundaries for identity, authorization, privacy, and
-  group membership. Material changes require an ADR update and regression
-  coverage.
-- Contributor work normally uses a focused branch or worktree and a PR.
-  Owner-directed maintenance follows the repository owner's explicit
-  instructions. Report administrative bypasses of required checks or review;
-  a bypass does not count as passing validation.
+## Workflow
 
-## Verification
+- Contributors work in a focused branch or Git worktree and open a PR to
+  `main`. GitHub requires the four CI jobs and one approval (CODEOWNERS).
+- Owner-directed maintenance may commit directly to `main`. An administrative
+  bypass of a review or check is not evidence that it passed; report it.
+- Each issue should fit one PR. Reference it in the PR (`Closes #123`).
+- Local config and database state belong to the worktree that owns them.
 
-Use package scripts as the source of truth. Root checks include:
+## Checks
+
+Package manifests are the source of truth. From the repository root:
 
 ```shell
-npm run lint
-npm run test:unit
+npm run lint              # backend eslint + frontend biome
+npm run test:unit         # backend jest + frontend karma
 npm run build
-npm run test:e2e
-npm run verify:migrations
-npm run verify:restore
-npm run verify:rollback
+npm run test:e2e          # backend e2e + Playwright public journeys
+npm run verify:migrations # empty-database migration chain
+npm run verify:restore    # restore + migrate rehearsal
+npm run verify:rollback   # rollback rehearsal
+npm run check:docs        # local links + Node version consistency
 ```
 
-Run the checks relevant to the changed packages and boundaries. Record any
-failed or skipped CI check honestly. Do not claim that a bypassed check passed.
+Run the checks for the packages and boundaries you changed. Report failed or
+skipped checks honestly.
 
-## Documentation updates
+## Documentation map
 
-Update `docs/README.md` when adding or moving maintained documentation. Update
-current-state docs when code, configuration, or operations change. Add or
-update an ADR for durable architecture, security, data, identity, privacy, or
-API compatibility decisions. Keep incomplete work in `docs/work/TODO.md` and
-update the standards contract when an assessed gap is resolved or deferred.
+Current-state docs describe the code as it is: [architecture](architecture.md),
+[data model](data-model.md), [authentication](authentication.md),
+[API](api.md), [environments](environments.md). ADRs record why. The
+[standards contract](project-standards.yml) records which shared
+engineering standards were assessed; unassessed rules are unknown, not
+compliant. Add new pages to [README.md](README.md).

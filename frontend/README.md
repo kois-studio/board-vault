@@ -1,23 +1,16 @@
 # Board Vault web client
 
-This directory contains the Angular client. Shared public contracts and
-security boundaries are documented in [`../docs/`](../docs/README.md).
-
-## Setup
+Angular app. Setup is in [`../docs/onboarding.md`](../docs/onboarding.md); the
+route map is in [`../docs/architecture.md`](../docs/architecture.md#frontend-map-frontendsrcapp).
 
 ```shell
-npm ci
-cp .env.example .env
-npm start
-```
-
-Use disposable development configuration only. Runtime configuration is
-generated from explicitly supplied public browser variables; backend secrets
-must never be placed in this application.
-
-## Checks
-
-```shell
+npm start                                            # http://localhost:4200
+npm test -- --watch=false --browsers=ChromeHeadless  # unit tests
+npm run e2e                                          # Playwright public journeys
+npm run lint:check                                   # Biome
 npm run build
-npm test -- --watch=false --browsers=ChromeHeadless
 ```
+
+There is no `.env` here. `npm start` and `npm run build` generate
+`public/runtime-config.js` from `../backend/.env`; see
+[`../docs/environments.md`](../docs/environments.md#frontend-configuration).

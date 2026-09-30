@@ -23,41 +23,25 @@ The repository contains:
 - `backend/` — the NestJS API;
 - `database/` — versioned schema, migrations, and disposable verification
   tooling;
-- `docs/` — public architecture decisions and API contracts.
+- `docs/` — current-state docs, how-to guides, ADRs, and the API contract.
 
 ## Development
 
-Install the backend and frontend dependencies, then prepare the local SQLite
-database:
-
 ```shell
 npm run install:all
-cp backend/.env.example backend/.env
+cp backend/.env.example backend/.env   # then add the development Clerk keys
 npm run local:setup
 ```
 
-Sign-in is Clerk-only, so add the development Clerk keys to `backend/.env`
-before `local:setup`. The reset creates a disposable SQLite database and
-synthetic accounts linked to development Clerk users; it does not connect to
-Turso or Upstash. Keep `backend/.env` private. See
-[`docs/contributor-setup.md`](docs/contributor-setup.md) for sign-in details
-and the parallel contribution workflow.
+Then run `npm run dev` in `backend/` and `npm start` in `frontend/`, and sign
+in at <http://localhost:4200> as `organizer+clerk_test@example.com` with the
+code `424242`. The full walkthrough is [`docs/onboarding.md`](docs/onboarding.md).
 
-Run the main checks from the repository root:
+## Documentation and work
 
-```shell
-npm run test:unit
-npm run build
-```
-
-Package-specific commands are available in `backend/package.json` and
-`frontend/package.json`.
-
-## Documentation
-
-Start with [`docs/README.md`](docs/README.md), then review the API contract in
-[`docs/api/openapi.json`](docs/api/openapi.json) and the accepted decisions in
-[`docs/adr/`](docs/adr/).
+- [`docs/README.md`](docs/README.md): architecture, data model, how-to guides
+- [`docs/AGENTS.md`](docs/AGENTS.md): rules and checks for humans and AI agents
+- [GitHub Issues](https://github.com/kois-studio/board-vault/issues): the work queue
 
 ## Security
 

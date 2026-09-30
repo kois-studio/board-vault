@@ -1,25 +1,22 @@
 # Contributing
 
-Thanks for helping improve Board Vault. Before opening a pull request:
+Thanks for helping improve Board Vault.
 
-1. read [`AGENTS.md`](AGENTS.md), the public documentation in [`docs/README.md`](docs/README.md),
-   and the relevant product context;
-2. work in a focused feature branch or separate Git worktree; do not commit
-   directly to `main`;
-3. keep changes focused and explain behavior or contract changes;
-4. use the disposable local SQLite workflow and synthetic identities;
-5. never commit `.env` files, credentials, database exports, browser storage,
-   personal data, or provider payloads; and
-6. run the relevant package checks and build checks.
+1. **Set up** with [`docs/onboarding.md`](docs/onboarding.md).
+2. **Pick an issue** from [GitHub Issues](https://github.com/kois-studio/board-vault/issues)
+   and comment that you're on it. For something new, open an issue first with
+   the *Work item* or *Bug report* template.
+3. **Branch** from `main` (`git switch -c fix/short-name`), or use a separate
+   worktree for parallel work.
+4. **Follow the guide** for your change, linked from the routing table in
+   [`docs/AGENTS.md`](docs/AGENTS.md), and respect its hard rules.
+5. **Run the checks** for the packages you touched.
+6. **Open a PR to `main`** that says `Closes #<issue>` and fills in the
+   template. GitHub requires the four CI jobs and one approval.
 
-Pull requests should describe migration and authorization impact, privacy
-boundaries, and any follow-up work that cannot be verified locally. New API or
-persistence behavior requires regression coverage and an updated public
-contract where applicable.
+Changes to API contracts or migrations can collide with other people's work;
+mention them in the issue early.
+
+Report vulnerabilities privately; see [`SECURITY.md`](SECURITY.md).
 
 By participating, you agree to follow the [Code of Conduct](CODE_OF_CONDUCT.md).
-
-Pull requests target `main`. GitHub requires one approval and all repository,
-backend, frontend, and database CI checks. Coordinate changes to shared API
-contracts and migrations with other contributors; see the development
-workflow in [`docs/contributor-setup.md`](docs/contributor-setup.md).

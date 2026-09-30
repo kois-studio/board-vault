@@ -1,26 +1,15 @@
 # Board Vault API
 
-This directory contains the NestJS API for Board Vault. The public API contract
-is tracked in [`../docs/api/openapi.json`](../docs/api/openapi.json).
-
-## Setup
+NestJS API. Setup is in [`../docs/onboarding.md`](../docs/onboarding.md); the
+module map is in [`../docs/architecture.md`](../docs/architecture.md).
 
 ```shell
-npm ci
-cp .env.example .env
-npm run start:dev
+npm run dev                          # watch mode on http://localhost:3000 (Swagger at /swagger)
+npm test -- --runInBand              # unit tests
+npm run test:e2e -- --runInBand      # e2e tests (temporary SQLite, fake Clerk)
+npm run lint:check && npm run lint:logs
+npm run build && npm run docs:openapi  # regenerate ../docs/api/openapi.json
 ```
 
-Use disposable local provider values only. Keep `.env` files and all provider
-credentials outside Git.
-
-## Checks
-
-```shell
-npm run build
-npm test -- --runInBand
-npm run test:e2e -- --runInBand
-```
-
-The API exposes a dependency-free liveness endpoint at `/health`; readiness
-checks may require the configured local database and optional integrations.
+`/health` is liveness; `/health/ready` checks the database, cache, and schema
+version.

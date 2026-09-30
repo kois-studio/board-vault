@@ -1,45 +1,35 @@
 # Board Vault documentation
 
-This directory contains documentation suitable for a public repository. It
-describes product boundaries and reproducible local behavior; provider account
-details, deployment identifiers, live data, credentials, and recovery contacts
-belong in private operator notes.
+Public, current-state documentation. Credentials, live data, and private
+operating procedures are not kept here.
 
 ## Start here
 
-- [Agent instructions](AGENTS.md)
-- [Project standards contract and initial assessment](project-standards.yml)
-- [Tracked work queue](work/TODO.md)
-- [API contract](api/openapi.json)
-- [Operations and local configuration](operations.md)
-- [Architecture overview](architecture.md)
-- [Data model](data-model.md)
-- [Authentication](authentication.md)
-- [User flows](ux-flows.md)
-- [Design system](design-system.md)
-- [Product glossary](glossary.md)
-- [Contributor setup](contributor-setup.md)
-- [Parallel development workflow](contributor-setup.md#parallel-contribution-workflow)
+- [Onboarding](onboarding.md): clean clone to running app
+- [Agent and contributor instructions](AGENTS.md): routing table, hard rules, checks
+- [Work queue: GitHub Issues](https://github.com/kois-studio/board-vault/issues)
+
+## How the system works
+
+- [Architecture](architecture.md): module, route, and guard maps
+- [Authentication](authentication.md): Clerk-only sign-in and account resolution
+- [Data model](data-model.md): tables, relations, deletion rules
+- [API contract](api.md) and [OpenAPI snapshot](api/openapi.json)
+- [Environments](environments.md): every environment and variable
+- [User flows](ux-flows.md), [design system](design-system.md), [glossary](glossary.md)
+
+## How to
+
+- [Add or change an endpoint](how-to/add-endpoint.md)
+- [Add a database migration](how-to/add-migration.md)
+- [Add a page](how-to/add-page.md)
+- [Run with Clerk](how-to/run-with-clerk.md)
+- [Run with local Redis](how-to/run-with-redis.md)
+- [Update Playwright screenshots](how-to/update-screenshots.md)
+
+## Decisions and governance
+
 - [Architecture decision records](adr/README.md)
+- [Standards contract](project-standards.yml)
 - [Public release checklist](release-checklist.md)
 - [Changelog](../CHANGELOG.md)
-- [Database workspace](../database/README.md)
-
-## Public documentation rules
-
-Examples use reserved domains or clearly synthetic values. Environment files,
-provider secrets, database exports, personal data, and live operational facts
-must stay outside the repository. Changes that affect the API, persistence,
-authentication, or privacy boundaries should update the relevant public
-contract and add regression coverage.
-
-## Local checks
-
-The package manifests are the source of truth for commands. At minimum, run
-the backend build and focused tests for a backend change, the frontend build
-and tests for a frontend change, and the disposable database verification for
-a migration change.
-
-Routine feature work should use the local SQLite setup in
-[`contributor-setup.md`](contributor-setup.md). The shared development services
-are reserved for integration checks and are not reset by local commands.
