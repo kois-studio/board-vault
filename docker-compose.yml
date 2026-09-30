@@ -1,0 +1,28 @@
+# Optional local Redis for Board Vault. The API talks to Upstash over its HTTP
+# REST protocol, so a plain Redis port is not enough: serverless-redis-http
+# (SRH) puts an Upstash-compatible REST endpoint in front of Redis.
+#
+# Nothing here starts by default. Opt in with:
+#   docker compose --profile redis up -d
+# and set in backend/.env:
+#   UPSTASH_REDIS_REST_DISABLE=false
+#   UPSTASH_REDIS_REST_URL=http://localhost:8079
+#   UPSTASH_REDIS_REST_TOKEN=local-only-board-vault
+# See docs/how-to/run-with-redis.md.
+
+services:
+    redis:
+        image: redis:7-alpine
+        profiles: [redis]
+        command: ['redis-server', '--save', '', '--appendonly', 'no']
+
+    redis-http:
+        image: hiett/serverless-redis-http:latest
+        profiles: [redis]
+        depends_on: [redis]
+        environment:
+            SRH_MODE: env
+            SRH_TOKEN: local-only-board-vault
+            SRH_CONNECTION_STRING: redis://redis:6379
+        ports:
+            - '127.0.0.1:8079:80'
