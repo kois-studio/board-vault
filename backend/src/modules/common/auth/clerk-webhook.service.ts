@@ -7,8 +7,9 @@ import type { WebhookEvent } from '@clerk/backend/webhooks'
 
 /**
  * Keeps local accounts in step with Clerk user lifecycle events (ADR-0013).
- * Handlers are idempotent because Clerk retries deliveries. Logs name the
- * account id only, never an email address.
+ * Handlers are idempotent because Clerk retries deliveries. Log lines carry
+ * no identifiers (see scripts/check-log-boundary.mjs); the Clerk dashboard
+ * keeps each delivery for tracing.
  */
 @Injectable()
 export class ClerkWebhookService {
@@ -39,12 +40,12 @@ export class ClerkWebhookService {
         const owner = (await this.databaseService.accounts.getUserByEmail(primary.email_address)).rows[0]
 
         if (owner && Number(owner.id) !== account.id) {
-            this.logger.warn(`Account ${account.id}: the new Clerk primary email belongs to another account; not synced`)
+            this.logger.warn('A Clerk primary email change was not synced: the email belongs to another account')
             return
         }
 
         await this.databaseService.accounts.updateUserEmail(account.id, primary.email_address)
-        this.logger.log(`Account ${account.id}: primary email synced from Clerk`)
+        this.logger.log('Synced a primary email change from Clerk')
     }
 
     private async softDeleteAccount(clerkUserId: string | undefined): Promise<void> {
@@ -55,7 +56,7 @@ export class ClerkWebhookService {
         if (!account) return
 
         await this.databaseService.accounts.softDeleteUserById(account.id)
-        this.logger.log(`Account ${account.id}: soft-deleted after its Clerk user was deleted`)
+        this.logger.log('Soft-deleted an account whose Clerk user was deleted')
     }
 
     /** The active account linked to a Clerk user, or null when there is none or it is already deleted. */

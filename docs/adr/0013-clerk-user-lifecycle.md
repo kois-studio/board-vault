@@ -33,7 +33,9 @@ Clerk notifies the API through signed webhooks at `POST /webhooks/clerk`.
   data model's deletion rules).
 - **Everything else is ignored**, and every handler is idempotent because
   Clerk retries failed deliveries.
-- Logs name the account id only, never an email address.
+- Log lines carry no identifiers, following the project's log boundary
+  (`npm run lint:logs`). The Clerk dashboard keeps each delivery and its
+  payload for tracing.
 
 ## Consequences
 

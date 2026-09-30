@@ -39,7 +39,7 @@ for (const file of await collectTypeScriptFiles(sourceRoot)) {
         for (const expression of message.matchAll(/\$\{([^}]+)\}/g)) {
             const value = expression[1].trim()
             if (!allowedExpressions.includes(value)) {
-                violations.push(`${file.pathname}:${source.slice(0, match.index).split('\n').length}: ${value}`)
+                violations.push(`${file}:${source.slice(0, match.index).split('\n').length}: ${value}`)
             }
         }
     }
