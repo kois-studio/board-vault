@@ -112,5 +112,6 @@ npm run local:setup
 | Login page says sign-in is not configured | `CLERK_PUBLISHABLE_KEY` is empty. Set it and restart `npm start`. |
 | Signed in but "We could not finish connecting this sign-in" | The backend is not running, or your local database was created without the Clerk key. Re-run `npm run local:setup`. |
 | `npm ci` fails with a lockfile error | Check `node --version` is 24.x. |
+| `npm start` exits with `EADDRINUSE` or another app opens on port 4200 | Something else uses port 4200. Run `npm start -- --port 4300` and open <http://localhost:4300>. For invitation links, also set `BOARD_VAULT_CLERK_INVITATION_REDIRECT_URL=http://localhost:4300/register` in `backend/.env`. |
 | Screenshot tests are skipped on macOS or Windows | Expected. They only run on Linux; see [how-to/update-screenshots.md](how-to/update-screenshots.md). |
 | Something else | Open a bug report issue with the steps and the error text. |
