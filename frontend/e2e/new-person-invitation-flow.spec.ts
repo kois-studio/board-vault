@@ -65,6 +65,10 @@ test.describe('new-person invitation flow', () => {
             // request. Install the Testing Token after that redirect so only
             // the subsequent sign-up exchange is intercepted.
             await setupClerkTestingToken({ context: inviteeContext })
+            // Clerk JS already initialized without the token; reload so the
+            // sign-up exchange carries it and bot protection is bypassed.
+            await inviteePage.reload()
+            await expect(inviteePage.getByRole('heading', { name: 'Join your Board Vault group' })).toBeVisible()
             await inviteePage.getByLabel('Choose a username').fill(inviteeUsername ?? '')
             await inviteePage.getByLabel('Create a password').fill(inviteePassword ?? '')
             await inviteePage.getByLabel('Confirm your password').fill(inviteePassword ?? '')

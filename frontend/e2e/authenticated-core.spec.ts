@@ -28,7 +28,7 @@ test.describe('authenticated core navigation', () => {
 
         await page.goto('/collection')
 
-        await expect(page.getByRole('heading', { name: 'Collection' })).toBeVisible()
+        await expect(page.getByRole('heading', { name: 'My shelf' })).toBeVisible()
         await expect(page.getByRole('link', { name: /Browse games/i }).first()).toBeVisible()
     })
 
@@ -56,6 +56,7 @@ test.describe('authenticated core navigation', () => {
         await expect(page.getByRole('navigation', { name: 'Group workspace areas' }).locator('a')).toHaveText([
             'Decide',
             'Games to acquire',
+            'People',
             'Sessions',
             'Group library',
             'History & insights',

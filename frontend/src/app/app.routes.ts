@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router'
 import { AdminGuard } from './core/guards/admin.guard'
+import { AuthOnlyGuard, SHOWS_AUTH_HANDOFF } from './core/guards/auth.guard'
 import { GuestOnlyGuard } from './core/guards/auth-redirect.guard'
-import { AuthOnlyGuard } from './core/guards/auth.guard'
 import { LayoutBasicComponent } from './layout/layout-basic/layout-basic.component'
 import { LayoutCompleteComponent } from './layout/layout-complete/layout-complete.component'
 
@@ -27,6 +27,7 @@ export const routes: Routes = [
     {
         path: '',
         component: LayoutCompleteComponent,
+        data: { [SHOWS_AUTH_HANDOFF]: true },
         children: [
             // accessible to everyone
             { path: '', loadComponent: () => import('./pages/landing/landing.component').then((m) => m.LandingComponent) }, // cannot move it to routes[n>0] unless routes[0].path !== ''
