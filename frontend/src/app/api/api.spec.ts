@@ -22,21 +22,21 @@ describe('Api response contracts', () => {
 
     afterEach(() => http.verify())
 
-    it('returns a typed auth status for a valid response', async () => {
-        const response = firstValueFrom(api.authStatus())
-        const request = http.expectOne(`${environment.apiUrl}/auth/status`)
+    it('returns a typed Clerk session status for a valid response', async () => {
+        const response = firstValueFrom(api.clerkAuthStatus())
+        const request = http.expectOne(`${environment.apiUrl}/auth/clerk/status`)
 
         expect(request.request.method).toBe('GET')
-        request.flush({ isValid: true, userId: 7, isAdmin: false })
+        request.flush({ isValid: true, userId: 7, isAdmin: false, clerkUserId: 'user_member' })
 
-        await expectAsync(response).toBeResolvedTo({ isValid: true, userId: 7, isAdmin: false })
+        await expectAsync(response).toBeResolvedTo({ isValid: true, userId: 7, isAdmin: false, clerkUserId: 'user_member' })
     })
 
-    it('rejects an auth status with an invalid user id before it reaches the app', async () => {
-        const response = firstValueFrom(api.authStatus())
-        const request = http.expectOne(`${environment.apiUrl}/auth/status`)
+    it('rejects a Clerk session status with an invalid user id before it reaches the app', async () => {
+        const response = firstValueFrom(api.clerkAuthStatus())
+        const request = http.expectOne(`${environment.apiUrl}/auth/clerk/status`)
 
-        request.flush({ isValid: true, userId: '7', isAdmin: false })
+        request.flush({ isValid: true, userId: '7', isAdmin: false, clerkUserId: 'user_member' })
 
         await expectAsync(response).toBeRejected()
     })
@@ -54,7 +54,6 @@ describe('Api response contracts', () => {
             createdAt: '2026-09-04 12:00:00',
             isAdmin: true,
             isDeleted: false,
-            email_verified: true,
         })
 
         const user = await response
@@ -268,16 +267,6 @@ describe('Api response contracts', () => {
         request.flush([{ id: 1, accountId: 7, type: 'invitation', message: 'Join us', createdAt: '2026-09-04', isRead: 'false' }])
 
         await expectAsync(response).toBeRejected()
-    })
-
-    it('encodes availability queries without changing plus signs into spaces', async () => {
-        const response = firstValueFrom(api.checkEmail('friend+board@example.com'))
-        const request = http.expectOne(`${environment.apiUrl}/auth/check-email?email=friend%2Bboard%40example.com`)
-
-        expect(request.request.method).toBe('GET')
-        request.flush({ isAvailable: true })
-
-        await expectAsync(response).toBeResolvedTo({ isAvailable: true })
     })
 
     it('rejects a malformed acquisition decision entry at the API boundary', async () => {

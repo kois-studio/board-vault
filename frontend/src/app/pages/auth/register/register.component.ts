@@ -3,11 +3,10 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router, RouterLink } from '@angular/router'
 import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { ClerkService } from '../../../core/services/clerk.service'
-import { FormRegisterComponent } from './form-register/form-register.component'
 
 @Component({
     templateUrl: 'register.component.html',
-    imports: [RouterLink, ReactiveFormsModule, FormRegisterComponent, IconComponent],
+    imports: [RouterLink, ReactiveFormsModule, IconComponent],
 })
 export class RegisterComponent {
     private readonly clerkService = inject(ClerkService)

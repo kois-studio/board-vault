@@ -8,7 +8,7 @@ import { LoginService } from '../services/login.service'
 
 /**
  * Prevents access to a route if the user is not authenticated.
- * Validates token with the backend if present.
+ * Validates the Clerk session with the backend if present.
  */
 export const AuthOnlyGuard: CanActivateFn = (): Observable<boolean> => {
     const loginService = inject(LoginService)
@@ -17,13 +17,13 @@ export const AuthOnlyGuard: CanActivateFn = (): Observable<boolean> => {
     // (e.g., from a previous check in this app session), allow access immediately.
     if (loginService.isAuthenticated()) {
         // It's assumed that if isAuthenticated is true,
-        // verifyTokenAndFetchUserData has already run and handled data loading.
+        // verifySession has already run and handled data loading.
         return of(true)
     }
 
-    // If not already marked as authenticated, verify the token.
+    // If not already marked as authenticated, verify the session.
     // This will also handle fetching user data on success.
-    return loginService.verifyTokenAndFetchUserData().pipe(
+    return loginService.verifySession().pipe(
         map((isAuthenticated) => {
             if (isAuthenticated) {
                 return true

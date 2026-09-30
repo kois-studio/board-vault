@@ -119,11 +119,6 @@ export class AppComponent {
                 title: 'Admin — Board Vault',
                 description: 'Operator tools for maintaining the Board Vault workspace.',
             },
-            {
-                match: /^\/(?:verify-email|reset-password)/,
-                title: 'Account recovery — Board Vault',
-                description: 'Complete a secure Board Vault account verification or recovery flow.',
-            },
         ].find((candidate) => candidate.match.test(path))
 
         return page ?? { title: 'Page not found — Board Vault', description: 'That Board Vault page could not be found.' }

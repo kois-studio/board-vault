@@ -4,7 +4,6 @@ import { map } from 'rxjs'
 import { z } from 'zod'
 import { environment } from '../../environments/environment'
 import {
-    accessTokenSchema,
     adminApprovalResponseSchema,
     adminGameProposalSchema,
     adminGameProposalsSchema,
@@ -12,8 +11,6 @@ import {
     adminSuccessResponseSchema,
     adminTagCategoriesSchema,
     adminTagsSchema,
-    authStatusSchema,
-    availabilitySchema,
     browseGamesSchema,
     clerkAuthStatusSchema,
     clerkGroupInvitationSchema,
@@ -30,7 +27,6 @@ import {
     groupPersonSchemaResponse,
     meetDetailsSchema,
     meetSchema,
-    messageSchema,
     publicUserSchema,
     recommendationSignalsSchema,
     recommendationsSchema,
@@ -118,14 +114,6 @@ export class Api {
 
     // #region auth
 
-    authStatus() {
-        // there is no case where the response is `isValid: false`.
-        // if token not valid, the server returns 401 error, not a valid response.
-        return this.http
-            .get<{ isValid: true; userId: number; isAdmin: boolean }>(`${this.url}/auth/status`)
-            .pipe(map((response) => authStatusSchema.parse(response)))
-    }
-
     clerkAuthStatus() {
         return this.http
             .get<{
@@ -135,48 +123,6 @@ export class Api {
                 clerkUserId: string
             }>(`${this.url}/auth/clerk/status`)
             .pipe(map((response) => clerkAuthStatusSchema.parse(response)))
-    }
-
-    login(email: string, password: string) {
-        return this.http
-            .post<{ access_token: string }>(`${this.url}/auth/login`, { email, password })
-            .pipe(map((response) => accessTokenSchema.parse(response)))
-    }
-
-    register(email: string, username: string, password: string) {
-        return this.http
-            .post<{ success: true }>(`${this.url}/auth/register`, { email, username, password })
-            .pipe(map((response) => successSchema.parse(response)))
-    }
-
-    checkEmail(email: string) {
-        return this.http
-            .get<{ isAvailable: boolean }>(`${this.url}/auth/check-email?${new URLSearchParams({ email }).toString()}`)
-            .pipe(map((response) => availabilitySchema.parse(response)))
-    }
-
-    checkUsername(username: string) {
-        return this.http
-            .get<{ isAvailable: boolean }>(`${this.url}/auth/check-username?${new URLSearchParams({ username }).toString()}`)
-            .pipe(map((response) => availabilitySchema.parse(response)))
-    }
-
-    verifyEmail(token: string) {
-        return this.http
-            .get<{ message: string }>(`${this.url}/auth/verify-email/${token}`)
-            .pipe(map((response) => messageSchema.parse(response)))
-    }
-
-    forgotPassword(email: string) {
-        return this.http
-            .post<{ message: string }>(`${this.url}/auth/forgot-password`, { email })
-            .pipe(map((response) => messageSchema.parse(response)))
-    }
-
-    resetPassword(token: string, password: string) {
-        return this.http
-            .post<{ message: string }>(`${this.url}/auth/reset-password/${token}`, { password })
-            .pipe(map((response) => messageSchema.parse(response)))
     }
 
     // #region users

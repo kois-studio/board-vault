@@ -1,5 +1,4 @@
 type BoardVaultRuntimeConfig = {
-    clerkAuthEnabled?: boolean
     clerkPublishableKey?: string
     selfRegistrationEnabled?: boolean
 }
@@ -10,6 +9,5 @@ export const environment = {
     production: true,
     apiUrl: 'https://backend.board-vault.com',
     clerkPublishableKey: runtimeConfig?.clerkPublishableKey ?? '',
-    clerkAuthEnabled: runtimeConfig?.clerkAuthEnabled === true,
     selfRegistrationEnabled: runtimeConfig?.selfRegistrationEnabled === true,
 }

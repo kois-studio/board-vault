@@ -13,11 +13,14 @@ if (existsSync(backendEnvFile)) {
 }
 
 const publishableKey = process.env.CLERK_PUBLISHABLE_KEY?.trim() ?? ''
-const authEnabled = publishableKey.length > 0 && process.env.CLERK_AUTH_ENABLED !== 'false'
 const selfRegistrationEnabled = process.env.BOARD_VAULT_SELF_REGISTRATION_ENABLED === 'true'
 
+if (!publishableKey) {
+    // Clerk is the only sign-in method, so the app builds but nobody can sign in.
+    console.warn('generate-runtime-config: CLERK_PUBLISHABLE_KEY is not set; sign-in will be unavailable.')
+}
+
 const runtimeConfig = {
-    clerkAuthEnabled: authEnabled,
     clerkPublishableKey: publishableKey,
     selfRegistrationEnabled,
 }

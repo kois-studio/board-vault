@@ -10,7 +10,6 @@ import { LayoutCompleteComponent } from './layout/layout-complete/layout-complet
  * The idea is to differentiate between when the user is making an *action* or only visualizing information.
  *
  * `LayoutBasicComponent`: you are executing an action that will change the state of the application.
- *    - auth actions (login, register, recover password, etc)
  *    - CRUD actions (create a new group or edit its data)
  *
  * `LayoutCompleteComponent`: you are only visualizing information.
@@ -165,26 +164,6 @@ export const routes: Routes = [
         path: '',
         component: LayoutBasicComponent,
         children: [
-            // accessible to unauthenticated users
-            {
-                path: 'verify-email/:token',
-                loadComponent: () => import('./pages/auth/verify-email/verify-email.component').then((m) => m.VerifyEmailComponent),
-                canActivate: [GuestOnlyGuard],
-            },
-            {
-                path: 'reset-password/request',
-                loadComponent: () =>
-                    import('./pages/auth/reset-password-request/reset-password-request.component').then(
-                        (m) => m.ResetPasswordRequestComponent,
-                    ),
-                canActivate: [GuestOnlyGuard],
-            },
-            {
-                path: 'reset-password/:token',
-                loadComponent: () =>
-                    import('./pages/auth/reset-password-token/reset-password-token.component').then((m) => m.ResetPasswordTokenComponent),
-                canActivate: [GuestOnlyGuard],
-            },
             // accessible to authenticated users
             {
                 path: 'create-group',

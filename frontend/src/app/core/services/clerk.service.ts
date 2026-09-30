@@ -9,16 +9,16 @@ import { environment } from '../../../environments/environment'
 /**
  * Thin browser-side adapter around Clerk.
  *
- * This service owns Clerk lifecycle and session-token access. It deliberately
- * does not decide which local Account row a Clerk user represents; that is a
- * backend responsibility and remains a separate migration step.
+ * Clerk is the only identity provider (ADR-0012). This service owns the Clerk
+ * lifecycle and session-token access. It deliberately does not decide which
+ * local Account row a Clerk user represents; that is a backend responsibility.
  */
 @Injectable({ providedIn: 'root' })
 export class ClerkService {
     private clerk: Clerk | null = null
     private unsubscribe: (() => void) | null = null
 
-    public readonly isConfigured = signal(environment.clerkAuthEnabled && environment.clerkPublishableKey.length > 0)
+    public readonly isConfigured = signal(environment.clerkPublishableKey.length > 0)
     public readonly isSelfRegistrationEnabled = signal(environment.selfRegistrationEnabled)
     public readonly isInvitationFlow = signal(this.hasInvitationTicket())
     public readonly isInvitationSignIn = signal(this.getInvitationStatus() === 'sign_in')
@@ -29,7 +29,10 @@ export class ClerkService {
     public readonly userId = signal<string | null>(null)
 
     public async initialize(): Promise<void> {
-        if (!environment.clerkAuthEnabled || !environment.clerkPublishableKey) {
+        if (!environment.clerkPublishableKey) {
+            // Without a key nobody can sign in. The sign-in page explains the
+            // missing configuration instead of failing silently.
+            console.error('Clerk is not configured: set CLERK_PUBLISHABLE_KEY.')
             this.isLoaded.set(true)
             return
         }
@@ -45,9 +48,8 @@ export class ClerkService {
             this.unsubscribe = clerk.addListener(() => this.syncState())
         } catch (error) {
             this.initializationError.set('Clerk could not be initialized')
-            // Clerk must not prevent the application shell from loading. The
-            // legacy authentication path remains available while the provider
-            // is unavailable.
+            // Clerk must not prevent the public application shell from loading.
+            // The sign-in page reports the outage instead.
             console.error('Clerk initialization failed.', error)
         } finally {
             this.isLoaded.set(true)

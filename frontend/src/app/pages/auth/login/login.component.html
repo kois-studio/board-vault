@@ -9,18 +9,21 @@
         @if (clerkIsAvailable()) {
             <div class="mt-8 rounded-2xl border border-indigo-100 bg-indigo-50 p-5 text-center dark:border-indigo-900/60 dark:bg-indigo-950/30">
                 <p class="font-medium text-zinc-900 dark:text-white">Use secure sign-in</p>
-                <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-300">Clerk manages your current Board Vault session.</p>
+                <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-300">Sign in with your email and password, or with a one-time email code.</p>
                 <button type="button" class="app-btn-primary mt-4" (click)="openClerkSignIn()">Continue with secure sign-in</button>
             </div>
-            <div class="my-8 flex items-center gap-4 text-xs uppercase tracking-wider text-zinc-400" aria-hidden="true">
-                <span class="h-px flex-1 bg-zinc-200 dark:bg-zinc-700"></span>
-                <span>Older account</span>
-                <span class="h-px flex-1 bg-zinc-200 dark:bg-zinc-700"></span>
-            </div>
-            <p class="mb-5 text-center text-sm text-zinc-600 dark:text-zinc-300">If you joined before the Clerk migration, use your existing Board Vault credentials.</p>
+            <p class="mt-5 text-center text-sm text-zinc-500 dark:text-zinc-400">Forgot your password? Choose “Forgot password?” in the sign-in window.</p>
+        } @else if (!clerkIsLoaded()) {
+            <p class="mt-8 rounded-lg border border-zinc-200 bg-zinc-50 p-4 text-center text-sm text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-zinc-300" role="status">Loading secure sign-in…</p>
+        } @else if (!clerkIsConfigured()) {
+            <p class="mt-8 rounded-lg border border-red-400/30 bg-red-50 p-4 text-center text-sm text-red-800 dark:bg-red-950/30 dark:text-red-200" role="alert">
+                Sign-in is not configured for this environment. Set <code>CLERK_PUBLISHABLE_KEY</code> and restart the app.
+            </p>
+        } @else {
+            <p class="mt-8 rounded-lg border border-amber-400/30 bg-amber-50 p-4 text-center text-sm text-amber-800 dark:bg-amber-950/30 dark:text-amber-200" role="alert">
+                The secure sign-in service could not be reached. Refresh this page to try again.
+            </p>
         }
-
-        <app-form-login />
 
         <p class="mt-8 text-center text-sm text-zinc-500 dark:text-zinc-400">
             Need access? <a routerLink="/register" class="font-medium text-indigo-600 underline dark:text-indigo-400">View private-beta access</a>

@@ -13,14 +13,11 @@ export class GuestOnlyGuard implements CanActivate {
     private readonly clerkService = inject(ClerkService)
 
     public canActivate(): boolean {
-        const token = this.loginService.token
-
-        if (token || this.loginService.isAuthenticated() || this.clerkService.isSignedIn()) {
-            // If token exists, redirect to dashboard
+        if (this.loginService.isAuthenticated() || this.clerkService.isSignedIn()) {
             this.router.navigate(['/dashboard'])
             return false // Prevent navigation to the login/register page
         }
 
-        return true // Allow access if there's no token
+        return true // Allow access if there's no session
     }
 }

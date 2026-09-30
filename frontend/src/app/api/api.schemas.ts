@@ -42,19 +42,12 @@ import type {
     UserType,
 } from './api.types'
 
-export const authStatusSchema = z.object({
+export const clerkAuthStatusSchema = z.object({
     isValid: z.literal(true),
     userId: z.number(),
     isAdmin: z.boolean(),
-})
-
-export const clerkAuthStatusSchema = authStatusSchema.extend({
     clerkUserId: z.string(),
 })
-
-export const accessTokenSchema = z.object({ access_token: z.string().min(1) })
-export const availabilitySchema = z.object({ isAvailable: z.boolean() })
-export const messageSchema = z.object({ message: z.string().min(1) })
 
 export const gameCompleteSchema: z.ZodType<GameCompleteType> = z.object({
     id: z.number(),
