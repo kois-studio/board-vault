@@ -168,10 +168,10 @@ compliance:
       priority: high
       next_action: None.
     - id: TS-008
-      status: deferred
-      evidence: 'Frontend uses Biome; the backend uses ESLint with Prettier. Two coherent systems, one per package.'
+      status: exception
+      evidence: Frontend uses Biome; the backend keeps the NestJS default ESLint with Prettier. Each package has exactly one coherent formatter and linter.
       priority: medium
-      next_action: 'https://github.com/kois-studio/board-vault/issues/34'
+      next_action: Revisit when Biome covers the type-aware ESLint rules the backend relies on.
     - id: TS-009
       status: deferred
       evidence: Frontend enables noPropertyAccessFromIndexSignature; neither package enables noUncheckedIndexedAccess.
@@ -687,5 +687,8 @@ exceptions:
   - id: CI-004
     rationale: The repository owner may explicitly direct an administrative push to main. Such a push can bypass branch protection and does not imply that skipped reviews or failing checks passed. Contributor PRs remain governed by the configured requirements.
     scope: Explicitly owner-directed maintainer commits only.
+  - id: TS-008
+    rationale: The backend keeps ESLint with Prettier because it is the NestJS default, comes pre-configured with the framework tooling, and supports type-aware rules. The frontend uses Biome. Migrating the backend would add churn without user value.
+    scope: backend/ only; new packages default to Biome.
 
 deferred_work: []
