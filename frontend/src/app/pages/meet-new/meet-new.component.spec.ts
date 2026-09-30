@@ -27,7 +27,10 @@ describe('MeetNewComponent social handoff', () => {
 
     const setup = async (queryParams: Record<string, string> = {}) => {
         const api = {
-            scheduleSession: jasmine.createSpy('scheduleSession').and.returnValue(of({ id: 99 })),
+            scheduleSession: vi
+                .fn()
+                .mockName('scheduleSession')
+                .mockReturnValue(of({ id: 99 })),
         }
         const routerData = {
             snapshot: {
@@ -40,7 +43,7 @@ describe('MeetNewComponent social handoff', () => {
             userGroups: signal([group]),
             invitationsGroupIndex: signal({}),
             userGroupsError: signal(false),
-            refreshUserMeets: jasmine.createSpy('refreshUserMeets'),
+            refreshUserMeets: vi.fn().mockName('refreshUserMeets'),
         }
         const loadingService = {
             loadingStatesIndex: signal({ [LOADING_KEYS.USER_GROUPS]: false }),
@@ -54,7 +57,7 @@ describe('MeetNewComponent social handoff', () => {
                 { provide: ActivatedRoute, useValue: routerData },
                 { provide: DataService, useValue: dataService },
                 { provide: LoadingService, useValue: loadingService },
-                { provide: ToastService, useValue: { success: jasmine.createSpy('success'), error: jasmine.createSpy('error') } },
+                { provide: ToastService, useValue: { success: vi.fn().mockName('success'), error: vi.fn().mockName('error') } },
             ],
         }).compileComponents()
 
@@ -76,9 +79,9 @@ describe('MeetNewComponent social handoff', () => {
         const { fixture, component, api, dataService } = await setup()
         component.clearAttendees()
 
-        expect(component.disableCreateButton).toBeTrue()
+        expect(component.disableCreateButton).toBe(true)
         component.selectAllAttendees()
-        expect(component.disableCreateButton).toBeFalse()
+        expect(component.disableCreateButton).toBe(false)
 
         component.notes = 'Try the group recommendation.'
         component.onClickCreateMeeting()
@@ -86,16 +89,16 @@ describe('MeetNewComponent social handoff', () => {
         await new Promise((resolve) => setTimeout(resolve, 0))
 
         expect(api.scheduleSession).toHaveBeenCalledWith(
-            jasmine.objectContaining({
+            expect.objectContaining({
                 groupId: 7,
                 attendeeIds: [1, 2],
                 plannedGameIds: [],
                 notes: 'Try the group recommendation.',
-                timezone: jasmine.any(String),
+                timezone: expect.any(String),
             }),
         )
         expect(dataService.refreshUserMeets).toHaveBeenCalled()
-        expect(component.isCreatingLoading).toBeFalse()
+        expect(component.isCreatingLoading).toBe(false)
     })
 
     it('clears stale planning context when the group disappears during a refresh', async () => {
@@ -108,6 +111,6 @@ describe('MeetNewComponent social handoff', () => {
         expect(component.groupData).toBeNull()
         expect(component.selectedAttendeeIds).toEqual([])
         expect(component.selectedPlannedGameIds).toEqual([])
-        expect(component.groupUnavailable).toBeTrue()
+        expect(component.groupUnavailable).toBe(true)
     })
 })

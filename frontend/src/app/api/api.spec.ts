@@ -29,7 +29,7 @@ describe('Api response contracts', () => {
         expect(request.request.method).toBe('GET')
         request.flush({ isValid: true, userId: 7, isAdmin: false, clerkUserId: 'user_member' })
 
-        await expectAsync(response).toBeResolvedTo({ isValid: true, userId: 7, isAdmin: false, clerkUserId: 'user_member' })
+        await expect(response).resolves.toEqual({ isValid: true, userId: 7, isAdmin: false, clerkUserId: 'user_member' })
     })
 
     it('rejects a Clerk session status with an invalid user id before it reaches the app', async () => {
@@ -38,7 +38,7 @@ describe('Api response contracts', () => {
 
         request.flush({ isValid: true, userId: '7', isAdmin: false, clerkUserId: 'user_member' })
 
-        await expectAsync(response).toBeRejected()
+        await expect(response).rejects.toThrow()
     })
 
     it('accepts the narrowed self-profile response without account-state fields', async () => {
@@ -57,8 +57,8 @@ describe('Api response contracts', () => {
         })
 
         const user = await response
-        expect(user).toEqual(jasmine.objectContaining({ id: 7, email: 'member@example.com' }))
-        expect(Object.hasOwn(user, 'isAdmin')).toBeFalse()
+        expect(user).toEqual(expect.objectContaining({ id: 7, email: 'member@example.com' }))
+        expect(Object.hasOwn(user, 'isAdmin')).toBe(false)
     })
 
     it('rejects a malformed self-profile response at the API boundary', async () => {
@@ -67,7 +67,7 @@ describe('Api response contracts', () => {
 
         request.flush({ id: 7, username: 'member', displayName: 'Member' })
 
-        await expectAsync(response).toBeRejected()
+        await expect(response).rejects.toThrow()
     })
 
     it('rejects a malformed group workspace response at the API boundary', async () => {
@@ -76,7 +76,7 @@ describe('Api response contracts', () => {
 
         request.flush([{ id: 7, name: 'Friday Crew', createdBy: 1, createdAt: '2026-09-04' }])
 
-        await expectAsync(response).toBeRejected()
+        await expect(response).rejects.toThrow()
     })
 
     it('accepts the group-person workspace and its actor-specific claim flag', async () => {
@@ -105,7 +105,7 @@ describe('Api response contracts', () => {
             ],
         })
 
-        await expectAsync(response).toBeResolvedTo(jasmine.objectContaining({ people: [jasmine.objectContaining({ claimable: true })] }))
+        await expect(response).resolves.toEqual(expect.objectContaining({ people: [expect.objectContaining({ claimable: true })] }))
     })
 
     it('rejects a malformed shared-history response at the API boundary', async () => {
@@ -114,7 +114,7 @@ describe('Api response contracts', () => {
 
         request.flush([{ meetData: { id: 12, groupId: 7 }, attendedBy: [], gamesPlayed: [] }])
 
-        await expectAsync(response).toBeRejected()
+        await expect(response).rejects.toThrow()
     })
 
     it('reads canonical session details from the member-scoped session endpoint', async () => {
@@ -139,7 +139,7 @@ describe('Api response contracts', () => {
             playedGameParticipants: [{ gameId: 42, participantIds: [1] }],
         })
 
-        await expectAsync(response).toBeResolvedTo(jasmine.objectContaining({ id: 12, groupId: 7, playedGames: [42] }))
+        await expect(response).resolves.toEqual(expect.objectContaining({ id: 12, groupId: 7, playedGames: [42] }))
     })
 
     it('rejects a malformed canonical session response at the API boundary', async () => {
@@ -148,7 +148,7 @@ describe('Api response contracts', () => {
 
         request.flush({ id: 12, groupId: 7 })
 
-        await expectAsync(response).toBeRejected()
+        await expect(response).rejects.toThrow()
     })
 
     it('accepts the direct collection-add response used by browse activation', async () => {
@@ -158,7 +158,7 @@ describe('Api response contracts', () => {
         expect(request.request.method).toBe('POST')
         request.flush({ success: true })
 
-        await expectAsync(response).toBeResolvedTo({ success: true })
+        await expect(response).resolves.toEqual({ success: true })
     })
 
     it('accepts an empty group acquisition board as a valid social decision state', async () => {
@@ -168,7 +168,7 @@ describe('Api response contracts', () => {
         expect(request.request.method).toBe('GET')
         request.flush([])
 
-        await expectAsync(response).toBeResolvedTo([])
+        await expect(response).resolves.toEqual([])
     })
 
     it('validates pending Clerk group invitations at the API boundary', async () => {
@@ -185,7 +185,7 @@ describe('Api response contracts', () => {
             },
         ])
 
-        await expectAsync(response).toBeResolvedTo([
+        await expect(response).resolves.toEqual([
             {
                 invitationId: 'inv_123',
                 emailAddress: 'friend@example.com',
@@ -202,7 +202,7 @@ describe('Api response contracts', () => {
         expect(request.request.method).toBe('DELETE')
         request.flush({ success: true })
 
-        await expectAsync(response).toBeResolvedTo({ success: true })
+        await expect(response).resolves.toEqual({ success: true })
     })
 
     it('rejects a provider invitation with a non-pending status', async () => {
@@ -211,7 +211,7 @@ describe('Api response contracts', () => {
 
         request.flush([{ invitationId: 'inv_123', emailAddress: 'friend@example.com', status: 'revoked', createdAt: '2026-09-05' }])
 
-        await expectAsync(response).toBeRejected()
+        await expect(response).rejects.toThrow()
     })
 
     it('rejects malformed recommendation lens responses at the API boundary', async () => {
@@ -228,7 +228,7 @@ describe('Api response contracts', () => {
             noResultReason: null,
         })
 
-        await expectAsync(response).toBeRejected()
+        await expect(response).rejects.toThrow()
     })
 
     it('rejects an invalid session lifecycle status before it reaches app state', async () => {
@@ -237,7 +237,7 @@ describe('Api response contracts', () => {
 
         request.flush({ sessionId: 12, status: 'archived' })
 
-        await expectAsync(response).toBeRejected()
+        await expect(response).rejects.toThrow()
     })
 
     it('rejects a false success envelope before it reaches app state', async () => {
@@ -248,7 +248,7 @@ describe('Api response contracts', () => {
 
         request.flush({ success: false })
 
-        await expectAsync(response).toBeRejected()
+        await expect(response).rejects.toThrow()
     })
 
     it('rejects malformed administrator pagination before it reaches app state', async () => {
@@ -257,7 +257,7 @@ describe('Api response contracts', () => {
 
         request.flush({ games: [], pagination: { currentPage: 1, totalPages: 0, totalItems: 0, itemsPerPage: '10' } })
 
-        await expectAsync(response).toBeRejected()
+        await expect(response).rejects.toThrow()
     })
 
     it('rejects malformed notification records before they reach app state', async () => {
@@ -266,7 +266,7 @@ describe('Api response contracts', () => {
 
         request.flush([{ id: 1, accountId: 7, type: 'invitation', message: 'Join us', createdAt: '2026-09-04', isRead: 'false' }])
 
-        await expectAsync(response).toBeRejected()
+        await expect(response).rejects.toThrow()
     })
 
     it('rejects a malformed acquisition decision entry at the API boundary', async () => {
@@ -286,7 +286,7 @@ describe('Api response contracts', () => {
             },
         ])
 
-        await expectAsync(response).toBeRejected()
+        await expect(response).rejects.toThrow()
     })
 
     it('rejects a malformed recommendation-signal response at the API boundary', async () => {
@@ -295,7 +295,7 @@ describe('Api response contracts', () => {
 
         request.flush({ groupId: 7, signals: [{ gameId: 42, interestedCount: 1 }] })
 
-        await expectAsync(response).toBeRejected()
+        await expect(response).rejects.toThrow()
     })
 
     it('rejects a scheduled-session response that does not confirm scheduling', async () => {
@@ -312,7 +312,7 @@ describe('Api response contracts', () => {
 
         request.flush({ sessionId: 12, status: 'completed' })
 
-        await expectAsync(response).toBeRejected()
+        await expect(response).rejects.toThrow()
     })
 
     it('rejects a malformed invitation handoff response at the API boundary', async () => {
@@ -321,7 +321,7 @@ describe('Api response contracts', () => {
 
         request.flush({ invitationId: 'inv_123', emailAddress: 'not-an-email', url: '/register' })
 
-        await expectAsync(response).toBeRejected()
+        await expect(response).rejects.toThrow()
     })
 
     it('rejects a malformed legacy user-invitation response at the API boundary', async () => {
@@ -341,6 +341,6 @@ describe('Api response contracts', () => {
             },
         ])
 
-        await expectAsync(response).toBeRejected()
+        await expect(response).rejects.toThrow()
     })
 })

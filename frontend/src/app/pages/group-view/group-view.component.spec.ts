@@ -30,14 +30,14 @@ describe('shouldShowFirstGroupSetup', () => {
     }
 
     it('shows the invite, add-games, and first-session handoff for a new empty group', () => {
-        expect(shouldShowFirstGroupSetup(emptyGroup)).toBeTrue()
+        expect(shouldShowFirstGroupSetup(emptyGroup)).toBe(true)
     })
 
     it('does not show onboarding while history is unresolved or after the group has activity', () => {
-        expect(shouldShowFirstGroupSetup({ ...emptyGroup, historyLoading: true })).toBeFalse()
-        expect(shouldShowFirstGroupSetup({ ...emptyGroup, memberCount: 2 })).toBeFalse()
-        expect(shouldShowFirstGroupSetup({ ...emptyGroup, gameCount: 1 })).toBeFalse()
-        expect(shouldShowFirstGroupSetup({ ...emptyGroup, hasUpcomingSession: true })).toBeFalse()
+        expect(shouldShowFirstGroupSetup({ ...emptyGroup, historyLoading: true })).toBe(false)
+        expect(shouldShowFirstGroupSetup({ ...emptyGroup, memberCount: 2 })).toBe(false)
+        expect(shouldShowFirstGroupSetup({ ...emptyGroup, gameCount: 1 })).toBe(false)
+        expect(shouldShowFirstGroupSetup({ ...emptyGroup, hasUpcomingSession: true })).toBe(false)
     })
 })
 

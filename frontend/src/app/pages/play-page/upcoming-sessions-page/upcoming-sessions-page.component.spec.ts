@@ -14,8 +14,8 @@ describe('UpcomingSessionsPageComponent social context', () => {
             userGroupsError: signal(false),
             userMeets: signal([]),
             userMeetsError: signal(false),
-            refreshUserGroups: jasmine.createSpy('refreshUserGroups'),
-            refreshUserMeets: jasmine.createSpy('refreshUserMeets'),
+            refreshUserGroups: vi.fn().mockName('refreshUserGroups'),
+            refreshUserMeets: vi.fn().mockName('refreshUserMeets'),
         }
         const loadingService = {
             loadingStatesIndex: signal({

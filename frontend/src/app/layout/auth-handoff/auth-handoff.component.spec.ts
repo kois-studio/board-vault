@@ -1,6 +1,7 @@
 import { signal } from '@angular/core'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { provideRouter } from '@angular/router'
+import type { Mock } from 'vitest'
 import { ClerkService } from '../../core/services/clerk.service'
 import { LoginService } from '../../core/services/login.service'
 import { AuthHandoffComponent } from './auth-handoff.component'
@@ -9,15 +10,15 @@ describe('AuthHandoffComponent', () => {
     let fixture: ComponentFixture<AuthHandoffComponent>
     let state: ReturnType<typeof signal<'idle' | 'linking' | 'ready' | 'error'>>
     let error: ReturnType<typeof signal<string | null>>
-    let retry: jasmine.Spy
-    let signOut: jasmine.Spy
+    let retry: Mock
+    let signOut: Mock
     let invitationFlow: ReturnType<typeof signal<boolean>>
 
     beforeEach(() => {
         state = signal<'idle' | 'linking' | 'ready' | 'error'>('linking')
         error = signal<string | null>(null)
-        retry = jasmine.createSpy('retry')
-        signOut = jasmine.createSpy('signOut').and.resolveTo()
+        retry = vi.fn().mockName('retry')
+        signOut = vi.fn().mockName('signOut').mockResolvedValue(undefined)
         invitationFlow = signal(false)
 
         TestBed.configureTestingModule({

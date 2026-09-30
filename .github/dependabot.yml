@@ -26,13 +26,6 @@ updates:
     schedule:
       interval: monthly
     open-pull-requests-limit: 3
-    ignore:
-      # Jasmine 7 freezes its globals, which Angular's zone.js test patching
-      # cannot reassign (all unit tests fail). Revisit with Angular's test runner.
-      - dependency-name: jasmine-core
-        update-types: ["version-update:semver-major"]
-      - dependency-name: "@types/jasmine"
-        update-types: ["version-update:semver-major"]
     groups:
       security-updates:
         applies-to: security-updates

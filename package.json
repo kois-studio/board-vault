@@ -7,7 +7,7 @@
         "build": "npm --prefix backend run build && npm --prefix frontend run build",
         "check:public-tree": "node scripts/check-public-tree.mjs",
         "check:docs": "node scripts/check-docs.mjs",
-        "test:unit": "npm --prefix backend test -- --runInBand && npm --prefix frontend test -- --watch=false --browsers=ChromeHeadless",
+        "test:unit": "npm --prefix backend test -- --runInBand && npm --prefix frontend test -- --watch=false",
         "test:e2e": "npm --prefix backend run test:e2e -- --runInBand && npm --prefix frontend run e2e",
         "lint": "npm --prefix backend run lint:check && npm --prefix frontend run lint:check",
         "verify:migrations": "node database/scripts/verify-empty-state.mjs",

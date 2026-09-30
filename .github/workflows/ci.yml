@@ -94,6 +94,8 @@ jobs:
               run: npm run build
             - name: Check frontend formatting and lint
               run: npx biome check src/app src/styles.css
+            - name: Run unit tests
+              run: npm test -- --watch=false
             - name: Install Playwright browser
               run: npx playwright install --with-deps chromium
             - name: Run browser checks

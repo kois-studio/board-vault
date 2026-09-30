@@ -11,7 +11,7 @@ describe('AuthOnlyGuard', () => {
     function run(options: { authenticated: boolean; signedIn: boolean; handoffLayout: boolean; verification: Observable<boolean> }) {
         const loginService = {
             isAuthenticated: signal(options.authenticated),
-            verifySession: jasmine.createSpy('verifySession').and.returnValue(options.verification),
+            verifySession: vi.fn().mockName('verifySession').mockReturnValue(options.verification),
         }
         TestBed.configureTestingModule({
             providers: [
@@ -30,7 +30,7 @@ describe('AuthOnlyGuard', () => {
     it('allows an authenticated user without verifying again', async () => {
         const { loginService, result } = run({ authenticated: true, signedIn: true, handoffLayout: true, verification: of(true) })
 
-        expect(await firstValueFrom(result)).toBeTrue()
+        expect(await firstValueFrom(result)).toBe(true)
         expect(loginService.verifySession).not.toHaveBeenCalled()
     })
 
@@ -38,19 +38,19 @@ describe('AuthOnlyGuard', () => {
         const pending = new Subject<boolean>()
         const { loginService, result } = run({ authenticated: false, signedIn: true, handoffLayout: true, verification: pending })
 
-        expect(await firstValueFrom(result)).toBeTrue()
+        expect(await firstValueFrom(result)).toBe(true)
         expect(loginService.verifySession).toHaveBeenCalled()
     })
 
     it('waits for verification on layouts without a handoff screen', async () => {
         const { result } = run({ authenticated: false, signedIn: true, handoffLayout: false, verification: of(false) })
 
-        expect(await firstValueFrom(result)).toBeFalse()
+        expect(await firstValueFrom(result)).toBe(false)
     })
 
     it('waits for verification when there is no Clerk session', async () => {
         const { result } = run({ authenticated: false, signedIn: false, handoffLayout: true, verification: of(false) })
 
-        expect(await firstValueFrom(result)).toBeFalse()
+        expect(await firstValueFrom(result)).toBe(false)
     })
 })

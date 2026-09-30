@@ -31,20 +31,20 @@ describe('MeetViewComponent participant safeguards', () => {
 
     const setup = async () => {
         const api = {
-            updateSessionAttendees: jasmine.createSpy('updateSessionAttendees'),
-            updateSessionAttendance: jasmine.createSpy('updateSessionAttendance'),
-            updateSessionPlayedGames: jasmine.createSpy('updateSessionPlayedGames'),
+            updateSessionAttendees: vi.fn().mockName('updateSessionAttendees'),
+            updateSessionAttendance: vi.fn().mockName('updateSessionAttendance'),
+            updateSessionPlayedGames: vi.fn().mockName('updateSessionPlayedGames'),
         }
         const dataService = {
             currentUser: signal(null),
             userGroups: signal([]),
             userReviews: signal([]),
-            updateSessionAttendees: jasmine.createSpy('updateSessionAttendees'),
-            refreshGameReviews: jasmine.createSpy('refreshGameReviews'),
+            updateSessionAttendees: vi.fn().mockName('updateSessionAttendees'),
+            refreshGameReviews: vi.fn().mockName('refreshGameReviews'),
         }
         const toastService = {
-            success: jasmine.createSpy('success'),
-            error: jasmine.createSpy('error'),
+            success: vi.fn().mockName('success'),
+            error: vi.fn().mockName('error'),
         }
 
         await TestBed.configureTestingModule({
@@ -112,8 +112,8 @@ describe('MeetViewComponent participant safeguards', () => {
 
         await component.onClickMember(1)
 
-        expect(component.isAttendeeRemovalBlocked(1)).toBeTrue()
-        expect(component.hasPlayedGameAttendeeLock).toBeFalse()
+        expect(component.isAttendeeRemovalBlocked(1)).toBe(true)
+        expect(component.hasPlayedGameAttendeeLock).toBe(false)
         expect(dataService.updateSessionAttendees).not.toHaveBeenCalled()
         expect(toastService.error).toHaveBeenCalledWith('A session must retain at least one attendee.')
     })
@@ -123,20 +123,20 @@ describe('MeetViewComponent participant safeguards', () => {
 
         await component.onClickMember(1)
 
-        expect(component.isAttendeeRemovalBlocked(1)).toBeTrue()
-        expect(component.hasPlayedGameAttendeeLock).toBeTrue()
+        expect(component.isAttendeeRemovalBlocked(1)).toBe(true)
+        expect(component.hasPlayedGameAttendeeLock).toBe(true)
         expect(dataService.updateSessionAttendees).not.toHaveBeenCalled()
         expect(toastService.error).toHaveBeenCalledWith('Remove this person from played games before removing them from the session.')
     })
 
     it('restores the participant selection when saving fails', async () => {
         const { component, api, toastService } = await setup()
-        api.updateSessionPlayedGames.and.returnValue(throwError(() => new Error('temporary failure')))
+        api.updateSessionPlayedGames.mockReturnValue(throwError(() => new Error('temporary failure')))
 
         await component.toggleGameParticipant(42, 1)
 
         expect(component.getGameParticipantIds(42)).toEqual([1, 2])
-        expect(component.isPersistingChanges).toBeFalse()
+        expect(component.isPersistingChanges).toBe(false)
         expect(toastService.error).toHaveBeenCalledWith('Could not save the played game changes.')
     })
 
@@ -156,7 +156,7 @@ describe('MeetViewComponent participant safeguards', () => {
             { person: { id: 12, accountId: null, displayName: 'Ana' } as never, ownership: [], preferences: [], claimable: false },
             { person: { id: 13, accountId: 1, displayName: 'Carlos' } as never, ownership: [], preferences: [], claimable: false },
         ]
-        api.updateSessionAttendees.and.returnValue(of({ sessionId: 99, attendeeIds: [], groupPersonIds: [13] }))
+        api.updateSessionAttendees.mockReturnValue(of({ sessionId: 99, attendeeIds: [], groupPersonIds: [13] }))
 
         await component.onClickGroupPerson(12)
 
@@ -176,7 +176,7 @@ describe('MeetViewComponent participant safeguards', () => {
             { groupPersonId: 13, rsvpStatus: 'accepted', attendanceStatus: 'attended' },
         ]
         meetData.playedGamePersonParticipants = [{ gameId: 42, participantIds: [12, 13] }]
-        api.updateSessionPlayedGames.and.returnValue(
+        api.updateSessionPlayedGames.mockReturnValue(
             of({
                 sessionId: 99,
                 playedGameIds: [42],

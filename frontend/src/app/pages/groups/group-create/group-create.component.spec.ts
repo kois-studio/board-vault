@@ -7,10 +7,13 @@ import { GroupCreateComponent } from './group-create.component'
 
 describe('GroupCreateComponent onboarding handoff', () => {
     it('opens the newly created group workspace', async () => {
-        const router = { navigate: jasmine.createSpy('navigate').and.resolveTo(true) }
+        const router = { navigate: vi.fn().mockName('navigate').mockResolvedValue(true) }
         const dataService = {
             currentUser: signal({ id: 7 }),
-            createGroup: jasmine.createSpy('createGroup').and.returnValue(of({ success: true, groupId: 42 })),
+            createGroup: vi
+                .fn()
+                .mockName('createGroup')
+                .mockReturnValue(of({ success: true, groupId: 42 })),
         }
 
         await TestBed.configureTestingModule({
@@ -33,10 +36,13 @@ describe('GroupCreateComponent onboarding handoff', () => {
     })
 
     it('keeps the name and exposes a retryable error when creation fails', async () => {
-        const router = { navigate: jasmine.createSpy('navigate').and.resolveTo(true) }
+        const router = { navigate: vi.fn().mockName('navigate').mockResolvedValue(true) }
         const dataService = {
             currentUser: signal({ id: 7 }),
-            createGroup: jasmine.createSpy('createGroup').and.returnValue(throwError(() => new Error('temporary failure'))),
+            createGroup: vi
+                .fn()
+                .mockName('createGroup')
+                .mockReturnValue(throwError(() => new Error('temporary failure'))),
         }
 
         await TestBed.configureTestingModule({
@@ -56,7 +62,7 @@ describe('GroupCreateComponent onboarding handoff', () => {
 
         expect(component.createError()).toContain('could not create the group')
         expect(component.groupNameForm.value).toBe('Friday Crew')
-        expect(component.isLoading).toBeFalse()
+        expect(component.isLoading).toBe(false)
         expect(router.navigate).not.toHaveBeenCalled()
     })
 })

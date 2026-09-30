@@ -15,7 +15,10 @@ describe('ButtonComponent accessibility states', () => {
     })
 
     it('keeps every visual variant on an explicit contrast-safe recipe', () => {
-        const variants: Array<{ name: ButtonComponent['variant']; expected: Array<string> }> = [
+        const variants: Array<{
+            name: ButtonComponent['variant']
+            expected: Array<string>
+        }> = [
             { name: 'primary', expected: ['bg-indigo-600', 'text-white'] },
             { name: 'secondary', expected: ['bg-zinc-100', 'text-zinc-900', 'dark:bg-zinc-800', 'dark:text-zinc-100'] },
             { name: 'danger', expected: ['bg-red-500', 'text-white'] },
@@ -28,9 +31,7 @@ describe('ButtonComponent accessibility states', () => {
             const button = fixture.nativeElement.querySelector('button') as HTMLButtonElement
 
             for (const className of variant.expected) {
-                expect(button.classList.contains(className))
-                    .withContext(`${variant.name}: ${className}; actual=${button.className}`)
-                    .toBeTrue()
+                expect(button.classList.contains(className), `${variant.name}: ${className}; actual=${button.className}`).toBe(true)
             }
         }
     })
@@ -40,7 +41,7 @@ describe('ButtonComponent accessibility states', () => {
         fixture.detectChanges()
 
         const button = fixture.nativeElement.querySelector('button') as HTMLButtonElement
-        expect(button.disabled).toBeTrue()
+        expect(button.disabled).toBe(true)
         expect(button.getAttribute('aria-busy')).toBe('true')
         expect(button.textContent).toContain('Working')
     })

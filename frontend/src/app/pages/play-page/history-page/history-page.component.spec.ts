@@ -43,7 +43,7 @@ describe('HistoryPageComponent shared-memory summaries', () => {
             userGroupsError: signal(false),
             userHistory: signal(history),
             userHistoryError: signal(false),
-            refreshUserHistory: jasmine.createSpy('refreshUserHistory'),
+            refreshUserHistory: vi.fn().mockName('refreshUserHistory'),
         }
         const loadingService = {
             loadingStatesIndex: signal({ [LOADING_KEYS.USER_GAMES_HISTORY]: false }),
@@ -82,7 +82,7 @@ describe('HistoryPageComponent shared-memory summaries', () => {
         component.groupIdFilter.set(999)
         fixture.detectChanges()
 
-        expect(component.isUnknownGroupFilter()).toBeTrue()
+        expect(component.isUnknownGroupFilter()).toBe(true)
         expect(fixture.nativeElement.textContent).toContain('That group is not available')
         expect(fixture.nativeElement.textContent).not.toContain('has no recorded sessions yet')
     })

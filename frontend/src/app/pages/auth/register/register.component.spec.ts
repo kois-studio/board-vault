@@ -12,10 +12,10 @@ describe('RegisterComponent invitation onboarding', () => {
             isSelfRegistrationEnabled: signal(false),
             isInvitationFlow: signal(true),
             isInvitationSignIn: signal(invitationSignIn),
-            clearInvitationState: jasmine.createSpy('clearInvitationState'),
-            completeInvitationSignUp: jasmine.createSpy('completeInvitationSignUp').and.resolveTo(undefined),
+            clearInvitationState: vi.fn().mockName('clearInvitationState'),
+            completeInvitationSignUp: vi.fn().mockName('completeInvitationSignUp').mockResolvedValue(undefined),
         }
-        const router = { navigateByUrl: jasmine.createSpy('navigateByUrl').and.resolveTo(true) }
+        const router = { navigateByUrl: vi.fn().mockName('navigateByUrl').mockResolvedValue(true) }
 
         TestBed.configureTestingModule({
             imports: [RegisterComponent],
@@ -78,14 +78,14 @@ describe('RegisterComponent invitation onboarding', () => {
         ] as const
 
         for (const [failure, expectedCopy] of failures) {
-            clerkService.completeInvitationSignUp.and.rejectWith(failure)
+            clerkService.completeInvitationSignUp.mockRejectedValue(failure)
             await component.completeInvitationSignUp()
 
             expect(component.invitationError()).toContain(expectedCopy)
             component.invitationError.set(null)
         }
 
-        expect(component.isInvitationSubmitting).toBeFalse()
+        expect(component.isInvitationSubmitting).toBe(false)
     })
 
     it('clears stale invitation state when returning to private-beta access', async () => {

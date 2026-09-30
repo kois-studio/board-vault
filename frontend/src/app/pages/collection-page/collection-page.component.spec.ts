@@ -9,8 +9,22 @@ import { CollectionPageComponent } from './collection-page.component'
 describe('CollectionPageComponent activation guidance', () => {
     const createDataService = () => ({
         currentUser: signal(null),
-        userGroups: signal<Array<{ id: number; members: Array<{ id: number; games: Array<{ id: number }> }> }>>([]),
-        userGames: signal<Array<{ id: number }>>([]),
+        userGroups: signal<
+            Array<{
+                id: number
+                members: Array<{
+                    id: number
+                    games: Array<{
+                        id: number
+                    }>
+                }>
+            }>
+        >([]),
+        userGames: signal<
+            Array<{
+                id: number
+            }>
+        >([]),
         userGamesError: signal(false),
         userReviews: signal<Array<unknown>>([]),
         userWishlist: signal<Array<unknown>>([]),
@@ -43,8 +57,8 @@ describe('CollectionPageComponent activation guidance', () => {
         dataService.userGroups.set([{ id: 10, members: [{ id: 1, games: [{ id: 1 }] }] }])
         fixture.detectChanges()
 
-        expect(component.activationComplete()).toBeFalse()
-        expect(component.groupDecisionReady()).toBeTrue()
+        expect(component.activationComplete()).toBe(false)
+        expect(component.groupDecisionReady()).toBe(true)
         expect(component.decisionGroupId()).toBe(10)
         expect(fixture.nativeElement.querySelector('a[href="/play/recommendations?groupId=10"]')).not.toBeNull()
         expect(fixture.nativeElement.textContent).toContain('Choose a game with your group')
@@ -56,8 +70,8 @@ describe('CollectionPageComponent activation guidance', () => {
         dataService.userGroups.set([{ id: 10, members: [{ id: 1, games: [] }] }])
         fixture.detectChanges()
 
-        expect(component.activationComplete()).toBeTrue()
-        expect(component.groupDecisionReady()).toBeFalse()
+        expect(component.activationComplete()).toBe(true)
+        expect(component.groupDecisionReady()).toBe(false)
         expect(fixture.nativeElement.textContent).toContain('Add games to your group’s shared shelf')
         expect(fixture.nativeElement.textContent).toContain('Group acquisition')
         expect(fixture.nativeElement.textContent).toContain('Private shelf')

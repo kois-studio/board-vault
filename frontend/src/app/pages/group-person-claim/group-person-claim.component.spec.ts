@@ -46,15 +46,25 @@ describe('GroupPersonClaimComponent', () => {
 
     async function createComponent() {
         const api = {
-            getGroupPeople: jasmine.createSpy('getGroupPeople').and.returnValue(of({ people: [person] })),
-            getGroupPersonCatalog: jasmine
-                .createSpy('getGroupPersonCatalog')
-                .and.returnValue(of([{ id: 42, title: 'Catan', titleTranslations: { en: 'Catan', es: 'Catan' } }])),
-            claimGroupPerson: jasmine.createSpy('claimGroupPerson').and.returnValue(of({ success: true, alreadyClaimed: false })),
-            joinGroupAsNewPerson: jasmine.createSpy('joinGroupAsNewPerson').and.returnValue(of({ id: 22 })),
+            getGroupPeople: vi
+                .fn()
+                .mockName('getGroupPeople')
+                .mockReturnValue(of({ people: [person] })),
+            getGroupPersonCatalog: vi
+                .fn()
+                .mockName('getGroupPersonCatalog')
+                .mockReturnValue(of([{ id: 42, title: 'Catan', titleTranslations: { en: 'Catan', es: 'Catan' } }])),
+            claimGroupPerson: vi
+                .fn()
+                .mockName('claimGroupPerson')
+                .mockReturnValue(of({ success: true, alreadyClaimed: false })),
+            joinGroupAsNewPerson: vi
+                .fn()
+                .mockName('joinGroupAsNewPerson')
+                .mockReturnValue(of({ id: 22 })),
         }
-        const router = { events: of(), navigate: jasmine.createSpy('navigate').and.resolveTo(true) }
-        const toastService = { success: jasmine.createSpy('success') }
+        const router = { events: of(), navigate: vi.fn().mockName('navigate').mockResolvedValue(true) }
+        const toastService = { success: vi.fn().mockName('success') }
 
         await TestBed.configureTestingModule({
             imports: [GroupPersonClaimComponent],
@@ -101,7 +111,7 @@ describe('GroupPersonClaimComponent', () => {
 
     it('does not expose a non-claimable placeholder as claimable data', async () => {
         const { api } = await createComponent()
-        api.getGroupPeople.and.returnValue(of({ people: [{ ...person, claimable: false }] }))
+        api.getGroupPeople.mockReturnValue(of({ people: [{ ...person, claimable: false }] }))
 
         const fixture = TestBed.createComponent(GroupPersonClaimComponent)
         await fixture.whenStable()

@@ -20,4 +20,4 @@
    `frontend/e2e/` for the main path. Public pages are covered by
    `public-a11y-audit.spec.ts`; add the route there if it is public.
 
-Checks: `cd frontend && npm run lint:check && npm test -- --watch=false --browsers=ChromeHeadless && npm run build`.
+Checks: `cd frontend && npm run lint:check && npm test -- --watch=false && npm run build`.

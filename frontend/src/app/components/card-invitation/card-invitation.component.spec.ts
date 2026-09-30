@@ -8,9 +8,15 @@ describe('CardInvitationComponent', () => {
     let fixture: ComponentFixture<CardInvitationComponent>
     let component: CardInvitationComponent
     const dataService = {
-        acceptInvitation: jasmine.createSpy('acceptInvitation').and.returnValue(of({ success: true })),
-        rejectInvitation: jasmine.createSpy('rejectInvitation').and.returnValue(of({ success: true })),
-        retryUserInvitations: jasmine.createSpy('retryUserInvitations'),
+        acceptInvitation: vi
+            .fn()
+            .mockName('acceptInvitation')
+            .mockReturnValue(of({ success: true })),
+        rejectInvitation: vi
+            .fn()
+            .mockName('rejectInvitation')
+            .mockReturnValue(of({ success: true })),
+        retryUserInvitations: vi.fn().mockName('retryUserInvitations'),
     }
 
     const invitation = {
@@ -30,11 +36,11 @@ describe('CardInvitationComponent', () => {
     } as InvitationWithExtraData
 
     beforeEach(async () => {
-        dataService.acceptInvitation.calls.reset()
-        dataService.rejectInvitation.calls.reset()
-        dataService.retryUserInvitations.calls.reset()
-        dataService.acceptInvitation.and.returnValue(of({ success: true }))
-        dataService.rejectInvitation.and.returnValue(of({ success: true }))
+        dataService.acceptInvitation.mockClear()
+        dataService.rejectInvitation.mockClear()
+        dataService.retryUserInvitations.mockClear()
+        dataService.acceptInvitation.mockReturnValue(of({ success: true }))
+        dataService.rejectInvitation.mockReturnValue(of({ success: true }))
         await TestBed.configureTestingModule({
             imports: [CardInvitationComponent],
             providers: [{ provide: DataService, useValue: dataService }],
@@ -56,7 +62,7 @@ describe('CardInvitationComponent', () => {
         declineButton.click()
         fixture.detectChanges()
 
-        expect(component.isConfirmingDecline).toBeTrue()
+        expect(component.isConfirmingDecline).toBe(true)
         expect(fixture.nativeElement.textContent).toContain('Decline this invitation?')
         expect(dataService.rejectInvitation).not.toHaveBeenCalled()
     })
@@ -78,7 +84,7 @@ describe('CardInvitationComponent', () => {
     })
 
     it('keeps an acceptance failure visible with an invitation refresh action', async () => {
-        dataService.acceptInvitation.and.returnValue(throwError(() => new Error('expired')))
+        dataService.acceptInvitation.mockReturnValue(throwError(() => new Error('expired')))
 
         await component.acceptInvitation()
         fixture.detectChanges()

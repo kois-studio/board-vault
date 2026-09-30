@@ -13,38 +13,45 @@ import { LoginService } from './login.service'
 
 describe('LoginService account readiness', () => {
     it('does not activate the protected route until the local account is loaded', async () => {
-        const profile = new Subject<{ id: number }>()
-        const navigate = jasmine.createSpy('navigate').and.resolveTo(true)
-        const signOut = jasmine.createSpy('signOut').and.resolveTo()
+        const profile = new Subject<{
+            id: number
+        }>()
+        const navigate = vi.fn().mockName('navigate').mockResolvedValue(true)
+        const signOut = vi.fn().mockName('signOut').mockResolvedValue(undefined)
         const api = {
-            clerkAuthStatus: jasmine
-                .createSpy('clerkAuthStatus')
-                .and.returnValue(of({ isValid: true, userId: 7, isAdmin: false, clerkUserId: 'clerk_7' })),
-            getUserById: jasmine.createSpy('getUserById').and.returnValue(profile.asObservable()),
+            clerkAuthStatus: vi
+                .fn()
+                .mockName('clerkAuthStatus')
+                .mockReturnValue(of({ isValid: true, userId: 7, isAdmin: false, clerkUserId: 'clerk_7' })),
+            getUserById: vi.fn().mockName('getUserById').mockReturnValue(profile.asObservable()),
         }
-        const dataService = { currentUser: signal<null | { id: number }>(null) }
+        const dataService = {
+            currentUser: signal<null | {
+                id: number
+            }>(null),
+        }
 
         TestBed.configureTestingModule({
             providers: [
                 LoginService,
                 { provide: Api, useValue: api },
                 { provide: Router, useValue: { navigate } },
-                { provide: LogService, useValue: { log: jasmine.createSpy('log'), error: jasmine.createSpy('error') } },
-                { provide: ToastService, useValue: { error: jasmine.createSpy('error'), success: jasmine.createSpy('success') } },
+                { provide: LogService, useValue: { log: vi.fn().mockName('log'), error: vi.fn().mockName('error') } },
+                { provide: ToastService, useValue: { error: vi.fn().mockName('error'), success: vi.fn().mockName('success') } },
                 {
                     provide: LoadingService,
                     useValue: {
-                        start: jasmine.createSpy('start'),
-                        finish: jasmine.createSpy('finish'),
-                        setAllLoadingTo: jasmine.createSpy('setAllLoadingTo'),
+                        start: vi.fn().mockName('start'),
+                        finish: vi.fn().mockName('finish'),
+                        setAllLoadingTo: vi.fn().mockName('setAllLoadingTo'),
                     },
                 },
                 {
                     provide: LocalStorageService,
                     useValue: {
-                        getItem: jasmine.createSpy('getItem'),
-                        setItem: jasmine.createSpy('setItem'),
-                        removeItem: jasmine.createSpy('removeItem'),
+                        getItem: vi.fn().mockName('getItem'),
+                        setItem: vi.fn().mockName('setItem'),
+                        removeItem: vi.fn().mockName('removeItem'),
                     },
                 },
                 {
@@ -64,53 +71,60 @@ describe('LoginService account readiness', () => {
         firstVerification.subscribe((isReady) => results.push(isReady))
 
         expect(results).toEqual([])
-        expect(service.isAuthenticated()).toBeFalse()
+        expect(service.isAuthenticated()).toBe(false)
         expect(service.clerkAuthHandoffState()).toBe('linking')
         expect(dataService.currentUser()).toBeNull()
 
         profile.next({ id: 7 })
 
         expect(results).toEqual([true])
-        expect(service.isAuthenticated()).toBeTrue()
+        expect(service.isAuthenticated()).toBe(true)
         expect(service.clerkAuthHandoffState()).toBe('ready')
         expect(dataService.currentUser()).toEqual({ id: 7 })
 
         await service.logOut()
 
         expect(signOut).toHaveBeenCalled()
-        expect(service.isAuthenticated()).toBeFalse()
+        expect(service.isAuthenticated()).toBe(false)
         expect(service.clerkAuthHandoffState()).toBe('idle')
         expect(navigate).toHaveBeenCalledWith(['/'])
     })
 
     it('uses group-specific recovery copy for a failed invitation handoff', () => {
         const api = {
-            clerkAuthStatus: jasmine.createSpy('clerkAuthStatus').and.returnValue(throwError(() => new Error('group unavailable'))),
-            getUserById: jasmine.createSpy('getUserById'),
+            clerkAuthStatus: vi
+                .fn()
+                .mockName('clerkAuthStatus')
+                .mockReturnValue(throwError(() => new Error('group unavailable'))),
+            getUserById: vi.fn().mockName('getUserById'),
         }
-        const dataService = { currentUser: signal<null | { id: number }>(null) }
+        const dataService = {
+            currentUser: signal<null | {
+                id: number
+            }>(null),
+        }
 
         TestBed.configureTestingModule({
             providers: [
                 LoginService,
                 { provide: Api, useValue: api },
-                { provide: Router, useValue: { navigate: jasmine.createSpy('navigate') } },
-                { provide: LogService, useValue: { log: jasmine.createSpy('log'), error: jasmine.createSpy('error') } },
-                { provide: ToastService, useValue: { error: jasmine.createSpy('error'), success: jasmine.createSpy('success') } },
+                { provide: Router, useValue: { navigate: vi.fn().mockName('navigate') } },
+                { provide: LogService, useValue: { log: vi.fn().mockName('log'), error: vi.fn().mockName('error') } },
+                { provide: ToastService, useValue: { error: vi.fn().mockName('error'), success: vi.fn().mockName('success') } },
                 {
                     provide: LoadingService,
                     useValue: {
-                        start: jasmine.createSpy('start'),
-                        finish: jasmine.createSpy('finish'),
-                        setAllLoadingTo: jasmine.createSpy('setAllLoadingTo'),
+                        start: vi.fn().mockName('start'),
+                        finish: vi.fn().mockName('finish'),
+                        setAllLoadingTo: vi.fn().mockName('setAllLoadingTo'),
                     },
                 },
                 {
                     provide: LocalStorageService,
                     useValue: {
-                        getItem: jasmine.createSpy('getItem'),
-                        setItem: jasmine.createSpy('setItem'),
-                        removeItem: jasmine.createSpy('removeItem'),
+                        getItem: vi.fn().mockName('getItem'),
+                        setItem: vi.fn().mockName('setItem'),
+                        removeItem: vi.fn().mockName('removeItem'),
                     },
                 },
                 {
@@ -119,7 +133,7 @@ describe('LoginService account readiness', () => {
                         isSignedIn: signal(true),
                         userId: signal<string | null>(null),
                         isInvitationFlow: signal(true),
-                        signOut: jasmine.createSpy('signOut').and.resolveTo(),
+                        signOut: vi.fn().mockName('signOut').mockResolvedValue(undefined),
                     },
                 },
                 { provide: DataService, useValue: dataService },

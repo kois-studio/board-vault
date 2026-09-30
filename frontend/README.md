@@ -5,7 +5,7 @@ route map is in [`../docs/architecture.md`](../docs/architecture.md#frontend-map
 
 ```shell
 npm start                                            # http://localhost:4200
-npm test -- --watch=false --browsers=ChromeHeadless  # unit tests
+npm test -- --watch=false                            # Vitest unit tests
 npm run e2e                                          # Playwright public journeys
 npm run lint:check                                   # Biome
 npm run build

@@ -38,6 +38,6 @@ describe('TooltipComponent keyboard behavior', () => {
         fixture.detectChanges()
 
         expect(fixture.nativeElement.querySelector('[role="tooltip"]')).toBeNull()
-        expect(button.hasAttribute('aria-describedby')).toBeFalse()
+        expect(button.hasAttribute('aria-describedby')).toBe(false)
     })
 })
