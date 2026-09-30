@@ -32,16 +32,16 @@ variable-name reference. Copy it to an ignored local `.env` and fill values
 from a private development secret store. Never commit local environment files,
 provider pulls, browser storage states, database dumps, or backup archives.
 
-The backend requires the database URL, database auth token, and legacy JWT
-secret. Email and Redis variables are required when those integrations are
-enabled; local development can disable Redis explicitly. The frontend uses a
-public Clerk publishable key only when the Clerk controls are enabled. Clerk
-secret keys, database tokens, email keys, and Redis tokens are backend/operator
+The backend requires the database URL (plus an auth token for remote
+databases), `CLERK_SECRET_KEY`, and `CLERK_AUTHORIZED_PARTIES`. Redis variables
+are required when Redis is enabled; local development disables it explicitly.
+The frontend needs the public Clerk publishable key; without it nobody can sign
+in. Clerk secret keys, database tokens, and Redis tokens are backend/operator
 secrets and must never enter browser code.
 
 For local development, use `npm run local:setup` to create an isolated SQLite
 database with synthetic accounts and scenario data. Redis is disabled by
-default, and the local email key is a nonfunctional placeholder. The API
+default. The API
 exposes `/health` for liveness and `/health/ready` for coarse dependency/schema
 readiness. Use the shared development services only for provider or
 multi-developer integration checks.
@@ -50,16 +50,14 @@ multi-developer integration checks.
 
 The important variable names are:
 
-- `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`, and `JWT_SECRET` for persistence
-  and the legacy authentication fallback;
-- `RESEND_API_KEY` and `NO_REPLY_EMAIL` for email delivery;
+- `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` for persistence;
 - `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, and
   `UPSTASH_REDIS_REST_DISABLE` for cache/rate-limit storage;
 - `CORS_ORIGINS` and `CLERK_AUTHORIZED_PARTIES` for exact trusted origins;
-- `CLERK_SECRET_KEY` for backend identity verification;
-- `CLERK_PUBLISHABLE_KEY`, `CLERK_AUTH_ENABLED`, and
-  `BOARD_VAULT_SELF_REGISTRATION_ENABLED` for public frontend/runtime
-  configuration; and
+- `CLERK_SECRET_KEY` for backend identity verification (the only sign-in
+  method, ADR-0012);
+- `CLERK_PUBLISHABLE_KEY` and `BOARD_VAULT_SELF_REGISTRATION_ENABLED` for
+  public frontend/runtime configuration; and
 - `BOARD_VAULT_CLERK_INVITATION_REDIRECT_URL` for the invitation handoff.
 
 Use exact origin allowlists. Do not use wildcard CORS with credentials, put a

@@ -1,10 +1,10 @@
 # Contributor setup
 
-This guide is intentionally self-contained. Routine development uses only
-repository files, a per-checkout SQLite database, reserved-domain identities,
-and disposable provider configuration. Do not use production accounts,
-shared development databases, real email addresses, or private sibling
-repositories for local work.
+This guide is intentionally self-contained. Routine development uses
+repository files, a per-checkout SQLite database, synthetic `+clerk_test`
+identities, and the development Clerk instance. Do not use production
+accounts, shared development databases, real email addresses, or private
+sibling repositories for local work.
 
 ## Requirements
 
@@ -30,16 +30,18 @@ cp backend/.env.example backend/.env
 chmod 600 backend/.env
 ```
 
-The template uses a local `file:` SQLite URL, a local-only JWT secret, a fake
-email key that cannot send mail, and Redis disabled. It requires no hosted
-database or provider credentials. Keep `backend/.env` private and never replace
-its local values with production credentials.
+The template uses a local `file:` SQLite URL and Redis disabled. Sign-in is
+Clerk-only ([ADR-0012](adr/0012-clerk-only-authentication.md)), so fill in the
+development Clerk keys (`pk_test_…` and `sk_test_…`) that the repository owner
+shares through an approved private channel. The backend does not start without
+`CLERK_SECRET_KEY`. Keep `backend/.env` private and never replace its values
+with production credentials.
 
 The frontend has no `.env` file. Its startup script generates ignored
-`frontend/public/runtime-config.js` from public browser configuration. Without
-a Clerk publishable key, the frontend uses the compatibility login against
-the local fixtures. Never put a Clerk secret, database token, email key, or
-Redis token in frontend configuration.
+`frontend/public/runtime-config.js` from `backend/.env`, writing only the
+publishable key and public feature flags. Without a publishable key the app
+loads, but the sign-in page reports that sign-in is not configured. Never put
+a Clerk secret, database token, or Redis token in frontend configuration.
 
 ## Synthetic data and reset boundaries
 
@@ -54,14 +56,18 @@ hard-coded to `data/board-vault.local.db` under this checkout, refuses an
 unexpected file type, applies the schema baseline and all migrations, and
 seeds synthetic data. It cannot target Turso or another remote database.
 
-The local login fixtures are:
+The local sign-in fixtures are:
 
-| Email | Password |
+| Email | Sign-in |
 | --- | --- |
-| `organizer@example.test` | `local-only-board-vault` |
-| `member@example.test` | `local-only-board-vault` |
+| `organizer+clerk_test@example.com` | email code `424242` |
+| `member+clerk_test@example.com` | email code `424242` |
 
-These credentials are synthetic and local-only. The seed includes a small game
+The reset creates or reuses these users in the development Clerk instance and
+links them to the local accounts. It refuses any key other than `sk_test_…`.
+Clerk never sends mail to `+clerk_test` addresses and accepts the fixed test
+code. Without a secret key, the reset uses placeholder links and nobody can
+sign in. The seed includes a small game
 catalog, a two-member group, ownership and review data, and completed and
 scheduled sessions. Each Git worktree gets its own ignored `data/` directory.
 
@@ -107,9 +113,11 @@ those journeys rather than contacting a real account or service.
 
 ## Optional shared integration environment
 
-Use the shared development Clerk instance and `board-vault-development` Turso
-database only for work that specifically needs provider or multi-user
-integration. These services are shared. Normal local reset never touches them.
+Use the shared `board-vault-development` Turso database only for work that
+specifically needs shared or multi-user integration data. It is shared by all
+contributors, and a normal local reset never touches it. Its fixture accounts
+also sign in through the development Clerk instance with `+clerk_test`
+addresses and the code `424242`.
 Get current development-only credentials from the repository owner through an
 approved private channel. Save the supplied environment file as
 `backend/.env` and restrict it to your account:
@@ -123,8 +131,8 @@ frontend startup/build script also reads it to create the ignored
 `frontend/public/runtime-config.js`; it writes only the Clerk publishable key
 and public feature flags there, never the Clerk secret or Turso token. Restart
 the frontend after changing the file. Do not commit or copy the file into a PR.
-Production Clerk, Turso, Resend, Redis, and deployment credentials are not
-needed for contribution work.
+Production Clerk, Turso, Redis, and deployment credentials are not needed for
+contribution work.
 
 Do not reset or refresh the shared Turso database as part of ordinary feature
 development. Its reset/refresh is an owner-run operation because it destroys

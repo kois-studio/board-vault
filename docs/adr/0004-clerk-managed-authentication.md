@@ -1,6 +1,6 @@
 # ADR: Provider-managed authentication with preserved local accounts
 
-- **Status:** Accepted
+- **Status:** Accepted; the legacy-path clause is superseded by [0012](0012-clerk-only-authentication.md)
 - **Date:** 2026-08-12
 
 ## Context

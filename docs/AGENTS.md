@@ -33,12 +33,12 @@ documents below before changing behavior:
 ## Safe change boundaries
 
 - Routine development uses the checkout-local SQLite database and synthetic
-  `example.test` identities from `npm run local:setup`.
+  `+clerk_test` fixture accounts from `npm run local:setup`.
 - Never use production credentials or data for development or tests. Keep
   `.env`, database files, generated runtime config, browser state, and private
   operator notes out of commits.
-- Keep Clerk disabled for routine local work. Use development-only Clerk
-  credentials only when the task requires the provider integration.
+- Sign-in is Clerk-only (ADR-0012). Local work uses the development Clerk
+  instance; production Clerk keys never belong in a development environment.
 - The shared Turso development database is integration infrastructure, not a
   disposable developer database. Do not reset or refresh it casually.
 - Redis integration expects Upstash HTTP REST; a native Redis service is not a

@@ -3,7 +3,7 @@
 - **Status:** Accepted
 - **Date:** 2026-09-28
 - **Supersedes:** None
-- **Superseded by:** None
+- **Superseded by:** [0012](0012-clerk-only-authentication.md) for the opt-in Clerk and legacy-session clauses; local development now signs in through the development Clerk instance
 
 ## Context
 

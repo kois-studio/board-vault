@@ -36,11 +36,12 @@ cp backend/.env.example backend/.env
 npm run local:setup
 ```
 
-The backend example is ready for local-only development. The reset creates a
-disposable database and synthetic accounts; it does not connect to Turso,
-Clerk, Resend, or Upstash. Keep `backend/.env` private. See
-[`docs/contributor-setup.md`](docs/contributor-setup.md) for login details,
-optional Clerk development setup, and the parallel contribution workflow.
+Sign-in is Clerk-only, so add the development Clerk keys to `backend/.env`
+before `local:setup`. The reset creates a disposable SQLite database and
+synthetic accounts linked to development Clerk users; it does not connect to
+Turso or Upstash. Keep `backend/.env` private. See
+[`docs/contributor-setup.md`](docs/contributor-setup.md) for sign-in details
+and the parallel contribution workflow.
 
 Run the main checks from the repository root:
 

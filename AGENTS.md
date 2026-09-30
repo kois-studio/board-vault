@@ -12,13 +12,14 @@ of truth for technical behavior.
 
 - Use `npm run install:all`, `cp backend/.env.example backend/.env`, and
   `npm run local:setup` for routine local development.
-- Local setup creates `data/board-vault.local.db` with reserved example.test
-  identities. Resetting it is destructive only to that checkout's local data.
+- Local setup creates `data/board-vault.local.db` with synthetic
+  `+clerk_test` fixture accounts. Resetting it is destructive only to that
+  checkout's local data.
 - Never use production credentials or data for development or tests. Do not
   display, copy, stage, or commit `.env` files, database files, runtime config,
   browser state, or private operator notes.
-- Keep Clerk disabled for normal work. Use development-instance credentials
-  only for a task that needs Clerk integration. The shared Turso development
+- Sign-in is Clerk-only (ADR-0012). Local work uses the development Clerk
+  instance keys; never use production Clerk keys. The shared Turso development
   database is not a scratch database and must not be reset casually.
 - The application supports local SQLite through libSQL. Redis uses Upstash's
   HTTP REST API; a native Redis server is not a compatible substitute.

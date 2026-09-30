@@ -17,7 +17,8 @@ Persistence rules:
 - private account data is never exposed through group-member projections;
 - group reads are membership-scoped and participant claims are email- and
   group-bound server-side;
-- authentication passwords and provider tokens are not part of public DTOs;
+- `Account` stores no credentials; Clerk owns passwords and verification, and
+  `clerkUserId` is the only provider link (ADR-0012);
 - multi-record writes define transaction, duplicate, and partial-failure
   behavior;
 - fixtures and verification databases use synthetic data only.

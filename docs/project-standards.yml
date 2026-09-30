@@ -68,9 +68,9 @@ compliance:
       next_action: Push the remediation and verify the GitHub Dependabot rescan closes the resolved alerts.
     - id: CI-002
       status: partial
-      evidence: The post-commit run https://github.com/kois-studio/board-vault/actions/runs/36483379661 passed backend, database, and repository checks but failed four existing frontend visual snapshots.
+      evidence: Linux landing baselines were refreshed on 2026-09-30 and the frontend job passes. The backend job then failed on the new js-yaml advisory GHSA-r3ph-w7gj-g6xm, which the Clerk-only push fixes with a scoped override.
       priority: high
-      next_action: Refresh or correct the Linux screenshot baselines and restore a passing frontend check.
+      next_action: Confirm all four required jobs pass on main after the Clerk-only push.
     - id: CI-004
       status: exception
       evidence: GitHub main protection requires review and four checks for PR merges; the owner-authorized direct commit on 2026-09-28 bypassed one missing approval and a failing frontend check.
@@ -92,11 +92,11 @@ deferred_work:
     title: Complete the rule-by-rule standards assessment
     priority: medium
     next_action: Assess the remaining selected standards and profiles using repository evidence and record gaps in docs/work/TODO.md.
-  - id: BOARD-002
-    title: Resolve the failing Linux visual regression snapshots
-    priority: high
-    next_action: Regenerate or correct the four landing-page baselines in the matching Linux Playwright environment, then confirm the frontend CI job passes.
   - id: BOARD-003
     title: Confirm dependency advisory remediation
     priority: high
     next_action: Verify GitHub Dependabot alert closure, all required CI checks, and the deployment after the dependency remediation push.
+  - id: BOARD-004
+    title: Refresh the stale authenticated browser journeys
+    priority: medium
+    next_action: Decide the intended auth-handoff behavior, then update the auth-handoff, authenticated-core, and new-person invitation specs.

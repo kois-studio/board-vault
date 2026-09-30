@@ -27,26 +27,6 @@ and [standards contract](../project-standards.yml) for the continuation rules.
 - **Owner:** Maintainer or designated reviewer.
 - **Last updated:** 2026-09-29
 
-### [BOARD-002] [P1] [CI] Resolve Linux visual regression snapshot failures
-
-- **Status:** Ready
-- **Origin:** GitHub Actions on `main` after the collaboration workflow commit.
-- **Goal:** Restore a passing `Frontend build and public E2E` check for the current landing page.
-- **Why now:** The required job fails on four existing light/dark desktop/mobile screenshots, which blocks normal PR merges.
-- **Scope:** Inspect the current rendered output in the matching Linux Playwright environment, update baselines if the current design is intended, or fix a confirmed rendering regression.
-- **Non-goals:** Raising the pixel threshold without understanding the visual difference; changing landing-page design without review.
-- **Acceptance criteria:**
-  - The four landing-page visual tests pass on Linux.
-  - Other public browser checks remain passing.
-- **Verification:** Run the frontend E2E suite in the CI-equivalent environment and confirm the GitHub frontend job succeeds.
-- **Affected areas:** `frontend/e2e/visual-regression.spec.ts`, its snapshot directory, and possibly frontend rendering code.
-- **Dependencies:** Access to the CI-equivalent Playwright browser environment.
-- **Risks:** Updating snapshots without visual review could hide a real regression.
-- **Blocker or question:** None; determine the intended current page rendering during the work.
-- **Next action:** Reproduce the mismatch in the Linux Playwright environment and inspect the expected/actual images.
-- **Owner:** Frontend maintainer.
-- **Last updated:** 2026-09-29
-
 ### [BOARD-003] [P1] [security] Remediate dependency advisories
 
 - **Status:** In Progress
@@ -64,6 +44,26 @@ and [standards contract](../project-standards.yml) for the continuation rules.
 - **Dependencies:** GitHub default-branch Dependabot rescan and push-triggered CI/deployment.
 - **Risks:** Framework major upgrades can introduce compatibility regressions. Angular 22's default `OnPush` strategy is intentionally accepted across existing components; address any observed behavior regressions if they arise. GitHub alert totals may take time to refresh after push.
 - **Blocker or question:** None.
-- **Next action:** Push the validated remediation, then confirm the alert rescan, required CI checks, and deployment result.
+- **Next action:** Confirm the backend CI job passes after the Clerk-only push, which also overrides `js-yaml` for `@nestjs/swagger` (advisory GHSA-r3ph-w7gj-g6xm reported on 2026-09-30); then confirm the alert rescan and deployment result.
 - **Owner:** Maintainer.
-- **Last updated:** 2026-09-29
+- **Last updated:** 2026-09-30
+
+### [BOARD-004] [P2] [testing] Refresh the stale authenticated browser journeys
+
+- **Status:** Ready
+- **Origin:** Clerk-only verification run on 2026-09-30 against a local stack with development Clerk storage states.
+- **Goal:** Make the opt-in authenticated Playwright journeys pass against the current UI.
+- **Why now:** These journeys are skipped in CI, so drift is invisible. The same failures reproduce on `main` before the Clerk-only change.
+- **Scope:** `auth-handoff-flow.spec.ts` expects the handoff screen while `/auth/clerk/status` is delayed, but the route guard waits for that call before the layout renders. `authenticated-core.spec.ts` expects a `Collection` heading and a group navigation without the `People` tab. `new-person-invitation-flow.spec.ts` stops at the Clerk bot-protection check on the invitee page because the Testing Token is installed after the ticket redirect.
+- **Non-goals:** Changing product behavior only to satisfy an outdated assertion.
+- **Acceptance criteria:**
+  - Each journey passes against a local stack with development Clerk storage states, or its assertion is updated to the intended current behavior.
+  - A documented helper produces the storage states (the app does not expose `window.Clerk`, so `@clerk/testing` sign-in helpers cannot be used directly).
+- **Verification:** Run the journeys with the storage-state environment variables documented in the specs.
+- **Affected areas:** `frontend/e2e/`, `docs/contributor-setup.md`.
+- **Dependencies:** Development Clerk keys.
+- **Risks:** Updating assertions without checking the intended UX could hide a real regression.
+- **Blocker or question:** Whether the handoff screen should render while a guarded route is resolving.
+- **Next action:** Decide the intended handoff behavior, then update the three specs.
+- **Owner:** Frontend maintainer.
+- **Last updated:** 2026-09-30
