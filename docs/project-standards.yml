@@ -67,13 +67,13 @@ compliance:
       priority: high
       next_action: Review the monthly Dependabot PRs; security updates arrive outside the schedule.
     - id: CI-002
-      status: partial
-      evidence: Linux landing baselines were refreshed on 2026-09-30 and the frontend job passes. The backend job then failed on the new js-yaml advisory GHSA-r3ph-w7gj-g6xm, which the Clerk-only push fixes with a scoped override.
+      status: compliant
+      evidence: All four required jobs pass on main (run https://github.com/kois-studio/board-vault/actions/runs/36773436842, commit 8dce8a330). CI can also be run manually on a branch before main moves.
       priority: high
-      next_action: Confirm all four required jobs pass on main after the Clerk-only push.
+      next_action: Keep main green; validate large owner batches on a branch first.
     - id: CI-004
       status: exception
-      evidence: GitHub main protection requires review and four checks for PR merges; the owner-authorized direct commit on 2026-09-28 bypassed one missing approval and a failing frontend check.
+      evidence: GitHub main protection requires review and four checks for PR merges. Owner-authorized direct pushes bypassed the required review on 2026-09-28, 2026-09-29, and 2026-09-30; the 2026-09-30 P2 batch passed all four checks on a branch before main was fast-forwarded.
       priority: high
       next_action: Keep the exception limited to explicitly owner-directed work and report every bypass; contributor PRs remain subject to required review and checks.
     - id: DATA-002
@@ -92,4 +92,4 @@ deferred_work:
   - id: BOARD-001
     title: Complete the rule-by-rule standards assessment
     priority: medium
-    next_action: See the GitHub issue "Complete the shared standards assessment".
+    next_action: https://github.com/kois-studio/board-vault/issues/22
