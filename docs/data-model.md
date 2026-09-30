@@ -73,3 +73,28 @@ sessions they created, and more.
 - Fixtures and verification databases use synthetic data only.
 
 To change the schema, follow [how-to/add-migration.md](how-to/add-migration.md).
+
+## Cache (Redis)
+
+Turso is the only source of truth. Upstash Redis holds disposable copies of
+read results and the rate-limit counters, through
+[`CacheService`](../backend/src/modules/common/cache/cache.service.ts).
+
+- **Keys:** `<area>:<selector>:<id>`, for example `reviews:byAccountId:7` or
+  `game-proposal:byStatus:pending`. Rate limits use `rate-limit:…` keys that
+  expire with their window.
+- **Values:** JSON, serialized by the Upstash client.
+- **TTL:** every entry expires: `short` 1 hour (collections, reviews,
+  wishlist), `medium` 6 hours, `long` 1 day (translations). See
+  [`cache.types.ts`](../backend/src/modules/common/cache/cache.types.ts).
+- **Invalidation:** a write deletes the keys it makes stale in the same
+  service method. A missed invalidation is bounded by the TTL, which is the
+  accepted staleness.
+- **Failure:** each Redis call times out after 250 ms and never retries. A
+  failure counts as a cache miss and pauses Redis use for 30 seconds; rate
+  limits then fail open. `/health/ready` reports `not_ready` while Redis is
+  down, but the API keeps serving from Turso.
+- **Concurrency:** there is no stampede protection; at private-beta traffic a
+  concurrent miss costs one extra query.
+- Clearing the cache is always safe (admin cache endpoints, or `FLUSHDB` on a
+  local Redis).

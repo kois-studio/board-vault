@@ -100,6 +100,13 @@ jobs:
               run: npx playwright install --with-deps chromium
             - name: Run browser checks
               run: npm run e2e
+            - name: Keep browser failure evidence
+              if: failure()
+              uses: actions/upload-artifact@v7
+              with:
+                  name: playwright-test-results
+                  path: frontend/test-results/
+                  retention-days: 7
 
     database:
         name: Database snapshot verification

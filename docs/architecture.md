@@ -112,6 +112,23 @@ List `AuthGuard` first; the others read `request.user`.
 `LayoutCompleteComponent` wraps browsing pages; `LayoutBasicComponent` wraps
 focused actions (create, edit, claim, propose) without navigation.
 
+## Security context
+
+- **Assets:** account records (email, username), private collections, group
+  and session history, and the provider secrets in Vercel.
+- **Untrusted input** enters through the browser (every API request), Clerk
+  webhooks (signature-verified), and invitation links.
+- **Trust boundary:** the API. The browser only holds a Clerk session token
+  and the publishable key; the API verifies the token, resolves the local
+  account, and authorizes every target object ([authentication.md](authentication.md)).
+- **Providers own:** credentials, sessions, and MFA (Clerk); TLS, DDoS, and
+  runtime isolation (Vercel); storage encryption and backups (Turso);
+  cache storage (Upstash). Board Vault owns authorization, input validation,
+  and what it logs.
+- Secrets live only in Vercel and the owner's password manager
+  ([environments.md](environments.md)); reporting is in
+  [`SECURITY.md`](../SECURITY.md).
+
 ## Contracts and decisions
 
 - API contract: [api.md](api.md) and [`api/openapi.json`](api/openapi.json).

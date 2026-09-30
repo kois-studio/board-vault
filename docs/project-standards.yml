@@ -29,67 +29,663 @@ profiles:
   - clerk-identity
 
 assessment_scope: >-
-  Initial AI-readiness assessment focused on documentation, safe parallel work,
-  CI, local data isolation, and known security/dependency risks. Rules not listed
-  below have not been assessed and must not be treated as compliant. The
-  rule-by-rule assessment continues in a GitHub issue.
+  Rule-by-rule assessment of every rule in the selected standards and profiles
+  at the pinned revision, against the source tree on 2026-10-01. Deferred rules
+  link to the GitHub issue that closes them; partial rules name their next
+  step. Priority follows rule strength (Required high, Recommended medium,
+  Optional low).
 
 compliance:
   rules:
     - id: DOC-001
       status: compliant
-      evidence: docs/AGENTS.md; AGENTS.md
+      evidence: 'docs/AGENTS.md (routing table, hard rules, checks, doc/ADR update rule); root AGENTS.md and CLAUDE.md point to it.'
       priority: high
-      next_action: Keep the canonical agent instructions current.
+      next_action: Keep the routing table and checks current.
     - id: DOC-002
       status: compliant
-      evidence: docs/README.md
+      evidence: docs/README.md indexes every maintained page.
       priority: high
-      next_action: Add new maintained documentation to the index.
+      next_action: Add new pages to the index.
+    - id: DOC-003
+      status: compliant
+      evidence: 'Each topic has one page (environments.md for variables, data-model.md for schema and cache, authentication.md for sign-in); other pages link to them.'
+      priority: high
+      next_action: Link instead of copying when adding docs.
+    - id: DOC-004
+      status: compliant
+      evidence: 'scripts/check-docs.mjs checks every relative link and anchor; CI "Check docs links and Node version consistency".'
+      priority: high
+      next_action: Keep the check in CI.
+    - id: DOC-005
+      status: compliant
+      evidence: 'docs/AGENTS.md hard rule 8; this batch updated architecture, data-model, api, authentication, and environments with the code.'
+      priority: high
+      next_action: Update docs in the same commit as behavior changes.
+    - id: DOC-006
+      status: compliant
+      evidence: 'Status and task notes live in GitHub Issues and the CHANGELOG; docs/ holds current state, how-to guides, and ADRs.'
+      priority: high
+      next_action: Keep investigations in issues.
+    - id: DOC-007
+      status: compliant
+      evidence: 'Architecture, domain, and integration facts live in this repository; private operations live in kois-context by decision, not in the shared standards.'
+      priority: high
+      next_action: None.
+    - id: DOC-008
+      status: compliant
+      evidence: Exceptions are listed in this contract (CI-004).
+      priority: high
+      next_action: Record any new exception here.
+    - id: DOC-009
+      status: compliant
+      evidence: 'README.md: purpose, status, repository structure, setup commands, and links to detailed docs.'
+      priority: high
+      next_action: Keep it short.
+    - id: DOC-010
+      status: compliant
+      evidence: README.md is human onboarding only; detailed guidance is under docs/ with docs/AGENTS.md as the agent entry point.
+      priority: high
+      next_action: None.
     - id: DOC-011
       status: compliant
-      evidence: GitHub Issues is the equivalent tracked queue (issue templates in .github/ISSUE_TEMPLATE mirror the work-item fields); docs/work/TODO.md points to it; docs/AGENTS.md routes work there.
+      evidence: 'GitHub Issues is the queue (templates in .github/ISSUE_TEMPLATE carry goal, scope, acceptance criteria, and verification; labels carry priority); docs/work/TODO.md points to it.'
       priority: high
       next_action: Keep unfinished work in GitHub Issues.
+    - id: TEST-001
+      status: compliant
+      evidence: 'Backend Jest unit tests and HTTP e2e tests; frontend Vitest unit tests and Playwright journeys; database migration, restore, and rollback rehearsals.'
+      priority: medium
+      next_action: None.
+    - id: TEST-002
+      status: compliant
+      evidence: 'Recent fixes shipped with regression tests (auth guard handoff, rate-limited routes, webhook signature, public-navigation config).'
+      priority: high
+      next_action: Keep adding a failing test first for reproducible defects.
+    - id: TEST-003
+      status: compliant
+      evidence: Tests use fakes for Clerk and in-memory or temporary SQLite; the public-navigation spec pins its runtime config; the flaky icon spec was fixed (vi.waitFor).
+      priority: high
+      next_action: Fix or quarantine any flaky test immediately.
+    - id: TEST-004
+      status: compliant
+      evidence: 'Specs assert responses, status codes, and persisted effects (for example the webhook tests sign real payloads).'
+      priority: medium
+      next_action: None.
+    - id: TEST-005
+      status: compliant
+      evidence: 'Security boundaries (guards, privacy projections, webhooks), migrations (rehearsal scripts), and the API contract (snapshot check) are covered.'
+      priority: medium
+      next_action: Extend coverage with each new route.
     - id: TEST-006
       status: compliant
-      evidence: package.json; .github/workflows/ci.yml
+      evidence: 'Root package.json test scripts; docs/AGENTS.md "Checks"; all run in .github/workflows/ci.yml.'
       priority: high
-      next_action: Keep documented test commands aligned with CI.
+      next_action: Keep documented commands aligned with CI.
+    - id: TEST-007
+      status: compliant
+      evidence: 'FakeClerkTokenVerifier (backend e2e), stubbed ClerkService (frontend units), disposable SQLite; Clerk browser journeys use the development instance by opt-in.'
+      priority: medium
+      next_action: None.
+    - id: TEST-008
+      status: compliant
+      evidence: '298 backend unit tests, 12 e2e tests, 88 frontend unit tests, Playwright journeys, and database rehearsals, all in CI.'
+      priority: high
+      next_action: None.
+    - id: TS-001
+      status: deferred
+      evidence: 'Frontend uses strict: true. The backend enables only strictNullChecks, noImplicitAny, strictBindCallApply, and noFallthroughCasesInSwitch.'
+      priority: high
+      next_action: 'https://github.com/kois-studio/board-vault/issues/33'
+    - id: TS-002
+      status: partial
+      evidence: 'A few undocumented any remain (cache decorator, CacheService get/set, dashboard proposal stats); new code in this batch uses unknown or precise types.'
+      priority: high
+      next_action: 'https://github.com/kois-studio/board-vault/issues/33'
+    - id: TS-003
+      status: compliant
+      evidence: DTO classes with class-validator and Swagger decorators for every route; typed query classes; frontend api.types.ts.
+      priority: medium
+      next_action: None.
+    - id: TS-004
+      status: partial
+      evidence: 'Some domains use literal unions (session status, acquisition status); many rows are still read positionally from libSQL results.'
+      priority: medium
+      next_action: Prefer precise types when touching a domain.
+    - id: TS-005
+      status: compliant
+      evidence: 'Backend: global ValidationPipe (whitelist, forbidNonWhitelisted), validateEnv at startup, zod schemas for database rows; webhooks are signature-verified. Frontend: zod schemas validate API responses (api.schemas.ts).'
+      priority: high
+      next_action: None.
+    - id: TS-006
+      status: compliant
+      evidence: zod on both sides where runtime schemas are needed; class-validator for NestJS DTOs as the framework-native equivalent.
+      priority: low
+      next_action: None.
+    - id: TS-007
+      status: compliant
+      evidence: 'tsconfig, backend .eslintrc.js and .prettierrc, and frontend biome.json are committed.'
+      priority: high
+      next_action: None.
+    - id: TS-008
+      status: deferred
+      evidence: 'Frontend uses Biome; the backend uses ESLint with Prettier. Two coherent systems, one per package.'
+      priority: medium
+      next_action: 'https://github.com/kois-studio/board-vault/issues/34'
+    - id: TS-009
+      status: deferred
+      evidence: Frontend enables noPropertyAccessFromIndexSignature; neither package enables noUncheckedIndexedAccess.
+      priority: high
+      next_action: 'https://github.com/kois-studio/board-vault/issues/33'
+    - id: TS-010
+      status: deferred
+      evidence: 'Frontend enables noImplicitOverride, noImplicitReturns, and noFallthroughCasesInSwitch; unused-local/parameter checks rely on the linters, and the backend lacks most flags.'
+      priority: high
+      next_action: 'https://github.com/kois-studio/board-vault/issues/33'
+    - id: TS-011
+      status: not_applicable
+      evidence: Considered; optional-versus-undefined does not change behavior in the current DTOs. Revisit if a PATCH contract needs it.
+      priority: medium
+      next_action: None.
+    - id: SEC-001
+      status: compliant
+      evidence: 'docs/architecture.md "Security context" (assets, untrusted inputs, trust boundary, provider responsibilities); docs/authentication.md.'
+      priority: high
+      next_action: Update when a new external actor appears.
     - id: SEC-002
       status: compliant
-      evidence: .gitignore; backend/.env.example; scripts/check-public-tree.mjs; docs/environments.md
+      evidence: '.gitignore; backend/.env.example; npm run check:public-tree; runtime secrets only in Vercel; the browser receives only the publishable key; SQL logs omit bound values.'
       priority: high
       next_action: Preserve secret and local-data exclusions.
+    - id: SEC-003
+      status: compliant
+      evidence: 'AuthGuard plus ownership, membership, and admin guards on every protected route; services authorize target objects; e2e tests reject unauthenticated access.'
+      priority: high
+      next_action: None.
+    - id: SEC-004
+      status: compliant
+      evidence: 'Global ValidationPipe, bounded body parsers, parameterized SQL only, Angular template escaping.'
+      priority: high
+      next_action: None.
+    - id: SEC-005
+      status: compliant
+      evidence: Minimal account fields; ADR-0006 privacy projections; TLS and encryption at rest by Vercel and Turso; deletion and retention in docs/data-model.md and ADR-0013.
+      priority: high
+      next_action: None.
+    - id: SEC-006
+      status: compliant
+      evidence: 'ApiErrorFilter returns a safe envelope with a request id; logs carry SQL templates without values; npm run lint:logs checks the log boundary.'
+      priority: high
+      next_action: None.
+    - id: SEC-007
+      status: compliant
+      evidence: 'Separate development and production Clerk instances and Turso databases; production secrets only in the Vercel production scope; Preview has non-secret placeholders only; owner: David.'
+      priority: high
+      next_action: 'Rotate the Upstash production token (issue #19).'
+    - id: SEC-008
+      status: compliant
+      evidence: 'Guard, privacy, rate-limit, and webhook-signature specs; HTTP e2e security-boundary suite.'
+      priority: high
+      next_action: Add rejection tests with every protected route.
+    - id: SEC-009
+      status: compliant
+      evidence: SECURITY.md describes private reporting.
+      priority: medium
+      next_action: None.
+    - id: DEP-001
+      status: compliant
+      evidence: 'package.json and package-lock.json committed for root, backend, and frontend.'
+      priority: high
+      next_action: None.
+    - id: DEP-002
+      status: compliant
+      evidence: 'CI and Vercel install with npm ci, which fails on a manifest/lockfile mismatch.'
+      priority: high
+      next_action: None.
+    - id: DEP-003
+      status: deferred
+      evidence: 'Node is pinned by .nvmrc and engines 24.x; npm comes from that Node locally and in CI, but Vercel uses the latest 24.x.'
+      priority: high
+      next_action: 'https://github.com/kois-studio/board-vault/issues/35'
+    - id: DEP-004
+      status: deferred
+      evidence: CI installs with --ignore-scripts; Vercel npm ci runs dependency lifecycle scripts without an allow-list.
+      priority: high
+      next_action: 'https://github.com/kois-studio/board-vault/issues/35'
+    - id: DEP-005
+      status: compliant
+      evidence: 'Unused packages were removed in this batch (Karma, Jasmine, build-angular); CODEOWNERS makes David the owner; Dependabot runs monthly.'
+      priority: medium
+      next_action: Remove dependencies with their last use.
     - id: DEP-006
       status: compliant
-      evidence: Backend and frontend `npm audit --audit-level=low` report zero vulnerabilities (CI audits both on every run). Dependabot runs monthly with at most three open PRs per ecosystem; the 2026-09-30 backlog was applied in one tested batch.
+      evidence: npm audit --audit-level=low in CI for both packages (zero findings); Dependabot security updates arrive outside the monthly schedule.
       priority: high
-      next_action: Review the monthly Dependabot PRs; security updates arrive outside the schedule.
+      next_action: Review the monthly Dependabot PRs.
+    - id: DEP-007
+      status: not_applicable
+      evidence: 'Existing project: npm and its lockfiles are the contributor compatibility requirement, with the required controls above.'
+      priority: medium
+      next_action: None.
+    - id: CI-001
+      status: compliant
+      evidence: '.github/workflows/ci.yml runs on pushes, pull requests, and manual dispatch with four jobs.'
+      priority: high
+      next_action: None.
     - id: CI-002
       status: compliant
-      evidence: All four required jobs pass on main (run https://github.com/kois-studio/board-vault/actions/runs/36773436842, commit 8dce8a330). CI can also be run manually on a branch before main moves.
+      evidence: 'Install (npm ci), format and lint (Biome, ESLint with Prettier), type-check (tsc through the builds), unit and e2e tests, builds, npm audit, docs and public-tree checks, OpenAPI drift.'
       priority: high
-      next_action: Keep main green; validate large owner batches on a branch first.
+      next_action: None.
+    - id: CI-003
+      status: compliant
+      evidence: setup-node reads .nvmrc; npm ci against committed lockfiles; environment inputs set explicitly per step.
+      priority: high
+      next_action: None.
     - id: CI-004
       status: exception
-      evidence: GitHub main protection requires review and four checks for PR merges. Owner-authorized direct pushes bypassed the required review on 2026-09-28, 2026-09-29, and 2026-09-30; the 2026-09-30 P2 batch passed all four checks on a branch before main was fast-forwarded.
+      evidence: main requires one review and the four checks for PRs. Owner-authorized direct pushes bypass the required review; each batch passes all four checks on a branch before main moves.
       priority: high
-      next_action: Keep the exception limited to explicitly owner-directed work and report every bypass; contributor PRs remain subject to required review and checks.
+      next_action: Keep the exception to explicitly owner-directed work and report every bypass.
+    - id: CI-005
+      status: compliant
+      evidence: 'Workflow permissions are contents: read; no secrets are used; pull-request code runs without credentials.'
+      priority: high
+      next_action: None.
+    - id: CI-006
+      status: compliant
+      evidence: 'npm cache per lockfile, concurrency cancels superseded runs, per-job timeouts, one small runner per job.'
+      priority: medium
+      next_action: None.
+    - id: CI-007
+      status: compliant
+      evidence: 'Job logs, plus Playwright traces, screenshots, and videos uploaded as an artifact when browser checks fail (7 days).'
+      priority: medium
+      next_action: None.
+    - id: OPS-001
+      status: compliant
+      evidence: validateEnv runs before the app starts and fails with named missing variables (production-only checks included).
+      priority: high
+      next_action: None.
+    - id: OPS-002
+      status: compliant
+      evidence: docs/environments.md lists every environment and variable; Vercel scopes are explicit; production never reads local files.
+      priority: high
+      next_action: None.
+    - id: OPS-003
+      status: deferred
+      evidence: Redis calls have a 250 ms timeout; Turso and Clerk calls have none.
+      priority: high
+      next_action: 'https://github.com/kois-studio/board-vault/issues/29'
+    - id: OPS-004
+      status: compliant
+      evidence: The API does not retry external calls (Redis retry disabled); Clerk retries webhook deliveries and the handlers are idempotent.
+      priority: high
+      next_action: Keep retries out unless bounded and idempotent.
+    - id: OPS-005
+      status: compliant
+      evidence: '/health (liveness) and /health/ready (database, cache, schema version) in docs/architecture.md.'
+      priority: high
+      next_action: None.
+    - id: OPS-006
+      status: deferred
+      evidence: Runs as a Vercel function that the platform stops; the app does not enable shutdown hooks or close the libSQL client.
+      priority: high
+      next_action: 'https://github.com/kois-studio/board-vault/issues/29'
+    - id: OPS-007
+      status: deferred
+      evidence: Plain Nest text logs; the request id appears only in error responses.
+      priority: high
+      next_action: 'https://github.com/kois-studio/board-vault/issues/30'
+    - id: OPS-008
+      status: deferred
+      evidence: Only Vercel logs; no alert when production is not ready.
+      priority: medium
+      next_action: 'https://github.com/kois-studio/board-vault/issues/30'
+    - id: OPS-009
+      status: compliant
+      evidence: 'Private owner runbook (kois-context projects/board-vault/operations.md): failure modes and recovery table, backups before schema changes, secrets rotation, owner and escalation (David); restore and rollback rehearsals in CI.'
+      priority: high
+      next_action: Update the runbook after every incident.
+    - id: API-001
+      status: compliant
+      evidence: docs/api/openapi.json generated from source; CI fails on drift.
+      priority: high
+      next_action: None.
+    - id: API-002
+      status: compliant
+      evidence: 'Inputs: global ValidationPipe. Outputs: DTO mapping and frontend zod validation of responses.'
+      priority: high
+      next_action: None.
+    - id: API-003
+      status: compliant
+      evidence: 'ApiErrorFilter envelope { statusCode, code, message, requestId } with stable codes in api-error.ts; docs/api.md.'
+      priority: high
+      next_action: None.
+    - id: API-004
+      status: compliant
+      evidence: 'docs/api.md "Compatibility": expand-then-contract changes because frontend and API deploy separately.'
+      priority: high
+      next_action: None.
+    - id: API-005
+      status: compliant
+      evidence: 'docs/api.md "Collections": catalogue and admin listings paginated with DTO maximums (20 and 100); owner-scoped lists are returned whole.'
+      priority: high
+      next_action: Paginate any list that can grow beyond one owner.
+    - id: API-006
+      status: partial
+      evidence: The client does not retry mutations automatically; atomic writes reject duplicates (for example collection activation returns a conflict); webhooks are idempotent. No general idempotency-key mechanism.
+      priority: high
+      next_action: Add idempotency keys if clients start retrying mutations.
+    - id: API-007
+      status: partial
+      evidence: OpenAPI drift check in CI and runtime zod validation in the client; no automated check that client schemas match the snapshot.
+      priority: high
+      next_action: Consider generating client schemas from openapi.json.
+    - id: API-008
+      status: deferred
+      evidence: Request ids exist in error responses only; no latency or error-rate signals.
+      priority: medium
+      next_action: 'https://github.com/kois-studio/board-vault/issues/30'
+    - id: DATA-001
+      status: compliant
+      evidence: 'docs/data-model.md (owner, schema source, tables, access rules); database/schema and migrations.'
+      priority: high
+      next_action: None.
     - id: DATA-002
       status: compliant
-      evidence: database/migrations; database/scripts/verify-empty-state.mjs; docs/how-to/add-migration.md
+      evidence: 'Numbered additive migrations; docs/how-to/add-migration.md; empty-state, restore, and rollback rehearsals in CI.'
       priority: high
-      next_action: Add future schema changes as ordered migrations and retain disposable verification.
+      next_action: None.
+    - id: DATA-003
+      status: compliant
+      evidence: 'Foreign keys, UNIQUE constraints (Account.email, clerkUserId), transactions for multi-record writes, and the Account-deletion invariant test.'
+      priority: high
+      next_action: None.
+    - id: DATA-004
+      status: compliant
+      evidence: 'docs/data-model.md "Cache (Redis)": Turso is the only source of truth; cache staleness and failure behavior defined.'
+      priority: high
+      next_action: None.
+    - id: DATA-005
+      status: partial
+      evidence: 27 indexes cover the main joins and lookups; list sizes are bounded; no documented way to measure query performance.
+      priority: high
+      next_action: 'Document how to inspect slow queries (Turso dashboard, EXPLAIN QUERY PLAN).'
+    - id: DATA-006
+      status: compliant
+      evidence: 'docs/data-model.md "Cache (Redis)": key scheme, JSON values, TTLs, invalidation, failure, and concurrency.'
+      priority: high
+      next_action: None.
+    - id: DATA-007
+      status: partial
+      evidence: 'A verified .dump before every production schema change (private runbook, section 4); restore rehearsal in CI. Turso point-in-time restore retention on the current plan is not confirmed.'
+      priority: high
+      next_action: Confirm the Turso restore retention and record it in the runbook.
+    - id: WEB-001
+      status: deferred
+      evidence: No rendered-page audit runs yet.
+      priority: high
+      next_action: 'https://github.com/kois-studio/board-vault/issues/31'
+    - id: WEB-002
+      status: deferred
+      evidence: No audit cadence yet.
+      priority: high
+      next_action: 'https://github.com/kois-studio/board-vault/issues/31'
+    - id: WEB-003
+      status: deferred
+      evidence: No audited routes yet.
+      priority: high
+      next_action: 'https://github.com/kois-studio/board-vault/issues/31'
+    - id: WEB-004
+      status: deferred
+      evidence: No audit results to track yet.
+      priority: medium
+      next_action: 'https://github.com/kois-studio/board-vault/issues/31'
+    - id: IDN-001
+      status: compliant
+      evidence: 'docs/authentication.md and ADR-0012: Clerk owns credentials, sessions, verification, and recovery; Board Vault owns accounts, groups, and authorization.'
+      priority: high
+      next_action: None.
+    - id: IDN-002
+      status: compliant
+      evidence: Account.clerkUserId with a UNIQUE index; accounts are never linked by email alone.
+      priority: high
+      next_action: None.
+    - id: IDN-003
+      status: compliant
+      evidence: Product state lives in Turso; Clerk public metadata carries only invitation context.
+      priority: high
+      next_action: None.
+    - id: IDN-004
+      status: compliant
+      evidence: Backend guards and service checks enforce ownership and membership; the frontend guard is UX only.
+      priority: high
+      next_action: None.
+    - id: IDN-005
+      status: compliant
+      evidence: ClerkTokenVerifier verifies every Bearer token server-side with the secret key and authorized parties.
+      priority: high
+      next_action: None.
+    - id: IDN-006
+      status: compliant
+      evidence: 'Creation (ADR-0008, ADR-0012), profile and email updates and deletion (ADR-0013), recovery by Clerk, retention by soft-delete (docs/data-model.md).'
+      priority: high
+      next_action: None.
+    - id: IDN-007
+      status: compliant
+      evidence: 'Svix-verified, idempotent webhook handlers; failures return non-2xx so Clerk retries and shows them; sign-in never depends on a webhook.'
+      priority: high
+      next_action: Configure the production webhook endpoint (ADR-0013).
+    - id: IDN-008
+      status: compliant
+      evidence: 'Account copies email (synced from Clerk by webhook); username, display name, and avatar are app-owned profile fields.'
+      priority: high
+      next_action: None.
+    - id: IDN-009
+      status: compliant
+      evidence: 'Account, UserGroup, and UserGroupMembership are separate tables; group people are separate identities (ADR-0010).'
+      priority: high
+      next_action: None.
+    - id: ANGULAR-001
+      status: compliant
+      evidence: 'pages/ by product area, modules/admin, core/ for app-wide services; see docs/architecture.md frontend map.'
+      priority: medium
+      next_action: None.
+    - id: ANGULAR-002
+      status: partial
+      evidence: Most pages delegate to services; core/services/data.service.ts is a large shared facade.
+      priority: medium
+      next_action: Split data.service.ts by feature when touching it.
+    - id: ANGULAR-003
+      status: compliant
+      evidence: strict TypeScript and strictTemplates; typed HttpClient calls through the Api adapter.
+      priority: medium
+      next_action: None.
+    - id: ANGULAR-004
+      status: compliant
+      evidence: Reactive forms in 16 components for the main workflows; a few simple inputs use ngModel.
+      priority: medium
+      next_action: None.
+    - id: ANGULAR-005
+      status: compliant
+      evidence: Tailwind CSS 4 and Lucide icons.
+      priority: low
+      next_action: None.
+    - id: ANGULAR-006
+      status: compliant
+      evidence: zod schemas validate API responses (api.schemas.ts); forms validate user input.
+      priority: high
+      next_action: None.
+    - id: ANGULAR-007
+      status: deferred
+      evidence: Shared services hold user state without a documented owner and reset policy.
+      priority: high
+      next_action: 'https://github.com/kois-studio/board-vault/issues/32'
+    - id: ANGULAR-008
+      status: partial
+      evidence: Business rules mostly live in the backend; some view logic stays in components.
+      priority: medium
+      next_action: Extract rules into testable functions when changing them.
+    - id: ANGULAR-009
+      status: compliant
+      evidence: auth.guard.spec.ts and auth-handoff specs cover access and failure paths.
+      priority: medium
+      next_action: Add specs with new guards or interceptors.
+    - id: ANGULAR-010
+      status: deferred
+      evidence: 'About 57 subscribe calls and 4 managed lifecycles; most are one-shot HTTP calls, the rest need review.'
+      priority: high
+      next_action: 'https://github.com/kois-studio/board-vault/issues/32'
+    - id: ANGULAR-011
+      status: compliant
+      evidence: Playwright public journeys run in CI; authenticated journeys (32 checks) run on demand against the development Clerk instance (docs/how-to/run-with-clerk.md).
+      priority: medium
+      next_action: Consider running the authenticated journeys in CI with a development Clerk testing token.
+    - id: ANGULAR-012
+      status: compliant
+      evidence: 'frontend/tsconfig.json enables strictTemplates, strictInjectionParameters, and strictInputAccessModifiers.'
+      priority: high
+      next_action: None.
+    - id: ANGULAR-013
+      status: compliant
+      evidence: The frontend guard only picks the screen; the API enforces every rule (docs/authentication.md).
+      priority: high
+      next_action: None.
+    - id: ANGULAR-014
+      status: partial
+      evidence: 'Auth handoff, invitations, and notifications have loading, failure, and retry states; other views are uneven. Contributors are reviewing the UI.'
+      priority: high
+      next_action: Record gaps from the UI review as issues.
+    - id: ANGULAR-015
+      status: deferred
+      evidence: No written scope or reset policy for shared client state.
+      priority: medium
+      next_action: 'https://github.com/kois-studio/board-vault/issues/32'
+    - id: NEST-001
+      status: compliant
+      evidence: modules/core per entity and modules/features per product capability; common/ for cross-cutting pieces.
+      priority: medium
+      next_action: None.
+    - id: NEST-002
+      status: compliant
+      evidence: 'Controllers validate, guard, and delegate to services.'
+      priority: medium
+      next_action: None.
+    - id: NEST-003
+      status: partial
+      evidence: Domain rules live in services next to row mapping; not separated from infrastructure.
+      priority: medium
+      next_action: Extract pure rules when a service grows.
+    - id: NEST-004
+      status: compliant
+      evidence: 'DTOs with class-validator on every route, validateEnv for configuration, zod for database rows, signature checks for webhooks.'
+      priority: high
+      next_action: None.
+    - id: NEST-005
+      status: deferred
+      evidence: Consistent error mapping (ApiErrorFilter); logging and correlation are not structured yet.
+      priority: medium
+      next_action: 'https://github.com/kois-studio/board-vault/issues/30'
+    - id: NEST-006
+      status: compliant
+      evidence: Each module exports only its service; docs/architecture.md backend map lists responsibilities.
+      priority: high
+      next_action: None.
+    - id: NEST-007
+      status: compliant
+      evidence: Modules import what they use (for example AuthModule imports DatabaseModule and UsersModule).
+      priority: medium
+      next_action: None.
+    - id: NEST-008
+      status: compliant
+      evidence: Services check membership and ownership again and SQL scopes queries by account or group.
+      priority: high
+      next_action: None.
+    - id: NEST-009
+      status: compliant
+      evidence: Global ValidationPipe with whitelist and forbidNonWhitelisted; webhooks verified before parsing.
+      priority: high
+      next_action: None.
+    - id: NEST-010
+      status: compliant
+      evidence: ApiErrorFilter and api-error.ts codes; docs/api.md.
+      priority: high
+      next_action: None.
+    - id: NEST-011
+      status: compliant
+      evidence: validateEnv at startup; secrets only in Vercel and local ignored .env files.
+      priority: high
+      next_action: None.
+    - id: NEST-012
+      status: compliant
+      evidence: SQL only in database/queries domain classes behind DatabaseService; Redis only through CacheService.
+      priority: high
+      next_action: None.
+    - id: NEST-013
+      status: compliant
+      evidence: Multi-record writes use libSQL write transactions with defined duplicate and partial-failure behavior (docs/data-model.md).
+      priority: high
+      next_action: None.
+    - id: NEST-014
+      status: compliant
+      evidence: 'The Clerk webhook handlers are idempotent, ignore unknown events, and rely on Clerk retries (ADR-0013).'
+      priority: high
+      next_action: None.
+    - id: NEST-015
+      status: deferred
+      evidence: Initialization and readiness are handled; no connection close on shutdown and no call timeouts.
+      priority: high
+      next_action: 'https://github.com/kois-studio/board-vault/issues/29'
+    - id: NEST-016
+      status: compliant
+      evidence: OpenAPI generated from the routes and checked for drift in CI.
+      priority: high
+      next_action: None.
+    - id: CLERK-001
+      status: compliant
+      evidence: 'Clerk owns authentication (ADR-0012); the app owns accounts, groups, and preferences.'
+      priority: medium
+      next_action: None.
+    - id: CLERK-002
+      status: compliant
+      evidence: Account.clerkUserId with a UNIQUE index; resolution never uses email as the key.
+      priority: high
+      next_action: None.
+    - id: CLERK-003
+      status: compliant
+      evidence: 'A local Account projection exists because collections, groups, and history are application-owned.'
+      priority: high
+      next_action: None.
+    - id: CLERK-004
+      status: compliant
+      evidence: 'POST /webhooks/clerk verifies the signature, parses the event, handles user.updated and user.deleted idempotently, and returns non-2xx on failure so Clerk retries. user.created is covered by provisioning on first verified sign-in (ADR-0013).'
+      priority: high
+      next_action: Configure the production webhook endpoint.
+    - id: CLERK-005
+      status: compliant
+      evidence: 'Public metadata holds only invitation context (group id, inviter id, optional group-person id).'
+      priority: high
+      next_action: None.
+    - id: CLERK-006
+      status: compliant
+      evidence: The Clerk session identifies the caller; the backend authorizes every resource.
+      priority: high
+      next_action: None.
+    - id: CLERK-007
+      status: compliant
+      evidence: 'docs/authentication.md: Clerk Organizations are not used; groups and memberships are application-owned (ADR-0007).'
+      priority: high
+      next_action: None.
+    - id: CLERK-008
+      status: compliant
+      evidence: 'docs/authentication.md: sign-in never waits for a webhook; ADR-0012 describes a Clerk outage.'
+      priority: high
+      next_action: None.
 
 exceptions:
   - id: CI-004
     rationale: The repository owner may explicitly direct an administrative push to main. Such a push can bypass branch protection and does not imply that skipped reviews or failing checks passed. Contributor PRs remain governed by the configured requirements.
     scope: Explicitly owner-directed maintainer commits only.
 
-deferred_work:
-  # Tracked as GitHub Issues since 2026-09-30.
-  - id: BOARD-001
-    title: Complete the rule-by-rule standards assessment
-    priority: medium
-    next_action: https://github.com/kois-studio/board-vault/issues/22
+deferred_work: []

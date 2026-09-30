@@ -38,12 +38,30 @@ Tests do not need Clerk: backend e2e tests replace `ClerkTokenVerifier` with a
 fake, and frontend unit tests stub `ClerkService`. Browser journeys that sign
 in use the development instance and `+clerk_test` addresses.
 
+Clerk Organizations are not used. Groups, memberships, and roles are
+application-owned ([ADR-0007](adr/0007-group-membership-policy.md)), and every
+group operation is authorized against local membership rows.
+
+## Changes made in Clerk
+
+Clerk tells the API about user changes through signed webhooks
+([ADR-0013](adr/0013-clerk-user-lifecycle.md)). A verified primary email change
+updates the linked account unless another account has that email; deleting
+the Clerk user soft-deletes the account, so it can no longer sign in while
+group history keeps its references. The endpoint is off unless
+`CLERK_WEBHOOK_SIGNING_SECRET` is set.
+
+Sign-in never waits for a webhook: every request verifies the Clerk session
+token itself. A delayed or failed delivery only delays the email or deletion
+sync; Clerk retries it, and failures stay visible in the Clerk dashboard's
+webhook log.
 
 ## Where it lives
 
 | Concern | File |
 | --- | --- |
 | Token verification | [`backend/src/modules/common/auth/clerk-token-verifier.ts`](../backend/src/modules/common/auth/clerk-token-verifier.ts) |
+| Clerk webhooks (email sync, deletion) | [`backend/src/modules/common/auth/clerk-webhook.service.ts`](../backend/src/modules/common/auth/clerk-webhook.service.ts) |
 | Account resolution and provisioning, Clerk invitations | [`backend/src/modules/common/auth/clerk-identity.service.ts`](../backend/src/modules/common/auth/clerk-identity.service.ts) |
 | Sets `request.user` on every request | [`backend/src/common/middlewares/clerk-session.middleware.ts`](../backend/src/common/middlewares/clerk-session.middleware.ts) |
 | Requires a resolved account | [`backend/src/common/guards/auth.guard.ts`](../backend/src/common/guards/auth.guard.ts) |

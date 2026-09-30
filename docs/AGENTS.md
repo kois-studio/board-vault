@@ -82,6 +82,6 @@ skipped checks honestly.
 Current-state docs describe the code as it is: [architecture](architecture.md),
 [data model](data-model.md), [authentication](authentication.md),
 [API](api.md), [environments](environments.md). ADRs record why. The
-[standards contract](project-standards.yml) records which shared
-engineering standards were assessed; unassessed rules are unknown, not
-compliant. Add new pages to [README.md](README.md).
+[standards contract](project-standards.yml) records the rule-by-rule
+assessment against the shared engineering standards; deferred rules link to
+their issues. Add new pages to [README.md](README.md).

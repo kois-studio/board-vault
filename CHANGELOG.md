@@ -24,11 +24,21 @@ operational details.
 - Swagger UI is served outside production only.
 - Documentation rewritten around onboarding, maps, and how-to guides; work is
   tracked in GitHub Issues.
+- Frontend unit tests run on Vitest (Karma and Jasmine removed) and now run in
+  CI.
+- Backend queries are split into per-domain classes
+  (`databaseService.groups.getGroupById`, …).
+- The backend deploys with Vercel's NestJS preset instead of the legacy
+  `builds` configuration.
 
 ### Added
 
 - Optional local Redis profile (`docker compose --profile redis up -d`).
 - CI check for documentation links and Node version consistency.
+- Clerk webhooks keep account emails in sync and soft-delete accounts whose
+  Clerk user is deleted (ADR-0013).
+- Rule-by-rule engineering-standards assessment in
+  `docs/project-standards.yml`.
 
 ## 0.1.0-beta.1 — public development baseline
 

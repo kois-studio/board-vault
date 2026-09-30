@@ -18,7 +18,28 @@ Group, collection, invitation, session, notification, and administrative
 operations must authorize the target object server-side; client-supplied owner
 or reviewer IDs are not authoritative.
 
-When changing a route or DTO:
+## Compatibility
+
+The frontend and the API deploy as separate Vercel projects, so for a few
+minutes an old client can talk to a new API, and the reverse. The API has no
+URL versioning; instead every change must work with the previous release of
+the other side:
+
+- add fields, routes, and optional inputs freely;
+- to remove or rename, ship the replacement first, move the frontend to it,
+  and remove the old one in a later release;
+- never change the meaning or type of an existing field in place.
+
+Endpoints consumed by third parties (today only the Clerk webhook) follow the
+provider's contract.
+
+## Collections
+
+Catalogue browsing and admin listings are paginated with a maximum page size
+enforced in the DTO. Per-account and per-group lists (collection, wishlist,
+members, sessions) are bounded by their owner and returned whole.
+
+## Changing a route or DTO
 
 1. update the source contract and relevant response schemas;
 2. regenerate and review the OpenAPI snapshot;
