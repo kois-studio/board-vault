@@ -1,5 +1,4 @@
 import { Component, inject, ViewChild } from '@angular/core'
-import { RouterLink } from '@angular/router'
 import type { GameProposalType } from '../../../api/api.types'
 import { ModalGameSubmissionComponent } from '../../../components/modals/modal-game-submission/modal-game-submission.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'

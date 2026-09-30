@@ -1,14 +1,11 @@
 import { effect, Injectable, inject, signal } from '@angular/core'
-import { Router } from '@angular/router'
 import { catchError, concatMap, finalize, of, tap, throwError } from 'rxjs'
 import { Api } from '../../api/api'
 import type {
     CollectionActivityWithGameDataType,
-    CreatedGroupType,
     GameCompleteType,
     GameProposalType,
     GameReviewWithGameData,
-    GameType,
     GroupWithMembersAndGames,
     HistoryRecordType,
     InvitationWithAccountsData,
@@ -22,14 +19,11 @@ import type {
 import { ToastService } from '../../components/toast/toast.service'
 import { LOADING_KEYS } from '../enums/loading-keys-enum'
 import { LoadingService } from './loading.service'
-import { LocalStorageService } from './local-storage.service'
 import { LogService } from './log.service'
-import { LoginService } from './login.service'
 
 @Injectable({ providedIn: 'root' })
 export class DataService {
     private readonly api = inject(Api)
-    private readonly router = inject(Router)
     private readonly logger = inject(LogService)
     private readonly toastService = inject(ToastService)
     private readonly loadingService = inject(LoadingService)
@@ -387,7 +381,7 @@ export class DataService {
         // 1.
         this.api
             .updateUser(currentUser.id, requestBody)
-            .pipe(concatMap((res) => this.api.getUserById(currentUser.id)))
+            .pipe(concatMap(() => this.api.getUserById(currentUser.id)))
             .subscribe({
                 next: (updatedUser) => {
                     // 2.
@@ -551,7 +545,7 @@ export class DataService {
         if (!currentUser) return throwError(() => new Error('No authenticated user'))
 
         return this.api.createGroup(currentUser.id, groupName).pipe(
-            tap((createdGroup: CreatedGroupType) => {
+            tap(() => {
                 this.userGroups.set([])
                 this._getUserGroups(currentUser.id)
                 this.toastService.success(`You have created the group ${groupName}`)
@@ -657,7 +651,7 @@ export class DataService {
     public deleteNotification(notificationId: number) {
         // 1.
         this.api.deleteNotification(notificationId).subscribe({
-            next: (res) => {
+            next: () => {
                 // 2.
                 this.userNotifications.update((notifications) => notifications.filter((notification) => notification.id !== notificationId))
 
@@ -675,7 +669,7 @@ export class DataService {
 
     public updateNotification(notificationId: number) {
         this.api.updateNotification(notificationId, { isRead: true }).subscribe({
-            next: (res) => {
+            next: () => {
                 this.userNotifications.update((notifications) =>
                     notifications.map((notification) =>
                         notification.id === notificationId ? { ...notification, isRead: true } : notification,
@@ -698,13 +692,13 @@ export class DataService {
     public saveGameReview(accountId: number, gameId: number, review: number) {
         // 1.
         this.api.saveGameReview(accountId, gameId, review).subscribe({
-            next: (res) => {
+            next: () => {
                 this.userReviews.set([])
                 this._getUserReviews(accountId)
 
                 this.toastService.success('Review saved')
             },
-            error: (error) => {
+            error: () => {
                 this.toastService.error('Error saving review')
             },
         })

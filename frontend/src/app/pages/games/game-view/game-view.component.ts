@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { Component, computed, effect, inject, OnDestroy, signal } from '@angular/core'
 import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms'
-import { ActivatedRoute, Router, RouterLink } from '@angular/router'
+import { ActivatedRoute, RouterLink } from '@angular/router'
 import { finalize, Subscription } from 'rxjs'
 import { Api } from '../../../api/api'
 import type { GameViewType } from '../../../api/api.types'
@@ -40,7 +40,6 @@ import { DataService } from '../../../core/services/data.service'
 export class GameViewPageComponent implements OnDestroy {
     private readonly api = inject(Api)
     private readonly route = inject(ActivatedRoute)
-    private readonly router = inject(Router)
     private readonly dataService = inject(DataService)
     private readonly toastService = inject(ToastService)
 
@@ -114,13 +113,13 @@ export class GameViewPageComponent implements OnDestroy {
 
     constructor() {
         this._routeSub = this.route.paramMap.subscribe((params) => {
-            const gameId = Number.parseInt(params.get('gameId') || '')
+            const gameId = Number.parseInt(params.get('gameId') || '', 10)
             this._loadGameData(this.currentUser$()?.id, gameId)
         })
 
         effect(() => {
             const currentUser = this.currentUser$()
-            const gameId = Number.parseInt(this.route.snapshot.paramMap.get('gameId') || '')
+            const gameId = Number.parseInt(this.route.snapshot.paramMap.get('gameId') || '', 10)
 
             if (currentUser?.id && !Number.isNaN(gameId)) {
                 this._loadGameData(currentUser.id, gameId)
@@ -157,7 +156,7 @@ export class GameViewPageComponent implements OnDestroy {
                     })
                 }
             },
-            error: (error) => {
+            error: () => {
                 this.isLoadingGameData = false
                 this.gameLoadError.set(true)
                 this.toastService.error('Error loading game data')
@@ -167,7 +166,7 @@ export class GameViewPageComponent implements OnDestroy {
 
     public retryGameLoad(): void {
         const currentUser = this.currentUser$()
-        const gameId = Number.parseInt(this.route.snapshot.paramMap.get('gameId') || '')
+        const gameId = Number.parseInt(this.route.snapshot.paramMap.get('gameId') || '', 10)
         this._loadGameData(currentUser?.id, gameId, true)
     }
 
@@ -223,7 +222,7 @@ export class GameViewPageComponent implements OnDestroy {
                     // Refresh the global wishlist state to keep it in sync
                     this.dataService.refreshUserWishlist()
                 },
-                error: (error) => {
+                error: () => {
                     this.toastService.error('Error saving wishlist')
                     // On error, reload the game data
                     this._loadGameData(currentUser.id, gameId)
@@ -251,7 +250,7 @@ export class GameViewPageComponent implements OnDestroy {
                 }),
             )
             .subscribe({
-                next: (res) => {
+                next: () => {
                     this.gameView$.update((game) => {
                         if (!game) {
                             return null
@@ -267,7 +266,7 @@ export class GameViewPageComponent implements OnDestroy {
                     })
                     this.toastService.success('Review saved')
                 },
-                error: (error) => {
+                error: () => {
                     this.toastService.error('Error saving review')
                     // On error, reload the game data
                     this._loadGameData(currentUser.id, gameId)
@@ -297,7 +296,7 @@ export class GameViewPageComponent implements OnDestroy {
                 }),
             )
             .subscribe({
-                next: (res) => {
+                next: () => {
                     this.toastService.success('Game added to collection')
 
                     // Check if the game was in the wishlist before adding to collection
@@ -329,7 +328,7 @@ export class GameViewPageComponent implements OnDestroy {
                     this.dataService.refreshUserWishlist()
                     this.dataService.refreshUserGames()
                 },
-                error: (error) => {
+                error: () => {
                     this.toastService.error('Error adding game to collection')
                     // On error, reload the game data
                     this._loadGameData(currentUser.id, gameId)
@@ -355,7 +354,7 @@ export class GameViewPageComponent implements OnDestroy {
                 }),
             )
             .subscribe({
-                next: (res) => {
+                next: () => {
                     this.toastService.success('Game removed from collection')
                     this.gameView$.update((game) => {
                         if (!game) {
@@ -366,7 +365,7 @@ export class GameViewPageComponent implements OnDestroy {
                     })
                     this.dataService.refreshUserGames()
                 },
-                error: (error) => {
+                error: () => {
                     this.toastService.error('Error removing game from collection')
                     // On error, reload the game data
                     this._loadGameData(currentUser.id, gameId)
@@ -413,7 +412,7 @@ export class GameViewPageComponent implements OnDestroy {
                     })
                     this.toastService.success('Purchase details updated')
                 },
-                error: (error) => {
+                error: () => {
                     this.toastService.error('Error updating purchase details')
                     // On error, reload the game data
                     this._loadGameData(currentUser.id, gameId)

@@ -68,7 +68,7 @@ export class WishlistPageComponent {
                     this.toastService.success('Game removed from wishlist')
                 }
             },
-            error: (error) => {
+            error: () => {
                 this.toastService.error('Error saving wishlist, will reload page')
                 // reload page
                 setTimeout(() => {

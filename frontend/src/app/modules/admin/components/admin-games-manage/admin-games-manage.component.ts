@@ -2,7 +2,7 @@ import { Component, inject, OnInit, signal, ViewChild } from '@angular/core'
 import { ReactiveFormsModule } from '@angular/forms'
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
 import { Api } from '../../../../api/api'
-import type { AdminGamesResultType, GameWithTagsAndTranslationsType, TagCategoryType, TagType } from '../../../../api/api.types'
+import type { AdminGamesResultType, GameWithTagsAndTranslationsType } from '../../../../api/api.types'
 import { ModalEditGameTagsComponent } from '../../../../components/modals/modal-edit-game-tags/modal-edit-game-tags.component'
 import { ModalEditGameTranslationsComponent } from '../../../../components/modals/modal-edit-game-translations/modal-edit-game-translations.component'
 import { TagsComponent } from '../../../../components/tags/tags.component'
@@ -64,7 +64,7 @@ export class AdminGamesManageComponent implements OnInit {
     async ngOnInit(): Promise<void> {
         try {
             await this.adminTagsManageService.initialize()
-        } catch (error) {
+        } catch {
             this.toastService.error('Could not load tags and categories.')
         }
         this._initializeSearch()

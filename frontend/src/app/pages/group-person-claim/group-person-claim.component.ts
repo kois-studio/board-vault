@@ -68,8 +68,8 @@ export class GroupPersonClaimComponent {
     }
 
     public async claim(): Promise<void> {
-        const groupId = Number.parseInt(this.route.snapshot.paramMap.get('groupId') || '')
-        const personId = Number.parseInt(this.route.snapshot.paramMap.get('personId') || '')
+        const groupId = Number.parseInt(this.route.snapshot.paramMap.get('groupId') || '', 10)
+        const personId = Number.parseInt(this.route.snapshot.paramMap.get('personId') || '', 10)
         const groupPerson = this.person()
         if (Number.isNaN(groupId) || Number.isNaN(personId) || !groupPerson || this.isSaving()) return
 
@@ -102,7 +102,7 @@ export class GroupPersonClaimComponent {
     }
 
     public async joinAsNewPerson(): Promise<void> {
-        const groupId = Number.parseInt(this.route.snapshot.paramMap.get('groupId') || '')
+        const groupId = Number.parseInt(this.route.snapshot.paramMap.get('groupId') || '', 10)
         if (Number.isNaN(groupId) || this.isSaving()) return
 
         this.isSaving.set(true)
@@ -118,8 +118,8 @@ export class GroupPersonClaimComponent {
     }
 
     private async load(): Promise<void> {
-        const groupId = Number.parseInt(this.route.snapshot.paramMap.get('groupId') || '')
-        const personId = Number.parseInt(this.route.snapshot.paramMap.get('personId') || '')
+        const groupId = Number.parseInt(this.route.snapshot.paramMap.get('groupId') || '', 10)
+        const personId = Number.parseInt(this.route.snapshot.paramMap.get('personId') || '', 10)
         if (Number.isNaN(groupId) || Number.isNaN(personId)) {
             this.error.set('This group person link is not valid.')
             this.isLoading.set(false)
@@ -132,7 +132,7 @@ export class GroupPersonClaimComponent {
                 firstValueFrom(this.api.getGroupPersonCatalog(groupId)),
             ])
             const candidate = peopleResponse.people.find((item) => item.person.id === personId)
-            if (!candidate || !candidate.claimable || candidate.person.kind !== 'placeholder') {
+            if (!candidate?.claimable || candidate.person.kind !== 'placeholder') {
                 this.error.set('This group person is not available for your account.')
                 return
             }

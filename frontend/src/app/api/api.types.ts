@@ -1,11 +1,3 @@
-// wrapper type - unused
-type ResponseDto<T> = {
-    statusOk: boolean
-    message: string
-    code: number
-    data: T
-}
-
 // #region User
 
 export type UserType = {

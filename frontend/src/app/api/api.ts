@@ -69,7 +69,6 @@ import type {
     GameReviewWithGameData,
     GameType,
     GameViewType,
-    GameWithTagsAndTranslationsType,
     GroupAcquisitionEntryType,
     GroupPersonType,
     GroupPersonWorkspaceType,

@@ -5,7 +5,6 @@ import { Api } from '../../../api/api'
 import type { CreateGameProposalType } from '../../../api/api.types'
 import { DataService } from '../../../core/services/data.service'
 import { ToastService } from '../../toast/toast.service'
-import { ButtonComponent } from '../../ui/button/button.component'
 
 @Component({
     imports: [ReactiveFormsModule],

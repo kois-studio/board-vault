@@ -63,7 +63,7 @@ export class GroupEditComponent {
             this.userGroups = this.dataService.userGroups()
             this.invitationsGroupIndex = this.dataService.invitationsGroupIndex()
 
-            const groupId = Number.parseInt(this.route.snapshot.paramMap.get('groupId') || '')
+            const groupId = Number.parseInt(this.route.snapshot.paramMap.get('groupId') || '', 10)
             const groupData = this.userGroups.find((group) => group.id === groupId)
 
             if (Number.isNaN(groupId) || !this.userData) {

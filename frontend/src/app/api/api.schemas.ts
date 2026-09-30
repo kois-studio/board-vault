@@ -24,7 +24,6 @@ import type {
     MeetType,
     MeetWithAttendeesAndGamesType,
     NotificationType,
-    PublicUserType,
     RecommendationSignalsType,
     RecommendationsType,
     ScheduledSessionCreatedType,

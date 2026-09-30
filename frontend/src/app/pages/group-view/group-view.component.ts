@@ -352,7 +352,7 @@ export class GroupViewComponent {
     constructor() {
         effect(() => {
             const currentUser = this.currentUser$()
-            const groupId = Number.parseInt(this.route.snapshot.paramMap.get('groupId') || '')
+            const groupId = Number.parseInt(this.route.snapshot.paramMap.get('groupId') || '', 10)
             const group = this.userGroups$().find((group) => group.id === groupId)
 
             if (this.activeSelectionGroupId !== groupId) {
@@ -404,7 +404,7 @@ export class GroupViewComponent {
 
     public retryGroupHistory(): void {
         const currentUser = this.currentUser$()
-        const groupId = Number.parseInt(this.route.snapshot.paramMap.get('groupId') || '')
+        const groupId = Number.parseInt(this.route.snapshot.paramMap.get('groupId') || '', 10)
         if (!currentUser || Number.isNaN(groupId)) return
 
         this.loadGroupHistory(currentUser.id, groupId)

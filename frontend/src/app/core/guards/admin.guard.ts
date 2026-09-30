@@ -2,12 +2,12 @@
 import { inject } from '@angular/core'
 import { CanActivateFn, Router } from '@angular/router'
 import { Observable, of } from 'rxjs'
-import { map, switchMap } from 'rxjs/operators'
+import { switchMap } from 'rxjs/operators'
 import { ToastService } from '../../components/toast/toast.service'
 import { LogService } from '../services/log.service'
 import { LoginService } from '../services/login.service'
 
-export const AdminGuard: CanActivateFn = (route, state): Observable<boolean> | boolean => {
+export const AdminGuard: CanActivateFn = (_route, state): Observable<boolean> | boolean => {
     const loginService = inject(LoginService)
     const router = inject(Router)
     const toastService = inject(ToastService)

@@ -61,7 +61,7 @@ export class AdminTagsManageComponent implements OnInit {
     async ngOnInit(): Promise<void> {
         try {
             await this.adminTagsManageService.initialize()
-        } catch (error) {
+        } catch {
             this.toastService.error('Could not load tags and categories.')
         }
     }
@@ -100,50 +100,50 @@ export class AdminTagsManageComponent implements OnInit {
     // --------------------------------------------------------------------------
     //        Event Handlers
     // --------------------------------------------------------------------------
-    public async onCategoryUpdated(update: { id: number; name: string }): Promise<void> {
+    public async onCategoryUpdated(_update: { id: number; name: string }): Promise<void> {
         try {
             await this.adminTagsManageService.refreshData()
-        } catch (error) {
+        } catch {
             this.toastService.error('Could not refresh data.')
         }
     }
 
-    public async onTagUpdated(update: { id: number; name: string; categoryId: number }): Promise<void> {
+    public async onTagUpdated(_update: { id: number; name: string; categoryId: number }): Promise<void> {
         try {
             await this.adminTagsManageService.refreshData()
-        } catch (error) {
+        } catch {
             this.toastService.error('Could not refresh data.')
         }
     }
 
-    public async onCategoryCreated(category: TagCategoryType): Promise<void> {
+    public async onCategoryCreated(_category: TagCategoryType): Promise<void> {
         try {
             await this.adminTagsManageService.refreshData()
-        } catch (error) {
+        } catch {
             this.toastService.error('Could not refresh data.')
         }
     }
 
-    public async onTagCreated(tag: TagType): Promise<void> {
+    public async onTagCreated(_tag: TagType): Promise<void> {
         try {
             await this.adminTagsManageService.refreshData()
-        } catch (error) {
+        } catch {
             this.toastService.error('Could not refresh data.')
         }
     }
 
-    public async onCategoryDeleted(categoryId: number): Promise<void> {
+    public async onCategoryDeleted(_categoryId: number): Promise<void> {
         try {
             await this.adminTagsManageService.refreshData()
-        } catch (error) {
+        } catch {
             this.toastService.error('Could not refresh data.')
         }
     }
 
-    public async onTagDeleted(tagId: number): Promise<void> {
+    public async onTagDeleted(_tagId: number): Promise<void> {
         try {
             await this.adminTagsManageService.refreshData()
-        } catch (error) {
+        } catch {
             this.toastService.error('Could not refresh data.')
         }
     }

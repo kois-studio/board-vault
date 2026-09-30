@@ -1,5 +1,4 @@
 import { Component, computed, inject } from '@angular/core'
-import { ReactiveFormsModule } from '@angular/forms'
 import { RouterLink } from '@angular/router'
 import { CardGameComponent } from '../../../components/card-game/card-game.component'
 import { SkeletonCardGameComponent } from '../../../components/skeletons/skeleton-card-game/skeleton-card-game.component'

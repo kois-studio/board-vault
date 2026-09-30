@@ -3,7 +3,6 @@ import { Api } from '../../../../api/api'
 import type { GameProposalType } from '../../../../api/api.types'
 import { ToastService } from '../../../../components/toast/toast.service'
 import { LogService } from '../../../../core/services/log.service'
-import { LoginService } from '../../../../core/services/login.service'
 
 export type GameProposalWithIdsType = GameProposalType & { submitterId: number; reviewerId?: number }
 
@@ -22,7 +21,6 @@ export class AdminGameProposalsService {
     private readonly api = inject(Api)
     private readonly logger = inject(LogService)
     private readonly toastService = inject(ToastService)
-    private readonly loginService = inject(LoginService)
 
     // --------------------------------------------------------------------------
     //        Component signals

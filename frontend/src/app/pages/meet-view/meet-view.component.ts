@@ -75,7 +75,7 @@ export class MeetViewComponent {
             this.userGroups = this.dataService.userGroups()
 
             // Get Meet Details
-            const sessionId = Number.parseInt(this.route.snapshot.paramMap.get('sessionId') || '')
+            const sessionId = Number.parseInt(this.route.snapshot.paramMap.get('sessionId') || '', 10)
             if (!this.userData || this.userGroups.length === 0 || Number.isNaN(sessionId) || this.requestedMeetId === sessionId) {
                 return
             }
@@ -86,7 +86,7 @@ export class MeetViewComponent {
     }
 
     public retryLoad(): void {
-        const sessionId = Number.parseInt(this.route.snapshot.paramMap.get('sessionId') || '')
+        const sessionId = Number.parseInt(this.route.snapshot.paramMap.get('sessionId') || '', 10)
         if (Number.isNaN(sessionId)) return
 
         this.requestedMeetId = null
