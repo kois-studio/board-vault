@@ -15,9 +15,8 @@ import {
 } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
-import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
+import { AuthGuard } from '../../../common/guards/auth.guard'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
-import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
 import { SuccessDto } from '../../../common/types/auth.type'
 import { CollectionActivityDto } from '../../../common/types/collection-activity.type'
 import { GameOwnedDto, UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
@@ -27,7 +26,7 @@ import { WishlistResponseDto } from '../../../common/types/wishlisted-game.type'
 
 import { CollectionService } from './collection.service'
 
-@UseGuards(JwtAuthGuard, VerifiedUserGuard)
+@UseGuards(AuthGuard)
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
 @ApiTags('collection')
 @ApiBearerAuth()

@@ -16,7 +16,7 @@ import { CollectionService } from './collection.service'
 
 @Module({
     imports: [
-        DatabaseModule, // needed for VerifiedUserGuard
+        DatabaseModule,
         GamesModule,
         TagsModule,
         ReviewsModule,

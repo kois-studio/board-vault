@@ -3,14 +3,24 @@
   "paths": {
     "/auth/clerk/status": {
       "get": {
-        "operationId": "AuthController_getClerkStatus",
+        "operationId": "AuthController_getSessionStatus",
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Clerk session is valid"
+            "description": "The session is valid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionStatusDto"
+                }
+              }
+            }
           },
           "401": {
-            "description": "Clerk session is invalid or expired"
+            "description": "The Clerk session is missing, invalid, or expired"
+          },
+          "409": {
+            "description": "The email already belongs to another Board Vault account"
           }
         },
         "security": [
@@ -18,252 +28,7 @@
             "bearer": []
           }
         ],
-        "summary": "Verify a Clerk session during the migration",
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/auth/status": {
-      "get": {
-        "operationId": "AuthController_getTokenStatus",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Token is valid and user status returned",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TokenStatusDto"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized - Token is invalid or expired"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Validate JWT token and get user status",
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/auth/register": {
-      "post": {
-        "operationId": "AuthController_createUser",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RegisterUserDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "The user has been successfully created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessDto"
-                }
-              }
-            }
-          }
-        },
-        "summary": "Create a new user",
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/auth/login": {
-      "post": {
-        "operationId": "AuthController_loginUser",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LoginUserDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Successfully logged in",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AccessTokenDto"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Invalid credentials"
-          }
-        },
-        "summary": "Log in a user",
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/auth/check-email": {
-      "get": {
-        "operationId": "AuthController_checkEmail",
-        "parameters": [
-          {
-            "name": "email",
-            "required": true,
-            "in": "query",
-            "description": "The email address to check",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Email availability status"
-          },
-          "400": {
-            "description": "Email is required"
-          }
-        },
-        "summary": "Check if an email exists",
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/auth/check-username": {
-      "get": {
-        "operationId": "AuthController_checkUsername",
-        "parameters": [
-          {
-            "name": "username",
-            "required": true,
-            "in": "query",
-            "description": "The username to check",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Username availability status"
-          },
-          "400": {
-            "description": "Username is required"
-          }
-        },
-        "summary": "Check if a username exists",
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/auth/verify-email/{token}": {
-      "get": {
-        "operationId": "AuthController_verifyEmail",
-        "parameters": [
-          {
-            "name": "token",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Email successfully verified"
-          },
-          "400": {
-            "description": "Invalid or expired token"
-          }
-        },
-        "summary": "Verify user email",
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/auth/forgot-password": {
-      "post": {
-        "operationId": "AuthController_forgotPassword",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ForgotPasswordDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Password reset link sent"
-          },
-          "400": {
-            "description": "Email is required"
-          }
-        },
-        "summary": "Request a password reset",
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/auth/reset-password/{token}": {
-      "post": {
-        "operationId": "AuthController_resetPassword",
-        "parameters": [
-          {
-            "name": "token",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ResetPasswordDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Password reset successfully"
-          },
-          "400": {
-            "description": "Invalid or expired token"
-          }
-        },
-        "summary": "Reset user password",
+        "summary": "Resolve the Clerk session to its Board Vault account",
         "tags": [
           "auth"
         ]
@@ -4960,7 +4725,7 @@
       }
     },
     "schemas": {
-      "TokenStatusDto": {
+      "SessionStatusDto": {
         "type": "object",
         "properties": {
           "isValid": {
@@ -4974,101 +4739,17 @@
           "isAdmin": {
             "type": "boolean",
             "example": false
+          },
+          "clerkUserId": {
+            "type": "string",
+            "example": "user_2abc"
           }
         },
         "required": [
           "isValid",
           "userId",
-          "isAdmin"
-        ]
-      },
-      "RegisterUserDto": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string",
-            "example": "user@example.test"
-          },
-          "username": {
-            "type": "string",
-            "example": "sample-user"
-          },
-          "password": {
-            "type": "string",
-            "example": "correct-horse-battery-staple"
-          }
-        },
-        "required": [
-          "email",
-          "username",
-          "password"
-        ]
-      },
-      "SuccessDto": {
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolean",
-            "example": true,
-            "description": "The success status of the operation."
-          }
-        },
-        "required": [
-          "success"
-        ]
-      },
-      "LoginUserDto": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string",
-            "example": "user@example.test"
-          },
-          "password": {
-            "type": "string",
-            "example": "correct-horse-battery-staple"
-          }
-        },
-        "required": [
-          "email",
-          "password"
-        ]
-      },
-      "AccessTokenDto": {
-        "type": "object",
-        "properties": {
-          "accessToken": {
-            "type": "string",
-            "example": "eyJhbGcifasdjghnsndgi...",
-            "description": "The JWT access token."
-          }
-        },
-        "required": [
-          "accessToken"
-        ]
-      },
-      "ForgotPasswordDto": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string",
-            "description": "The email address of the user"
-          }
-        },
-        "required": [
-          "email"
-        ]
-      },
-      "ResetPasswordDto": {
-        "type": "object",
-        "properties": {
-          "password": {
-            "type": "string",
-            "description": "The new password for the user"
-          }
-        },
-        "required": [
-          "password"
+          "isAdmin",
+          "clerkUserId"
         ]
       },
       "AvatarDto": {
@@ -5141,10 +4822,6 @@
           "isAdmin": {
             "type": "boolean",
             "example": false
-          },
-          "email_verified": {
-            "type": "boolean",
-            "example": false
           }
         },
         "required": [
@@ -5155,8 +4832,7 @@
           "displayName",
           "avatar",
           "isDeleted",
-          "isAdmin",
-          "email_verified"
+          "isAdmin"
         ]
       },
       "UpdateUserBody": {
@@ -5196,6 +4872,19 @@
         "required": [
           "gamesToAdd",
           "gamesToRemove"
+        ]
+      },
+      "SuccessDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true,
+            "description": "The success status of the operation."
+          }
+        },
+        "required": [
+          "success"
         ]
       },
       "PrintKeysDto": {

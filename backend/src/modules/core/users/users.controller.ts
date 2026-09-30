@@ -2,15 +2,14 @@ import { Body, Controller, Delete, Get, Param, ParseIntPipe, Put, UseGuards, Use
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { AdminGuard } from '../../../common/guards/admin.guard'
-import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
+import { AuthGuard } from '../../../common/guards/auth.guard'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
-import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
 import { SuccessDto } from '../../../common/types/auth.type'
 import { UpdateUserBody, UserGetDto, UserUpdateGamesBody } from '../../../common/types/user.type'
 
 import { UsersService } from './users.service'
 
-@UseGuards(JwtAuthGuard, VerifiedUserGuard)
+@UseGuards(AuthGuard)
 @ApiTags('users')
 @ApiBearerAuth()
 @Controller('users')

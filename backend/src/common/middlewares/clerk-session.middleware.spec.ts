@@ -1,85 +1,71 @@
-import { verifyToken } from '@clerk/backend'
+import { ConflictException } from '@nestjs/common'
 
 import { ClerkSessionMiddleware } from './clerk-session.middleware'
 
-jest.mock('@clerk/backend', () => ({
-    verifyToken: jest.fn(),
-}))
-
 describe('ClerkSessionMiddleware', () => {
-    const mockedVerifyToken = jest.mocked(verifyToken)
-    const configService = {
-        get: jest.fn(
-            (key: string) =>
-                ({
-                    CLERK_SECRET_KEY: 'secret',
-                    CLERK_AUTHORIZED_PARTIES: 'https://board-vault.com,http://localhost:4200',
-                })[key],
-        ),
-    }
-    const clerkIdentityService = {
-        resolveAccount: jest.fn(),
-    }
-    const middleware = new ClerkSessionMiddleware(configService as never, clerkIdentityService as never)
+    const tokenVerifier = { verify: jest.fn() }
+    const clerkIdentityService = { resolveAccount: jest.fn() }
+    const middleware = new ClerkSessionMiddleware(tokenVerifier as never, clerkIdentityService as never)
+    const requestWith = (authorization?: string) =>
+        ({ headers: authorization ? { authorization } : {} }) as {
+            headers: { authorization?: string }
+            user?: unknown
+            authError?: unknown
+        }
 
     beforeEach(() => {
-        mockedVerifyToken.mockReset()
+        tokenVerifier.verify.mockReset()
         clerkIdentityService.resolveAccount.mockReset()
     })
 
-    it('resolves a verified Clerk token into the local request identity', async () => {
-        mockedVerifyToken.mockResolvedValue({ sub: 'user_clerk_123' } as never)
-        clerkIdentityService.resolveAccount.mockResolvedValue({ id: 7, email: 'person@example.com', isAdmin: true })
-        const request = { path: '/profile/users/7', headers: { authorization: 'Bearer clerk-token' } } as {
-            path: string
-            headers: { authorization?: string }
-            user?: unknown
-        }
+    it('attaches the local account behind a verified Clerk token', async () => {
+        tokenVerifier.verify.mockResolvedValue('user_clerk_123')
+        clerkIdentityService.resolveAccount.mockResolvedValue({ id: 7, email: 'person@example.test', isAdmin: true })
+        const request = requestWith('Bearer clerk-token')
         const next = jest.fn()
 
         await middleware.use(request as never, {} as never, next)
 
-        expect(mockedVerifyToken).toHaveBeenCalledWith('clerk-token', {
-            secretKey: 'secret',
-            authorizedParties: ['https://board-vault.com', 'http://localhost:4200'],
-        })
-        expect(request.user).toEqual({
-            userId: 7,
-            email: 'person@example.com',
-            isAdmin: true,
-            clerkUserId: 'user_clerk_123',
-            authProvider: 'clerk',
-        })
+        expect(tokenVerifier.verify).toHaveBeenCalledWith('clerk-token')
+        expect(request.user).toEqual({ userId: 7, email: 'person@example.test', isAdmin: true, clerkUserId: 'user_clerk_123' })
         expect(next).toHaveBeenCalledTimes(1)
     })
 
-    it('does not resolve auth routes because the dedicated auth guards own them', async () => {
-        const request = { path: '/auth/clerk/status', headers: { authorization: 'Bearer clerk-token' } } as {
-            path: string
-            headers: { authorization?: string }
-            user?: unknown
-        }
+    it('leaves requests without a bearer token anonymous', async () => {
+        const request = requestWith()
         const next = jest.fn()
 
         await middleware.use(request as never, {} as never, next)
 
-        expect(mockedVerifyToken).not.toHaveBeenCalled()
+        expect(tokenVerifier.verify).not.toHaveBeenCalled()
+        expect(request.user).toBeUndefined()
+        expect(next).toHaveBeenCalledTimes(1)
+    })
+
+    it('leaves invalid tokens anonymous without resolving an account', async () => {
+        tokenVerifier.verify.mockResolvedValue(null)
+        const request = requestWith('Bearer expired-token')
+        const next = jest.fn()
+
+        await middleware.use(request as never, {} as never, next)
+
         expect(clerkIdentityService.resolveAccount).not.toHaveBeenCalled()
+        expect(request.user).toBeUndefined()
         expect(next).toHaveBeenCalledTimes(1)
     })
 
-    it('leaves an invalid or unlinked session for the protected guard to reject', async () => {
-        mockedVerifyToken.mockRejectedValue(new Error('invalid token'))
-        const request = { path: '/profile/users/7', headers: { authorization: 'Bearer invalid-token' } } as {
-            path: string
-            headers: { authorization?: string }
-            user?: unknown
-        }
+    it('keeps account resolution errors for the guard', async () => {
+        const error = new ConflictException('This email already belongs to another Board Vault account')
+
+        tokenVerifier.verify.mockResolvedValue('user_clerk_123')
+        clerkIdentityService.resolveAccount.mockRejectedValue(error)
+        const request = requestWith('Bearer clerk-token')
         const next = jest.fn()
 
         await middleware.use(request as never, {} as never, next)
 
         expect(request.user).toBeUndefined()
+        expect(request.authError).toBe(error)
         expect(next).toHaveBeenCalledTimes(1)
     })
 })

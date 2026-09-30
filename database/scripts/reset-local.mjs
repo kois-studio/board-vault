@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { createRequire } from 'node:module'
+import { existsSync } from 'node:fs'
 import { chmod, mkdir, readFile, readdir, rm, lstat } from 'node:fs/promises'
 import { dirname, join, resolve } from 'node:path'
 import { spawn } from 'node:child_process'
@@ -14,11 +15,52 @@ const schemaPath = resolve(repositoryRoot, 'database/schema/schema.sql')
 const migrationsDirectory = resolve(repositoryRoot, 'database/migrations')
 const requireFromBackend = createRequire(resolve(repositoryRoot, 'backend/package.json'))
 const { createClient } = requireFromBackend('@libsql/client')
-const bcrypt = requireFromBackend('bcryptjs')
+const { createClerkClient } = requireFromBackend('@clerk/backend')
 
 const localDatabaseUrl = `file:${databasePath}`
-const localPassword = 'local-only-board-vault'
 process.umask(0o077)
+
+// Fixture people. `+clerk_test` addresses never receive email in a Clerk
+// development instance and accept the verification code 424242.
+const fixtureAccounts = [
+    ['organizer', 'organizer+clerk_test@example.com', 'organizer', 'Organizer'],
+    ['member', 'member+clerk_test@example.com', 'member', 'Member'],
+]
+
+const backendEnvFile = resolve(repositoryRoot, 'backend/.env')
+if (!process.env.CLERK_SECRET_KEY && existsSync(backendEnvFile)) {
+    process.loadEnvFile(backendEnvFile)
+}
+
+/**
+ * Makes sure each fixture person exists in the Clerk development instance and
+ * returns their Clerk user ids. Every checkout shares these identities and
+ * links them to its own local rows. Without a development key the local rows
+ * get placeholder ids: the data works, but nobody can sign in.
+ */
+async function resolveFixtureClerkUsers() {
+    const secretKey = process.env.CLERK_SECRET_KEY?.trim() ?? ''
+
+    if (!secretKey) {
+        console.warn('CLERK_SECRET_KEY is not set: fixture accounts get placeholder Clerk ids and cannot sign in.')
+        return Object.fromEntries(fixtureAccounts.map(([key]) => [key, `user_local_${key}`]))
+    }
+    if (!secretKey.startsWith('sk_test_')) {
+        throw new Error('Refusing to create fixture users with a non-development Clerk key. Use the sk_test_ key from the onboarding .env.')
+    }
+
+    const clerk = createClerkClient({ secretKey })
+    const clerkUserIds = {}
+
+    for (const [key, email, username] of fixtureAccounts) {
+        const existing = await clerk.users.getUserList({ emailAddress: [email], limit: 1 })
+        const user = existing.data[0] ?? (await clerk.users.createUser({ emailAddress: [email], username, skipPasswordRequirement: true }))
+
+        clerkUserIds[key] = user.id
+    }
+
+    return clerkUserIds
+}
 
 function runNodeScript(scriptPath, env) {
     return new Promise((resolvePromise, reject) => {
@@ -92,28 +134,25 @@ async function seedLocalScenario() {
     try {
         await client.execute('PRAGMA foreign_keys = ON')
         const migration = await client.execute('SELECT MAX(version) AS version FROM SchemaMigrations')
-        if (String(migration.rows[0]?.version ?? '') !== '0014') {
-            throw new Error('Local fixtures can only be added after migrations reach 0014.')
+        if (String(migration.rows[0]?.version ?? '') !== '0015') {
+            throw new Error('Local fixtures can only be added after migrations reach 0015.')
         }
 
-        const passwordHash = await bcrypt.hash(localPassword, 10)
+        const clerkUserIds = await resolveFixtureClerkUsers()
         transaction = await client.transaction('write')
 
         const accounts = {}
-        for (const [key, email, username, displayName] of [
-            ['organizer', 'organizer@example.test', 'organizer', 'Organizer'],
-            ['member', 'member@example.test', 'member', 'Member'],
-        ]) {
+        for (const [key, email, username, displayName] of fixtureAccounts) {
             const result = await transaction.execute({
                 sql: `INSERT INTO Account
-                    (email, username, password, displayName, avatar, isDeleted, isAdmin, email_verified)
-                    VALUES (?, ?, ?, ?, ?, FALSE, FALSE, TRUE)`,
+                    (email, username, displayName, avatar, isDeleted, isAdmin, clerkUserId)
+                    VALUES (?, ?, ?, ?, FALSE, FALSE, ?)`,
                 args: [
                     email,
                     username,
-                    passwordHash,
                     displayName,
                     JSON.stringify({ backgroundColor: '#4f46e5', iconName: 'person-fill', emoji: null, type: 'initials', initials: username.slice(0, 2) }),
+                    clerkUserIds[key],
                 ],
             })
             accounts[key] = Number(result.lastInsertRowid)
@@ -191,8 +230,9 @@ async function seedLocalScenario() {
         await chmod(databasePath, 0o600)
         console.log('Local SQLite reset and synthetic scenario seed completed.')
         console.log(`Database: ${databasePath}`)
-        console.log('Synthetic login: organizer@example.test / local-only-board-vault')
-        console.log('Synthetic login: member@example.test / local-only-board-vault')
+        for (const [key, email] of fixtureAccounts) {
+            if (!clerkUserIds[key].startsWith('user_local_')) console.log(`Sign in as ${email} with the email code 424242`)
+        }
         console.log(`Seeded ${Object.keys(games).length} games, one group, reviews, ownership, and completed/scheduled sessions.`)
     } catch (error) {
         await transaction?.rollback().catch(() => undefined)

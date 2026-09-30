@@ -1,13 +1,12 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
-import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
-import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
+import { AuthGuard } from '../../../common/guards/auth.guard'
 import { CreateNotificationRequestBody, NotificationDto, UpdateNotificationRequestBody } from '../../../common/types/notification.type'
 
 import { NotificationsService } from './notifications.service'
 
-@UseGuards(JwtAuthGuard, VerifiedUserGuard)
+@UseGuards(AuthGuard)
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
 @ApiTags('notifications')
 @ApiBearerAuth()

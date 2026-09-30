@@ -1,8 +1,7 @@
 import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
-import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
-import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
+import { AuthGuard } from '../../../common/guards/auth.guard'
 import { MeetWithAttendeesAndGames } from '../../../common/types/meet.type'
 import {
     CreatePlaySessionBody,
@@ -25,7 +24,7 @@ import {
 
 import { SessionsService } from './sessions.service'
 
-@UseGuards(JwtAuthGuard, VerifiedUserGuard)
+@UseGuards(AuthGuard)
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
 @ApiTags('sessions')
 @ApiBearerAuth()

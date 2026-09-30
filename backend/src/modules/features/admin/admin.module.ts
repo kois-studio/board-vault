@@ -15,7 +15,7 @@ import { AdminService } from './admin.service'
 
 @Module({
     imports: [
-        DatabaseModule, // needed for VerifiedUserGuard
+        DatabaseModule,
         CacheModule,
         GamesModule,
         TagsModule,

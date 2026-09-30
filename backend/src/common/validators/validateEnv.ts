@@ -22,16 +22,12 @@ export function validateEnv(): void {
         err.push('Remote libSQL databases require an auth token. Local file: databases do not.\n')
     }
 
-    if (!process.env.JWT_SECRET) {
-        err.push('Missing in .env file: JWT_SECRET')
-        err.push('Example value: "eyJfdjsbrEzr..."\n')
+    if (!process.env.CLERK_SECRET_KEY) {
+        err.push('Missing in .env file: CLERK_SECRET_KEY')
+        err.push('Sign-in is Clerk-only. Use the development instance key (sk_test_...) from the onboarding .env.\n')
     }
 
     if (process.env.NODE_ENV === 'production') {
-        if (!process.env.CLERK_SECRET_KEY) {
-            err.push('Missing in production environment: CLERK_SECRET_KEY')
-        }
-
         if (
             !process.env.CLERK_AUTHORIZED_PARTIES?.split(',')
                 .map(value => value.trim())

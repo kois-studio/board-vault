@@ -16,8 +16,7 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { AdminGuard } from '../../../common/guards/admin.guard'
-import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
-import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
+import { AuthGuard } from '../../../common/guards/auth.guard'
 import {
     UpdateGameTranslationsBody,
     UpdateGameTagsBody,
@@ -36,7 +35,7 @@ import { CreateTagDto, TagDto } from '../../../common/types/tag.type'
 
 import { AdminService } from './admin.service'
 
-@UseGuards(JwtAuthGuard, VerifiedUserGuard, AdminGuard)
+@UseGuards(AuthGuard, AdminGuard)
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
 @ApiTags('admin')
 @ApiBearerAuth()

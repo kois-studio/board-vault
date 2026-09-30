@@ -1,5 +1,5 @@
 import { createClerkClient } from '@clerk/backend'
-import { ForbiddenException, NotFoundException } from '@nestjs/common'
+import { ForbiddenException, NotFoundException, UnauthorizedException } from '@nestjs/common'
 
 import { API_ERROR_CODES, BoardVaultHttpException } from '../../../common/http/api-error'
 
@@ -17,7 +17,6 @@ describe('ClerkIdentityService', () => {
         getUserByEmail: jest.fn(),
         getUserByUsername: jest.fn(),
         createClerkUser: jest.fn(),
-        linkClerkUser: jest.fn(),
     }
     const databaseService = {
         getGroupById: jest.fn(),
@@ -81,22 +80,39 @@ describe('ClerkIdentityService', () => {
         expect(usersService.createClerkUser).not.toHaveBeenCalled()
     })
 
-    it('migrates an exact-email account from a development Clerk identity', async () => {
-        const existingAccount = {
-            id: 1,
-            email: 'new@example.com',
-            isAdmin: true,
-            isDeleted: false,
-            clerkUserId: 'user_development',
-        }
-        const migratedAccount = { ...existingAccount, clerkUserId: 'user_new' }
+    it('never links or duplicates an account that already owns the email', async () => {
+        usersService.getUserByEmail.mockResolvedValue({ id: 1, email: 'new@example.com', isAdmin: true, isDeleted: false })
 
-        usersService.getUserByEmail.mockResolvedValue(existingAccount)
-        usersService.linkClerkUser.mockResolvedValue(migratedAccount)
+        const resolution = service.resolveAccount('user_new')
 
-        await expect(service.resolveAccount('user_new')).resolves.toBe(migratedAccount)
-        expect(usersService.linkClerkUser).toHaveBeenCalledWith(1, 'user_new')
+        await expect(resolution).rejects.toBeInstanceOf(BoardVaultHttpException)
+        await expect(resolution).rejects.toMatchObject({
+            status: 409,
+            response: { code: API_ERROR_CODES.ACCOUNT_EMAIL_CONFLICT },
+        })
         expect(usersService.createClerkUser).not.toHaveBeenCalled()
+        expect(databaseService.joinGroupFromClerkInvitation).not.toHaveBeenCalled()
+    })
+
+    it('rejects a Clerk identity whose primary email is not verified', async () => {
+        mockedCreateClerkClient.mockReturnValue({
+            users: {
+                getUser: jest.fn().mockResolvedValue({
+                    publicMetadata: {},
+                    primaryEmailAddressId: 'email_1',
+                    emailAddresses: [{ id: 'email_1', emailAddress: 'new@example.com', verification: { status: 'unverified' } }],
+                }),
+            },
+        } as never)
+
+        await expect(service.resolveAccount('user_new')).rejects.toBeInstanceOf(UnauthorizedException)
+        expect(usersService.createClerkUser).not.toHaveBeenCalled()
+    })
+
+    it('refuses a soft-deleted linked account', async () => {
+        usersService.getUserByClerkId.mockReset().mockResolvedValue({ id: 1, email: 'gone@example.com', isAdmin: false, isDeleted: true })
+
+        await expect(service.resolveAccount('user_existing')).rejects.toBeInstanceOf(UnauthorizedException)
     })
 
     it('does not provision unknown Clerk identities while production registration is closed', async () => {

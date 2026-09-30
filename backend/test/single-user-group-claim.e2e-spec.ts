@@ -5,14 +5,14 @@ import { resolve } from 'node:path'
 import { createClient, type Client } from '@libsql/client'
 import { INestApplication } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
-import * as bcrypt from 'bcryptjs'
 import * as request from 'supertest'
 
 import { AppModule } from './../src/app.module'
+import { ClerkTokenVerifier } from './../src/modules/common/auth/clerk-token-verifier'
+import { FakeClerkTokenVerifier, sessionFor } from './fake-clerk-token-verifier'
 
 const repositoryRoot = resolve(__dirname, '../..')
 const testDatabasePath = resolve(__dirname, 'single-user-group-claim.e2e.sqlite')
-const testPassword = 'test-password-for-synthetic-fixtures'
 
 const sqlLiteral = (value: string): string => `'${value.replaceAll("'", "''")}'`
 
@@ -36,7 +36,6 @@ describe('single-user group claim workflow (e2e)', () => {
             encoding: 'utf8',
         })
 
-        const passwordHash = bcrypt.hashSync(testPassword, 4)
         const avatar = JSON.stringify({
             backgroundColor: '#2563EB',
             iconName: 'person-fill',
@@ -53,10 +52,10 @@ describe('single-user group claim workflow (e2e)', () => {
         })
         const fixture = `
             PRAGMA foreign_keys = ON;
-            INSERT INTO Account (id, email, username, password, avatar, displayName, email_verified)
+            INSERT INTO Account (id, email, username, avatar, displayName, clerkUserId)
             VALUES
-                (1, 'organizer@example.test', 'organizer', ${sqlLiteral(passwordHash)}, ${sqlLiteral(avatar)}, 'Organizer', TRUE),
-                (2, 'member@example.test', 'member', ${sqlLiteral(passwordHash)}, ${sqlLiteral(inviteeAvatar)}, 'Member', TRUE);
+                (1, 'organizer@example.test', 'organizer', ${sqlLiteral(avatar)}, 'Organizer', 'user_organizer'),
+                (2, 'member@example.test', 'member', ${sqlLiteral(inviteeAvatar)}, 'Member', 'user_member');
             INSERT INTO Game (id, imageUrl, gameAvgDuration, minPlayers, maxPlayers)
             VALUES
                 (10, 'https://example.test/game-10.png', 60, 2, 4),
@@ -72,12 +71,13 @@ describe('single-user group claim workflow (e2e)', () => {
         process.env.NODE_ENV = 'test'
         process.env.TURSO_DATABASE_URL = `file:${testDatabasePath}`
         process.env.TURSO_AUTH_TOKEN = ''
-        process.env.JWT_SECRET = 'single-user-group-claim-secret'
-        process.env.RESEND_API_KEY = 're_test_key'
         process.env.UPSTASH_REDIS_REST_DISABLE = 'true'
         process.env.BOARD_VAULT_GROUP_PEOPLE_ENABLED = 'true'
 
-        const moduleFixture: TestingModule = await Test.createTestingModule({ imports: [AppModule] }).compile()
+        const moduleFixture: TestingModule = await Test.createTestingModule({ imports: [AppModule] })
+            .overrideProvider(ClerkTokenVerifier)
+            .useValue(new FakeClerkTokenVerifier())
+            .compile()
 
         app = moduleFixture.createNestApplication()
         await app.init()
@@ -90,17 +90,11 @@ describe('single-user group claim workflow (e2e)', () => {
         rmSync(testDatabasePath, { force: true })
     })
 
-    async function login(email: string) {
-        const response = await request(app.getHttpServer()).post('/auth/login').send({ email, password: testPassword }).expect(201)
-
-        return String(response.body.access_token)
-    }
-
     const withAuth = (token: string) => ({ Authorization: `Bearer ${token}` })
 
     it('creates phantom people, targets one invitation, and preserves the reviewed claim in the database', async () => {
-        const organizerToken = await login('organizer@example.test')
-        const memberToken = await login('member@example.test')
+        const organizerToken = sessionFor('user_organizer')
+        const memberToken = sessionFor('user_member')
 
         const createdGroup = await request(app.getHttpServer())
             .post('/dashboard/users/1/groups/create/group_example')

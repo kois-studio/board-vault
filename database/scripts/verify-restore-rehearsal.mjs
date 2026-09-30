@@ -88,6 +88,8 @@ try {
                    (SELECT expiresAt FROM Invitation WHERE id = 40);
             SELECT CASE WHEN (SELECT notes FROM Meet WHERE id = 30) IS NULL THEN 'notes:ok' ELSE 'notes:unexpected' END;
             SELECT (SELECT COUNT(*) FROM SchemaMigrations) || '|' || (SELECT MAX(version) FROM SchemaMigrations);
+            SELECT CASE WHEN NOT EXISTS (SELECT 1 FROM pragma_table_info('Account') WHERE name IN ('password', 'email_verified'))
+                THEN 'credentials:dropped' ELSE 'credentials:present' END;
         `,
     )
     if (restored.code !== 0) {
@@ -95,14 +97,14 @@ try {
     }
 
     const lines = restored.stdout.trim().split('\n').map(line => line.trim()).filter(Boolean)
-    const expected = ['ok', '2|2|2|1|2', 'Fixture Group|Fixture Game|2026-01-31 10:00:00', 'notes:ok', '14|0014']
+    const expected = ['ok', '2|2|2|1|2', 'Fixture Group|Fixture Game|2026-01-31 10:00:00', 'notes:ok', '15|0015', 'credentials:dropped']
     if (lines.join('\n') !== expected.join('\n')) {
         throw new Error(`Restored database assertions failed. Expected:\n${expected.join('\n')}\nReceived:\n${lines.join('\n')}`)
     }
 
     console.log('Synthetic SQLite backup/restore rehearsal: ok')
     console.log('Representative accounts, group membership, session attendance, played games, translations, and invitation history survived the copy.')
-    console.log('Pending migrations 0006–0014 applied successfully to the restored database; integrity and foreign-key checks passed.')
+    console.log('Pending migrations 0006–0015 applied successfully to the restored database; integrity and foreign-key checks passed.')
 } finally {
     await rm(temporaryDirectory, { recursive: true, force: true })
 }

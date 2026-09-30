@@ -18,7 +18,7 @@ import { DashboardService } from './dashboard.service'
 
 @Module({
     imports: [
-        DatabaseModule, // needed for VerifiedUserGuard
+        DatabaseModule,
         CacheModule,
         UsersModule,
         GroupsModule,

@@ -61,10 +61,8 @@ jobs:
               run: >-
                   TURSO_DATABASE_URL='file:/tmp/board-vault-openapi.db'
                   TURSO_AUTH_TOKEN='local'
-                  JWT_SECRET='local-secret'
                   UPSTASH_REDIS_REST_DISABLE='true'
                   CLERK_SECRET_KEY='sk_test_local'
-                  RESEND_API_KEY='re_local'
                   npm run docs:openapi
                   && git diff --exit-code -- ../docs/api/openapi.json
 

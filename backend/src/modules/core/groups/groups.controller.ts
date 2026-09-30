@@ -1,10 +1,9 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
+import { AuthGuard } from '../../../common/guards/auth.guard'
 import { GroupOwnerGuard } from '../../../common/guards/group-owner.guard'
-import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
 import { UserInGroupGuard } from '../../../common/guards/user-in-group.guard'
-import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
 import {
     ClerkGroupInvitationDto,
     ClerkInvitationIdParam,
@@ -23,7 +22,7 @@ import { ClerkIdentityService } from '../../common/auth/clerk-identity.service'
 import { GroupAcquisitionService } from './group-acquisition.service'
 import { GroupsService } from './groups.service'
 
-@UseGuards(JwtAuthGuard, VerifiedUserGuard)
+@UseGuards(AuthGuard)
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
 @ApiTags('groups')
 @ApiBearerAuth()

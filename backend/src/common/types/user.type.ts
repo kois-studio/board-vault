@@ -1,18 +1,6 @@
 import { ApiProperty, PickType } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
-import {
-    ArrayMaxSize,
-    IsArray,
-    IsEmail,
-    IsIn,
-    IsInt,
-    IsNotEmpty,
-    IsOptional,
-    IsString,
-    MaxLength,
-    Min,
-    ValidateNested,
-} from 'class-validator'
+import { ArrayMaxSize, IsArray, IsIn, IsInt, IsNotEmpty, IsOptional, IsString, MaxLength, Min, ValidateNested } from 'class-validator'
 
 import { GameCompleteDto } from './game.type'
 
@@ -47,30 +35,8 @@ export class AvatarDto {
 }
 
 /**
- * Internal account record as it comes from the database.
- *
- * This is deliberately a type rather than a decorated Swagger class. Password
- * hashes and one-time tokens must stay inside backend services and must never
- * become part of an HTTP response schema by inheritance.
- */
-export type UserRecord = {
-    id: number
-    email: string
-    password: string
-    createdAt: string
-    username: string
-    displayName: string
-    avatar: AvatarDto
-    isDeleted: boolean
-    isAdmin: boolean
-    email_verified: boolean
-    verification_token: string | null
-    password_reset_token: string | null
-}
-
-/**
- * Safe account response. Sensitive database-only fields are intentionally
- * declared nowhere on this HTTP DTO.
+ * Account response. Credentials belong to Clerk (ADR-0012); the local
+ * Account row holds only the Board Vault profile and authorization flags.
  */
 export class UserGetDto {
     @ApiProperty({ example: 1 })
@@ -96,9 +62,6 @@ export class UserGetDto {
 
     @ApiProperty({ example: false })
     isAdmin: boolean
-
-    @ApiProperty({ example: false })
-    email_verified: boolean
 }
 
 /**
@@ -112,12 +75,6 @@ export class UserSelfDto extends PickType(UserGetDto, ['id', 'email', 'username'
  * Email and account-state fields are reserved for dedicated self/admin boundaries.
  */
 export class UserPublicDto extends PickType(UserGetDto, ['id', 'username', 'displayName', 'avatar']) {}
-
-/**
- * Internal account creation input. This is not an HTTP DTO; public
- * registration uses RegisterUserDto below.
- */
-export type CreateUserBody = Pick<UserRecord, 'email' | 'password' | 'username' | 'displayName' | 'avatar'>
 
 /**
  * PUT /users/:userId requests --> safe profile fields only
@@ -142,66 +99,6 @@ export class UpdateUserBody {
     @ValidateNested()
     @Type(() => AvatarDto)
     avatar?: AvatarDto
-}
-
-/**
- * Internal account-state updates used by authentication workflows.
- * This type must never be used as an HTTP request body.
- */
-export type UpdateUserRecord = Partial<
-    Pick<
-        UserRecord,
-        | 'email'
-        | 'username'
-        | 'password'
-        | 'displayName'
-        | 'avatar'
-        | 'isAdmin'
-        | 'email_verified'
-        | 'verification_token'
-        | 'password_reset_token'
-    >
-> & {
-    /** Internal UTC epoch-second expiry for the email verification token. */
-    verification_token_expires_at?: number | null
-    /** Internal UTC epoch-second expiry for the password reset token. */
-    password_reset_token_expires_at?: number | null
-}
-
-/**
- * POST /auth/register
- */
-export class RegisterUserDto {
-    @ApiProperty({ example: 'user@example.test' })
-    @IsEmail()
-    email: string
-
-    @ApiProperty({ example: 'sample-user' })
-    @IsString()
-    @IsNotEmpty()
-    @MaxLength(50)
-    username: string
-
-    @ApiProperty({ example: 'correct-horse-battery-staple' })
-    @IsString()
-    @IsNotEmpty()
-    @MaxLength(128)
-    password: string
-}
-
-/**
- * POST /auth/login
- */
-export class LoginUserDto {
-    @ApiProperty({ example: 'user@example.test' })
-    @IsEmail()
-    email: string
-
-    @ApiProperty({ example: 'correct-horse-battery-staple' })
-    @IsString()
-    @IsNotEmpty()
-    @MaxLength(128)
-    password: string
 }
 
 /**

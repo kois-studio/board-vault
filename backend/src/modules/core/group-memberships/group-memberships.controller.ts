@@ -1,14 +1,13 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
-import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
+import { AuthGuard } from '../../../common/guards/auth.guard'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
-import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
 import { CreateGroupMembershipRequestBody, GroupMembershipDto } from '../../../common/types/group-membership.type'
 
 import { GroupMembershipsService } from './group-memberships.service'
 
-@UseGuards(JwtAuthGuard, VerifiedUserGuard)
+@UseGuards(AuthGuard)
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
 @ApiTags('memberships')
 @ApiBearerAuth()

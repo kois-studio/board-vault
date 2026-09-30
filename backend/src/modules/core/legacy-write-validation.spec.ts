@@ -2,10 +2,9 @@ import { ExecutionContext, INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
 import * as request from 'supertest'
 
+import { AuthGuard } from '../../common/guards/auth.guard'
 import { GroupOwnerGuard } from '../../common/guards/group-owner.guard'
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
 import { UserInGroupGuard } from '../../common/guards/user-in-group.guard'
-import { VerifiedUserGuard } from '../../common/guards/verified-user.guard'
 import { ClerkIdentityService } from '../common/auth/clerk-identity.service'
 
 import { GroupMembershipsController } from './group-memberships/group-memberships.controller'
@@ -37,15 +36,13 @@ describe('Legacy write DTO validation', () => {
                 { provide: GroupMembershipsService, useValue: { createGroupMembershipFromInvitation } },
             ],
         })
-            .overrideGuard(JwtAuthGuard)
+            .overrideGuard(AuthGuard)
             .useValue({
                 canActivate: (context: ExecutionContext) => {
                     context.switchToHttp().getRequest().user = { userId: 7 }
                     return true
                 },
             })
-            .overrideGuard(VerifiedUserGuard)
-            .useValue({ canActivate: () => true })
             .overrideGuard(UserInGroupGuard)
             .useValue({ canActivate: () => true })
             .overrideGuard(GroupOwnerGuard)

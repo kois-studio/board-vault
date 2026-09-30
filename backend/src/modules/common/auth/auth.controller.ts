@@ -1,175 +1,27 @@
-// auth.controller.ts
-import {
-    BadRequestException,
-    Body,
-    Controller,
-    Get,
-    NotFoundException,
-    Param,
-    ParseUUIDPipe,
-    Post,
-    Query,
-    Req,
-    UseGuards,
-    UsePipes,
-    ValidationPipe,
-} from '@nestjs/common'
+import { Controller, Get, Req, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
-import { ClerkAuthGuard } from '../../../common/guards/clerk-auth.guard'
-import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
-import { RateLimit, RateLimitGuard } from '../../../common/guards/rate-limit.guard'
-import {
-    AccessTokenDto,
-    CheckEmailDto,
-    CheckUsernameDto,
-    ForgotPasswordDto,
-    ResetPasswordDto,
-    SuccessDto,
-    TokenStatusDto,
-} from '../../../common/types/auth.type'
-import { LoginUserDto, RegisterUserDto } from '../../../common/types/user.type'
+import { AuthGuard } from '../../../common/guards/auth.guard'
+import { SessionStatusDto } from '../../../common/types/auth.type'
 
-import { AuthService } from './auth.service'
-import { ClerkIdentityService } from './clerk-identity.service'
+import type { AuthenticatedUser } from '../../../common/types/auth.type'
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-    constructor(
-        private readonly authService: AuthService,
-        private readonly clerkIdentityService: ClerkIdentityService,
-    ) {}
-
     @Get('/clerk/status')
-    @UseGuards(ClerkAuthGuard)
+    @UseGuards(AuthGuard)
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'Verify a Clerk session during the migration' })
-    @ApiResponse({ status: 200, description: 'Clerk session is valid' })
-    @ApiResponse({ status: 401, description: 'Clerk session is invalid or expired' })
-    async getClerkStatus(@Req() request: { user: { clerkUserId: string } }) {
-        const user = await this.clerkIdentityService.resolveAccount(request.user.clerkUserId)
-
+    @ApiOperation({ summary: 'Resolve the Clerk session to its Board Vault account' })
+    @ApiResponse({ status: 200, type: SessionStatusDto, description: 'The session is valid' })
+    @ApiResponse({ status: 401, description: 'The Clerk session is missing, invalid, or expired' })
+    @ApiResponse({ status: 409, description: 'The email already belongs to another Board Vault account' })
+    getSessionStatus(@Req() request: { user: AuthenticatedUser }): SessionStatusDto {
         return {
             isValid: true,
-            userId: user.id,
-            isAdmin: user.isAdmin,
+            userId: request.user.userId,
+            isAdmin: request.user.isAdmin,
             clerkUserId: request.user.clerkUserId,
         }
-    }
-
-    @Get('/status')
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
-    @ApiOperation({ summary: 'Validate JWT token and get user status' })
-    @ApiResponse({ status: 200, description: 'Token is valid and user status returned', type: TokenStatusDto })
-    @ApiResponse({ status: 401, description: 'Unauthorized - Token is invalid or expired' })
-    async getTokenStatus(@Req() request: any): Promise<TokenStatusDto> {
-        // If JwtAuthGuard passes, the request.user object will be populated by your JwtStrategy's validate method.
-        // The guard itself handles the 401 if the token is bad.
-
-        // Ensure userId is a number if it comes as a string from the token
-        const userId = typeof request.user.userId === 'string' ? parseInt(request.user.userId, 10) : request.user.userId
-
-        return {
-            isValid: true,
-            userId,
-            isAdmin: request.user.isAdmin || false,
-        }
-    }
-
-    @Post('/register')
-    @UseGuards(RateLimitGuard)
-    @RateLimit(5, 60)
-    @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
-    @ApiOperation({ summary: 'Create a new user' })
-    @ApiResponse({ status: 201, type: SuccessDto, description: 'The user has been successfully created' })
-    async createUser(@Body() userDto: RegisterUserDto) {
-        return this.authService.register(userDto.email, userDto.username, userDto.password)
-    }
-
-    @Post('/login')
-    @UseGuards(RateLimitGuard)
-    @RateLimit(10, 60)
-    @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
-    @ApiOperation({ summary: 'Log in a user' })
-    @ApiResponse({ status: 201, type: AccessTokenDto, description: 'Successfully logged in' })
-    @ApiResponse({ status: 401, description: 'Invalid credentials' })
-    async loginUser(@Body() loginDto: LoginUserDto) {
-        return this.authService.login(loginDto.email, loginDto.password)
-    }
-
-    @Get('/check-email')
-    @UseGuards(RateLimitGuard)
-    @RateLimit(30, 60)
-    @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
-    @ApiOperation({ summary: 'Check if an email exists' })
-    @ApiResponse({ status: 200, description: 'Email availability status' })
-    @ApiResponse({ status: 400, description: 'Email is required' })
-    async checkEmail(@Query() checkEmailDto: CheckEmailDto) {
-        const isAvailable = await this.authService.checkEmail(checkEmailDto.email)
-
-        return { isAvailable }
-    }
-
-    @Get('/check-username')
-    @UseGuards(RateLimitGuard)
-    @RateLimit(30, 60)
-    @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
-    @ApiOperation({ summary: 'Check if a username exists' })
-    @ApiResponse({ status: 200, description: 'Username availability status' })
-    @ApiResponse({ status: 400, description: 'Username is required' })
-    async checkUsername(@Query() checkUsernameDto: CheckUsernameDto) {
-        const isAvailable = await this.authService.checkUsername(checkUsernameDto.username)
-
-        return { isAvailable }
-    }
-
-    @Get('/verify-email/:token')
-    @UseGuards(RateLimitGuard)
-    @RateLimit(10, 60)
-    @ApiOperation({ summary: 'Verify user email' })
-    @ApiResponse({ status: 200, description: 'Email successfully verified' })
-    @ApiResponse({ status: 400, description: 'Invalid or expired token' })
-    async verifyEmail(@Param('token', new ParseUUIDPipe()) token: string) {
-        const result = await this.authService.verifyEmail(token)
-
-        if (!result) {
-            throw new NotFoundException('Invalid or expired token')
-        }
-        return { message: 'Email successfully verified' }
-    }
-
-    @Post('/forgot-password')
-    @UseGuards(RateLimitGuard)
-    @RateLimit(5, 60)
-    @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
-    @ApiOperation({ summary: 'Request a password reset' })
-    @ApiResponse({ status: 200, description: 'Password reset link sent' })
-    @ApiResponse({ status: 400, description: 'Email is required' })
-    async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
-        const { email } = forgotPasswordDto
-
-        if (!email) {
-            throw new BadRequestException('Email is required')
-        }
-        await this.authService.forgotPassword(email)
-        return { message: 'Password reset link sent' }
-    }
-
-    @Post('/reset-password/:token')
-    @UseGuards(RateLimitGuard)
-    @RateLimit(5, 60)
-    @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
-    @ApiOperation({ summary: 'Reset user password' })
-    @ApiResponse({ status: 200, description: 'Password reset successfully' })
-    @ApiResponse({ status: 400, description: 'Invalid or expired token' })
-    async resetPassword(@Param('token', new ParseUUIDPipe()) token: string, @Body() resetPasswordDto: ResetPasswordDto) {
-        const result = await this.authService.resetPassword(token, resetPasswordDto.password)
-
-        if (!result) {
-            throw new NotFoundException('Invalid or expired token')
-        }
-        return { message: 'Password reset successfully' }
     }
 }

@@ -6,24 +6,18 @@ import { CreateGameProposalBody } from './game-proposal.type'
 import { LegacyCreateGroupParams } from './group.type'
 import { CreateNotificationRequestBody } from './notification.type'
 import { CreatePlaySessionBody, UpdateSessionShortlistBody } from './session.type'
-import { RegisterUserDto, UserUpdateGamesBody } from './user.type'
+import { UserUpdateGamesBody } from './user.type'
 
 describe('request boundary limits', () => {
     async function validationErrors<T extends object>(type: new () => T, value: object) {
         return validate(plainToInstance(type, value))
     }
 
-    it('bounds legacy registration credentials and proposal text', async () => {
-        const registrationErrors = await validationErrors(RegisterUserDto, {
-            email: 'friend@example.com',
-            username: 'a'.repeat(51),
-            password: 'a'.repeat(129),
-        })
+    it('bounds proposal text', async () => {
         const proposalErrors = await validationErrors(CreateGameProposalBody, {
             title: 'a'.repeat(201),
         })
 
-        expect(registrationErrors.map(error => error.property)).toEqual(expect.arrayContaining(['username', 'password']))
         expect(proposalErrors.map(error => error.property)).toContain('title')
     })
 

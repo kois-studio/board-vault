@@ -11,14 +11,7 @@ import { PlayController } from './play.controller'
 import { PlayService } from './play.service'
 
 @Module({
-    imports: [
-        DatabaseModule, // needed for VerifiedUserGuard
-        UsersModule,
-        GamesModule,
-        MeetsModule,
-        MeetAccountGamesModule,
-        GameTranslationModule,
-    ],
+    imports: [DatabaseModule, UsersModule, GamesModule, MeetsModule, MeetAccountGamesModule, GameTranslationModule],
     providers: [PlayService],
     exports: [PlayService],
     controllers: [PlayController],

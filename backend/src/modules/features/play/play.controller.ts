@@ -1,9 +1,8 @@
 import { Body, Controller, Get, Param, ParseIntPipe, Post, Query, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
-import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
+import { AuthGuard } from '../../../common/guards/auth.guard'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
-import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
 import { MeetDto } from '../../../common/types/meet.type'
 
 import { PlayService } from './play.service'
@@ -18,7 +17,7 @@ import {
     RecommendationsDto,
 } from './play.types'
 
-@UseGuards(JwtAuthGuard, VerifiedUserGuard)
+@UseGuards(AuthGuard)
 @ApiTags('play')
 @ApiBearerAuth()
 @Controller('play')

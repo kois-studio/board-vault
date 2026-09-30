@@ -4,6 +4,9 @@
 -- against the live database on 2026-08-16.
 -- This is an observed schema snapshot, not a migration. Do not apply it
 -- directly to another environment without creating and reviewing migrations.
+-- It is the baseline that database/migrations apply on top of, so it keeps
+-- columns that later migrations remove (0015 drops the Account credential
+-- columns; see ADR-0012).
 
 CREATE TABLE Account (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

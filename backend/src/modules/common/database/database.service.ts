@@ -1,9 +1,6 @@
-import { randomUUID } from 'node:crypto'
-
 import { Client, createClient, type InStatement } from '@libsql/client'
 import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundException, OnModuleInit } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import * as bcrypt from 'bcryptjs'
 
 import type { ClerkGroupInvitationMetadata } from '../../../common/types/clerk-invitation.type'
 import type { CollectionActivityDto } from '../../../common/types/collection-activity.type'
@@ -20,7 +17,7 @@ import type {
 import type { CreateGroupBody, UpdateGroupBody } from '../../../common/types/group.type'
 import type { CreateInvitationBody, CreateInvitationByUsernameBody } from '../../../common/types/invitation.type'
 import type { CreateNotificationBody, UpdateNotificationBody } from '../../../common/types/notification.type'
-import type { CreateUserBody, UpdateUserBody, UpdateUserRecord } from '../../../common/types/user.type'
+import type { UpdateUserBody } from '../../../common/types/user.type'
 import type { MeetAccountGameQueryOptions } from '../../../modules/core/meet-account-games/meet-account-games.types'
 
 type CompletedSessionInput = {
@@ -46,7 +43,12 @@ type ScheduledSessionInput = {
     plannedGameIds: Array<number>
 }
 
-export const CURRENT_SCHEMA_VERSION = '0014'
+export const CURRENT_SCHEMA_VERSION = '0015'
+
+// Account columns the application reads. Always select them by name: the
+// table's column order changed when migration 0015 dropped the legacy
+// credential columns.
+const ACCOUNT_COLUMNS = 'id, email, username, avatar, displayName, created_at, isDeleted, isAdmin, clerkUserId'
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
@@ -88,124 +90,44 @@ export class DatabaseService implements OnModuleInit {
         return this.tursoClient.execute(stmt)
     }
 
-    // #region Auth
-
-    checkEmail(email: string) {
-        return this._tursoExecute({
-            sql: 'SELECT * FROM Account WHERE email = ?',
-            args: [email],
-        })
-    }
-
-    checkUsername(username: string) {
-        return this._tursoExecute({
-            sql: 'SELECT * FROM Account WHERE username = ?',
-            args: [username],
-        })
-    }
-
     // #region User
 
     getUsers() {
-        return this._tursoExecute('SELECT * FROM Account')
+        return this._tursoExecute(`SELECT ${ACCOUNT_COLUMNS} FROM Account`)
     }
 
     getUserById(id: number) {
         return this._tursoExecute({
-            sql: 'SELECT * FROM Account WHERE id = ?',
+            sql: `SELECT ${ACCOUNT_COLUMNS} FROM Account WHERE id = ?`,
             args: [id],
         })
     }
 
     getUserByEmail(email: string) {
         return this._tursoExecute({
-            sql: 'SELECT * FROM Account WHERE email = ?',
+            sql: `SELECT ${ACCOUNT_COLUMNS} FROM Account WHERE email = ?`,
             args: [email],
         })
     }
 
     getUserByUsername(username: string) {
         return this._tursoExecute({
-            sql: 'SELECT * FROM Account WHERE username = ?',
+            sql: `SELECT ${ACCOUNT_COLUMNS} FROM Account WHERE username = ?`,
             args: [username],
         })
     }
 
     getUserByClerkId(clerkUserId: string) {
         return this._tursoExecute({
-            sql: 'SELECT * FROM Account WHERE clerkUserId = ?',
+            sql: `SELECT ${ACCOUNT_COLUMNS} FROM Account WHERE clerkUserId = ?`,
             args: [clerkUserId],
         })
     }
 
-    linkUserToClerkId(accountId: number, clerkUserId: string) {
+    createClerkUser(user: { email: string; username: string; displayName: string; avatar: string; clerkUserId: string }) {
         return this._tursoExecute({
-            // A verified exact-email match may migrate an account from the
-            // development Clerk instance to production. The identity service
-            // performs that email and verification check before this update.
-            sql: 'UPDATE Account SET clerkUserId = ? WHERE id = ? AND (clerkUserId IS NULL OR clerkUserId <> ?)',
-            args: [clerkUserId, accountId, clerkUserId],
-        })
-    }
-
-    getUserByPasswordResetToken(token: string) {
-        return this._tursoExecute({
-            sql: 'SELECT * FROM Account WHERE password_reset_token = ? AND password_reset_token_expires_at IS NOT NULL AND password_reset_token_expires_at > unixepoch()',
-            args: [token],
-        })
-    }
-
-    async resetPasswordWithToken(token: string, password: string) {
-        const hashedPassword = await bcrypt.hash(password, 10)
-
-        return this._tursoExecute({
-            sql: `
-                UPDATE Account
-                SET password = ?, password_reset_token = NULL, password_reset_token_expires_at = NULL
-                WHERE password_reset_token = ?
-                  AND password_reset_token_expires_at IS NOT NULL
-                  AND password_reset_token_expires_at > unixepoch()
-            `,
-            args: [hashedPassword, token],
-        })
-    }
-
-    async createUser(userDto: CreateUserBody, verificationToken: string, verificationTokenExpiresAt?: number) {
-        const { email, password, username, displayName, avatar } = userDto
-        const hashedPassword = await bcrypt.hash(password, 10)
-
-        await this._tursoExecute({
-            sql: 'INSERT INTO Account (email, password, username, displayName, avatar, verification_token, verification_token_expires_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            args: [
-                email,
-                hashedPassword,
-                username,
-                displayName,
-                JSON.stringify(avatar),
-                verificationToken,
-                verificationTokenExpiresAt ?? null,
-            ],
-        })
-    }
-
-    async createClerkUser(user: { email: string; username: string; displayName: string; avatar: string; clerkUserId: string }) {
-        const unusablePassword = await bcrypt.hash(`clerk:${randomUUID()}`, 10)
-
-        return this._tursoExecute({
-            sql: `
-                INSERT INTO Account (
-                    email,
-                    password,
-                    username,
-                    displayName,
-                    avatar,
-                    email_verified,
-                    verification_token,
-                    password_reset_token,
-                    clerkUserId
-                ) VALUES (?, ?, ?, ?, ?, TRUE, NULL, NULL, ?)
-            `,
-            args: [user.email, unusablePassword, user.username, user.displayName, user.avatar, user.clerkUserId],
+            sql: 'INSERT INTO Account (email, username, displayName, avatar, clerkUserId) VALUES (?, ?, ?, ?, ?)',
+            args: [user.email, user.username, user.displayName, user.avatar, user.clerkUserId],
         })
     }
 
@@ -254,32 +176,10 @@ export class DatabaseService implements OnModuleInit {
         }
     }
 
-    updateUserProfile(id: number, partialUserDto: UpdateUserBody) {
-        const { username, displayName, avatar } = partialUserDto
-
-        return this.updateUserRecord(id, {
-            ...(username !== undefined ? { username } : {}),
-            ...(displayName !== undefined ? { displayName } : {}),
-            ...(avatar !== undefined ? { avatar } : {}),
-        })
-    }
-
-    async updateUserRecord(id: number, partialUserDto: UpdateUserRecord) {
-        // Array to store fields to update
+    async updateUserProfile(id: number, partialUserDto: UpdateUserBody) {
         const fields = []
         const args = []
 
-        // Dynamically build the update query based on the provided properties
-        if (partialUserDto.email) {
-            fields.push('email = ?')
-            args.push(partialUserDto.email)
-        }
-        if (partialUserDto.password) {
-            fields.push('password = ?')
-            const hashedPassword = await bcrypt.hash(partialUserDto.password, 10)
-
-            args.push(hashedPassword)
-        }
         if (partialUserDto.username) {
             fields.push('username = ?')
             args.push(partialUserDto.username)
@@ -292,64 +192,20 @@ export class DatabaseService implements OnModuleInit {
             fields.push('avatar = ?')
             args.push(JSON.stringify(partialUserDto.avatar))
         }
-        if (partialUserDto.isAdmin) {
-            fields.push('isAdmin = ?')
-            args.push(partialUserDto.isAdmin)
-        }
-        if (partialUserDto.email_verified) {
-            fields.push('email_verified = ?')
-            args.push(partialUserDto.email_verified)
-        }
-        if (partialUserDto.verification_token !== undefined) {
-            fields.push('verification_token = ?')
-            args.push(partialUserDto.verification_token)
-        }
-        if (partialUserDto.password_reset_token !== undefined) {
-            fields.push('password_reset_token = ?')
-            args.push(partialUserDto.password_reset_token)
-        }
-        if (partialUserDto.verification_token_expires_at !== undefined) {
-            fields.push('verification_token_expires_at = ?')
-            args.push(partialUserDto.verification_token_expires_at)
-        }
-        if (partialUserDto.password_reset_token_expires_at !== undefined) {
-            fields.push('password_reset_token_expires_at = ?')
-            args.push(partialUserDto.password_reset_token_expires_at)
-        }
 
-        // Error if no fields are provided
         if (fields.length === 0) {
             throw new BadRequestException('No fields to update')
         }
 
-        // Add user id as the last argument
         args.push(id)
+        await this._tursoExecute({ sql: `UPDATE Account SET ${fields.join(', ')} WHERE id = ?`, args })
 
-        // Construct the final query
-        const sql = `
-          UPDATE Account
-          SET ${fields.join(', ')}
-          WHERE id = ?
-        `
-
-        // Execute the query
-        await this._tursoExecute({ sql, args })
-
-        // Return the updated user
         return this.getUserById(id)
     }
 
     softDeleteUserById(id: number) {
         return this._tursoExecute({
             sql: 'UPDATE Account SET isDeleted = true WHERE id = ?',
-            args: [id],
-        })
-    }
-
-    // avoid deleting users -> soft delete instead
-    deleteUserById(id: number) {
-        return this._tursoExecute({
-            sql: 'DELETE FROM Account WHERE id = ?',
             args: [id],
         })
     }
@@ -511,26 +367,6 @@ export class DatabaseService implements OnModuleInit {
         } finally {
             transaction.close()
         }
-    }
-
-    async findUserByVerificationToken(token: string) {
-        return this._tursoExecute({
-            sql: 'SELECT * FROM Account WHERE verification_token = ? AND verification_token_expires_at IS NOT NULL AND verification_token_expires_at > unixepoch()',
-            args: [token],
-        })
-    }
-
-    verifyEmailToken(token: string) {
-        return this._tursoExecute({
-            sql: `
-                UPDATE Account
-                SET email_verified = TRUE, verification_token = NULL, verification_token_expires_at = NULL
-                WHERE verification_token = ?
-                  AND verification_token_expires_at IS NOT NULL
-                  AND verification_token_expires_at > unixepoch()
-            `,
-            args: [token],
-        })
     }
 
     // #region Group
@@ -2133,7 +1969,7 @@ export class DatabaseService implements OnModuleInit {
 
     async createInvitationByUsername(invitationDto: CreateInvitationByUsernameBody) {
         const toAccount = await this._tursoExecute({
-            sql: 'SELECT * FROM Account WHERE username = ? AND isDeleted = 0',
+            sql: `SELECT ${ACCOUNT_COLUMNS} FROM Account WHERE username = ? AND isDeleted = 0`,
             args: [invitationDto.username],
         })
 
@@ -2142,7 +1978,7 @@ export class DatabaseService implements OnModuleInit {
         }
 
         if (invitationDto.groupPersonId !== undefined && invitationDto.groupPersonId !== null) {
-            await this.assertClaimableGroupPerson(invitationDto.groupId, invitationDto.groupPersonId, Number(toAccount.rows[0][0]))
+            await this.assertClaimableGroupPerson(invitationDto.groupId, invitationDto.groupPersonId, Number(toAccount.rows[0].id))
         }
 
         await this._tursoExecute({

@@ -9,7 +9,9 @@ describe('GroupPeopleService participant boundaries', () => {
         const databaseService = {
             getGroupMembershipById: jest.fn().mockResolvedValue({ rows: [[1, 12]] }),
             getGroupById: jest.fn().mockResolvedValue({ rows: [[12, null, 7]] }),
-            getUserById: jest.fn().mockResolvedValue({ rows: [[7, 'friend@example.com', null, 'friend', null, 'Friend']] }),
+            getUserById: jest
+                .fn()
+                .mockResolvedValue({ rows: [{ id: 7, email: 'friend@example.com', username: 'friend', displayName: 'Friend' }] }),
             getClaimableGroupPersonIds: jest.fn().mockResolvedValue({ rows: [[21]] }),
             getGroupPersonGameCatalog: jest.fn().mockResolvedValue({ rows: [[42, 'image', 60, 2, 4, 'Catan', 'Catan', 'Catán']] }),
             getGroupPeople: jest.fn().mockResolvedValue({ rows: [personRow] }),

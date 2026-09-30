@@ -3,9 +3,8 @@ import { Test } from '@nestjs/testing'
 import * as request from 'supertest'
 
 import { AdminGuard } from '../../../common/guards/admin.guard'
-import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
+import { AuthGuard } from '../../../common/guards/auth.guard'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
-import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
 import { DatabaseService } from '../../common/database/database.service'
 
 import { UsersController } from './users.controller'
@@ -31,20 +30,18 @@ describe('UsersController profile update boundary', () => {
             providers: [
                 UsersService,
                 { provide: DatabaseService, useValue: { updateUserProfile, updateGames } },
-                JwtAuthGuard,
+                AuthGuard,
                 UserOwnershipGuard,
                 AdminGuard,
             ],
         })
-            .overrideGuard(JwtAuthGuard)
+            .overrideGuard(AuthGuard)
             .useValue({
                 canActivate: (context: ExecutionContext) => {
                     context.switchToHttp().getRequest().user = { userId: 1 }
                     return true
                 },
             })
-            .overrideGuard(VerifiedUserGuard)
-            .useValue({ canActivate: () => true })
             .compile()
 
         app = module.createNestApplication()

@@ -27,7 +27,7 @@ export class GroupPeopleService {
         const claimableIds = new Set(
             account.rows.length === 0
                 ? []
-                : (await this.databaseService.getClaimableGroupPersonIds(groupId, String(account.rows[0][1]))).rows.map(row =>
+                : (await this.databaseService.getClaimableGroupPersonIds(groupId, String(account.rows[0].email))).rows.map(row =>
                       Number(row[0]),
                   ),
         )
@@ -147,7 +147,7 @@ export class GroupPeopleService {
             groupId,
             groupPersonId: personId,
             accountId: actorAccountId,
-            email: String(account.rows[0][1]),
+            email: String(account.rows[0].email),
             keepOwnershipGameIds,
             keepPreferenceGameIds,
             importOwnershipToCollection: body.importOwnershipToCollection === true,

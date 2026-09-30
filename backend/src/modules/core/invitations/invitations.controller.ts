@@ -1,9 +1,8 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
+import { AuthGuard } from '../../../common/guards/auth.guard'
 import { GroupOwnerGuard } from '../../../common/guards/group-owner.guard'
-import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
-import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
 import { SuccessDto } from '../../../common/types/auth.type'
 import {
     CreateInvitationBody,
@@ -16,7 +15,7 @@ import { UserPublicDto } from '../../../common/types/user.type'
 
 import { InvitationsService } from './invitations.service'
 
-@UseGuards(JwtAuthGuard, VerifiedUserGuard)
+@UseGuards(AuthGuard)
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
 @ApiTags('invitations')
 @ApiBearerAuth()

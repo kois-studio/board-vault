@@ -2,9 +2,8 @@ import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
 import * as request from 'supertest'
 
-import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
+import { AuthGuard } from '../../../common/guards/auth.guard'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
-import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
 
 import { CollectionController } from './collection.controller'
 import { CollectionService } from './collection.service'
@@ -24,9 +23,7 @@ describe('CollectionController review validation', () => {
             controllers: [CollectionController],
             providers: [{ provide: CollectionService, useValue: { saveGameReview, updateGameOwnership, getGamesNotOwnedByUser } }],
         })
-            .overrideGuard(JwtAuthGuard)
-            .useValue({ canActivate: () => true })
-            .overrideGuard(VerifiedUserGuard)
+            .overrideGuard(AuthGuard)
             .useValue({ canActivate: () => true })
             .overrideGuard(UserOwnershipGuard)
             .useValue({ canActivate: () => true })

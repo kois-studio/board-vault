@@ -5,6 +5,8 @@ import { Test, TestingModule } from '@nestjs/testing'
 import * as request from 'supertest'
 
 import { AppModule } from './../src/app.module'
+import { ClerkTokenVerifier } from './../src/modules/common/auth/clerk-token-verifier'
+import { FakeClerkTokenVerifier, sessionFor } from './fake-clerk-token-verifier'
 
 const testDatabasePath = './test/.e2e.sqlite'
 
@@ -15,13 +17,14 @@ describe('HTTP security boundary (e2e)', () => {
         process.env.NODE_ENV = 'test'
         process.env.TURSO_DATABASE_URL = `file:${testDatabasePath}`
         process.env.TURSO_AUTH_TOKEN = 'test-token'
-        process.env.JWT_SECRET = 'test-jwt-secret'
-        process.env.RESEND_API_KEY = 're_test_key'
         process.env.UPSTASH_REDIS_REST_DISABLE = 'true'
 
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [AppModule],
-        }).compile()
+        })
+            .overrideProvider(ClerkTokenVerifier)
+            .useValue(new FakeClerkTokenVerifier())
+            .compile()
 
         app = moduleFixture.createNestApplication()
         await app.init()
@@ -32,18 +35,26 @@ describe('HTTP security boundary (e2e)', () => {
         await rm(testDatabasePath, { force: true })
     })
 
-    it('rejects an unauthenticated Clerk status request', () => {
+    it('rejects an unauthenticated session status request', () => {
         return request(app.getHttpServer())
             .get('/auth/clerk/status')
             .expect(401)
-            .expect(({ body }) => expect(body.message).toEqual('A valid Clerk session is required'))
+            .expect(({ body }) => expect(body.message).toEqual('A valid session is required'))
     })
 
-    it('rejects invalid public query input before database access', () => {
+    it('rejects a session token that fails verification', () => {
+        return request(app.getHttpServer()).get('/auth/clerk/status').set('Authorization', 'Bearer not-a-clerk-session').expect(401)
+    })
+
+    it.each([
+        ['post', '/auth/login'],
+        ['post', '/auth/register'],
+        ['post', '/auth/forgot-password'],
+    ] as const)('no longer serves the legacy %s %s route', (method, path) => {
         return request(app.getHttpServer())
-            .get('/auth/check-email')
-            .expect(400)
-            .expect(({ body }) => expect(body.message).toEqual(expect.arrayContaining(['email must be an email'])))
+            [method](path)
+            .set('Authorization', `Bearer ${sessionFor('user_unknown')}`)
+            .expect(404)
     })
 
     it.each([

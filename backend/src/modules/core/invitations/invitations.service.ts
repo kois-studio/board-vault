@@ -90,10 +90,10 @@ export class InvitationsService {
         const userRow = await this.databaseService.createInvitationByUsername(invitationDto)
 
         return {
-            id: Number(userRow[0]),
-            username: String(userRow[2]),
-            avatar: JSON.parse(String(userRow[4])) as AvatarDto,
-            displayName: String(userRow[5]),
+            id: Number(userRow.id),
+            username: String(userRow.username),
+            avatar: JSON.parse(String(userRow.avatar)) as AvatarDto,
+            displayName: String(userRow.displayName),
         }
     }
 

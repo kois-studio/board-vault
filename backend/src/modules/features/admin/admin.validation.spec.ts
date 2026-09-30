@@ -3,8 +3,7 @@ import { Test } from '@nestjs/testing'
 import * as request from 'supertest'
 
 import { AdminGuard } from '../../../common/guards/admin.guard'
-import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
-import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
+import { AuthGuard } from '../../../common/guards/auth.guard'
 
 import { AdminController } from './admin.controller'
 import { AdminService } from './admin.service'
@@ -22,15 +21,13 @@ describe('AdminController write validation', () => {
             controllers: [AdminController],
             providers: [{ provide: AdminService, useValue: { rejectGameProposal, markGameProposalAsDuplicate } }],
         })
-            .overrideGuard(JwtAuthGuard)
+            .overrideGuard(AuthGuard)
             .useValue({
                 canActivate: (context: ExecutionContext) => {
                     context.switchToHttp().getRequest().user = { userId: 7 }
                     return true
                 },
             })
-            .overrideGuard(VerifiedUserGuard)
-            .useValue({ canActivate: () => true })
             .overrideGuard(AdminGuard)
             .useValue({ canActivate: () => true })
             .compile()
@@ -97,9 +94,7 @@ describe('AdminController list query validation', () => {
             controllers: [AdminController],
             providers: [{ provide: AdminService, useValue: { getAdminGames, getAdminGameProposals } }],
         })
-            .overrideGuard(JwtAuthGuard)
-            .useValue({ canActivate: () => true })
-            .overrideGuard(VerifiedUserGuard)
+            .overrideGuard(AuthGuard)
             .useValue({ canActivate: () => true })
             .overrideGuard(AdminGuard)
             .useValue({ canActivate: () => true })

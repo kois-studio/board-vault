@@ -5,8 +5,8 @@ import { API_ERROR_CODES } from './http/api-error'
 export const PRIVATE_BETA_REGISTRATION_MESSAGE = 'Board Vault is currently in private beta. Registration is by invitation only.'
 
 /**
- * Public registration is opt-in in production. Development and test keep the
- * legacy flow available unless the variable explicitly disables it.
+ * Public registration is opt-in in production. Development and test allow new
+ * Clerk users to get an account unless the variable explicitly disables it.
  */
 export function isSelfRegistrationEnabled(): boolean {
     const configuredValue = process.env.BOARD_VAULT_SELF_REGISTRATION_ENABLED?.trim().toLowerCase()

@@ -155,24 +155,21 @@ export class ClerkIdentityService {
     }
 
     /**
-     * Resolves a verified Clerk subject to a local Account row.
-     * Existing links win; an exact primary-email match is linked, and a new
-     * local domain account is provisioned only when self-registration is open.
+     * Resolves a verified Clerk subject to its local Account row.
+     * Every account is linked by `clerkUserId` (ADR-0012). An unlinked Clerk
+     * user gets a new account only through a group invitation or open
+     * self-registration. An email that already belongs to another account is
+     * never linked implicitly.
      */
     async resolveAccount(clerkUserId: string): Promise<UserGetDto> {
-        try {
-            const linkedUser = await this.usersService.getUserByClerkId(clerkUserId)
+        const linkedUser = await this.findUser(() => this.usersService.getUserByClerkId(clerkUserId))
 
+        if (linkedUser) {
             if (linkedUser.isDeleted) {
                 throw new UnauthorizedException('The Board Vault account is unavailable')
             }
 
             return linkedUser
-        } catch (error) {
-            // An unlinked Clerk identity is expected during the migration.
-            if (!(error instanceof NotFoundException)) {
-                throw error
-            }
         }
 
         const clerkUser = await this.withClerkProviderBoundary(() => this.getClerkClient().users.getUser(clerkUserId))
@@ -188,42 +185,36 @@ export class ClerkIdentityService {
             throw new UnauthorizedException('The Clerk primary email address is not verified')
         }
 
-        let localUser: UserGetDto
-
-        try {
-            localUser = await this.usersService.getUserByEmail(primaryEmail)
-        } catch (error) {
-            if (!(error instanceof NotFoundException)) {
-                throw error
-            }
-            if (!groupInvitation) {
-                assertSelfRegistrationEnabled()
-            }
-            const provisionedAccount = await this.provisionAccount(clerkUserId, clerkUser, primaryEmail)
-
-            if (groupInvitation) {
-                await this.databaseService.joinGroupFromClerkInvitation(provisionedAccount.id, groupInvitation)
-            }
-            return provisionedAccount
+        if (await this.findUser(() => this.usersService.getUserByEmail(primaryEmail))) {
+            throw new BoardVaultHttpException(
+                API_ERROR_CODES.ACCOUNT_EMAIL_CONFLICT,
+                409,
+                'This email already belongs to another Board Vault account',
+            )
         }
 
-        if (localUser.isDeleted) {
-            throw new UnauthorizedException('The Board Vault account is unavailable')
+        if (!groupInvitation) {
+            assertSelfRegistrationEnabled()
         }
 
-        let linkedAccount: UserGetDto
-
-        try {
-            linkedAccount = await this.usersService.linkClerkUser(localUser.id, clerkUserId)
-        } catch {
-            throw new ConflictException('This Clerk account could not be linked to the preserved Board Vault account')
-        }
+        const provisionedAccount = await this.provisionAccount(clerkUserId, clerkUser, primaryEmail)
 
         if (groupInvitation) {
-            await this.databaseService.joinGroupFromClerkInvitation(linkedAccount.id, groupInvitation)
+            await this.databaseService.joinGroupFromClerkInvitation(provisionedAccount.id, groupInvitation)
         }
 
-        return linkedAccount
+        return provisionedAccount
+    }
+
+    private async findUser(lookup: () => Promise<UserGetDto>): Promise<UserGetDto | null> {
+        try {
+            return await lookup()
+        } catch (error) {
+            if (error instanceof NotFoundException) {
+                return null
+            }
+            throw error
+        }
     }
 
     private getInvitationRedirectUrl(): string {
@@ -324,29 +315,13 @@ export class ClerkIdentityService {
                 clerkUserId,
             })
         } catch {
-            // A concurrent first request may have created the same Clerk row.
-            // Re-read both identity keys before reporting a real conflict.
-            try {
-                return await this.usersService.getUserByClerkId(clerkUserId)
-            } catch (error) {
-                if (!(error instanceof NotFoundException)) {
-                    throw error
-                }
-            }
+            // A concurrent first request may have created the same row.
+            const account = await this.findUser(() => this.usersService.getUserByClerkId(clerkUserId))
 
-            try {
-                const account = await this.usersService.getUserByEmail(email)
-
-                if (account.isDeleted) {
-                    throw new UnauthorizedException('The Board Vault account is unavailable')
-                }
-                return await this.usersService.linkClerkUser(account.id, clerkUserId)
-            } catch (error) {
-                if (error instanceof UnauthorizedException) {
-                    throw error
-                }
-                throw new ConflictException('The Clerk account could not be provisioned as a Board Vault account')
+            if (account) {
+                return account
             }
+            throw new ConflictException('The Clerk account could not be provisioned as a Board Vault account')
         }
 
         return this.usersService.getUserByClerkId(clerkUserId)

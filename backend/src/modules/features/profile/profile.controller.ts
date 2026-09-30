@@ -1,9 +1,8 @@
 import { Body, Controller, Get, Param, ParseIntPipe, Post, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
-import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
+import { AuthGuard } from '../../../common/guards/auth.guard'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
-import { VerifiedUserGuard } from '../../../common/guards/verified-user.guard'
 import { SuccessDto } from '../../../common/types/auth.type'
 import { CreateGameProposalBody, GameProposalDto } from '../../../common/types/game-proposal.type'
 import { InvitationWithExtraData } from '../../../common/types/invitation.type'
@@ -13,7 +12,7 @@ import { UserSelfDto } from '../../../common/types/user.type'
 
 import { ProfileService } from './profile.service'
 
-@UseGuards(JwtAuthGuard, VerifiedUserGuard)
+@UseGuards(AuthGuard)
 @ApiTags('profile')
 @ApiBearerAuth()
 @Controller('profile')

@@ -1,11 +1,9 @@
 import { ResultSet } from '@libsql/client/.'
-import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common'
+import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { usersSchema } from '../../../common/schemas'
-import { AvatarDto, CreateUserBody, UpdateUserBody, UserGetDto, UserPublicDto } from '../../../common/types/user.type'
+import { AvatarDto, UpdateUserBody, UserGetDto, UserPublicDto } from '../../../common/types/user.type'
 import { DatabaseService } from '../../common/database/database.service'
-
-import type { UserRecord } from '../../../common/types/user.type'
 
 @Injectable()
 export class UsersService {
@@ -13,20 +11,17 @@ export class UsersService {
 
     constructor(private readonly databaseService: DatabaseService) {}
 
-    private _parseResultSet(resultSet: ResultSet): Array<UserRecord> {
+    // Read Account columns by name: the table's column order is not a contract.
+    private _parseResultSet(resultSet: ResultSet): Array<UserGetDto> {
         const users = resultSet.rows.map(row => ({
-            id: Number(row[0]),
-            email: String(row[1]),
-            username: String(row[2]),
-            password: String(row[3]),
-            avatar: JSON.parse(String(row[4])) as AvatarDto,
-            displayName: String(row[5]),
-            createdAt: String(row[6]),
-            isDeleted: Boolean(row[7]),
-            isAdmin: Number(row[8]) === 1 ? true : false,
-            email_verified: Boolean(row[9]),
-            verification_token: String(row[10]),
-            password_reset_token: String(row[11]),
+            id: Number(row.id),
+            email: String(row.email),
+            username: String(row.username),
+            avatar: JSON.parse(String(row.avatar)) as AvatarDto,
+            displayName: String(row.displayName),
+            createdAt: String(row.created_at),
+            isDeleted: Boolean(row.isDeleted),
+            isAdmin: Number(row.isAdmin) === 1,
         }))
 
         const result = usersSchema.safeParse(users)
@@ -44,7 +39,7 @@ export class UsersService {
         const resultSet = await this.databaseService.getUsers()
         const users = this._parseResultSet(resultSet)
 
-        return users.map(user => this._toUserGetDto(user))
+        return users
     }
 
     async getUserById(id: number): Promise<UserGetDto> {
@@ -55,7 +50,7 @@ export class UsersService {
         if (users.length === 0) {
             throw new NotFoundException(`User with id ${id} not found`)
         }
-        return this._toUserGetDto(users[0])
+        return users[0]
     }
 
     async getPublicUserById(id: number): Promise<UserPublicDto> {
@@ -69,13 +64,7 @@ export class UsersService {
         }
     }
 
-    /**
-     * password is needed for auth.service,
-     * thats why `include_password` option available
-     */
-    async getUserByEmail(email: string, include_password: true): Promise<UserRecord>
-    async getUserByEmail(email: string, include_password?: false): Promise<UserGetDto>
-    async getUserByEmail(email: string, include_password = false): Promise<UserGetDto | UserRecord> {
+    async getUserByEmail(email: string): Promise<UserGetDto> {
         this.LOGGER.log('Getting user by email')
         const resultSet = await this.databaseService.getUserByEmail(email)
         const users = this._parseResultSet(resultSet)
@@ -84,7 +73,7 @@ export class UsersService {
             throw new NotFoundException(`User with email ${email} not found`)
         }
 
-        return include_password ? users[0] : this._toUserGetDto(users[0])
+        return users[0]
     }
 
     async getUserByUsername(username: string): Promise<UserGetDto> {
@@ -96,7 +85,7 @@ export class UsersService {
             throw new NotFoundException(`User with username ${username} not found`)
         }
 
-        return this._toUserGetDto(users[0])
+        return users[0]
     }
 
     async getUserByClerkId(clerkUserId: string): Promise<UserGetDto> {
@@ -108,18 +97,7 @@ export class UsersService {
             throw new NotFoundException(`No user linked to Clerk identity ${clerkUserId}`)
         }
 
-        return this._toUserGetDto(users[0])
-    }
-
-    async linkClerkUser(accountId: number, clerkUserId: string): Promise<UserGetDto> {
-        this.LOGGER.log('Linking local user to Clerk identity')
-        const resultSet = await this.databaseService.linkUserToClerkId(accountId, clerkUserId)
-
-        if (resultSet.rowsAffected !== 1) {
-            throw new ConflictException('The local account is already linked to another Clerk identity')
-        }
-
-        return this.getUserById(accountId)
+        return users[0]
     }
 
     async createClerkUser(user: { email: string; username: string; displayName: string; avatar: object; clerkUserId: string }) {
@@ -129,28 +107,6 @@ export class UsersService {
         })
 
         return { success: true }
-    }
-
-    private _toUserGetDto(user: UserRecord): UserGetDto {
-        const { password: _password, verification_token: _verificationToken, password_reset_token: _passwordResetToken, ...safeUser } = user
-
-        void _password
-        void _verificationToken
-        void _passwordResetToken
-
-        return safeUser
-    }
-
-    async createUser(userDto: CreateUserBody, verificationToken: string, verificationTokenExpiresAt?: number) {
-        this.LOGGER.log('Creating user')
-        try {
-            await this.databaseService.createUser(userDto, verificationToken, verificationTokenExpiresAt)
-
-            return { success: true }
-        } catch {
-            this.LOGGER.error('Failed to create user')
-            throw new ConflictException('Email or Username already in use')
-        }
     }
 
     async updateUser(id: number, partialUserDto: UpdateUserBody): Promise<{ success: boolean }> {

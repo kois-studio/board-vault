@@ -1,7 +1,7 @@
 import { GUARDS_METADATA } from '@nestjs/common/constants'
 
 import { AdminGuard } from '../../../common/guards/admin.guard'
-import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard'
+import { AuthGuard } from '../../../common/guards/auth.guard'
 
 import { CacheController } from './cache.controller'
 import { CacheService } from './cache.service'
@@ -10,7 +10,7 @@ describe('CacheController', () => {
     it('protects operational cache endpoints with authenticated admin access', () => {
         const guards = Reflect.getMetadata(GUARDS_METADATA, CacheController) as Array<unknown>
 
-        expect(guards).toEqual(expect.arrayContaining([JwtAuthGuard, AdminGuard]))
+        expect(guards).toEqual(expect.arrayContaining([AuthGuard, AdminGuard]))
     })
 
     it('delegates cache operations without exposing provider details in the controller', async () => {

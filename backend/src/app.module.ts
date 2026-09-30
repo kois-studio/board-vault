@@ -7,7 +7,6 @@ import { LoggerMiddleware } from './common/middlewares/logger.middleware'
 import { AuthModule } from './modules/common/auth/auth.module'
 import { CacheModule } from './modules/common/cache/cache.module'
 import { DatabaseModule } from './modules/common/database/database.module'
-import { EmailModule } from './modules/common/email/email.module'
 import { HealthModule } from './modules/common/health/health.module'
 // Core
 import { CollectionActivityModule } from './modules/core/collection-activity/collection-activity.module'
@@ -44,7 +43,6 @@ import { SessionsModule } from './modules/features/sessions/sessions.module'
         AuthModule,
         CacheModule,
         DatabaseModule,
-        EmailModule,
         HealthModule,
         // Core
         CollectionActivityModule,

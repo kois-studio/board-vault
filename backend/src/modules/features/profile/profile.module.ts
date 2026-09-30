@@ -11,14 +11,7 @@ import { ProfileController } from './profile.controller'
 import { ProfileService } from './profile.service'
 
 @Module({
-    imports: [
-        DatabaseModule, // needed for VerifiedUserGuard
-        UsersModule,
-        NotificationsModule,
-        GroupsModule,
-        InvitationsModule,
-        GameProposalModule,
-    ],
+    imports: [DatabaseModule, UsersModule, NotificationsModule, GroupsModule, InvitationsModule, GameProposalModule],
     providers: [ProfileService],
     exports: [ProfileService],
     controllers: [ProfileController],
