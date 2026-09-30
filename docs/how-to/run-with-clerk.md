@@ -64,7 +64,5 @@ PLAYWRIGHT_GROUP_ID=1 \
 
 Each spec's `test.skip` line lists any extra variables it needs (for example
 the invitation journey needs `PLAYWRIGHT_NEW_PERSON_INVITATION=1` and a new
-`+clerk_test` invitee). Three `public-navigation` checks assume CI's
-configuration (no Clerk key, self-registration off) and fail with a full local
-`backend/.env`; that is expected. Never commit storage-state files, and delete
-them when you are done.
+`+clerk_test` invitee). Never commit storage-state files, and delete them when
+you are done.

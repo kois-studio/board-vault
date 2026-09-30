@@ -1,6 +1,17 @@
 import { expect, test } from '@playwright/test'
 
 test.describe('public navigation', () => {
+    // Pin the signed-out, invitation-only configuration CI uses, so a full local
+    // backend/.env (Clerk key, self-registration) does not change what renders.
+    test.beforeEach(async ({ page }) => {
+        await page.route('**/runtime-config.js', route =>
+            route.fulfill({
+                contentType: 'text/javascript',
+                body: 'globalThis.__BOARD_VAULT_RUNTIME_CONFIG__ = { clerkPublishableKey: "", selfRegistrationEnabled: false };',
+            }),
+        )
+    })
+
     test('renders the public landing page', async ({ page }) => {
         await page.goto('/')
 
