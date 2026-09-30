@@ -14,7 +14,12 @@ where they are set, never values.
 
 Vercel builds only from `main` and only when non-documentation files changed,
 so documentation-only pushes do not deploy. Pull request previews are not
-deployed.
+deployed. The backend project has placeholder Preview variables (an
+unreachable database URL, a dummy Clerk key, Redis off), not secrets, so an
+owner-forced preview can boot and answer `/health`; `/health/ready` stays not
+ready there. The backend project has placeholder Preview variables (an unreachable
+database URL, a dummy Clerk key, Redis off), not secrets, so an owner-forced
+preview can boot and answer `/health`; `/health/ready` stays not ready there.
 
 ## Backend variables
 
@@ -33,6 +38,7 @@ checks them at startup.
 | `CLERK_PUBLISHABLE_KEY` | Locally | Not read by the API. The frontend startup script reads it from `backend/.env`. |
 | `CLERK_AUTHORIZED_PARTIES` | Production | Comma-separated origins allowed to present session tokens. |
 | `BOARD_VAULT_CLERK_INVITATION_REDIRECT_URL` | Production | Where Clerk invitation links land (`…/register`). |
+| `CLERK_WEBHOOK_SIGNING_SECRET` | No | Signing secret (`whsec_…`) of the Clerk webhook endpoint. Turns on `POST /webhooks/clerk` ([ADR-0013](adr/0013-clerk-user-lifecycle.md)); unset, the endpoint answers `404`. |
 | `BOARD_VAULT_SELF_REGISTRATION_ENABLED` | No | `true` lets a Clerk user without an invitation create an account. Keep `false` in production during the private beta; the API logs a warning at startup if it is `true`. |
 | `BOARD_VAULT_GROUP_PEOPLE_ENABLED` | No | `false` turns off the group-people routes without touching data. |
 | `UPSTASH_REDIS_REST_DISABLE` | No | `true` turns off caching and rate-limit storage. Rate limits then fail open. |

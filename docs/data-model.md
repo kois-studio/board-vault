@@ -22,7 +22,8 @@ collection, reviews, memberships, groups they created (and everything in them),
 sessions they created, and more.
 
 - **Never `DELETE FROM Account` and never drop or rebuild the `Account` table.**
-  Accounts are soft-deleted with `isDeleted = 1`. A unit test
+  Accounts are soft-deleted with `isDeleted = 1`, including when their Clerk
+  user is deleted ([ADR-0013](adr/0013-clerk-user-lifecycle.md)). A unit test
   ([`account-invariants.spec.ts`](../backend/src/modules/common/database/account-invariants.spec.ts))
   fails if either statement appears in the backend.
 - Column removal uses `ALTER TABLE … DROP COLUMN`, which does not fire cascades.

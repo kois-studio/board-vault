@@ -75,6 +75,13 @@ export class AccountQueries {
         return this.getUserById(id)
     }
 
+    updateUserEmail(id: number, email: string) {
+        return this.database.execute({
+            sql: 'UPDATE Account SET email = ? WHERE id = ?',
+            args: [email, id],
+        })
+    }
+
     softDeleteUserById(id: number) {
         return this.database.execute({
             sql: 'UPDATE Account SET isDeleted = true WHERE id = ?',

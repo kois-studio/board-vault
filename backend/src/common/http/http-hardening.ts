@@ -2,8 +2,18 @@ import { json, urlencoded, type NextFunction, type Request, type RequestHandler,
 
 export const REQUEST_BODY_LIMIT = '100kb'
 
+/** A request whose exact body bytes were kept for signature checks (webhook routes only). */
+export type RawBodyRequest = Request & { rawBody?: Buffer }
+
+// Webhook signatures cover the exact bytes received, so keep them for those routes.
+function keepWebhookRawBody(request: RawBodyRequest, _response: Response, buffer: Buffer): void {
+    if (request.originalUrl?.startsWith('/webhooks/')) {
+        request.rawBody = buffer
+    }
+}
+
 export function createBodyParsers(): Array<RequestHandler> {
-    return [json({ limit: REQUEST_BODY_LIMIT }), urlencoded({ extended: false, limit: REQUEST_BODY_LIMIT })]
+    return [json({ limit: REQUEST_BODY_LIMIT, verify: keepWebhookRawBody }), urlencoded({ extended: false, limit: REQUEST_BODY_LIMIT })]
 }
 
 export function applySecurityHeaders(

@@ -15,6 +15,7 @@ deployment-specific evidence, live data, credentials, and personal details.
 - [0010 — Group-scoped placeholder identities](0010-group-person-identities.md)
 - [0011 — Isolated local development and shared integration](0011-isolated-local-development.md)
 - [0012 — Clerk-only authentication](0012-clerk-only-authentication.md)
+- [0013 — Clerk user lifecycle sync](0013-clerk-user-lifecycle.md)
 
 Accepted ADRs are durable constraints unless a later ADR explicitly supersedes
 them. Create an ADR when a decision changes architecture, persistence,
