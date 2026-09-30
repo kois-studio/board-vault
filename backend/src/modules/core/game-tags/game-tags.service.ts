@@ -47,7 +47,7 @@ export class GameTagsService {
         }
 
         // Step 2: If no cached, get them from database
-        const resultSet = await this.databaseService.getGameTags(gameId)
+        const resultSet = await this.databaseService.games.getGameTags(gameId)
         const tags = this._parseResultSet(resultSet)
 
         // Step 3: Save them to cache
@@ -59,7 +59,7 @@ export class GameTagsService {
     async getGameCountByTagCategoryId(tagCategoryId: number): Promise<number> {
         this.LOGGER.log('Getting game count for tag category')
 
-        const resultSet = await this.databaseService.getGameCountByTagCategoryId(tagCategoryId)
+        const resultSet = await this.databaseService.games.getGameCountByTagCategoryId(tagCategoryId)
 
         return Number(resultSet.rows[0][0])
     }
@@ -67,7 +67,7 @@ export class GameTagsService {
     async getGameCountByTagId(tagId: number): Promise<number> {
         this.LOGGER.log('Getting game count for tag')
 
-        const resultSet = await this.databaseService.getGameCountByTagId(tagId)
+        const resultSet = await this.databaseService.games.getGameCountByTagId(tagId)
 
         return Number(resultSet.rows[0][0])
     }
@@ -75,7 +75,7 @@ export class GameTagsService {
     async addGameTag(gameId: number, tagId: number): Promise<{ success: boolean }> {
         this.LOGGER.log('Adding tag to game')
 
-        await this.databaseService.addGameTag(gameId, tagId)
+        await this.databaseService.games.addGameTag(gameId, tagId)
 
         // Clear cache
         await this.cacheService.deleteOne(`${this.CACHE_KEY}:byGameId:${gameId}`)
@@ -86,7 +86,7 @@ export class GameTagsService {
     async removeGameTag(gameId: number, tagId: number): Promise<{ success: boolean }> {
         this.LOGGER.log('Removing tag from game')
 
-        await this.databaseService.removeGameTag(gameId, tagId)
+        await this.databaseService.games.removeGameTag(gameId, tagId)
 
         // Clear cache
         await this.cacheService.deleteOne(`${this.CACHE_KEY}:byGameId:${gameId}`)

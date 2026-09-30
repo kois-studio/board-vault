@@ -1,3 +1,5 @@
+import { fakeDatabase } from '../../../../test/fake-database'
+
 import { DashboardService } from './dashboard.service'
 
 describe('DashboardService group history', () => {
@@ -30,11 +32,14 @@ describe('DashboardService group history', () => {
         const database = {
             getMeetAttendedAccountIds: jest.fn().mockResolvedValue([]),
             getPlayedGameIdsByMeetId: jest.fn().mockResolvedValue([]),
+            getMeetAttendedPersonIds: jest.fn().mockResolvedValue([]),
+            getGroupPeople: jest.fn().mockResolvedValue({ rows: [] }),
+            getMeetPlayedGamePersonParticipants: jest.fn().mockResolvedValue([]),
         }
 
         const service = new DashboardService(
             {} as never,
-            database as never,
+            fakeDatabase(database),
             {} as never,
             {} as never,
             {} as never,
@@ -60,7 +65,7 @@ describe('DashboardService group creation', () => {
         }
         const service = new DashboardService(
             {} as never,
-            database as never,
+            fakeDatabase(database),
             {} as never,
             {} as never,
             {} as never,

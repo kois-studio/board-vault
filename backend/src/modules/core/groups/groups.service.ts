@@ -40,14 +40,14 @@ export class GroupsService {
 
     async getGroupsForAccount(accountId: number): Promise<Array<GroupDto>> {
         this.LOGGER.log('Getting groups for account')
-        const resultSet = await this.databaseService.getGroupsForAccount(accountId)
+        const resultSet = await this.databaseService.groups.getGroupsForAccount(accountId)
 
         return this._parseResultSet(resultSet)
     }
 
     async getGroupById(id: number): Promise<GroupDto> {
         this.LOGGER.log('Getting group by id')
-        const resultSet = await this.databaseService.getGroupById(id)
+        const resultSet = await this.databaseService.groups.getGroupById(id)
         const groups = this._parseResultSet(resultSet)
 
         if (groups.length === 0) {
@@ -59,7 +59,7 @@ export class GroupsService {
 
     async getGroupByName(name: string): Promise<GroupDto> {
         this.LOGGER.log('Getting group by name')
-        const resultSet = await this.databaseService.getGroupByName(name)
+        const resultSet = await this.databaseService.groups.getGroupByName(name)
         const groups = this._parseResultSet(resultSet)
 
         if (groups.length === 0) {
@@ -72,7 +72,7 @@ export class GroupsService {
     async createGroup(groupBody: CreateGroupBody) {
         this.LOGGER.log('Creating group')
         try {
-            await this.databaseService.createGroup(groupBody)
+            await this.databaseService.groups.createGroup(groupBody)
 
             return { success: true }
         } catch {
@@ -83,7 +83,7 @@ export class GroupsService {
 
     async deleteGroupById(id: number): Promise<{ success: boolean }> {
         this.LOGGER.log('Deleting group')
-        const resultSet = await this.databaseService.deleteGroupById(id)
+        const resultSet = await this.databaseService.groups.deleteGroupById(id)
 
         if (resultSet.rowsAffected === 0) {
             throw new NotFoundException(`Group with id ${id} not found`)
@@ -94,7 +94,7 @@ export class GroupsService {
 
     async updateGroup(id: number, partialGroupDto: UpdateGroupBody): Promise<{ success: boolean }> {
         this.LOGGER.log('Updating group')
-        const resultSet = await this.databaseService.updateGroup(id, partialGroupDto)
+        const resultSet = await this.databaseService.groups.updateGroup(id, partialGroupDto)
 
         if (resultSet.rows.length === 0) {
             throw new NotFoundException(`Group with id ${id} not found`)
@@ -105,7 +105,7 @@ export class GroupsService {
 
     async getGroupInvitations(groupId: number): Promise<Array<InvitationWithAccountsData>> {
         this.LOGGER.log('Getting all invitations for group')
-        const resultSet = await this.databaseService.getGroupInvitations(groupId)
+        const resultSet = await this.databaseService.invitations.getGroupInvitations(groupId)
 
         return resultSet.rows
             .map(row => ({

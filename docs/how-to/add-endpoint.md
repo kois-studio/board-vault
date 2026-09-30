@@ -9,9 +9,11 @@ Example: `GET /collection/users/:userId/stats` for the signed-in user.
    fields). Response DTOs use `@ApiProperty` so they appear in the contract.
    Never return `Account` credentials or private collection data to other
    members ([ADR-0006](../adr/0006-user-response-privacy.md)).
-3. **Add the SQL** as a method on `DatabaseService`
-   (`backend/src/modules/common/database/database.service.ts`). Always use
-   parameters (`args: [...]`), never string concatenation. Name columns
+3. **Add the SQL** as a method on the matching query class in
+   `backend/src/modules/common/database/queries/` (for example
+   `groups.queries.ts`); callers reach it as `databaseService.groups.<method>`.
+   In unit tests, wrap flat query mocks with `fakeDatabase({...})` from
+   `backend/test/fake-database.ts`. Always use parameters (`args: [...]`), never string concatenation. Name columns
    explicitly.
 4. **Add the service method** that calls it, maps rows to the DTO, and
    enforces domain rules.

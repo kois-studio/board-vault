@@ -54,7 +54,7 @@ export class GamesService {
         }
 
         // Step 2: If no cached, get them from database
-        const resultSet = await this.databaseService.getGameById(id)
+        const resultSet = await this.databaseService.games.getGameById(id)
         const games = this._parseResultSet(resultSet)
 
         if (games.length === 0) {
@@ -78,7 +78,7 @@ export class GamesService {
     async getGames(): Promise<Array<GameDto>> {
         this.LOGGER.log('Getting all games')
 
-        const resultSet = await this.databaseService.getGames()
+        const resultSet = await this.databaseService.games.getGames()
         const games = this._parseResultSet(resultSet)
 
         return games
@@ -93,10 +93,10 @@ export class GamesService {
     }): Promise<GameDto> {
         this.LOGGER.log('Creating game')
 
-        await this.databaseService.createGame(gameData)
+        await this.databaseService.games.createGame(gameData)
 
         // Get the created game to return it
-        const resultSet = await this.databaseService.getGames()
+        const resultSet = await this.databaseService.games.getGames()
         const games = this._parseResultSet(resultSet)
 
         // Return the most recent one (should be the one we just created)

@@ -91,7 +91,7 @@ export class DashboardService {
 
     @LogFeature(new Logger('DashboardService'))
     async createGroup(userId: number, groupName: string): Promise<CreatedGroupDto> {
-        const { groupId } = await this.databaseService.createGroupWithMembership({
+        const { groupId } = await this.databaseService.groups.createGroupWithMembership({
             name: groupName,
             createdBy: userId,
         })
@@ -121,32 +121,25 @@ export class DashboardService {
 
         return await Promise.all(
             groupMeetings.map(async meetData => {
-                const attendedByIds = await this.databaseService.getMeetAttendedAccountIds(meetData.id)
-                const attendedByPersonIds =
-                    typeof this.databaseService.getMeetAttendedPersonIds === 'function'
-                        ? await this.databaseService.getMeetAttendedPersonIds(meetData.id)
-                        : []
-                const groupPeople =
-                    typeof this.databaseService.getGroupPeople === 'function'
-                        ? await this.databaseService.getGroupPeople(groupId)
-                        : { rows: [] }
+                const attendedByIds = await this.databaseService.sessions.getMeetAttendedAccountIds(meetData.id)
+                const attendedByPersonIds = await this.databaseService.sessions.getMeetAttendedPersonIds(meetData.id)
+                const groupPeople = await this.databaseService.groups.getGroupPeople(groupId)
                 const peopleById = new Map(
                     groupPeople.rows.map(row => [
                         Number(row[0]),
                         { id: Number(row[0]), displayName: String(row[5]), avatar: this.parseAvatar(row[6]) },
                     ]),
                 )
-                const gameIds = await this.databaseService.getPlayedGameIdsByMeetId(meetData.id)
+                const gameIds = await this.databaseService.sessions.getPlayedGameIdsByMeetId(meetData.id)
                 const gamesPlayed = await Promise.all(
                     gameIds.map(async gameId => {
                         const game = await this.gamesService.getGameById(gameId)
                         const gameTranslations = await this.gameTranslationService.getGameTranslations(gameId)
                         const playedByIds = await this.meetAccountGamesService.getDistinctAccountIdsByMeetIdAndGameId(meetData.id, gameId)
                         const playedByPersonIds =
-                            (typeof this.databaseService.getMeetPlayedGamePersonParticipants === 'function'
-                                ? await this.databaseService.getMeetPlayedGamePersonParticipants(meetData.id)
-                                : []
-                            ).find(game => game.gameId === gameId)?.participantIds ?? []
+                            (await this.databaseService.sessions.getMeetPlayedGamePersonParticipants(meetData.id)).find(
+                                game => game.gameId === gameId,
+                            )?.participantIds ?? []
                         const playedByData = await Promise.all(
                             playedByIds.map(async accountId => this.usersService.getPublicUserById(accountId)),
                         )

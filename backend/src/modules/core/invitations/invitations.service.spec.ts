@@ -1,6 +1,6 @@
 import { ForbiddenException, NotFoundException } from '@nestjs/common'
 
-import { DatabaseService } from '../../common/database/database.service'
+import { fakeDatabase } from '../../../../test/fake-database'
 
 import { InvitationsService } from './invitations.service'
 
@@ -11,11 +11,13 @@ describe('InvitationsService lifecycle authorization', () => {
         const getInvitationById = jest.fn().mockResolvedValue({ rows: invitationRows })
         const getUserInvitationsReceived = jest.fn().mockResolvedValue({ rows: invitationRows })
         const deleteInvitationById = jest.fn().mockResolvedValue({ rowsAffected: 1 })
-        const service = new InvitationsService({
-            getInvitationById,
-            getUserInvitationsReceived,
-            deleteInvitationById,
-        } as unknown as DatabaseService)
+        const service = new InvitationsService(
+            fakeDatabase({
+                getInvitationById,
+                getUserInvitationsReceived,
+                deleteInvitationById,
+            }),
+        )
 
         return { service, getInvitationById, getUserInvitationsReceived, deleteInvitationById }
     }

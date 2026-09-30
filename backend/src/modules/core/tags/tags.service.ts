@@ -41,7 +41,7 @@ export class TagsService {
     async getTags(): Promise<Array<TagDto>> {
         this.LOGGER.log('Getting all tags')
 
-        const resultSet = await this.databaseService.getTags()
+        const resultSet = await this.databaseService.games.getTags()
         const tags = this._parseResultSet(resultSet)
 
         return tags
@@ -50,7 +50,7 @@ export class TagsService {
     async getTagById(tagId: number): Promise<TagDto> {
         this.LOGGER.log('Getting tag by id')
 
-        const resultSet = await this.databaseService.getTagById(tagId)
+        const resultSet = await this.databaseService.games.getTagById(tagId)
         const tags = this._parseResultSet(resultSet)
 
         if (tags.length === 0) {
@@ -63,7 +63,7 @@ export class TagsService {
     async getTagsByCategoryId(categoryId: number): Promise<Array<TagDto>> {
         this.LOGGER.log('Getting tags for category')
 
-        const resultSet = await this.databaseService.getTagsByCategoryId(categoryId)
+        const resultSet = await this.databaseService.games.getTagsByCategoryId(categoryId)
         const tags = this._parseResultSet(resultSet)
 
         return tags
@@ -72,7 +72,7 @@ export class TagsService {
     async createTag(name: string, categoryId: number): Promise<TagDto> {
         this.LOGGER.log('Creating tag in category')
 
-        const resultSet = await this.databaseService.createTag(name, categoryId)
+        const resultSet = await this.databaseService.games.createTag(name, categoryId)
         const tagId = Number(resultSet.lastInsertRowid)
 
         // Clear cache
@@ -84,7 +84,7 @@ export class TagsService {
     async updateTag(id: number, name: string, categoryId: number): Promise<TagDto> {
         this.LOGGER.log('Updating tag in category')
 
-        await this.databaseService.updateTag(id, name, categoryId)
+        await this.databaseService.games.updateTag(id, name, categoryId)
 
         // Clear cache
         await this.cacheService.deleteOne(`${this.CACHE_KEY}:byCategoryId:${categoryId}`)
@@ -95,7 +95,7 @@ export class TagsService {
     async deleteTag(id: number): Promise<{ success: boolean }> {
         this.LOGGER.log('Deleting tag')
 
-        await this.databaseService.deleteTag(id)
+        await this.databaseService.games.deleteTag(id)
 
         return { success: true }
     }

@@ -1,5 +1,7 @@
 import { ForbiddenException } from '@nestjs/common'
 
+import { fakeDatabase } from '../../../../test/fake-database'
+
 import { GroupPeopleService } from './group-people.service'
 
 describe('GroupPeopleService participant boundaries', () => {
@@ -25,7 +27,7 @@ describe('GroupPeopleService participant boundaries', () => {
             ...overrides,
         }
 
-        return { service: new GroupPeopleService(databaseService as never), databaseService }
+        return { service: new GroupPeopleService(fakeDatabase(databaseService)), databaseService }
     }
 
     it('marks only email-targeted placeholders as claimable', async () => {

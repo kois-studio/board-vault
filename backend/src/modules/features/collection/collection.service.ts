@@ -145,7 +145,7 @@ export class CollectionService {
 
     @LogFeature(new Logger('CollectionService'))
     async addGameToUserCollection(userId: number, gameId: number): Promise<SuccessDto> {
-        const result = await this.databaseService.addGameToCollection(userId, gameId)
+        const result = await this.databaseService.collection.addGameToCollection(userId, gameId)
 
         if (!result.success) {
             throw new ConflictException('This game is already in your collection')
@@ -158,7 +158,7 @@ export class CollectionService {
 
     @LogFeature(new Logger('CollectionService'))
     async removeGameFromUserCollection(userId: number, gameId: number): Promise<SuccessDto> {
-        const result = await this.databaseService.removeGameFromCollection(userId, gameId)
+        const result = await this.databaseService.collection.removeGameFromCollection(userId, gameId)
 
         if (result.rowsAffected === 0) {
             throw new NotFoundException(`OwnedGame with accountId ${userId} and gameId ${gameId} not found`)
@@ -171,7 +171,7 @@ export class CollectionService {
 
     @LogFeature(new Logger('CollectionService'))
     async updateGameOwnership(userId: number, gameId: number, body: UpdateGameOwnedDto) {
-        const result = await this.databaseService.updateGameOwnershipAndLogActivity(userId, gameId, body)
+        const result = await this.databaseService.collection.updateGameOwnershipAndLogActivity(userId, gameId, body)
 
         if (result.rowsAffected === 0) {
             throw new NotFoundException(`OwnedGame with id ${userId} ${gameId} not found`)
@@ -184,7 +184,7 @@ export class CollectionService {
 
     @LogFeature(new Logger('CollectionService'))
     async toggleWishlist(accountId: number, gameId: number): Promise<boolean> {
-        const isWishlisted = await this.databaseService.toggleWishlistAndLogActivity(accountId, gameId)
+        const isWishlisted = await this.databaseService.collection.toggleWishlistAndLogActivity(accountId, gameId)
 
         await this.collectionActivityService.invalidateForAccount(accountId)
 

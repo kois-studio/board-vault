@@ -1,4 +1,4 @@
-import { DatabaseService } from '../../common/database/database.service'
+import { fakeDatabase } from '../../../../test/fake-database'
 
 import { UsersService } from './users.service'
 
@@ -25,8 +25,7 @@ describe('UsersService account rows', () => {
         email: 'alice@example.test',
         id: 1,
     }
-    const serviceWith = (row: object) =>
-        new UsersService({ getUserById: jest.fn().mockResolvedValue({ rows: [row] }) } as unknown as DatabaseService)
+    const serviceWith = (row: object) => new UsersService(fakeDatabase({ getUserById: jest.fn().mockResolvedValue({ rows: [row] }) }))
 
     it('returns only public identity fields for nested user responses', async () => {
         await expect(serviceWith(accountRow).getPublicUserById(1)).resolves.toEqual({

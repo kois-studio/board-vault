@@ -43,14 +43,14 @@ export class ReviewsService {
 
     async getGameReviews(): Promise<Array<GameReviewDto>> {
         this.LOGGER.log('Getting all reviews')
-        const resultSet = await this.databaseService.getGameReviews()
+        const resultSet = await this.databaseService.collection.getGameReviews()
 
         return this._parseResultSet(resultSet)
     }
 
     async getGameReviewsById(accountId: number, gameId: number): Promise<GameReviewDto> {
         this.LOGGER.log('Getting review')
-        const resultSet = await this.databaseService.getGameReviewById(accountId, gameId)
+        const resultSet = await this.databaseService.collection.getGameReviewById(accountId, gameId)
         const reviews = this._parseResultSet(resultSet)
 
         if (reviews.length === 0) {
@@ -70,7 +70,7 @@ export class ReviewsService {
 
     async getGameReviewsByAccountId(accountId: number): Promise<Array<GameReviewDto>> {
         this.LOGGER.log('Getting reviews for account')
-        const resultSet = await this.databaseService.getGameReviewsByAccountId(accountId)
+        const resultSet = await this.databaseService.collection.getGameReviewsByAccountId(accountId)
 
         return this._parseResultSet(resultSet)
     }
@@ -78,7 +78,7 @@ export class ReviewsService {
     async saveGameReview(accountId: number, gameId: number, review: number) {
         this.LOGGER.log('Saving game review')
         try {
-            const result = await this.databaseService.saveGameReviewAndLogActivity(accountId, gameId, review)
+            const result = await this.databaseService.collection.saveGameReviewAndLogActivity(accountId, gameId, review)
 
             // invalidate the cache
             await this.cacheService.deleteOne(`${this.CACHE_KEY}:userReviewsWithGameData:${accountId}`)
@@ -92,7 +92,7 @@ export class ReviewsService {
 
     async deleteGameReviewById(accountId: number, gameId: number): Promise<{ success: boolean }> {
         this.LOGGER.log('Deleting review')
-        const resultSet = await this.databaseService.deleteGameReviewById(accountId, gameId)
+        const resultSet = await this.databaseService.collection.deleteGameReviewById(accountId, gameId)
 
         if (resultSet.rowsAffected === 0) {
             throw new NotFoundException(`Game Review with accountId ${accountId} and gameId ${gameId} not found`)
@@ -113,7 +113,7 @@ export class ReviewsService {
         }
 
         // Step 2: If no cached, get them from database
-        const resultSet = await this.databaseService.getUserReviews(userId)
+        const resultSet = await this.databaseService.collection.getUserReviews(userId)
         const reviews = this._parseResultSet(resultSet)
 
         // Step 3: Save them to cache
@@ -136,7 +136,7 @@ export class ReviewsService {
         }
 
         // Step 2: If no cached, get them from database
-        const resultSet = await this.databaseService.getAvgGlobalRating(gameId)
+        const resultSet = await this.databaseService.collection.getAvgGlobalRating(gameId)
         const avgGlobalRating = {
             review: Number(resultSet.rows[0].avgGlobalRating),
             count: Number(resultSet.rows[0].count),
@@ -160,7 +160,7 @@ export class ReviewsService {
         }
 
         // Step 2: If no cached, get them from database
-        const resultSet = await this.databaseService.getAvgGroupsRating(accountId, gameId)
+        const resultSet = await this.databaseService.collection.getAvgGroupsRating(accountId, gameId)
         const avgGroupsRating = {
             review: Number(resultSet.rows[0].avgGroupsRating),
             count: Number(resultSet.rows[0].count),

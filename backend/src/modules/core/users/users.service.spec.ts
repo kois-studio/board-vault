@@ -2,6 +2,7 @@ import { BadRequestException, ExecutionContext, INestApplication } from '@nestjs
 import { Test } from '@nestjs/testing'
 import * as request from 'supertest'
 
+import { fakeDatabase } from '../../../../test/fake-database'
 import { AdminGuard } from '../../../common/guards/admin.guard'
 import { AuthGuard } from '../../../common/guards/auth.guard'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
@@ -29,7 +30,7 @@ describe('UsersController profile update boundary', () => {
             controllers: [UsersController],
             providers: [
                 UsersService,
-                { provide: DatabaseService, useValue: { updateUserProfile, updateGames } },
+                { provide: DatabaseService, useValue: fakeDatabase({ updateUserProfile, updateGames }) },
                 AuthGuard,
                 UserOwnershipGuard,
                 AdminGuard,

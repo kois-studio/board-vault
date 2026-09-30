@@ -1,6 +1,6 @@
-import { GroupAcquisitionService } from './group-acquisition.service'
+import { fakeDatabase } from '../../../../test/fake-database'
 
-import type { DatabaseService } from '../../common/database/database.service'
+import { GroupAcquisitionService } from './group-acquisition.service'
 
 describe('GroupAcquisitionService', () => {
     it('aggregates member interest into group-level entries', async () => {
@@ -42,7 +42,7 @@ describe('GroupAcquisitionService', () => {
                 ],
             }),
         }
-        const service = new GroupAcquisitionService(database as unknown as DatabaseService)
+        const service = new GroupAcquisitionService(fakeDatabase(database))
 
         await expect(service.getBoard(7)).resolves.toMatchObject([
             {
@@ -63,7 +63,7 @@ describe('GroupAcquisitionService', () => {
             getGroupAvailableGameIds: jest.fn().mockResolvedValue([42]),
             addGroupGameInterestAndReopenDecision: jest.fn(),
         }
-        const service = new GroupAcquisitionService(database as unknown as DatabaseService)
+        const service = new GroupAcquisitionService(fakeDatabase(database))
 
         await expect(service.addInterest(7, 1, { gameId: 42 })).rejects.toThrow('This group already owns the selected game')
         expect(database.addGroupGameInterestAndReopenDecision).not.toHaveBeenCalled()
@@ -75,7 +75,7 @@ describe('GroupAcquisitionService', () => {
             getGroupAvailableGameIds: jest.fn().mockResolvedValue([]),
             addGroupGameInterestAndReopenDecision: jest.fn().mockResolvedValue({ rowsAffected: 1 }),
         }
-        const service = new GroupAcquisitionService(database as unknown as DatabaseService)
+        const service = new GroupAcquisitionService(fakeDatabase(database))
 
         await expect(service.addInterest(7, 1, { gameId: 42 })).resolves.toEqual({ success: true })
         expect(database.addGroupGameInterestAndReopenDecision).toHaveBeenCalledWith(7, 1, 42)
@@ -87,7 +87,7 @@ describe('GroupAcquisitionService', () => {
             getGroupAvailableGameIds: jest.fn().mockResolvedValueOnce([]).mockResolvedValueOnce([42]),
             addGroupGameInterestAndReopenDecision: jest.fn().mockResolvedValue({ rowsAffected: 0 }),
         }
-        const service = new GroupAcquisitionService(database as unknown as DatabaseService)
+        const service = new GroupAcquisitionService(fakeDatabase(database))
 
         await expect(service.addInterest(7, 1, { gameId: 42 })).rejects.toThrow('This group already owns the selected game')
         expect(database.getGroupAvailableGameIds).toHaveBeenCalledTimes(2)
@@ -99,7 +99,7 @@ describe('GroupAcquisitionService', () => {
             getGroupAvailableGameIds: jest.fn().mockResolvedValue([]),
             upsertGroupAcquisitionDecision: jest.fn().mockResolvedValue({ rowsAffected: 1 }),
         }
-        const service = new GroupAcquisitionService(database as unknown as DatabaseService)
+        const service = new GroupAcquisitionService(fakeDatabase(database))
 
         await expect(service.updateDecision(7, 1, 42, { status: 'planned', note: 'Buy before autumn' })).resolves.toEqual({ success: true })
         expect(database.upsertGroupAcquisitionDecision).toHaveBeenCalledWith(7, 42, 1, 'planned', 'Buy before autumn')
@@ -111,7 +111,7 @@ describe('GroupAcquisitionService', () => {
             getGroupAvailableGameIds: jest.fn().mockResolvedValue([42]),
             upsertGroupAcquisitionDecision: jest.fn(),
         }
-        const service = new GroupAcquisitionService(database as unknown as DatabaseService)
+        const service = new GroupAcquisitionService(fakeDatabase(database))
 
         await expect(service.updateDecision(7, 1, 42, { status: 'not_now' })).rejects.toThrow('This group already owns the selected game')
         expect(database.upsertGroupAcquisitionDecision).not.toHaveBeenCalled()

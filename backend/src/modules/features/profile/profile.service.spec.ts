@@ -1,5 +1,6 @@
 import { ForbiddenException } from '@nestjs/common'
 
+import { fakeDatabase } from '../../../../test/fake-database'
 import { DatabaseService } from '../../common/database/database.service'
 import { GameProposalService } from '../../core/game-proposal/game-proposal.service'
 import { GroupsService } from '../../core/groups/groups.service'
@@ -53,7 +54,7 @@ describe('ProfileService invitation acceptance', () => {
             {} as NotificationsService,
             {} as GroupsService,
             invitationsService as unknown as InvitationsService,
-            databaseService as unknown as DatabaseService,
+            fakeDatabase(databaseService),
             {} as GameProposalService,
         )
 
@@ -74,7 +75,7 @@ describe('ProfileService invitation acceptance', () => {
             {} as NotificationsService,
             {} as GroupsService,
             invitationsService as unknown as InvitationsService,
-            databaseService as unknown as DatabaseService,
+            fakeDatabase(databaseService),
             {} as GameProposalService,
         )
 

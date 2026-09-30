@@ -1,3 +1,5 @@
+import { fakeDatabase } from '../../../../test/fake-database'
+
 import { PlayService } from './play.service'
 
 import type { DatabaseService } from '../../common/database/database.service'
@@ -23,11 +25,14 @@ describe('PlayService history', () => {
                 timezone: 'Europe/Madrid',
             })),
         }
-        const database = {
+        const database = fakeDatabase({
             getMeetAttendedAccountIds: jest.fn().mockResolvedValue([1]),
             getDistinctCompletedMeetIdsForAccountHistory: jest.fn().mockResolvedValue([10, 11]),
             getPlayedGameIdsByMeetId: jest.fn().mockResolvedValue([42]),
-        } as unknown as DatabaseService
+            getMeetAttendedPersonIds: jest.fn().mockResolvedValue([]),
+            getGroupPeople: jest.fn().mockResolvedValue({ rows: [] }),
+            getMeetPlayedGamePersonParticipants: jest.fn().mockResolvedValue([]),
+        })
         const service = new PlayService(
             { getPublicUserById: jest.fn().mockResolvedValue({ id: 1, username: 'organizer' }) } as unknown as UsersService,
             database,
@@ -38,8 +43,8 @@ describe('PlayService history', () => {
         )
 
         await expect(service.getUserGamesHistory(1)).resolves.toHaveLength(1)
-        expect(database.getPlayedGameIdsByMeetId).toHaveBeenCalledTimes(1)
-        expect(database.getPlayedGameIdsByMeetId).toHaveBeenCalledWith(10)
+        expect(database.sessions.getPlayedGameIdsByMeetId).toHaveBeenCalledTimes(1)
+        expect(database.sessions.getPlayedGameIdsByMeetId).toHaveBeenCalledWith(10)
     })
 
     it('sorts a user meet list without mutating the database response contract', async () => {
@@ -78,7 +83,7 @@ describe('PlayService history', () => {
         }
         const service = new PlayService(
             {} as UsersService,
-            database as unknown as DatabaseService,
+            fakeDatabase(database),
             {} as GamesService,
             {} as MeetsService,
             {} as MeetAccountGamesService,
@@ -118,7 +123,7 @@ describe('PlayService history', () => {
         }
         const service = new PlayService(
             {} as UsersService,
-            database as unknown as DatabaseService,
+            fakeDatabase(database),
             {} as GamesService,
             {} as MeetsService,
             {} as MeetAccountGamesService,
@@ -158,7 +163,7 @@ describe('PlayService history', () => {
         }
         const service = new PlayService(
             {} as UsersService,
-            database as unknown as DatabaseService,
+            fakeDatabase(database),
             {} as GamesService,
             {} as MeetsService,
             {} as MeetAccountGamesService,
@@ -206,7 +211,7 @@ describe('PlayService history', () => {
         }
         const service = new PlayService(
             {} as UsersService,
-            database as unknown as DatabaseService,
+            fakeDatabase(database),
             {} as GamesService,
             {} as MeetsService,
             {} as MeetAccountGamesService,
@@ -230,7 +235,7 @@ describe('PlayService history', () => {
         }
         const service = new PlayService(
             {} as UsersService,
-            database as unknown as DatabaseService,
+            fakeDatabase(database),
             {} as GamesService,
             {} as MeetsService,
             {} as MeetAccountGamesService,
@@ -251,7 +256,7 @@ describe('PlayService history', () => {
         }
         const service = new PlayService(
             {} as UsersService,
-            database as unknown as DatabaseService,
+            fakeDatabase(database),
             {} as GamesService,
             {} as MeetsService,
             {} as MeetAccountGamesService,
@@ -273,7 +278,7 @@ describe('PlayService history', () => {
         }
         const service = new PlayService(
             {} as UsersService,
-            database as unknown as DatabaseService,
+            fakeDatabase(database),
             {} as GamesService,
             {} as MeetsService,
             {} as MeetAccountGamesService,
@@ -306,7 +311,7 @@ describe('PlayService history', () => {
         }
         const service = new PlayService(
             {} as UsersService,
-            database as unknown as DatabaseService,
+            fakeDatabase(database),
             {} as GamesService,
             {} as MeetsService,
             {} as MeetAccountGamesService,
@@ -339,7 +344,7 @@ describe('PlayService history', () => {
         }
         const service = new PlayService(
             {} as UsersService,
-            database as unknown as DatabaseService,
+            fakeDatabase(database),
             {} as GamesService,
             {} as MeetsService,
             {} as MeetAccountGamesService,
@@ -369,7 +374,7 @@ describe('PlayService history', () => {
         }
         const service = new PlayService(
             {} as UsersService,
-            database as unknown as DatabaseService,
+            fakeDatabase(database),
             {} as GamesService,
             {} as MeetsService,
             {} as MeetAccountGamesService,

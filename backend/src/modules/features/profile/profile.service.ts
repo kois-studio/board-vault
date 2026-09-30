@@ -72,7 +72,7 @@ export class ProfileService {
         }
 
         // Membership creation and invitation consumption must commit together.
-        await this.databaseService.acceptInvitationAtomically(invitationId, userId, invitationData.groupId)
+        await this.databaseService.invitations.acceptInvitationAtomically(invitationId, userId, invitationData.groupId)
 
         // Owner notifications are intentionally deferred until the
         // notification contract defines delivery and unread semantics.

@@ -40,14 +40,14 @@ export class NotificationsService {
 
     async getNotifications(): Promise<Array<NotificationDto>> {
         this.LOGGER.log('Getting all notifications')
-        const resultSet = await this.databaseService.getNotifications()
+        const resultSet = await this.databaseService.notifications.getNotifications()
 
         return this._parseResultSet(resultSet)
     }
 
     async getNotificationById(id: number, accountId: number): Promise<NotificationDto> {
         this.LOGGER.log('Getting notification by id')
-        const resultSet = await this.databaseService.getNotificationById(id, accountId)
+        const resultSet = await this.databaseService.notifications.getNotificationById(id, accountId)
         const notifications = this._parseResultSet(resultSet)
 
         if (notifications.length === 0) {
@@ -58,7 +58,7 @@ export class NotificationsService {
 
     async getNotificationsByAccountId(accountId: number): Promise<Array<NotificationDto>> {
         this.LOGGER.log('Getting notifications for account')
-        const resultSet = await this.databaseService.getNotificationsByAccountId(accountId)
+        const resultSet = await this.databaseService.notifications.getNotificationsByAccountId(accountId)
 
         return this._parseResultSet(resultSet)
     }
@@ -66,7 +66,7 @@ export class NotificationsService {
     async createNotification(notificationDto: CreateNotificationBody) {
         this.LOGGER.log('Creating notification')
         try {
-            await this.databaseService.createNotification(notificationDto)
+            await this.databaseService.notifications.createNotification(notificationDto)
 
             return { success: true }
         } catch {
@@ -81,7 +81,7 @@ export class NotificationsService {
         partialNotificationDto: UpdateNotificationRequestBody,
     ): Promise<{ success: boolean }> {
         this.LOGGER.log('Updating notification')
-        const resultSet = await this.databaseService.updateNotification(id, accountId, partialNotificationDto)
+        const resultSet = await this.databaseService.notifications.updateNotification(id, accountId, partialNotificationDto)
 
         if (resultSet.rowsAffected === 0) {
             throw new NotFoundException(`Notification with id ${id} not found`)
@@ -92,7 +92,7 @@ export class NotificationsService {
 
     async deleteNotificationById(id: number, accountId: number): Promise<{ success: boolean }> {
         this.LOGGER.log('Deleting notification')
-        const resultSet = await this.databaseService.deleteNotificationById(id, accountId)
+        const resultSet = await this.databaseService.notifications.deleteNotificationById(id, accountId)
 
         if (resultSet.rowsAffected === 0) {
             throw new NotFoundException(`Notification with id ${id} not found`)

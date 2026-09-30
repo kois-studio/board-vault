@@ -41,7 +41,7 @@ export class MeetAccountGamesService {
         fullRecords: MeetAccountGameDto[]
     }> {
         this.LOGGER.log('Querying legacy MeetAccountGame compatibility data')
-        const resultSet = await this.databaseService.queryMeetAccountGame(options)
+        const resultSet = await this.databaseService.sessions.queryMeetAccountGame(options)
 
         // For single field selections with distinct, return an array of that field
         if (options.select && options.select.length === 1) {
@@ -116,7 +116,7 @@ export class MeetAccountGamesService {
     // #region other
 
     private async _assertAccountCanAccessMeet(accountId: number, meetId: number): Promise<number> {
-        const resultSet = await this.databaseService.getMeetByIdForAccount(meetId, accountId)
+        const resultSet = await this.databaseService.sessions.getMeetByIdForAccount(meetId, accountId)
 
         if (resultSet.rows.length === 0) {
             throw new ForbiddenException('You are not a member of this meet group')
@@ -127,7 +127,7 @@ export class MeetAccountGamesService {
 
     async createMeetAccountGameForAccount(accountId: number, meetId: number, gameId: number): Promise<MeetAccountGameDto> {
         const groupId = await this._assertAccountCanAccessMeet(accountId, meetId)
-        const availableGameIds = new Set(await this.databaseService.getGroupAvailableGameIds(groupId))
+        const availableGameIds = new Set(await this.databaseService.groups.getGroupAvailableGameIds(groupId))
 
         if (!availableGameIds.has(gameId)) {
             throw new BadRequestException('The game must be owned by at least one member of the meet group')
@@ -144,7 +144,7 @@ export class MeetAccountGamesService {
 
     async createMeetAccountGame(accountId: number, meetId: number, gameId: number): Promise<MeetAccountGameDto> {
         this.LOGGER.log('Creating a legacy MeetAccountGame record')
-        const resultSet = await this.databaseService.createMeetAccountGame(accountId, meetId, gameId)
+        const resultSet = await this.databaseService.sessions.createMeetAccountGame(accountId, meetId, gameId)
 
         if (resultSet.rowsAffected === 0) {
             throw new NotFoundException(`Meet with meetId ${meetId} not found`)
@@ -155,7 +155,7 @@ export class MeetAccountGamesService {
 
     async deleteMeetAccountGame(accountId: number, meetId: number, gameId: number): Promise<{ success: boolean }> {
         this.LOGGER.log('Deleting a legacy MeetAccountGame record')
-        const resultSet = await this.databaseService.deleteMeetAccountGame(accountId, meetId, gameId)
+        const resultSet = await this.databaseService.sessions.deleteMeetAccountGame(accountId, meetId, gameId)
 
         if (resultSet.rowsAffected === 0) {
             throw new NotFoundException(`Meet with meetId ${meetId} not found`)

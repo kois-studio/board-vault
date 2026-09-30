@@ -37,13 +37,13 @@ export class PlayService {
 
     @LogFeature(new Logger('PlayService'))
     async getRecommendations(actorAccountId: number, body: RecommendationRequestBody): Promise<RecommendationsDto> {
-        const group = await this.databaseService.getGroupById(body.groupId)
+        const group = await this.databaseService.groups.getGroupById(body.groupId)
 
         if (group.rows.length === 0) {
             throw new NotFoundException(`Group with id ${body.groupId} not found`)
         }
 
-        const memberIds = await this.databaseService.getGroupMemberIds(body.groupId)
+        const memberIds = await this.databaseService.groups.getGroupMemberIds(body.groupId)
 
         if (!memberIds.includes(actorAccountId)) {
             throw new ForbiddenException('You must belong to the group to get recommendations')
@@ -53,7 +53,7 @@ export class PlayService {
             throw new BadRequestException('Every attendee must belong to the selected group')
         }
 
-        const resultSet = await this.databaseService.getRecommendationCandidates(
+        const resultSet = await this.databaseService.recommendations.getRecommendationCandidates(
             body.attendeeIds,
             body.attendeeIds.length,
             body.availableMinutes,
@@ -62,7 +62,7 @@ export class PlayService {
         const feedbackByGame = new Map<number, { interestedCount: number; notForUsCount: number }>()
 
         if (resultSet.rows.length > 0) {
-            const feedbackResult = await this.databaseService.getRecommendationFeedbackForGroup(body.groupId)
+            const feedbackResult = await this.databaseService.recommendations.getRecommendationFeedbackForGroup(body.groupId)
             const latestByMemberAndGame = new Set<string>()
             const attendeeIds = new Set(body.attendeeIds)
 
@@ -114,19 +114,19 @@ export class PlayService {
     }
 
     async getParticipantRecommendations(actorAccountId: number, body: ParticipantRecommendationRequestBody): Promise<RecommendationsDto> {
-        const group = await this.databaseService.getGroupById(body.groupId)
+        const group = await this.databaseService.groups.getGroupById(body.groupId)
 
         if (group.rows.length === 0) {
             throw new NotFoundException(`Group with id ${body.groupId} not found`)
         }
 
-        const memberIds = await this.databaseService.getGroupMemberIds(body.groupId)
+        const memberIds = await this.databaseService.groups.getGroupMemberIds(body.groupId)
 
         if (!memberIds.includes(actorAccountId)) {
             throw new ForbiddenException('You must belong to the group to get recommendations')
         }
 
-        const people = await this.databaseService.getGroupPeople(body.groupId)
+        const people = await this.databaseService.groups.getGroupPeople(body.groupId)
         const activePersonIds = new Set(people.rows.filter(row => String(row[4]) === 'active').map(row => Number(row[0])))
 
         if (body.groupPersonIds.some(personId => !activePersonIds.has(personId))) {
@@ -134,14 +134,14 @@ export class PlayService {
         }
 
         const decisionLens = body.decisionLens ?? 'balanced'
-        const resultSet = await this.databaseService.getGroupPersonRecommendationCandidates(
+        const resultSet = await this.databaseService.recommendations.getGroupPersonRecommendationCandidates(
             body.groupId,
             body.groupPersonIds,
             body.groupPersonIds.length,
             body.availableMinutes,
         )
         const feedbackByGame = new Map<number, { interestedCount: number; notForUsCount: number }>()
-        const feedbackResult = await this.databaseService.getParticipantRecommendationFeedbackForGroup(body.groupId)
+        const feedbackResult = await this.databaseService.recommendations.getParticipantRecommendationFeedbackForGroup(body.groupId)
         const selectedPeople = new Set(body.groupPersonIds)
         const selectedPersonNames = body.groupPersonIds
             .map(personId => people.rows.find(row => Number(row[0]) === personId))
@@ -196,30 +196,30 @@ export class PlayService {
         actorAccountId: number,
         body: ParticipantRecommendationFeedbackBody,
     ): Promise<RecommendationFeedbackDto> {
-        const group = await this.databaseService.getGroupById(body.groupId)
+        const group = await this.databaseService.groups.getGroupById(body.groupId)
 
         if (group.rows.length === 0) throw new NotFoundException(`Group with id ${body.groupId} not found`)
 
-        const memberIds = await this.databaseService.getGroupMemberIds(body.groupId)
+        const memberIds = await this.databaseService.groups.getGroupMemberIds(body.groupId)
 
         if (!memberIds.includes(actorAccountId)) {
             throw new ForbiddenException('You must belong to the group to submit recommendation feedback')
         }
 
-        const people = await this.databaseService.getGroupPeople(body.groupId)
+        const people = await this.databaseService.groups.getGroupPeople(body.groupId)
         const activePersonIds = new Set(people.rows.filter(row => String(row[4]) === 'active').map(row => Number(row[0])))
 
         if (body.participantIds.some(personId => !activePersonIds.has(personId))) {
             throw new BadRequestException('Every participant must belong to the selected group')
         }
 
-        const availableGameIds = await this.databaseService.getGroupAvailableGameIdsForPeople(body.groupId, body.participantIds)
+        const availableGameIds = await this.databaseService.groups.getGroupAvailableGameIdsForPeople(body.groupId, body.participantIds)
 
         if (!availableGameIds.includes(body.gameId)) {
             throw new BadRequestException('The selected group people do not own this game')
         }
 
-        await this.databaseService.createParticipantRecommendationFeedback({
+        await this.databaseService.recommendations.createParticipantRecommendationFeedback({
             accountId: actorAccountId,
             groupId: body.groupId,
             gameId: body.gameId,
@@ -231,7 +231,7 @@ export class PlayService {
     }
 
     private async _getNoResultReason(body: RecommendationRequestBody): Promise<string> {
-        const counts = await this.databaseService.getRecommendationCandidateCounts(
+        const counts = await this.databaseService.recommendations.getRecommendationCandidateCounts(
             body.attendeeIds,
             body.attendeeIds.length,
             body.availableMinutes,
@@ -364,13 +364,13 @@ export class PlayService {
 
     @LogFeature(new Logger('PlayService'))
     async createRecommendationFeedback(actorAccountId: number, body: RecommendationFeedbackBody): Promise<RecommendationFeedbackDto> {
-        const group = await this.databaseService.getGroupById(body.groupId)
+        const group = await this.databaseService.groups.getGroupById(body.groupId)
 
         if (group.rows.length === 0) {
             throw new NotFoundException(`Group with id ${body.groupId} not found`)
         }
 
-        const memberIds = await this.databaseService.getGroupMemberIds(body.groupId)
+        const memberIds = await this.databaseService.groups.getGroupMemberIds(body.groupId)
 
         if (!memberIds.includes(actorAccountId)) {
             throw new ForbiddenException('You must belong to the group to submit recommendation feedback')
@@ -380,13 +380,13 @@ export class PlayService {
             throw new BadRequestException('Every attendee must belong to the selected group')
         }
 
-        const ownedGame = await this.databaseService.getOwnedGameByAnyAccount(body.gameId, body.attendeeIds)
+        const ownedGame = await this.databaseService.recommendations.getOwnedGameByAnyAccount(body.gameId, body.attendeeIds)
 
         if (ownedGame.rows.length === 0) {
             throw new BadRequestException('The selected attendees do not own this game')
         }
 
-        await this.databaseService.createRecommendationFeedback({
+        await this.databaseService.recommendations.createRecommendationFeedback({
             accountId: actorAccountId,
             groupId: body.groupId,
             gameId: body.gameId,
@@ -399,19 +399,19 @@ export class PlayService {
 
     @LogFeature(new Logger('PlayService'))
     async getRecommendationSignals(actorAccountId: number, groupId: number): Promise<RecommendationSignalsDto> {
-        const group = await this.databaseService.getGroupById(groupId)
+        const group = await this.databaseService.groups.getGroupById(groupId)
 
         if (group.rows.length === 0) {
             throw new NotFoundException(`Group with id ${groupId} not found`)
         }
 
-        const memberIds = await this.databaseService.getGroupMemberIds(groupId)
+        const memberIds = await this.databaseService.groups.getGroupMemberIds(groupId)
 
         if (!memberIds.includes(actorAccountId)) {
             throw new ForbiddenException('You must belong to the group to view recommendation signals')
         }
 
-        const resultSet = await this.databaseService.getRecommendationFeedbackForGroup(groupId)
+        const resultSet = await this.databaseService.recommendations.getRecommendationFeedbackForGroup(groupId)
         const latestByMemberAndGame = new Map<
             string,
             {
@@ -489,7 +489,7 @@ export class PlayService {
 
     @LogFeature(new Logger('PlayService'))
     async getUserGamesHistory(userId: number): Promise<Array<HistoryRecordDto>> {
-        const meetsYouParticipatedIn = await this.databaseService.getDistinctCompletedMeetIdsForAccountHistory(userId)
+        const meetsYouParticipatedIn = await this.databaseService.sessions.getDistinctCompletedMeetIdsForAccountHistory(userId)
 
         const history = await Promise.all(
             meetsYouParticipatedIn.map(async meetId => {
@@ -499,32 +499,25 @@ export class PlayService {
                     return null
                 }
 
-                const attendedByIds = await this.databaseService.getMeetAttendedAccountIds(meetId)
-                const attendedByPersonIds =
-                    typeof this.databaseService.getMeetAttendedPersonIds === 'function'
-                        ? await this.databaseService.getMeetAttendedPersonIds(meetId)
-                        : []
-                const groupPeople =
-                    typeof this.databaseService.getGroupPeople === 'function'
-                        ? await this.databaseService.getGroupPeople(meetData.groupId)
-                        : { rows: [] }
+                const attendedByIds = await this.databaseService.sessions.getMeetAttendedAccountIds(meetId)
+                const attendedByPersonIds = await this.databaseService.sessions.getMeetAttendedPersonIds(meetId)
+                const groupPeople = await this.databaseService.groups.getGroupPeople(meetData.groupId)
                 const peopleById = new Map(
                     groupPeople.rows.map(row => [
                         Number(row[0]),
                         { id: Number(row[0]), displayName: String(row[5]), avatar: this.parseAvatar(row[6]) },
                     ]),
                 )
-                const gameIds = await this.databaseService.getPlayedGameIdsByMeetId(meetId)
+                const gameIds = await this.databaseService.sessions.getPlayedGameIdsByMeetId(meetId)
                 const gamesPlayed = await Promise.all(
                     gameIds.map(async gameId => {
                         const game = await this.gamesService.getGameById(gameId)
                         const gameTranslations = await this.gameTranslationService.getGameTranslations(gameId)
                         const playedByIds = await this.meetAccountGamesService.getDistinctAccountIdsByMeetIdAndGameId(meetId, gameId)
                         const playedByPersonIds =
-                            (typeof this.databaseService.getMeetPlayedGamePersonParticipants === 'function'
-                                ? await this.databaseService.getMeetPlayedGamePersonParticipants(meetId)
-                                : []
-                            ).find(game => game.gameId === gameId)?.participantIds ?? []
+                            (await this.databaseService.sessions.getMeetPlayedGamePersonParticipants(meetId)).find(
+                                game => game.gameId === gameId,
+                            )?.participantIds ?? []
                         const playedByData = await Promise.all(
                             playedByIds.map(async accountId => this.usersService.getPublicUserById(accountId)),
                         )

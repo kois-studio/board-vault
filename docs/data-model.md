@@ -11,8 +11,8 @@ production. The schema is
 [`database/schema/schema.sql`](../database/schema/schema.sql) (the 0001–0005
 baseline) plus the numbered files in
 [`database/migrations/`](../database/migrations/). Current version: **0015**.
-All SQL lives in
-[`DatabaseService`](../backend/src/modules/common/database/database.service.ts).
+All SQL lives in the per-domain query classes in
+[`database/queries/`](../backend/src/modules/common/database/queries/).
 
 ## Deletion rules
 
@@ -64,7 +64,7 @@ sessions they created, and more.
 - Group reads are membership-scoped. Group-person claims are bound to the
   invited email and group on the server.
 - Read `Account` rows through the explicit `ACCOUNT_COLUMNS` list in
-  `DatabaseService` and by column name, never `SELECT *` or by position; its
+  `database.constants.ts` and by column name, never `SELECT *` or by position; its
   column order changed when 0015 dropped columns. Prefer the same for new
   queries on other tables.
 - Multi-record writes define transaction, duplicate, and partial-failure

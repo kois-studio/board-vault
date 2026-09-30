@@ -304,7 +304,7 @@ export class AdminService {
             })
         }
 
-        const { createdGameId } = await this.databaseService.approveGameProposalAtomically({
+        const { createdGameId } = await this.databaseService.games.approveGameProposalAtomically({
             proposalId,
             reviewerId,
             ...gameData,
@@ -338,7 +338,7 @@ export class AdminService {
     async rejectGameProposal(proposalId: number, reviewerId: number, rejectionData: RejectGameProposalBody): Promise<{ success: boolean }> {
         const proposal = await this.gameProposalService.getGameProposalById(proposalId)
 
-        await this.databaseService.rejectGameProposalAtomically({
+        await this.databaseService.games.rejectGameProposalAtomically({
             proposalId,
             reviewerId,
             reviewNotes: rejectionData.reviewNotes,

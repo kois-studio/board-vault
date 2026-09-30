@@ -28,7 +28,7 @@ export class SessionsService {
     constructor(private readonly databaseService: DatabaseService) {}
 
     async getSessionDetails(actorAccountId: number, sessionId: number): Promise<MeetWithAttendeesAndGames> {
-        const result = await this.databaseService.getMeetDetailsByIdForAccount(sessionId, actorAccountId)
+        const result = await this.databaseService.sessions.getMeetDetailsByIdForAccount(sessionId, actorAccountId)
         const session = mapMeetDetailsResult(result)
 
         if (!session) {
@@ -39,13 +39,13 @@ export class SessionsService {
     }
 
     async createCompletedSession(actorAccountId: number, body: CreatePlaySessionBody): Promise<SessionCreatedDto> {
-        const group = await this.databaseService.getGroupById(body.groupId)
+        const group = await this.databaseService.groups.getGroupById(body.groupId)
 
         if (group.rows.length === 0) {
             throw new NotFoundException(`Group with id ${body.groupId} not found`)
         }
 
-        const memberIds = await this.databaseService.getGroupMemberIds(body.groupId)
+        const memberIds = await this.databaseService.groups.getGroupMemberIds(body.groupId)
         const memberIdSet = new Set(memberIds)
 
         if (!memberIdSet.has(actorAccountId)) {
@@ -102,7 +102,7 @@ export class SessionsService {
         const availableGameIds = new Set<number>()
 
         if (usesAccounts) {
-            for (const gameId of await this.databaseService.getGroupAvailableGameIds(body.groupId)) availableGameIds.add(gameId)
+            for (const gameId of await this.databaseService.groups.getGroupAvailableGameIds(body.groupId)) availableGameIds.add(gameId)
         }
         if (usesGroupPeople) {
             for (const gameId of await this.getGroupAvailableGameIdsForPeople(body.groupId, groupPersonIds)) {
@@ -126,7 +126,7 @@ export class SessionsService {
             }
         }
 
-        const result = await this.databaseService.createCompletedSession({
+        const result = await this.databaseService.sessions.createCompletedSession({
             groupId: body.groupId,
             createdBy: actorAccountId,
             sessionDate: body.sessionDate,
@@ -145,13 +145,13 @@ export class SessionsService {
     }
 
     async createScheduledSession(actorAccountId: number, body: CreateScheduledSessionBody): Promise<ScheduledSessionCreatedDto> {
-        const group = await this.databaseService.getGroupById(body.groupId)
+        const group = await this.databaseService.groups.getGroupById(body.groupId)
 
         if (group.rows.length === 0) {
             throw new NotFoundException(`Group with id ${body.groupId} not found`)
         }
 
-        const memberIds = await this.databaseService.getGroupMemberIds(body.groupId)
+        const memberIds = await this.databaseService.groups.getGroupMemberIds(body.groupId)
 
         if (!memberIds.includes(actorAccountId)) {
             throw new ForbiddenException('You must belong to the group to schedule a session')
@@ -183,7 +183,7 @@ export class SessionsService {
         const availableGameIds = new Set<number>()
 
         if (selectedAccountIds.length > 0) {
-            for (const gameId of await this.databaseService.getGroupAvailableGameIds(body.groupId)) availableGameIds.add(gameId)
+            for (const gameId of await this.databaseService.groups.getGroupAvailableGameIds(body.groupId)) availableGameIds.add(gameId)
         }
         if (groupPersonIds.length > 0) {
             for (const gameId of await this.getGroupAvailableGameIdsForPeople(body.groupId, groupPersonIds)) {
@@ -195,7 +195,7 @@ export class SessionsService {
             throw new BadRequestException('Every planned game must be owned by at least one group member')
         }
 
-        const result = await this.databaseService.createScheduledSession({
+        const result = await this.databaseService.sessions.createScheduledSession({
             groupId: body.groupId,
             createdBy: actorAccountId,
             sessionDate: body.sessionDate,
@@ -213,7 +213,7 @@ export class SessionsService {
     }
 
     async updateSessionStatus(actorAccountId: number, sessionId: number, body: UpdateSessionStatusBody): Promise<SessionStatusUpdatedDto> {
-        const session = await this.databaseService.getMeetByIdForCreator(sessionId, actorAccountId)
+        const session = await this.databaseService.sessions.getMeetByIdForCreator(sessionId, actorAccountId)
 
         if (session.rows.length === 0) {
             throw new ForbiddenException('Only the session organizer can change its status')
@@ -231,7 +231,7 @@ export class SessionsService {
             throw new BadRequestException(`Cannot change a ${currentStatus} session to ${body.status}`)
         }
 
-        const result = await this.databaseService.updateMeetStatus(sessionId, currentStatus, body.status)
+        const result = await this.databaseService.sessions.updateMeetStatus(sessionId, currentStatus, body.status)
 
         if (result.rowsAffected !== 1) {
             throw new NotFoundException(`Session with id ${sessionId} not found`)
@@ -245,7 +245,7 @@ export class SessionsService {
         sessionId: number,
         body: UpdateSessionAttendeesBody,
     ): Promise<SessionAttendeesUpdatedDto> {
-        const session = await this.databaseService.getMeetByIdForCreator(sessionId, actorAccountId)
+        const session = await this.databaseService.sessions.getMeetByIdForCreator(sessionId, actorAccountId)
 
         if (session.rows.length === 0) {
             throw new ForbiddenException('Only the session organizer can manage attendees')
@@ -265,7 +265,7 @@ export class SessionsService {
         }
 
         const groupId = Number(session.rows[0][1])
-        const memberIds = await this.databaseService.getGroupMemberIds(groupId)
+        const memberIds = await this.databaseService.groups.getGroupMemberIds(groupId)
 
         if (attendeeIds.some(accountId => !memberIds.includes(accountId))) {
             throw new BadRequestException('Every attendee must belong to the session group')
@@ -280,9 +280,9 @@ export class SessionsService {
 
         const nextAttendeeIds = new Set(attendeeIds)
         const nextPersonIds = new Set(groupPersonIds)
-        const existingAccountIds = await this.databaseService.getMeetAttendeeIds(sessionId)
+        const existingAccountIds = await this.databaseService.sessions.getMeetAttendeeIds(sessionId)
         const existingPersonIds = await this.getMeetPersonIds(sessionId)
-        const playedAccountParticipants = await this.databaseService.getMeetPlayedGameParticipants(sessionId)
+        const playedAccountParticipants = await this.databaseService.sessions.getMeetPlayedGameParticipants(sessionId)
         const playedPersonParticipants = await this.getMeetPlayedGameParticipants(sessionId)
 
         if (playedAccountParticipants.some(game => game.participantIds.some(participantId => !nextAttendeeIds.has(participantId)))) {
@@ -294,11 +294,11 @@ export class SessionsService {
 
         const accountApplied =
             existingAccountIds.length > 0 || (existingPersonIds.length === 0 && attendeeIds.length > 0)
-                ? await this.databaseService.replaceMeetAttendees(sessionId, attendeeIds, status)
+                ? await this.databaseService.sessions.replaceMeetAttendees(sessionId, attendeeIds, status)
                 : true
         const personApplied =
             existingPersonIds.length > 0 || groupPersonIds.length > 0
-                ? await this.databaseService.replaceMeetPersonAttendees(sessionId, groupPersonIds, status)
+                ? await this.databaseService.sessions.replaceMeetPersonAttendees(sessionId, groupPersonIds, status)
                 : true
 
         if (accountApplied === false || personApplied === false) {
@@ -312,7 +312,7 @@ export class SessionsService {
         sessionId: number,
         body: UpdateSessionShortlistBody,
     ): Promise<SessionShortlistUpdatedDto> {
-        const session = await this.databaseService.getMeetByIdForCreator(sessionId, actorAccountId)
+        const session = await this.databaseService.sessions.getMeetByIdForCreator(sessionId, actorAccountId)
 
         if (session.rows.length === 0) {
             throw new ForbiddenException('Only the session organizer can manage the shortlist')
@@ -326,7 +326,7 @@ export class SessionsService {
 
         const groupId = Number(session.rows[0][1])
         const personIds = await this.getMeetPersonIds(sessionId)
-        const availableGameIds = new Set(await this.databaseService.getGroupAvailableGameIds(groupId))
+        const availableGameIds = new Set(await this.databaseService.groups.getGroupAvailableGameIds(groupId))
 
         for (const gameId of await this.getGroupAvailableGameIdsForPeople(groupId, personIds)) {
             availableGameIds.add(gameId)
@@ -337,7 +337,7 @@ export class SessionsService {
             throw new BadRequestException('Every planned game must be owned by at least one group member')
         }
 
-        const applied = await this.databaseService.replaceMeetPlannedGames(sessionId, plannedGameIds, status)
+        const applied = await this.databaseService.sessions.replaceMeetPlannedGames(sessionId, plannedGameIds, status)
 
         if (applied === false) {
             throw new ConflictException('The session changed while the shortlist was being updated. Reload and try again.')
@@ -350,7 +350,7 @@ export class SessionsService {
         sessionId: number,
         body: UpdateSessionPlayedGamesBody,
     ): Promise<SessionPlayedGamesUpdatedDto> {
-        const session = await this.databaseService.getMeetByIdForCreator(sessionId, actorAccountId)
+        const session = await this.databaseService.sessions.getMeetByIdForCreator(sessionId, actorAccountId)
 
         if (session.rows.length === 0) {
             throw new ForbiddenException('Only the session organizer can record games played')
@@ -364,11 +364,11 @@ export class SessionsService {
 
         const groupId = Number(session.rows[0][1])
         const personIds = await this.getMeetPersonIds(sessionId)
-        const accountIds = await this.databaseService.getMeetAttendeeIds(sessionId)
+        const accountIds = await this.databaseService.sessions.getMeetAttendeeIds(sessionId)
         const availableGameIds = new Set<number>()
 
         if (accountIds.length > 0) {
-            for (const gameId of await this.databaseService.getGroupAvailableGameIds(groupId)) availableGameIds.add(gameId)
+            for (const gameId of await this.databaseService.groups.getGroupAvailableGameIds(groupId)) availableGameIds.add(gameId)
         }
         for (const gameId of await this.getGroupAvailableGameIdsForPeople(groupId, personIds)) availableGameIds.add(gameId)
         const playedGameIds = [...new Set(body.playedGameIds)]
@@ -377,9 +377,9 @@ export class SessionsService {
             throw new BadRequestException('Every played game must be owned by at least one group member')
         }
 
-        const attendees = new Set(await this.databaseService.getMeetAttendeeIds(sessionId))
+        const attendees = new Set(await this.databaseService.sessions.getMeetAttendeeIds(sessionId))
         const personAttendees = new Set(personIds)
-        const existingAccountParticipants = body.games ? [] : await this.databaseService.getMeetPlayedGameParticipants(sessionId)
+        const existingAccountParticipants = body.games ? [] : await this.databaseService.sessions.getMeetPlayedGameParticipants(sessionId)
         const existingPersonParticipants = body.games ? [] : await this.getMeetPlayedGameParticipants(sessionId)
         const games = body.games
             ? body.games.map(game => ({ gameId: game.gameId, participantIds: [...new Set(game.participantIds ?? [])] }))
@@ -422,10 +422,10 @@ export class SessionsService {
 
         const result =
             personIds.length > 0 && attendees.size === 0
-                ? await this.databaseService.replaceMeetPlayedPersonGames(sessionId, personGames, status)
+                ? await this.databaseService.sessions.replaceMeetPlayedPersonGames(sessionId, personGames, status)
                 : personIds.length > 0
-                  ? await this.databaseService.replaceMeetPlayedGames(sessionId, games, status, personGames)
-                  : await this.databaseService.replaceMeetPlayedGames(sessionId, games, status)
+                  ? await this.databaseService.sessions.replaceMeetPlayedGames(sessionId, games, status, personGames)
+                  : await this.databaseService.sessions.replaceMeetPlayedGames(sessionId, games, status)
 
         if (result.applied === false) {
             throw new ConflictException('The session changed while played games were being updated. Reload and try again.')
@@ -445,9 +445,11 @@ export class SessionsService {
     }
 
     async updateSessionRsvp(actorAccountId: number, sessionId: number, body: UpdateSessionRsvpBody): Promise<SessionRsvpUpdatedDto> {
-        const attendee = await this.databaseService.getMeetAttendeeForAccount(sessionId, actorAccountId)
+        const attendee = await this.databaseService.sessions.getMeetAttendeeForAccount(sessionId, actorAccountId)
         const personAttendee =
-            attendee.rows.length === 0 ? await this.databaseService.getMeetPersonAttendeeForAccount(sessionId, actorAccountId) : null
+            attendee.rows.length === 0
+                ? await this.databaseService.sessions.getMeetPersonAttendeeForAccount(sessionId, actorAccountId)
+                : null
 
         if (attendee.rows.length === 0 && (!personAttendee || personAttendee.rows.length === 0)) {
             throw new ForbiddenException('You are not invited to this session')
@@ -461,8 +463,12 @@ export class SessionsService {
 
         const result =
             attendee.rows.length > 0
-                ? await this.databaseService.updateMeetAttendeeRsvp(sessionId, actorAccountId, body.rsvpStatus)
-                : await this.databaseService.updateMeetPersonAttendeeRsvp(sessionId, Number(personAttendee?.rows[0]?.[1]), body.rsvpStatus)
+                ? await this.databaseService.sessions.updateMeetAttendeeRsvp(sessionId, actorAccountId, body.rsvpStatus)
+                : await this.databaseService.sessions.updateMeetPersonAttendeeRsvp(
+                      sessionId,
+                      Number(personAttendee?.rows[0]?.[1]),
+                      body.rsvpStatus,
+                  )
 
         if (result.rowsAffected !== 1) {
             throw new NotFoundException('Session invite not found')
@@ -476,7 +482,7 @@ export class SessionsService {
         sessionId: number,
         body: UpdateSessionAttendanceBody,
     ): Promise<SessionAttendanceUpdatedDto> {
-        const session = await this.databaseService.getMeetByIdForCreator(sessionId, actorAccountId)
+        const session = await this.databaseService.sessions.getMeetByIdForCreator(sessionId, actorAccountId)
 
         if (session.rows.length === 0) {
             throw new ForbiddenException('Only the session organizer can record attendance')
@@ -488,7 +494,7 @@ export class SessionsService {
             throw new BadRequestException(`Cannot record attendance for a ${status} session`)
         }
 
-        const invitedIds = new Set(await this.databaseService.getMeetAttendeeIds(sessionId))
+        const invitedIds = new Set(await this.databaseService.sessions.getMeetAttendeeIds(sessionId))
         const invitedPersonIds = new Set(await this.getMeetPersonIds(sessionId))
 
         const attendedIds = body.attendedIds ?? []
@@ -503,36 +509,36 @@ export class SessionsService {
         }
 
         if (invitedIds.size > 0) {
-            await this.databaseService.updateMeetAttendance(sessionId, attendedIds)
+            await this.databaseService.sessions.updateMeetAttendance(sessionId, attendedIds)
         }
         if (invitedPersonIds.size > 0) {
-            await this.databaseService.updateMeetPersonAttendance(sessionId, attendedPersonIds)
+            await this.databaseService.sessions.updateMeetPersonAttendance(sessionId, attendedPersonIds)
         }
 
         return { sessionId, attendedIds, attendedPersonIds: invitedPersonIds.size > 0 ? attendedPersonIds : undefined }
     }
 
     private async getMeetPersonIds(sessionId: number): Promise<Array<number>> {
-        const method = this.databaseService.getMeetPersonIds
+        const method = this.databaseService.sessions.getMeetPersonIds
 
         return typeof method === 'function' ? method.call(this.databaseService, sessionId) : []
     }
 
     private async getGroupPeople(groupId: number) {
-        const method = this.databaseService.getGroupPeople
+        const method = this.databaseService.groups.getGroupPeople
 
         return typeof method === 'function' ? method.call(this.databaseService, groupId) : { rows: [] }
     }
 
     private async getGroupAvailableGameIdsForPeople(groupId: number, groupPersonIds: Array<number>): Promise<Array<number>> {
         if (groupPersonIds.length === 0) return []
-        const method = this.databaseService.getGroupAvailableGameIdsForPeople
+        const method = this.databaseService.groups.getGroupAvailableGameIdsForPeople
 
         return typeof method === 'function' ? method.call(this.databaseService, groupId, groupPersonIds) : []
     }
 
     private async getMeetPlayedGameParticipants(meetId: number): Promise<Array<{ gameId: number; participantIds: Array<number> }>> {
-        const method = this.databaseService.getMeetPlayedGamePersonParticipants
+        const method = this.databaseService.sessions.getMeetPlayedGamePersonParticipants
 
         return typeof method === 'function' ? method.call(this.databaseService, meetId) : []
     }

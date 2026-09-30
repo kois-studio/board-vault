@@ -52,7 +52,7 @@ export class CollectionActivityService {
         }
 
         // Step 2: If no cached, get them from database
-        const resultSet = await this.databaseService.getUserCollectionActivities(accountId)
+        const resultSet = await this.databaseService.collection.getUserCollectionActivities(accountId)
         const collectionActivities = this._parseResultSet(resultSet)
 
         // Step 3: Save them to cache
@@ -75,7 +75,7 @@ export class CollectionActivityService {
             // The [0] is the oldest because SQLite returns sorted by id ascending
             const oldestId = loggedActivities[0].id
 
-            await this.databaseService.deleteCollectionActivityById(oldestId)
+            await this.databaseService.collection.deleteCollectionActivityById(oldestId)
         }
 
         try {
@@ -87,7 +87,7 @@ export class CollectionActivityService {
                 createdAt: new Date().toISOString(),
             }
 
-            const result = await this.databaseService.createCollectionActivity(collectionActivity)
+            const result = await this.databaseService.collection.createCollectionActivity(collectionActivity)
 
             if (result.rowsAffected === 0) {
                 throw new BadRequestException('Failed to log collection activity')

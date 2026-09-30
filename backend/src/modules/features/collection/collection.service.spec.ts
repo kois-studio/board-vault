@@ -1,5 +1,7 @@
 import { ConflictException } from '@nestjs/common'
 
+import { fakeDatabase } from '../../../../test/fake-database'
+
 import { CollectionService } from './collection.service'
 
 function createService(database: unknown, collectionActivity = { invalidateForAccount: jest.fn().mockResolvedValue(undefined) }) {
@@ -13,7 +15,7 @@ function createService(database: unknown, collectionActivity = { invalidateForAc
         {} as never,
         {} as never,
         collectionActivity as never,
-        database as never,
+        fakeDatabase(database as object),
     )
 }
 
@@ -64,7 +66,7 @@ describe('CollectionService', () => {
             {} as never,
             {} as never,
             { invalidateForAccount } as never,
-            { updateGameOwnershipAndLogActivity } as never,
+            fakeDatabase({ updateGameOwnershipAndLogActivity }),
         )
 
         await expect(service.updateGameOwnership(1, 42, { purchaseNotes: 'Gift' })).resolves.toEqual({ accountId: 1, gameId: 42 })

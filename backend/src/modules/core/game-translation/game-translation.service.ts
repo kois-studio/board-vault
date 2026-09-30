@@ -84,7 +84,7 @@ export class GameTranslationService {
         }
 
         // Step 2: If no cached, get them from database
-        const resultSet = await this.databaseService.getGameTranslations(gameId)
+        const resultSet = await this.databaseService.games.getGameTranslations(gameId)
         const gameTranslations = this._parseResultSet(resultSet)
 
         // Step 3: Save them to cache
@@ -98,7 +98,7 @@ export class GameTranslationService {
 
         const normalizedTitle = this._normalizeTitle(title)
 
-        await this.databaseService.createGameTranslation(gameId, languageCode, title, normalizedTitle)
+        await this.databaseService.games.createGameTranslation(gameId, languageCode, title, normalizedTitle)
 
         // Step 4: Invalidate cache
         await this.cacheService.deleteOne(`${this.CACHE_KEY}:byGameId:${gameId}`)
@@ -111,7 +111,7 @@ export class GameTranslationService {
 
         const normalizedTitle = this._normalizeTitle(title)
 
-        await this.databaseService.upsertGameTranslation(gameId, languageCode, title, normalizedTitle)
+        await this.databaseService.games.upsertGameTranslation(gameId, languageCode, title, normalizedTitle)
 
         // Step 4: Invalidate cache
         await this.cacheService.deleteOne(`${this.CACHE_KEY}:byGameId:${gameId}`)
@@ -145,14 +145,14 @@ export class GameTranslationService {
 
         // Step 2: Get games and total count from database
         const [gamesResult, countResult] = await Promise.all([
-            this.databaseService.browseGames({
+            this.databaseService.games.browseGames({
                 search: normalizedSearch,
                 skip,
                 take: options.pageSize,
                 excludeGameIds: options.excludeGameIds,
                 languageCode: 'en',
             }),
-            this.databaseService.countGames({
+            this.databaseService.games.countGames({
                 search: normalizedSearch,
                 excludeGameIds: options.excludeGameIds,
                 languageCode: 'en',
@@ -207,13 +207,13 @@ export class GameTranslationService {
 
         // Step 2: Get games and total count from database
         const [gamesResult, countResult] = await Promise.all([
-            this.databaseService.browseGamesMultiLanguage({
+            this.databaseService.games.browseGamesMultiLanguage({
                 search: normalizedSearch,
                 skip,
                 take: options.pageSize,
                 excludeGameIds: options.excludeGameIds,
             }),
-            this.databaseService.countGamesMultiLanguage({
+            this.databaseService.games.countGamesMultiLanguage({
                 search: normalizedSearch,
                 excludeGameIds: options.excludeGameIds,
             }),

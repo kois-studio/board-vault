@@ -36,7 +36,7 @@ export class UsersService {
 
     async getUsers(): Promise<Array<UserGetDto>> {
         this.LOGGER.log('Getting all users')
-        const resultSet = await this.databaseService.getUsers()
+        const resultSet = await this.databaseService.accounts.getUsers()
         const users = this._parseResultSet(resultSet)
 
         return users
@@ -44,7 +44,7 @@ export class UsersService {
 
     async getUserById(id: number): Promise<UserGetDto> {
         this.LOGGER.log('Getting user by id')
-        const resultSet = await this.databaseService.getUserById(id)
+        const resultSet = await this.databaseService.accounts.getUserById(id)
         const users = this._parseResultSet(resultSet)
 
         if (users.length === 0) {
@@ -66,7 +66,7 @@ export class UsersService {
 
     async getUserByEmail(email: string): Promise<UserGetDto> {
         this.LOGGER.log('Getting user by email')
-        const resultSet = await this.databaseService.getUserByEmail(email)
+        const resultSet = await this.databaseService.accounts.getUserByEmail(email)
         const users = this._parseResultSet(resultSet)
 
         if (users.length === 0) {
@@ -78,7 +78,7 @@ export class UsersService {
 
     async getUserByUsername(username: string): Promise<UserGetDto> {
         this.LOGGER.log('Getting user by username')
-        const resultSet = await this.databaseService.getUserByUsername(username)
+        const resultSet = await this.databaseService.accounts.getUserByUsername(username)
         const users = this._parseResultSet(resultSet)
 
         if (users.length === 0) {
@@ -90,7 +90,7 @@ export class UsersService {
 
     async getUserByClerkId(clerkUserId: string): Promise<UserGetDto> {
         this.LOGGER.log('Getting user by Clerk identity')
-        const resultSet = await this.databaseService.getUserByClerkId(clerkUserId)
+        const resultSet = await this.databaseService.accounts.getUserByClerkId(clerkUserId)
         const users = this._parseResultSet(resultSet)
 
         if (users.length === 0) {
@@ -101,7 +101,7 @@ export class UsersService {
     }
 
     async createClerkUser(user: { email: string; username: string; displayName: string; avatar: object; clerkUserId: string }) {
-        await this.databaseService.createClerkUser({
+        await this.databaseService.accounts.createClerkUser({
             ...user,
             avatar: JSON.stringify(user.avatar),
         })
@@ -111,7 +111,7 @@ export class UsersService {
 
     async updateUser(id: number, partialUserDto: UpdateUserBody): Promise<{ success: boolean }> {
         this.LOGGER.log('Updating user')
-        const resultSet = await this.databaseService.updateUserProfile(id, partialUserDto)
+        const resultSet = await this.databaseService.accounts.updateUserProfile(id, partialUserDto)
 
         if (resultSet.rows.length === 0) {
             throw new NotFoundException(`User with id ${id} not found`)
@@ -122,7 +122,7 @@ export class UsersService {
 
     async deleteUserById(id: number): Promise<{ success: boolean }> {
         this.LOGGER.log('Deleting user')
-        const resultSet = await this.databaseService.softDeleteUserById(id)
+        const resultSet = await this.databaseService.accounts.softDeleteUserById(id)
 
         if (resultSet.rowsAffected === 0) {
             throw new NotFoundException(`User with id ${id} not found`)
@@ -135,7 +135,7 @@ export class UsersService {
         this.LOGGER.log('Updating games for user')
         try {
             // TODO: responsability of games-owned.service, delete this query
-            await this.databaseService.updateGames(accountId, gamesToAdd, gamesToRemove)
+            await this.databaseService.collection.updateGames(accountId, gamesToAdd, gamesToRemove)
 
             return { success: true }
         } catch {

@@ -39,13 +39,13 @@ export class WishlistService {
     // #region methods
 
     async getWishlistByAccountId(accountId: number): Promise<Array<GameDto['id']>> {
-        const resultSet = await this.databaseService.getWishlistByAccountId(accountId)
+        const resultSet = await this.databaseService.collection.getWishlistByAccountId(accountId)
 
         return this._parseResultSet(resultSet).map(game => game.gameId)
     }
 
     async isGameWishlisted(accountId: number, gameId: number): Promise<boolean> {
-        const resultSet = await this.databaseService.getWishlistById(accountId, gameId)
+        const resultSet = await this.databaseService.collection.getWishlistById(accountId, gameId)
 
         return resultSet.rows.length > 0
     }
@@ -54,9 +54,9 @@ export class WishlistService {
         const isWishlisted = await this.isGameWishlisted(accountId, gameId)
 
         if (isWishlisted) {
-            await this.databaseService.removeGameFromWishlist(accountId, gameId)
+            await this.databaseService.collection.removeGameFromWishlist(accountId, gameId)
         } else {
-            await this.databaseService.addGameToWishlist(accountId, gameId)
+            await this.databaseService.collection.addGameToWishlist(accountId, gameId)
         }
 
         return this.isGameWishlisted(accountId, gameId)

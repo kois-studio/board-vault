@@ -39,14 +39,14 @@ export class GamesOwnedService {
 
     async getGamesOwneds() {
         this.LOGGER.log('Getting all ownedGames')
-        const resultSet = await this.databaseService.getOwnedGames()
+        const resultSet = await this.databaseService.collection.getOwnedGames()
 
         return this._parseResultSet(resultSet)
     }
 
     async getGameOwnedByAccountIdAndGameId(accountId: number, gameId: number): Promise<GameOwnedDto> {
         this.LOGGER.log('Getting owned game')
-        const resultSet = await this.databaseService.getGameOwnedByAccountIdAndGameId(accountId, gameId)
+        const resultSet = await this.databaseService.collection.getGameOwnedByAccountIdAndGameId(accountId, gameId)
 
         const ownedGames = this._parseResultSet(resultSet)
 
@@ -59,7 +59,7 @@ export class GamesOwnedService {
 
     async getGamesOwnedByAccountId(accountId: number): Promise<Array<GameOwnedDto>> {
         this.LOGGER.log('Getting owned games for account')
-        const resultSet = await this.databaseService.getOwnedGamesByAccountId(accountId)
+        const resultSet = await this.databaseService.collection.getOwnedGamesByAccountId(accountId)
 
         return this._parseResultSet(resultSet)
     }
@@ -67,7 +67,7 @@ export class GamesOwnedService {
     // TODO: boolean? what is this method for?
     async isGameIdOwnedByAccountId(accountId: number, gameId: number, throwError = true): Promise<GameOwnedDto | null> {
         this.LOGGER.log('Getting owned game by composite id')
-        const resultSet = await this.databaseService.isGameIdOwnedByAccountId(accountId, gameId)
+        const resultSet = await this.databaseService.collection.isGameIdOwnedByAccountId(accountId, gameId)
         const ownedGames = this._parseResultSet(resultSet)
 
         if (ownedGames.length === 0 && throwError) {
@@ -82,7 +82,7 @@ export class GamesOwnedService {
     async createGamesOwned(ownedGameDto: GameOwnedDto): Promise<SuccessDto> {
         this.LOGGER.log('Creating owned game')
         try {
-            await this.databaseService.createOwnedGame(ownedGameDto)
+            await this.databaseService.collection.createOwnedGame(ownedGameDto)
 
             return { success: true }
         } catch {
@@ -96,7 +96,7 @@ export class GamesOwnedService {
 
     async updateGameOwned(accountId: number, gameId: number, ownedGameDto: UpdateGameOwnedDto) {
         this.LOGGER.log('Updating owned game')
-        const resultSet = await this.databaseService.updateGameOwned(accountId, gameId, ownedGameDto)
+        const resultSet = await this.databaseService.collection.updateGameOwned(accountId, gameId, ownedGameDto)
 
         if (resultSet.rowsAffected === 0) {
             throw new NotFoundException(`OwnedGame with id ${accountId} ${gameId} not found`)
@@ -107,7 +107,7 @@ export class GamesOwnedService {
 
     async deleteGamesOwnedById(accountId: number, gameId: number): Promise<SuccessDto> {
         this.LOGGER.log('Deleting owned game')
-        const resultSet = await this.databaseService.deleteOwnedGameById(accountId, gameId)
+        const resultSet = await this.databaseService.collection.deleteOwnedGameById(accountId, gameId)
 
         if (resultSet.rowsAffected === 0) {
             throw new NotFoundException(`OwnedGame with accountId ${accountId} and gameId ${gameId} not found`)

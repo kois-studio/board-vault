@@ -15,7 +15,7 @@ export class GroupAcquisitionService {
     constructor(private readonly databaseService: DatabaseService) {}
 
     async getBoard(groupId: number): Promise<Array<GroupAcquisitionEntryDto>> {
-        const resultSet = await this.databaseService.getGroupAcquisitionBoard(groupId)
+        const resultSet = await this.databaseService.groups.getGroupAcquisitionBoard(groupId)
         const entries = new Map<number, GroupAcquisitionEntryDto>()
 
         for (const row of resultSet.rows) {
@@ -68,22 +68,22 @@ export class GroupAcquisitionService {
     }
 
     async addInterest(groupId: number, accountId: number, body: GroupGameInterestBody): Promise<{ success: true }> {
-        const game = await this.databaseService.getGameById(body.gameId)
+        const game = await this.databaseService.games.getGameById(body.gameId)
 
         if (game.rows.length === 0) {
             throw new NotFoundException(`Game with id ${body.gameId} not found`)
         }
 
-        const availableGameIds = await this.databaseService.getGroupAvailableGameIds(groupId)
+        const availableGameIds = await this.databaseService.groups.getGroupAvailableGameIds(groupId)
 
         if (availableGameIds.includes(body.gameId)) {
             throw new BadRequestException('This group already owns the selected game')
         }
 
-        const result = await this.databaseService.addGroupGameInterestAndReopenDecision(groupId, accountId, body.gameId)
+        const result = await this.databaseService.groups.addGroupGameInterestAndReopenDecision(groupId, accountId, body.gameId)
 
         if (result.rowsAffected === 0) {
-            const availableGameIdsAfterWrite = await this.databaseService.getGroupAvailableGameIds(groupId)
+            const availableGameIdsAfterWrite = await this.databaseService.groups.getGroupAvailableGameIds(groupId)
 
             if (availableGameIdsAfterWrite.includes(body.gameId)) {
                 throw new BadRequestException('This group already owns the selected game')
@@ -99,19 +99,19 @@ export class GroupAcquisitionService {
         gameId: number,
         body: UpdateGroupAcquisitionDecisionBody,
     ): Promise<{ success: true }> {
-        const game = await this.databaseService.getGameById(gameId)
+        const game = await this.databaseService.games.getGameById(gameId)
 
         if (game.rows.length === 0) {
             throw new NotFoundException(`Game with id ${gameId} not found`)
         }
 
-        const availableGameIds = await this.databaseService.getGroupAvailableGameIds(groupId)
+        const availableGameIds = await this.databaseService.groups.getGroupAvailableGameIds(groupId)
 
         if (availableGameIds.includes(gameId)) {
             throw new BadRequestException('This group already owns the selected game')
         }
 
-        await this.databaseService.upsertGroupAcquisitionDecision(groupId, gameId, accountId, body.status, body.note ?? null)
+        await this.databaseService.groups.upsertGroupAcquisitionDecision(groupId, gameId, accountId, body.status, body.note ?? null)
         return { success: true }
     }
 
@@ -120,7 +120,7 @@ export class GroupAcquisitionService {
     }
 
     async removeInterest(groupId: number, accountId: number, gameId: number): Promise<{ success: true }> {
-        await this.databaseService.removeGroupGameInterest(groupId, accountId, gameId)
+        await this.databaseService.groups.removeGroupGameInterest(groupId, accountId, gameId)
         return { success: true }
     }
 }

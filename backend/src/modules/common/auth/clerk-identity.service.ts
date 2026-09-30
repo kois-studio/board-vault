@@ -32,12 +32,12 @@ export class ClerkIdentityService {
         await this.assertGroupOwner(groupId, inviterAccountId)
 
         if (groupPersonId !== undefined) {
-            const person = await this.databaseService.getGroupPersonById(groupPersonId, groupId)
+            const person = await this.databaseService.groups.getGroupPersonById(groupPersonId, groupId)
 
             if (person.rows.length === 0 || String(person.rows[0][3]) !== 'placeholder' || person.rows[0][2] !== null) {
                 throw new NotFoundException('The selected placeholder is not available for claiming')
             }
-            const claimTarget = await this.databaseService.setGroupPersonClaimEmail(groupPersonId, groupId, emailAddress)
+            const claimTarget = await this.databaseService.groups.setGroupPersonClaimEmail(groupPersonId, groupId, emailAddress)
 
             if (claimTarget.rowsAffected !== 1) {
                 throw new NotFoundException('The selected placeholder is not available for claiming')
@@ -149,7 +149,7 @@ export class ClerkIdentityService {
 
         await this.withClerkProviderBoundary(() => this.getClerkClient().invitations.revokeInvitation(invitationId))
         if (metadata.groupPersonId !== undefined) {
-            await this.databaseService.clearGroupPersonClaimEmail(metadata.groupPersonId, groupId, invitation.emailAddress)
+            await this.databaseService.groups.clearGroupPersonClaimEmail(metadata.groupPersonId, groupId, invitation.emailAddress)
         }
         return { success: true }
     }
@@ -200,7 +200,7 @@ export class ClerkIdentityService {
         const provisionedAccount = await this.provisionAccount(clerkUserId, clerkUser, primaryEmail)
 
         if (groupInvitation) {
-            await this.databaseService.joinGroupFromClerkInvitation(provisionedAccount.id, groupInvitation)
+            await this.databaseService.groups.joinGroupFromClerkInvitation(provisionedAccount.id, groupInvitation)
         }
 
         return provisionedAccount
@@ -236,7 +236,7 @@ export class ClerkIdentityService {
     }
 
     private async assertGroupOwner(groupId: number, inviterAccountId: number): Promise<void> {
-        const group = await this.databaseService.getGroupById(groupId)
+        const group = await this.databaseService.groups.getGroupById(groupId)
 
         if (group.rows.length === 0 || Number(group.rows[0][2]) !== inviterAccountId) {
             throw new ForbiddenException('You are not the owner of this group')

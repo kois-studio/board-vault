@@ -21,9 +21,11 @@ persists. Frontend guards and hidden buttons are UX only.
 3. Guards on the controller decide access (table below).
 4. The global `ValidationPipe` ([`main.ts`](../backend/src/main.ts)) rejects
    unknown or malformed DTO fields.
-5. The controller calls a service, which calls
+5. The controller calls a service, which runs SQL through the per-domain
+   query classes on
    [`DatabaseService`](../backend/src/modules/common/database/database.service.ts)
-   for SQL. Queries are parameterized. Services map rows to DTOs.
+   (for example `databaseService.groups.getGroupById`). Queries are
+   parameterized. Services map rows to DTOs.
 6. Errors go through [`ApiErrorFilter`](../backend/src/common/http/api-error.filter.ts),
    which returns `{ statusCode, code, message, requestId }` and never leaks SQL
    or provider payloads.
@@ -43,7 +45,8 @@ persists. Frontend guards and hidden buttons are UX only.
 | `common/schemas/` | zod schemas that parse database rows. |
 | `common/validators/validateEnv.ts` | Startup environment checks. |
 | `modules/common/auth/` | Clerk token verification, account resolution, Clerk invitations, `GET /auth/clerk/status`. |
-| `modules/common/database/` | `DatabaseService`: all SQL, one method per query. |
+| `modules/common/database/` | `DatabaseService`: the connection, `execute`, and `transaction`. |
+| `modules/common/database/queries/` | All SQL, one class per domain (`accounts`, `groups`, `games`, `collection`, `invitations`, `notifications`, `sessions`, `recommendations`), one method per query. |
 | `modules/common/cache/` | Upstash Redis wrapper and the admin cache endpoints. |
 | `modules/common/health/` | `/health` (liveness) and `/health/ready` (database, cache, schema version). |
 | `modules/core/*` | One module per domain entity: games, tags, translations, owned games, wishlist, reviews, collection activity, game proposals, groups (`UserGroup`), memberships, group people, invitations, notifications, meets (sessions), attendees, users. |

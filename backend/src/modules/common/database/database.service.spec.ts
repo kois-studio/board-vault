@@ -9,7 +9,7 @@ describe('DatabaseService logging', () => {
 
         ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
 
-        await service.setGroupPersonClaimEmail(21, 12, 'Ana@Example.com')
+        await service.groups.setGroupPersonClaimEmail(21, 12, 'Ana@Example.com')
 
         expect(execute).toHaveBeenCalledWith({
             sql: expect.stringContaining("claimExpiresAt = datetime('now', '+30 days')"),
@@ -27,7 +27,7 @@ describe('DatabaseService logging', () => {
 
         ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
 
-        await expect(service.deleteInvitationById(99)).resolves.toEqual({ rowsAffected: 1 })
+        await expect(service.invitations.deleteInvitationById(99)).resolves.toEqual({ rowsAffected: 1 })
         expect(execute).toHaveBeenNthCalledWith(3, expect.objectContaining({ args: [21, 12, 21] }))
         expect(execute).toHaveBeenNthCalledWith(3, expect.objectContaining({ sql: expect.stringContaining('claimExpiresAt = NULL') }))
     })
@@ -43,7 +43,7 @@ describe('DatabaseService logging', () => {
 
         ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
 
-        await (service as unknown as { _tursoExecute: (stmt: typeof statement) => Promise<unknown> })._tursoExecute(statement)
+        await service.execute(statement)
 
         expect(execute).toHaveBeenCalledWith(statement)
         expect(logger).toHaveBeenCalledWith(statement.sql)
@@ -57,7 +57,7 @@ describe('DatabaseService logging', () => {
 
         ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
 
-        await service.getRecommendationCandidates([1, 2], 2, 120)
+        await service.recommendations.getRecommendationCandidates([1, 2], 2, 120)
 
         expect(execute).toHaveBeenCalledWith({
             sql: expect.stringContaining('INNER JOIN OwnedGame ownedByAttendee'),
@@ -71,7 +71,7 @@ describe('DatabaseService logging', () => {
 
         ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
 
-        await service.createRecommendationFeedback({
+        await service.recommendations.createRecommendationFeedback({
             accountId: 1,
             groupId: 7,
             gameId: 42,
@@ -91,7 +91,7 @@ describe('DatabaseService logging', () => {
 
         ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
 
-        await service.getGroupPersonOwnership(21, 12)
+        await service.groups.getGroupPersonOwnership(21, 12)
 
         expect(execute).toHaveBeenCalledWith({
             sql: expect.stringContaining("'account_collection'"),
@@ -113,7 +113,7 @@ describe('DatabaseService logging', () => {
             transaction: transactionFactory,
         }
 
-        await expect(service.updateGames(1, [42, 43], [7])).resolves.toBeUndefined()
+        await expect(service.collection.updateGames(1, [42, 43], [7])).resolves.toBeUndefined()
 
         expect(transactionFactory).toHaveBeenCalledWith('write')
         expect(transaction.execute).toHaveBeenNthCalledWith(1, {
@@ -146,7 +146,7 @@ describe('DatabaseService logging', () => {
             transaction: jest.fn().mockResolvedValue(transaction),
         }
 
-        await expect(service.updateGames(1, [42], [7])).rejects.toThrow('ownership write failed')
+        await expect(service.collection.updateGames(1, [42], [7])).rejects.toThrow('ownership write failed')
 
         expect(transaction.rollback).toHaveBeenCalledTimes(1)
         expect(transaction.commit).not.toHaveBeenCalled()
@@ -173,7 +173,7 @@ describe('DatabaseService logging', () => {
         }
 
         await expect(
-            service.approveGameProposalAtomically({
+            service.games.approveGameProposalAtomically({
                 proposalId: 12,
                 reviewerId: 7,
                 title: 'Catan',
@@ -246,7 +246,7 @@ describe('DatabaseService logging', () => {
         }
 
         await expect(
-            service.approveGameProposalAtomically({
+            service.games.approveGameProposalAtomically({
                 proposalId: 12,
                 reviewerId: 7,
                 title: 'Catan',
@@ -284,7 +284,7 @@ describe('DatabaseService logging', () => {
         }
 
         await expect(
-            service.rejectGameProposalAtomically({
+            service.games.rejectGameProposalAtomically({
                 proposalId: 12,
                 reviewerId: 7,
                 reviewNotes: 'Already present',
@@ -324,7 +324,7 @@ describe('DatabaseService logging', () => {
         }
 
         await expect(
-            service.rejectGameProposalAtomically({
+            service.games.rejectGameProposalAtomically({
                 proposalId: 12,
                 reviewerId: 7,
                 reviewNotes: 'Already present',
@@ -364,7 +364,7 @@ describe('DatabaseService logging', () => {
             transaction: transactionFactory,
         }
 
-        await expect(service.addGameToCollection(1, 42)).resolves.toEqual({ success: true, wishlistRemoved: true })
+        await expect(service.collection.addGameToCollection(1, 42)).resolves.toEqual({ success: true, wishlistRemoved: true })
 
         expect(transactionFactory).toHaveBeenCalledWith('write')
         expect(execute).toHaveBeenNthCalledWith(1, {
@@ -395,7 +395,7 @@ describe('DatabaseService logging', () => {
             transaction: jest.fn().mockResolvedValue(transaction),
         }
 
-        await expect(service.addGameToCollection(1, 42)).resolves.toEqual({ success: false, wishlistRemoved: false })
+        await expect(service.collection.addGameToCollection(1, 42)).resolves.toEqual({ success: false, wishlistRemoved: false })
 
         expect(execute).toHaveBeenCalledTimes(1)
         expect(transaction.commit).toHaveBeenCalledTimes(1)
@@ -416,7 +416,7 @@ describe('DatabaseService logging', () => {
             transaction: jest.fn().mockResolvedValue(transaction),
         }
 
-        await expect(service.addGameToCollection(1, 42)).rejects.toThrow('activity write failed')
+        await expect(service.collection.addGameToCollection(1, 42)).rejects.toThrow('activity write failed')
 
         expect(transaction.rollback).toHaveBeenCalledTimes(1)
         expect(transaction.commit).not.toHaveBeenCalled()
@@ -440,7 +440,7 @@ describe('DatabaseService logging', () => {
             transaction: jest.fn().mockResolvedValue(transaction),
         }
 
-        await expect(service.removeGameFromCollection(1, 42)).resolves.toEqual({ rowsAffected: 1 })
+        await expect(service.collection.removeGameFromCollection(1, 42)).resolves.toEqual({ rowsAffected: 1 })
 
         expect(transaction.execute).toHaveBeenNthCalledWith(1, {
             sql: 'DELETE FROM OwnedGame WHERE accountId = ? AND gameId = ?',
@@ -470,7 +470,9 @@ describe('DatabaseService logging', () => {
             transaction: jest.fn().mockResolvedValue(transaction),
         }
 
-        await expect(service.updateGameOwnershipAndLogActivity(1, 42, { purchaseNotes: 'Gift' })).resolves.toEqual({ rowsAffected: 1 })
+        await expect(service.collection.updateGameOwnershipAndLogActivity(1, 42, { purchaseNotes: 'Gift' })).resolves.toEqual({
+            rowsAffected: 1,
+        })
 
         expect(transaction.execute).toHaveBeenNthCalledWith(1, {
             sql: 'UPDATE OwnedGame SET purchaseNotes = ? WHERE accountId = ? AND gameId = ?',
@@ -498,7 +500,7 @@ describe('DatabaseService logging', () => {
             transaction: jest.fn().mockResolvedValue(transaction),
         }
 
-        await expect(service.toggleWishlistAndLogActivity(1, 42)).resolves.toBe(true)
+        await expect(service.collection.toggleWishlistAndLogActivity(1, 42)).resolves.toBe(true)
 
         expect(transaction.execute).toHaveBeenNthCalledWith(2, {
             sql: 'INSERT INTO WishlistedGame (accountId, gameId) VALUES (?, ?)',
@@ -530,7 +532,7 @@ describe('DatabaseService logging', () => {
             transaction: jest.fn().mockResolvedValue(transaction),
         }
 
-        await expect(service.saveGameReviewAndLogActivity(1, 42, 8)).resolves.toEqual({ success: true })
+        await expect(service.collection.saveGameReviewAndLogActivity(1, 42, 8)).resolves.toEqual({ success: true })
 
         expect(transaction.execute).toHaveBeenNthCalledWith(2, {
             sql: 'INSERT INTO GameReview (accountId, gameId, review) VALUES (?, ?, ?)',
@@ -557,7 +559,7 @@ describe('DatabaseService logging', () => {
             transaction: jest.fn().mockResolvedValue(transaction),
         }
 
-        await expect(service.saveGameReviewAndLogActivity(1, 42, 8)).rejects.toThrow('review write failed')
+        await expect(service.collection.saveGameReviewAndLogActivity(1, 42, 8)).rejects.toThrow('review write failed')
 
         expect(transaction.rollback).toHaveBeenCalledTimes(1)
         expect(transaction.commit).not.toHaveBeenCalled()
@@ -570,7 +572,7 @@ describe('DatabaseService logging', () => {
 
         ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
 
-        await service.addGroupGameInterest(7, 1, { gameId: 42 })
+        await service.groups.addGroupGameInterest(7, 1, { gameId: 42 })
 
         expect(execute).toHaveBeenCalledWith({
             sql: expect.stringContaining('WHERE NOT EXISTS'),
@@ -591,7 +593,7 @@ describe('DatabaseService logging', () => {
             transaction: jest.fn().mockResolvedValue(transaction),
         }
 
-        await expect(service.addGroupGameInterestAndReopenDecision(7, 1, 42)).resolves.toEqual({ rowsAffected: 1 })
+        await expect(service.groups.addGroupGameInterestAndReopenDecision(7, 1, 42)).resolves.toEqual({ rowsAffected: 1 })
 
         expect(transaction.execute).toHaveBeenNthCalledWith(
             1,
@@ -625,7 +627,7 @@ describe('DatabaseService logging', () => {
             transaction: jest.fn().mockResolvedValue(transaction),
         }
 
-        await expect(service.addGroupGameInterestAndReopenDecision(7, 1, 42)).rejects.toThrow('decision write failed')
+        await expect(service.groups.addGroupGameInterestAndReopenDecision(7, 1, 42)).rejects.toThrow('decision write failed')
 
         expect(transaction.rollback).toHaveBeenCalledTimes(1)
         expect(transaction.commit).not.toHaveBeenCalled()
@@ -638,7 +640,7 @@ describe('DatabaseService logging', () => {
 
         ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
 
-        await service.upsertGroupAcquisitionDecision(7, 42, 1, 'planned', 'Buy before autumn')
+        await service.groups.upsertGroupAcquisitionDecision(7, 42, 1, 'planned', 'Buy before autumn')
 
         expect(execute).toHaveBeenCalledWith({
             sql: expect.stringContaining('ON CONFLICT(groupId, gameId) DO UPDATE SET'),
@@ -664,7 +666,7 @@ describe('DatabaseService logging', () => {
             transaction: jest.fn().mockResolvedValue(transaction),
         }
 
-        await expect(service.acceptInvitationAtomically(42, 7, 12)).resolves.toEqual({ success: true })
+        await expect(service.invitations.acceptInvitationAtomically(42, 7, 12)).resolves.toEqual({ success: true })
         expect(transaction.execute).toHaveBeenNthCalledWith(1, {
             sql: expect.stringContaining('SELECT id'),
             args: [42, 12, 7],
@@ -692,9 +694,9 @@ describe('DatabaseService logging', () => {
 
         ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
 
-        await expect(service.createInvitationByUsername({ groupId: 12, fromAccountId: 7, username: 'former-member' })).rejects.toThrow(
-            'User not found',
-        )
+        await expect(
+            service.invitations.createInvitationByUsername({ groupId: 12, fromAccountId: 7, username: 'former-member' }),
+        ).rejects.toThrow('User not found')
 
         expect(execute).toHaveBeenCalledWith({
             sql: 'SELECT id, email, username, avatar, displayName, created_at, isDeleted, isAdmin, clerkUserId FROM Account WHERE username = ? AND isDeleted = 0',
@@ -719,7 +721,7 @@ describe('DatabaseService logging', () => {
             transaction: jest.fn().mockResolvedValue(transaction),
         }
 
-        await expect(service.acceptInvitationAtomically(42, 7, 12)).rejects.toThrow('membership write failed')
+        await expect(service.invitations.acceptInvitationAtomically(42, 7, 12)).rejects.toThrow('membership write failed')
         expect(transaction.rollback).toHaveBeenCalledTimes(1)
         expect(transaction.commit).not.toHaveBeenCalled()
         expect(transaction.close).toHaveBeenCalledTimes(1)
@@ -731,7 +733,7 @@ describe('DatabaseService logging', () => {
 
         ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
 
-        await service.getRecommendationFeedbackForGroup(7)
+        await service.recommendations.getRecommendationFeedbackForGroup(7)
 
         expect(execute).toHaveBeenCalledWith({
             sql: expect.stringContaining('INNER JOIN GroupMembership'),
@@ -747,7 +749,7 @@ describe('DatabaseService logging', () => {
 
         ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
 
-        await expect(service.getMeetAttendedAccountIds(12)).resolves.toEqual([1, 3])
+        await expect(service.sessions.getMeetAttendedAccountIds(12)).resolves.toEqual([1, 3])
         expect(execute).toHaveBeenCalledWith({
             sql: "SELECT accountId FROM MeetAttendee WHERE meetId = ? AND attendanceStatus = 'attended'",
             args: [12],
@@ -760,7 +762,7 @@ describe('DatabaseService logging', () => {
 
         ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
 
-        await expect(service.getDistinctCompletedMeetIdsForAccountHistory(7)).resolves.toEqual([12, 10])
+        await expect(service.sessions.getDistinctCompletedMeetIdsForAccountHistory(7)).resolves.toEqual([12, 10])
         expect(execute).toHaveBeenCalledWith({
             sql: expect.stringContaining("m.status = 'completed'"),
             args: [7, 7, 7, 7, 7],
@@ -774,7 +776,7 @@ describe('DatabaseService logging', () => {
 
         ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
 
-        await service.getMeetByIdForCreator(12, 7)
+        await service.sessions.getMeetByIdForCreator(12, 7)
 
         expect(execute).toHaveBeenCalledWith({
             sql: expect.stringContaining('INNER JOIN GroupMembership gm'),
@@ -788,7 +790,7 @@ describe('DatabaseService logging', () => {
 
         ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
 
-        await service.getRecommendationCandidateCounts([1, 2], 2, 60)
+        await service.recommendations.getRecommendationCandidateCounts([1, 2], 2, 60)
 
         expect(execute).toHaveBeenCalledWith({
             sql: expect.stringContaining('durationFitCount'),
@@ -810,7 +812,7 @@ describe('DatabaseService logging', () => {
             transaction: jest.fn().mockResolvedValue(transaction),
         }
 
-        await service.createCompletedSession({
+        await service.sessions.createCompletedSession({
             groupId: 7,
             createdBy: 1,
             sessionDate: '2026-08-16T19:30:00.000Z',
@@ -854,7 +856,7 @@ describe('DatabaseService logging', () => {
         }
 
         await expect(
-            service.createCompletedSession({
+            service.sessions.createCompletedSession({
                 groupId: 7,
                 createdBy: 1,
                 sessionDate: '2026-08-16T19:30:00.000Z',
@@ -886,7 +888,7 @@ describe('DatabaseService logging', () => {
             transaction: jest.fn().mockResolvedValue(transaction),
         }
 
-        await service.joinGroupFromClerkInvitation(9, { groupId: 12, inviterAccountId: 7, version: 1 })
+        await service.groups.joinGroupFromClerkInvitation(9, { groupId: 12, inviterAccountId: 7, version: 1 })
 
         expect(transaction.execute).toHaveBeenNthCalledWith(1, {
             sql: 'SELECT id FROM UserGroup WHERE id = ? AND createdBy = ?',
@@ -917,7 +919,7 @@ describe('DatabaseService logging', () => {
             transaction: jest.fn().mockResolvedValue(transaction),
         }
 
-        await expect(service.joinGroupFromClerkInvitation(9, { groupId: 404, inviterAccountId: 7, version: 1 })).rejects.toThrow(
+        await expect(service.groups.joinGroupFromClerkInvitation(9, { groupId: 404, inviterAccountId: 7, version: 1 })).rejects.toThrow(
             'The group invitation is no longer valid',
         )
 
@@ -944,7 +946,7 @@ describe('DatabaseService logging', () => {
             transaction: jest.fn().mockResolvedValue(transaction),
         }
 
-        await expect(service.createGroupWithMembership({ name: 'Friends / Friday', createdBy: 7 })).resolves.toEqual({ groupId: 77 })
+        await expect(service.groups.createGroupWithMembership({ name: 'Friends / Friday', createdBy: 7 })).resolves.toEqual({ groupId: 77 })
 
         expect(transaction.execute).toHaveBeenNthCalledWith(1, {
             sql: 'INSERT INTO UserGroup (name, createdBy) VALUES (?, ?)',
@@ -976,7 +978,7 @@ describe('DatabaseService logging', () => {
             transaction: jest.fn().mockResolvedValue(transaction),
         }
 
-        await expect(service.createGroupWithMembership({ name: 'Friends', createdBy: 7 })).rejects.toThrow('membership write failed')
+        await expect(service.groups.createGroupWithMembership({ name: 'Friends', createdBy: 7 })).rejects.toThrow('membership write failed')
 
         expect(transaction.rollback).toHaveBeenCalledTimes(1)
         expect(transaction.commit).not.toHaveBeenCalled()
@@ -997,7 +999,7 @@ describe('DatabaseService logging', () => {
             transaction: jest.fn().mockResolvedValue(transaction),
         }
 
-        await expect(service.replaceMeetAttendees(12, [1, 3], 'scheduled')).resolves.toBe(true)
+        await expect(service.sessions.replaceMeetAttendees(12, [1, 3], 'scheduled')).resolves.toBe(true)
 
         expect(transaction.execute).toHaveBeenCalledWith({
             sql: 'UPDATE Meet SET updatedAt = CURRENT_TIMESTAMP WHERE id = ? AND status = ?',
@@ -1030,7 +1032,7 @@ describe('DatabaseService logging', () => {
             transaction: jest.fn().mockResolvedValue(transaction),
         }
 
-        await expect(service.replaceMeetPlannedGames(12, [42, 43], 'active')).resolves.toBe(true)
+        await expect(service.sessions.replaceMeetPlannedGames(12, [42, 43], 'active')).resolves.toBe(true)
         expect(transaction.execute).toHaveBeenCalledWith({
             sql: 'UPDATE Meet SET updatedAt = CURRENT_TIMESTAMP WHERE id = ? AND status = ?',
             args: [12, 'active'],
@@ -1047,7 +1049,7 @@ describe('DatabaseService logging', () => {
 
         transaction.execute.mockClear()
         transaction.batch.mockClear()
-        await expect(service.replaceMeetPlannedGames(12, [], 'active')).resolves.toBe(true)
+        await expect(service.sessions.replaceMeetPlannedGames(12, [], 'active')).resolves.toBe(true)
         expect(transaction.batch).not.toHaveBeenCalled()
         expect(transaction.commit).toHaveBeenCalledTimes(2)
     })
@@ -1066,7 +1068,7 @@ describe('DatabaseService logging', () => {
             transaction: jest.fn().mockResolvedValue(transaction),
         }
 
-        await expect(service.replaceMeetAttendees(12, [1, 3], 'active')).rejects.toThrow('attendee write failed')
+        await expect(service.sessions.replaceMeetAttendees(12, [1, 3], 'active')).rejects.toThrow('attendee write failed')
         expect(transaction.rollback).toHaveBeenCalledTimes(1)
         expect(transaction.commit).not.toHaveBeenCalled()
         expect(transaction.close).toHaveBeenCalledTimes(1)
@@ -1087,7 +1089,7 @@ describe('DatabaseService logging', () => {
         }
 
         await expect(
-            service.createScheduledSession({
+            service.sessions.createScheduledSession({
                 groupId: 7,
                 createdBy: 1,
                 sessionDate: '2026-08-21T19:30:00.000Z',
@@ -1128,7 +1130,7 @@ describe('DatabaseService logging', () => {
             transaction: jest.fn().mockResolvedValue(transaction),
         }
 
-        await expect(service.createMeetAccountGame(1, 12, 42)).resolves.toEqual({ rowsAffected: 1 })
+        await expect(service.sessions.createMeetAccountGame(1, 12, 42)).resolves.toEqual({ rowsAffected: 1 })
         expect(transaction.execute).toHaveBeenNthCalledWith(1, {
             sql: expect.stringContaining('INSERT OR IGNORE INTO MeetGame'),
             args: [12, 42],
@@ -1157,7 +1159,7 @@ describe('DatabaseService logging', () => {
             transaction: jest.fn().mockResolvedValue(transaction),
         }
 
-        await expect(service.updateMeetStatus(12, 'active', 'completed')).resolves.toEqual({ rowsAffected: 1 })
+        await expect(service.sessions.updateMeetStatus(12, 'active', 'completed')).resolves.toEqual({ rowsAffected: 1 })
 
         expect(transaction.execute).toHaveBeenNthCalledWith(1, {
             sql: expect.stringContaining('SET status = ?'),
@@ -1184,7 +1186,7 @@ describe('DatabaseService logging', () => {
             transaction: jest.fn().mockResolvedValue(transaction),
         }
 
-        await expect(service.updateMeetStatus(12, 'scheduled', 'active')).resolves.toEqual({ rowsAffected: 1 })
+        await expect(service.sessions.updateMeetStatus(12, 'scheduled', 'active')).resolves.toEqual({ rowsAffected: 1 })
 
         expect(transaction.execute).toHaveBeenCalledTimes(1)
         expect(transaction.commit).toHaveBeenCalledTimes(1)
@@ -1203,7 +1205,7 @@ describe('DatabaseService logging', () => {
             transaction: jest.fn().mockResolvedValue(transaction),
         }
 
-        await expect(service.updateMeetStatus(12, 'scheduled', 'cancelled')).resolves.toEqual({ rowsAffected: 0 })
+        await expect(service.sessions.updateMeetStatus(12, 'scheduled', 'cancelled')).resolves.toEqual({ rowsAffected: 0 })
 
         expect(transaction.execute).toHaveBeenCalledTimes(1)
         expect(transaction.commit).toHaveBeenCalledTimes(1)

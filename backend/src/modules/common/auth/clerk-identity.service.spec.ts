@@ -1,6 +1,7 @@
 import { createClerkClient } from '@clerk/backend'
 import { ForbiddenException, NotFoundException, UnauthorizedException } from '@nestjs/common'
 
+import { fakeDatabase } from '../../../../test/fake-database'
 import { API_ERROR_CODES, BoardVaultHttpException } from '../../../common/http/api-error'
 
 import { ClerkIdentityService } from './clerk-identity.service'
@@ -24,7 +25,7 @@ describe('ClerkIdentityService', () => {
         setGroupPersonClaimEmail: jest.fn(),
         joinGroupFromClerkInvitation: jest.fn(),
     }
-    const service = new ClerkIdentityService(configService as never, usersService as never, databaseService as never)
+    const service = new ClerkIdentityService(configService as never, usersService as never, fakeDatabase(databaseService))
 
     beforeEach(() => {
         jest.clearAllMocks()

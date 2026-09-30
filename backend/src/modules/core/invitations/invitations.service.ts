@@ -35,14 +35,14 @@ export class InvitationsService {
 
     async getInvitations(accountId: number): Promise<Array<InvitationDto>> {
         this.LOGGER.log('Getting invitations for the authenticated account')
-        const resultSet = await this.databaseService.getUserInvitationsReceived(accountId)
+        const resultSet = await this.databaseService.invitations.getUserInvitationsReceived(accountId)
 
         return this._parseResultSet(resultSet)
     }
 
     async getInvitationById(id: number): Promise<InvitationDto> {
         this.LOGGER.log('Getting invitation by id')
-        const resultSet = await this.databaseService.getInvitationById(id)
+        const resultSet = await this.databaseService.invitations.getInvitationById(id)
         const invitations = this._parseResultSet(resultSet)
 
         if (invitations.length === 0) {
@@ -63,7 +63,7 @@ export class InvitationsService {
 
     async getUserInvitationsReceived(accountId: number): Promise<Array<InvitationDto>> {
         this.LOGGER.log('Getting invitations for user')
-        const resultSet = await this.databaseService.getUserInvitationsReceived(accountId)
+        const resultSet = await this.databaseService.invitations.getUserInvitationsReceived(accountId)
 
         return this._parseResultSet(resultSet)
     }
@@ -75,7 +75,7 @@ export class InvitationsService {
     async createInvitation(invitationDto: CreateInvitationBody) {
         this.LOGGER.log('Creating invitation')
         try {
-            await this.databaseService.createInvitation(invitationDto)
+            await this.databaseService.invitations.createInvitation(invitationDto)
 
             return { success: true }
         } catch {
@@ -87,7 +87,7 @@ export class InvitationsService {
     // TODO: composite en databaseService? oh nonono
     async createInvitationByUsername(invitationDto: CreateInvitationByUsernameBody): Promise<UserPublicDto> {
         this.LOGGER.log('Creating invitation by username')
-        const userRow = await this.databaseService.createInvitationByUsername(invitationDto)
+        const userRow = await this.databaseService.invitations.createInvitationByUsername(invitationDto)
 
         return {
             id: Number(userRow.id),
@@ -119,7 +119,7 @@ export class InvitationsService {
 
     private async deleteInvitationRecord(id: number): Promise<{ success: boolean }> {
         this.LOGGER.log('Deleting invitation')
-        const resultSet = await this.databaseService.deleteInvitationById(id)
+        const resultSet = await this.databaseService.invitations.deleteInvitationById(id)
 
         if (resultSet.rowsAffected === 0) {
             throw new NotFoundException(`Invitation with id ${id} not found`)

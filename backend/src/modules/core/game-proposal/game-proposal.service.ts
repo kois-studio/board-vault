@@ -65,7 +65,7 @@ export class GameProposalService {
     async getGameProposals(): Promise<Array<GameProposalDto>> {
         this.LOGGER.log('Getting all game proposals')
 
-        const resultSet = await this.databaseService.getGameProposals()
+        const resultSet = await this.databaseService.games.getGameProposals()
         const proposals = this._parseResultSet(resultSet)
 
         return proposals
@@ -74,7 +74,7 @@ export class GameProposalService {
     async getGameProposalById(id: number): Promise<GameProposalDto> {
         this.LOGGER.log('Getting game proposal by id')
 
-        const resultSet = await this.databaseService.getGameProposalById(id)
+        const resultSet = await this.databaseService.games.getGameProposalById(id)
         const proposals = this._parseResultSet(resultSet)
 
         if (proposals.length === 0) {
@@ -87,7 +87,7 @@ export class GameProposalService {
     async getGameProposalsByStatus(status: 'pending' | 'approved' | 'rejected' | 'duplicate'): Promise<Array<GameProposalDto>> {
         this.LOGGER.log('Getting game proposals by status')
 
-        const resultSet = await this.databaseService.getGameProposalsByStatus(status)
+        const resultSet = await this.databaseService.games.getGameProposalsByStatus(status)
         const proposals = this._parseResultSet(resultSet)
 
         return proposals
@@ -96,7 +96,7 @@ export class GameProposalService {
     async getGameProposalsBySubmitter(submittedBy: number): Promise<Array<GameProposalDto>> {
         this.LOGGER.log('Getting game proposals by submitter')
 
-        const resultSet = await this.databaseService.getGameProposalsBySubmitter(submittedBy)
+        const resultSet = await this.databaseService.games.getGameProposalsBySubmitter(submittedBy)
         const proposals = this._parseResultSet(resultSet)
 
         return proposals
@@ -105,7 +105,7 @@ export class GameProposalService {
     async createGameProposal(submittedBy: number, proposalData: CreateGameProposalBody): Promise<GameProposalDto> {
         this.LOGGER.log('Creating game proposal')
 
-        await this.databaseService.createGameProposal({
+        await this.databaseService.games.createGameProposal({
             submittedBy,
             title: proposalData.title,
             imageUrl: proposalData.imageUrl,
@@ -117,7 +117,7 @@ export class GameProposalService {
         })
 
         // Get the created proposal to return it
-        const resultSet = await this.databaseService.getGameProposalsBySubmitter(submittedBy)
+        const resultSet = await this.databaseService.games.getGameProposalsBySubmitter(submittedBy)
         const proposals = this._parseResultSet(resultSet)
 
         // Return the most recent one (should be the one we just created)
@@ -146,7 +146,7 @@ export class GameProposalService {
             updatePayload.reviewedBy = reviewedBy
         }
 
-        await this.databaseService.updateGameProposal(id, updatePayload)
+        await this.databaseService.games.updateGameProposal(id, updatePayload)
 
         // Clear cache
         await this.cacheService.deleteOne(`${this.CACHE_KEY}:byId:${id}`)
@@ -160,7 +160,7 @@ export class GameProposalService {
     async deleteGameProposalById(id: number): Promise<{ success: boolean }> {
         this.LOGGER.log('Deleting game proposal')
 
-        await this.databaseService.deleteGameProposalById(id)
+        await this.databaseService.games.deleteGameProposalById(id)
 
         // Clear cache
         await this.cacheService.deleteOne(`${this.CACHE_KEY}:byId:${id}`)
