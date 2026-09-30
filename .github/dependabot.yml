@@ -1,10 +1,13 @@
+# Monthly and capped so the queue stays reviewable by a small team.
+# Security updates are not affected by the schedule; GitHub opens them as
+# soon as an advisory applies.
 version: 2
 updates:
   - package-ecosystem: npm
     directory: /backend
     schedule:
-      interval: weekly
-      day: monday
+      interval: monthly
+    open-pull-requests-limit: 3
     groups:
       security-updates:
         applies-to: security-updates
@@ -21,8 +24,15 @@ updates:
   - package-ecosystem: npm
     directory: /frontend
     schedule:
-      interval: weekly
-      day: monday
+      interval: monthly
+    open-pull-requests-limit: 3
+    ignore:
+      # Jasmine 7 freezes its globals, which Angular's zone.js test patching
+      # cannot reassign (all unit tests fail). Revisit with Angular's test runner.
+      - dependency-name: jasmine-core
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@types/jasmine"
+        update-types: ["version-update:semver-major"]
     groups:
       security-updates:
         applies-to: security-updates
@@ -39,5 +49,5 @@ updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: weekly
-      day: monday
+      interval: monthly
+    open-pull-requests-limit: 3

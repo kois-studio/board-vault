@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, inject, signal } from '@angular/core'
+import { Component, EventEmitter, inject, Output, signal } from '@angular/core'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../../api/api'
 import type { GameWithTagsAndTranslationsType, TagCategoryType, TagType } from '../../../api/api.types'

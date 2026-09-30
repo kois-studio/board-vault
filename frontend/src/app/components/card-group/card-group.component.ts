@@ -1,4 +1,4 @@
-import { Component, Input, computed, inject } from '@angular/core'
+import { Component, computed, Input, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import type { GameType, GroupWithMembersAndGames, InvitationWithAccountsData } from '../../api/api.types'
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'

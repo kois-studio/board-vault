@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, inject, signal } from '@angular/core'
+import { Component, EventEmitter, inject, Output, signal } from '@angular/core'
 import { Api } from '../../../api/api'
 import type { TagType } from '../../../api/api.types'
 import { LogService } from '../../../core/services/log.service'

@@ -1,4 +1,4 @@
-import { Injectable, computed, inject, signal } from '@angular/core'
+import { computed, Injectable, inject, signal } from '@angular/core'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../../../api/api'
 import type { TagCategoryType, TagType } from '../../../../api/api.types'

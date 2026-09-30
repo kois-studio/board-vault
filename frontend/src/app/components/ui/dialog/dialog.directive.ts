@@ -1,4 +1,4 @@
-import { DOCUMENT, Directive, ElementRef, EventEmitter, HostListener, NgZone, OnDestroy, Output, Renderer2, inject } from '@angular/core'
+import { Directive, DOCUMENT, ElementRef, EventEmitter, HostListener, inject, NgZone, OnDestroy, Output, Renderer2 } from '@angular/core'
 
 const FOCUSABLE_SELECTOR =
     'a[href], area[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'

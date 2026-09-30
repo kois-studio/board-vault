@@ -1,4 +1,4 @@
-import { Injectable, computed, signal } from '@angular/core'
+import { computed, Injectable, signal } from '@angular/core'
 import type { Clerk } from '@clerk/clerk-js'
 
 type ClerkLoadOptions = NonNullable<Parameters<Clerk['load']>[0]>

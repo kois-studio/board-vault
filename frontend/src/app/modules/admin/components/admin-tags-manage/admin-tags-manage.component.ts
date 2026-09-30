@@ -1,6 +1,6 @@
 // src/app/pages/admin/tags-manage/admin-tags-manage.component.ts
 
-import { Component, OnInit, ViewChild, inject } from '@angular/core'
+import { Component, inject, OnInit, ViewChild } from '@angular/core'
 import type { TagCategoryType, TagType } from '../../../../api/api.types'
 import { ModalAddCategoryComponent } from '../../../../components/modals/modal-add-category/modal-add-category.component'
 import { ModalAddTagComponent } from '../../../../components/modals/modal-add-tag/modal-add-tag.component'

@@ -1,7 +1,6 @@
 import { Component, computed, effect, inject, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { ActivatedRoute } from '@angular/router'
-import { RouterLink } from '@angular/router'
+import { ActivatedRoute, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../../api/api'
 import type {

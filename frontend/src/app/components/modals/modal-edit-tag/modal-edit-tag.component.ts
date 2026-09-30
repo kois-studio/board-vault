@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, inject, signal } from '@angular/core'
+import { Component, EventEmitter, inject, Output, signal } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Api } from '../../../api/api'
 import type { TagCategoryType, TagType } from '../../../api/api.types'

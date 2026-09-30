@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing'
-import { ActivatedRoute, Router, convertToParamMap } from '@angular/router'
+import { ActivatedRoute, convertToParamMap, Router } from '@angular/router'
 import { of } from 'rxjs'
 
 import { Api } from '../../api/api'

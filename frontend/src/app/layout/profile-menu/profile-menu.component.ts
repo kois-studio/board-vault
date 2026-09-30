@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, Renderer2, ViewChild, computed, inject } from '@angular/core'
+import { Component, computed, ElementRef, HostListener, inject, Renderer2, ViewChild } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
 import { IconComponent } from '../../components/ui/icon/icon.component'

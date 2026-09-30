@@ -1,4 +1,4 @@
-import { Injectable, effect, inject, signal } from '@angular/core'
+import { effect, Injectable, inject, signal } from '@angular/core'
 import { Router } from '@angular/router'
 import { catchError, concatMap, finalize, of, tap, throwError } from 'rxjs'
 import { Api } from '../../api/api'
@@ -510,14 +510,12 @@ export class DataService {
             .pipe(
                 concatMap(() =>
                     // 2.
-                    this.api
-                        .getUserGames(currentUser.id)
-                        .pipe(
-                            catchError(() => {
-                                this.toastService.error('Error fetching updated games')
-                                return of([]) // Return an empty array if fetching fails
-                            }),
-                        ),
+                    this.api.getUserGames(currentUser.id).pipe(
+                        catchError(() => {
+                            this.toastService.error('Error fetching updated games')
+                            return of([]) // Return an empty array if fetching fails
+                        }),
+                    ),
                 ),
                 catchError(() => {
                     this.toastService.error('Error updating games')

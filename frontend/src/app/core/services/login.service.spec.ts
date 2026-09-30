@@ -1,7 +1,7 @@
 import { signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { Router } from '@angular/router'
-import { Subject, of, throwError } from 'rxjs'
+import { of, Subject, throwError } from 'rxjs'
 import { Api } from '../../api/api'
 import { ToastService } from '../../components/toast/toast.service'
 import { ClerkService } from './clerk.service'

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, inject } from '@angular/core'
+import { Component, EventEmitter, Input, inject, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../../api/api'

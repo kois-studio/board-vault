@@ -1,4 +1,4 @@
-import { Component, ViewChild, inject } from '@angular/core'
+import { Component, inject, ViewChild } from '@angular/core'
 import { FormUpdateDisplayNameComponent } from '../../../components/forms/form-update-display-name/form-update-display-name.component'
 import { FormUpdateUsernameComponent } from '../../../components/forms/form-update-username/form-update-username.component'
 import { ImageProfileComponent } from '../../../components/image-profile/image-profile.component'

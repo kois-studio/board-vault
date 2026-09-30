@@ -1,5 +1,5 @@
 import { NgComponentOutlet } from '@angular/common'
-import { Component, Input, OnChanges, Type, signal } from '@angular/core'
+import { Component, Input, OnChanges, signal, Type } from '@angular/core'
 
 type LucideModule = typeof import('@lucide/angular')
 type IconType = Type<unknown>
