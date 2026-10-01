@@ -31,6 +31,12 @@ operational details.
 - The backend deploys with Vercel's NestJS preset instead of the legacy
   `builds` configuration.
 
+### Fixed
+
+- Local checks on Windows: `.gitattributes` keeps LF line endings regardless
+  of `core.autocrlf`, and backend e2e cleanup tolerates the SQLite file lock
+  that the native libsql driver holds until the test process exits.
+
 ### Added
 
 - Optional local Redis profile (`docker compose --profile redis up -d`).
