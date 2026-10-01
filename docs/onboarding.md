@@ -1,9 +1,7 @@
 # Onboarding
 
 From a clean clone to a running app signed in as a test account, in about ten
-minutes. The steps are the same on macOS, Windows, and Linux. On Windows, a
-pending fix (branch `fix/windows-dev-checks`) is still needed for the backend
-e2e tests and some Playwright runs; the app itself runs normally.
+minutes. The steps are the same on macOS, Windows, and Linux.
 
 ## 1. Install the tools
 
@@ -15,6 +13,10 @@ e2e tests and some Playwright runs; the app itself runs normally.
 - **npm** comes with Node. The project uses npm and its lockfiles; don't use
   pnpm or yarn.
 - **Git** and a Chromium browser (Chrome or Edge) for tests.
+- The **`sqlite3` command-line tool** for the backend e2e tests and the
+  `verify:*` database checks. macOS ships it; on Debian/Ubuntu install
+  `sqlite3`; on Windows run `winget install SQLite.SQLite` and open a new
+  terminal.
 
 ## 2. Get the development keys
 

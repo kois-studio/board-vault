@@ -1,5 +1,4 @@
 import { createHmac } from 'node:crypto'
-import { rm } from 'node:fs/promises'
 
 import { INestApplication } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
@@ -9,6 +8,7 @@ import { AppModule } from './../src/app.module'
 import { createBodyParsers } from './../src/common/http/http-hardening'
 import { ClerkTokenVerifier } from './../src/modules/common/auth/clerk-token-verifier'
 import { FakeClerkTokenVerifier, sessionFor } from './fake-clerk-token-verifier'
+import { removeTestDatabase } from './remove-test-database'
 
 const testDatabasePath = './test/.e2e.sqlite'
 const webhookKey = Buffer.from('board-vault-e2e-webhook-signing-key')
@@ -47,7 +47,7 @@ describe('HTTP security boundary (e2e)', () => {
 
     afterAll(async () => {
         await app?.close()
-        await rm(testDatabasePath, { force: true })
+        removeTestDatabase(testDatabasePath)
     })
 
     it('rejects an unauthenticated session status request', () => {
