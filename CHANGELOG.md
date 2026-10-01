@@ -39,12 +39,12 @@ operational details.
 
 ### Fixed
 
+- Approved game proposals without artwork no longer point to a dead
+  third-party placeholder image.
 - Long names without spaces no longer overflow their cards or widen the
   page on phones. They wrap in attendee pickers, group and session cards, and
   recommendation explanations, and history's "Played by" line stops at two
   lines.
-- Approved game proposals without artwork no longer point to a dead
-  third-party placeholder image.
 - Local checks on Windows: `.gitattributes` keeps LF line endings regardless
   of `core.autocrlf`, and backend e2e cleanup tolerates the SQLite file lock
   that the native libsql driver holds until the test process exits.
