@@ -8,9 +8,9 @@ const invitationRows = [[1, 12, 7, 8, '2026-08-13 00:00:00', '2099-08-13 00:00:0
 
 describe('InvitationsService lifecycle authorization', () => {
     const createService = () => {
-        const getInvitationById = jest.fn().mockResolvedValue({ rows: invitationRows })
-        const getUserInvitationsReceived = jest.fn().mockResolvedValue({ rows: invitationRows })
-        const deleteInvitationById = jest.fn().mockResolvedValue({ rowsAffected: 1 })
+        const getInvitationById = vi.fn().mockResolvedValue({ rows: invitationRows })
+        const getUserInvitationsReceived = vi.fn().mockResolvedValue({ rows: invitationRows })
+        const deleteInvitationById = vi.fn().mockResolvedValue({ rowsAffected: 1 })
         const service = new InvitationsService(
             fakeDatabase({
                 getInvitationById,

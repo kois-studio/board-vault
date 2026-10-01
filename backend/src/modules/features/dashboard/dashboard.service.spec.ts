@@ -5,7 +5,7 @@ import { DashboardService } from './dashboard.service'
 describe('DashboardService group history', () => {
     it('returns completed sessions only', async () => {
         const meets = {
-            getMeetsByGroupId: jest.fn().mockResolvedValue([
+            getMeetsByGroupId: vi.fn().mockResolvedValue([
                 {
                     id: 10,
                     groupId: 7,
@@ -27,14 +27,14 @@ describe('DashboardService group history', () => {
             ]),
         }
         const meetAccountGames = {
-            getDistinctAccountIdsByMeetIdAndGameId: jest.fn().mockResolvedValue([]),
+            getDistinctAccountIdsByMeetIdAndGameId: vi.fn().mockResolvedValue([]),
         }
         const database = {
-            getMeetAttendedAccountIds: jest.fn().mockResolvedValue([]),
-            getPlayedGameIdsByMeetId: jest.fn().mockResolvedValue([]),
-            getMeetAttendedPersonIds: jest.fn().mockResolvedValue([]),
-            getGroupPeople: jest.fn().mockResolvedValue({ rows: [] }),
-            getMeetPlayedGamePersonParticipants: jest.fn().mockResolvedValue([]),
+            getMeetAttendedAccountIds: vi.fn().mockResolvedValue([]),
+            getPlayedGameIdsByMeetId: vi.fn().mockResolvedValue([]),
+            getMeetAttendedPersonIds: vi.fn().mockResolvedValue([]),
+            getGroupPeople: vi.fn().mockResolvedValue({ rows: [] }),
+            getMeetPlayedGamePersonParticipants: vi.fn().mockResolvedValue([]),
         }
 
         const service = new DashboardService(
@@ -61,7 +61,7 @@ describe('DashboardService group history', () => {
 describe('DashboardService group creation', () => {
     it('returns the created group identifier for the onboarding handoff', async () => {
         const database = {
-            createGroupWithMembership: jest.fn().mockResolvedValue({ groupId: 42 }),
+            createGroupWithMembership: vi.fn().mockResolvedValue({ groupId: 42 }),
         }
         const service = new DashboardService(
             {} as never,

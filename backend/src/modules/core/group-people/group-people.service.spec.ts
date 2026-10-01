@@ -4,26 +4,28 @@ import { fakeDatabase } from '../../../../test/fake-database'
 
 import { GroupPeopleService } from './group-people.service'
 
+import type { Mock } from 'vitest'
+
 describe('GroupPeopleService participant boundaries', () => {
     const personRow = [21, 12, null, 'placeholder', 'active', 'Ana', null, '2026-09-26', '2026-09-26', null]
 
-    function createService(overrides: Record<string, jest.Mock> = {}) {
+    function createService(overrides: Record<string, Mock> = {}) {
         const databaseService = {
-            getGroupMembershipById: jest.fn().mockResolvedValue({ rows: [[1, 12]] }),
-            getGroupById: jest.fn().mockResolvedValue({ rows: [[12, null, 7]] }),
-            getUserById: jest
+            getGroupMembershipById: vi.fn().mockResolvedValue({ rows: [[1, 12]] }),
+            getGroupById: vi.fn().mockResolvedValue({ rows: [[12, null, 7]] }),
+            getUserById: vi
                 .fn()
                 .mockResolvedValue({ rows: [{ id: 7, email: 'friend@example.com', username: 'friend', displayName: 'Friend' }] }),
-            getClaimableGroupPersonIds: jest.fn().mockResolvedValue({ rows: [[21]] }),
-            getGroupPersonGameCatalog: jest.fn().mockResolvedValue({ rows: [[42, 'image', 60, 2, 4, 'Catan', 'Catan', 'Catán']] }),
-            getGroupPeople: jest.fn().mockResolvedValue({ rows: [personRow] }),
-            getGroupPersonOwnership: jest.fn().mockResolvedValue({ rows: [[42, 'asserted', 'placeholder_setup', 7, null, 'a', 'b']] }),
-            getGroupPersonPreferences: jest.fn().mockResolvedValue({ rows: [[42, 'favorite', 'placeholder_setup', 7, 'a', 'b']] }),
-            getGroupPersonById: jest.fn().mockResolvedValue({ rows: [personRow] }),
-            getGameById: jest.fn().mockResolvedValue({ rows: [[42]] }),
-            claimGroupPerson: jest.fn().mockResolvedValue({ claimed: true, alreadyClaimed: false }),
-            getLinkedGroupPersonByAccount: jest.fn().mockResolvedValue({ rows: [] }),
-            createLinkedGroupPerson: jest.fn().mockResolvedValue({ lastInsertRowid: 22 }),
+            getClaimableGroupPersonIds: vi.fn().mockResolvedValue({ rows: [[21]] }),
+            getGroupPersonGameCatalog: vi.fn().mockResolvedValue({ rows: [[42, 'image', 60, 2, 4, 'Catan', 'Catan', 'Catán']] }),
+            getGroupPeople: vi.fn().mockResolvedValue({ rows: [personRow] }),
+            getGroupPersonOwnership: vi.fn().mockResolvedValue({ rows: [[42, 'asserted', 'placeholder_setup', 7, null, 'a', 'b']] }),
+            getGroupPersonPreferences: vi.fn().mockResolvedValue({ rows: [[42, 'favorite', 'placeholder_setup', 7, 'a', 'b']] }),
+            getGroupPersonById: vi.fn().mockResolvedValue({ rows: [personRow] }),
+            getGameById: vi.fn().mockResolvedValue({ rows: [[42]] }),
+            claimGroupPerson: vi.fn().mockResolvedValue({ claimed: true, alreadyClaimed: false }),
+            getLinkedGroupPersonByAccount: vi.fn().mockResolvedValue({ rows: [] }),
+            createLinkedGroupPerson: vi.fn().mockResolvedValue({ lastInsertRowid: 22 }),
             ...overrides,
         }
 
@@ -69,7 +71,7 @@ describe('GroupPeopleService participant boundaries', () => {
     })
 
     it('rejects a non-member before reading or mutating participant data', async () => {
-        const { service, databaseService } = createService({ getGroupMembershipById: jest.fn().mockResolvedValue({ rows: [] }) })
+        const { service, databaseService } = createService({ getGroupMembershipById: vi.fn().mockResolvedValue({ rows: [] }) })
 
         await expect(service.claim(99, 12, 21, {})).rejects.toBeInstanceOf(ForbiddenException)
         expect(databaseService.getUserById).not.toHaveBeenCalled()
@@ -79,7 +81,7 @@ describe('GroupPeopleService participant boundaries', () => {
     it('makes joining as a new person idempotent', async () => {
         const existing = { ...personRow, 2: 7, 3: 'linked', 5: 'Friend' }
         const { service, databaseService } = createService({
-            getLinkedGroupPersonByAccount: jest.fn().mockResolvedValue({ rows: [existing] }),
+            getLinkedGroupPersonByAccount: vi.fn().mockResolvedValue({ rows: [existing] }),
         })
 
         await expect(service.joinAsNewPerson(7, 12)).resolves.toEqual(expect.objectContaining({ id: 21, kind: 'linked' }))

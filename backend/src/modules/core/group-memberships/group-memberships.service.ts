@@ -1,4 +1,4 @@
-import { ResultSet } from '@libsql/client/.'
+import { ResultSet } from '@libsql/client'
 import { ForbiddenException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common'
 
 import { groupMembreshipsSchema } from '../../../common/schemas'

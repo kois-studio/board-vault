@@ -15,7 +15,7 @@ import type {
     ClaimGroupPersonBody,
 } from '../../../common/types/group-person.type'
 import type { AvatarDto } from '../../../common/types/user.type'
-import type { ResultSet } from '@libsql/client/.'
+import type { ResultSet } from '@libsql/client'
 
 @Injectable()
 export class GroupPeopleService {

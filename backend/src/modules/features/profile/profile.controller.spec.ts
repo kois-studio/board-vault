@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
-import * as request from 'supertest'
+import request from 'supertest'
 
 import { AuthGuard } from '../../../common/guards/auth.guard'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
@@ -9,12 +9,14 @@ import { RateLimitGuard } from '../../../common/guards/rate-limit.guard'
 import { ProfileController } from './profile.controller'
 import { ProfileService } from './profile.service'
 
+import type { Mock } from 'vitest'
+
 describe('ProfileController proposal validation', () => {
     let app: INestApplication
-    let createGameProposal: jest.Mock
+    let createGameProposal: Mock
 
     beforeEach(async () => {
-        createGameProposal = jest.fn().mockResolvedValue({ id: 1, title: 'Catan' })
+        createGameProposal = vi.fn().mockResolvedValue({ id: 1, title: 'Catan' })
 
         const module = await Test.createTestingModule({
             controllers: [ProfileController],

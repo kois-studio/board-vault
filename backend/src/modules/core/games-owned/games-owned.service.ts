@@ -1,4 +1,4 @@
-import { ResultSet } from '@libsql/client/.'
+import { ResultSet } from '@libsql/client'
 import { HttpException, HttpStatus, Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { gameOwnedsSchema } from '../../../common/schemas'

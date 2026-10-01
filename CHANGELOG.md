@@ -30,6 +30,8 @@ operational details.
   (`databaseService.groups.getGroupById`, …).
 - The backend deploys with Vercel's NestJS preset instead of the legacy
   `builds` configuration.
+- Backend on NestJS 12 and TypeScript 6; backend unit and e2e tests run on
+  Vitest (Jest removed), like the frontend.
 
 ### Fixed
 

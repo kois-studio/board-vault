@@ -4,14 +4,14 @@ import { fakeDatabase } from '../../../../test/fake-database'
 
 import { CollectionService } from './collection.service'
 
-function createService(database: unknown, collectionActivity = { invalidateForAccount: jest.fn().mockResolvedValue(undefined) }) {
+function createService(database: unknown, collectionActivity = { invalidateForAccount: vi.fn().mockResolvedValue(undefined) }) {
     return new CollectionService(
         {} as never,
         {} as never,
         {} as never,
         {} as never,
         {} as never,
-        { getGameOwnedByAccountIdAndGameId: jest.fn() } as never,
+        { getGameOwnedByAccountIdAndGameId: vi.fn() } as never,
         {} as never,
         {} as never,
         collectionActivity as never,
@@ -21,8 +21,8 @@ function createService(database: unknown, collectionActivity = { invalidateForAc
 
 describe('CollectionService', () => {
     it('invalidates activity memory after atomic collection activation', async () => {
-        const addGameToCollection = jest.fn().mockResolvedValue({ success: true, wishlistRemoved: true })
-        const invalidateForAccount = jest.fn().mockResolvedValue(undefined)
+        const addGameToCollection = vi.fn().mockResolvedValue({ success: true, wishlistRemoved: true })
+        const invalidateForAccount = vi.fn().mockResolvedValue(undefined)
         const service = createService({ addGameToCollection }, { invalidateForAccount })
 
         await expect(service.addGameToUserCollection(1, 42)).resolves.toEqual({ success: true })
@@ -32,8 +32,8 @@ describe('CollectionService', () => {
     })
 
     it('turns a duplicate atomic activation into the existing conflict contract', async () => {
-        const addGameToCollection = jest.fn().mockResolvedValue({ success: false, wishlistRemoved: false })
-        const invalidateForAccount = jest.fn()
+        const addGameToCollection = vi.fn().mockResolvedValue({ success: false, wishlistRemoved: false })
+        const invalidateForAccount = vi.fn()
         const service = createService({ addGameToCollection }, { invalidateForAccount })
 
         await expect(service.addGameToUserCollection(1, 42)).rejects.toBeInstanceOf(ConflictException)
@@ -42,8 +42,8 @@ describe('CollectionService', () => {
     })
 
     it('invalidates activity memory after atomic collection removal', async () => {
-        const removeGameFromCollection = jest.fn().mockResolvedValue({ rowsAffected: 1 })
-        const invalidateForAccount = jest.fn().mockResolvedValue(undefined)
+        const removeGameFromCollection = vi.fn().mockResolvedValue({ rowsAffected: 1 })
+        const invalidateForAccount = vi.fn().mockResolvedValue(undefined)
         const service = createService({ removeGameFromCollection }, { invalidateForAccount })
 
         await expect(service.removeGameFromUserCollection(1, 42)).resolves.toEqual({ success: true })
@@ -53,9 +53,9 @@ describe('CollectionService', () => {
     })
 
     it('returns refreshed ownership after an atomic metadata update', async () => {
-        const updateGameOwnershipAndLogActivity = jest.fn().mockResolvedValue({ rowsAffected: 1 })
-        const getGameOwnedByAccountIdAndGameId = jest.fn().mockResolvedValue({ accountId: 1, gameId: 42 })
-        const invalidateForAccount = jest.fn().mockResolvedValue(undefined)
+        const updateGameOwnershipAndLogActivity = vi.fn().mockResolvedValue({ rowsAffected: 1 })
+        const getGameOwnedByAccountIdAndGameId = vi.fn().mockResolvedValue({ accountId: 1, gameId: 42 })
+        const invalidateForAccount = vi.fn().mockResolvedValue(undefined)
         const service = new CollectionService(
             {} as never,
             {} as never,
@@ -76,8 +76,8 @@ describe('CollectionService', () => {
     })
 
     it('returns the atomic wishlist state and invalidates activity memory', async () => {
-        const toggleWishlistAndLogActivity = jest.fn().mockResolvedValue(true)
-        const invalidateForAccount = jest.fn().mockResolvedValue(undefined)
+        const toggleWishlistAndLogActivity = vi.fn().mockResolvedValue(true)
+        const invalidateForAccount = vi.fn().mockResolvedValue(undefined)
         const service = createService({ toggleWishlistAndLogActivity }, { invalidateForAccount })
 
         await expect(service.toggleWishlist(1, 42)).resolves.toBe(true)

@@ -6,9 +6,9 @@ import { GroupMembershipsService } from './group-memberships.service'
 
 describe('GroupMembershipsService join policy', () => {
     it('requires a pending invitation before joining a group', async () => {
-        const acceptInvitationAtomically = jest.fn()
+        const acceptInvitationAtomically = vi.fn()
         const databaseService = fakeDatabase({
-            getInvitationByGroupAndRecipient: jest.fn().mockResolvedValue({ rows: [] }),
+            getInvitationByGroupAndRecipient: vi.fn().mockResolvedValue({ rows: [] }),
             acceptInvitationAtomically,
         })
         const service = new GroupMembershipsService(databaseService)
@@ -18,9 +18,9 @@ describe('GroupMembershipsService join policy', () => {
     })
 
     it('creates membership and consumes the pending invitation', async () => {
-        const acceptInvitationAtomically = jest.fn().mockResolvedValue({ success: true })
+        const acceptInvitationAtomically = vi.fn().mockResolvedValue({ success: true })
         const databaseService = fakeDatabase({
-            getInvitationByGroupAndRecipient: jest.fn().mockResolvedValue({ rows: [[42]] }),
+            getInvitationByGroupAndRecipient: vi.fn().mockResolvedValue({ rows: [[42]] }),
             acceptInvitationAtomically,
         })
         const service = new GroupMembershipsService(databaseService)

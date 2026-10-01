@@ -2,13 +2,15 @@ import { JsonLogger } from './json-logger'
 import { requestContext } from './request-context'
 import { structuredLog } from './structured-log'
 
+import type { MockInstance } from 'vitest'
+
 describe('JsonLogger', () => {
     const lines: Array<Record<string, unknown>> = []
-    let write: jest.SpyInstance
+    let write: MockInstance
 
     beforeEach(() => {
         lines.length = 0
-        write = jest.spyOn(process.stdout, 'write').mockImplementation((chunk: string | Uint8Array) => {
+        write = vi.spyOn(process.stdout, 'write').mockImplementation((chunk: string | Uint8Array) => {
             lines.push(JSON.parse(String(chunk)) as Record<string, unknown>)
             return true
         })

@@ -15,9 +15,9 @@ describe('CacheController', () => {
 
     it('delegates cache operations without exposing provider details in the controller', async () => {
         const cacheService = {
-            keys: jest.fn().mockResolvedValue({ keys: ['user-proposal-stats:1'] }),
-            deleteAll: jest.fn().mockResolvedValue(true),
-            deleteOne: jest.fn().mockResolvedValue(true),
+            keys: vi.fn().mockResolvedValue({ keys: ['user-proposal-stats:1'] }),
+            deleteAll: vi.fn().mockResolvedValue(true),
+            deleteOne: vi.fn().mockResolvedValue(true),
         }
         const controller = new CacheController(cacheService as unknown as CacheService)
 

@@ -1,4 +1,4 @@
-import { ResultSet } from '@libsql/client/.'
+import { ResultSet } from '@libsql/client'
 import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { mapMeetDetailsResult } from '../../../common/mappers/meet-details.mapper'

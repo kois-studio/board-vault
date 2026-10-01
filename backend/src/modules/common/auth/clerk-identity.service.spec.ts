@@ -6,32 +6,32 @@ import { API_ERROR_CODES, BoardVaultHttpException } from '../../../common/http/a
 
 import { ClerkIdentityService } from './clerk-identity.service'
 
-jest.mock('@clerk/backend', () => ({
-    createClerkClient: jest.fn(),
+vi.mock('@clerk/backend', () => ({
+    createClerkClient: vi.fn(),
 }))
 
 describe('ClerkIdentityService', () => {
-    const mockedCreateClerkClient = jest.mocked(createClerkClient)
-    const configService = { get: jest.fn().mockReturnValue('secret') }
+    const mockedCreateClerkClient = vi.mocked(createClerkClient)
+    const configService = { get: vi.fn().mockReturnValue('secret') }
     const usersService = {
-        getUserByClerkId: jest.fn(),
-        getUserByEmail: jest.fn(),
-        getUserByUsername: jest.fn(),
-        createClerkUser: jest.fn(),
+        getUserByClerkId: vi.fn(),
+        getUserByEmail: vi.fn(),
+        getUserByUsername: vi.fn(),
+        createClerkUser: vi.fn(),
     }
     const databaseService = {
-        getGroupById: jest.fn(),
-        getGroupPersonById: jest.fn(),
-        setGroupPersonClaimEmail: jest.fn(),
-        joinGroupFromClerkInvitation: jest.fn(),
+        getGroupById: vi.fn(),
+        getGroupPersonById: vi.fn(),
+        setGroupPersonClaimEmail: vi.fn(),
+        joinGroupFromClerkInvitation: vi.fn(),
     }
     const service = new ClerkIdentityService(configService as never, usersService as never, fakeDatabase(databaseService))
 
     beforeEach(() => {
-        jest.clearAllMocks()
+        vi.clearAllMocks()
         mockedCreateClerkClient.mockReturnValue({
             users: {
-                getUser: jest.fn().mockResolvedValue({
+                getUser: vi.fn().mockResolvedValue({
                     username: 'new-player',
                     firstName: 'New',
                     lastName: 'Player',
@@ -98,7 +98,7 @@ describe('ClerkIdentityService', () => {
     it('rejects a Clerk identity whose primary email is not verified', async () => {
         mockedCreateClerkClient.mockReturnValue({
             users: {
-                getUser: jest.fn().mockResolvedValue({
+                getUser: vi.fn().mockResolvedValue({
                     publicMetadata: {},
                     primaryEmailAddressId: 'email_1',
                     emailAddresses: [{ id: 'email_1', emailAddress: 'new@example.com', verification: { status: 'unverified' } }],
@@ -142,7 +142,7 @@ describe('ClerkIdentityService', () => {
         delete process.env.BOARD_VAULT_SELF_REGISTRATION_ENABLED
         mockedCreateClerkClient.mockReturnValue({
             users: {
-                getUser: jest.fn().mockResolvedValue({
+                getUser: vi.fn().mockResolvedValue({
                     username: 'invited-player',
                     firstName: 'Invited',
                     lastName: 'Player',
@@ -179,7 +179,7 @@ describe('ClerkIdentityService', () => {
             key === 'BOARD_VAULT_CLERK_INVITATION_REDIRECT_URL' ? 'https://board-vault.test/register' : 'secret',
         )
         databaseService.getGroupById.mockResolvedValue({ rows: [[12, 'Friends', 7]] })
-        const createInvitation = jest.fn().mockResolvedValue({
+        const createInvitation = vi.fn().mockResolvedValue({
             id: 'inv_123',
             emailAddress: 'invite@example.com',
             url: 'https://clerk.test/invite',
@@ -210,7 +210,7 @@ describe('ClerkIdentityService', () => {
         databaseService.getGroupById.mockResolvedValue({ rows: [[12, 'Friends', 7]] })
         databaseService.getGroupPersonById.mockResolvedValue({ rows: [[21, 12, null, 'placeholder']] })
         databaseService.setGroupPersonClaimEmail.mockResolvedValue({ rowsAffected: 1 })
-        const createInvitation = jest.fn().mockResolvedValue({
+        const createInvitation = vi.fn().mockResolvedValue({
             id: 'inv_targeted',
             emailAddress: 'invite@example.com',
             url: 'https://clerk.test/invite',
@@ -236,7 +236,7 @@ describe('ClerkIdentityService', () => {
         )
         databaseService.getGroupById.mockResolvedValue({ rows: [[12, 'Friends', 7]] })
         mockedCreateClerkClient.mockReturnValue({
-            invitations: { createInvitation: jest.fn().mockRejectedValue(new Error('provider payload must not escape')) },
+            invitations: { createInvitation: vi.fn().mockRejectedValue(new Error('provider payload must not escape')) },
         } as never)
 
         const error = await service.createGroupInvitation(12, 7, 'invite@example.com').catch((caught: unknown) => caught)
@@ -251,7 +251,7 @@ describe('ClerkIdentityService', () => {
 
     it('lists only pending Clerk invitations owned by the requested group', async () => {
         databaseService.getGroupById.mockResolvedValue({ rows: [[12, 'Friends', 7]] })
-        const getInvitationList = jest.fn().mockResolvedValue({
+        const getInvitationList = vi.fn().mockResolvedValue({
             totalCount: 3,
             data: [
                 {
@@ -293,7 +293,7 @@ describe('ClerkIdentityService', () => {
 
     it('revokes only a pending Clerk invitation carrying the requested group metadata', async () => {
         databaseService.getGroupById.mockResolvedValue({ rows: [[12, 'Friends', 7]] })
-        const getInvitationList = jest.fn().mockResolvedValue({
+        const getInvitationList = vi.fn().mockResolvedValue({
             totalCount: 1,
             data: [
                 {
@@ -305,7 +305,7 @@ describe('ClerkIdentityService', () => {
                 },
             ],
         })
-        const revokeInvitation = jest.fn().mockResolvedValue({})
+        const revokeInvitation = vi.fn().mockResolvedValue({})
 
         mockedCreateClerkClient.mockReturnValue({ invitations: { getInvitationList, revokeInvitation } } as never)
 
@@ -315,7 +315,7 @@ describe('ClerkIdentityService', () => {
 
     it('does not revoke an invitation belonging to another group', async () => {
         databaseService.getGroupById.mockResolvedValue({ rows: [[12, 'Friends', 7]] })
-        const getInvitationList = jest.fn().mockResolvedValue({
+        const getInvitationList = vi.fn().mockResolvedValue({
             totalCount: 1,
             data: [
                 {
@@ -327,7 +327,7 @@ describe('ClerkIdentityService', () => {
                 },
             ],
         })
-        const revokeInvitation = jest.fn()
+        const revokeInvitation = vi.fn()
 
         mockedCreateClerkClient.mockReturnValue({ invitations: { getInvitationList, revokeInvitation } } as never)
 

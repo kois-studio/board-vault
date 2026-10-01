@@ -14,7 +14,7 @@ describe('ProfileService invitation acceptance', () => {
     it('returns only self-profile fields instead of account-state fields', async () => {
         const service = new ProfileService(
             {
-                getUserById: jest.fn().mockResolvedValue({
+                getUserById: vi.fn().mockResolvedValue({
                     id: 8,
                     email: 'member@example.com',
                     username: 'member',
@@ -45,10 +45,10 @@ describe('ProfileService invitation acceptance', () => {
 
     it('denies accepting an invitation addressed to another user', async () => {
         const invitationsService = {
-            getInvitationById: jest.fn().mockResolvedValue({ id: 1, groupId: 12, fromAccountId: 7, toAccountId: 8 }),
-            isExpired: jest.fn().mockReturnValue(false),
+            getInvitationById: vi.fn().mockResolvedValue({ id: 1, groupId: 12, fromAccountId: 7, toAccountId: 8 }),
+            isExpired: vi.fn().mockReturnValue(false),
         }
-        const databaseService = { acceptInvitationAtomically: jest.fn() }
+        const databaseService = { acceptInvitationAtomically: vi.fn() }
         const service = new ProfileService(
             {} as UsersService,
             {} as NotificationsService,
@@ -64,12 +64,12 @@ describe('ProfileService invitation acceptance', () => {
 
     it('does not accept an expired invitation', async () => {
         const invitationsService = {
-            getInvitationById: jest
+            getInvitationById: vi
                 .fn()
                 .mockResolvedValue({ id: 1, groupId: 12, fromAccountId: 7, toAccountId: 8, expiresAt: '2000-08-13 00:00:00' }),
-            isExpired: jest.fn().mockReturnValue(true),
+            isExpired: vi.fn().mockReturnValue(true),
         }
-        const databaseService = { acceptInvitationAtomically: jest.fn() }
+        const databaseService = { acceptInvitationAtomically: vi.fn() }
         const service = new ProfileService(
             {} as UsersService,
             {} as NotificationsService,

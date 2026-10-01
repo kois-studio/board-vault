@@ -1,4 +1,4 @@
-import { ResultSet } from '@libsql/client/.'
+import { ResultSet } from '@libsql/client'
 import { BadRequestException, Injectable, Logger } from '@nestjs/common'
 
 import { collectionActivitiesSchema } from '../../../common/schemas/db-collection-activity.schema'

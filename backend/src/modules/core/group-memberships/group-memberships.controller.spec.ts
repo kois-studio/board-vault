@@ -8,7 +8,7 @@ import { GroupMembershipsService } from './group-memberships.service'
 
 describe('GroupMembershipsController actor identity', () => {
     it('scopes the legacy membership list to the authenticated account', async () => {
-        const getGroupMembershipsByAccountId = jest.fn().mockResolvedValue([])
+        const getGroupMembershipsByAccountId = vi.fn().mockResolvedValue([])
         const controller = new GroupMembershipsController({ getGroupMembershipsByAccountId } as unknown as GroupMembershipsService)
 
         await controller.getGroupMemberships({ user: { userId: 7 } })
@@ -17,7 +17,7 @@ describe('GroupMembershipsController actor identity', () => {
     })
 
     it('derives the membership account from the authenticated user', async () => {
-        const createGroupMembershipFromInvitation = jest.fn().mockResolvedValue({ success: true })
+        const createGroupMembershipFromInvitation = vi.fn().mockResolvedValue({ success: true })
         const controller = new GroupMembershipsController({ createGroupMembershipFromInvitation } as unknown as GroupMembershipsService)
         const body = { groupId: 12, accountId: 999 } as unknown as CreateGroupMembershipRequestBody
 

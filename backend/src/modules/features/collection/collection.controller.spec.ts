@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
-import * as request from 'supertest'
+import request from 'supertest'
 
 import { AuthGuard } from '../../../common/guards/auth.guard'
 import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
@@ -8,16 +8,18 @@ import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
 import { CollectionController } from './collection.controller'
 import { CollectionService } from './collection.service'
 
+import type { Mock } from 'vitest'
+
 describe('CollectionController review validation', () => {
     let app: INestApplication
-    let saveGameReview: jest.Mock
-    let updateGameOwnership: jest.Mock
-    let getGamesNotOwnedByUser: jest.Mock
+    let saveGameReview: Mock
+    let updateGameOwnership: Mock
+    let getGamesNotOwnedByUser: Mock
 
     beforeEach(async () => {
-        saveGameReview = jest.fn().mockResolvedValue({ success: true })
-        updateGameOwnership = jest.fn().mockResolvedValue({ success: true })
-        getGamesNotOwnedByUser = jest.fn().mockResolvedValue({ games: [], pagination: {} })
+        saveGameReview = vi.fn().mockResolvedValue({ success: true })
+        updateGameOwnership = vi.fn().mockResolvedValue({ success: true })
+        getGamesNotOwnedByUser = vi.fn().mockResolvedValue({ games: [], pagination: {} })
 
         const module = await Test.createTestingModule({
             controllers: [CollectionController],

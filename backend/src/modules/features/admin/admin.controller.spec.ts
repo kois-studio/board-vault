@@ -9,7 +9,7 @@ describe('AdminController reviewer identity', () => {
     const request = { user: { userId: 7 } }
 
     it('derives the approval reviewer from the authenticated user', async () => {
-        const approveGameProposal = jest.fn().mockResolvedValue({ success: true })
+        const approveGameProposal = vi.fn().mockResolvedValue({ success: true })
         const controller = new AdminController({ approveGameProposal } as unknown as AdminService)
         const body = { reviewNotes: 'approved' }
 
@@ -19,8 +19,8 @@ describe('AdminController reviewer identity', () => {
     })
 
     it('derives rejection and duplicate reviewers from the authenticated user', async () => {
-        const rejectGameProposal = jest.fn().mockResolvedValue({ success: true })
-        const markGameProposalAsDuplicate = jest.fn().mockResolvedValue({ success: true })
+        const rejectGameProposal = vi.fn().mockResolvedValue({ success: true })
+        const markGameProposalAsDuplicate = vi.fn().mockResolvedValue({ success: true })
         const controller = new AdminController({ rejectGameProposal, markGameProposalAsDuplicate } as unknown as AdminService)
 
         await controller.rejectGameProposal(request, 12, { reviewNotes: 'duplicate' })

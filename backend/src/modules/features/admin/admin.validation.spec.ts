@@ -1,6 +1,6 @@
 import { ExecutionContext, INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
-import * as request from 'supertest'
+import request from 'supertest'
 
 import { AdminGuard } from '../../../common/guards/admin.guard'
 import { AuthGuard } from '../../../common/guards/auth.guard'
@@ -8,14 +8,16 @@ import { AuthGuard } from '../../../common/guards/auth.guard'
 import { AdminController } from './admin.controller'
 import { AdminService } from './admin.service'
 
+import type { Mock } from 'vitest'
+
 describe('AdminController write validation', () => {
     let app: INestApplication
-    let rejectGameProposal: jest.Mock
-    let markGameProposalAsDuplicate: jest.Mock
+    let rejectGameProposal: Mock
+    let markGameProposalAsDuplicate: Mock
 
     beforeEach(async () => {
-        rejectGameProposal = jest.fn().mockResolvedValue({ success: true })
-        markGameProposalAsDuplicate = jest.fn().mockResolvedValue({ success: true })
+        rejectGameProposal = vi.fn().mockResolvedValue({ success: true })
+        markGameProposalAsDuplicate = vi.fn().mockResolvedValue({ success: true })
 
         const module = await Test.createTestingModule({
             controllers: [AdminController],
@@ -78,14 +80,14 @@ describe('AdminController write validation', () => {
 
 describe('AdminController list query validation', () => {
     let app: INestApplication
-    let getAdminGames: jest.Mock
-    let getAdminGameProposals: jest.Mock
+    let getAdminGames: Mock
+    let getAdminGameProposals: Mock
 
     beforeEach(async () => {
-        getAdminGames = jest
+        getAdminGames = vi
             .fn()
             .mockResolvedValue({ games: [], pagination: { currentPage: 1, totalPages: 0, totalItems: 0, itemsPerPage: 10 } })
-        getAdminGameProposals = jest.fn().mockResolvedValue({
+        getAdminGameProposals = vi.fn().mockResolvedValue({
             proposals: [],
             pagination: { currentPage: 1, totalPages: 0, totalItems: 0, itemsPerPage: 10 },
         })

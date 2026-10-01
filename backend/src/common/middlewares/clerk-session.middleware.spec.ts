@@ -5,8 +5,8 @@ import { ProviderTimeoutError } from '../http/provider-timeout'
 import { ClerkSessionMiddleware } from './clerk-session.middleware'
 
 describe('ClerkSessionMiddleware', () => {
-    const tokenVerifier = { verify: jest.fn() }
-    const clerkIdentityService = { resolveAccount: jest.fn() }
+    const tokenVerifier = { verify: vi.fn() }
+    const clerkIdentityService = { resolveAccount: vi.fn() }
     const middleware = new ClerkSessionMiddleware(tokenVerifier as never, clerkIdentityService as never)
     const requestWith = (authorization?: string) =>
         ({ headers: authorization ? { authorization } : {} }) as {
@@ -24,7 +24,7 @@ describe('ClerkSessionMiddleware', () => {
         tokenVerifier.verify.mockResolvedValue('user_clerk_123')
         clerkIdentityService.resolveAccount.mockResolvedValue({ id: 7, email: 'person@example.test', isAdmin: true })
         const request = requestWith('Bearer clerk-token')
-        const next = jest.fn()
+        const next = vi.fn()
 
         await middleware.use(request as never, {} as never, next)
 
@@ -35,7 +35,7 @@ describe('ClerkSessionMiddleware', () => {
 
     it('leaves requests without a bearer token anonymous', async () => {
         const request = requestWith()
-        const next = jest.fn()
+        const next = vi.fn()
 
         await middleware.use(request as never, {} as never, next)
 
@@ -47,7 +47,7 @@ describe('ClerkSessionMiddleware', () => {
     it('leaves invalid tokens anonymous without resolving an account', async () => {
         tokenVerifier.verify.mockResolvedValue(null)
         const request = requestWith('Bearer expired-token')
-        const next = jest.fn()
+        const next = vi.fn()
 
         await middleware.use(request as never, {} as never, next)
 
@@ -62,7 +62,7 @@ describe('ClerkSessionMiddleware', () => {
         tokenVerifier.verify.mockResolvedValue('user_clerk_123')
         clerkIdentityService.resolveAccount.mockRejectedValue(error)
         const request = requestWith('Bearer clerk-token')
-        const next = jest.fn()
+        const next = vi.fn()
 
         await middleware.use(request as never, {} as never, next)
 
@@ -76,7 +76,7 @@ describe('ClerkSessionMiddleware', () => {
 
         tokenVerifier.verify.mockRejectedValue(error)
         const request = requestWith('Bearer clerk-token')
-        const next = jest.fn()
+        const next = vi.fn()
 
         await middleware.use(request as never, {} as never, next)
 

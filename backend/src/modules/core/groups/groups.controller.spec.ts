@@ -10,7 +10,7 @@ describe('GroupsController actor and listing boundaries', () => {
     const request = { user: { userId: 7 } }
 
     it('scopes the legacy group list to the authenticated account', async () => {
-        const getGroupsForAccount = jest.fn().mockResolvedValue([])
+        const getGroupsForAccount = vi.fn().mockResolvedValue([])
         const controller = new GroupsController(
             { getGroupsForAccount } as unknown as GroupsService,
             {} as GroupAcquisitionService,
@@ -23,7 +23,7 @@ describe('GroupsController actor and listing boundaries', () => {
     })
 
     it('derives the legacy group creator from the authenticated account', async () => {
-        const createGroup = jest.fn().mockResolvedValue({ success: true })
+        const createGroup = vi.fn().mockResolvedValue({ success: true })
         const controller = new GroupsController(
             { createGroup } as unknown as GroupsService,
             {} as GroupAcquisitionService,
@@ -37,7 +37,7 @@ describe('GroupsController actor and listing boundaries', () => {
     })
 
     it('derives the Clerk invitation sender from the authenticated account', async () => {
-        const createGroupInvitation = jest.fn().mockResolvedValue({
+        const createGroupInvitation = vi.fn().mockResolvedValue({
             invitationId: 'inv_123',
             emailAddress: 'friend@example.com',
             url: 'https://clerk.test/invite',
@@ -50,7 +50,7 @@ describe('GroupsController actor and listing boundaries', () => {
     })
 
     it('derives the Clerk invitation listing owner from the authenticated account', async () => {
-        const getGroupInvitations = jest.fn().mockResolvedValue([])
+        const getGroupInvitations = vi.fn().mockResolvedValue([])
         const controller = new GroupsController({} as GroupsService, {} as GroupAcquisitionService, { getGroupInvitations } as never)
 
         await controller.getClerkInvitations(12, request)
@@ -59,7 +59,7 @@ describe('GroupsController actor and listing boundaries', () => {
     })
 
     it('derives the Clerk invitation revocation owner from the authenticated account', async () => {
-        const revokeGroupInvitation = jest.fn().mockResolvedValue({ success: true })
+        const revokeGroupInvitation = vi.fn().mockResolvedValue({ success: true })
         const controller = new GroupsController({} as GroupsService, {} as GroupAcquisitionService, { revokeGroupInvitation } as never)
 
         await controller.revokeClerkInvitation(12, { groupId: 12, invitationId: 'inv_123' }, request)
@@ -68,7 +68,7 @@ describe('GroupsController actor and listing boundaries', () => {
     })
 
     it('derives the acquisition decision owner from the authenticated account', async () => {
-        const updateDecision = jest.fn().mockResolvedValue({ success: true })
+        const updateDecision = vi.fn().mockResolvedValue({ success: true })
         const controller = new GroupsController(
             {} as GroupsService,
             { updateDecision } as unknown as GroupAcquisitionService,

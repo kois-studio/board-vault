@@ -1,8 +1,10 @@
 import { CacheService } from './cache.service'
 
+import type { Mock } from 'vitest'
+
 type CacheServiceInternals = {
-    LOGGER: { log: jest.Mock; error: jest.Mock }
-    REDIS: { get: jest.Mock; set: jest.Mock; incr: jest.Mock; expire: jest.Mock; keys: jest.Mock; flushdb: jest.Mock; ping: jest.Mock }
+    LOGGER: { log: Mock; error: Mock }
+    REDIS: { get: Mock; set: Mock; incr: Mock; expire: Mock; keys: Mock; flushdb: Mock; ping: Mock }
 }
 
 describe('CacheService logging', () => {
@@ -10,21 +12,21 @@ describe('CacheService logging', () => {
         const service = Object.create(CacheService.prototype) as CacheService
         const internals = service as unknown as CacheServiceInternals
 
-        internals.LOGGER = { log: jest.fn(), error: jest.fn() }
+        internals.LOGGER = { log: vi.fn(), error: vi.fn() }
         internals.REDIS = {
-            get: jest.fn().mockResolvedValue({ email: 'person@example.com' }),
-            set: jest.fn().mockResolvedValue('OK'),
-            incr: jest.fn().mockResolvedValue(1),
-            expire: jest.fn().mockResolvedValue(1),
-            keys: jest.fn().mockResolvedValue([]),
-            flushdb: jest.fn().mockResolvedValue('OK'),
-            ping: jest.fn().mockResolvedValue('PONG'),
+            get: vi.fn().mockResolvedValue({ email: 'person@example.com' }),
+            set: vi.fn().mockResolvedValue('OK'),
+            incr: vi.fn().mockResolvedValue(1),
+            expire: vi.fn().mockResolvedValue(1),
+            keys: vi.fn().mockResolvedValue([]),
+            flushdb: vi.fn().mockResolvedValue('OK'),
+            ping: vi.fn().mockResolvedValue('PONG'),
         }
         return { service, internals }
     }
 
     it('has deterministic disabled-cache behavior without constructing a Redis client', async () => {
-        const configService = { get: jest.fn().mockReturnValue('true') }
+        const configService = { get: vi.fn().mockReturnValue('true') }
         const service = new CacheService(configService as never)
 
         await expect(service.get('games:byId:7')).resolves.toBeNull()

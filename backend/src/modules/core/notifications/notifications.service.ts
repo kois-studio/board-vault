@@ -1,4 +1,4 @@
-import { ResultSet } from '@libsql/client/.'
+import { ResultSet } from '@libsql/client'
 import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { notificationsSchema } from '../../../common/schemas'

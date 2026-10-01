@@ -5,8 +5,8 @@ module map is in [`../docs/architecture.md`](../docs/architecture.md).
 
 ```shell
 npm run dev                          # watch mode on http://localhost:3000 (Swagger at /swagger)
-npm test -- --runInBand              # unit tests
-npm run test:e2e -- --runInBand      # e2e tests (temporary SQLite, fake Clerk)
+npm test                             # unit tests (Vitest)
+npm run test:e2e                     # e2e tests (temporary SQLite, fake Clerk)
 npm run lint:check && npm run lint:logs
 npm run build && npm run docs:openapi  # regenerate ../docs/api/openapi.json
 ```

@@ -94,7 +94,7 @@ compliance:
       next_action: Keep unfinished work in GitHub Issues.
     - id: TEST-001
       status: compliant
-      evidence: 'Backend Jest unit tests and HTTP e2e tests; frontend Vitest unit tests and Playwright journeys; database migration, restore, and rollback rehearsals.'
+      evidence: 'Backend Vitest unit tests and HTTP e2e tests; frontend Vitest unit tests and Playwright journeys; database migration, restore, and rollback rehearsals.'
       priority: medium
       next_action: None.
     - id: TEST-002

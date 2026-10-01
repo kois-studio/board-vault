@@ -14,14 +14,14 @@ const createContext = (request: Record<string, unknown>): ExecutionContext =>
 
 describe('GroupOwnerGuard', () => {
     it('allows the group owner', async () => {
-        const groupsService = { getGroupById: jest.fn().mockResolvedValue({ id: 12, createdBy: 7 }) } as unknown as GroupsService
+        const groupsService = { getGroupById: vi.fn().mockResolvedValue({ id: 12, createdBy: 7 }) } as unknown as GroupsService
         const guard = new GroupOwnerGuard(groupsService)
 
         await expect(guard.canActivate(createContext({ user: { userId: 7 }, params: { groupId: '12' } }))).resolves.toBe(true)
     })
 
     it('denies a non-owner', async () => {
-        const groupsService = { getGroupById: jest.fn().mockResolvedValue({ id: 12, createdBy: 7 }) } as unknown as GroupsService
+        const groupsService = { getGroupById: vi.fn().mockResolvedValue({ id: 12, createdBy: 7 }) } as unknown as GroupsService
         const guard = new GroupOwnerGuard(groupsService)
 
         await expect(guard.canActivate(createContext({ user: { userId: 8 }, params: { groupId: '12' } }))).rejects.toThrow(
@@ -30,7 +30,7 @@ describe('GroupOwnerGuard', () => {
     })
 
     it('reads the group identifier from a legacy invitation body', async () => {
-        const groupsService = { getGroupById: jest.fn().mockResolvedValue({ id: 12, createdBy: 7 }) } as unknown as GroupsService
+        const groupsService = { getGroupById: vi.fn().mockResolvedValue({ id: 12, createdBy: 7 }) } as unknown as GroupsService
         const guard = new GroupOwnerGuard(groupsService)
 
         await expect(guard.canActivate(createContext({ user: { userId: 7 }, params: {}, body: { groupId: 12 } }))).resolves.toBe(true)

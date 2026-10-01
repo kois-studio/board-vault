@@ -52,13 +52,13 @@ jobs:
             - name: Audit dependencies
               run: npm audit --audit-level=low
             - name: Run unit tests
-              run: npm test -- --runInBand
+              run: npm test
             - name: Run backend lint
               run: npx eslint "{src,apps,libs,test}/**/*.ts"
             - name: Check log boundary
               run: npm run lint:logs
             - name: Run HTTP E2E tests
-              run: npm run test:e2e -- --runInBand
+              run: npm run test:e2e
             - name: Build backend
               run: npm run build
             - name: Check committed OpenAPI snapshot

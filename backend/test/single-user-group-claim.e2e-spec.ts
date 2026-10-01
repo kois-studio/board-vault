@@ -5,7 +5,7 @@ import { resolve } from 'node:path'
 import { createClient, type Client } from '@libsql/client'
 import { INestApplication } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
-import * as request from 'supertest'
+import request from 'supertest'
 
 import { AppModule } from './../src/app.module'
 import { ClerkTokenVerifier } from './../src/modules/common/auth/clerk-token-verifier'

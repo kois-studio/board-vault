@@ -1,4 +1,4 @@
-import { ResultSet } from '@libsql/client/.'
+import { ResultSet } from '@libsql/client'
 import { Injectable, Logger } from '@nestjs/common'
 
 import { wishlistedGamesSchema } from '../../../common/schemas/db-wishlisted-game.schema'

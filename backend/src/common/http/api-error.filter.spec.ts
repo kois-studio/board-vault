@@ -6,9 +6,9 @@ import { ProviderTimeoutError } from './provider-timeout'
 
 function createHost(exception: unknown) {
     const response = {
-        setHeader: jest.fn(),
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
+        setHeader: vi.fn(),
+        status: vi.fn().mockReturnThis(),
+        json: vi.fn(),
     }
     const request = { method: 'POST', originalUrl: '/sessions' }
     const host = {

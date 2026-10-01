@@ -1,4 +1,4 @@
-import { ResultSet } from '@libsql/client/.'
+import { ResultSet } from '@libsql/client'
 import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { safeErrorName } from '../../../common/logging/structured-log'

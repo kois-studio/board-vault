@@ -5,7 +5,7 @@ import { GroupAcquisitionService } from './group-acquisition.service'
 describe('GroupAcquisitionService', () => {
     it('aggregates member interest into group-level entries', async () => {
         const database = {
-            getGroupAcquisitionBoard: jest.fn().mockResolvedValue({
+            getGroupAcquisitionBoard: vi.fn().mockResolvedValue({
                 rows: [
                     [
                         42,
@@ -59,9 +59,9 @@ describe('GroupAcquisitionService', () => {
 
     it('rejects adding a game the group already owns', async () => {
         const database = {
-            getGameById: jest.fn().mockResolvedValue({ rows: [[42]] }),
-            getGroupAvailableGameIds: jest.fn().mockResolvedValue([42]),
-            addGroupGameInterestAndReopenDecision: jest.fn(),
+            getGameById: vi.fn().mockResolvedValue({ rows: [[42]] }),
+            getGroupAvailableGameIds: vi.fn().mockResolvedValue([42]),
+            addGroupGameInterestAndReopenDecision: vi.fn(),
         }
         const service = new GroupAcquisitionService(fakeDatabase(database))
 
@@ -71,9 +71,9 @@ describe('GroupAcquisitionService', () => {
 
     it('persists interest for a catalog game not owned by the group', async () => {
         const database = {
-            getGameById: jest.fn().mockResolvedValue({ rows: [[42]] }),
-            getGroupAvailableGameIds: jest.fn().mockResolvedValue([]),
-            addGroupGameInterestAndReopenDecision: jest.fn().mockResolvedValue({ rowsAffected: 1 }),
+            getGameById: vi.fn().mockResolvedValue({ rows: [[42]] }),
+            getGroupAvailableGameIds: vi.fn().mockResolvedValue([]),
+            addGroupGameInterestAndReopenDecision: vi.fn().mockResolvedValue({ rowsAffected: 1 }),
         }
         const service = new GroupAcquisitionService(fakeDatabase(database))
 
@@ -83,9 +83,9 @@ describe('GroupAcquisitionService', () => {
 
     it('reports ownership when the atomic insert loses a race to a group purchase', async () => {
         const database = {
-            getGameById: jest.fn().mockResolvedValue({ rows: [[42]] }),
-            getGroupAvailableGameIds: jest.fn().mockResolvedValueOnce([]).mockResolvedValueOnce([42]),
-            addGroupGameInterestAndReopenDecision: jest.fn().mockResolvedValue({ rowsAffected: 0 }),
+            getGameById: vi.fn().mockResolvedValue({ rows: [[42]] }),
+            getGroupAvailableGameIds: vi.fn().mockResolvedValueOnce([]).mockResolvedValueOnce([42]),
+            addGroupGameInterestAndReopenDecision: vi.fn().mockResolvedValue({ rowsAffected: 0 }),
         }
         const service = new GroupAcquisitionService(fakeDatabase(database))
 
@@ -95,9 +95,9 @@ describe('GroupAcquisitionService', () => {
 
     it('persists an owner decision for an unowned game', async () => {
         const database = {
-            getGameById: jest.fn().mockResolvedValue({ rows: [[42]] }),
-            getGroupAvailableGameIds: jest.fn().mockResolvedValue([]),
-            upsertGroupAcquisitionDecision: jest.fn().mockResolvedValue({ rowsAffected: 1 }),
+            getGameById: vi.fn().mockResolvedValue({ rows: [[42]] }),
+            getGroupAvailableGameIds: vi.fn().mockResolvedValue([]),
+            upsertGroupAcquisitionDecision: vi.fn().mockResolvedValue({ rowsAffected: 1 }),
         }
         const service = new GroupAcquisitionService(fakeDatabase(database))
 
@@ -107,9 +107,9 @@ describe('GroupAcquisitionService', () => {
 
     it('rejects an owner decision when the group already owns the game', async () => {
         const database = {
-            getGameById: jest.fn().mockResolvedValue({ rows: [[42]] }),
-            getGroupAvailableGameIds: jest.fn().mockResolvedValue([42]),
-            upsertGroupAcquisitionDecision: jest.fn(),
+            getGameById: vi.fn().mockResolvedValue({ rows: [[42]] }),
+            getGroupAvailableGameIds: vi.fn().mockResolvedValue([42]),
+            upsertGroupAcquisitionDecision: vi.fn(),
         }
         const service = new GroupAcquisitionService(fakeDatabase(database))
 

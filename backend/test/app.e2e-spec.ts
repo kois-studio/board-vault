@@ -2,7 +2,7 @@ import { createHmac } from 'node:crypto'
 
 import { INestApplication } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
-import * as request from 'supertest'
+import request from 'supertest'
 
 import { AppModule } from './../src/app.module'
 import { createBodyParsers } from './../src/common/http/http-hardening'
@@ -65,8 +65,8 @@ describe('HTTP security boundary (e2e)', () => {
         ['post', '/auth/login'],
         ['post', '/auth/register'],
         ['post', '/auth/forgot-password'],
-    ] as const)('no longer serves the legacy %s %s route', (method, path) => {
-        return request(app.getHttpServer())
+    ] as const)('no longer serves the legacy %s %s route', async (method, path) => {
+        await request(app.getHttpServer())
             [method](path)
             .set('Authorization', `Bearer ${sessionFor('user_unknown')}`)
             .expect(404)
@@ -77,8 +77,8 @@ describe('HTTP security boundary (e2e)', () => {
         ['recommendation signals', () => request(app.getHttpServer()).get('/play/recommendations/signals?groupId=7')],
         ['session scheduling', () => request(app.getHttpServer()).post('/sessions/scheduled').send({ groupId: 7 })],
         ['collection activation', () => request(app.getHttpServer()).post('/collection/users/7/games/42')],
-    ])('rejects unauthenticated %s before domain access', (_name, buildRequest) => {
-        return buildRequest().expect(401)
+    ])('rejects unauthenticated %s before domain access', async (_name, buildRequest) => {
+        await buildRequest().expect(401)
     })
 
     it('accepts a Clerk webhook signed over the exact request body', () => {

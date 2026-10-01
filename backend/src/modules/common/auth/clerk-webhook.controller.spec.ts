@@ -28,7 +28,7 @@ describe('ClerkWebhookController', () => {
     const body = JSON.stringify(event)
 
     function createController(secret: string | undefined = signingSecret) {
-        const handle = jest.fn().mockResolvedValue(undefined)
+        const handle = vi.fn().mockResolvedValue(undefined)
         const controller = new ClerkWebhookController({ get: () => secret } as never, { handle } as never)
 
         return { controller, handle }

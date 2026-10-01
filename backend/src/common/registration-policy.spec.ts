@@ -49,7 +49,7 @@ describe('registration policy', () => {
 
         try {
             assertSelfRegistrationEnabled()
-            fail('Expected registration to be rejected')
+            expect.unreachable('Expected registration to be rejected')
         } catch (error) {
             expect(error).toBeInstanceOf(ForbiddenException)
             expect((error as ForbiddenException).getResponse()).toEqual(

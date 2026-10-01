@@ -12,10 +12,10 @@ import type { UsersService } from '../../core/users/users.service'
 describe('PlayService history', () => {
     it('includes only completed sessions in personal history', async () => {
         const meetAccountGames = {
-            getDistinctAccountIdsByMeetIdAndGameId: jest.fn().mockResolvedValue([1]),
+            getDistinctAccountIdsByMeetIdAndGameId: vi.fn().mockResolvedValue([1]),
         }
         const meets = {
-            getMeetById: jest.fn().mockImplementation(async (meetId: number) => ({
+            getMeetById: vi.fn().mockImplementation(async (meetId: number) => ({
                 id: meetId,
                 groupId: 7,
                 createdBy: 1,
@@ -26,20 +26,20 @@ describe('PlayService history', () => {
             })),
         }
         const database = fakeDatabase({
-            getMeetAttendedAccountIds: jest.fn().mockResolvedValue([1]),
-            getDistinctCompletedMeetIdsForAccountHistory: jest.fn().mockResolvedValue([10, 11]),
-            getPlayedGameIdsByMeetId: jest.fn().mockResolvedValue([42]),
-            getMeetAttendedPersonIds: jest.fn().mockResolvedValue([]),
-            getGroupPeople: jest.fn().mockResolvedValue({ rows: [] }),
-            getMeetPlayedGamePersonParticipants: jest.fn().mockResolvedValue([]),
+            getMeetAttendedAccountIds: vi.fn().mockResolvedValue([1]),
+            getDistinctCompletedMeetIdsForAccountHistory: vi.fn().mockResolvedValue([10, 11]),
+            getPlayedGameIdsByMeetId: vi.fn().mockResolvedValue([42]),
+            getMeetAttendedPersonIds: vi.fn().mockResolvedValue([]),
+            getGroupPeople: vi.fn().mockResolvedValue({ rows: [] }),
+            getMeetPlayedGamePersonParticipants: vi.fn().mockResolvedValue([]),
         })
         const service = new PlayService(
-            { getPublicUserById: jest.fn().mockResolvedValue({ id: 1, username: 'organizer' }) } as unknown as UsersService,
+            { getPublicUserById: vi.fn().mockResolvedValue({ id: 1, username: 'organizer' }) } as unknown as UsersService,
             database,
-            { getGameById: jest.fn().mockResolvedValue({ id: 42, imageUrl: 'image' }) } as unknown as GamesService,
+            { getGameById: vi.fn().mockResolvedValue({ id: 42, imageUrl: 'image' }) } as unknown as GamesService,
             meets as unknown as MeetsService,
             meetAccountGames as unknown as MeetAccountGamesService,
-            { getGameTranslations: jest.fn().mockResolvedValue({ en: 'Game' }) } as unknown as GameTranslationService,
+            { getGameTranslations: vi.fn().mockResolvedValue({ en: 'Game' }) } as unknown as GameTranslationService,
         )
 
         await expect(service.getUserGamesHistory(1)).resolves.toHaveLength(1)
@@ -49,7 +49,7 @@ describe('PlayService history', () => {
 
     it('sorts a user meet list without mutating the database response contract', async () => {
         const meets = {
-            getMeetsForAccount: jest.fn().mockResolvedValue([
+            getMeetsForAccount: vi.fn().mockResolvedValue([
                 { id: 1, meetDate: '2026-08-10T19:30:00.000Z' },
                 { id: 2, meetDate: '2026-08-16T19:30:00.000Z' },
             ]),
@@ -71,10 +71,10 @@ describe('PlayService history', () => {
 
     it('returns deterministic recommendations for selected attendees', async () => {
         const database = {
-            getGroupById: jest.fn().mockResolvedValue({ rows: [[7]] }),
-            getGroupMemberIds: jest.fn().mockResolvedValue([1, 2, 3]),
-            getRecommendationFeedbackForGroup: jest.fn().mockResolvedValue({ rows: [] }),
-            getRecommendationCandidates: jest.fn().mockResolvedValue({
+            getGroupById: vi.fn().mockResolvedValue({ rows: [[7]] }),
+            getGroupMemberIds: vi.fn().mockResolvedValue([1, 2, 3]),
+            getRecommendationFeedbackForGroup: vi.fn().mockResolvedValue({ rows: [] }),
+            getRecommendationCandidates: vi.fn().mockResolvedValue({
                 rows: [
                     [42, 'image-42', 90, 2, 5, 'Better Game', 'Mejor juego', 2, 8, '2026-08-01T19:30:00.000Z'],
                     [21, 'image-21', 120, 2, 5, 'Long Game', 'Juego largo', 1, null, null],
@@ -108,18 +108,18 @@ describe('PlayService history', () => {
 
     it('names selected group people when explaining participant recommendations', async () => {
         const database = {
-            getGroupById: jest.fn().mockResolvedValue({ rows: [[7]] }),
-            getGroupMemberIds: jest.fn().mockResolvedValue([1]),
-            getGroupPeople: jest.fn().mockResolvedValue({
+            getGroupById: vi.fn().mockResolvedValue({ rows: [[7]] }),
+            getGroupMemberIds: vi.fn().mockResolvedValue([1]),
+            getGroupPeople: vi.fn().mockResolvedValue({
                 rows: [
                     [12, 7, null, 'placeholder', 'active', 'Ana'],
                     [13, 7, 1, 'linked', 'active', 'Carlos'],
                 ],
             }),
-            getGroupPersonRecommendationCandidates: jest.fn().mockResolvedValue({
+            getGroupPersonRecommendationCandidates: vi.fn().mockResolvedValue({
                 rows: [[42, 'image-42', 90, 2, 5, 'Shared Game', 'Juego compartido', 2, null, null, 2]],
             }),
-            getParticipantRecommendationFeedbackForGroup: jest.fn().mockResolvedValue({ rows: [] }),
+            getParticipantRecommendationFeedbackForGroup: vi.fn().mockResolvedValue({ rows: [] }),
         }
         const service = new PlayService(
             {} as UsersService,
@@ -151,10 +151,10 @@ describe('PlayService history', () => {
 
     it('applies the selected decision lens and explains its effect', async () => {
         const database = {
-            getGroupById: jest.fn().mockResolvedValue({ rows: [[7]] }),
-            getGroupMemberIds: jest.fn().mockResolvedValue([1, 2]),
-            getRecommendationFeedbackForGroup: jest.fn().mockResolvedValue({ rows: [] }),
-            getRecommendationCandidates: jest.fn().mockResolvedValue({
+            getGroupById: vi.fn().mockResolvedValue({ rows: [[7]] }),
+            getGroupMemberIds: vi.fn().mockResolvedValue([1, 2]),
+            getRecommendationFeedbackForGroup: vi.fn().mockResolvedValue({ rows: [] }),
+            getRecommendationCandidates: vi.fn().mockResolvedValue({
                 rows: [
                     [42, 'image-42', 90, 2, 5, 'Played Game', 'Juego jugado', 2, 8, '2026-08-01T19:30:00.000Z'],
                     [21, 'image-21', 120, 2, 5, 'Fresh Game', 'Juego nuevo', 1, null, null],
@@ -196,12 +196,12 @@ describe('PlayService history', () => {
 
     it('uses the latest selected-attendee feedback in the recommendation score and explanation', async () => {
         const database = {
-            getGroupById: jest.fn().mockResolvedValue({ rows: [[7]] }),
-            getGroupMemberIds: jest.fn().mockResolvedValue([1, 2]),
-            getRecommendationCandidates: jest.fn().mockResolvedValue({
+            getGroupById: vi.fn().mockResolvedValue({ rows: [[7]] }),
+            getGroupMemberIds: vi.fn().mockResolvedValue([1, 2]),
+            getRecommendationCandidates: vi.fn().mockResolvedValue({
                 rows: [[42, 'image-42', 90, 2, 5, 'Better Game', 'Mejor juego', 2, 8, null]],
             }),
-            getRecommendationFeedbackForGroup: jest.fn().mockResolvedValue({
+            getRecommendationFeedbackForGroup: vi.fn().mockResolvedValue({
                 rows: [
                     [8, 42, 1, 'interested', '2026-09-03 20:02:00'],
                     [7, 42, 1, 'not_for_us', '2026-09-03 20:01:00'],
@@ -230,8 +230,8 @@ describe('PlayService history', () => {
 
     it('rejects attendees who are not members of the selected group', async () => {
         const database = {
-            getGroupById: jest.fn().mockResolvedValue({ rows: [[7]] }),
-            getGroupMemberIds: jest.fn().mockResolvedValue([1, 2]),
+            getGroupById: vi.fn().mockResolvedValue({ rows: [[7]] }),
+            getGroupMemberIds: vi.fn().mockResolvedValue([1, 2]),
         }
         const service = new PlayService(
             {} as UsersService,
@@ -249,10 +249,10 @@ describe('PlayService history', () => {
 
     it('explains which recommendation constraint produced an empty result', async () => {
         const database = {
-            getGroupById: jest.fn().mockResolvedValue({ rows: [[7]] }),
-            getGroupMemberIds: jest.fn().mockResolvedValue([1, 2]),
-            getRecommendationCandidates: jest.fn().mockResolvedValue({ rows: [] }),
-            getRecommendationCandidateCounts: jest.fn().mockResolvedValue({ rows: [[4, 2, 0]] }),
+            getGroupById: vi.fn().mockResolvedValue({ rows: [[7]] }),
+            getGroupMemberIds: vi.fn().mockResolvedValue([1, 2]),
+            getRecommendationCandidates: vi.fn().mockResolvedValue({ rows: [] }),
+            getRecommendationCandidateCounts: vi.fn().mockResolvedValue({ rows: [[4, 2, 0]] }),
         }
         const service = new PlayService(
             {} as UsersService,
@@ -271,10 +271,10 @@ describe('PlayService history', () => {
 
     it('persists recommendation feedback only for selected-attendee-owned games', async () => {
         const database = {
-            getGroupById: jest.fn().mockResolvedValue({ rows: [[7]] }),
-            getGroupMemberIds: jest.fn().mockResolvedValue([1, 2, 3]),
-            getOwnedGameByAnyAccount: jest.fn().mockResolvedValue({ rows: [[1]] }),
-            createRecommendationFeedback: jest.fn().mockResolvedValue({ rowsAffected: 1 }),
+            getGroupById: vi.fn().mockResolvedValue({ rows: [[7]] }),
+            getGroupMemberIds: vi.fn().mockResolvedValue([1, 2, 3]),
+            getOwnedGameByAnyAccount: vi.fn().mockResolvedValue({ rows: [[1]] }),
+            createRecommendationFeedback: vi.fn().mockResolvedValue({ rowsAffected: 1 }),
         }
         const service = new PlayService(
             {} as UsersService,
@@ -304,10 +304,10 @@ describe('PlayService history', () => {
 
     it('rejects recommendation feedback for games absent from selected attendees', async () => {
         const database = {
-            getGroupById: jest.fn().mockResolvedValue({ rows: [[7]] }),
-            getGroupMemberIds: jest.fn().mockResolvedValue([1, 2]),
-            getOwnedGameByAnyAccount: jest.fn().mockResolvedValue({ rows: [] }),
-            createRecommendationFeedback: jest.fn(),
+            getGroupById: vi.fn().mockResolvedValue({ rows: [[7]] }),
+            getGroupMemberIds: vi.fn().mockResolvedValue([1, 2]),
+            getOwnedGameByAnyAccount: vi.fn().mockResolvedValue({ rows: [] }),
+            createRecommendationFeedback: vi.fn(),
         }
         const service = new PlayService(
             {} as UsersService,
@@ -332,9 +332,9 @@ describe('PlayService history', () => {
     it('returns the latest group recommendation signals per member and game', async () => {
         const avatar = JSON.stringify({ backgroundColor: '#000', iconName: null, emoji: '🎲', type: 'emoji', initials: 'O' })
         const database = {
-            getGroupById: jest.fn().mockResolvedValue({ rows: [[7]] }),
-            getGroupMemberIds: jest.fn().mockResolvedValue([1, 2]),
-            getRecommendationFeedbackForGroup: jest.fn().mockResolvedValue({
+            getGroupById: vi.fn().mockResolvedValue({ rows: [[7]] }),
+            getGroupMemberIds: vi.fn().mockResolvedValue([1, 2]),
+            getRecommendationFeedbackForGroup: vi.fn().mockResolvedValue({
                 rows: [
                     [5, 42, 1, 'not_for_us', '2026-09-03 20:02:00', 'organizer', 'Organizer', avatar],
                     [4, 42, 1, 'interested', '2026-09-03 20:01:00', 'organizer', 'Organizer', avatar],
@@ -368,9 +368,9 @@ describe('PlayService history', () => {
 
     it('rejects recommendation signals for non-members', async () => {
         const database = {
-            getGroupById: jest.fn().mockResolvedValue({ rows: [[7]] }),
-            getGroupMemberIds: jest.fn().mockResolvedValue([2]),
-            getRecommendationFeedbackForGroup: jest.fn(),
+            getGroupById: vi.fn().mockResolvedValue({ rows: [[7]] }),
+            getGroupMemberIds: vi.fn().mockResolvedValue([2]),
+            getRecommendationFeedbackForGroup: vi.fn(),
         }
         const service = new PlayService(
             {} as UsersService,

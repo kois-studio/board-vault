@@ -1,6 +1,6 @@
 import { ExecutionContext, INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
-import * as request from 'supertest'
+import request from 'supertest'
 
 import { AuthGuard } from '../../common/guards/auth.guard'
 import { GroupOwnerGuard } from '../../common/guards/group-owner.guard'
@@ -20,10 +20,10 @@ import { NotificationsService } from './notifications/notifications.service'
 
 describe('Legacy write DTO validation', () => {
     let app: INestApplication
-    const createGroup = jest.fn().mockResolvedValue({ success: true })
-    const createInvitation = jest.fn().mockResolvedValue({ success: true })
-    const createNotification = jest.fn().mockResolvedValue({ success: true })
-    const createGroupMembershipFromInvitation = jest.fn().mockResolvedValue({ success: true })
+    const createGroup = vi.fn().mockResolvedValue({ success: true })
+    const createInvitation = vi.fn().mockResolvedValue({ success: true })
+    const createNotification = vi.fn().mockResolvedValue({ success: true })
+    const createGroupMembershipFromInvitation = vi.fn().mockResolvedValue({ success: true })
 
     beforeEach(async () => {
         const module = await Test.createTestingModule({
@@ -54,7 +54,7 @@ describe('Legacy write DTO validation', () => {
 
         app = module.createNestApplication()
         await app.init()
-        jest.clearAllMocks()
+        vi.clearAllMocks()
     })
 
     afterEach(async () => {
