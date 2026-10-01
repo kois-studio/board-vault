@@ -53,6 +53,21 @@ export class UsersService {
         return users[0]
     }
 
+    /** Public profiles for many accounts in one query, keyed by id. */
+    async getPublicUsersByIds(ids: Array<number>): Promise<Map<number, UserPublicDto>> {
+        const uniqueIds = [...new Set(ids)]
+
+        if (uniqueIds.length === 0) {
+            return new Map()
+        }
+
+        const users = this._parseResultSet(await this.databaseService.accounts.getUsersByIds(uniqueIds))
+
+        return new Map(
+            users.map(user => [user.id, { id: user.id, username: user.username, displayName: user.displayName, avatar: user.avatar }]),
+        )
+    }
+
     async getPublicUserById(id: number): Promise<UserPublicDto> {
         const user = await this.getUserById(id)
 

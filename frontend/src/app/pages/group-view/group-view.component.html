@@ -24,7 +24,7 @@
         <div class="rounded-2xl border border-amber-200 bg-amber-50 p-8 text-center dark:border-amber-900/50 dark:bg-amber-950/30" role="alert">
             <p class="text-lg font-semibold">This group is not available.</p>
             <p class="mt-2 text-secondary">It may have been deleted, or your membership may have changed.</p>
-            <a class="app-btn-primary mt-5 inline-block" routerLink="/groups">Back to groups</a>
+            <a class="app-btn-primary mt-5 inline-block" routerLink="/dashboard">Back to groups</a>
         </div>
     } @else {
         @if (groupData$(); as group) {
@@ -46,7 +46,7 @@
                             <option [value]="availableGroup.id">{{ availableGroup.name }}</option>
                         }
                     </select>
-                    <a class="app-btn-secondary text-center" routerLink="/groups">All groups</a>
+                    <a class="app-btn-secondary text-center" routerLink="/dashboard">All groups</a>
                 </div>
             </nav>
 

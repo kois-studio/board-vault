@@ -42,6 +42,19 @@ export class GamesService {
 
     // #region methods
 
+    /** Many games in one query, keyed by id. Missing ids are left out. */
+    async getGamesByIds(ids: Array<number>): Promise<Map<number, GameDto>> {
+        const uniqueIds = [...new Set(ids)]
+
+        if (uniqueIds.length === 0) {
+            return new Map()
+        }
+
+        const games = this._parseResultSet(await this.databaseService.games.getGamesByIds(uniqueIds))
+
+        return new Map(games.map(game => [game.id, game]))
+    }
+
     async getGameById(id: number): Promise<GameDto> {
         this.LOGGER.log('Getting game by id')
 

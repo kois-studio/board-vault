@@ -1,141 +1,163 @@
-<app-page-header titleText="Your game groups" [showActionButton]="true">
-    Choose a group to decide what to play, coordinate the next session, and keep the group's game memory together.
+<app-page-header [titleText]="greetingName() ? 'Hi, ' + greetingName() : 'Home'" [showActionButton]="true">
+    Your groups, the next game night, and what you played lately.
     <a class="app-btn-primary action-button text-center" routerLink="/create-group">Create a group</a>
 </app-page-header>
 
 <container-wrapper>
-    @if (isLoadingOverview()) {
-        <section class="space-y-5" aria-label="Loading your groups" aria-busy="true">
-            <div class="h-32 motion-safe:animate-pulse rounded-3xl bg-zinc-100 dark:bg-zinc-900" aria-hidden="true"></div>
-            <div class="grid gap-5 md:grid-cols-2">
-                @for (item of [1, 2]; track item) {
-                    <div class="h-56 motion-safe:animate-pulse rounded-2xl border border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900" aria-hidden="true"></div>
+    <div class="space-y-12 pb-16 pt-8">
+        <!-- Invitations come first: they are the only thing waiting on you. -->
+        @if (!isLoadingInvitations() && userInvitationsError()) {
+            <section class="rounded-2xl border border-amber-200 bg-amber-50 p-6 dark:border-amber-900/60 dark:bg-amber-950/30" aria-labelledby="invitations-error-heading">
+                <h2 id="invitations-error-heading" class="text-lg font-bold">Invitations are temporarily unavailable</h2>
+                <p class="mt-2 text-sm text-secondary">We could not refresh your pending group invitations. Your groups are still available below.</p>
+                <button type="button" class="app-btn-secondary mt-4" (click)="retryInvitations()">Retry invitations</button>
+            </section>
+        } @else if (!isLoadingInvitations() && userInvitations$().length > 0) {
+            <section class="rounded-2xl border border-indigo-200 bg-indigo-50 p-6 dark:border-indigo-900/60 dark:bg-indigo-950/30" aria-labelledby="pending-invitations-heading">
+                <div class="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                        <h2 id="pending-invitations-heading" class="text-xl font-bold">Invitations waiting for you</h2>
+                        <p class="mt-1 text-sm text-secondary">Accept to join the group’s shared games and history, or decline if it is not for you.</p>
+                    </div>
+                    <span class="rounded-full bg-white px-3 py-1 text-sm font-semibold text-indigo-700 dark:bg-zinc-900 dark:text-indigo-300">{{ userInvitations$().length }} pending</span>
+                </div>
+                <ul class="mt-5 grid gap-4 lg:grid-cols-2">
+                    @for (invitation of userInvitations$(); track invitation.id) {
+                        <li><app-card-invitation [invitation]="invitation" /></li>
+                    }
+                </ul>
+            </section>
+        }
+
+        <!-- Next game nights across every group -->
+        <section aria-labelledby="upcoming-heading">
+            <div class="mb-4 flex items-end justify-between gap-3">
+                <h2 id="upcoming-heading" class="text-xl font-bold">Next game nights</h2>
+                <a routerLink="/play/upcoming-sessions" class="text-sm font-semibold text-indigo-600 hover:underline dark:text-indigo-400">All upcoming</a>
+            </div>
+            @if (isLoadingMeets() && upcomingSessions().length === 0) {
+                <div class="grid gap-4 md:grid-cols-3" aria-busy="true">
+                    @for (item of [1, 2, 3]; track item) {
+                        <div class="h-24 animate-pulse rounded-2xl bg-zinc-100 dark:bg-zinc-800"></div>
+                    }
+                </div>
+            } @else if (userMeetsError()) {
+                <p class="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm dark:border-amber-900/50 dark:bg-amber-950/30" role="alert">
+                    Upcoming sessions could not be loaded.
+                    <button type="button" class="ml-2 font-semibold underline" (click)="retryGroups()">Retry</button>
+                </p>
+            } @else if (upcomingSessions().length === 0) {
+                <div class="flex flex-col items-start justify-between gap-4 rounded-2xl border border-dashed border-zinc-300 p-5 sm:flex-row sm:items-center dark:border-zinc-700">
+                    <p class="text-secondary">Nothing planned yet. Pick a date and let the group decide what to play.</p>
+                    @if (firstGroupId(); as groupId) {
+                        <a class="app-btn-secondary shrink-0 text-center" [routerLink]="['/groups', groupId, 'sessions', 'new']">Plan a session</a>
+                    }
+                </div>
+            } @else {
+                <ul class="grid gap-4 md:grid-cols-3">
+                    @for (meet of upcomingSessions(); track meet.id) {
+                        <li>
+                            <a [routerLink]="['/sessions', meet.id]" class="flex h-full items-start gap-4 rounded-2xl border border-zinc-200 bg-white p-5 transition hover:border-indigo-300 hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-indigo-700">
+                                <span class="rounded-xl bg-indigo-50 p-3 text-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-300" aria-hidden="true"><app-icon name="calendar" [size]="22" /></span>
+                                <span class="min-w-0">
+                                    <span class="block font-semibold">{{ meet.meetDate | customDate: true: meet.timezone }}</span>
+                                    <span class="mt-1 block truncate text-sm text-secondary">{{ groupName(meet.groupId) }}</span>
+                                    @if (meet.status === 'active') {
+                                        <span class="mt-2 inline-block rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">Happening now</span>
+                                    }
+                                </span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            }
+        </section>
+
+        <!-- Groups: the workspaces everything else hangs off -->
+        <section aria-labelledby="groups-heading">
+            <div class="mb-4 flex items-end justify-between gap-3">
+                <h2 id="groups-heading" class="text-xl font-bold">Your groups</h2>
+                @if (userGroups$().length > 0) {
+                    <span class="text-sm text-secondary">{{ userGroups$().length }} group{{ userGroups$().length === 1 ? '' : 's' }}</span>
                 }
             </div>
+            @if (isLoadingGroups() && userGroups$().length === 0) {
+                <div class="grid gap-6 xl:grid-cols-2" aria-busy="true" aria-label="Loading your groups">
+                    @for (item of [1, 2]; track item) {
+                        <app-skeleton-card-group />
+                    }
+                </div>
+            } @else if (userGroupsError()) {
+                <div class="rounded-2xl border border-amber-200 bg-amber-50 p-8 text-center dark:border-amber-900/50 dark:bg-amber-950/30" role="alert">
+                    <p class="text-lg font-medium">Your groups could not be loaded.</p>
+                    <p class="mt-2 text-secondary">Try again without losing your saved groups.</p>
+                    <button type="button" class="app-btn-primary mt-4" (click)="retryGroups()">Retry</button>
+                </div>
+            } @else if (userGroups$().length === 0) {
+                <div class="rounded-2xl border border-dashed border-indigo-300 bg-indigo-50 p-8 text-center dark:border-indigo-800 dark:bg-indigo-950/30">
+                    <app-icon name="users" [size]="36" className="text-indigo-500" aria-hidden="true" />
+                    <p class="mt-3 text-xl font-semibold">Start with the people you play with</p>
+                    <p class="mx-auto mt-2 max-w-xl text-secondary">Create a private group, invite your friends, and add the games you actually own. Invitations you receive appear at the top of this page.</p>
+                    <a routerLink="/create-group" class="app-btn-primary mt-5 inline-block">Create your first group</a>
+                </div>
+            } @else {
+                <div class="grid gap-6 xl:grid-cols-2">
+                    @for (group of userGroups$(); track group.id) {
+                        <app-card-group [group]="group" [invitations]="invitationsGroupIndex$()[group.id]" />
+                    }
+                    <a routerLink="/create-group" class="flex min-h-40 flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-zinc-300 p-6 text-secondary transition hover:border-indigo-400 hover:text-indigo-600 dark:border-zinc-700 dark:hover:border-indigo-600 dark:hover:text-indigo-400">
+                        <app-icon name="circle-plus" [size]="28" aria-hidden="true" />
+                        <span class="font-semibold">Create another group</span>
+                    </a>
+                </div>
+            }
         </section>
-    } @else {
-        @if (hasOverviewError()) {
-            <div class="mb-6 flex flex-col gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900 sm:flex-row sm:items-center sm:justify-between dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200" role="alert">
-                <span>Some group data could not be loaded. Your saved data is unchanged.</span>
-                <button type="button" class="font-semibold underline underline-offset-2" (click)="retryOverview()">Retry</button>
-            </div>
+
+        <!-- What was played lately -->
+        @if (recentlyPlayed().length > 0) {
+            <section aria-labelledby="recent-heading">
+                <div class="mb-4 flex items-end justify-between gap-3">
+                    <h2 id="recent-heading" class="text-xl font-bold">Recently played</h2>
+                    <a routerLink="/play/history" class="text-sm font-semibold text-indigo-600 hover:underline dark:text-indigo-400">Full history</a>
+                </div>
+                <ul class="divide-y divide-zinc-200 rounded-2xl border border-zinc-200 bg-white dark:divide-zinc-800 dark:border-zinc-800 dark:bg-zinc-900">
+                    @for (record of recentlyPlayed(); track record.meetData.id) {
+                        <li>
+                            <a [routerLink]="['/sessions', record.meetData.id]" class="flex flex-col gap-1 p-4 transition hover:bg-zinc-50 sm:flex-row sm:items-center sm:justify-between dark:hover:bg-zinc-800/60">
+                                <span class="min-w-0">
+                                    <span class="block truncate font-semibold">{{ gameTitles(record) || 'No games recorded' }}</span>
+                                    <span class="block text-sm text-secondary">{{ groupName(record.meetData.groupId) }} · {{ peopleCount(record) }} {{ peopleCount(record) === 1 ? 'person' : 'people' }}</span>
+                                </span>
+                                <span class="shrink-0 text-sm text-secondary">{{ record.meetData.meetDate | customDate: false: record.meetData.timezone }}</span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </section>
         }
 
-        @if (userGroupsError()) {
-            <section class="rounded-3xl border border-amber-200 bg-amber-50 p-8 text-center dark:border-amber-900/50 dark:bg-amber-950/30" aria-labelledby="groups-unavailable-heading">
-                <h2 id="groups-unavailable-heading" class="text-xl font-semibold">Your groups are unavailable</h2>
-                <p class="mt-2 text-secondary">We could not load the places where your friends play. Try again when the connection is ready.</p>
-                <button type="button" class="app-btn-primary mt-5" (click)="retryOverview()">Retry</button>
-            </section>
-        } @else if (groupSummaries().length === 0) {
-            <section class="rounded-3xl border border-dashed border-indigo-300 bg-indigo-50 p-8 text-center dark:border-indigo-800 dark:bg-indigo-950/30" aria-labelledby="first-group-heading">
-                <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-600 text-2xl text-white" aria-hidden="true">
-                    <app-icon name="users" [size]="18" />
-                </div>
-                <h2 id="first-group-heading" class="mt-5 text-2xl font-bold">Start with the people you play with</h2>
-                <p class="mx-auto mt-2 max-w-xl leading-7 text-secondary">Create a private group or accept an invitation. Once your group has games and members, Board Vault can help you choose the next game night.</p>
-                <div class="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
-                    <a routerLink="/create-group" class="app-btn-primary text-center">Create your first group</a>
-                    <a routerLink="/groups" class="app-btn-secondary text-center">View invitations</a>
-                </div>
-            </section>
-        } @else {
-            <section aria-labelledby="groups-heading">
-                <div class="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                    <div>
-                        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Your social workspace</p>
-                        <h2 id="groups-heading" class="mt-1 text-2xl font-bold text-zinc-900 dark:text-white">Pick up where your group left off</h2>
-                        <p class="mt-1 text-secondary">Every group has its own library, decisions, sessions, and shared memory.</p>
-                    </div>
-                    <a routerLink="/groups" class="text-sm font-semibold text-indigo-600 hover:underline dark:text-indigo-400">Manage all groups</a>
-                </div>
-
-                <div class="grid gap-5 md:grid-cols-2">
-                    @for (summary of groupSummaries(); track summary.group.id) {
-                        <article class="flex flex-col rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-                            <div class="flex items-start justify-between gap-4">
-                                <div class="min-w-0">
-                                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Group workspace</p>
-                                    <h3 class="mt-2 truncate text-2xl font-bold text-zinc-900 dark:text-white">
-                                        <a [routerLink]="['/groups', summary.group.id]" class="hover:text-indigo-600 hover:underline dark:hover:text-indigo-400">{{ summary.group.name }}</a>
-                                    </h3>
-                                </div>
-                                <span class="shrink-0 rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium text-secondary dark:bg-zinc-800">{{ summary.group.members.length }} member{{ summary.group.members.length === 1 ? '' : 's' }}</span>
-                            </div>
-
-                            <dl class="mt-6 grid grid-cols-2 gap-3">
-                                <div class="rounded-xl bg-zinc-50 p-3 dark:bg-zinc-800/70">
-                                    <dt class="text-xs text-secondary">Shared games</dt>
-                                    <dd class="mt-1 text-xl font-bold">{{ summary.gameCount }}</dd>
-                                </div>
-                                <div class="rounded-xl bg-zinc-50 p-3 dark:bg-zinc-800/70">
-                                    <dt class="text-xs text-secondary">Next session</dt>
-                                    <dd class="mt-1 truncate text-sm font-semibold">
-                                        @if (summary.nextMeeting; as nextMeeting) {
-                                            {{ nextMeeting.meetDate | customDate: true: nextMeeting.timezone }}
-                                        } @else {
-                                            Not planned
-                                        }
-                                    </dd>
-                                </div>
-                            </dl>
-
-                            @if (summary.nextMeeting; as nextMeeting) {
-                                <p class="mt-4 text-sm text-secondary">{{ nextMeeting.status === 'active' ? 'This session is happening now.' : 'Your group has a session on the calendar.' }}</p>
-                            } @else {
-                                <p class="mt-4 text-sm text-secondary">Give the group a date, invite attendees, and make a shortlist.</p>
-                            }
-
-                            <div class="mt-6 flex flex-col gap-2 sm:flex-row">
-                                <a class="app-btn-primary flex-1 text-center" [routerLink]="['/groups', summary.group.id]">Open group</a>
-                                @if (summary.nextMeeting; as nextMeeting) {
-                                    <a class="app-btn-secondary flex-1 text-center" [routerLink]="['/sessions', nextMeeting.id]">Open session</a>
-                                } @else {
-                                    <a class="app-btn-secondary flex-1 text-center" [routerLink]="['/groups', summary.group.id, 'sessions', 'new']">Plan a session</a>
-                                }
-                            </div>
-                            <a class="mt-4 text-center text-sm font-semibold text-indigo-600 hover:underline dark:text-indigo-400" routerLink="/play/recommendations" [queryParams]="{ groupId: summary.group.id }">Find a game for this group</a>
-                        </article>
-                    }
-                </div>
-            </section>
-
-            <section class="mt-10" aria-labelledby="setup-heading">
-                <div class="mb-5">
-                    <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Keep the group useful</p>
-                    <h2 id="setup-heading" class="mt-1 text-2xl font-bold text-zinc-900 dark:text-white">Build the shared context</h2>
-                    <p class="mt-1 text-secondary">Your collection is input; the group’s decisions and play history are the product.</p>
-                </div>
-                <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <!-- Only until the basics exist -->
+        @if (showGettingStarted()) {
+            <section aria-labelledby="setup-heading">
+                <h2 id="setup-heading" class="mb-4 text-xl font-bold">Getting started</h2>
+                <div class="grid gap-4 md:grid-cols-3">
                     <a routerLink="/collection/browse" class="rounded-2xl border border-zinc-200 bg-white p-5 transition hover:border-indigo-300 hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-indigo-700">
-                        <span class="text-indigo-600 dark:text-indigo-400" aria-hidden="true"><app-icon name="circle-plus" [size]="28" /></span>
-                        <h3 class="mt-4 font-semibold">Add games you own</h3>
-                        <p class="mt-2 text-sm leading-6 text-secondary">Games become recommendable when the people attending a night own them.</p>
-                            <span class="mt-4 block text-sm font-semibold text-indigo-600 dark:text-indigo-400">Browse the catalog</span>
+                        <span class="text-indigo-600 dark:text-indigo-400" aria-hidden="true"><app-icon name="circle-plus" [size]="26" /></span>
+                        <h3 class="mt-3 font-semibold">Add the games you own</h3>
+                        <p class="mt-1 text-sm text-secondary">Your collection is private; groups only use it when you decide together.</p>
                     </a>
-                    <a routerLink="/play/history" class="rounded-2xl border border-zinc-200 bg-white p-5 transition hover:border-indigo-300 hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-indigo-700">
-                        <span class="text-indigo-600 dark:text-indigo-400" aria-hidden="true"><app-icon name="history" [size]="28" /></span>
-                        <h3 class="mt-4 font-semibold">Remember what you played</h3>
-                        <p class="mt-2 text-sm leading-6 text-secondary">Record actual games and participants so future suggestions reflect your group.</p>
-                            <span class="mt-4 block text-sm font-semibold text-indigo-600 dark:text-indigo-400">Open history</span>
+                    <a routerLink="/create-group" class="rounded-2xl border border-zinc-200 bg-white p-5 transition hover:border-indigo-300 hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-indigo-700">
+                        <span class="text-indigo-600 dark:text-indigo-400" aria-hidden="true"><app-icon name="users" [size]="26" /></span>
+                        <h3 class="mt-3 font-semibold">Create a group</h3>
+                        <p class="mt-1 text-sm text-secondary">Invite friends, or add them as group people until they have an account.</p>
                     </a>
-                    @if (decisionGroup(); as decisionGroup) {
-                        <a routerLink="/play/recommendations" [queryParams]="{ groupId: decisionGroup.group.id }" class="rounded-2xl border border-zinc-200 bg-white p-5 transition hover:border-indigo-300 hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-indigo-700">
-                            <span class="text-indigo-600 dark:text-indigo-400" aria-hidden="true"><app-icon name="sparkle" [size]="28" /></span>
-                            <h3 class="mt-4 font-semibold">Make the next decision</h3>
-                            <p class="mt-2 text-sm leading-6 text-secondary">Compare explainable suggestions for {{ decisionGroup.group.name }} and the people attending.</p>
-                            <span class="mt-4 block text-sm font-semibold text-indigo-600 dark:text-indigo-400">Choose for {{ decisionGroup.group.name }}</span>
-                        </a>
-                    } @else {
-                        <a routerLink="/groups" class="rounded-2xl border border-zinc-200 bg-white p-5 transition hover:border-indigo-300 hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-indigo-700">
-                            <span class="text-indigo-600 dark:text-indigo-400" aria-hidden="true"><app-icon name="sparkle" [size]="28" /></span>
-                            <h3 class="mt-4 font-semibold">Choose a group first</h3>
-                            <p class="mt-2 text-sm leading-6 text-secondary">Pick the people and shared games before asking what fits the next night.</p>
-                            <span class="mt-4 block text-sm font-semibold text-indigo-600 dark:text-indigo-400">Open your groups</span>
-                        </a>
-                    }
+                    <a routerLink="/play/log-session" class="rounded-2xl border border-zinc-200 bg-white p-5 transition hover:border-indigo-300 hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-indigo-700">
+                        <span class="text-indigo-600 dark:text-indigo-400" aria-hidden="true"><app-icon name="history" [size]="26" /></span>
+                        <h3 class="mt-3 font-semibold">Record a past session</h3>
+                        <p class="mt-1 text-sm text-secondary">Start the group’s history with a night you already played.</p>
+                    </a>
                 </div>
             </section>
         }
-    }
+    </div>
 </container-wrapper>

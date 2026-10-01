@@ -34,12 +34,14 @@ describe('PlayService history', () => {
             getMeetPlayedGamePersonParticipants: jest.fn().mockResolvedValue([]),
         })
         const service = new PlayService(
-            { getPublicUserById: jest.fn().mockResolvedValue({ id: 1, username: 'organizer' }) } as unknown as UsersService,
+            {
+                getPublicUsersByIds: jest.fn().mockResolvedValue(new Map([[1, { id: 1, username: 'organizer' }]])),
+            } as unknown as UsersService,
             database,
-            { getGameById: jest.fn().mockResolvedValue({ id: 42, imageUrl: 'image' }) } as unknown as GamesService,
+            { getGamesByIds: jest.fn().mockResolvedValue(new Map([[42, { id: 42, imageUrl: 'image' }]])) } as unknown as GamesService,
             meets as unknown as MeetsService,
             meetAccountGames as unknown as MeetAccountGamesService,
-            { getGameTranslations: jest.fn().mockResolvedValue({ en: 'Game' }) } as unknown as GameTranslationService,
+            { getTranslationsByGameIds: jest.fn().mockResolvedValue(new Map([[42, { en: 'Game' }]])) } as unknown as GameTranslationService,
         )
 
         await expect(service.getUserGamesHistory(1)).resolves.toHaveLength(1)

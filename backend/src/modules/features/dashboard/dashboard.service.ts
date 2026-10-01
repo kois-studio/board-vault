@@ -13,12 +13,13 @@ import { MeetAccountGamesService } from '../../core/meet-account-games/meet-acco
 import { MeetsService } from '../../core/meets/meets.service'
 import { ReviewsService } from '../../core/reviews/reviews.service'
 import { UsersService } from '../../core/users/users.service'
+import { buildHistoryRecords } from '../play/history-records'
 
 import type { SuccessDto } from '../../../common/types/auth.type'
 import type { CreatedGroupDto, GroupMemberWithGames, GroupWithMembersAndGames } from '../../../common/types/group.type'
 import type { UserStatsDto, UserProposalStatsDto } from '../../../common/types/stats.type'
 import type { UserPublicWithGames } from '../../../common/types/user.type'
-import type { HistoryPersonDto, HistoryRecordDto } from '../play/play.types'
+import type { HistoryRecordDto } from '../play/play.types'
 
 @Injectable()
 export class DashboardService {
@@ -53,40 +54,49 @@ export class DashboardService {
     @LogFeature(new Logger('DashboardService'))
     async getGroupsOfUser(userId: number): Promise<Array<GroupWithMembersAndGames>> {
         const memberships = await this.groupMembershipsService.getGroupMembershipsByAccountId(userId)
-        const groupsWithMembers = await Promise.all(
-            memberships.map(async membership => {
-                // the group data
-                const group = await this.groupsService.getGroupById(membership.groupId)
-                // the members of the group
-                const _memberships = await this.groupMembershipsService.getGroupMembershipsByGroupId(membership.groupId)
-                const members: Array<GroupMemberWithGames> = await Promise.all(
-                    _memberships.map(async _membership => {
-                        const user = await this.usersService.getPublicUserById(_membership.accountId)
-                        const gamesOwned = await this.gamesOwnedService.getGamesOwnedByAccountId(_membership.accountId)
-                        const games = await Promise.all(gamesOwned.map(game => this.gamesService.getGameById(game.gameId)))
-                        const gamesWithTranslations = await Promise.all(
-                            games.map(async game => ({
-                                ...game,
-                                titleTranslations: await this.gameTranslationService.getGameTranslations(game.id),
-                            })),
-                        )
-
-                        const userWithGames: UserPublicWithGames = { ...user, games: gamesWithTranslations }
-                        const userReviews = await this.reviewsService.getGameReviewsByAccountId(_membership.accountId)
-
-                        return {
-                            ...userWithGames,
-                            joinedAt: _membership.joinedAt,
-                            reviews: userReviews,
-                        }
-                    }),
-                )
-
-                return { ...group, members }
-            }),
+        const groups = await Promise.all(
+            memberships.map(async membership => ({
+                group: await this.groupsService.getGroupById(membership.groupId),
+                memberships: await this.groupMembershipsService.getGroupMembershipsByGroupId(membership.groupId),
+            })),
         )
 
-        return groupsWithMembers
+        // Load every member, game, and translation once, in set-based queries,
+        // instead of once per group, member, and game.
+        const memberIds = [...new Set(groups.flatMap(entry => entry.memberships.map(item => item.accountId)))]
+        const [users, ownedByMember, reviewsByMember] = await Promise.all([
+            this.usersService.getPublicUsersByIds(memberIds),
+            Promise.all(memberIds.map(async id => [id, await this.gamesOwnedService.getGamesOwnedByAccountId(id)] as const)).then(
+                entries => new Map(entries),
+            ),
+            Promise.all(memberIds.map(async id => [id, await this.reviewsService.getGameReviewsByAccountId(id)] as const)).then(
+                entries => new Map(entries),
+            ),
+        ])
+        const gameIds = [...ownedByMember.values()].flat().map(owned => owned.gameId)
+        const [games, translations] = await Promise.all([
+            this.gamesService.getGamesByIds(gameIds),
+            this.gameTranslationService.getTranslationsByGameIds(gameIds),
+        ])
+
+        return groups.map(({ group, memberships: groupMemberships }) => ({
+            ...group,
+            members: groupMemberships
+                .filter(membership => users.has(membership.accountId))
+                .map(membership => {
+                    const ownedGames = (ownedByMember.get(membership.accountId) ?? [])
+                        .map(owned => games.get(owned.gameId))
+                        .filter(game => game !== undefined)
+                        .map(game => ({ ...game, titleTranslations: translations.get(game.id) ?? { en: '', es: '' } }))
+                    const userWithGames: UserPublicWithGames = { ...users.get(membership.accountId)!, games: ownedGames }
+
+                    return {
+                        ...userWithGames,
+                        joinedAt: membership.joinedAt,
+                        reviews: reviewsByMember.get(membership.accountId) ?? [],
+                    } satisfies GroupMemberWithGames
+                }),
+        }))
     }
 
     @LogFeature(new Logger('DashboardService'))
@@ -119,64 +129,13 @@ export class DashboardService {
     async getGroupMeetings(userId: number, groupId: number): Promise<Array<HistoryRecordDto>> {
         const groupMeetings = (await this.meetsService.getMeetsByGroupId(groupId)).filter(meet => meet.status === 'completed')
 
-        return await Promise.all(
-            groupMeetings.map(async meetData => {
-                const attendedByIds = await this.databaseService.sessions.getMeetAttendedAccountIds(meetData.id)
-                const attendedByPersonIds = await this.databaseService.sessions.getMeetAttendedPersonIds(meetData.id)
-                const groupPeople = await this.databaseService.groups.getGroupPeople(groupId)
-                const peopleById = new Map(
-                    groupPeople.rows.map(row => [
-                        Number(row[0]),
-                        { id: Number(row[0]), displayName: String(row[5]), avatar: this.parseAvatar(row[6]) },
-                    ]),
-                )
-                const gameIds = await this.databaseService.sessions.getPlayedGameIdsByMeetId(meetData.id)
-                const gamesPlayed = await Promise.all(
-                    gameIds.map(async gameId => {
-                        const game = await this.gamesService.getGameById(gameId)
-                        const gameTranslations = await this.gameTranslationService.getGameTranslations(gameId)
-                        const playedByIds = await this.meetAccountGamesService.getDistinctAccountIdsByMeetIdAndGameId(meetData.id, gameId)
-                        const playedByPersonIds =
-                            (await this.databaseService.sessions.getMeetPlayedGamePersonParticipants(meetData.id)).find(
-                                game => game.gameId === gameId,
-                            )?.participantIds ?? []
-                        const playedByData = await Promise.all(
-                            playedByIds.map(async accountId => this.usersService.getPublicUserById(accountId)),
-                        )
-
-                        return {
-                            gameData: {
-                                ...game,
-                                titleTranslations: gameTranslations,
-                            },
-                            playedBy: playedByData,
-                            playedByPeople: playedByPersonIds
-                                .map(personId => peopleById.get(personId))
-                                .filter((person): person is HistoryPersonDto => person !== undefined),
-                        }
-                    }),
-                )
-
-                return {
-                    meetData,
-                    gamesPlayed,
-                    attendedBy: await Promise.all(attendedByIds.map(async accountId => this.usersService.getPublicUserById(accountId))),
-                    attendedByPeople: attendedByPersonIds
-                        .map(personId => peopleById.get(personId))
-                        .filter((person): person is HistoryPersonDto => person !== undefined),
-                }
-            }),
-        )
-    }
-
-    private parseAvatar(value: unknown) {
-        if (value === null || value === undefined || value === '') return null
-        if (typeof value === 'object') return value
-        try {
-            return JSON.parse(String(value))
-        } catch {
-            return null
-        }
+        return buildHistoryRecords(groupMeetings, {
+            databaseService: this.databaseService,
+            gamesService: this.gamesService,
+            gameTranslationService: this.gameTranslationService,
+            usersService: this.usersService,
+            meetAccountGamesService: this.meetAccountGamesService,
+        })
     }
 
     @LogFeature(new Logger('DashboardService'))

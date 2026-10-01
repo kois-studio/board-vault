@@ -9,7 +9,7 @@ test.describe('authenticated core navigation', () => {
     test('opens the dashboard overview', async ({ page }) => {
         await page.goto('/dashboard')
 
-        await expect(page.getByRole('heading', { name: 'Your game groups' })).toBeVisible()
+        await expect(page.getByRole('heading', { name: 'Your groups' })).toBeVisible()
         await expect(page.locator('body')).toContainText(/Start with the people you play with|Pick up where your group left off/i)
     })
 
@@ -17,18 +17,20 @@ test.describe('authenticated core navigation', () => {
         await page.goto('/dashboard')
 
         await expect(page.getByRole('link', { name: 'Create a group', exact: true })).toHaveAttribute('href', '/create-group')
-        await expect(page.locator('a[href="/groups"]').first()).toBeVisible()
+        await expect(page.getByRole('heading', { name: 'Your groups' })).toBeVisible()
+        await expect(page.getByRole('navigation', { name: 'Section navigation' }).getByRole('link')).toHaveText(['Home', 'Collection', 'Play'])
     })
 
     test('opens groups and collection entry points', async ({ page }) => {
+        // Groups live on Home; the old URL redirects there.
         await page.goto('/groups')
 
-        await expect(page.getByRole('heading', { name: /My Groups/i })).toBeVisible()
-        await expect(page.getByRole('button', { name: /Create Group/i })).toBeVisible()
+        await expect(page).toHaveURL(/\/dashboard$/)
+        await expect(page.getByRole('heading', { name: 'Your groups' })).toBeVisible()
 
         await page.goto('/collection')
 
-        await expect(page.getByRole('heading', { name: 'My shelf' })).toBeVisible()
+        await expect(page.getByRole('heading', { name: 'Collection' })).toBeVisible()
         await expect(page.getByRole('link', { name: /Browse games/i }).first()).toBeVisible()
     })
 
@@ -36,7 +38,7 @@ test.describe('authenticated core navigation', () => {
         await page.goto('/groups/999999')
 
         await expect(page.getByRole('alert')).toContainText('This group is not available')
-        await expect(page.getByRole('link', { name: 'Back to groups', exact: true })).toHaveAttribute('href', '/groups')
+        await expect(page.getByRole('link', { name: 'Back to groups', exact: true })).toHaveAttribute('href', '/dashboard')
     })
 
     test('gives image-only group game links accessible names', async ({ page }) => {
@@ -95,7 +97,7 @@ test.describe('authenticated core navigation', () => {
         await page.goto('/play/history?groupId=999999')
 
         await expect(page.getByRole('alert')).toContainText('That group is not available')
-        await expect(page.getByRole('link', { name: 'Back to your groups', exact: true })).toHaveAttribute('href', '/groups')
+        await expect(page.getByRole('link', { name: 'Back to your groups', exact: true })).toHaveAttribute('href', '/dashboard')
     })
 
     test('opens explainable game recommendations', async ({ page }) => {

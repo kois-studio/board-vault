@@ -6,7 +6,7 @@
                 <h2 class="mt-2 truncate text-2xl font-bold tracking-tight">
                     <a [routerLink]="['/groups', group.id]" class="rounded-sm hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-white">{{ group.name }}</a>
                 </h2>
-                <p class="mt-2 text-sm text-indigo-100">{{ group.members.length }} people · {{ totalGames.length }} shared games</p>
+                <p class="mt-2 text-sm text-indigo-100">{{ group.members.length }} {{ group.members.length === 1 ? 'person' : 'people' }} · {{ totalGames.length }} shared game{{ totalGames.length === 1 ? '' : 's' }}</p>
             </div>
             <app-icon name="users" [size]="24" className="mt-1 text-indigo-200" aria-hidden="true" />
         </div>

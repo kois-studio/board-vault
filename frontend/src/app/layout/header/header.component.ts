@@ -29,11 +29,8 @@ export class LayoutHeaderComponent {
 
     public readonly mobileNavigation = [
         { path: '/dashboard', label: 'Home', icon: 'home' },
-        { path: '/groups', label: 'Groups', icon: 'users' },
-        { path: '/collection/games', label: 'My shelf', icon: 'library' },
+        { path: '/collection', label: 'Collection', icon: 'library' },
         { path: '/play', label: 'Play', icon: 'dice' },
-        { path: '/play/history', label: 'Memories', icon: 'clock' },
-        { path: '/settings', label: 'Settings', icon: 'settings' },
     ]
 
     public readonly mobilePublicNavigation = [

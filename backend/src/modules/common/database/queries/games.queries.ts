@@ -143,6 +143,20 @@ export class GameQueries {
         })
     }
 
+    getGamesByIds(ids: Array<number>) {
+        return this.database.execute({
+            sql: `SELECT * FROM Game WHERE id IN (${ids.map(() => '?').join(', ')})`,
+            args: ids,
+        })
+    }
+
+    getGameTranslationsByGameIds(gameIds: Array<number>) {
+        return this.database.execute({
+            sql: `SELECT * FROM GameTranslation WHERE gameId IN (${gameIds.map(() => '?').join(', ')})`,
+            args: gameIds,
+        })
+    }
+
     getGameTranslations(gameId: number) {
         return this.database.execute({
             sql: 'SELECT * FROM GameTranslation WHERE gameId = ?',

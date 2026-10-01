@@ -38,15 +38,15 @@ describe('DashboardService group history', () => {
         }
 
         const service = new DashboardService(
-            {} as never,
+            { getPublicUsersByIds: jest.fn().mockResolvedValue(new Map()) } as never,
             fakeDatabase(database),
             {} as never,
             {} as never,
             {} as never,
-            {} as never,
+            { getGamesByIds: jest.fn().mockResolvedValue(new Map()) } as never,
             {} as never,
             meets as never,
-            {} as never,
+            { getTranslationsByGameIds: jest.fn().mockResolvedValue(new Map()) } as never,
             meetAccountGames as never,
             {} as never,
             {} as never,
@@ -80,5 +80,52 @@ describe('DashboardService group creation', () => {
 
         await expect(service.createGroup(7, 'Friday Crew')).resolves.toEqual({ success: true, groupId: 42 })
         expect(database.createGroupWithMembership).toHaveBeenCalledWith({ name: 'Friday Crew', createdBy: 7 })
+    })
+})
+
+describe('DashboardService groups overview', () => {
+    it('loads members, games, and titles once, however many games members own', async () => {
+        const owned = (accountId: number) => [1, 2, 3].map(n => ({ accountId, gameId: accountId * 10 + n }))
+        const users = {
+            getPublicUsersByIds: jest.fn(async (ids: Array<number>) => new Map(ids.map(id => [id, { id, username: `u${id}` }]))),
+        }
+        const games = {
+            getGamesByIds: jest.fn(async (ids: Array<number>) => new Map(ids.map(id => [id, { id, imageUrl: '' }]))),
+            getGameById: jest.fn(),
+        }
+        const translations = {
+            getTranslationsByGameIds: jest.fn(async (ids: Array<number>) => new Map(ids.map(id => [id, { en: `Game ${id}`, es: '' }]))),
+            getGameTranslations: jest.fn(),
+        }
+        const service = new DashboardService(
+            users as never,
+            fakeDatabase({}),
+            { getGroupById: jest.fn(async (id: number) => ({ id, name: `Group ${id}`, createdBy: 1 })) } as never,
+            {
+                getGroupMembershipsByAccountId: jest.fn().mockResolvedValue([{ groupId: 1 }, { groupId: 2 }]),
+                getGroupMembershipsByGroupId: jest.fn().mockResolvedValue([
+                    { accountId: 1, joinedAt: '2026-01-01' },
+                    { accountId: 2, joinedAt: '2026-01-02' },
+                ]),
+            } as never,
+            { getGamesOwnedByAccountId: jest.fn(async (id: number) => owned(id)) } as never,
+            games as never,
+            { getGameReviewsByAccountId: jest.fn().mockResolvedValue([]) } as never,
+            {} as never,
+            translations as never,
+            {} as never,
+            {} as never,
+            {} as never,
+        )
+
+        const groups = await service.getGroupsOfUser(1)
+
+        expect(groups).toHaveLength(2)
+        expect(groups[0].members[1].games.map(game => game.titleTranslations.en)).toEqual(['Game 21', 'Game 22', 'Game 23'])
+        expect(users.getPublicUsersByIds).toHaveBeenCalledTimes(1)
+        expect(games.getGamesByIds).toHaveBeenCalledTimes(1)
+        expect(translations.getTranslationsByGameIds).toHaveBeenCalledTimes(1)
+        expect(games.getGameById).not.toHaveBeenCalled()
+        expect(translations.getGameTranslations).not.toHaveBeenCalled()
     })
 })

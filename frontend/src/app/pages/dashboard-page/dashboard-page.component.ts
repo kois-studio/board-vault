@@ -1,5 +1,9 @@
 import { Component, computed, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
+import type { HistoryRecordType } from '../../api/api.types'
+import { CardGroupComponent } from '../../components/card-group/card-group.component'
+import { CardInvitationComponent } from '../../components/card-invitation/card-invitation.component'
+import { SkeletonCardGroupComponent } from '../../components/skeletons/skeleton-card-group/skeleton-card-group.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { IconComponent } from '../../components/ui/icon/icon.component'
 import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'
@@ -8,41 +12,90 @@ import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
 
+/**
+ * Home: the signed-in starting point. Groups live here (there is no separate
+ * groups page), together with what is coming up and what was played lately.
+ */
 @Component({
-    imports: [RouterLink, ContainerWrapperComponent, PageHeaderComponent, CustomDatePipe, IconComponent],
+    imports: [
+        RouterLink,
+        ContainerWrapperComponent,
+        PageHeaderComponent,
+        CustomDatePipe,
+        IconComponent,
+        CardGroupComponent,
+        CardInvitationComponent,
+        SkeletonCardGroupComponent,
+    ],
     templateUrl: 'dashboard-page.component.html',
 })
 export class DashboardPageComponent {
     private readonly dataService = inject(DataService)
     private readonly loadingService = inject(LoadingService)
 
+    public readonly currentUser$ = this.dataService.currentUser
     public readonly userGroups$ = this.dataService.userGroups
-    public readonly userMeets$ = this.dataService.userMeets
     public readonly userGroupsError = this.dataService.userGroupsError
     public readonly userMeetsError = this.dataService.userMeetsError
-    public readonly groupSummaries = computed(() => {
-        return this.userGroups$().map((group) => {
-            const nextMeeting =
-                this.userMeets$()
-                    .filter((meet) => meet.groupId === group.id && (meet.status === 'scheduled' || meet.status === 'active'))
-                    .sort((a, b) => new Date(a.meetDate).getTime() - new Date(b.meetDate).getTime())[0] ?? null
+    public readonly userInvitations$ = this.dataService.userInvitations
+    public readonly userInvitationsError = this.dataService.userInvitationsError
+    public readonly isLoadingInvitations = this.dataService.userInvitationsLoading
+    public readonly invitationsGroupIndex$ = this.dataService.invitationsGroupIndex
 
-            return {
-                group,
-                nextMeeting,
-                gameCount: new Set(group.members.flatMap((member) => member.games.map((game) => game.id))).size,
-            }
-        })
-    })
-    public readonly decisionGroup = computed(() => this.groupSummaries().find((summary) => summary.gameCount > 0) ?? null)
-    public readonly isLoadingOverview = computed(() => {
-        const loading = this.loadingService.loadingStatesIndex()
-        return loading[LOADING_KEYS.USER_GROUPS] || loading[LOADING_KEYS.USER_MEETS]
-    })
-    public readonly hasOverviewError = computed(() => this.userGroupsError() || this.userMeetsError())
+    private readonly loading = computed(() => this.loadingService.loadingStatesIndex())
+    public readonly isLoadingGroups = computed(() => this.loading()[LOADING_KEYS.USER_GROUPS])
+    public readonly isLoadingMeets = computed(() => this.loading()[LOADING_KEYS.USER_MEETS])
+    public readonly isLoadingHistory = computed(() => this.loading()[LOADING_KEYS.USER_GAMES_HISTORY])
 
-    public retryOverview() {
+    public readonly greetingName = computed(() => {
+        const user = this.currentUser$()
+        return user?.displayName || user?.username || ''
+    })
+
+    private readonly groupNames = computed(() => new Map(this.userGroups$().map((group) => [group.id, group.name])))
+    public groupName(groupId: number): string {
+        return this.groupNames().get(groupId) ?? 'Your group'
+    }
+
+    /** The next three planned or running sessions across every group. */
+    public readonly upcomingSessions = computed(() => {
+        const now = Date.now() - 6 * 60 * 60 * 1000 // keep tonight's session visible for a few hours
+        return this.dataService
+            .userMeets()
+            .filter((meet) => (meet.status === 'scheduled' || meet.status === 'active') && new Date(meet.meetDate).getTime() >= now)
+            .sort((a, b) => new Date(a.meetDate).getTime() - new Date(b.meetDate).getTime())
+            .slice(0, 3)
+    })
+
+    /** The last three sessions you played, newest first. */
+    public readonly recentlyPlayed = computed(() =>
+        [...this.dataService.userHistory()]
+            .sort((a, b) => new Date(b.meetData.meetDate).getTime() - new Date(a.meetData.meetDate).getTime())
+            .slice(0, 3),
+    )
+
+    public readonly firstGroupId = computed(() => this.userGroups$()[0]?.id ?? null)
+    public readonly hasGames = computed(() => this.dataService.userGames().length > 0)
+    /** Onboarding tips only make sense until the basics exist. */
+    public readonly showGettingStarted = computed(
+        () => !this.isLoadingGroups() && !this.userGroupsError() && (this.userGroups$().length === 0 || !this.hasGames()),
+    )
+
+    /** Group people include members' own entries, so prefer them over accounts. */
+    public peopleCount(record: HistoryRecordType): number {
+        return record.attendedByPeople?.length || record.attendedBy.length
+    }
+
+    public gameTitles(record: HistoryRecordType): string {
+        return record.gamesPlayed.map((game) => game.gameData.titleTranslations.en ?? 'Untitled').join(', ')
+    }
+
+    public retryGroups() {
         this.dataService.refreshUserGroups()
         this.dataService.refreshUserMeets()
+    }
+
+    public retryInvitations() {
+        this.dataService.retryUserInvitations()
     }
 }

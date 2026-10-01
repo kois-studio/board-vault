@@ -1,64 +1,40 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core'
-import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router'
+import { NavigationEnd, Router, RouterLink } from '@angular/router'
 import { filter } from 'rxjs/operators'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { IconComponent } from '../../components/ui/icon/icon.component'
 
+type Section = {
+    path: string
+    name: string
+    /** URL prefixes that belong to this section (besides its own path). */
+    owns: Array<string>
+    subsections?: Array<{ path: string; icon: string; name: string }>
+}
+
 /**
- * Top bar - is like a second header under the main header
- * used to display user profile and other options
+ * The three main sections, under the header. Settings lives in the profile
+ * menu, not here.
  */
 @Component({
-    imports: [RouterLink, RouterLinkActive, ContainerWrapperComponent, IconComponent],
+    imports: [RouterLink, ContainerWrapperComponent, IconComponent],
     selector: 'app-layout-top-bar',
     templateUrl: 'top-bar.component.html',
 })
 export class LayoutTopBarComponent implements OnInit {
     public readonly router = inject(Router)
 
-    // --------------------------------------------------------------------------
-    //        Signals
-    // --------------------------------------------------------------------------
-    public readonly currentUrl$ = signal<string | null>(null)
-    public readonly topBarModeComputed = computed(() => {
-        // 0 -> shows sections, but no subsections
-        // 1 -> shows sections[0] and its subsections (dashboard doesn't have any)
-        // 2 -> shows sections[1] and its subsections
-        // 3-> shows sections[2] and its subsections
-        const currentUrl = this.currentUrl$()?.split(/[?#]/)[0]
-        if (!currentUrl) {
-            return 0
-        }
-
-        return (
-            {
-                '/dashboard': 0,
-                '/collection': 0,
-                '/collection/games': 2,
-                '/collection/browse': 2,
-                '/collection/reviews': 2,
-                '/collection/wishlist': 2,
-                '/play': 0,
-                '/play/upcoming-sessions': 3,
-                '/play/recommendations': 3,
-                '/play/history': 0,
-                '/settings': 0,
-            }[currentUrl] ?? 0
-        )
-    })
-
-    public readonly sections = [
+    public readonly sections: Array<Section> = [
         {
             path: 'dashboard',
             name: 'Home',
-        },
-        {
-            path: 'groups',
-            name: 'Groups',
+            // Groups and everything inside them live under Home.
+            owns: ['/groups'],
         },
         {
             path: 'collection',
-            name: 'My shelf',
+            name: 'Collection',
+            owns: ['/games'],
             subsections: [
                 { path: 'collection/games', icon: 'collection-fill', name: 'My Games' },
                 { path: 'collection/browse', icon: 'search', name: 'Browse' },
@@ -69,35 +45,31 @@ export class LayoutTopBarComponent implements OnInit {
         {
             path: 'play',
             name: 'Play',
+            owns: ['/sessions', '/meets'],
             subsections: [
                 { path: 'play/upcoming-sessions', icon: 'calendar-check-fill', name: 'Upcoming' },
                 { path: 'play/recommendations', icon: 'hand-thumbs-up', name: 'Discover' },
+                { path: 'play/history', icon: 'history', name: 'History' },
             ],
-        },
-        {
-            path: 'play/history',
-            name: 'Memories',
-        },
-        {
-            path: 'settings',
-            name: 'Settings',
         },
     ]
 
-    public isSectionActive(path: string): boolean {
-        const currentUrl = this.currentUrl$()?.split(/[?#]/)[0] ?? ''
-        if (path === 'play') return currentUrl === '/play' || (currentUrl.startsWith('/play/') && !currentUrl.startsWith('/play/history'))
-        if (path === 'collection' || path === 'groups') return currentUrl === `/${path}` || currentUrl.startsWith(`/${path}/`)
-        return currentUrl === `/${path}`
+    public readonly currentUrl$ = signal<string>('')
+    public readonly activeSection = computed(() => {
+        const url = this.currentUrl$().split(/[?#]/)[0]
+        const matches = (prefix: string) => url === prefix || url.startsWith(`${prefix}/`)
+        return this.sections.find((section) => matches(`/${section.path}`) || section.owns.some(matches)) ?? null
+    })
+
+    public isSubsectionActive(path: string): boolean {
+        const url = this.currentUrl$().split(/[?#]/)[0]
+        return url === `/${path}` || url.startsWith(`/${path}/`)
     }
 
     ngOnInit() {
-        // Initialize based on current route
         this.currentUrl$.set(this.router.url)
-
-        // Update whenever navigation completes
         this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((event: NavigationEnd) => {
-            this.currentUrl$.set(event.url)
+            this.currentUrl$.set(event.urlAfterRedirects)
         })
     }
 }

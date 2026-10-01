@@ -8,9 +8,10 @@ import { MeetAccountGamesService } from '../../core/meet-account-games/meet-acco
 import { MeetsService } from '../../core/meets/meets.service'
 import { UsersService } from '../../core/users/users.service'
 
+import { buildHistoryRecords } from './history-records'
+
 import type {
     HistoryRecordDto,
-    HistoryPersonDto,
     RecommendationDto,
     RecommendationFeedbackBody,
     ParticipantRecommendationFeedbackBody,
@@ -489,64 +490,18 @@ export class PlayService {
 
     @LogFeature(new Logger('PlayService'))
     async getUserGamesHistory(userId: number): Promise<Array<HistoryRecordDto>> {
-        const meetsYouParticipatedIn = await this.databaseService.sessions.getDistinctCompletedMeetIdsForAccountHistory(userId)
-
-        const history = await Promise.all(
-            meetsYouParticipatedIn.map(async meetId => {
-                const meetData = await this.meetsService.getMeetById(meetId, userId)
-
-                if (meetData.status !== 'completed') {
-                    return null
-                }
-
-                const attendedByIds = await this.databaseService.sessions.getMeetAttendedAccountIds(meetId)
-                const attendedByPersonIds = await this.databaseService.sessions.getMeetAttendedPersonIds(meetId)
-                const groupPeople = await this.databaseService.groups.getGroupPeople(meetData.groupId)
-                const peopleById = new Map(
-                    groupPeople.rows.map(row => [
-                        Number(row[0]),
-                        { id: Number(row[0]), displayName: String(row[5]), avatar: this.parseAvatar(row[6]) },
-                    ]),
-                )
-                const gameIds = await this.databaseService.sessions.getPlayedGameIdsByMeetId(meetId)
-                const gamesPlayed = await Promise.all(
-                    gameIds.map(async gameId => {
-                        const game = await this.gamesService.getGameById(gameId)
-                        const gameTranslations = await this.gameTranslationService.getGameTranslations(gameId)
-                        const playedByIds = await this.meetAccountGamesService.getDistinctAccountIdsByMeetIdAndGameId(meetId, gameId)
-                        const playedByPersonIds =
-                            (await this.databaseService.sessions.getMeetPlayedGamePersonParticipants(meetId)).find(
-                                game => game.gameId === gameId,
-                            )?.participantIds ?? []
-                        const playedByData = await Promise.all(
-                            playedByIds.map(async accountId => this.usersService.getPublicUserById(accountId)),
-                        )
-
-                        return {
-                            gameData: {
-                                ...game,
-                                titleTranslations: gameTranslations,
-                            },
-                            playedBy: playedByData,
-                            playedByPeople: playedByPersonIds
-                                .map(personId => peopleById.get(personId))
-                                .filter((person): person is HistoryPersonDto => person !== undefined),
-                        }
-                    }),
-                )
-
-                return {
-                    meetData,
-                    gamesPlayed,
-                    attendedBy: await Promise.all(attendedByIds.map(async accountId => this.usersService.getPublicUserById(accountId))),
-                    attendedByPeople: attendedByPersonIds
-                        .map(personId => peopleById.get(personId))
-                        .filter((person): person is HistoryPersonDto => person !== undefined),
-                }
-            }),
+        const meetIds = await this.databaseService.sessions.getDistinctCompletedMeetIdsForAccountHistory(userId)
+        const meets = (await Promise.all(meetIds.map(meetId => this.meetsService.getMeetById(meetId, userId)))).filter(
+            meet => meet.status === 'completed',
         )
 
-        return history.filter(record => record !== null) as Array<HistoryRecordDto>
+        return buildHistoryRecords(meets, {
+            databaseService: this.databaseService,
+            gamesService: this.gamesService,
+            gameTranslationService: this.gameTranslationService,
+            usersService: this.usersService,
+            meetAccountGamesService: this.meetAccountGamesService,
+        })
     }
 
     @LogFeature(new Logger('PlayService'))
@@ -554,15 +509,5 @@ export class PlayService {
         const meets = await this.meetsService.getMeetsForAccount(userId)
 
         return meets.sort((a, b) => new Date(b.meetDate).getTime() - new Date(a.meetDate).getTime())
-    }
-
-    private parseAvatar(value: unknown): AvatarDto | null {
-        if (value === null || value === undefined || value === '') return null
-        if (typeof value === 'object') return value as AvatarDto
-        try {
-            return JSON.parse(String(value)) as AvatarDto
-        } catch {
-            return null
-        }
     }
 }

@@ -1,27 +1,23 @@
 <container-wrapper>
     <nav class="flex items-center justify-start gap-2 overflow-x-auto border-b border-zinc-200 dark:border-zinc-700 md:justify-center md:gap-4" aria-label="Section navigation">
-        @for (section of sections; track $index) {
+        @for (section of sections; track section.path) {
             <a
                 [routerLink]="section.path"
-                routerLinkActive="border-b-2 border-black dark:border-white"
-                [routerLinkActiveOptions]="{ exact: section.path === 'dashboard' || section.path === 'play' || section.path === 'play/history' || section.path === 'settings' }"
-                [attr.aria-current]="isSectionActive(section.path) ? 'page' : null"
-                class="block min-h-11 whitespace-nowrap px-4 py-3 text-sm font-medium"
+                [attr.aria-current]="activeSection() === section ? 'page' : null"
+                class="block min-h-11 whitespace-nowrap px-4 py-3 text-sm font-medium {{ activeSection() === section ? 'border-b-2 border-black dark:border-white' : '' }}"
             >{{ section.name }}</a>
         }
     </nav>
 </container-wrapper>
 
-<!-- 0 is "no subsections" mode -->
-@if (topBarModeComputed() > 0) {
+@if (activeSection()?.subsections; as subsections) {
     <div class="container mx-auto max-w-6xl px-4">
         <nav class="flex items-center justify-start gap-2 overflow-x-auto md:justify-center md:gap-4" aria-label="Subsection navigation">
-            @for (subsection of sections[topBarModeComputed() - 1].subsections; track $index) {
+            @for (subsection of subsections; track subsection.path) {
                 <a
                     [routerLink]="subsection.path"
-                    routerLinkActive="border-b-2 border-black dark:border-white"
-                    [attr.aria-current]="router.isActive('/' + subsection.path, false) ? 'page' : null"
-                    class="flex min-h-11 items-center gap-2 whitespace-nowrap px-3 py-3 text-sm font-medium md:px-5"
+                    [attr.aria-current]="isSubsectionActive(subsection.path) ? 'page' : null"
+                    class="flex min-h-11 items-center gap-2 whitespace-nowrap px-3 py-3 text-sm font-medium md:px-5 {{ isSubsectionActive(subsection.path) ? 'border-b-2 border-black dark:border-white' : '' }}"
                 >
                     <app-icon [name]="subsection.icon" [size]="16" />
                     {{ subsection.name }}
