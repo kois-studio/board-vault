@@ -34,7 +34,9 @@ describe('PlayService history', () => {
             getMeetPlayedGamePersonParticipants: jest.fn().mockResolvedValue([]),
         })
         const service = new PlayService(
-            { getPublicUsersByIds: jest.fn().mockResolvedValue(new Map([[1, { id: 1, username: 'organizer' }]])) } as unknown as UsersService,
+            {
+                getPublicUsersByIds: jest.fn().mockResolvedValue(new Map([[1, { id: 1, username: 'organizer' }]])),
+            } as unknown as UsersService,
             database,
             { getGamesByIds: jest.fn().mockResolvedValue(new Map([[42, { id: 42, imageUrl: 'image' }]])) } as unknown as GamesService,
             meets as unknown as MeetsService,
