@@ -274,7 +274,8 @@ export class AdminService {
         // Create the new game
         const gameData = {
             title: proposal.title,
-            imageUrl: approvalData.imageUrl ?? proposal.imageUrl ?? 'https://via.placeholder.com/300x200?text=No+Image',
+            // Empty means no artwork; the frontend shows its own placeholder.
+            imageUrl: approvalData.imageUrl ?? proposal.imageUrl ?? '',
             gameAvgDuration: approvalData.gameAvgDuration ?? proposal.gameAvgDuration ?? 60,
             minPlayers: approvalData.minPlayers ?? proposal.minPlayers ?? 2,
             maxPlayers: approvalData.maxPlayers ?? proposal.maxPlayers ?? 4,

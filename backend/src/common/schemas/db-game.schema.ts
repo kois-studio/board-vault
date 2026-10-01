@@ -2,7 +2,8 @@ import { z } from 'zod'
 
 export const gameSchema = z.object({
     id: z.number().int().nonnegative(),
-    imageUrl: z.string().url(),
+    // Empty when a game has no artwork.
+    imageUrl: z.string().url().or(z.literal('')),
     gameAvgDuration: z.number().int().nonnegative(),
     minPlayers: z.number().int().nonnegative(),
     maxPlayers: z.number().int().nonnegative(),
