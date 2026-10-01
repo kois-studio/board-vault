@@ -11,7 +11,7 @@
                 <h2 id="play-group-start-heading" class="mt-2 text-2xl font-bold text-zinc-900 dark:text-white">Which group are you planning for?</h2>
                 <p class="mt-2 max-w-2xl text-sm leading-6 text-secondary">Recommendations are group decisions. Pick the shared space first, then use its collection and memory to decide what fits tonight.</p>
             </div>
-            <a class="app-btn-secondary shrink-0 text-center" routerLink="/groups">See all groups</a>
+            <a class="app-btn-secondary shrink-0 text-center" routerLink="/dashboard">See all groups</a>
         </div>
 
         @if (userGroups$().length === 0) {
@@ -20,7 +20,7 @@
                 <p class="mt-1 text-sm text-secondary">Your friends, shared games, and play history are the context Board Vault uses to help.</p>
                 <div class="mt-4 flex flex-wrap gap-3">
                     <a class="app-btn-primary" routerLink="/create-group">Create a group</a>
-                    <a class="app-btn-secondary" routerLink="/groups">View invitations</a>
+                    <a class="app-btn-secondary" routerLink="/dashboard">View invitations</a>
                 </div>
             </div>
         } @else {
@@ -82,7 +82,7 @@
             color="fuchsia"
             titleText="Decide with a group"
             description="Choose a shared group, then find a game that fits the people and time."
-            cardLink="/groups"
+            cardLink="/dashboard"
         >
             <span class="text-fuchsia-600 dark:text-fuchsia-400 group-hover:underline flex items-center text-sm font-medium">Choose a group &gt;</span>
         </app-card-section>

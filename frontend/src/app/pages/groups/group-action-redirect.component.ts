@@ -13,7 +13,7 @@ export class GroupActionRedirectComponent implements OnInit {
         const target = this.route.snapshot.data['target'] === 'delete' ? ['groups', groupId, 'edit'] : ['groups', groupId]
 
         if (!Number.isInteger(groupId) || groupId <= 0) {
-            void this.router.navigate(['/groups'])
+            void this.router.navigate(['/dashboard'])
             return
         }
 

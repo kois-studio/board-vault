@@ -62,6 +62,6 @@ describe('PlayPageComponent group-first entry', () => {
         const recommendationCard = Array.from(element.querySelectorAll('app-card-section')).find((card) =>
             card.textContent?.includes('Decide with a group'),
         )
-        expect(recommendationCard?.getAttribute('cardlink')).toBe('/groups')
+        expect(recommendationCard?.getAttribute('cardlink')).toBe('/dashboard')
     })
 })

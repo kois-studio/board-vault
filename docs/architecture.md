@@ -106,8 +106,8 @@ List `AuthGuard` first; the others read `request.user`.
 | --- | --- | --- |
 | `/` | none | Landing |
 | `/login`, `/register` | `GuestOnlyGuard` | Clerk sign-in; invitations and the private-beta notice |
-| `/dashboard` | `AuthOnlyGuard` | Home |
-| `/groups`, `/groups/:groupId` | `AuthOnlyGuard` | Group list and workspace |
+| `/dashboard` | `AuthOnlyGuard` | Home: invitations, next game nights, your groups, recently played |
+| `/groups/:groupId` | `AuthOnlyGuard` | Group workspace (`/groups` redirects to Home) |
 | `/create-group`, `/groups/:groupId/edit` | `AuthOnlyGuard` | Group create and settings (invitations) |
 | `/groups/:groupId/people/:personId/claim` | `AuthOnlyGuard` | Claim a group person |
 | `/groups/:groupId/sessions/new`, `/sessions/:sessionId` | `AuthOnlyGuard` | Plan and view sessions |
@@ -116,6 +116,10 @@ List `AuthGuard` first; the others read `request.user`.
 | `/play/…` | `AuthOnlyGuard` | Recommendations, log a session, upcoming, history |
 | `/settings/account`, `/settings/security` | `AuthOnlyGuard` | Profile and Clerk account security |
 | `/admin/…` | `AdminGuard` | Catalogue administration |
+
+The top bar has three sections: Home (groups and their pages), Collection
+(games, browse, reviews, wishlist), and Play (upcoming, discover, history).
+Settings is in the profile menu.
 
 `LayoutCompleteComponent` wraps browsing pages; `LayoutBasicComponent` wraps
 focused actions (create, edit, claim, propose) without navigation.

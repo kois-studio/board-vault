@@ -75,7 +75,7 @@ test.describe('new-person invitation flow', () => {
             await inviteePage.getByRole('button', { name: 'Join the group', exact: true }).click()
 
             await expect(inviteePage).toHaveURL(/\/dashboard$/)
-            await expect(inviteePage.getByRole('heading', { name: 'Your game groups' })).toBeVisible()
+            await expect(inviteePage.getByRole('heading', { name: 'Your groups' })).toBeVisible()
             await expect(inviteePage.getByText(groupName, { exact: true })).toBeVisible()
         } finally {
             await inviteeContext.close()

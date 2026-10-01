@@ -32,7 +32,7 @@ test.describe('save Clerk storage states', () => {
             await code.click()
             await page.keyboard.type('424242')
 
-            await expect(page.getByRole('heading', { name: 'Your game groups' })).toBeVisible({ timeout: 30_000 })
+            await expect(page.getByRole('heading', { name: 'Your groups' })).toBeVisible({ timeout: 30_000 })
             await page.context().storageState({ path: join(outputDirectory ?? '', `${name}.json`) })
         })
     }

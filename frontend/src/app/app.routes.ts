@@ -49,9 +49,10 @@ export const routes: Routes = [
                 canActivate: [AuthOnlyGuard],
             },
             {
+                // Groups live on Home now; keep old links working.
                 path: 'groups',
-                loadComponent: () => import('./pages/groups/groups-page/groups-page.component').then((m) => m.GroupsPageComponent),
-                canActivate: [AuthOnlyGuard],
+                pathMatch: 'full',
+                redirectTo: 'dashboard',
             },
             {
                 path: 'submissions',

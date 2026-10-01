@@ -26,6 +26,12 @@ operational details.
   tracked in GitHub Issues.
 - Frontend unit tests run on Vitest (Karma and Jasmine removed) and now run in
   CI.
+- Navigation is back to three sections, Home, Collection, and Play. Groups
+  live on Home, History is under Play, and Settings is in the profile menu.
+  Home is redesigned around invitations, the next game nights, your groups,
+  and recently played sessions.
+- The groups overview and history load games, titles, and people in
+  set-based queries (the groups overview went from about 650 queries to 15).
 - Backend queries are split into per-domain classes
   (`databaseService.groups.getGroupById`, …).
 - The backend deploys with Vercel's NestJS preset instead of the legacy

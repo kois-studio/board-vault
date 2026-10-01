@@ -91,7 +91,7 @@ export class AppComponent {
             },
             {
                 match: /^\/collection(?:\/|$)/,
-                title: 'My shelf — Board Vault',
+                title: 'Collection — Board Vault',
                 description: 'Keep your private shelf, wishlist, reviews, and group game context together.',
             },
             {
