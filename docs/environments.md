@@ -17,9 +17,15 @@ so documentation-only pushes do not deploy. Pull request previews are not
 deployed. The backend project has placeholder Preview variables (an
 unreachable database URL, a dummy Clerk key, Redis off), not secrets, so an
 owner-forced preview can boot and answer `/health`; `/health/ready` stays not
-ready there. The backend project has placeholder Preview variables (an unreachable
-database URL, a dummy Clerk key, Redis off), not secrets, so an owner-forced
-preview can boot and answer `/health`; `/health/ready` stays not ready there.
+ready there.
+
+To use the shared development database instead of your own SQLite file, set
+`TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` in `backend/.env` to the values
+David shares. It holds the game catalogue and sample groups with play history.
+Everyone connected reads and writes the same data, so what you add is visible
+to the others; David can rebuild it from scratch when it gets messy. The
+`organizer+clerk_test@example.com` fixture stays the default for your own
+local database.
 
 ## Backend variables
 
