@@ -11,7 +11,16 @@ import { IconComponent } from '../ui/icon/icon.component'
     styleUrls: ['./avatar-editor.component.scss'],
 })
 export class AvatarEditorComponent implements OnInit {
-    @Input({ required: true }) avatar!: UserType['avatar']
+    // Edit a copy: the caller's avatar is shared user state until the save succeeds.
+    private draft!: UserType['avatar']
+
+    @Input({ required: true })
+    set avatar(value: UserType['avatar']) {
+        this.draft = { ...value }
+    }
+    get avatar(): UserType['avatar'] {
+        return this.draft
+    }
 
     @Output() configChange = new EventEmitter<UserType['avatar']>()
 
@@ -69,31 +78,29 @@ export class AvatarEditorComponent implements OnInit {
         return this.bootstrapIcons.filter((icon) => icon.toLowerCase().includes(this.searchTerm.toLowerCase()))
     }
 
+    // Each change replaces the draft so OnPush children such as the preview see a new object.
     selectColor(color: string): void {
-        this.avatar.backgroundColor = color
+        this.draft = { ...this.draft, backgroundColor: color }
         this.emitChange()
     }
 
     selectIcon(iconName: string): void {
-        this.avatar.iconName = iconName
-        this.avatar.emoji = null
-        this.avatar.type = 'icon'
+        this.draft = { ...this.draft, iconName, emoji: null, type: 'icon' }
         this.emitChange()
     }
 
     selectEmoji(emoji: string): void {
-        this.avatar.emoji = emoji
-        this.avatar.iconName = null
-        this.avatar.type = 'emoji'
+        this.draft = { ...this.draft, emoji, iconName: null, type: 'emoji' }
         this.emitChange()
     }
 
     setInitials(initials: string): void {
-        this.avatar.initials = initials.substring(0, 2).toUpperCase()
-        this.avatar.iconName = null
-        this.avatar.emoji = null
-        this.avatar.type = 'initials'
-        this.emitChange()
+        this.draft = { ...this.draft, initials: initials.substring(0, 2).toUpperCase(), iconName: null, emoji: null, type: 'initials' }
+
+        // An initials avatar needs initials; wait until there is something to save.
+        if (this.draft.initials.trim()) {
+            this.emitChange()
+        }
     }
 
     switchTab(tab: 'icon' | 'emoji' | 'initials'): void {

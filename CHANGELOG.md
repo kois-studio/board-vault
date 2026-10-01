@@ -37,6 +37,10 @@ operational details.
   notifications dialogs in the profile menu open again. They had stopped
   rendering under Angular 22's default `OnPush` change detection. Saving an
   avatar now sends one profile update instead of two.
+- Avatar changes save again for icon and emoji avatars with empty initials:
+  the API requires initials only for an initials avatar. The editor no longer
+  shows an unsaved avatar as if it were saved, and a failed profile update
+  shows an accurate error.
 - Approved game proposals without artwork no longer point to a dead
   third-party placeholder image.
 - Local checks on Windows: `.gitattributes` keeps LF line endings regardless

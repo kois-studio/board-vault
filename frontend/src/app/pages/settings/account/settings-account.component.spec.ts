@@ -69,4 +69,16 @@ describe('SettingsAccountComponent avatar editor', () => {
         })
         expect(api.updateUser).not.toHaveBeenCalled()
     })
+
+    it('leaves the current user unchanged until the save succeeds', () => {
+        ;(fixture.nativeElement.querySelector('button[aria-label="Edit profile avatar"]') as HTMLButtonElement).click()
+        fixture.detectChanges()
+
+        const editor = fixture.debugElement.query((element) => element.name === 'app-avatar-editor')
+        editor.componentInstance.selectColor('#10B981')
+        fixture.detectChanges()
+
+        // updateCurrentUserData is stubbed, as if the request failed: the shared user state must not show the change.
+        expect(dataService.currentUser()?.avatar).toEqual(currentUser.avatar)
+    })
 })
