@@ -28,7 +28,12 @@ async function bootstrap() {
     }
 
     // Create the Nest application
-    const app = await NestFactory.create<NestExpressApplication>(AppModule, { bodyParser: false })
+    // On Vercel, log one JSON object per line so logs can be searched by
+    // requestId, route, and status. Locally, keep Nest's readable output.
+    const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+        bodyParser: false,
+        ...(process.env.VERCEL ? { logger: new JsonLogger() } : {}),
+    })
 
     // Vercel sits in front of the function and overwrites X-Forwarded-For with
     // the real client IP. Trust exactly that one hop so request.ip (used by

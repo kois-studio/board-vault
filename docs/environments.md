@@ -71,3 +71,16 @@ Only public values may go there. The API base URL is fixed per build in
   else needs them for development.
 - If a secret lands in Git, an issue, a PR, or a chat, tell David so it can be
   rotated.
+
+## Monitoring
+
+- **Uptime:** the [`uptime.yml`](../.github/workflows/uptime.yml) workflow
+  checks `https://backend.board-vault.com/health/ready` every 15 minutes
+  (three tries). While it fails, one issue labelled `incident` stays open and
+  is assigned to David; the first healthy check closes it. To test the alert,
+  run the workflow manually with a bad URL.
+- **Logs:** on Vercel the API writes one JSON object per line. Every line
+  inside a request has its `requestId` (also returned as `X-Request-Id` and in
+  error bodies); `http.request.completed` adds the route template, status,
+  duration, and account id; `provider.timeout` marks a slow provider. Search
+  Vercel logs by any of these values. No bodies, emails, or tokens are logged.

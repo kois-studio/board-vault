@@ -1,0 +1,76 @@
+name: Production uptime
+
+# Checks the production API every 15 minutes. While it is down, one issue
+# labelled `incident` stays open (GitHub notifies the owner when it is opened);
+# the first healthy check closes it.
+on:
+    schedule:
+        - cron: '*/15 * * * *'
+    workflow_dispatch:
+        inputs:
+            url:
+                description: URL to check (use a bad one to test the alert)
+                default: https://backend.board-vault.com/health/ready
+
+permissions:
+    contents: read
+    issues: write
+
+concurrency:
+    group: uptime
+    cancel-in-progress: false
+
+jobs:
+    check:
+        name: Check /health/ready
+        runs-on: ubuntu-24.04
+        timeout-minutes: 3
+        env:
+            URL: ${{ inputs.url || 'https://backend.board-vault.com/health/ready' }}
+            GH_TOKEN: ${{ github.token }}
+            GH_REPO: ${{ github.repository }}
+        steps:
+            - name: Check health
+              id: health
+              # Three tries, 20 seconds apart, so one cold start or blip does not page.
+              run: |
+                  for attempt in 1 2 3; do
+                      body=$(curl -sS --max-time 20 -w '\n%{http_code}' "$URL" || true)
+                      code=$(printf '%s' "$body" | tail -n 1)
+                      body=$(printf '%s' "$body" | sed '$d')
+                      status=$(printf '%s' "$body" | jq -r '.status // empty' 2>/dev/null || true)
+                      if [ "$code" = 200 ] && [ "$status" = ready ]; then
+                          echo "healthy=true" >> "$GITHUB_OUTPUT"
+                          exit 0
+                      fi
+                      [ "$attempt" -lt 3 ] && sleep 20
+                  done
+                  {
+                      echo "healthy=false"
+                      echo "code=$code"
+                      # Only the public readiness summary; it holds no secrets.
+                      echo "checks=$(printf '%s' "$body" | jq -c '.checks // empty' 2>/dev/null | head -c 300)"
+                  } >> "$GITHUB_OUTPUT"
+            - name: Open or update the incident
+              if: steps.health.outputs.healthy == 'false'
+              env:
+                  CODE: ${{ steps.health.outputs.code }}
+                  CHECKS: ${{ steps.health.outputs.checks }}
+              run: |
+                  gh label create incident --color B60205 --description "Production is down" 2>/dev/null || true
+                  note="$(date -u '+%Y-%m-%d %H:%M UTC'): \`$URL\` answered HTTP ${CODE:-none}, checks: \`${CHECKS:-none}\`. [Run]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)"
+                  open=$(gh issue list --label incident --state open --json number --jq '.[0].number')
+                  if [ -n "$open" ]; then
+                      gh issue comment "$open" --body "$note"
+                  else
+                      gh issue create --title "Production API is not ready" --label incident --assignee dawichi \
+                          --body "$note"$'\n\n'"Recovery: the owner runbook, Failure and recovery." \
+                          || gh issue create --title "Production API is not ready" --label incident --body "$note"
+                  fi
+                  exit 1
+            - name: Close the incident
+              if: steps.health.outputs.healthy == 'true'
+              run: |
+                  for n in $(gh issue list --label incident --state open --json number --jq '.[].number'); do
+                      gh issue close "$n" --comment "Recovered: \`$URL\` is ready again ($(date -u '+%Y-%m-%d %H:%M UTC'))."
+                  done
