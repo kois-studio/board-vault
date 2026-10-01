@@ -78,12 +78,12 @@
                 <article class="app-bg-secondary relative mb-8 rounded-3xl p-5 shadow-sm sm:p-6" [attr.aria-labelledby]="'history-session-' + historyRecord.meetData.id">
                     <span class="absolute -left-[2.05rem] top-6 h-4 w-4 rounded-full border-4 border-white bg-indigo-500 dark:border-zinc-950" aria-hidden="true"></span>
                     <div class="flex flex-wrap items-start justify-between gap-4">
-                    <div>
+                    <div class="min-w-0">
                         <p class="text-sm font-semibold text-indigo-600 dark:text-indigo-400">{{ getGroupName(historyRecord.meetData.groupId) }}</p>
                         <h2 class="mt-1 text-xl font-bold text-zinc-900 dark:text-white" [id]="'history-session-' + historyRecord.meetData.id">
                             {{ historyRecord.meetData.meetDate | customDate: true: historyRecord.meetData.timezone }}
                         </h2>
-                        <p class="mt-2 text-sm text-secondary">{{ getAttendeeSummary(historyRecord.attendedBy) }} · {{ historyRecord.gamesPlayed.length }} game{{ historyRecord.gamesPlayed.length === 1 ? '' : 's' }} played</p>
+                        <p class="mt-2 text-sm text-secondary wrap-anywhere">{{ getAttendeeSummary(historyRecord.attendedBy) }} · {{ historyRecord.gamesPlayed.length }} game{{ historyRecord.gamesPlayed.length === 1 ? '' : 's' }} played</p>
                     </div>
                     <a class="app-btn-secondary text-center text-sm" [routerLink]="['/sessions', historyRecord.meetData.id]">Open session memory</a>
                     </div>
@@ -114,13 +114,13 @@
                             </a>
 
                             <!-- Game info -->
-                            <div class="flex flex-col justify-between flex-1">
+                            <div class="flex min-w-0 flex-col justify-between flex-1">
                                 <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">{{ getGameTitle(gamePlayed.gameData) }}</h3>
 
-                                <div class="flex justify-between items-end">
+                                <div class="flex min-w-0 justify-between items-end">
                                     
                                     <!-- Players -->
-                                    <div class="relative h-8 flex items-center">
+                                    <div class="relative h-8 flex min-w-0 items-center">
                                         <!-- Player avatars -->
                                         <div class="flex -space-x-2">
                                             @for (player of gamePlayed.playedBy; track player.id) {
@@ -135,7 +135,7 @@
                                         @if (gamePlayed.playedBy.length === 0) {
                                             <span class="ml-3 text-xs text-secondary">Players not recorded</span>
                                         } @else {
-                                            <span class="ml-3 text-xs text-secondary" [attr.aria-label]="'Played by ' + getPlayedBySummary(gamePlayed.playedBy)">Played by {{ getPlayedBySummary(gamePlayed.playedBy) }}</span>
+                                            <span class="ml-3 min-w-0 line-clamp-2 text-xs text-secondary wrap-anywhere" [attr.aria-label]="'Played by ' + getPlayedBySummary(gamePlayed.playedBy)" [title]="'Played by ' + getPlayedBySummary(gamePlayed.playedBy)">Played by {{ getPlayedBySummary(gamePlayed.playedBy) }}</span>
                                         }
                                     </div>
                                 </div>

@@ -169,7 +169,7 @@
                                 <div class="flex items-start justify-between gap-3">
                                     <div class="min-w-0">
                                         <div class="flex flex-wrap items-center gap-2">
-                                            <h3 class="font-semibold">{{ person.person.displayName }}</h3>
+                                            <h3 class="min-w-0 font-semibold wrap-anywhere">{{ person.person.displayName }}</h3>
                                             <span class="rounded-full bg-zinc-100 px-2 py-1 text-xs text-secondary dark:bg-zinc-800">{{ person.person.kind === 'linked' ? 'Account linked' : 'Placeholder' }}</span>
                                         </div>
                                         <p class="mt-1 text-xs text-secondary">{{ getGroupPersonOwnedGameCount(person) }} games · {{ person.preferences.length }} preferences</p>
@@ -556,9 +556,9 @@
                         @for (historyRecord of recentGroupHistoryComputed(); track historyRecord.meetData.id) {
                             <article class="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
                                 <div class="flex items-start justify-between gap-3">
-                                    <div>
+                                    <div class="min-w-0">
                                         <p class="font-semibold">{{ historyRecord.meetData.meetDate | customDate: true: historyRecord.meetData.timezone }}</p>
-                                        <p class="mt-1 text-sm text-secondary">{{ getAttendeeSummary(historyRecord.attendedBy, historyRecord.attendedByPeople ?? []) }}</p>
+                                        <p class="mt-1 text-sm text-secondary wrap-anywhere">{{ getAttendeeSummary(historyRecord.attendedBy, historyRecord.attendedByPeople ?? []) }}</p>
                                         <p class="mt-1 text-sm text-secondary">{{ historyRecord.gamesPlayed.length }} game{{ historyRecord.gamesPlayed.length === 1 ? '' : 's' }} played</p>
                                     </div>
                                     <a [routerLink]="['/sessions', historyRecord.meetData.id]" class="text-sm text-indigo-600 hover:underline dark:text-indigo-400">View</a>
@@ -595,7 +595,7 @@
                         <h2 id="insights-heading" class="mt-1 text-2xl font-bold">Small group insights</h2>
                         <p class="mt-1 text-secondary">Built from completed sessions and actual participation—not global rankings.</p>
                     </div>
-                    <div class="mt-5 grid gap-4 lg:grid-cols-2">
+                    <div class="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-2">
                         <article class="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
                             <h3 class="font-semibold">Most played</h3>
                             @if (mostPlayedGamesComputed().length === 0) {

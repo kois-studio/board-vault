@@ -201,7 +201,7 @@
                         @if (isGroupPersonSession) {
                         @for (person of groupPeople; track person.person.id) {
                             @if (meetData?.participants?.includes(person.person.id)) {
-                                <button type="button" class="rounded-lg border px-3 py-2 text-sm transition-colors disabled:cursor-not-allowed" [disabled]="isUpdatingAttendance" [attr.aria-pressed]="getGroupPersonAttendanceStatus(person.person.id) === 'Was there'" [ngClass]="getGroupPersonAttendanceStatus(person.person.id) === 'Was there' ? 'border-green-500 bg-green-50 dark:bg-green-900/20' : 'border-zinc-200 dark:border-zinc-700'" (click)="toggleGroupPersonAttendance(person.person.id)">
+                                <button type="button" class="max-w-full rounded-lg border px-3 py-2 text-left text-sm wrap-anywhere transition-colors disabled:cursor-not-allowed" [disabled]="isUpdatingAttendance" [attr.aria-pressed]="getGroupPersonAttendanceStatus(person.person.id) === 'Was there'" [ngClass]="getGroupPersonAttendanceStatus(person.person.id) === 'Was there' ? 'border-green-500 bg-green-50 dark:bg-green-900/20' : 'border-zinc-200 dark:border-zinc-700'" (click)="toggleGroupPersonAttendance(person.person.id)">
                                     {{ person.person.displayName }} · {{ getGroupPersonAttendanceStatus(person.person.id) === 'Was there' ? 'There' : 'Not there' }}
                                 </button>
                             }
@@ -209,7 +209,7 @@
                         } @else {
                         @for (member of groupData?.members; track member.id) {
                             @if (meetData?.attendees?.includes(member.id)) {
-                                <button type="button" class="rounded-lg border px-3 py-2 text-sm transition-colors disabled:cursor-not-allowed" [disabled]="isUpdatingAttendance" [attr.aria-pressed]="getMemberAttendanceStatus(member.id) === 'Was there'" [ngClass]="getMemberAttendanceStatus(member.id) === 'Was there' ? 'border-green-500 bg-green-50 dark:bg-green-900/20' : 'border-zinc-200 dark:border-zinc-700'" (click)="toggleAttendance(member.id)">
+                                <button type="button" class="max-w-full rounded-lg border px-3 py-2 text-left text-sm wrap-anywhere transition-colors disabled:cursor-not-allowed" [disabled]="isUpdatingAttendance" [attr.aria-pressed]="getMemberAttendanceStatus(member.id) === 'Was there'" [ngClass]="getMemberAttendanceStatus(member.id) === 'Was there' ? 'border-green-500 bg-green-50 dark:bg-green-900/20' : 'border-zinc-200 dark:border-zinc-700'" (click)="toggleAttendance(member.id)">
                                     {{ member.displayName || member.username }} · {{ getMemberAttendanceStatus(member.id) === 'Was there' ? 'There' : 'Not there' }}
                                 </button>
                             }
@@ -308,7 +308,7 @@
                                         @if (isGroupPersonSession) {
                                         @for (person of groupPeople; track person.person.id) {
                                             @if (meetData?.participants?.includes(person.person.id)) {
-                                                <label class="inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs" [ngClass]="isGroupPersonGameParticipant(game.id, person.person.id) ? 'border-green-500 bg-green-100 dark:bg-green-900/40' : 'border-zinc-200 dark:border-zinc-700'">
+                                                <label class="inline-flex max-w-full items-center gap-1.5 rounded-md border px-2 py-1 text-xs wrap-anywhere" [ngClass]="isGroupPersonGameParticipant(game.id, person.person.id) ? 'border-green-500 bg-green-100 dark:bg-green-900/40' : 'border-zinc-200 dark:border-zinc-700'">
                                                     <input
                                                         type="checkbox"
                                                         [checked]="isGroupPersonGameParticipant(game.id, person.person.id)"
@@ -322,7 +322,7 @@
                                         } @else {
                                         @for (member of groupData?.members; track member.id) {
                                             @if (meetData?.attendees?.includes(member.id)) {
-                                                <label class="inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs" [ngClass]="isGameParticipant(game.id, member.id) ? 'border-green-500 bg-green-100 dark:bg-green-900/40' : 'border-zinc-200 dark:border-zinc-700'">
+                                                <label class="inline-flex max-w-full items-center gap-1.5 rounded-md border px-2 py-1 text-xs wrap-anywhere" [ngClass]="isGameParticipant(game.id, member.id) ? 'border-green-500 bg-green-100 dark:bg-green-900/40' : 'border-zinc-200 dark:border-zinc-700'">
                                                     <input
                                                         type="checkbox"
                                                         [checked]="isGameParticipant(game.id, member.id)"

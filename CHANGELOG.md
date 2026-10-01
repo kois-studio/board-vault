@@ -39,6 +39,10 @@ operational details.
 
 ### Fixed
 
+- Long names without spaces no longer overflow their cards or widen the
+  page on phones. They wrap in attendee pickers, group and session cards, and
+  recommendation explanations, and history's "Played by" line stops at two
+  lines.
 - Approved game proposals without artwork no longer point to a dead
   third-party placeholder image.
 - Local checks on Windows: `.gitattributes` keeps LF line endings regardless
