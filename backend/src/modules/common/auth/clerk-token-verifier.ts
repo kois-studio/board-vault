@@ -2,6 +2,8 @@ import { verifyToken } from '@clerk/backend'
 import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 
+import { ProviderTimeoutError, withTimeout } from '../../../common/http/provider-timeout'
+
 /**
  * Verifies Clerk session tokens. Tests replace this provider with a fake
  * through Nest's `overrideProvider`; there is no runtime bypass.
@@ -10,7 +12,10 @@ import { ConfigService } from '@nestjs/config'
 export class ClerkTokenVerifier {
     constructor(private readonly configService: ConfigService) {}
 
-    /** Returns the Clerk user id of a valid session token, or null. */
+    /**
+     * Returns the Clerk user id of a valid session token, or null. A Clerk
+     * timeout is rethrown: answering 401 would sign the user out of the app.
+     */
     async verify(token: string): Promise<string | null> {
         const secretKey = this.configService.get<string>('CLERK_SECRET_KEY')
 
@@ -26,13 +31,20 @@ export class ClerkTokenVerifier {
                 .filter(Boolean) ?? []
 
         try {
-            const verification = await verifyToken(token, {
-                secretKey,
-                ...(authorizedParties.length ? { authorizedParties } : {}),
-            })
+            const verification = await withTimeout(
+                verifyToken(token, {
+                    secretKey,
+                    ...(authorizedParties.length ? { authorizedParties } : {}),
+                }),
+                'clerk',
+            )
 
             return verification?.sub || null
-        } catch {
+        } catch (error) {
+            if (error instanceof ProviderTimeoutError) {
+                throw error
+            }
+
             return null
         }
     }

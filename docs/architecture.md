@@ -29,6 +29,14 @@ persists. Frontend guards and hidden buttons are UX only.
 6. Errors go through [`ApiErrorFilter`](../backend/src/common/http/api-error.filter.ts),
    which returns `{ statusCode, code, message, requestId }` and never leaks SQL
    or provider payloads.
+
+Every provider call is bounded
+([`provider-timeout.ts`](../backend/src/common/http/provider-timeout.ts)):
+a Turso call or a Clerk call that takes more than 5 seconds fails the request
+with `503` and `DATABASE_TIMEOUT` or `CLERK_TIMEOUT`, and Redis calls give up
+after 250 ms ([data-model.md](data-model.md#cache-redis)). A Clerk timeout
+while checking a session is a 503, never a 401, so the app does not sign the
+user out.
 7. The frontend [`Api`](../frontend/src/app/api/api.ts) adapter validates every
    response with the zod schemas in [`api.schemas.ts`](../frontend/src/app/api/api.schemas.ts).
 

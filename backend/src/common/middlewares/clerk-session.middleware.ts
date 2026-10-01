@@ -15,7 +15,7 @@ export type AuthenticatedRequest = Request & {
  * Authenticates every request that carries a Clerk session token and attaches
  * the local account as `request.user`. AuthGuard enforces it on protected
  * routes. Account resolution errors are kept on the request so the guard can
- * report them (for example 409 or 502) instead of a generic 401.
+ * report them (for example 409, 502, or a 503 timeout) instead of a generic 401.
  */
 @Injectable()
 export class ClerkSessionMiddleware implements NestMiddleware {
@@ -34,10 +34,10 @@ export class ClerkSessionMiddleware implements NestMiddleware {
             return
         }
 
-        const clerkUserId = await this.tokenVerifier.verify(token)
+        try {
+            const clerkUserId = await this.tokenVerifier.verify(token)
 
-        if (clerkUserId) {
-            try {
+            if (clerkUserId) {
                 const account = await this.clerkIdentityService.resolveAccount(clerkUserId)
 
                 request.user = {
@@ -46,9 +46,9 @@ export class ClerkSessionMiddleware implements NestMiddleware {
                     isAdmin: account.isAdmin,
                     clerkUserId,
                 }
-            } catch (error) {
-                request.authError = error
             }
+        } catch (error) {
+            request.authError = error
         }
 
         next()

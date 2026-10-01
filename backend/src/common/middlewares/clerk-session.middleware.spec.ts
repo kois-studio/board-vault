@@ -1,5 +1,7 @@
 import { ConflictException } from '@nestjs/common'
 
+import { ProviderTimeoutError } from '../http/provider-timeout'
+
 import { ClerkSessionMiddleware } from './clerk-session.middleware'
 
 describe('ClerkSessionMiddleware', () => {
@@ -59,6 +61,20 @@ describe('ClerkSessionMiddleware', () => {
 
         tokenVerifier.verify.mockResolvedValue('user_clerk_123')
         clerkIdentityService.resolveAccount.mockRejectedValue(error)
+        const request = requestWith('Bearer clerk-token')
+        const next = jest.fn()
+
+        await middleware.use(request as never, {} as never, next)
+
+        expect(request.user).toBeUndefined()
+        expect(request.authError).toBe(error)
+        expect(next).toHaveBeenCalledTimes(1)
+    })
+
+    it('keeps a Clerk timeout for the guard instead of failing the request', async () => {
+        const error = new ProviderTimeoutError('clerk')
+
+        tokenVerifier.verify.mockRejectedValue(error)
         const request = requestWith('Bearer clerk-token')
         const next = jest.fn()
 

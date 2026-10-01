@@ -1,6 +1,8 @@
 import { Client, createClient, type InStatement, type TransactionMode } from '@libsql/client'
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common'
+import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
+
+import { fetchWithTimeout } from '../../../common/http/provider-timeout'
 
 import { AccountQueries } from './queries/accounts.queries'
 import { CollectionQueries } from './queries/collection.queries'
@@ -19,7 +21,7 @@ export const CURRENT_SCHEMA_VERSION = '0015'
  * `databaseService.groups.getGroupById(id)`).
  */
 @Injectable()
-export class DatabaseService implements OnModuleInit {
+export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     private readonly LOGGER: Logger = new Logger(this.constructor.name)
     private tursoClient: Client
 
@@ -41,7 +43,13 @@ export class DatabaseService implements OnModuleInit {
         this.tursoClient = createClient({
             url,
             ...(!url.startsWith('file:') && authToken ? { authToken } : {}),
+            // Remote Turso runs over HTTP; every call is bounded (see PROVIDER_TIMEOUT_MS).
+            fetch: fetchWithTimeout('database'),
         })
+    }
+
+    onModuleDestroy() {
+        this.tursoClient?.close()
     }
 
     async checkHealth(): Promise<void> {

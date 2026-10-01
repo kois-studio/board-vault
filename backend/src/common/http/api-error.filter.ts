@@ -4,6 +4,9 @@ import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logge
 
 import { structuredLog } from '../logging/structured-log'
 
+import { API_ERROR_CODES, BoardVaultHttpException } from './api-error'
+import { ProviderTimeoutError } from './provider-timeout'
+
 import type { Request, Response } from 'express'
 
 export type ApiErrorResponse = {
@@ -24,11 +27,29 @@ export type ApiErrorResponse = {
 export class ApiErrorFilter implements ExceptionFilter {
     private readonly logger = new Logger(ApiErrorFilter.name)
 
-    catch(exception: unknown, host: ArgumentsHost): void {
+    catch(caught: unknown, host: ArgumentsHost): void {
         const http = host.switchToHttp()
         const request = http.getRequest<Request>()
         const response = http.getResponse<Response>()
         const requestId = (request as Request & { requestId?: string }).requestId ?? randomUUID()
+        let exception = caught
+
+        if (caught instanceof ProviderTimeoutError) {
+            this.logger.warn(
+                structuredLog('provider.timeout', {
+                    requestId,
+                    provider: caught.provider,
+                    method: request.method,
+                    path: (request.originalUrl ?? request.url).split('?')[0],
+                }),
+            )
+            exception = new BoardVaultHttpException(
+                caught.provider === 'database' ? API_ERROR_CODES.DATABASE_TIMEOUT : API_ERROR_CODES.CLERK_TIMEOUT,
+                HttpStatus.SERVICE_UNAVAILABLE,
+                'A service the app depends on is slow to respond. Try again in a moment.',
+            )
+        }
+
         const statusCode = exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR
         const payload = exception instanceof HttpException ? exception.getResponse() : undefined
         const normalized = this.normalizePayload(payload, statusCode)

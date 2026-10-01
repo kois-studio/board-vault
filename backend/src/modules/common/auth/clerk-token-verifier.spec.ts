@@ -1,5 +1,7 @@
 import { verifyToken } from '@clerk/backend'
 
+import { PROVIDER_TIMEOUT_MS, ProviderTimeoutError } from '../../../common/http/provider-timeout'
+
 import { ClerkTokenVerifier } from './clerk-token-verifier'
 
 jest.mock('@clerk/backend', () => ({
@@ -33,6 +35,21 @@ describe('ClerkTokenVerifier', () => {
         mockedVerifyToken.mockRejectedValue(new Error('expired'))
 
         await expect(verifierWith({ CLERK_SECRET_KEY: 'sk_test_example' }).verify('expired-token')).resolves.toBeNull()
+    })
+
+    it('reports a Clerk timeout instead of treating the token as invalid', async () => {
+        jest.useFakeTimers()
+        mockedVerifyToken.mockReturnValue(new Promise(() => {}))
+
+        try {
+            const verification = verifierWith({ CLERK_SECRET_KEY: 'sk_test_example' }).verify('clerk-token')
+            const assertion = expect(verification).rejects.toBeInstanceOf(ProviderTimeoutError)
+
+            await jest.advanceTimersByTimeAsync(PROVIDER_TIMEOUT_MS.clerk)
+            await assertion
+        } finally {
+            jest.useRealTimers()
+        }
     })
 
     it('rejects every token when Clerk is not configured', async () => {

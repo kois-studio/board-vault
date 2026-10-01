@@ -3,6 +3,7 @@ import { ConflictException, ForbiddenException, Injectable, NotFoundException, U
 import { ConfigService } from '@nestjs/config'
 
 import { API_ERROR_CODES, BoardVaultHttpException } from '../../../common/http/api-error'
+import { ProviderTimeoutError, withTimeout } from '../../../common/http/provider-timeout'
 import { assertSelfRegistrationEnabled } from '../../../common/registration-policy'
 import {
     CLERK_GROUP_INVITATION_METADATA_KEY,
@@ -287,9 +288,9 @@ export class ClerkIdentityService {
 
     private async withClerkProviderBoundary<T>(operation: () => Promise<T>): Promise<T> {
         try {
-            return await operation()
+            return await withTimeout(operation(), 'clerk')
         } catch (error) {
-            if (error instanceof BoardVaultHttpException) {
+            if (error instanceof BoardVaultHttpException || error instanceof ProviderTimeoutError) {
                 throw error
             }
 

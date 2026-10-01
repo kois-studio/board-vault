@@ -8,6 +8,7 @@ import { AppModule } from './app.module'
 import { ApiErrorFilter } from './common/http/api-error.filter'
 import { getCorsOrigins } from './common/http/cors'
 import { applySecurityHeaders, createBodyParsers } from './common/http/http-hardening'
+import { JsonLogger } from './common/logging/json-logger'
 import { validateEnv } from './common/validators'
 
 const port = process.env.PORT || 3000
@@ -35,6 +36,9 @@ async function bootstrap() {
     if (process.env.VERCEL) {
         app.set('trust proxy', 1)
     }
+
+    // Close the database client when the runtime stops the process.
+    app.enableShutdownHooks()
 
     app.useGlobalFilters(new ApiErrorFilter())
 

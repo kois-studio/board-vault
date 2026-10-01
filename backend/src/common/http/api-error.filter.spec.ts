@@ -2,6 +2,7 @@ import { BadRequestException, HttpStatus } from '@nestjs/common'
 
 import { API_ERROR_CODES, BoardVaultHttpException } from './api-error'
 import { ApiErrorFilter } from './api-error.filter'
+import { ProviderTimeoutError } from './provider-timeout'
 
 function createHost(exception: unknown) {
     const response = {
@@ -96,6 +97,24 @@ describe('ApiErrorFilter', () => {
             statusCode: 502,
             code: 'CLERK_PROVIDER_UNAVAILABLE',
             message: 'The invitation provider is temporarily unavailable',
+            requestId: expect.any(String),
+        })
+    })
+
+    it.each([
+        ['database', 'DATABASE_TIMEOUT'],
+        ['clerk', 'CLERK_TIMEOUT'],
+    ] as const)('answers a %s timeout with 503 and a stable code', (provider, code) => {
+        const filter = new ApiErrorFilter()
+        const { host, response } = createHost(new ProviderTimeoutError(provider))
+
+        filter.catch(new ProviderTimeoutError(provider), host as never)
+
+        expect(response.status).toHaveBeenCalledWith(HttpStatus.SERVICE_UNAVAILABLE)
+        expect(response.json).toHaveBeenCalledWith({
+            statusCode: 503,
+            code,
+            message: expect.any(String),
             requestId: expect.any(String),
         })
     })
