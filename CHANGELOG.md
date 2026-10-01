@@ -33,6 +33,10 @@ operational details.
 
 ### Fixed
 
+- The avatar editor (Settings → Account) and the invitations and
+  notifications dialogs in the profile menu open again. They had stopped
+  rendering under Angular 22's default `OnPush` change detection. Saving an
+  avatar now sends one profile update instead of two.
 - Approved game proposals without artwork no longer point to a dead
   third-party placeholder image.
 - Local checks on Windows: `.gitattributes` keeps LF line endings regardless

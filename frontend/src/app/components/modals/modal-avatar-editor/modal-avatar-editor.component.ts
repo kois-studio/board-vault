@@ -1,5 +1,4 @@
-import { Component, inject } from '@angular/core'
-import { Api } from '../../../api/api'
+import { Component, inject, signal } from '@angular/core'
 import type { UserType } from '../../../api/api.types'
 import { DataService } from '../../../core/services/data.service'
 import { AvatarEditorComponent } from '../../avatar-editor/avatar-editor.component'
@@ -12,7 +11,6 @@ import { IconComponent } from '../../ui/icon/icon.component'
     templateUrl: 'modal-avatar-editor.component.html',
 })
 export class ModalAvatarEditorComponent {
-    private readonly api = inject(Api)
     private readonly dataService = inject(DataService)
 
     // --------------------------------------------------------------------------
@@ -24,28 +22,21 @@ export class ModalAvatarEditorComponent {
     // --------------------------------------------------------------------------
     //        Component props
     // --------------------------------------------------------------------------
-    public isVisible = false
+    public readonly isVisible = signal(false)
 
     // --------------------------------------------------------------------------
     //        Methods
     // --------------------------------------------------------------------------
     public showDialog() {
-        this.isVisible = true
+        this.isVisible.set(true)
     }
 
     public hideDialog() {
-        this.isVisible = false
+        this.isVisible.set(false)
     }
 
     public updateAvatar(newAvatar: UserType['avatar']) {
-        if (!this.currentUser$()) {
-            return
-        }
-
-        this.api.updateUser(Number(this.currentUser$()?.id), { avatar: newAvatar }).subscribe({
-            next: () => {
-                this.dataService.updateCurrentUserData({ avatar: newAvatar })
-            },
-        })
+        // updateCurrentUserData saves the change and reloads the current user.
+        this.dataService.updateCurrentUserData({ avatar: newAvatar })
     }
 }
