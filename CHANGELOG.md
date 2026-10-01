@@ -33,12 +33,18 @@ operational details.
 
 ### Fixed
 
+- Approved game proposals without artwork no longer point to a dead
+  third-party placeholder image.
 - Local checks on Windows: `.gitattributes` keeps LF line endings regardless
   of `core.autocrlf`, and backend e2e cleanup tolerates the SQLite file lock
   that the native libsql driver holds until the test process exits.
 
 ### Added
 
+- Turso and Clerk calls time out after 5 seconds with a `503` and a stable
+  error code; the database client closes on shutdown.
+- JSON logs on Vercel with the request id on every line, and an uptime check
+  that opens an `incident` issue while production is not ready.
 - Optional local Redis profile (`docker compose --profile redis up -d`).
 - CI check for documentation links and Node version consistency.
 - Clerk webhooks keep account emails in sync and soft-delete accounts whose

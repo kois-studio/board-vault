@@ -313,10 +313,10 @@ compliance:
       priority: high
       next_action: None.
     - id: OPS-003
-      status: deferred
-      evidence: Redis calls have a 250 ms timeout; Turso and Clerk calls have none.
+      status: compliant
+      evidence: Turso and Clerk calls time out after 5 s (503 DATABASE_TIMEOUT / CLERK_TIMEOUT, provider-timeout.ts); Redis after 250 ms.
       priority: high
-      next_action: 'https://github.com/kois-studio/board-vault/issues/29'
+      next_action: Keep new provider calls behind fetchWithTimeout or withTimeout.
     - id: OPS-004
       status: compliant
       evidence: The API does not retry external calls (Redis retry disabled); Clerk retries webhook deliveries and the handlers are idempotent.
@@ -328,20 +328,20 @@ compliance:
       priority: high
       next_action: None.
     - id: OPS-006
-      status: deferred
-      evidence: Runs as a Vercel function that the platform stops; the app does not enable shutdown hooks or close the libSQL client.
+      status: compliant
+      evidence: enableShutdownHooks in main.ts; DatabaseService closes the libSQL client on module destroy.
       priority: high
-      next_action: 'https://github.com/kois-studio/board-vault/issues/29'
+      next_action: None.
     - id: OPS-007
-      status: deferred
-      evidence: Plain Nest text logs; the request id appears only in error responses.
+      status: compliant
+      evidence: JSON log lines on Vercel (JsonLogger) with the request id on every line via AsyncLocalStorage; documented in docs/environments.md.
       priority: high
-      next_action: 'https://github.com/kois-studio/board-vault/issues/30'
+      next_action: None.
     - id: OPS-008
-      status: deferred
-      evidence: Only Vercel logs; no alert when production is not ready.
+      status: compliant
+      evidence: Scheduled uptime workflow checks /health/ready every 15 minutes and opens an incident issue for David (docs/environments.md).
       priority: medium
-      next_action: 'https://github.com/kois-studio/board-vault/issues/30'
+      next_action: None.
     - id: OPS-009
       status: compliant
       evidence: 'Private owner runbook (kois-context projects/board-vault/operations.md): failure modes and recovery table, backups before schema changes, secrets rotation, owner and escalation (David); restore and rollback rehearsals in CI.'
@@ -383,10 +383,10 @@ compliance:
       priority: high
       next_action: Consider generating client schemas from openapi.json.
     - id: API-008
-      status: deferred
-      evidence: Request ids exist in error responses only; no latency or error-rate signals.
+      status: compliant
+      evidence: http.request.completed logs route, status, duration, and request id per request; uptime workflow alerts on not-ready.
       priority: medium
-      next_action: 'https://github.com/kois-studio/board-vault/issues/30'
+      next_action: Add latency or error-rate dashboards if traffic grows.
     - id: DATA-001
       status: compliant
       evidence: 'docs/data-model.md (owner, schema source, tables, access rules); database/schema and migrations.'
@@ -583,10 +583,10 @@ compliance:
       priority: high
       next_action: None.
     - id: NEST-005
-      status: deferred
-      evidence: Consistent error mapping (ApiErrorFilter); logging and correlation are not structured yet.
+      status: compliant
+      evidence: ApiErrorFilter error mapping plus structured JSON logs correlated by request id.
       priority: medium
-      next_action: 'https://github.com/kois-studio/board-vault/issues/30'
+      next_action: None.
     - id: NEST-006
       status: compliant
       evidence: Each module exports only its service; docs/architecture.md backend map lists responsibilities.
@@ -633,10 +633,10 @@ compliance:
       priority: high
       next_action: None.
     - id: NEST-015
-      status: deferred
-      evidence: Initialization and readiness are handled; no connection close on shutdown and no call timeouts.
+      status: compliant
+      evidence: Readiness checks, call timeouts on every provider, and connection close on shutdown.
       priority: high
-      next_action: 'https://github.com/kois-studio/board-vault/issues/29'
+      next_action: None.
     - id: NEST-016
       status: compliant
       evidence: OpenAPI generated from the routes and checked for drift in CI.
