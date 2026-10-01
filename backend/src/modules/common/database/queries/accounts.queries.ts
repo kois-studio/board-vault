@@ -20,6 +20,13 @@ export class AccountQueries {
         })
     }
 
+    getUsersByIds(ids: Array<number>) {
+        return this.database.execute({
+            sql: `SELECT ${ACCOUNT_COLUMNS} FROM Account WHERE id IN (${ids.map(() => '?').join(', ')})`,
+            args: ids,
+        })
+    }
+
     getUserByEmail(email: string) {
         return this.database.execute({
             sql: `SELECT ${ACCOUNT_COLUMNS} FROM Account WHERE email = ?`,

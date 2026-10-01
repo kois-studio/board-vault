@@ -56,6 +56,24 @@ export class GameTranslationService {
         return this._normalizeTitle(title)
     }
 
+    /** Translations for many games in one query, keyed by game id. */
+    async getTranslationsByGameIds(gameIds: Array<number>): Promise<Map<number, Record<SupportedLanguage, string>>> {
+        const uniqueIds = [...new Set(gameIds)]
+
+        if (uniqueIds.length === 0) {
+            return new Map()
+        }
+
+        const translations = this._parseResultSet(await this.databaseService.games.getGameTranslationsByGameIds(uniqueIds))
+
+        return new Map(
+            uniqueIds.map(gameId => [
+                gameId,
+                this._reduceGameTranslations(translations.filter(translation => translation.gameId === gameId)),
+            ]),
+        )
+    }
+
     private _reduceGameTranslations(gameTranslations: Array<GameTranslationDto>): Record<SupportedLanguage, string> {
         return gameTranslations.reduce(
             (acc, translation) => {
