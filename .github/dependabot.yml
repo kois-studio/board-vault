@@ -13,6 +13,11 @@ updates:
         applies-to: security-updates
         patterns:
           - "*"
+      # Nest packages only install at matching majors; one PR for all of them.
+      nestjs:
+        applies-to: version-updates
+        patterns:
+          - "@nestjs/*"
       minor-and-patch:
         applies-to: version-updates
         update-types:
@@ -26,11 +31,21 @@ updates:
     schedule:
       interval: monthly
     open-pull-requests-limit: 3
+    # TypeScript majors follow Angular's supported range; move them with
+    # `ng update`, not on their own.
+    ignore:
+      - dependency-name: typescript
+        update-types:
+          - version-update:semver-major
     groups:
       security-updates:
         applies-to: security-updates
         patterns:
           - "*"
+      angular:
+        applies-to: version-updates
+        patterns:
+          - "@angular/*"
       minor-and-patch:
         applies-to: version-updates
         update-types:
