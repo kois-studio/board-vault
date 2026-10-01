@@ -1,5 +1,11 @@
+import { provideLocationMocks } from '@angular/common/testing'
+import { Component } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
+import { provideRouter, Router } from '@angular/router'
 import { AppComponent } from './app.component'
+
+@Component({ template: '' })
+class EmptyRouteComponent {}
 
 describe('AppComponent', () => {
     beforeEach(async () => {
@@ -24,12 +30,20 @@ describe('AppComponent', () => {
         expect(document.querySelector('link[rel="canonical"]')?.getAttribute('href')).toContain(window.location.origin)
     })
 
-    it('provides a keyboard skip link for routed content', () => {
+    it('provides a keyboard skip link that stays on the current route', async () => {
+        TestBed.resetTestingModule()
+        await TestBed.configureTestingModule({
+            imports: [AppComponent],
+            providers: [provideRouter([{ path: 'groups/:groupId', component: EmptyRouteComponent }]), provideLocationMocks()],
+        }).compileComponents()
         const fixture = TestBed.createComponent(AppComponent)
+        await TestBed.inject(Router).navigateByUrl('/groups/7')
         fixture.detectChanges()
 
-        const skipLink = fixture.nativeElement.querySelector('a[href="#main-content"]') as HTMLAnchorElement
-        expect(skipLink?.textContent).toContain('Skip to main content')
+        // A bare "#main-content" would resolve against <base href="/"> and leave the route.
+        const skipLink = fixture.nativeElement.querySelector('a[appInPageLink="main-content"]') as HTMLAnchorElement
+        expect(skipLink.textContent).toContain('Skip to main content')
+        expect(skipLink.getAttribute('href')).toBe('/groups/7#main-content')
     })
 
     // it(`should have the 'frontend' title`, () => {

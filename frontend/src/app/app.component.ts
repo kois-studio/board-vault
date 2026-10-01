@@ -4,10 +4,11 @@ import { Meta, Title } from '@angular/platform-browser'
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router'
 import { filter } from 'rxjs'
 import { ToastComponent } from './components/toast/toast.component'
+import { InPageLinkDirective } from './components/ui/in-page-link/in-page-link.directive'
 
 @Component({
     selector: 'app-root',
-    imports: [RouterOutlet, ToastComponent],
+    imports: [RouterOutlet, ToastComponent, InPageLinkDirective],
     templateUrl: './app.component.html',
 })
 export class AppComponent {

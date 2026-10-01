@@ -47,6 +47,21 @@ test.describe('public navigation', () => {
         await expect(page.getByRole('heading', { name: /Make the next game night easier/i })).toBeVisible()
     })
 
+    test('keeps the keyboard skip link on the current page', async ({ page }) => {
+        await page.goto('/login')
+        const skipLink = page.getByRole('link', { name: 'Skip to main content' })
+
+        // A bare "#main-content" resolved against <base href="/"> and loaded the landing page instead.
+        await expect(skipLink).toHaveAttribute('href', '/login#main-content')
+        await page.keyboard.press('Tab')
+        await expect(skipLink).toBeFocused()
+        await page.keyboard.press('Enter')
+
+        await expect(page).toHaveURL(/\/login#main-content$/)
+        await expect(page.locator('#main-content')).toBeFocused()
+        await expect(page.getByRole('heading', { name: /Make the next game night easier/i })).toHaveCount(0)
+    })
+
     test('shows a not-found page for an unknown route', async ({ page }) => {
         await page.goto('/route-that-does-not-exist')
 
