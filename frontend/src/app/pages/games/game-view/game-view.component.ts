@@ -93,7 +93,8 @@ export class GameViewPageComponent implements OnDestroy {
     private _routeSub: Subscription | undefined
     private lastLoadedGameKey: string | null = null
     public wishlistAnimation = false // used for a little scale animation
-    public isLoadingGameData = true // initial loading state
+    // A signal, not a field: the load can start inside an effect, where a plain field change is never rendered.
+    public readonly isLoadingGameData = signal(true)
     public readonly gameLoadError = signal(false)
     // ownership form
     public ownershipFormGroup = new FormGroup({
@@ -140,13 +141,13 @@ export class GameViewPageComponent implements OnDestroy {
 
         // scroll to the top of the page
         window.scrollTo(0, 0)
-        this.isLoadingGameData = true
+        this.isLoadingGameData.set(true)
         this.gameLoadError.set(false)
 
         this.api.getGameView(userId, gameId).subscribe({
             next: (game) => {
                 this.gameView$.set(game)
-                this.isLoadingGameData = false
+                this.isLoadingGameData.set(false)
                 // ownership form
                 if (game.ownedGameData) {
                     this.ownershipFormGroup.patchValue({
@@ -157,7 +158,7 @@ export class GameViewPageComponent implements OnDestroy {
                 }
             },
             error: () => {
-                this.isLoadingGameData = false
+                this.isLoadingGameData.set(false)
                 this.gameLoadError.set(true)
                 this.toastService.error('Error loading game data')
             },
