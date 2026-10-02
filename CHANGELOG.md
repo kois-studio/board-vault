@@ -99,6 +99,8 @@ operational details.
 
 ### Fixed
 
+- Signing in no longer fails at random when the database is slow to answer
+  its first query after a quiet spell: a read that times out is tried once more.
 - A long name without spaces no longer makes the group page wider than a
   phone screen; it is cut off with an ellipsis in its card.
 - The Collection tabs fit on a phone screen; Wishlist was cut off.

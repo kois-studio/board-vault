@@ -33,7 +33,10 @@ persists. Frontend guards and hidden buttons are UX only.
 Every provider call is bounded
 ([`provider-timeout.ts`](../backend/src/common/http/provider-timeout.ts)):
 a Turso call or a Clerk call that takes more than 5 seconds fails the request
-with `503` and `DATABASE_TIMEOUT` or `CLERK_TIMEOUT`, and Redis calls give up
+with `503` and `DATABASE_TIMEOUT` or `CLERK_TIMEOUT`. A read-only query
+(`SELECT` or `WITH` without a write) that times out is sent once more first,
+because Turso's first query after a quiet spell can stall for seconds; writes
+are never repeated. Redis calls give up
 after 250 ms ([data-model.md](data-model.md#cache-redis)). A Clerk timeout
 while checking a session is a 503, never a 401, so the app does not sign the
 user out.

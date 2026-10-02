@@ -1,3 +1,5 @@
+import { ProviderTimeoutError } from '../../../common/http/provider-timeout'
+
 import { DatabaseService } from './database.service'
 
 import type { ConfigService } from '@nestjs/config'
@@ -1210,5 +1212,49 @@ describe('DatabaseService logging', () => {
         expect(transaction.execute).toHaveBeenCalledTimes(1)
         expect(transaction.commit).toHaveBeenCalledTimes(1)
         expect(transaction.rollback).not.toHaveBeenCalled()
+    })
+
+    describe('a database timeout', () => {
+        const serviceWith = (execute: jest.Mock) => {
+            const service = new DatabaseService({} as ConfigService)
+
+            ;(service as unknown as { tursoClient: { execute: jest.Mock } }).tursoClient = { execute }
+            return service
+        }
+
+        it('retries a read once', async () => {
+            const execute = jest.fn().mockRejectedValueOnce(new ProviderTimeoutError('database')).mockResolvedValueOnce({ rows: [] })
+
+            await expect(serviceWith(execute).execute('SELECT 1')).resolves.toEqual({ rows: [] })
+            expect(execute).toHaveBeenCalledTimes(2)
+        })
+
+        it('gives up after the second timeout', async () => {
+            const execute = jest.fn().mockRejectedValue(new ProviderTimeoutError('database'))
+
+            await expect(serviceWith(execute).execute({ sql: 'WITH x AS (SELECT 1) SELECT * FROM x', args: [] })).rejects.toBeInstanceOf(
+                ProviderTimeoutError,
+            )
+            expect(execute).toHaveBeenCalledTimes(2)
+        })
+
+        it('never repeats a write', async () => {
+            const execute = jest.fn().mockRejectedValue(new ProviderTimeoutError('database'))
+
+            await expect(serviceWith(execute).execute({ sql: 'INSERT INTO Meet (groupId) VALUES (?)', args: [1] })).rejects.toBeInstanceOf(
+                ProviderTimeoutError,
+            )
+            await expect(
+                serviceWith(execute).execute({ sql: 'WITH x AS (SELECT 1) DELETE FROM Meet WHERE id IN x', args: [] }),
+            ).rejects.toBeInstanceOf(ProviderTimeoutError)
+            expect(execute).toHaveBeenCalledTimes(2)
+        })
+
+        it('does not retry other errors', async () => {
+            const execute = jest.fn().mockRejectedValue(new Error('SQLITE_ERROR'))
+
+            await expect(serviceWith(execute).execute('SELECT 1')).rejects.toThrow('SQLITE_ERROR')
+            expect(execute).toHaveBeenCalledTimes(1)
+        })
     })
 })

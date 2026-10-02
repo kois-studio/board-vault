@@ -2,7 +2,7 @@ import { Client, createClient, type InStatement, type TransactionMode } from '@l
 import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 
-import { fetchWithTimeout } from '../../../common/http/provider-timeout'
+import { ProviderTimeoutError, fetchWithTimeout } from '../../../common/http/provider-timeout'
 
 import { AccountQueries } from './queries/accounts.queries'
 import { CollectionQueries } from './queries/collection.queries'
@@ -14,6 +14,14 @@ import { RecommendationQueries } from './queries/recommendations.queries'
 import { SessionQueries } from './queries/sessions.queries'
 
 export const CURRENT_SCHEMA_VERSION = '0015'
+
+/** Statements that only read, so running them twice is harmless. */
+const READ_ONLY_SQL = /^\s*(SELECT|WITH)\b/i
+const WRITE_SQL = /\b(INSERT|UPDATE|DELETE|REPLACE)\b/i
+
+function isReadOnly(sql: string): boolean {
+    return READ_ONLY_SQL.test(sql) && !WRITE_SQL.test(sql)
+}
 
 /**
  * The database connection. Queries live in per-domain classes under
@@ -71,7 +79,23 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
 
         this.LOGGER.log(sql)
 
-        return this.tursoClient.execute(stmt)
+        return this.executeWithRetry(stmt, sql)
+    }
+
+    /**
+     * Turso's first query after a quiet spell can stall for several seconds
+     * (#64). A read that times out is sent once more, which then answers in
+     * well under a second. Writes are never repeated.
+     */
+    private async executeWithRetry(stmt: InStatement, sql: string) {
+        try {
+            return await this.tursoClient.execute(stmt)
+        } catch (error) {
+            if (!(error instanceof ProviderTimeoutError) || !isReadOnly(sql)) throw error
+
+            this.LOGGER.warn('Database read timed out; retrying once')
+            return this.tursoClient.execute(stmt)
+        }
     }
 
     transaction(mode: TransactionMode) {
