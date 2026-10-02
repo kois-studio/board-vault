@@ -15,7 +15,11 @@
    and mobile width ([ux-flows.md](../ux-flows.md)). Hidden buttons are not
    security; the API must still reject the action.
 5. **Accessibility**: one `h1`, labelled form controls, buttons with
-   `type="button"` unless they submit, links with real `routerLink`s.
+   `type="button"` unless they submit, links with real `routerLink`s. To link
+   to a section of the same page, use `<a appInPageLink="section-id">`
+   (`components/ui/in-page-link/`), not `href="#section-id"`: with
+   `<base href="/">` a bare fragment resolves to `/#section-id` and reloads the
+   app on the landing page.
 6. **Test**: a component spec for logic, and a Playwright journey in
    `frontend/e2e/` for the main path. Public pages are covered by
    `public-a11y-audit.spec.ts`; add the route there if it is public.

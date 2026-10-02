@@ -20,6 +20,7 @@ import { ContainerWrapperComponent } from '../../components/ui/container-wrapper
 import { DialogDirective } from '../../components/ui/dialog/dialog.directive'
 import { IconComponent } from '../../components/ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../../components/ui/image-background/image-background.component'
+import { InPageLinkDirective } from '../../components/ui/in-page-link/in-page-link.directive'
 import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'
 import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
@@ -71,6 +72,7 @@ export function shouldShowFirstGroupSetup(input: {
         DialogDirective,
         SkeletonHistoryComponent,
         PageHeaderComponent,
+        InPageLinkDirective,
     ],
     templateUrl: 'group-view.component.html',
     styleUrls: ['group-view.component.scss'],

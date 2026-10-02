@@ -61,6 +61,10 @@ operational details.
 - Local checks on Windows: `.gitattributes` keeps LF line endings regardless
   of `core.autocrlf`, and backend e2e cleanup tolerates the SQLite file lock
   that the native libsql driver holds until the test process exits.
+- The group page section links (Decide, Games to acquire, People, …) and the
+  "Skip to main content" link stay on the current page. Under
+  `<base href="/">` they resolved to `/#section` and reloaded the app on the
+  landing page; they now scroll to the section and move focus to it.
 
 ### Added
 
