@@ -106,7 +106,11 @@ export class LogSessionWizardComponent {
 
     public steps: StepInfo[] = [
         { key: 'who', label: 'Who and when', description: 'Pick the group, the day, and who came.' },
-        { key: 'games', label: 'Games', description: 'Tick the games you played. Everyone who came is marked as a player; untick anyone who sat a game out.' },
+        {
+            key: 'games',
+            label: 'Games',
+            description: 'Tick the games you played. Everyone who came is marked as a player; untick anyone who sat a game out.',
+        },
         { key: 'save', label: 'Note and save', description: 'Add a note if you like, check the details, and save.' },
     ]
 
@@ -137,7 +141,9 @@ export class LogSessionWizardComponent {
     /** The offered games matching the search; chosen games always stay visible. */
     public readonly visibleGames = computed(() => {
         const query = this.gameQuery().trim().toLowerCase()
-        return this.games().filter((selection) => selection.selected || !query || this.getGameTitle(selection.game).toLowerCase().includes(query))
+        return this.games().filter(
+            (selection) => selection.selected || !query || this.getGameTitle(selection.game).toLowerCase().includes(query),
+        )
     })
 
     // --------------------------------------------------------------------------
@@ -516,7 +522,9 @@ export class LogSessionWizardComponent {
     public getSessionDateLabel(): string {
         const value = this.sessionDate.value
         if (!value) return 'Not set'
-        return new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(`${value}T12:00:00`))
+        return new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(
+            new Date(`${value}T12:00:00`),
+        )
     }
 
     public retryGroups(): void {
