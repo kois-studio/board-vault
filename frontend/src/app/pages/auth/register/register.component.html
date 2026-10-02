@@ -17,7 +17,7 @@
                         <div class="mt-8 rounded-2xl border border-indigo-200 bg-indigo-50 p-5 text-left dark:border-indigo-900/60 dark:bg-indigo-950/30" role="status">
                             <p class="font-semibold text-zinc-900 dark:text-white">Your Board Vault account is already registered.</p>
                             <p class="mt-2 text-sm leading-6 text-zinc-600 dark:text-zinc-300">Continue with this secure invitation link and we’ll add you to the group. No new password is needed.</p>
-                            <button type="button" class="app-btn-primary mt-5 w-full" [disabled]="isInvitationSubmitting" (click)="completeInvitationSignUp()">
+                            <button appButton type="button" class="mt-5 w-full" [disabled]="isInvitationSubmitting" (click)="completeInvitationSignUp()">
                                 {{ isInvitationSubmitting ? 'Joining…' : 'Continue to the group' }}
                             </button>
                         </div>
@@ -43,7 +43,7 @@
                                 }
                             </div>
                             <div id="clerk-captcha" aria-live="polite"></div>
-                            <button type="submit" class="app-btn-primary w-full" [disabled]="isInvitationSubmitting">
+                            <button appButton type="submit" class="w-full" [disabled]="isInvitationSubmitting">
                                 {{ isInvitationSubmitting ? 'Joining…' : 'Join the group' }}
                             </button>
                         </form>
@@ -75,8 +75,8 @@
                     <p class="mt-2 text-sm leading-6 text-zinc-600 dark:text-zinc-300">Ask a friend or group organizer who already uses Board Vault to invite you. Once invited, use the secure Clerk sign-up link they provide.</p>
                 </div>
                 <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
-                    <a routerLink="/login" class="app-btn-primary text-center">Sign in</a>
-                    <a routerLink="/" class="app-btn-secondary text-center">Back to home</a>
+                    <a appButton routerLink="/login" class="text-center">Sign in</a>
+                    <a appButton variant="secondary" routerLink="/" class="text-center">Back to home</a>
                 </div>
                 <p class="mt-8 text-sm text-zinc-500 dark:text-zinc-400">Already have access? Sign in with your existing Board Vault account.</p>
             </div>
@@ -85,7 +85,7 @@
                 <p class="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400">Create your shelf</p>
                 <h1 class="mt-3 text-4xl font-bold tracking-tight text-zinc-900 dark:text-white">Create your Board Vault account</h1>
                 <p class="mt-5 text-zinc-600 dark:text-zinc-300">Set up your identity securely with Clerk.</p>
-                <button type="button" class="app-btn-primary mt-8" (click)="openClerkSignUp()">Open secure sign-up</button>
+                <button appButton type="button" class="mt-8" (click)="openClerkSignUp()">Open secure sign-up</button>
                 <p class="mt-6 text-sm text-zinc-500 dark:text-zinc-400">Already have an account? <a routerLink="/login" class="underline">Sign in</a></p>
             </div>
         } @else {
@@ -98,9 +98,9 @@
                 <p class="mt-5 text-zinc-600 dark:text-zinc-300">Your account has not been created. Please try again shortly or ask your group owner to send a fresh invitation.</p>
                 <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
                     @if (clerkIsConfigured()) {
-                        <button type="button" class="app-btn-primary" (click)="openClerkSignUp()">Try secure sign-up again</button>
+                        <button appButton type="button" (click)="openClerkSignUp()">Try secure sign-up again</button>
                     }
-                    <a routerLink="/login" class="app-btn-secondary text-center">Sign in</a>
+                    <a appButton variant="secondary" routerLink="/login" class="text-center">Sign in</a>
                 </div>
             </div>
         }

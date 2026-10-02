@@ -2,9 +2,9 @@
     Your shared place to decide what to play, coordinate the next session, and remember the games you enjoyed.
 
     @if (isGroupOwnerComputed()) {
-        <app-button class="action-button" icon="gear-fill" (click)="onClickEditGroup()">Manage group</app-button>
+        <button appButton class="action-button" icon="gear-fill" (click)="onClickEditGroup()">Manage group</button>
     } @else {
-        <app-button class="action-button" variant="secondary" icon="box-arrow-right" (click)="onClickLeaveGroup()">Leave group</app-button>
+        <button appButton class="action-button" variant="secondary" icon="box-arrow-right" (click)="onClickLeaveGroup()">Leave group</button>
     }
 </app-page-header>
 
@@ -18,13 +18,13 @@
         <div class="rounded-2xl border border-amber-200 bg-amber-50 p-8 text-center dark:border-amber-900/50 dark:bg-amber-950/30" role="alert">
             <p class="text-lg font-semibold">This group could not be loaded.</p>
             <p class="mt-2 text-secondary">Your group data is safe. Try again when the connection is ready.</p>
-            <button type="button" class="app-btn-primary mt-5" (click)="retryGroups()">Retry group</button>
+            <button appButton type="button" class="mt-5" (click)="retryGroups()">Retry group</button>
         </div>
     } @else if (!groupData$()) {
         <div class="rounded-2xl border border-amber-200 bg-amber-50 p-8 text-center dark:border-amber-900/50 dark:bg-amber-950/30" role="alert">
             <p class="text-lg font-semibold">This group is not available.</p>
             <p class="mt-2 text-secondary">It may have been deleted, or your membership may have changed.</p>
-            <a class="app-btn-primary mt-5" routerLink="/dashboard">Back to groups</a>
+            <a appButton class="mt-5" routerLink="/dashboard">Back to groups</a>
         </div>
     } @else {
         @if (groupData$(); as group) {
@@ -46,7 +46,7 @@
                             <option [value]="availableGroup.id">{{ availableGroup.name }}</option>
                         }
                     </select>
-                    <a class="app-btn-secondary text-center" routerLink="/dashboard">All groups</a>
+                    <a appButton variant="secondary" class="text-center" routerLink="/dashboard">All groups</a>
                 </div>
             </nav>
 
@@ -58,7 +58,7 @@
                             <h2 id="first-group-setup-heading" class="text-2xl font-bold text-zinc-900 dark:text-white sm:text-3xl">Make {{ group.name }} ready for a game night</h2>
                             <p class="mt-2 max-w-2xl leading-7 text-secondary">This space is ready. Add the people and games that make its decisions useful, then plan the first night together.</p>
                         </div>
-                        <a class="app-btn-secondary shrink-0 text-center" appInPageLink="sessions">Skip to session planning</a>
+                        <a appButton variant="secondary" class="shrink-0 text-center" appInPageLink="sessions">Skip to session planning</a>
                     </div>
 
                     <ol class="mt-6 grid gap-3 lg:grid-cols-3">
@@ -130,9 +130,9 @@
                                 placeholder="Friend's name"
                                 maxlength="100"
                             />
-                            <button type="button" class="app-btn-primary shrink-0" [disabled]="!newGroupPersonName().trim() || groupPersonMutationId() !== null" (click)="addGroupPerson()">Add person</button>
+                            <button appButton type="button" class="shrink-0" [disabled]="!newGroupPersonName().trim() || groupPersonMutationId() !== null" (click)="addGroupPerson()">Add person</button>
                         </div>
-                        <button type="button" class="app-btn-secondary shrink-0" (click)="toggleArchivedGroupPeople()">{{ includeArchivedGroupPeople() ? 'Hide archived' : 'Show archived' }}</button>
+                        <button appButton variant="secondary" type="button" class="shrink-0" (click)="toggleArchivedGroupPeople()">{{ includeArchivedGroupPeople() ? 'Hide archived' : 'Show archived' }}</button>
                     }
                 </div>
 
@@ -140,13 +140,13 @@
                     <div class="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-900/60 dark:bg-emerald-950/30" role="status">
                         <p class="font-semibold text-emerald-900 dark:text-emerald-100">A group person is waiting for you</p>
                         <p class="mt-1 text-sm text-secondary">Review the games and preferences recorded for {{ claimablePerson.person.displayName }}, then link that history to your account.</p>
-                        <a class="app-btn-primary mt-3" [routerLink]="['/groups', group.id, 'people', claimablePerson.person.id, 'claim']">Review and claim</a>
+                        <a appButton class="mt-3" [routerLink]="['/groups', group.id, 'people', claimablePerson.person.id, 'claim']">Review and claim</a>
                     </div>
                 } @else if (!currentUserHasGroupPersonComputed() && !isGroupOwnerComputed()) {
                     <div class="mt-5 rounded-2xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
                         <p class="font-semibold">Represent yourself in this group</p>
                         <p class="mt-1 text-sm text-secondary">Your account is already a member, but is not yet represented in this group’s participant history. This only adds a group-scoped person record; it does not grant access or invite anyone.</p>
-                        <button type="button" class="app-btn-secondary mt-3" [disabled]="groupPersonMutationId() !== null" (click)="joinAsNewGroupPerson()">Add me to group history</button>
+                        <button appButton variant="secondary" type="button" class="mt-3" [disabled]="groupPersonMutationId() !== null" (click)="joinAsNewGroupPerson()">Add me to group history</button>
                     </div>
                 }
 
@@ -155,7 +155,7 @@
                 } @else if (groupPeopleError()) {
                     <div class="mt-5 rounded-2xl border border-amber-200 bg-amber-50 p-6 text-center dark:border-amber-900/50 dark:bg-amber-950/30" role="alert">
                         <p class="font-medium">Group people could not be loaded.</p>
-                        <button type="button" class="app-btn-secondary mt-4" (click)="retryGroupPeople()">Retry</button>
+                        <button appButton variant="secondary" type="button" class="mt-4" (click)="retryGroupPeople()">Retry</button>
                     </div>
                 } @else if (groupPeople$().length === 0) {
                     <div class="mt-5 rounded-2xl border border-dashed border-indigo-200 p-6 text-center dark:border-indigo-900">
@@ -258,12 +258,12 @@
                                 <h2 class="text-3xl font-bold">{{ nextMeeting.meetDate | customDate: true: nextMeeting.timezone }}</h2>
                                 <p class="mt-2 text-indigo-100">{{ nextMeeting.status === 'active' ? 'This session is happening now.' : 'Your next planned session.' }}</p>
                             </div>
-                            <a class="app-btn-secondary text-center" [routerLink]="['/sessions', nextMeeting.id]">Open session</a>
+                            <a appButton variant="secondary" class="text-center" [routerLink]="['/sessions', nextMeeting.id]">Open session</a>
                         </div>
                     } @else {
                         <h2 class="mt-3 text-3xl font-bold">Nothing planned yet</h2>
                         <p class="mt-2 max-w-xl text-indigo-100">Give the group a date and let everyone know what you might play.</p>
-                        <a class="app-btn-secondary mt-5" [routerLink]="['/groups', group.id, 'sessions', 'new']">Plan a session</a>
+                        <a appButton variant="secondary" class="mt-5" [routerLink]="['/groups', group.id, 'sessions', 'new']">Plan a session</a>
                     }
                 </article>
 
@@ -299,13 +299,13 @@
                         <p class="mt-2 max-w-2xl text-secondary">Use the people attending and the games they own to get a short, explainable list of suggestions.</p>
                     </div>
                     @if (selectedMembers$().length > 0) {
-                        <a
-                            class="app-btn-primary shrink-0 text-center"
+                        <a appButton
+                            class="shrink-0 text-center"
                             routerLink="/play/recommendations"
                             [queryParams]="{ groupId: group.id, attendeeIds: selectedMembers$().join(',') }"
                         >Find a game</a>
                     } @else {
-                        <a class="app-btn-secondary shrink-0 text-center" appInPageLink="sessions">Choose attendees first</a>
+                        <a appButton variant="secondary" class="shrink-0 text-center" appInPageLink="sessions">Choose attendees first</a>
                     }
                 </div>
             </section>
@@ -317,7 +317,7 @@
                         <h2 id="acquisition-heading" class="mt-1 text-2xl font-bold">Games the group wants next</h2>
                         <p class="mt-1 text-secondary">A shared shortlist for games nobody in the group owns yet. Interest is explicit, so purchase suggestions stay social.</p>
                     </div>
-                    <a class="app-btn-secondary shrink-0 text-center" [routerLink]="['/collection/browse']" [queryParams]="{ groupId: group.id }">Browse catalog</a>
+                    <a appButton variant="secondary" class="shrink-0 text-center" [routerLink]="['/collection/browse']" [queryParams]="{ groupId: group.id }">Browse catalog</a>
                 </div>
 
                 @if (acquisitionBoardLoading()) {
@@ -325,14 +325,14 @@
                 } @else if (acquisitionBoardError()) {
                     <div class="mt-5 rounded-2xl border border-amber-200 bg-amber-50 p-6 text-center dark:border-amber-900/50 dark:bg-amber-950/30" role="alert">
                         <p class="font-medium">The group shortlist could not be loaded.</p>
-                        <app-button class="mt-4" icon="arrow-repeat" (click)="retryAcquisitionBoard()">Retry</app-button>
+                        <button appButton class="mt-4" icon="arrow-repeat" (click)="retryAcquisitionBoard()">Retry</button>
                     </div>
                 } @else if (acquisitionBoard$().length === 0) {
                     <div class="mt-5 rounded-2xl border border-dashed border-zinc-300 p-8 text-center dark:border-zinc-700">
                         <app-icon name="shopping-bag" [size]="40" className="text-indigo-500" />
                         <h3 class="mt-3 text-lg font-semibold">No group acquisition ideas yet</h3>
                         <p class="mt-2 text-secondary">Browse the catalog and add games that would make a good next group purchase.</p>
-                        <a class="app-btn-primary mt-5" [routerLink]="['/collection/browse']" [queryParams]="{ groupId: group.id }">Find a game to add</a>
+                        <a appButton class="mt-5" [routerLink]="['/collection/browse']" [queryParams]="{ groupId: group.id }">Find a game to add</a>
                     </div>
                 } @else {
                     <div class="mt-5 grid gap-4 md:grid-cols-2">
@@ -364,7 +364,7 @@
                                             <span class="text-xs font-medium text-emerald-700 dark:text-emerald-300" role="status">You are interested</span>
                                             <button type="button" class="shrink-0 text-xs text-secondary underline" [disabled]="acquisitionMutationGameId() === entry.gameData.id" (click)="removeAcquisitionInterest(entry.gameData.id)">Remove my interest</button>
                                         } @else {
-                                            <button type="button" class="app-btn-secondary text-xs" [disabled]="acquisitionMutationGameId() === entry.gameData.id" (click)="addAcquisitionInterest(entry.gameData.id)">{{ acquisitionMutationGameId() === entry.gameData.id ? 'Saving…' : 'Add my interest' }}</button>
+                                            <button appButton variant="secondary" type="button" class="text-xs" [disabled]="acquisitionMutationGameId() === entry.gameData.id" (click)="addAcquisitionInterest(entry.gameData.id)">{{ acquisitionMutationGameId() === entry.gameData.id ? 'Saving…' : 'Add my interest' }}</button>
                                         }
                                     </div>
                                     @if (acquisitionMutationErrors()[entry.gameData.id]; as interestError) {
@@ -448,9 +448,9 @@
                 </div>
 
                 <div class="mt-4 flex flex-wrap items-center gap-3">
-                    <app-button size="small" (click)="onClickSelectAll()">
+                    <button appButton size="small" (click)="onClickSelectAll()">
                         {{ selectedMembers$().length === group.members.length ? 'Clear selection' : 'Select everyone' }}
-                    </app-button>
+                    </button>
                     @if (invitationsList.length > 0) {
                         <span class="text-sm text-secondary"><app-icon name="mail" [size]="16" className="mr-1" />{{ invitationsList.length }} invitation{{ invitationsList.length === 1 ? '' : 's' }} pending</span>
                     }
@@ -547,7 +547,7 @@
                         <h2 id="history-heading" class="mt-1 text-2xl font-bold">Recent sessions</h2>
                         <p class="mt-1 text-secondary">A compact record of what this group has actually played together.</p>
                     </div>
-                    <app-button (click)="onClickNewMeet()" icon="plus-lg">Plan a session</app-button>
+                    <button appButton (click)="onClickNewMeet()" icon="plus-lg">Plan a session</button>
                 </div>
 
                 @if (isLoading()) {
@@ -556,14 +556,14 @@
                     <div class="mt-5 rounded-2xl border border-amber-200 bg-amber-50 p-8 text-center dark:border-amber-900/50 dark:bg-amber-950/30" role="alert">
                         <p class="font-medium">Recent sessions could not be loaded.</p>
                         <p class="mt-2 text-sm text-secondary">Your group data is safe. Try again when the connection is ready.</p>
-                        <app-button class="mt-4" icon="arrow-repeat" (click)="retryGroupHistory()">Retry</app-button>
+                        <button appButton class="mt-4" icon="arrow-repeat" (click)="retryGroupHistory()">Retry</button>
                     </div>
                 } @else if (groupHistory$().length === 0) {
                     <div class="mt-5 rounded-2xl border border-dashed border-zinc-300 p-8 text-center dark:border-zinc-700">
                         <app-icon name="calendar-heart" [size]="40" className="text-indigo-500" />
                         <h3 class="mt-3 text-lg font-semibold">Your group history starts here</h3>
                         <p class="mt-2 text-secondary">Record the next game night so recommendations can learn from what you really play.</p>
-                        <app-button class="mt-5" icon="plus-lg" (click)="onClickNewMeet()">Plan a session</app-button>
+                        <button appButton class="mt-5" icon="plus-lg" (click)="onClickNewMeet()">Plan a session</button>
                     </div>
                 } @else {
                     <div class="mt-5 grid gap-4 lg:grid-cols-3">
@@ -710,8 +710,8 @@
                 </div>
             </div>
             <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-                <button id="leave-group-dialog-cancel" type="button" class="app-btn-secondary" [disabled]="isLeavingGroup()" (click)="cancelLeaveGroup()">Keep group access</button>
-                <button type="button" class="app-btn-danger" [disabled]="isLeavingGroup()" (click)="confirmLeaveGroup()">{{ isLeavingGroup() ? 'Leaving…' : 'Leave group' }}</button>
+                <button appButton variant="secondary" id="leave-group-dialog-cancel" type="button" [disabled]="isLeavingGroup()" (click)="cancelLeaveGroup()">Keep group access</button>
+                <button appButton variant="danger" type="button" [disabled]="isLeavingGroup()" (click)="confirmLeaveGroup()">{{ isLeavingGroup() ? 'Leaving…' : 'Leave group' }}</button>
             </div>
         </section>
     </div>

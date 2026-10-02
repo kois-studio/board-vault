@@ -2,6 +2,7 @@ import { Component, computed, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { CardSectionComponent } from '../../components/cards/card-section/card-section.component'
 import { BadgeComponent } from '../../components/ui/badge/badge.component'
+import { ButtonComponent } from '../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'
 import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
@@ -11,7 +12,15 @@ import { LoadingService } from '../../core/services/loading.service'
 
 /** The Play landing page: one card per subpage. */
 @Component({
-    imports: [PageHeaderComponent, ContainerWrapperComponent, CardSectionComponent, BadgeComponent, RouterLink, CustomDatePipe],
+    imports: [
+        ButtonComponent,
+        PageHeaderComponent,
+        ContainerWrapperComponent,
+        CardSectionComponent,
+        BadgeComponent,
+        RouterLink,
+        CustomDatePipe,
+    ],
     templateUrl: 'play-page.component.html',
 })
 export class PlayPageComponent {

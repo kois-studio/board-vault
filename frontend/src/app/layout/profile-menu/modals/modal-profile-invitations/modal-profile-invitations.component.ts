@@ -1,11 +1,12 @@
 import { Component, inject, signal } from '@angular/core'
 import { CardInvitationComponent } from '../../../../components/card-invitation/card-invitation.component'
+import { ButtonComponent } from '../../../../components/ui/button/button.component'
 import { DialogDirective } from '../../../../components/ui/dialog/dialog.directive'
 import { IconComponent } from '../../../../components/ui/icon/icon.component'
 import { DataService } from '../../../../core/services/data.service'
 
 @Component({
-    imports: [CardInvitationComponent, DialogDirective, IconComponent],
+    imports: [ButtonComponent, CardInvitationComponent, DialogDirective, IconComponent],
     selector: 'app-modal-profile-invitations',
     templateUrl: 'modal-profile-invitations.component.html',
 })

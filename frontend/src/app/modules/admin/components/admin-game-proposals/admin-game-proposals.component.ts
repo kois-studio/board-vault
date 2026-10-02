@@ -1,5 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
+import { ButtonComponent } from '../../../../components/ui/button/button.component'
 import { DialogDirective } from '../../../../components/ui/dialog/dialog.directive'
 import { IconComponent } from '../../../../components/ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../../../../components/ui/image-background/image-background.component'
@@ -7,7 +8,7 @@ import { SpinnerComponent } from '../../../../components/ui/spinner/spinner.comp
 import { AdminGameProposalsService } from './admin-game-proposals.service'
 
 @Component({
-    imports: [FormsModule, ImageBackgroundComponent, SpinnerComponent, IconComponent, DialogDirective],
+    imports: [ButtonComponent, FormsModule, ImageBackgroundComponent, SpinnerComponent, IconComponent, DialogDirective],
     providers: [AdminGameProposalsService],
     selector: 'app-admin-game-proposals',
     templateUrl: './admin-game-proposals.component.html',

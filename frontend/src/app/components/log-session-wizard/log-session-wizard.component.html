@@ -74,15 +74,15 @@
             <div class="py-12 text-center" role="alert">
                 <p class="text-gray-700 dark:text-gray-300">Your groups could not be loaded.</p>
                 <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Check your connection and try again.</p>
-                <app-button class="mt-4" icon="arrow-repeat" (click)="retryGroups()">Retry</app-button>
+                <button appButton class="mt-4" icon="arrow-repeat" (click)="retryGroups()">Retry</button>
             </div>
             } @else if (userGroups().length === 0) {
             <div class="py-12 text-center">
                 <p class="text-gray-700 dark:text-gray-300">Create or join a group before logging a session.</p>
                 <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">A group gives this session its attendees and available games.</p>
                 <div class="mt-5 flex flex-wrap justify-center gap-3">
-                    <a class="app-btn-primary" routerLink="/create-group">Create a group</a>
-                    <a class="app-btn-secondary" routerLink="/dashboard">View invitations</a>
+                    <a appButton routerLink="/create-group">Create a group</a>
+                    <a appButton variant="secondary" routerLink="/dashboard">View invitations</a>
                 </div>
             </div>
             } @else {
@@ -148,8 +148,8 @@
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white">Select Attendees</h3>
                 <div class="flex space-x-2">
-                    <app-button variant="primary" size="small" (click)="selectAllAttendees()"> Select All </app-button>
-                    <app-button variant="secondary" size="small" (click)="deselectAllAttendees()"> Deselect All </app-button>
+                    <button appButton variant="primary" size="small" (click)="selectAllAttendees()"> Select All </button>
+                    <button appButton variant="secondary" size="small" (click)="deselectAllAttendees()"> Deselect All </button>
                 </div>
             </div>
             <div class="grid lg:grid-cols-2 gap-4">
@@ -198,8 +198,8 @@
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white">Select Games</h3>
                 <div class="flex space-x-2">
-                    <app-button variant="primary" size="small" (click)="selectAllGames()"> Select All </app-button>
-                    <app-button variant="secondary" size="small" (click)="deselectAllGames()"> Deselect All </app-button>
+                    <button appButton variant="primary" size="small" (click)="selectAllGames()"> Select All </button>
+                    <button appButton variant="secondary" size="small" (click)="deselectAllGames()"> Deselect All </button>
                 </div>
             </div>
             <div class="grid lg:grid-cols-2 gap-4">
@@ -264,13 +264,13 @@
                                 <p class="text-sm text-gray-600 dark:text-gray-400" aria-live="polite">{{ getSelectedParticipantCount(game.game.id) }} player{{ getSelectedParticipantCount(game.game.id) === 1 ? '' : 's' }}</p>
                             </div>
                         </div>
-                        <app-button
+                        <button appButton
                             [variant]="isAllSelectedForGame(game.game.id) ? 'secondary' : 'primary'"
                             size="small"
                             (click)="toggleAllForGame(game.game.id)"
                         >
                             {{ isAllSelectedForGame(game.game.id) ? 'Remove everyone' : 'Select everyone' }}
-                        </app-button>
+                        </button>
                     </div>
                     <div class="mt-4 grid gap-2 sm:grid-cols-2">
                         @for (attendee of getSelectedAttendees(); track attendee.user.id) {
@@ -347,16 +347,16 @@
         <!-- Navigation Buttons -->
         <div class="flex justify-between items-center mt-8 pt-6 border-t border-gray-200 dark:border-zinc-600">
             @if (currentStep() !== 'group') {
-            <app-button variant="secondary" (click)="previousStep()"> Previous </app-button>
+            <button appButton variant="secondary" (click)="previousStep()"> Previous </button>
             } @else {
             <div></div>
             }
 
-            <app-button variant="primary" [disabled]="!canProceedToNextStep() || isLoading()" [loading]="isLoading()" (click)="nextStep()">
+            <button appButton variant="primary" [disabled]="!canProceedToNextStep() || isLoading()" [loading]="isLoading()" (click)="nextStep()">
                 @if (!isLoading()) {
                 {{ currentStep() === 'review' ? 'Save session' : currentStep() === 'notes' ? 'Review session' : 'Next' }}
                 }
-            </app-button>
+            </button>
         </div>
     </div>
 </container-wrapper>

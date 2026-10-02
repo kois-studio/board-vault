@@ -1,7 +1,7 @@
 <app-page-header titleText="My Games" [showActionButton]="true">
     The games you can bring. Only you see this list; groups use it when you decide together.
 
-    <a class="app-btn-primary action-button text-center" routerLink="/collection/browse">Add games</a>
+    <a appButton class="action-button text-center" routerLink="/collection/browse">Add games</a>
 </app-page-header>
 <container-wrapper>
 
@@ -15,7 +15,7 @@
         <div class="rounded-lg border border-amber-200 bg-amber-50 p-8 text-center dark:border-amber-900/50 dark:bg-amber-950/30" role="alert">
             <p class="text-lg font-medium">Your collection could not be loaded.</p>
             <p class="text-secondary mt-2">Try again without losing your saved games.</p>
-            <button type="button" class="app-btn-primary mt-4" (click)="retryGames()">Retry</button>
+            <button appButton type="button" class="mt-4" (click)="retryGames()">Retry</button>
         </div>
     } @else if (userGames$().length === 0) {
         <section class="rounded-2xl border border-dashed border-zinc-300 p-8 text-center dark:border-zinc-700" aria-labelledby="empty-collection-heading">
@@ -23,8 +23,8 @@
             <h2 id="empty-collection-heading" class="mt-3 text-xl font-semibold">Start with the games you actually bring to the table</h2>
             <p class="mx-auto mt-2 max-w-xl text-secondary">A few real games make group suggestions useful. Add your first five, then invite friends or choose what to play together.</p>
             <div class="mt-5 flex flex-wrap justify-center gap-3">
-                <a class="app-btn-primary" routerLink="/collection/browse">Add your first game</a>
-                <a class="app-btn-secondary" routerLink="/dashboard">Go to groups</a>
+                <a appButton routerLink="/collection/browse">Add your first game</a>
+                <a appButton variant="secondary" routerLink="/dashboard">Go to groups</a>
             </div>
         </section>
     } @else {

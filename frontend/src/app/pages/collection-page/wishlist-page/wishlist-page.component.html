@@ -1,7 +1,7 @@
 <app-page-header titleText="Wishlist" [showActionButton]="true">
     Personal intent for games you may want to add to your private shelf — not a group purchase request
 
-    <app-button class="action-button" icon="plus-lg" link="/collection/browse">Explore Games</app-button>
+    <a appButton class="action-button" icon="plus-lg" routerLink="/collection/browse">Explore Games</a>
 </app-page-header>
 
 <container-wrapper>
@@ -16,7 +16,7 @@
         <div class="text-center text-secondary" role="alert">
             <p>Wishlist could not be loaded.</p>
             <p class="mt-2 text-sm">Check your connection and try again.</p>
-            <app-button class="mt-4" icon="arrow-repeat" (click)="retryWishlist()">Retry</app-button>
+            <button appButton class="mt-4" icon="arrow-repeat" (click)="retryWishlist()">Retry</button>
         </div>
     } @else if (userWishlist$().length === 0) {
         <!-- no data -->

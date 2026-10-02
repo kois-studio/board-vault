@@ -36,10 +36,10 @@ operational details.
   compact upcoming sessions, and shorter group and session pages.
   `/collection` and `/play` open a hub with a card for each subpage and its
   count; recent collection activity sits under the Collection cards.
-- Buttons share one style: links and buttons that look like buttons use the
-  same recipe as `<app-button>`, primary buttons are indigo everywhere, and
-  every button shrinks slightly when pressed. `<app-button link="…">` renders
-  a real link.
+- Buttons share one component: `appButton` goes on a native `<button>` or
+  `<a>` (replacing the `<app-button>` wrapper and hand-written `app-btn-*`
+  classes), primary buttons are indigo everywhere, and every button shrinks
+  slightly when pressed.
 - Group cards count the group's people without an account and the games
   they own.
 - The groups overview and history load games, titles, and people in

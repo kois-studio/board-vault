@@ -7,7 +7,7 @@
   <div class="flex min-h-[50vh] flex-col items-center justify-center gap-3 px-4 text-center text-secondary">
     <h1 class="text-xl font-semibold">Game data could not be loaded.</h1>
     <p>Check your connection and try again.</p>
-    <app-button icon="arrow-repeat" (click)="retryGameLoad()">Retry</app-button>
+    <button appButton icon="arrow-repeat" (click)="retryGameLoad()">Retry</button>
   </div>
 } @else if (gameView$(); as game) {
   <container-wrapper>
@@ -86,9 +86,9 @@
               <span class="inline-flex items-center gap-2 rounded-full bg-emerald-100 px-4 py-2 text-sm font-semibold text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200">
                 <app-icon name="circle-check" [size]="16" aria-hidden="true" /> In your games
               </span>
-              <app-button variant="secondary" size="small" (click)="removeFromCollection()" [loading]="PREVENT_SPAM.isLoadingRemoveFromCollection">Remove</app-button>
+              <button appButton variant="secondary" size="small" (click)="removeFromCollection()" [loading]="PREVENT_SPAM.isLoadingRemoveFromCollection">Remove</button>
             } @else {
-              <app-button icon="plus-lg" (click)="addToCollection()" [loading]="PREVENT_SPAM.isLoadingAddToCollection">I own this game</app-button>
+              <button appButton icon="plus-lg" (click)="addToCollection()" [loading]="PREVENT_SPAM.isLoadingAddToCollection">I own this game</button>
               <button
                 type="button"
                 (click)="toggleWishlist()"
@@ -186,7 +186,7 @@
               <textarea formControlName="purchaseNotes" rows="2" maxlength="128" placeholder="For example: gift from Ana, missing one meeple" class="mt-1 w-full resize-none rounded-lg border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"></textarea>
             </label>
             <div class="flex justify-end sm:col-span-2">
-              <app-button type="submit" [loading]="PREVENT_SPAM.isLoadingUpdateOwnership" [disabled]="ownershipFormGroup.invalid">Save</app-button>
+              <button appButton type="submit" [loading]="PREVENT_SPAM.isLoadingUpdateOwnership" [disabled]="ownershipFormGroup.invalid">Save</button>
             </div>
           </form>
         </details>

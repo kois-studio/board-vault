@@ -33,7 +33,7 @@
     @if (!isSearching$() && searchError()) {
         <div class="text-center text-secondary space-y-4" role="alert">
             <p>We couldn't load games right now.</p>
-            <app-button (click)="retrySearch()">Try again</app-button>
+            <button appButton (click)="retrySearch()">Try again</button>
         </div>
     } @else if (!isSearching$() && gamesListComputed().length === 0) {
         <!-- no data -->
@@ -43,16 +43,16 @@
                     @if (acquisitionGroupId() && acquisitionBoardError()) {
                         <p class="mb-2">We couldn't check {{ acquisitionGroupName() }}'s shortlist.</p>
                         <p class="text-sm text-gray-500 mb-4">Try again before adding a game so the group decision stays accurate.</p>
-                        <app-button (click)="retryAcquisitionBoard()">Try again</app-button>
+                        <button appButton (click)="retryAcquisitionBoard()">Try again</button>
                     } @else if (allSearchResultsOwnedByGroup()) {
                         <p class="mb-2">Your group already owns every matching game</p>
                         <p class="text-sm text-gray-500 mb-4">Search for another game if you want to grow the group’s acquisition shortlist.</p>
                     } @else {
                         <p class="mb-2">No games found matching "{{searchTerm$().trim()}}"</p>
                         <p class="text-sm text-gray-500 mb-4">Please review the spelling</p>
-                        <app-button (click)="navigateToProposeGame()">
+                        <button appButton (click)="navigateToProposeGame()">
                             Propose this game
-                        </app-button>
+                        </button>
                     }
                 </div>
             } @else {
@@ -96,9 +96,9 @@
                         </button>
                     }
                     @if (acquisitionGroupId()) {
-                        <button
+                        <button appButton variant="secondary"
                             type="button"
-                            class="app-btn-secondary mt-2 w-full text-sm"
+                            class="mt-2 w-full text-sm"
                             [disabled]="acquisitionBoardLoading() || acquisitionBoardError() || !!acquisitionActionState(game.id)"
                             (click)="addGameToAcquisitionBoard(game.id)"
                         >
@@ -141,9 +141,9 @@
         <!-- Pagination controls if needed -->
         @if (hasMoreGames$()) {
             <div class="flex justify-center mt-6">
-                <app-button (click)="loadMoreGames()">
+                <button appButton (click)="loadMoreGames()">
                     Load More
-                </app-button>
+                </button>
             </div>
         }
     }

@@ -10,7 +10,7 @@
             <div class="mt-8 rounded-2xl border border-indigo-100 bg-indigo-50 p-5 text-center dark:border-indigo-900/60 dark:bg-indigo-950/30">
                 <p class="font-medium text-zinc-900 dark:text-white">Use secure sign-in</p>
                 <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-300">Sign in with your email and password, or with a one-time email code.</p>
-                <button type="button" class="app-btn-primary mt-4" (click)="openClerkSignIn()">Continue with secure sign-in</button>
+                <button appButton type="button" class="mt-4" (click)="openClerkSignIn()">Continue with secure sign-in</button>
             </div>
             <p class="mt-5 text-center text-sm text-zinc-500 dark:text-zinc-400">Forgot your password? Choose “Forgot password?” in the sign-in window.</p>
         } @else if (!clerkIsLoaded()) {

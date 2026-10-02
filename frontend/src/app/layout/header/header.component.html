@@ -27,7 +27,7 @@
                         @if (!clerkIsSignedIn()) {
                             <button type="button" class="cursor-pointer" (click)="openClerkSignIn()">Log In</button>
                             @if (selfRegistrationEnabled()) {
-                                <app-button type="button" (click)="openClerkSignUp()">Sign Up</app-button>
+                                <button appButton type="button" (click)="openClerkSignUp()">Sign Up</button>
                             } @else {
                                 <a routerLink="/register" class="font-medium text-indigo-600 dark:text-indigo-400">Private beta</a>
                             }
@@ -35,7 +35,7 @@
                     } @else {
                         <a routerLink="/login">Log In</a>
                         @if (selfRegistrationEnabled()) {
-                            <app-button link="/register">Sign Up</app-button>
+                            <a appButton routerLink="/register">Sign Up</a>
                         } @else {
                             <a routerLink="/register" class="font-medium text-indigo-600 dark:text-indigo-400">Private beta</a>
                         }

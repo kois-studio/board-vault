@@ -9,18 +9,18 @@
       <section class="rounded-3xl border border-amber-200 bg-amber-50 p-8 text-center dark:border-amber-900/60 dark:bg-amber-950/30" role="alert">
         <h1 class="text-2xl font-bold">This group plan is temporarily unavailable</h1>
         <p class="mt-2 text-secondary">We could not load your groups. Your saved data is safe; try again or return to the groups workspace.</p>
-        <div class="mt-6 flex flex-col justify-center gap-3 sm:flex-row"><app-button icon="arrow-repeat" (click)="retryGroups()">Retry</app-button><a class="app-btn-secondary text-center" routerLink="/dashboard">Back to groups</a></div>
+        <div class="mt-6 flex flex-col justify-center gap-3 sm:flex-row"><button appButton icon="arrow-repeat" (click)="retryGroups()">Retry</button><a appButton variant="secondary" class="text-center" routerLink="/dashboard">Back to groups</a></div>
       </section>
     }
     @if (!isLoadingGroups && !groupsError && groupUnavailable) {
       <section class="rounded-3xl border border-zinc-200 bg-white p-8 text-center shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
         <h1 class="text-2xl font-bold">This group is no longer available</h1>
         <p class="mt-2 text-secondary">You may have left the group, or this link may be out of date.</p>
-        <a class="app-btn-primary mt-6" routerLink="/dashboard">Return to groups</a>
+        <a appButton class="mt-6" routerLink="/dashboard">Return to groups</a>
       </section>
     }
     <div [hidden]="isLoadingGroups || groupsError || groupUnavailable">
-      <a [routerLink]="['/groups', $safeNavigationMigration(groupData?.id)]" class="app-btn-secondary mb-6">Back to group</a>
+      <a appButton variant="secondary" [routerLink]="['/groups', $safeNavigationMigration(groupData?.id)]" class="mb-6">Back to group</a>
 
       <div class="app-bg-secondary shadow-md rounded-lg p-6 lg:p-8">
         <header class="mb-8">
@@ -153,7 +153,7 @@
 
         <footer class="mt-8 border-t border-zinc-200 pt-6 dark:border-zinc-700">
           <p class="text-secondary text-sm mb-4">The session will be created as scheduled. Everyone can then open it to see the plan, update attendance, and record what was actually played.</p>
-          <button class="app-btn-primary w-full sm:w-auto" title="Plan game night" (click)="onClickCreateMeeting()" [disabled]="disableCreateButton">
+          <button appButton class="w-full sm:w-auto" title="Plan game night" (click)="onClickCreateMeeting()" [disabled]="disableCreateButton">
             {{ isCreatingLoading ? 'Planning…' : 'Plan game night' }}
           </button>
         </footer>

@@ -22,9 +22,9 @@
 			<h2 class="text-xl font-semibold text-zinc-700 dark:text-zinc-200">
 				Tag Categories
 			</h2>
-			<app-button (click)="onAddCategory()" variant="primary" icon="plus-lg">
+			<button appButton (click)="onAddCategory()" variant="primary" icon="plus-lg">
 				Add new
-			</app-button>
+			</button>
 		</div>
 
 		@if (isLoadingCategories()) {
@@ -120,9 +120,9 @@
 			<h2 class="text-xl font-semibold text-zinc-700 dark:text-zinc-200">
 				Tags
 			</h2>
-			<app-button (click)="onAddTag()" variant="primary" icon="plus-lg">
+			<button appButton (click)="onAddTag()" variant="primary" icon="plus-lg">
 				Add new
-			</app-button>
+			</button>
 		</div>
 
 		@if (isLoadingTags()) {

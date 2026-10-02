@@ -33,11 +33,11 @@
   </div>
 
   @if (!isEditing){
-    <app-button variant="secondary" (click)="toggleEditing()">Change username</app-button>
+    <button appButton variant="secondary" (click)="toggleEditing()">Change username</button>
     }@else {
     <div class="flex gap-4">
-      <app-button variant="secondary" (click)="onCancel()">Cancel</app-button>
-      <app-button variant="primary" [disabled]="disableSubmit" (click)="onSave()">Save</app-button>
+      <button appButton variant="secondary" (click)="onCancel()">Cancel</button>
+      <button appButton variant="primary" [disabled]="disableSubmit" (click)="onSave()">Save</button>
     </div>
   }
 </div>

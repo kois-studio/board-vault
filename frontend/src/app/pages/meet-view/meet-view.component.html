@@ -7,12 +7,12 @@
         <div class="p-8 text-center text-secondary" role="alert">
             <p class="text-lg font-medium">This session could not be loaded.</p>
             <p class="mt-2 mb-4 text-sm">Check your connection or access and try again.</p>
-            <button type="button" class="app-btn-primary" (click)="retryLoad()">Retry</button>
+            <button appButton type="button" (click)="retryLoad()">Retry</button>
         </div>
     </container-wrapper>
 } @else if (loaded) {
     <container-wrapper>
-        <a [routerLink]="['/groups', $safeNavigationMigration(groupData?.id)]" class="app-btn-secondary mb-6">Back to {{ groupData?.name }}</a>
+        <a appButton variant="secondary" [routerLink]="['/groups', $safeNavigationMigration(groupData?.id)]" class="mb-6">Back to {{ groupData?.name }}</a>
 
         <header class="app-bg-secondary rounded-lg p-6 lg:p-8">
             <div class="flex flex-wrap items-start justify-between gap-4">
@@ -31,12 +31,12 @@
             @if (canManageLifecycle && canEditSession) {
                 <div class="flex flex-wrap gap-3 mt-6 pt-6 border-t border-zinc-200 dark:border-zinc-700">
                     @if (meetData?.status === 'scheduled') {
-                        <button type="button" class="app-btn-primary" [disabled]="isUpdatingStatus" (click)="updateStatus('active')">Start game night</button>
+                        <button appButton type="button" [disabled]="isUpdatingStatus" (click)="updateStatus('active')">Start game night</button>
                         <p class="basis-full text-sm text-secondary">Start the session when the group is playing. Then record attendance and the games you actually play before saving the memory.</p>
                     } @else if (meetData?.status === 'active') {
-                        <button type="button" class="app-btn-primary" [disabled]="isUpdatingStatus" (click)="requestStatusUpdate('completed')">Finish and save memory</button>
+                        <button appButton type="button" [disabled]="isUpdatingStatus" (click)="requestStatusUpdate('completed')">Finish and save memory</button>
                     }
-                    <button type="button" class="app-btn-danger" [disabled]="isUpdatingStatus" (click)="requestStatusUpdate('cancelled')">Cancel session</button>
+                    <button appButton variant="danger" type="button" [disabled]="isUpdatingStatus" (click)="requestStatusUpdate('cancelled')">Cancel session</button>
                 </div>
             }
 
@@ -45,8 +45,8 @@
                     <p class="font-medium">Can you make it?</p>
                     <p class="text-secondary text-sm mt-1">Your RSVP helps the organizer plan. Final attendance is recorded separately after the game night.</p>
                     <div class="flex flex-wrap gap-3 mt-3">
-                        <button type="button" class="app-btn-primary" [disabled]="isUpdatingRsvp" (click)="updateRsvp('accepted')">{{ currentRsvpStatus === 'accepted' ? 'Going ✓' : 'I’m going' }}</button>
-                        <button type="button" class="app-btn-secondary" [disabled]="isUpdatingRsvp" (click)="updateRsvp('declined')">{{ currentRsvpStatus === 'declined' ? 'Can’t make it ✓' : 'Can’t make it' }}</button>
+                        <button appButton type="button" [disabled]="isUpdatingRsvp" (click)="updateRsvp('accepted')">{{ currentRsvpStatus === 'accepted' ? 'Going ✓' : 'I’m going' }}</button>
+                        <button appButton variant="secondary" type="button" [disabled]="isUpdatingRsvp" (click)="updateRsvp('declined')">{{ currentRsvpStatus === 'declined' ? 'Can’t make it ✓' : 'Can’t make it' }}</button>
                     </div>
                 </div>
             }
@@ -85,8 +85,8 @@
                     </dl>
                     <p class="mt-4 text-sm text-secondary">Remaining planned games will not be recorded as played. They stay unplayed so the group can revisit the shortlist later.</p>
                     <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-                        <button type="button" class="app-btn-secondary" (click)="cancelStatusUpdate()">Keep editing</button>
-                        <button type="button" class="app-btn-danger" [disabled]="isUpdatingStatus" (click)="confirmStatusUpdate()">{{ requestedStatus === 'completed' ? 'Finish and save memory' : 'Cancel session' }}</button>
+                        <button appButton variant="secondary" type="button" (click)="cancelStatusUpdate()">Keep editing</button>
+                        <button appButton variant="danger" type="button" [disabled]="isUpdatingStatus" (click)="confirmStatusUpdate()">{{ requestedStatus === 'completed' ? 'Finish and save memory' : 'Cancel session' }}</button>
                     </div>
                 </section>
             </div>
@@ -233,7 +233,7 @@
                             }
                         }
                     </div>
-                    <button type="button" class="app-btn-primary mt-4" [disabled]="!plannedGameIdsDraftChanged || isUpdatingShortlist" (click)="savePlannedGames()">
+                    <button appButton type="button" class="mt-4" [disabled]="!plannedGameIdsDraftChanged || isUpdatingShortlist" (click)="savePlannedGames()">
                         {{ isUpdatingShortlist ? 'Saving…' : 'Save shortlist' }}
                     </button>
                 </fieldset>

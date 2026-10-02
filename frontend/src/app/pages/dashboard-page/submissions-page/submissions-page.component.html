@@ -1,6 +1,6 @@
 <app-page-header titleText="My Submissions" [showActionButton]="true">
     Track your game proposals and their review status
-    <app-button class="action-button" icon="plus-lg" (click)="showSubmissionModal()">Submit New Game</app-button>
+    <button appButton class="action-button" icon="plus-lg" (click)="showSubmissionModal()">Submit New Game</button>
 </app-page-header>
 
 <container-wrapper>
@@ -30,7 +30,7 @@
     @if (proposalStatsError() || proposalsError()) {
         <div class="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900" role="alert">
             <p>Submission data could not be loaded.</p>
-            <app-button class="mt-3" icon="arrow-repeat" (click)="retryProposals()">Retry</app-button>
+            <button appButton class="mt-3" icon="arrow-repeat" (click)="retryProposals()">Retry</button>
         </div>
     }
 
@@ -47,7 +47,7 @@
                 </div>
                 <h3 class="text-lg font-medium text-gray-900 mb-2">No proposals yet</h3>
                 <p class="text-gray-500 mb-4">Start contributing to our game collection by submitting your first proposal!</p>
-                <app-button icon="plus-lg" (click)="showSubmissionModal()">Submit Your First Game</app-button>
+                <button appButton icon="plus-lg" (click)="showSubmissionModal()">Submit Your First Game</button>
             </div>
         }
 

@@ -1,10 +1,10 @@
 import { Component, inject, signal } from '@angular/core'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
-
 import { Api } from '../../api/api'
 import type { GameCompleteType, GroupPersonWorkspaceType } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
+import { ButtonComponent } from '../../components/ui/button/button.component'
 
 type ClaimSummary = {
     ownershipKept: number
@@ -15,7 +15,7 @@ type ClaimSummary = {
 }
 
 @Component({
-    imports: [RouterLink],
+    imports: [ButtonComponent, RouterLink],
     templateUrl: './group-person-claim.component.html',
 })
 export class GroupPersonClaimComponent {

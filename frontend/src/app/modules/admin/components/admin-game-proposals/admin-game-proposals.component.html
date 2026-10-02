@@ -175,38 +175,38 @@
                                     <td class="px-4 py-4">
                                         <div class="flex flex-wrap gap-1">
                                             @if (proposal.status === 'pending') {
-                                                <button
+                                                <button appButton variant="success" size="small"
                                                     type="button"
                                                     (click)="onApproveProposal(proposal.id)"
-                                                    class="app-btn-success app-btn-sm text-xs"
+                                                    class="text-xs"
                                                     title="Approve proposal"
                                                     aria-label="Approve proposal"
                                                 >
                                                     <app-icon name="check" [size]="16" />
                                                 </button>
-                                                <button
+                                                <button appButton variant="danger" size="small"
                                                     type="button"
                                                     (click)="onRejectProposal(proposal.id)"
-                                                    class="app-btn-danger app-btn-sm text-xs"
+                                                    class="text-xs"
                                                     title="Reject proposal"
                                                     aria-label="Reject proposal"
                                                 >
                                                     <app-icon name="x" [size]="16" />
                                                 </button>
-                                                <button
+                                                <button appButton variant="secondary" size="small"
                                                     type="button"
                                                     (click)="onMarkAsDuplicate(proposal.id)"
-                                                    class="app-btn-secondary app-btn-sm text-xs"
+                                                    class="text-xs"
                                                     title="Mark as duplicate"
                                                     aria-label="Mark proposal as duplicate"
                                                 >
                                                     <app-icon name="file-text" [size]="16" />
                                                 </button>
                                             }
-                                            <button
+                                            <button appButton variant="danger" size="small"
                                                 type="button"
                                                 (click)="onDeleteProposal(proposal.id)"
-                                                class="app-btn-danger app-btn-sm text-xs"
+                                                class="text-xs"
                                                 title="Delete proposal"
                                                 aria-label="Delete proposal"
                                             >
@@ -231,17 +231,17 @@
                             </div>
                             <div class="flex space-x-2">
                                 @if (pagination()!.currentPage > 1) {
-                                    <button
+                                    <button appButton variant="secondary" size="small"
                                         (click)="onPageChange(pagination()!.currentPage - 1)"
-                                        class="app-btn-secondary app-btn-sm"
+                                       
                                     >
                                         Previous
                                     </button>
                                 }
                                 @if (pagination()!.currentPage < pagination()!.totalPages) {
-                                    <button
+                                    <button appButton variant="secondary" size="small"
                                         (click)="onPageChange(pagination()!.currentPage + 1)"
-                                        class="app-btn-secondary app-btn-sm"
+                                       
                                     >
                                         Next
                                     </button>
@@ -268,8 +268,8 @@
             <h2 id="delete-proposal-title" class="text-xl font-bold">Delete this proposal?</h2>
             <p id="delete-proposal-description" class="mt-2 text-secondary">Proposal #{{ proposalId }} will be removed from the moderation queue. This cannot be undone.</p>
             <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-                <button type="button" class="app-btn-secondary" (click)="cancelDeleteProposal()">Keep proposal</button>
-                <button type="button" class="app-btn-danger" (click)="confirmDeleteProposal()">Delete proposal</button>
+                <button appButton variant="secondary" type="button" (click)="cancelDeleteProposal()">Keep proposal</button>
+                <button appButton variant="danger" type="button" (click)="confirmDeleteProposal()">Delete proposal</button>
             </div>
         </section>
     </div>

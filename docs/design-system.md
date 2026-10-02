@@ -71,18 +71,46 @@ icons are supporting language, not the only label for an action.
 - Respect `prefers-reduced-motion`; motion must not be required to understand
   state or complete a task.
 
-### Buttons
+### Buttons and links
 
-- Use `<app-button>` (`components/ui/button/`) for actions. Set `link` to
-  make it navigate; it then renders a real link. Variants: `primary`,
-  `secondary`, `danger`, `success`; sizes: `small`, `medium`, `large`.
-- A link or native `<button>` that must look like a button uses the same
-  classes: one of `app-btn-primary`, `app-btn-secondary`, `app-btn-danger`,
-  `app-btn-success`, plus `app-btn-sm` or `app-btn-lg` if needed. Do not
-  rebuild a button from colour utilities.
+Pick the element by what it does, then the look:
+
+| It… | Element | Looks like a button? |
+| --- | --- | --- |
+| Runs an action (save, delete, open a modal) | `<button>` | Add `appButton` |
+| Goes to another page or URL | `<a routerLink>` or `<a href>` | Add `appButton` if it is a call to action; otherwise a plain styled link |
+
+Navigation is always an `<a>`, even when it looks like a button, so new tab,
+middle-click, and "copy link address" work and screen readers announce a link.
+Never navigate from a `<button (click)>`.
+
+`appButton` (`components/ui/button/`) is a component that attaches to the
+native element, so every attribute and directive (`routerLink`,
+`queryParams`, `aria-*`, `form`, `target`) works on it directly:
+
+```html
+<button appButton (click)="save()">Save</button>
+<button appButton variant="danger" icon="trash" [loading]="isDeleting()">Delete group</button>
+<button appButton type="submit" [disabled]="form.invalid" [wide]="true">Create group</button>
+<a appButton variant="secondary" routerLink="/collection/browse" icon="plus-lg">Add games</a>
+```
+
+- Inputs: `variant` (`primary`, `secondary`, `danger`, `success`), `size`
+  (`small`, `medium`, `large`), `icon`, `loading`, `disabled`, `wide`, and
+  `type` on buttons.
+- `type` defaults to `button`; set `type="submit"` for the form's submit
+  button.
+- `loading` disables the button and swaps the icon for a spinner; the label
+  stays.
+- `disabled` on a link removes it from the tab order and blocks clicks.
+- Import `ButtonComponent` in the component that uses it. Without the import,
+  Angular ignores the `appButton` attribute silently and the element renders
+  unstyled.
+- Do not use the `app-btn-*` classes in templates or rebuild a button from
+  colour utilities; they are the component's internals in `styles.css`.
 - Coloured buttons keep white text in both themes; buttons shrink by 5% while
-  pressed. Toggle chips, tabs, and menu items are not buttons in this sense
-  and keep their own styles.
+  pressed. Toggle chips, tabs, menu items, and icon-only controls are not
+  buttons in this sense and keep their own styles.
 
 ## Layout patterns
 

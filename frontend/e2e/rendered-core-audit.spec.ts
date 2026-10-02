@@ -124,9 +124,6 @@ test.describe('rendered core route audit', () => {
                 expect(audit.overflow, `${route} overflows at ${width}px`).toBe(false)
                 expect(audit.unnamed, `${route} has unnamed visible controls at ${width}px`).toEqual([])
 
-                const duplicateButtonHosts = await page.locator('app-button[tabindex="0"]').count()
-                expect(duplicateButtonHosts, `${route} exposes a focusable app-button host at ${width}px`).toBe(0)
-
                 await assertKeyboardTraversal(page, route, width)
             }
         }

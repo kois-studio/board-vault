@@ -79,15 +79,15 @@
 
             <!-- Actions -->
             <div class="flex justify-end space-x-3 p-6 border-t border-zinc-200 dark:border-zinc-700">
-                <app-button
+                <button appButton
                     type="button"
                     variant="secondary"
                     (click)="onCancel()"
                     [disabled]="isLoading()"
                 >
                     Cancel
-                </app-button>
-                <app-button
+                </button>
+                <button appButton
                     type="button"
                     variant="primary"
                     (click)="onSubmit()"
@@ -95,7 +95,7 @@
                     [disabled]="isLoading()"
                 >
                     Update Tags
-                </app-button>
+                </button>
             </div>
         </div>
     </div>

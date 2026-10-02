@@ -55,15 +55,15 @@
 
                 <!-- Actions -->
                 <div class="flex justify-end space-x-3 mt-6">
-                    <app-button 
+                    <button appButton 
                         type="button"
                         variant="secondary" 
                         (click)="hideDialog()"
                         [disabled]="isLoading()"
                     >
                         Cancel
-                    </app-button>
-                    <app-button 
+                    </button>
+                    <button appButton 
                         type="submit"
                         variant="primary" 
                         [disabled]="!isFormValid || isLoading()"
@@ -74,7 +74,7 @@
                         } @else {
                             Update Category
                         }
-                    </app-button>
+                    </button>
                 </div>
             </form>
         </div>

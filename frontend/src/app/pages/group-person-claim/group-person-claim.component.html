@@ -10,7 +10,7 @@
             <section class="mt-8 rounded-3xl border border-amber-200 bg-amber-50 p-8 dark:border-amber-900/60 dark:bg-amber-950/30" role="alert">
                 <h1 class="text-2xl font-bold">This handoff is unavailable</h1>
                 <p class="mt-2 text-secondary">{{ error() }}</p>
-                <button type="button" class="app-btn-primary mt-5" (click)="joinAsNewPerson()">Join as a new person</button>
+                <button appButton type="button" class="mt-5" (click)="joinAsNewPerson()">Join as a new person</button>
             </section>
         } @else {
             @if (person(); as groupPerson) {
@@ -31,7 +31,7 @@
                         <div class="rounded-2xl bg-white/70 p-4 dark:bg-zinc-900/60"><dt class="text-sm text-secondary">Entries discarded</dt><dd class="mt-1 text-2xl font-bold">{{ summary.ownershipDiscarded + summary.preferencesDiscarded }}</dd></div>
                         <div class="rounded-2xl bg-white/70 p-4 dark:bg-zinc-900/60"><dt class="text-sm text-secondary">Private collection import</dt><dd class="mt-1 font-semibold">{{ summary.importedOwnership ? 'Included' : 'Not included' }}</dd></div>
                     </dl>
-                    <a class="app-btn-primary mt-6" [routerLink]="['/groups', route.snapshot.paramMap.get('groupId')]">Return to group</a>
+                    <a appButton class="mt-6" [routerLink]="['/groups', route.snapshot.paramMap.get('groupId')]">Return to group</a>
                 </section>
             } @else {
                 <section class="mt-6 rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900" aria-labelledby="ownership-heading">
@@ -84,8 +84,8 @@
 
                 @if (error()) { <p class="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/30" role="alert">{{ error() }}</p> }
                 <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-                    <button type="button" class="app-btn-secondary" [disabled]="isSaving()" (click)="joinAsNewPerson()">No, join as new person</button>
-                    <button type="button" class="app-btn-primary" [disabled]="isSaving()" (click)="claim()">{{ isSaving() ? 'Saving…' : 'Save my choices and claim history' }}</button>
+                    <button appButton variant="secondary" type="button" [disabled]="isSaving()" (click)="joinAsNewPerson()">No, join as new person</button>
+                    <button appButton type="button" [disabled]="isSaving()" (click)="claim()">{{ isSaving() ? 'Saving…' : 'Save my choices and claim history' }}</button>
                 </div>
             }
             }

@@ -73,8 +73,8 @@
     </div>
 
     <footer class="flex flex-wrap gap-2 border-t border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-950/40">
-        <a [routerLink]="['/groups', group().id]" class="app-btn-primary">Open workspace</a>
-        <a [routerLink]="['/play/recommendations']" [queryParams]="{ groupId: group().id }" class="app-btn-secondary">Decide what to play</a>
-        <a [routerLink]="['/groups', group().id, 'sessions', 'new']" class="app-btn-secondary">Plan session</a>
+        <a appButton [routerLink]="['/groups', group().id]">Open workspace</a>
+        <a appButton variant="secondary" [routerLink]="['/play/recommendations']" [queryParams]="{ groupId: group().id }">Decide what to play</a>
+        <a appButton variant="secondary" [routerLink]="['/groups', group().id, 'sessions', 'new']">Plan session</a>
     </footer>
 </article>

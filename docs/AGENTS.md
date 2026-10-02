@@ -14,6 +14,7 @@ and Upstash.
 | Add or change an API route or DTO | [how-to/add-endpoint.md](how-to/add-endpoint.md), [api.md](api.md) |
 | Change the database schema | [how-to/add-migration.md](how-to/add-migration.md), [data-model.md](data-model.md) |
 | Add a page or change a frontend flow | [how-to/add-page.md](how-to/add-page.md), [design-system.md](design-system.md), [ux-flows.md](ux-flows.md) |
+| Add a button or a button-like link | [design-system.md#buttons-and-links](design-system.md#buttons-and-links) (`appButton` on a native `<button>` or `<a>`) |
 | Touch sign-in, sessions, or account resolution | [authentication.md](authentication.md), [ADR-0012](adr/0012-clerk-only-authentication.md) |
 | Sign in locally or run Clerk browser tests | [how-to/run-with-clerk.md](how-to/run-with-clerk.md) |
 | Add or read an environment variable | [environments.md](environments.md) |

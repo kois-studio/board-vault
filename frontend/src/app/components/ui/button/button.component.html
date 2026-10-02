@@ -1,23 +1,6 @@
-<ng-template #content>
-    @if (loading()) {
-        <app-icon name="loader" className="shrink-0 motion-safe:animate-spin" [size]="iconSize()" aria-hidden="true" />
-    } @else if (icon(); as icon) {
-        <app-icon [name]="icon" className="shrink-0" [size]="iconSize()" aria-hidden="true" />
-    }
-    <ng-content />
-</ng-template>
-
-@if (link(); as link) {
-    <a
-        [class]="classes()"
-        [routerLink]="disabled() ? null : link"
-        [queryParams]="queryParams()"
-        [attr.aria-disabled]="disabled() || null"
-    >
-        <ng-container [ngTemplateOutlet]="content" />
-    </a>
-} @else {
-    <button [type]="type()" [class]="classes()" [disabled]="disabled() || loading()" [attr.aria-busy]="loading() || null">
-        <ng-container [ngTemplateOutlet]="content" />
-    </button>
+@if (loading()) {
+    <app-icon name="loader" className="shrink-0 motion-safe:animate-spin" [size]="iconSize()" aria-hidden="true" />
+} @else if (icon(); as icon) {
+    <app-icon [name]="icon" className="shrink-0" [size]="iconSize()" aria-hidden="true" />
 }
+<ng-content />

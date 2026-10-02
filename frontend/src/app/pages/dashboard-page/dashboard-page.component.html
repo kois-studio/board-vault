@@ -1,6 +1,6 @@
 <app-page-header [titleText]="greetingName() ? 'Hi, ' + greetingName() : 'Home'" [showActionButton]="true">
     Your groups, the next game night, and what you played lately.
-    <a class="app-btn-primary action-button text-center" routerLink="/create-group">Create a group</a>
+    <a appButton class="action-button text-center" routerLink="/create-group">Create a group</a>
 </app-page-header>
 
 <container-wrapper>
@@ -10,7 +10,7 @@
             <section class="rounded-2xl border border-amber-200 bg-amber-50 p-6 dark:border-amber-900/60 dark:bg-amber-950/30" aria-labelledby="invitations-error-heading">
                 <h2 id="invitations-error-heading" class="text-lg font-bold">Invitations are temporarily unavailable</h2>
                 <p class="mt-2 text-sm text-secondary">We could not refresh your pending group invitations. Your groups are still available below.</p>
-                <button type="button" class="app-btn-secondary mt-4" (click)="retryInvitations()">Retry invitations</button>
+                <button appButton variant="secondary" type="button" class="mt-4" (click)="retryInvitations()">Retry invitations</button>
             </section>
         } @else if (!isLoadingInvitations() && userInvitations$().length > 0) {
             <section class="rounded-2xl border border-indigo-200 bg-indigo-50 p-6 dark:border-indigo-900/60 dark:bg-indigo-950/30" aria-labelledby="pending-invitations-heading">
@@ -50,7 +50,7 @@
                 <div class="flex flex-col items-start justify-between gap-4 rounded-2xl border border-dashed border-zinc-300 p-5 sm:flex-row sm:items-center dark:border-zinc-700">
                     <p class="text-secondary">Nothing planned yet. Pick a date and let the group decide what to play.</p>
                     @if (firstGroupId(); as groupId) {
-                        <a class="app-btn-secondary shrink-0 text-center" [routerLink]="['/groups', groupId, 'sessions', 'new']">Plan a session</a>
+                        <a appButton variant="secondary" class="shrink-0 text-center" [routerLink]="['/groups', groupId, 'sessions', 'new']">Plan a session</a>
                     }
                 </div>
             } @else {
@@ -91,14 +91,14 @@
                 <div class="rounded-2xl border border-amber-200 bg-amber-50 p-8 text-center dark:border-amber-900/50 dark:bg-amber-950/30" role="alert">
                     <p class="text-lg font-medium">Your groups could not be loaded.</p>
                     <p class="mt-2 text-secondary">Try again without losing your saved groups.</p>
-                    <button type="button" class="app-btn-primary mt-4" (click)="retryGroups()">Retry</button>
+                    <button appButton type="button" class="mt-4" (click)="retryGroups()">Retry</button>
                 </div>
             } @else if (userGroups$().length === 0) {
                 <div class="rounded-2xl border border-dashed border-indigo-300 bg-indigo-50 p-8 text-center dark:border-indigo-800 dark:bg-indigo-950/30">
                     <app-icon name="users" [size]="36" className="text-indigo-500" aria-hidden="true" />
                     <p class="mt-3 text-xl font-semibold">Start with the people you play with</p>
                     <p class="mx-auto mt-2 max-w-xl text-secondary">Create a private group, invite your friends, and add the games you actually own. Invitations you receive appear at the top of this page.</p>
-                    <a routerLink="/create-group" class="app-btn-primary mt-5">Create your first group</a>
+                    <a appButton routerLink="/create-group" class="mt-5">Create your first group</a>
                 </div>
             } @else {
                 <div class="grid gap-6 xl:grid-cols-2">

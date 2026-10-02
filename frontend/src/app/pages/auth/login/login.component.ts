@@ -1,10 +1,11 @@
 import { Component, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
+import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ClerkService } from '../../../core/services/clerk.service'
 
 @Component({
     templateUrl: 'login.component.html',
-    imports: [RouterLink],
+    imports: [ButtonComponent, RouterLink],
 })
 export class LoginComponent {
     private readonly clerkService = inject(ClerkService)

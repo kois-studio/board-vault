@@ -1,8 +1,8 @@
 <app-page-header titleText="Upcoming" [showActionButton]="true">
     Game nights your groups have planned.
     <div class="action-button flex flex-wrap gap-2">
-        <a class="app-btn-secondary text-center" routerLink="/play/log-session">Record a past session</a>
-        <app-button icon="plus-lg" (click)="isSchedulingASession.set(true)" [disabled]="isSchedulingASession()">Plan a session</app-button>
+        <a appButton variant="secondary" class="text-center" routerLink="/play/log-session">Record a past session</a>
+        <button appButton icon="plus-lg" (click)="isSchedulingASession.set(true)" [disabled]="isSchedulingASession()">Plan a session</button>
     </div>
 </app-page-header>
 
@@ -18,13 +18,13 @@
             } @else if (groupsError()) {
                 <div class="text-secondary" role="alert">
                     <p>Groups could not be loaded.</p>
-                    <app-button class="mt-4" icon="arrow-repeat" (click)="retryGroups()">Retry</app-button>
+                    <button appButton class="mt-4" icon="arrow-repeat" (click)="retryGroups()">Retry</button>
                 </div>
             } @else if (userGroups$().length === 0) {
                 <p class="text-secondary">Create or join a group before scheduling a session.</p>
                 <div class="mt-4 flex flex-wrap justify-center gap-3">
-                    <a class="app-btn-primary" routerLink="/create-group">Create a group</a>
-                    <a class="app-btn-secondary" routerLink="/dashboard">View invitations</a>
+                    <a appButton routerLink="/create-group">Create a group</a>
+                    <a appButton variant="secondary" routerLink="/dashboard">View invitations</a>
                 </div>
             } @else {
                 <div class="mt-5 grid gap-3 sm:grid-cols-2">
@@ -42,14 +42,14 @@
         <div class="text-center py-8 text-secondary" role="alert">
             <p>Upcoming sessions could not be loaded.</p>
             <p class="text-sm mt-2 mb-4">Check your connection and try again.</p>
-            <app-button icon="arrow-repeat" (click)="retrySessions()">Retry</app-button>
+            <button appButton icon="arrow-repeat" (click)="retrySessions()">Retry</button>
         </div>
     } @else if (upcomingSessions().length === 0) {
         <div class="rounded-3xl border border-dashed border-zinc-300 px-6 py-12 text-center dark:border-zinc-700">
             <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-300" aria-hidden="true"><app-icon name="calendar-plus" [size]="28" /></div>
             <h2 class="mt-5 text-xl font-bold text-zinc-900 dark:text-white">Your next game night is not planned yet</h2>
             <p class="mx-auto mt-2 max-w-lg text-sm leading-6 text-secondary">Choose a group to coordinate the people, time, and games. The session stays editable until the night begins.</p>
-            <app-button class="mt-6" icon="plus-lg" (click)="isSchedulingASession.set(true)">Plan a future session</app-button>
+            <button appButton class="mt-6" icon="plus-lg" (click)="isSchedulingASession.set(true)">Plan a future session</button>
         </div>
     } @else {
         <ul class="space-y-3 py-6">

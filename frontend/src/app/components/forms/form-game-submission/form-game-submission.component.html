@@ -170,17 +170,17 @@
 
   <!-- Submit Button -->
   <div class="flex justify-end space-x-4">
-    <button
+    <button appButton variant="secondary"
       type="button"
       (click)="resetForm()"
-      class="app-btn-secondary text-sm"
+      class="text-sm"
       >
       Reset
     </button>
-    <button
+    <button appButton
       type="submit"
       [disabled]="gameSubmissionForm.invalid || isSubmitting"
-      class="app-btn-primary text-sm"
+      class="text-sm"
       >
       @if (!isSubmitting) {
         <span>Submit Proposal</span>

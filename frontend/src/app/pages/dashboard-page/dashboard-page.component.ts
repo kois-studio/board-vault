@@ -4,6 +4,7 @@ import type { HistoryRecordType } from '../../api/api.types'
 import { CardGroupComponent } from '../../components/card-group/card-group.component'
 import { CardInvitationComponent } from '../../components/card-invitation/card-invitation.component'
 import { SkeletonCardGroupComponent } from '../../components/skeletons/skeleton-card-group/skeleton-card-group.component'
+import { ButtonComponent } from '../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { IconComponent } from '../../components/ui/icon/icon.component'
 import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'
@@ -18,6 +19,7 @@ import { LoadingService } from '../../core/services/loading.service'
  */
 @Component({
     imports: [
+        ButtonComponent,
         RouterLink,
         ContainerWrapperComponent,
         PageHeaderComponent,

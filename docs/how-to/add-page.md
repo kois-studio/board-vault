@@ -2,7 +2,9 @@
 
 1. **Create the component** in `frontend/src/app/pages/<name>/` as a
    standalone component. Reuse `components/ui/` primitives and follow
-   [design-system.md](../design-system.md). Declare inputs and outputs with
+   [design-system.md](../design-system.md); buttons and button-like links
+   use `appButton` on a native `<button>` or `<a>`
+   ([Buttons and links](../design-system.md#buttons-and-links)). Declare inputs and outputs with
    `input()`, `input.required()`, and `output()`, not the `@Input` and
    `@Output` decorators.
 2. **Register the route** in `frontend/src/app/app.routes.ts` with

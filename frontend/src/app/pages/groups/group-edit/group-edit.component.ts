@@ -7,6 +7,7 @@ import { ClerkGroupInvitationSummaryType, ClerkGroupInvitationType, GameType, Gr
 import { CardAccountComponent } from '../../../components/card-account/card-account.component'
 import { ImageProfileComponent } from '../../../components/image-profile/image-profile.component'
 import { ToastService } from '../../../components/toast/toast.service'
+import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { DialogDirective } from '../../../components/ui/dialog/dialog.directive'
 import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
@@ -15,7 +16,16 @@ import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
 
 @Component({
-    imports: [RouterLink, ImageProfileComponent, ReactiveFormsModule, CardAccountComponent, CustomDatePipe, DialogDirective, IconComponent],
+    imports: [
+        ButtonComponent,
+        RouterLink,
+        ImageProfileComponent,
+        ReactiveFormsModule,
+        CardAccountComponent,
+        CustomDatePipe,
+        DialogDirective,
+        IconComponent,
+    ],
     templateUrl: 'group-edit.component.html',
 })
 export class GroupEditComponent {

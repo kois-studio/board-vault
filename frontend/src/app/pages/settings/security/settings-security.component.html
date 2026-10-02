@@ -8,7 +8,7 @@
             Update your email addresses, password, and connected sign-in methods in the secure account panel.
         </p>
         @if (clerkIsAvailable()) {
-            <app-button variant="secondary" (click)="openClerkProfile()">Manage sign-in and security</app-button>
+            <button appButton variant="secondary" (click)="openClerkProfile()">Manage sign-in and security</button>
         } @else {
             <p class="text-sm text-amber-600 dark:text-amber-400" role="status">Account security controls are unavailable until authentication finishes loading.</p>
         }

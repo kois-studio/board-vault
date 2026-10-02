@@ -2,10 +2,11 @@ import { Component, computed, input } from '@angular/core'
 import type { NotificationType } from '../../api/api.types'
 import { DataService } from '../../core/services/data.service'
 import { formatDate } from '../../core/utils/formatDate'
+import { ButtonComponent } from '../ui/button/button.component'
 import { IconComponent } from '../ui/icon/icon.component'
 
 @Component({
-    imports: [IconComponent],
+    imports: [ButtonComponent, IconComponent],
     selector: 'app-card-notification',
     templateUrl: 'card-notification.component.html',
 })

@@ -68,7 +68,7 @@
 
                         <!-- Actions -->
                         <div class="flex gap-3 pt-4">
-                            <app-button
+                            <button appButton
                                 type="button"
                                 variant="secondary"
                                 (click)="onCancel()"
@@ -76,8 +76,8 @@
                                 class="flex-1"
                             >
                                 Cancel
-                            </app-button>
-                            <app-button
+                            </button>
+                            <button appButton
                                 type="submit"
                                 variant="primary"
                                 [loading]="isLoading()"
@@ -85,7 +85,7 @@
                                 class="flex-1"
                             >
                                 Update Translations
-                            </app-button>
+                            </button>
                         </div>
                     </form>
                 }

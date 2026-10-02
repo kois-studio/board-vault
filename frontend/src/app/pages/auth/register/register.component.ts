@@ -1,12 +1,13 @@
 import { Component, inject, signal } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router, RouterLink } from '@angular/router'
+import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { ClerkService } from '../../../core/services/clerk.service'
 
 @Component({
     templateUrl: 'register.component.html',
-    imports: [RouterLink, ReactiveFormsModule, IconComponent],
+    imports: [ButtonComponent, RouterLink, ReactiveFormsModule, IconComponent],
 })
 export class RegisterComponent {
     private readonly clerkService = inject(ClerkService)

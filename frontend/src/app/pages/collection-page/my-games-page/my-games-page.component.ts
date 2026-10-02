@@ -2,6 +2,7 @@ import { Component, computed, inject, signal } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { CardGameComponent } from '../../../components/card-game/card-game.component'
 import { SkeletonCardGameComponent } from '../../../components/skeletons/skeleton-card-game/skeleton-card-game.component'
+import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
@@ -10,7 +11,15 @@ import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
 
 @Component({
-    imports: [CardGameComponent, ContainerWrapperComponent, RouterLink, PageHeaderComponent, SkeletonCardGameComponent, IconComponent],
+    imports: [
+        ButtonComponent,
+        CardGameComponent,
+        ContainerWrapperComponent,
+        RouterLink,
+        PageHeaderComponent,
+        SkeletonCardGameComponent,
+        IconComponent,
+    ],
     templateUrl: 'my-games-page.component.html',
 })
 export class MyGamesPageComponent {

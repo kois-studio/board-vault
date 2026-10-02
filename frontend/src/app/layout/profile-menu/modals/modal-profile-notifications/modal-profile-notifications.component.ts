@@ -1,12 +1,13 @@
 import { Component, inject, signal } from '@angular/core'
 import { CardNotificationComponent } from '../../../../components/card-notification/card-notification.component'
+import { ButtonComponent } from '../../../../components/ui/button/button.component'
 import { DialogDirective } from '../../../../components/ui/dialog/dialog.directive'
 import { IconComponent } from '../../../../components/ui/icon/icon.component'
 import { SortByDatePipe } from '../../../../core/pipes/sortByDate.pipe'
 import { DataService } from '../../../../core/services/data.service'
 
 @Component({
-    imports: [CardNotificationComponent, DialogDirective, IconComponent, SortByDatePipe],
+    imports: [ButtonComponent, CardNotificationComponent, DialogDirective, IconComponent, SortByDatePipe],
     selector: 'app-modal-profile-notifications',
     templateUrl: 'modal-profile-notifications.component.html',
 })

@@ -18,17 +18,17 @@
     
         <!-- RIGHT COL: buttons -->
         <div class="flex flex-wrap gap-3" [attr.aria-busy]="isLoading">
-            <button type="button" (click)="acceptInvitation()" class="app-btn-primary" [disabled]="isLoading" [attr.aria-label]="'Accept invitation to ' + invitation.group.name">
+            <button appButton type="button" (click)="acceptInvitation()" [disabled]="isLoading" [attr.aria-label]="'Accept invitation to ' + invitation.group.name">
                 <app-icon name="check" [size]="16" /> {{ isLoading ? 'Working…' : 'Accept' }}
             </button>
             @if (isConfirmingDecline) {
                 <div class="flex flex-wrap items-center gap-2 rounded-lg border border-red-300/50 bg-red-50 px-3 py-2 text-sm dark:border-red-900/60 dark:bg-red-950/30" role="group" aria-label="Confirm invitation decline">
                     <span class="text-red-800 dark:text-red-200">Decline this invitation?</span>
-                    <button type="button" (click)="rejectInvitation()" class="app-btn-danger py-2!" [disabled]="isLoading">Yes, decline</button>
-                    <button type="button" (click)="isConfirmingDecline = false" class="app-btn-secondary py-2!" [disabled]="isLoading">Keep it</button>
+                    <button appButton variant="danger" type="button" (click)="rejectInvitation()" class="py-2!" [disabled]="isLoading">Yes, decline</button>
+                    <button appButton variant="secondary" type="button" (click)="isConfirmingDecline = false" class="py-2!" [disabled]="isLoading">Keep it</button>
                 </div>
             } @else {
-                <button type="button" (click)="rejectInvitation()" class="app-btn-danger" [disabled]="isLoading" [attr.aria-label]="'Decline invitation to ' + invitation.group.name">
+                <button appButton variant="danger" type="button" (click)="rejectInvitation()" [disabled]="isLoading" [attr.aria-label]="'Decline invitation to ' + invitation.group.name">
                     <app-icon name="x" [size]="16" /> Decline
                 </button>
             }
