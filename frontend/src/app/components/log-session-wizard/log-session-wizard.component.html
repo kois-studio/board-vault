@@ -73,7 +73,7 @@
                     </div>
                 } @else {
                     <div class="space-y-7">
-                        <div class="grid gap-6 sm:grid-cols-[1fr_auto]">
+                        <div class="grid grid-cols-1 gap-6 sm:grid-cols-[1fr_auto]">
                             <fieldset class="min-w-0">
                                 <legend class="mb-2 text-sm font-semibold">Group</legend>
                                 <div class="flex flex-wrap gap-2">
@@ -103,7 +103,7 @@
                                     <button type="button" class="rounded text-sm font-medium text-bv-primary underline underline-offset-2" (click)="selectAllAttendees()">Everyone</button>
                                     <button type="button" class="rounded text-sm text-bv-text-muted underline underline-offset-2" (click)="deselectAllAttendees()">Nobody</button>
                                 </div>
-                                <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                                <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
                                     @for (attendee of attendees(); track attendee.user.id) {
                                         <button
                                             type="button"
@@ -206,7 +206,7 @@
 
                     <section class="rounded-lg bg-bv-surface-2 p-4" aria-labelledby="review-heading">
                         <h3 id="review-heading" class="text-sm font-semibold">What will be saved</h3>
-                        <dl class="mt-3 grid gap-3 text-sm sm:grid-cols-3">
+                        <dl class="mt-3 grid grid-cols-1 gap-3 text-sm sm:grid-cols-3">
                             <div><dt class="text-bv-text-muted">Group</dt><dd class="font-medium wrap-anywhere">{{ selectedGroup()?.name }}</dd></div>
                             <div><dt class="text-bv-text-muted">Day</dt><dd class="font-medium">{{ getSessionDateLabel() }}</dd></div>
                             <div><dt class="text-bv-text-muted">Who came</dt><dd class="font-medium wrap-anywhere">{{ getSelectedAttendeeNames() }}</dd></div>

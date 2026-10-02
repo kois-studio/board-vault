@@ -13,7 +13,7 @@
     </header>
 
     <div class="space-y-5 p-5">
-        <section aria-label="Group activity" class="grid gap-3 sm:grid-cols-2">
+        <section aria-label="Group activity" class="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div class="rounded-xl bg-bv-primary-soft p-4">
                 <p class="text-xs font-semibold uppercase tracking-wide text-bv-primary">Next session</p>
                 @if (nextMeetingComputed(); as nextMeeting) {
@@ -41,10 +41,10 @@
                 <h3 [id]="'group-members-' + group().id" class="text-sm font-semibold uppercase tracking-wide text-secondary">People in this group</h3>
                 <span class="text-xs text-secondary">{{ sharedGameCount() }} games available</span>
             </div>
-            <div class="grid gap-2 sm:grid-cols-2">
+            <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 @for (member of group().members; track member.id) {
-                    <div class="flex min-w-0 items-center justify-between rounded-xl bg-bv-bg">
-                        <app-card-account [member]="member" [isOwner]="group().createdBy === member.id" format="compact" />
+                    <div class="flex min-w-0 items-center justify-between gap-3 rounded-xl bg-bv-bg">
+                        <app-card-account [member]="member" [isOwner]="group().createdBy === member.id" format="compact" class="min-w-0 flex-1" />
                         <span class="mr-3 shrink-0 text-xs text-secondary">{{ member.games.length }} owned</span>
                     </div>
                 }

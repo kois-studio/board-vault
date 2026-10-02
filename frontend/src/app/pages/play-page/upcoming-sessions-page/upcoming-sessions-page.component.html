@@ -34,7 +34,7 @@
                     <a appButton variant="secondary" routerLink="/dashboard">View invitations</a>
                 </div>
             } @else {
-                <div class="mt-4 grid gap-3 sm:grid-cols-2">
+                <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
                     @for (group of userGroups$(); track group.id) {
                         <a class="flex items-center justify-between gap-3 rounded-lg border border-bv-border p-4 transition hover:border-bv-primary/50 hover:bg-bv-primary-soft" [routerLink]="['/groups', group.id, 'sessions', 'new']">
                             <span class="min-w-0">
