@@ -7094,6 +7094,41 @@
           "reviews"
         ]
       },
+      "GroupPlaceholderSummary": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 12
+          },
+          "displayName": {
+            "type": "string",
+            "example": "Lucía"
+          },
+          "avatar": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AvatarDto"
+              }
+            ]
+          },
+          "gameIds": {
+            "description": "Games recorded as owned by this person in the group.",
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "displayName",
+          "avatar",
+          "gameIds"
+        ]
+      },
       "GroupWithMembersAndGames": {
         "type": "object",
         "properties": {
@@ -7119,6 +7154,13 @@
             "items": {
               "$ref": "#/components/schemas/GroupMemberWithGames"
             }
+          },
+          "placeholders": {
+            "description": "Active group people without an account.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GroupPlaceholderSummary"
+            }
           }
         },
         "required": [
@@ -7126,7 +7168,8 @@
           "name",
           "createdBy",
           "createdAt",
-          "members"
+          "members",
+          "placeholders"
         ]
       },
       "CreatedGroupDto": {

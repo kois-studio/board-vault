@@ -53,6 +53,12 @@ export class MeetsService {
         return meets[0]
     }
 
+    /** The sessions among `ids` that the account can see. */
+    async getMeetsByIdsForAccount(ids: Array<number>, accountId: number): Promise<Array<MeetDto>> {
+        if (ids.length === 0) return []
+        return this._parseResultSet(await this.databaseService.sessions.getMeetsByIdsForAccount(ids, accountId))
+    }
+
     async getMeetsByGroupId(groupId: number): Promise<Array<MeetDto>> {
         this.LOGGER.log('Getting all meetings for group')
         const resultSet = await this.databaseService.sessions.getMeetsByGroupId(groupId)

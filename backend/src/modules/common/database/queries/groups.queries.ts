@@ -252,6 +252,30 @@ export class GroupQueries {
         return resultSet.rows.map(row => Number(row[0]))
     }
 
+    getActivePlaceholdersByGroupIds(groupIds: Array<number>) {
+        return this.database.execute({
+            sql: `
+                SELECT id, groupId, displayName, avatar
+                FROM GroupPerson
+                WHERE groupId IN (${groupIds.map(() => '?').join(', ')}) AND kind = 'placeholder' AND status = 'active'
+                ORDER BY groupId, displayName
+            `,
+            args: groupIds,
+        })
+    }
+
+    getAssertedOwnershipByGroupIds(groupIds: Array<number>) {
+        return this.database.execute({
+            sql: `
+                SELECT o.groupPersonId, o.gameId
+                FROM GroupPersonGameOwnership o
+                INNER JOIN GroupPerson gp ON gp.id = o.groupPersonId
+                WHERE gp.groupId IN (${groupIds.map(() => '?').join(', ')}) AND o.status = 'asserted'
+            `,
+            args: groupIds,
+        })
+    }
+
     getGroupPeople(groupId: number, includeArchived = false) {
         return this.database.execute({
             sql: `

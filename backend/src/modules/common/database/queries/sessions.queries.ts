@@ -42,6 +42,64 @@ export class SessionQueries {
         })
     }
 
+    /** Sessions in groups the account belongs to; others are left out. */
+    getMeetsByIdsForAccount(meetIds: Array<number>, accountId: number) {
+        return this.database.execute({
+            sql: `
+                SELECT m.id, m.groupId, m.createdBy, m.meetDate, m.isConfirmed,
+                    m.status, m.timezone, m.notes
+                FROM Meet m
+                INNER JOIN GroupMembership gm ON gm.groupId = m.groupId
+                WHERE m.id IN (${meetIds.map(() => '?').join(', ')}) AND gm.accountId = ?
+            `,
+            args: [...meetIds, accountId],
+        })
+    }
+
+    /**
+     * Everything a history record needs about many sessions, in five queries
+     * whatever the number of sessions.
+     */
+    async getHistoryDetailsByMeetIds(meetIds: Array<number>) {
+        const ids = meetIds.map(() => '?').join(', ')
+        const [attendedAccounts, attendedPeople, playedGames, personPlays, accountPlays] = await Promise.all([
+            this.database.execute({
+                sql: `SELECT meetId, accountId FROM MeetAttendee WHERE meetId IN (${ids}) AND attendanceStatus = 'attended'`,
+                args: meetIds,
+            }),
+            this.database.execute({
+                sql: `SELECT meetId, groupPersonId FROM MeetPersonAttendee WHERE meetId IN (${ids}) AND attendanceStatus = 'attended'`,
+                args: meetIds,
+            }),
+            this.database.execute({
+                sql: `SELECT meetId, gameId FROM MeetGame WHERE meetId IN (${ids}) AND gameStatus = 'played' ORDER BY meetId, playOrder ASC, gameId ASC`,
+                args: meetIds,
+            }),
+            this.database.execute({
+                sql: `SELECT meetId, gameId, groupPersonId FROM MeetPersonGame WHERE meetId IN (${ids}) ORDER BY groupPersonId`,
+                args: meetIds,
+            }),
+            this.database.execute({
+                sql: `SELECT DISTINCT meetId, gameId, accountId FROM MeetAccountGame WHERE meetId IN (${ids}) ORDER BY accountId`,
+                args: meetIds,
+            }),
+        ])
+        const group = <T>(rows: Array<Record<string, unknown>>, value: (row: Record<string, unknown>) => T) => {
+            const byMeet = new Map<number, Array<T>>()
+
+            for (const row of rows) byMeet.set(Number(row.meetId), [...(byMeet.get(Number(row.meetId)) ?? []), value(row)])
+            return byMeet
+        }
+
+        return {
+            attendedAccountIds: group(attendedAccounts.rows, row => Number(row.accountId)),
+            attendedPersonIds: group(attendedPeople.rows, row => Number(row.groupPersonId)),
+            playedGameIds: group(playedGames.rows, row => Number(row.gameId)),
+            personPlays: group(personPlays.rows, row => ({ gameId: Number(row.gameId), personId: Number(row.groupPersonId) })),
+            accountPlays: group(accountPlays.rows, row => ({ gameId: Number(row.gameId), accountId: Number(row.accountId) })),
+        }
+    }
+
     getMeetByIdForAccount(meetId: number, accountId: number) {
         return this.database.execute({
             sql: `

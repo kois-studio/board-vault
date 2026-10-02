@@ -11,40 +11,40 @@ export type HistoryRecordSources = {
     gamesService: GamesService
     gameTranslationService: GameTranslationService
     usersService: UsersService
-    meetAccountGamesService: MeetAccountGamesService
+    meetAccountGamesService?: MeetAccountGamesService
 }
 
 /**
- * Builds history records for completed sessions. Each session still reads its
- * own attendance and played games, but games, translations, accounts, and
- * group people are loaded once for the whole list.
+ * Builds history records for completed sessions with a fixed number of
+ * queries: session details, games, translations, accounts, and group people
+ * are each loaded once for the whole list.
  */
 export async function buildHistoryRecords(meets: Array<MeetDto>, sources: HistoryRecordSources): Promise<Array<HistoryRecordDto>> {
     if (meets.length === 0) {
         return []
     }
 
-    const { databaseService, gamesService, gameTranslationService, usersService, meetAccountGamesService } = sources
-    const sessions = await Promise.all(
-        meets.map(async meet => {
-            const [attendedByIds, attendedByPersonIds, gameIds, personParticipants] = await Promise.all([
-                databaseService.sessions.getMeetAttendedAccountIds(meet.id),
-                databaseService.sessions.getMeetAttendedPersonIds(meet.id),
-                databaseService.sessions.getPlayedGameIdsByMeetId(meet.id),
-                databaseService.sessions.getMeetPlayedGamePersonParticipants(meet.id),
-            ])
-            const accountParticipants = new Map(
-                await Promise.all(
-                    gameIds.map(
-                        async gameId =>
-                            [gameId, await meetAccountGamesService.getDistinctAccountIdsByMeetIdAndGameId(meet.id, gameId)] as const,
-                    ),
-                ),
-            )
+    const { databaseService, gamesService, gameTranslationService, usersService } = sources
+    const details = await databaseService.sessions.getHistoryDetailsByMeetIds(meets.map(meet => meet.id))
+    const sessions = meets.map(meet => {
+        const gameIds = details.playedGameIds.get(meet.id) ?? []
+        const personPlays = details.personPlays.get(meet.id) ?? []
+        const accountPlays = details.accountPlays.get(meet.id) ?? []
 
-            return { meet, attendedByIds, attendedByPersonIds, gameIds, personParticipants, accountParticipants }
-        }),
-    )
+        return {
+            meet,
+            gameIds,
+            attendedByIds: details.attendedAccountIds.get(meet.id) ?? [],
+            attendedByPersonIds: details.attendedPersonIds.get(meet.id) ?? [],
+            personParticipants: gameIds.map(gameId => ({
+                gameId,
+                participantIds: personPlays.filter(play => play.gameId === gameId).map(play => play.personId),
+            })),
+            accountParticipants: new Map(
+                gameIds.map(gameId => [gameId, accountPlays.filter(play => play.gameId === gameId).map(play => play.accountId)]),
+            ),
+        }
+    })
 
     const groupIds = [...new Set(meets.map(meet => meet.groupId))]
     const gameIds = sessions.flatMap(session => session.gameIds)
@@ -84,7 +84,7 @@ function peopleById(groupPeople: Awaited<ReturnType<DatabaseService['groups']['g
     )
 }
 
-function parseAvatar(value: unknown) {
+export function parseAvatar(value: unknown) {
     if (value === null || value === undefined || value === '') return null
     if (typeof value === 'object') return value
     try {

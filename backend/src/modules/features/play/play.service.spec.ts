@@ -10,28 +10,27 @@ import type { MeetsService } from '../../core/meets/meets.service'
 import type { UsersService } from '../../core/users/users.service'
 
 describe('PlayService history', () => {
-    it('includes only completed sessions in personal history', async () => {
-        const meetAccountGames = {
-            getDistinctAccountIdsByMeetIdAndGameId: jest.fn().mockResolvedValue([1]),
-        }
-        const meets = {
-            getMeetById: jest.fn().mockImplementation(async (meetId: number) => ({
-                id: meetId,
-                groupId: 7,
-                createdBy: 1,
-                meetDate: '2026-08-16T19:30:00.000Z',
-                isConfirmed: meetId === 10,
-                status: meetId === 10 ? 'completed' : 'cancelled',
-                timezone: 'Europe/Madrid',
-            })),
-        }
+    it('includes only completed sessions in personal history, with a fixed number of queries', async () => {
+        const meet = (id: number, status: string) => ({
+            id,
+            groupId: 7,
+            createdBy: 1,
+            meetDate: '2026-08-16T19:30:00.000Z',
+            isConfirmed: true,
+            status,
+            timezone: 'Europe/Madrid',
+        })
+        const meets = { getMeetsByIdsForAccount: jest.fn().mockResolvedValue([meet(10, 'completed'), meet(11, 'cancelled')]) }
         const database = fakeDatabase({
-            getMeetAttendedAccountIds: jest.fn().mockResolvedValue([1]),
             getDistinctCompletedMeetIdsForAccountHistory: jest.fn().mockResolvedValue([10, 11]),
-            getPlayedGameIdsByMeetId: jest.fn().mockResolvedValue([42]),
-            getMeetAttendedPersonIds: jest.fn().mockResolvedValue([]),
+            getHistoryDetailsByMeetIds: jest.fn().mockResolvedValue({
+                attendedAccountIds: new Map([[10, [1]]]),
+                attendedPersonIds: new Map(),
+                playedGameIds: new Map([[10, [42]]]),
+                personPlays: new Map(),
+                accountPlays: new Map([[10, [{ gameId: 42, accountId: 1 }]]]),
+            }),
             getGroupPeople: jest.fn().mockResolvedValue({ rows: [] }),
-            getMeetPlayedGamePersonParticipants: jest.fn().mockResolvedValue([]),
         })
         const service = new PlayService(
             {
@@ -40,13 +39,17 @@ describe('PlayService history', () => {
             database,
             { getGamesByIds: jest.fn().mockResolvedValue(new Map([[42, { id: 42, imageUrl: 'image' }]])) } as unknown as GamesService,
             meets as unknown as MeetsService,
-            meetAccountGames as unknown as MeetAccountGamesService,
+            {} as unknown as MeetAccountGamesService,
             { getTranslationsByGameIds: jest.fn().mockResolvedValue(new Map([[42, { en: 'Game' }]])) } as unknown as GameTranslationService,
         )
 
-        await expect(service.getUserGamesHistory(1)).resolves.toHaveLength(1)
-        expect(database.sessions.getPlayedGameIdsByMeetId).toHaveBeenCalledTimes(1)
-        expect(database.sessions.getPlayedGameIdsByMeetId).toHaveBeenCalledWith(10)
+        const history = await service.getUserGamesHistory(1)
+
+        expect(history).toHaveLength(1)
+        expect(history[0].gamesPlayed[0].playedBy.map(user => user.id)).toEqual([1])
+        expect(meets.getMeetsByIdsForAccount).toHaveBeenCalledWith([10, 11], 1)
+        expect(database.sessions.getHistoryDetailsByMeetIds).toHaveBeenCalledTimes(1)
+        expect(database.sessions.getHistoryDetailsByMeetIds).toHaveBeenCalledWith([10])
     })
 
     it('sorts a user meet list without mutating the database response contract', async () => {

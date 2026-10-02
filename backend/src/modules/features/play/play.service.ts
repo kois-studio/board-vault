@@ -491,9 +491,7 @@ export class PlayService {
     @LogFeature(new Logger('PlayService'))
     async getUserGamesHistory(userId: number): Promise<Array<HistoryRecordDto>> {
         const meetIds = await this.databaseService.sessions.getDistinctCompletedMeetIdsForAccountHistory(userId)
-        const meets = (await Promise.all(meetIds.map(meetId => this.meetsService.getMeetById(meetId, userId)))).filter(
-            meet => meet.status === 'completed',
-        )
+        const meets = (await this.meetsService.getMeetsByIdsForAccount(meetIds, userId)).filter(meet => meet.status === 'completed')
 
         return buildHistoryRecords(meets, {
             databaseService: this.databaseService,

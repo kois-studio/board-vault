@@ -13,7 +13,7 @@ import { MeetAccountGamesService } from '../../core/meet-account-games/meet-acco
 import { MeetsService } from '../../core/meets/meets.service'
 import { ReviewsService } from '../../core/reviews/reviews.service'
 import { UsersService } from '../../core/users/users.service'
-import { buildHistoryRecords } from '../play/history-records'
+import { buildHistoryRecords, parseAvatar } from '../play/history-records'
 
 import type { SuccessDto } from '../../../common/types/auth.type'
 import type { CreatedGroupDto, GroupMemberWithGames, GroupWithMembersAndGames } from '../../../common/types/group.type'
@@ -74,13 +74,33 @@ export class DashboardService {
             ),
         ])
         const gameIds = [...ownedByMember.values()].flat().map(owned => owned.gameId)
-        const [games, translations] = await Promise.all([
+        const groupIds = groups.map(entry => entry.group.id)
+        const [games, translations, placeholderRows, ownershipRows] = await Promise.all([
             this.gamesService.getGamesByIds(gameIds),
             this.gameTranslationService.getTranslationsByGameIds(gameIds),
+            groupIds.length ? this.databaseService.groups.getActivePlaceholdersByGroupIds(groupIds) : { rows: [] },
+            groupIds.length ? this.databaseService.groups.getAssertedOwnershipByGroupIds(groupIds) : { rows: [] },
         ])
+        const gamesByPerson = new Map<number, Array<number>>()
+
+        for (const row of ownershipRows.rows) {
+            const personId = Number(row.groupPersonId)
+
+            gamesByPerson.set(personId, [...(gamesByPerson.get(personId) ?? []), Number(row.gameId)])
+        }
+        const placeholders = placeholderRows.rows.map(row => ({
+            groupId: Number(row.groupId),
+            summary: {
+                id: Number(row.id),
+                displayName: String(row.displayName),
+                avatar: parseAvatar(row.avatar),
+                gameIds: gamesByPerson.get(Number(row.id)) ?? [],
+            },
+        }))
 
         return groups.map(({ group, memberships: groupMemberships }) => ({
             ...group,
+            placeholders: placeholders.filter(item => item.groupId === group.id).map(item => item.summary),
             members: groupMemberships
                 .filter(membership => users.has(membership.accountId))
                 .map(membership => {
