@@ -28,26 +28,45 @@
             </div>
         </section>
     } @else {
-        <section class="flex flex-col gap-3 py-6 sm:flex-row sm:items-center sm:justify-between" aria-label="Filter your games">
-            <p class="font-semibold">{{ userGames$().length }} game{{ userGames$().length === 1 ? '' : 's' }}</p>
-            <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
-                <label class="relative block">
-                    <span class="sr-only">Filter your games</span>
-                    <app-icon name="search" [size]="16" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-bv-text-muted" />
-                    <input type="search" placeholder="Filter by title" autocomplete="off" class="w-full rounded-lg border border-bv-border py-2 pl-9 pr-3 sm:w-64 dark:bg-bv-surface" [value]="filterText()" (input)="filterText.set($any($event.target).value)" />
-                </label>
-                <label class="flex items-center gap-2 text-sm">
-                    <span class="text-secondary">Sort</span>
-                    <select class="rounded-lg border border-bv-border px-3 py-2 dark:bg-bv-surface" [value]="sortBy()" (change)="setSort($any($event.target).value)">
-                        <option value="title">A–Z</option>
-                        <option value="duration">Shortest first</option>
-                        <option value="players">Most players</option>
-                    </select>
-                </label>
-            </div>
+        <section class="flex flex-col gap-3 py-6 lg:flex-row lg:items-center lg:justify-between" aria-label="Filter your games">
+            <p class="font-semibold">
+                @if (visibleGames().length === userGames$().length) {
+                    {{ userGames$().length }} game{{ userGames$().length === 1 ? '' : 's' }}
+                } @else {
+                    {{ visibleGames().length }} of {{ userGames$().length }} games
+                }
+            </p>
+            @if (showToolbar()) {
+                <div class="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+                    <label class="relative block">
+                        <span class="sr-only">Filter your games by title</span>
+                        <app-icon name="search" [size]="16" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-bv-text-muted" />
+                        <input type="search" placeholder="Filter by title" autocomplete="off" class="w-full rounded-lg border border-bv-border bg-bv-surface py-2 pl-9 pr-3 sm:w-56" [value]="filterText()" (input)="filterText.set($any($event.target).value)" />
+                    </label>
+                    <label class="flex items-center gap-2 text-sm">
+                        <span class="text-secondary">Players</span>
+                        <select class="rounded-lg border border-bv-border bg-bv-surface px-3 py-2" [value]="playerCount() ?? ''" (change)="setPlayerCount($any($event.target).value)">
+                            <option value="">Any</option>
+                            @for (count of PLAYER_OPTIONS; track count) {
+                                <option [value]="count">{{ count }}</option>
+                            }
+                        </select>
+                    </label>
+                    <label class="flex items-center gap-2 text-sm">
+                        <span class="text-secondary">Sort</span>
+                        <select class="rounded-lg border border-bv-border bg-bv-surface px-3 py-2" [value]="sortBy()" (change)="setSort($any($event.target).value)">
+                            <option value="title">A–Z</option>
+                            <option value="duration">Shortest first</option>
+                        </select>
+                    </label>
+                </div>
+            }
         </section>
         @if (visibleGames().length === 0) {
-            <p class="rounded-2xl border border-dashed border-bv-border p-8 text-center text-secondary">No games match "{{ filterText() }}".</p>
+            <div class="rounded-2xl border border-dashed border-bv-border p-8 text-center text-secondary">
+                <p>None of your games match these filters.</p>
+                <button appButton variant="secondary" size="small" class="mt-3" (click)="clearFilters()">Clear filters</button>
+            </div>
         }
         <section class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5" aria-label="Your games">
             @for (game of visibleGames(); track game.id) {

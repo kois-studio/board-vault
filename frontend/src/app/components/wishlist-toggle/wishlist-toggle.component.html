@@ -1,0 +1,17 @@
+<button
+    type="button"
+    class="group/wish flex h-10 cursor-pointer items-center rounded-full border bg-bv-surface/95 pl-2.5 pr-2.5 shadow-md transition-all duration-200 ease-out disabled:cursor-progress"
+    [class]="stateClass()"
+    [disabled]="busy()"
+    [attr.aria-label]="ariaLabel()"
+    [title]="actionLabel()"
+    (click)="$event.preventDefault(); $event.stopPropagation(); toggle()"
+>
+    <!-- The label slides open with a mouse or keyboard focus; touch screens show the heart only. -->
+    <span
+        class="max-w-0 overflow-hidden whitespace-nowrap text-sm font-semibold opacity-0 transition-all duration-200 ease-out group-hover/wish:mr-1.5 group-hover/wish:max-w-44 group-hover/wish:opacity-100 group-focus-visible/wish:mr-1.5 group-focus-visible/wish:max-w-44 group-focus-visible/wish:opacity-100"
+        aria-hidden="true"
+        >{{ actionLabel() }}</span
+    >
+    <app-icon name="heart" [size]="20" [fill]="wishlisted() ? 'currentColor' : 'none'" aria-hidden="true" />
+</button>

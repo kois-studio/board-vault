@@ -1,0 +1,25 @@
+<span class="inline-flex" (pointerenter)="onPointerEnter($event)" (pointerleave)="onPointerLeave($event)">
+    <button
+        type="button"
+        class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-bv-text-muted transition hover:bg-bv-surface-2 hover:text-bv-text"
+        [class.bg-bv-surface-2]="isOpen()"
+        [class.text-bv-text]="isOpen()"
+        [attr.aria-label]="label()"
+        [attr.aria-expanded]="isOpen()"
+        [attr.aria-controls]="panelId"
+        (click)="toggle()"
+    >
+        <app-icon name="circle-help" [size]="18" aria-hidden="true" />
+    </button>
+
+    @if (isOpen()) {
+        <div
+            [id]="panelId"
+            role="region"
+            [attr.aria-label]="label()"
+            class="absolute right-0 top-full z-30 mt-2 w-72 max-w-[calc(100vw-2rem)] rounded-xl border border-bv-border bg-bv-surface p-4 text-left text-sm font-normal text-bv-text shadow-lg"
+        >
+            <ng-content />
+        </div>
+    }
+</span>

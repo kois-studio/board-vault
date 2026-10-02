@@ -34,4 +34,11 @@ export class CollectionPageComponent {
     public readonly userReviews$ = this.dataService.userReviews
     public readonly userWishlist$ = this.dataService.userWishlist
     public readonly isLoadingUserGames = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_GAMES])
+    public readonly isLoadingReviews = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_REVIEWS])
+    public readonly isLoadingWishlist = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_WISHLIST])
+
+    /** "1 game", "3 games". */
+    public countLabel(count: number, noun: string): string {
+        return `${count} ${noun}${count === 1 ? '' : 's'}`
+    }
 }

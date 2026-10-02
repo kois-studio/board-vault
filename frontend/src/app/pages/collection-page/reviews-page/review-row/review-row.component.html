@@ -4,7 +4,7 @@
         <!-- First row wrapper -->
         <a routerLink="/games/{{ game().id }}" class="flex items-center gap-3 w-full">
             <!-- Image and game info (unchanged) -->
-            <image-background class="block h-16 w-16 shrink-0 rounded-lg border border-bv-text-muted" [src]="game().imageUrl" [alt]="game().titleTranslations.en + ' cover'" />
+            <image-background class="block h-16 w-16 shrink-0 rounded-lg border border-bv-border" [src]="game().imageUrl" [alt]="game().titleTranslations.en + ' cover'" />
 
             <div class="grow min-w-0">
                 <h3 class="text-lg font-semibold mb-1 truncate">{{ game().titleTranslations.en }}</h3>

@@ -14,7 +14,7 @@
                 id="game-search"
                 type="search"
                 placeholder="Search by title, in English or Spanish"
-                class="w-full rounded-xl border border-bv-border py-3 pl-11 pr-10 text-base focus:outline-none focus:ring-2 focus:ring-bv-primary dark:bg-bv-surface"
+                class="w-full rounded-xl border border-bv-border bg-bv-surface py-3 pl-11 pr-10 text-base focus:outline-none focus:ring-2 focus:ring-bv-primary"
                 [formControl]="searchControl"
                 autocomplete="off"
             />
@@ -72,16 +72,18 @@
                             [maxPlayers]="game.maxPlayers"
                         />
                     </a>
-                    @if (game.isInCollection) {
-                        <div title="In your games" class="absolute right-2 top-2 rounded-full bg-bv-surface/90 p-1.5 text-bv-success shadow-sm" aria-label="In your games">
-                            <app-icon name="bookmark-check" [size]="16" />
+                    @if (game.isInCollection || collectionState()[game.id] === 'saved') {
+                        <div title="In your games" class="absolute right-2 top-2 rounded-full bg-bv-surface/90 p-1.5 text-bv-success shadow-sm" role="img" aria-label="In your games">
+                            <app-icon name="bookmark-check" [size]="16" aria-hidden="true" />
                         </div>
+                    } @else if (!acquisitionGroupId()) {
+                        <app-wishlist-toggle class="absolute right-2 top-2" [game]="game" />
                     }
                     @if (!acquisitionGroupId()) {
                         <button
                             type="button"
                             class="mt-2 w-full rounded-lg border px-3 py-2 text-sm font-semibold transition disabled:cursor-default"
-                            [class]="game.isInCollection || collectionState()[game.id] === 'saved' ? 'border-bv-success/30 bg-bv-success/10 text-bv-success' : 'border-bv-border hover:border-bv-primary hover:bg-bv-primary-soft'"
+                            [class]="game.isInCollection || collectionState()[game.id] === 'saved' ? 'border-bv-success/30 bg-bv-success/10 text-bv-success' : 'border-bv-border bg-bv-surface hover:border-bv-primary hover:bg-bv-primary-soft'"
                             [disabled]="game.isInCollection || !!collectionState()[game.id]"
                             [attr.aria-label]="game.isInCollection ? game.titleTranslations.en + ' is already in your collection' : 'Add ' + game.titleTranslations.en + ' to your collection'"
                             (click)="addGameToCollection(game.id)"

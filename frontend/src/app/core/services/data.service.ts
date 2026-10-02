@@ -1,5 +1,5 @@
 import { effect, Injectable, inject, signal } from '@angular/core'
-import { catchError, concatMap, finalize, of, tap, throwError } from 'rxjs'
+import { catchError, concatMap, finalize, firstValueFrom, of, tap, throwError } from 'rxjs'
 import { Api } from '../../api/api'
 import type {
     CollectionActivityWithGameDataType,
@@ -693,8 +693,9 @@ export class DataService {
         // 1.
         this.api.saveGameReview(accountId, gameId, review).subscribe({
             next: () => {
-                this.userReviews.set([])
+                // Reload without clearing first, so the reviews list doesn't flash empty.
                 this._getUserReviews(accountId)
+                this._getUserCollectionActivity(accountId)
 
                 this.toastService.success('Review saved')
             },
@@ -720,11 +721,31 @@ export class DataService {
         this._getUserWishlist(currentUser.id)
     }
 
+    /**
+     * Adds the game to the wishlist or takes it off, then updates `userWishlist`
+     * in place (no reload, so lists don't flash) and the activity list.
+     * Resolves to whether the game is now on the wishlist.
+     */
+    public async toggleWishlist(game: GameCompleteType): Promise<boolean> {
+        const currentUser = this.currentUser()
+        if (!currentUser) throw new Error('No signed-in user')
+
+        const { isWishlisted } = await firstValueFrom(this.api.toggleWishlist(currentUser.id, game.id))
+        this.userWishlist.update((wishlist) => {
+            const others = wishlist.filter((item) => item.id !== game.id)
+            return isWishlisted ? [...others, game] : others
+        })
+        this._getUserCollectionActivity(currentUser.id)
+        return isWishlisted
+    }
+
+    /** Reloads My Games and, since every collection change is logged, the activity list. */
     public refreshUserGames() {
         const currentUser = this.currentUser()
         if (!currentUser) return
 
         this._getUserGames(currentUser.id)
+        this._getUserCollectionActivity(currentUser.id)
     }
 
     public refreshUserGroups() {

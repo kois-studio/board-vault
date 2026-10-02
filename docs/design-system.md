@@ -65,8 +65,13 @@ colour, such as the danger button.
 - **success, warning, danger** for attendance states and recommendation
   reasons, always with text or an icon, never colour alone. For a tinted
   background use opacity: `bg-bv-danger/10 border-bv-danger/30
-  text-bv-danger`. Don't use them as decoration (a wishlist heart is not
-  danger).
+  text-bv-danger`. Otherwise don't use them as decoration. The designer
+  approved two exceptions: section colours on hub cards (below) and the
+  wishlist heart, which is `text-bv-danger`.
+- **Hub cards** (`/collection`, `/play`) each get a `tone`. The icon tile
+  uses the full colour and the card a faint tint of it, mixed into the
+  surface so it stays opaque: My Games `primary`, Browse `success`, Reviews
+  `warning`, Wishlist `danger`. Their count badges use the same tone.
 - **Player colours** always with the initial or the name visible.
 - On a primary fill, secondary text uses `text-bv-on-primary/80`, not a soft
   token.
@@ -74,6 +79,10 @@ colour, such as the danger button.
 - Tinting a component: `<app-badge>` and `<app-card-section>` take a `tone`
   (`primary`, `accent`, `success`, `warning`, `danger`, `neutral`;
   `types/tone.type.ts`).
+- Never pair a `bv-*` colour with `dark:`. The tokens already switch with the
+  theme, so `dark:bg-bv-surface` alone leaves the light theme with no
+  background (a see-through field). Write `bg-bv-surface`. Use `dark:` only
+  to pick a *different* token in dark mode, as the rating stars do.
 
 ### Player colours
 
@@ -132,6 +141,23 @@ not the only label for an action.
   name and a nearby visible explanation when the action is unfamiliar.
 - Respect `prefers-reduced-motion`; motion must not be required to understand
   state or complete a task.
+
+### Shared controls
+
+- **Explaining a feature:** `<app-info-popover label="About …">` renders a
+  (?) button; put the explanation in its content. A mouse opens it on hover,
+  and a click or tap pins it open (touch screens have no hover). Escape or a
+  click outside closes it. Say what the feature records, for how long, and
+  who can see it.
+- **Wishlist:** `<app-wishlist-toggle [game]="game" />` is the heart on a
+  game cover (game page, Browse, Wishlist). Position it from the parent
+  (`class="absolute right-2 top-2"`). It reads and updates
+  `DataService.userWishlist`, slides open to name its action with a mouse or
+  keyboard focus, and its toast offers Undo. Hide it once the game is owned.
+- **Undo:** for a quick, reversible action, act at once and pass an action
+  to the toast instead of asking for confirmation first:
+  `toastService.success('Removed from your wishlist', { label: 'Undo', run: () => … })`.
+  Destructive or shared changes still confirm first.
 
 ### Buttons and links
 

@@ -126,7 +126,7 @@
                     id="session-date"
                     type="date"
                     [formControl]="sessionDate"
-                    class="w-full px-3 py-2 border border-bv-border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-bv-primary focus:border-bv-primary dark:bg-bv-border dark:text-bv-text"
+                    class="w-full px-3 py-2 border border-bv-border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-bv-primary focus:border-bv-primary bg-bv-surface text-bv-text"
                     [class]="sessionDate.invalid && (sessionDate.dirty || sessionDate.touched) ? 'border-bv-danger' : ''"
                 />
                 @if (sessionDate.invalid && (sessionDate.dirty || sessionDate.touched)) {
@@ -280,7 +280,7 @@
                                 [checked]="isMatrixCellSelected(attendee.user.id, game.game.id)"
                                 (change)="toggleMatrixCell(attendee.user.id, game.game.id)"
                                 [attr.aria-label]="'Mark ' + (attendee.user.displayName || attendee.user.username) + ' as a player of ' + (game.game.titleTranslations.en || game.game.title || 'this game')"
-                                class="h-4 w-4 rounded border-bv-border text-bv-success focus:ring-2 focus:ring-bv-success dark:bg-bv-border"
+                                class="h-4 w-4 rounded border-bv-border text-bv-success focus:ring-2 focus:ring-bv-success bg-bv-surface"
                             />
                             <app-card-account [member]="attendee.user" format="compact" />
                         </label>
@@ -306,7 +306,7 @@
                     [formControl]="sessionNotes"
                     maxlength="1000"
                     rows="5"
-                    class="mt-4 w-full rounded-md border border-bv-border px-3 py-2 shadow-sm focus:border-bv-primary focus:outline-none focus:ring-2 focus:ring-bv-primary dark:bg-bv-border dark:text-bv-text"
+                    class="mt-4 w-full rounded-md border border-bv-border px-3 py-2 shadow-sm focus:border-bv-primary focus:outline-none focus:ring-2 focus:ring-bv-primary bg-bv-surface text-bv-text"
                     placeholder="For example: We finally finished the campaign and everyone wants a rematch."
                 ></textarea>
                 <div class="mt-1 flex justify-between text-sm text-bv-text-muted">

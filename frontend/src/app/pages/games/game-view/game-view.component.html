@@ -14,8 +14,13 @@
     <div class="space-y-12 pb-16 pt-6">
       <!-- Hero: cover, facts, ratings, and the actions that matter -->
       <section class="grid gap-8 md:grid-cols-[minmax(0,320px)_1fr] lg:gap-12" aria-labelledby="game-title">
-        <div class="mx-auto aspect-square w-full max-w-xs overflow-hidden rounded-2xl border border-bv-border bg-bv-surface p-3 shadow-sm md:max-w-none">
-          <image-background [src]="game.gameData.imageUrl" [alt]="game.gameData.titleTranslations.en + ' cover'" loading="eager" />
+        <div class="relative mx-auto aspect-square w-full max-w-xs rounded-2xl border border-bv-border bg-bv-surface p-3 shadow-sm md:max-w-none">
+          <div class="h-full w-full overflow-hidden rounded-xl">
+            <image-background class="h-full" [src]="game.gameData.imageUrl" [alt]="game.gameData.titleTranslations.en + ' cover'" loading="eager" />
+          </div>
+          @if (!game.ownedGameData) {
+            <app-wishlist-toggle class="absolute right-5 top-5" [game]="game.gameData" (changed)="onWishlistChanged($event)" />
+          }
         </div>
 
         <div class="min-w-0">
@@ -89,20 +94,6 @@
               <button appButton variant="secondary" size="small" (click)="removeFromCollection()" [loading]="PREVENT_SPAM.isLoadingRemoveFromCollection">Remove</button>
             } @else {
               <button appButton icon="plus-lg" (click)="addToCollection()" [loading]="PREVENT_SPAM.isLoadingAddToCollection">I own this game</button>
-              <button
-                type="button"
-                (click)="toggleWishlist()"
-                [attr.aria-pressed]="isWishlistedComputed()"
-                class="inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-semibold transition"
-                [ngClass]="{
-                  'border-bv-danger/30 bg-bv-danger/10 text-bv-danger': isWishlistedComputed(),
-                  'border-bv-border hover:bg-bv-bg': !isWishlistedComputed(),
-                  'scale-105': wishlistAnimation,
-                }"
-              >
-                <app-icon name="heart" [size]="16" [fill]="isWishlistedComputed() ? 'currentColor' : 'none'" aria-hidden="true" />
-                {{ isWishlistedComputed() ? 'On your wishlist' : 'Add to wishlist' }}
-              </button>
             }
           </div>
         </div>
@@ -172,18 +163,18 @@
           <form [formGroup]="ownershipFormGroup" class="grid gap-4 border-t border-bv-border p-4 sm:grid-cols-2" (ngSubmit)="saveOwnedGameDetails()">
             <label class="block text-sm font-medium">
               Bought on <span class="text-xs text-secondary">(optional)</span>
-              <input type="date" formControlName="purchaseDate" class="mt-1 w-full rounded-lg border border-bv-border px-3 py-2 dark:bg-bv-surface" />
+              <input type="date" formControlName="purchaseDate" class="mt-1 w-full rounded-lg border border-bv-border px-3 py-2 bg-bv-surface" />
             </label>
             <label class="block text-sm font-medium">
               Price paid <span class="text-xs text-secondary">(optional)</span>
-              <input type="number" formControlName="purchasePrice" min="0" step="0.01" placeholder="0.00" class="mt-1 w-full rounded-lg border border-bv-border px-3 py-2 dark:bg-bv-surface" />
+              <input type="number" formControlName="purchasePrice" min="0" step="0.01" placeholder="0.00" class="mt-1 w-full rounded-lg border border-bv-border px-3 py-2 bg-bv-surface" />
               @if (ownershipFormGroup.get('purchasePrice')?.errors?.['positiveNumber']) {
                 <span class="mt-1 block text-sm text-bv-danger">Enter a positive number.</span>
               }
             </label>
             <label class="block text-sm font-medium sm:col-span-2">
               Notes <span class="text-xs text-secondary">(optional)</span>
-              <textarea formControlName="purchaseNotes" rows="2" maxlength="128" placeholder="For example: gift from Ana, missing one meeple" class="mt-1 w-full resize-none rounded-lg border border-bv-border px-3 py-2 dark:bg-bv-surface"></textarea>
+              <textarea formControlName="purchaseNotes" rows="2" maxlength="128" placeholder="For example: gift from Ana, missing one meeple" class="mt-1 w-full resize-none rounded-lg border border-bv-border px-3 py-2 bg-bv-surface"></textarea>
             </label>
             <div class="flex justify-end sm:col-span-2">
               <button appButton type="submit" [loading]="PREVENT_SPAM.isLoadingUpdateOwnership" [disabled]="ownershipFormGroup.invalid">Save</button>

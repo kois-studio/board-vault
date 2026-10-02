@@ -1,48 +1,44 @@
-import { Injectable } from '@angular/core'
+import { Injectable, signal } from '@angular/core'
+
+/** A button inside a toast, such as "Undo". Clicking it also closes the toast. */
+export interface ToastAction {
+    label: string
+    run: () => void
+}
 
 interface Toast {
     id: string
     message: string
     type: 'success' | 'error' | 'info' | 'warning' | 'generic'
+    action?: ToastAction
 }
 
 @Injectable({
     providedIn: 'root',
 })
 export class ToastService {
-    toasts: Toast[] = [
-        // Testing toasts
-        // { id: crypto.randomUUID(), message: 'This is a success message!', type: 'success' },
-        // { id: crypto.randomUUID(), message: 'This is a info message.', type: 'info' },
-        // { id: crypto.randomUUID(), message: 'This is a warning message.', type: 'warning' },
-        // { id: crypto.randomUUID(), message: 'This is an error message!', type: 'error' },
-        // { id: crypto.randomUUID(), message: 'This is a generic message.', type: 'generic' },
-    ]
+    readonly toasts = signal<Toast[]>([])
 
-    private _addToast(message: string, type: Toast['type']): void {
+    private _addToast(message: string, type: Toast['type'], action?: ToastAction): void {
         const id = crypto.randomUUID()
-        this.toasts.push({ id, message, type })
+        this.toasts.update((toasts) => [...toasts, { id, message, type, action }])
 
         // Automatically remove the toast after 5 seconds
         setTimeout(() => {
-            this._removeToastById(id)
+            this.removeToast(id)
         }, 5000)
     }
 
-    private _removeToastById(id: string): void {
-        this.toasts = this.toasts.filter((toast) => toast.id !== id)
-    }
-
-    success(message: string): void {
-        this._addToast(message, 'success')
+    success(message: string, action?: ToastAction): void {
+        this._addToast(message, 'success', action)
     }
 
     error(message: string): void {
         this._addToast(message, 'error')
     }
 
-    info(message: string): void {
-        this._addToast(message, 'info')
+    info(message: string, action?: ToastAction): void {
+        this._addToast(message, 'info', action)
     }
 
     warning(message: string): void {
@@ -54,6 +50,6 @@ export class ToastService {
     }
 
     removeToast(id: string): void {
-        this.toasts = this.toasts.filter((toast) => toast.id !== id)
+        this.toasts.update((toasts) => toasts.filter((toast) => toast.id !== id))
     }
 }

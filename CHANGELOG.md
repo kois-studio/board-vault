@@ -41,6 +41,23 @@ operational details.
   tokens (`bg-bv-surface`, `text-bv-primary`) instead of Tailwind's palette,
   secondary buttons are outlined, and avatars use eight player colours that
   follow the theme (earlier avatar colours map onto them).
+- Collection pages, after a review pass:
+  - The wishlist heart is back on game covers (game page, Browse, and
+    Wishlist). With a mouse it slides open to say "Add to wishlist" or
+    "Remove from wishlist", and every change can be undone from the toast.
+    Browse can now save a game to the wishlist.
+  - Wishlist cards have an "I bought it" button that moves the game to My
+    Games, and an empty wishlist explains how to add games.
+  - The Collection hub cards have colour again: a faint tint per section
+    with a stronger icon tile (plum, green, amber, red).
+  - The (?) next to Recent activity explains what the list records, how
+    long it keeps it, and who sees it. It opens on hover or on a tap.
+  - Reviews lists the games waiting for your rating even before your first
+    rating, shows each game once, and sorts your ratings A–Z, by rating, or
+    by date. Rating a game no longer reloads the whole list.
+  - My Games shows its filters from 12 games and filters by player count
+    instead of sorting by maximum players.
+  - Recent activity updates after changes instead of on the next sign-in.
 - Buttons share one component: `appButton` goes on a native `<button>` or
   `<a>` (replacing the `<app-button>` wrapper and hand-written `app-btn-*`
   classes), primary buttons are indigo everywhere, and every button shrinks
@@ -57,6 +74,13 @@ operational details.
   `builds` configuration.
 
 ### Fixed
+
+- The Collection tabs fit on a phone screen; Wishlist was cut off.
+- Search boxes, filters, and form fields have a background in light mode
+  again (they were see-through after the palette change).
+- Hub card counts say "1 game" and "1 review", and show "Loading…" while
+  loading instead of 0.
+- The game page cover fills its frame.
 
 - The avatar editor (Settings → Account) and the invitations and
   notifications dialogs in the profile menu open again. They had stopped

@@ -5,25 +5,25 @@
 
 <container-wrapper>
     <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <app-card-section icon="collection-fill" titleText="My Games" description="Browse and manage your board game collection" cardLink="/collection/games">
-            <app-badge class="app-card-section-badge" [text]="isLoadingUserGames() ? 'Loading…' : userGames$().length + ' games'" />
+        <app-card-section icon="collection-fill" tone="primary" titleText="My Games" description="Browse and manage your board game collection" cardLink="/collection/games">
+            <app-badge class="app-card-section-badge" tone="primary" [text]="isLoadingUserGames() ? 'Loading…' : countLabel(userGames$().length, 'game')" />
             <div></div>
             <span class="flex items-center text-sm font-medium text-bv-primary group-hover:underline">View all &gt;</span>
         </app-card-section>
 
-        <app-card-section icon="search" titleText="Browse and discover" description="Find new games to add to your collection" cardLink="/collection/browse">
+        <app-card-section icon="search" tone="success" titleText="Browse and discover" description="Find new games to add to your collection" cardLink="/collection/browse">
             <div></div>
             <span class="flex items-center text-sm font-medium text-bv-primary group-hover:underline">Browse games &gt;</span>
         </app-card-section>
 
-        <app-card-section icon="star-fill" tone="accent" titleText="Reviews" description="Rate and review the games you've played" cardLink="/collection/reviews">
-            <app-badge class="app-card-section-badge" [text]="userReviews$().length + ' reviews'" />
+        <app-card-section icon="star-fill" tone="warning" titleText="Reviews" description="Rate and review the games you've played" cardLink="/collection/reviews">
+            <app-badge class="app-card-section-badge" tone="warning" [text]="isLoadingReviews() ? 'Loading…' : countLabel(userReviews$().length, 'review')" />
             <div></div>
             <span class="flex items-center text-nowrap text-sm font-medium text-bv-primary group-hover:underline">View all &gt;</span>
         </app-card-section>
 
-        <app-card-section icon="suit-heart-fill" titleText="Wishlist" description="Keep track of games you want to add to your collection" cardLink="/collection/wishlist">
-            <app-badge class="app-card-section-badge" [text]="userWishlist$().length + ' games'" />
+        <app-card-section icon="suit-heart-fill" tone="danger" titleText="Wishlist" description="Keep track of games you want to add to your collection" cardLink="/collection/wishlist">
+            <app-badge class="app-card-section-badge" tone="danger" [text]="isLoadingWishlist() ? 'Loading…' : countLabel(userWishlist$().length, 'game')" />
             <div></div>
             <span class="flex items-center text-sm font-medium text-bv-primary group-hover:underline">View all &gt;</span>
         </app-card-section>

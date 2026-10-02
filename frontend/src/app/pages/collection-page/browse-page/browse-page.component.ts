@@ -11,6 +11,7 @@ import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
+import { WishlistToggleComponent } from '../../../components/wishlist-toggle/wishlist-toggle.component'
 import { DataService } from '../../../core/services/data.service'
 import { BrowsePageService } from './browse-page.service'
 
@@ -27,6 +28,7 @@ const BROWSE_PAGE_SIZE = 20
         ButtonComponent,
         SkeletonCardGameComponent,
         ReactiveFormsModule,
+        WishlistToggleComponent,
     ],
     templateUrl: 'browse-page.component.html',
 })
@@ -247,6 +249,8 @@ export class BrowsePageComponent {
         this.api.addGameToUserCollection(userId, gameId).subscribe({
             next: () => {
                 this.collectionState.update((state) => ({ ...state, [gameId]: 'saved' }))
+                // The server takes an owned game off the wishlist.
+                this.dataService.userWishlist.update((wishlist) => wishlist.filter((game) => game.id !== gameId))
                 this.dataService.refreshUserGames()
                 this.toastService.success('Game added to your collection.')
             },

@@ -1,5 +1,5 @@
 <div class="fixed inset-x-4 bottom-5 z-50 flex flex-col items-end gap-3 sm:left-auto" aria-live="polite" aria-atomic="false">
-    @for (toast of toastService.toasts; track toast.id) {
+    @for (toast of toastService.toasts(); track toast.id) {
     <div class="animate-toast-enter w-full max-w-sm motion-reduce:animate-none">
         <div
             class="relative rounded-lg border border-l-4 border-bv-border bg-bv-surface p-4 text-bv-text shadow-lg"
@@ -21,6 +21,11 @@
                 />
 
                 <span class="flex-1 px-4">{{ toast.message }}</span>
+                @if (toast.action; as action) {
+                    <button type="button" (click)="runAction(toast.id, action)" class="mr-1 rounded px-2 py-1 text-sm font-semibold text-bv-primary hover:bg-bv-surface-2">
+                        {{ action.label }}
+                    </button>
+                }
                 <button type="button" (click)="closeToast(toast.id)" class="rounded p-1 text-bv-text-muted hover:bg-bv-surface-2 hover:text-bv-text" aria-label="Dismiss notification">
                     <app-icon name="x" [size]="16" aria-hidden="true" />
                 </button>

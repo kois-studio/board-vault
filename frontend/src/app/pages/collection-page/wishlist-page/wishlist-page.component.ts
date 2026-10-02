@@ -1,6 +1,8 @@
-import { Component, computed, inject } from '@angular/core'
+import { Component, computed, inject, signal } from '@angular/core'
 import { RouterLink } from '@angular/router'
+import { finalize } from 'rxjs'
 import { Api } from '../../../api/api'
+import type { GameCompleteType } from '../../../api/api.types'
 import { CardGameComponent } from '../../../components/card-game/card-game.component'
 import { SkeletonCardGameComponent } from '../../../components/skeletons/skeleton-card-game/skeleton-card-game.component'
 import { ToastService } from '../../../components/toast/toast.service'
@@ -8,6 +10,7 @@ import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
+import { WishlistToggleComponent } from '../../../components/wishlist-toggle/wishlist-toggle.component'
 import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
 import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
@@ -21,6 +24,7 @@ import { LoadingService } from '../../../core/services/loading.service'
         ButtonComponent,
         IconComponent,
         SkeletonCardGameComponent,
+        WishlistToggleComponent,
     ],
     templateUrl: 'wishlist-page.component.html',
 })
@@ -43,42 +47,25 @@ export class WishlistPageComponent {
     // --------------------------------------------------------------------------
     //        Component props
     // --------------------------------------------------------------------------
-    public preventSpamIsLoadingWishlist = false
+    public readonly buyingGameId = signal<number | null>(null)
 
-    public toggleWishlist(gameId: number): void {
-        const currentUser = this.currentUser$()
+    /** Adds the game to My Games; the server takes it off the wishlist. */
+    public markAsBought(game: GameCompleteType): void {
+        const userId = this.currentUser$()?.id
+        if (!userId || this.buyingGameId() !== null) return
 
-        if (!currentUser?.id || !gameId || this.preventSpamIsLoadingWishlist) {
-            return
-        }
-
-        this.preventSpamIsLoadingWishlist = true
-
-        // save the wishlist status
-        this.api.toggleWishlist(currentUser.id, gameId).subscribe({
-            next: (response) => {
-                this.userWishlist$.update((wishlist) => {
-                    return wishlist.filter((game) => game.id !== gameId)
-                })
-
-                if (response.isWishlisted) {
-                    // This should never happen
-                    this.toastService.success('Game added to wishlist')
-                } else {
-                    this.toastService.success('Game removed from wishlist')
-                }
-            },
-            error: () => {
-                this.toastService.error('Error saving wishlist, will reload page')
-                // reload page
-                setTimeout(() => {
-                    window.location.reload()
-                }, 1000)
-            },
-            complete: () => {
-                this.preventSpamIsLoadingWishlist = false
-            },
-        })
+        this.buyingGameId.set(game.id)
+        this.api
+            .addGameToUserCollection(userId, game.id)
+            .pipe(finalize(() => this.buyingGameId.set(null)))
+            .subscribe({
+                next: () => {
+                    this.userWishlist$.update((wishlist) => wishlist.filter((item) => item.id !== game.id))
+                    this.dataService.refreshUserGames()
+                    this.toastService.success(`${game.titleTranslations.en} moved to My Games`)
+                },
+                error: () => this.toastService.error('Could not add this game to My Games. Try again.'),
+            })
     }
 
     public retryWishlist(): void {

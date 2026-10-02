@@ -14,6 +14,7 @@ import { ContainerWrapperComponent } from '../../../components/ui/container-wrap
 import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../../../components/ui/image-background/image-background.component'
 import { SpinnerComponent } from '../../../components/ui/spinner/spinner.component'
+import { WishlistToggleComponent } from '../../../components/wishlist-toggle/wishlist-toggle.component'
 import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { DataService } from '../../../core/services/data.service'
 
@@ -32,6 +33,7 @@ import { DataService } from '../../../core/services/data.service'
         ReactiveFormsModule,
         ImageProfileComponent,
         CustomDatePipe,
+        WishlistToggleComponent,
     ],
     templateUrl: './game-view.component.html',
 })
@@ -90,7 +92,6 @@ export class GameViewPageComponent implements OnDestroy {
     // --------------------------------------------------------------------------
     private _routeSub: Subscription | undefined
     private lastLoadedGameKey: string | null = null
-    public wishlistAnimation = false // used for a little scale animation
     // A signal, not a field: the load can start inside an effect, where a plain field change is never rendered.
     public readonly isLoadingGameData = signal(true)
     public readonly gameLoadError = signal(false)
@@ -103,7 +104,6 @@ export class GameViewPageComponent implements OnDestroy {
 
     // to prevent spamming actions, basically isLoading flags
     public readonly PREVENT_SPAM = {
-        isLoadingWishlist: false,
         isLoadingReview: false,
         isLoadingUpdateOwnership: false,
         isLoadingAddToCollection: false,
@@ -171,62 +171,11 @@ export class GameViewPageComponent implements OnDestroy {
 
     // #region Wishlist
 
-    public toggleWishlist(): void {
-        const currentUser = this.currentUser$()
-        const gameId = this.gameView$()?.gameData?.id
-
-        if (!currentUser?.id || !gameId || this.PREVENT_SPAM.isLoadingWishlist) {
-            return
-        }
-
-        this.PREVENT_SPAM.isLoadingWishlist = true
-
-        // Trigger the animation
-        this.wishlistAnimation = true
-        setTimeout(() => {
-            this.wishlistAnimation = false
-        }, 300)
-
-        // save the wishlist status
-        this.api
-            .toggleWishlist(currentUser.id, gameId)
-            .pipe(
-                finalize(() => {
-                    this.PREVENT_SPAM.isLoadingWishlist = false
-                }),
-            )
-            .subscribe({
-                next: (response) => {
-                    this.gameView$.update((game) => {
-                        if (!game) {
-                            return null
-                        }
-
-                        return {
-                            ...game,
-                            wishlistedGameData: response.isWishlisted
-                                ? {
-                                      dateAdded: new Date().toISOString(),
-                                      notes: '',
-                                  }
-                                : null,
-                        }
-                    })
-                    if (response.isWishlisted) {
-                        this.toastService.success('Game added to wishlist')
-                    } else {
-                        this.toastService.success('Game removed from wishlist')
-                    }
-
-                    // Refresh the global wishlist state to keep it in sync
-                    this.dataService.refreshUserWishlist()
-                },
-                error: () => {
-                    this.toastService.error('Error saving wishlist')
-                    // On error, reload the game data
-                    this._loadGameData(currentUser.id, gameId)
-                },
-            })
+    /** Keeps this page's copy in step with the heart on the cover. */
+    public onWishlistChanged(isWishlisted: boolean): void {
+        this.gameView$.update((game) =>
+            game ? { ...game, wishlistedGameData: isWishlisted ? { dateAdded: new Date().toISOString(), notes: '' } : null } : null,
+        )
     }
 
     // #region Review

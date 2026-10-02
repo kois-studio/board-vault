@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { Component } from '@angular/core'
 import { IconComponent } from '../ui/icon/icon.component'
-import { ToastService } from './toast.service'
+import { type ToastAction, ToastService } from './toast.service'
 
 @Component({
     imports: [CommonModule, IconComponent],
@@ -48,6 +48,11 @@ export class ToastComponent {
 
     closeToast(id: string): void {
         this.toastService.removeToast(id)
+    }
+
+    runAction(id: string, action: ToastAction): void {
+        this.toastService.removeToast(id)
+        action.run()
     }
 
     iconFor(type: 'success' | 'error' | 'info' | 'warning' | 'generic'): string {

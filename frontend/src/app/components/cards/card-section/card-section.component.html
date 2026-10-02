@@ -1,5 +1,6 @@
 <div
-    class="group relative h-full overflow-hidden rounded-xl border border-bv-border bg-bv-surface shadow-sm transition hover:border-bv-primary/40 hover:shadow-md"
+    class="group relative h-full overflow-hidden rounded-xl border shadow-sm transition hover:shadow-md"
+    [class]="cardClass()"
     [class.opacity-60]="comingSoon()"
     [class.cursor-not-allowed]="comingSoon()"
 >

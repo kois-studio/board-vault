@@ -17,9 +17,9 @@
                 <a
                     [routerLink]="subsection.path"
                     [attr.aria-current]="isSubsectionActive(subsection.path) ? 'page' : null"
-                    class="flex min-h-11 items-center gap-2 whitespace-nowrap px-3 py-3 text-sm font-medium border-b-2 md:px-5 transition {{ isSubsectionActive(subsection.path) ? 'border-bv-primary text-bv-primary' : 'border-transparent text-bv-text-muted hover:text-bv-text' }}"
+                    class="flex min-h-11 items-center gap-2 whitespace-nowrap px-2.5 py-3 sm:px-3 text-sm font-medium border-b-2 md:px-5 transition {{ isSubsectionActive(subsection.path) ? 'border-bv-primary text-bv-primary' : 'border-transparent text-bv-text-muted hover:text-bv-text' }}"
                 >
-                    <app-icon [name]="subsection.icon" [size]="16" />
+                    <app-icon class="hidden sm:inline-flex" [name]="subsection.icon" [size]="16" aria-hidden="true" />
                     {{ subsection.name }}
                 </a>
             }

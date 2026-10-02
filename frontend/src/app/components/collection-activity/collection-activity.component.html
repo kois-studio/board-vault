@@ -1,6 +1,16 @@
     <h2 class="text-lg font-medium text-bv-text mb-4 flex items-center justify-between gap-2 w-full">
         Recent Activity
-        <app-icon name="circle-help" [size]="18" className="text-bv-text-muted" label="What is recent activity?" />
+        <app-info-popover label="About recent activity">
+            <p class="font-semibold">What this list shows</p>
+            <p class="mt-1 text-bv-text-muted">Your latest changes to your collection:</p>
+            <ul class="mt-2 list-disc space-y-1 pl-5 text-bv-text-muted">
+                <li>Games you add to or remove from My Games</li>
+                <li>Changes to your copy's purchase details</li>
+                <li>Ratings you give</li>
+                <li>Games you add to or remove from your wishlist</li>
+            </ul>
+            <p class="mt-2 text-bv-text-muted">It keeps your last 32 changes, however old; each new change replaces the oldest. Only you can see it.</p>
+        </app-info-popover>
     </h2>
     <div class="bg-bv-surface rounded-xl shadow-sm border border-bv-border overflow-hidden">
         @if (userCollectionActivity$().length === 0) {

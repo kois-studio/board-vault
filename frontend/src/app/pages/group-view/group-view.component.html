@@ -199,7 +199,7 @@
                                         <div class="mt-3 rounded-xl border border-bv-border">
                                             <label class="block border-b border-bv-border p-2">
                                                 <span class="sr-only">Filter games for {{ person.person.displayName }}</span>
-                                                <input type="search" class="w-full rounded-lg border border-bv-border px-3 py-2 text-sm dark:bg-bv-surface" placeholder="Filter games" [value]="groupPersonGameFilter()" (input)="groupPersonGameFilter.set($any($event.target).value)" />
+                                                <input type="search" class="w-full rounded-lg border border-bv-border px-3 py-2 text-sm bg-bv-surface" placeholder="Filter games" [value]="groupPersonGameFilter()" (input)="groupPersonGameFilter.set($any($event.target).value)" />
                                             </label>
                                             <ul class="max-h-96 divide-y divide-bv-border overflow-y-auto">
                                                 @for (game of getGroupPersonEditorGames(person); track game.id) {

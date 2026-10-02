@@ -16,6 +16,7 @@ and Upstash.
 | Add a page or change a frontend flow | [how-to/add-page.md](how-to/add-page.md), [design-system.md](design-system.md), [ux-flows.md](ux-flows.md) |
 | Add a button or a button-like link | [design-system.md#buttons-and-links](design-system.md#buttons-and-links) (`appButton` on a native `<button>` or `<a>`) |
 | Pick a colour, or style light and dark mode | [design-system.md#colour-the-ciruela-palette](design-system.md#colour-the-ciruela-palette) (`bv-*` tokens only, no Tailwind palette colours) |
+| Explain a feature with a (?), add a wishlist heart, or offer Undo | [design-system.md#shared-controls](design-system.md#shared-controls) (`<app-info-popover>`, `<app-wishlist-toggle>`, toast actions) |
 | Touch sign-in, sessions, or account resolution | [authentication.md](authentication.md), [ADR-0012](adr/0012-clerk-only-authentication.md) |
 | Sign in locally or run Clerk browser tests | [how-to/run-with-clerk.md](how-to/run-with-clerk.md) |
 | Add or read an environment variable | [environments.md](environments.md) |
