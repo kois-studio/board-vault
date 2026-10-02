@@ -75,7 +75,8 @@ describe('HistoryPageComponent shared-memory summaries', () => {
         })
         expect(component.mostPlayedSummary()).toBe('Cascadia · 2 sessions')
         expect(component.getPlayedBySummary([{ displayName: 'Dee', username: 'dee' }])).toBe('Dee')
-        expect(fixture.nativeElement.textContent).toContain('Get a recommendation for this group')
+        expect(fixture.nativeElement.textContent).toContain('What should this group play next?')
+        expect(component.visibleMonths().map((month) => month.label)).toEqual(['September 2026', 'August 2026'])
         expect((fixture.nativeElement.querySelector('#history-group-filter') as HTMLSelectElement).value).toBe('7')
         expect(component.getGameInitials('Cascadia')).toBe('C')
 
@@ -130,13 +131,13 @@ describe('HistoryPageComponent shared-memory summaries', () => {
         expect([...playedBy.classList]).toEqual(expect.arrayContaining(['min-w-0', 'line-clamp-2', 'wrap-anywhere']))
 
         const attendees = [...fixture.nativeElement.querySelectorAll('article p')].find((element: HTMLElement) =>
-            element.textContent?.includes(longName),
+            element.textContent?.startsWith('With'),
         ) as HTMLParagraphElement
         expect(attendees.classList).toContain('wrap-anywhere')
         expect(attendees.parentElement?.classList).toContain('min-w-0')
 
         const note = [...fixture.nativeElement.querySelectorAll('article p')].find((element: HTMLElement) =>
-            element.textContent?.includes('Session note:'),
+            element.textContent?.includes('Hicieron'),
         ) as HTMLParagraphElement
         expect(note.textContent).toContain(longNote)
         expect(note.classList).toContain('wrap-anywhere')
@@ -193,7 +194,59 @@ describe('HistoryPageComponent sessions recorded with group people', () => {
         expect(fixture.nativeElement.querySelector('[title^="Played by"]')?.getAttribute('title')).toBe(
             'Played by bloddsword, David M. Fajardo, Guest',
         )
-        expect(fixture.nativeElement.querySelectorAll('app-image-profile').length).toBe(3)
+        // Two attendee avatars come from accounts, and the guest without one gets initials.
+        const avatars = [...fixture.nativeElement.querySelectorAll('app-image-profile')] as Array<HTMLElement>
+        expect(avatars.length).toBe(3)
+        expect(avatars[2].textContent).toContain('G')
+        expect(text).toContain('Everyone played')
         expect(fixture.componentInstance.historySummary().people).toBe(3)
+    })
+})
+
+describe('HistoryPageComponent long histories', () => {
+    it('shows ten sessions at first and older ones on request', async () => {
+        const history = Array.from({ length: 13 }, (_, index) => ({
+            meetData: {
+                id: index + 1,
+                groupId: 7,
+                meetDate: new Date(Date.UTC(2026, 8, 28 - index * 2, 18)).toISOString(),
+                timezone: 'UTC',
+                notes: null,
+            },
+            attendedBy: [],
+            gamesPlayed: [],
+        }))
+        await TestBed.configureTestingModule({
+            imports: [HistoryPageComponent],
+            providers: [
+                {
+                    provide: DataService,
+                    useValue: {
+                        userGroups: signal([{ id: 7, name: 'Friday Crew' }]),
+                        userGroupsError: signal(false),
+                        userHistory: signal(history),
+                        userHistoryError: signal(false),
+                        refreshUserHistory: vi.fn(),
+                    },
+                },
+                { provide: LoadingService, useValue: { loadingStatesIndex: signal({ [LOADING_KEYS.USER_GAMES_HISTORY]: false }) } },
+                { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: convertToParamMap({}) } } },
+                provideRouter([]),
+            ],
+        }).compileComponents()
+
+        const fixture = TestBed.createComponent(HistoryPageComponent)
+        fixture.detectChanges()
+        const element = fixture.nativeElement as HTMLElement
+
+        expect(element.querySelectorAll('article').length).toBe(10)
+        const showMore = [...element.querySelectorAll('button')].find((button) => button.textContent?.includes('Show older sessions'))
+        expect(showMore?.textContent).toContain('(3)')
+
+        showMore?.click()
+        fixture.detectChanges()
+
+        expect(element.querySelectorAll('article').length).toBe(13)
+        expect(element.textContent).not.toContain('Show older sessions')
     })
 })

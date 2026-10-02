@@ -71,7 +71,9 @@ colour, such as the danger button.
 - **Hub cards** (`/collection`, `/play`) each get a `tone`. The icon tile
   uses the full colour and the card a faint tint of it, mixed into the
   surface so it stays opaque: My Games `primary`, Browse `success`, Reviews
-  `warning`, Wishlist `danger`. Their count badges use the same tone.
+  `warning`, Wishlist `danger`; Upcoming `primary`, What to play `accent`,
+  History `success`, Record a session `warning`. Their count badges use the
+  same tone.
 - **Player colours** always with the initial or the name visible.
 - On a primary fill, secondary text uses `text-bv-on-primary/80`, not a soft
   token.
@@ -154,6 +156,15 @@ not the only label for an action.
   (`class="absolute right-2 top-2"`). It reads and updates
   `DataService.userWishlist`, slides open to name its action with a mouse or
   keyboard focus, and its toast offers Undo. Hide it once the game is owned.
+- **Toggle chips:** `<button type="button" class="app-chip"
+  [attr.aria-pressed]="isChosen">` for filters and choices (group, people,
+  durations, players). The chosen chip takes the primary fill. Wrap a set in
+  a `<fieldset class="min-w-0">` with a `<legend>`: without `min-w-0` a
+  fieldset cannot shrink below its widest chip and a long name widens the
+  page on phones.
+- **Session timing:** `core/utils/sessionTiming.ts` says whether a scheduled
+  session is `planned`, `live`, or waiting for results (`wrap-up`, 12 hours
+  after it started), and formats date blocks and "in 6 days" labels.
 - **Undo:** for a quick, reversible action, act at once and pass an action
   to the toast instead of asking for confirmation first:
   `toastService.success('Removed from your wishlist', { label: 'Undo', run: () => … })`.

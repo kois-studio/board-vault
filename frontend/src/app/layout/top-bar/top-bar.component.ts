@@ -47,8 +47,8 @@ export class LayoutTopBarComponent implements OnInit {
             name: 'Play',
             owns: ['/sessions', '/meets'],
             subsections: [
-                { path: 'play/upcoming-sessions', icon: 'calendar-check-fill', name: 'Upcoming' },
-                { path: 'play/recommendations', icon: 'hand-thumbs-up', name: 'Discover' },
+                { path: 'play/upcoming-sessions', icon: 'calendar-clock', name: 'Upcoming' },
+                { path: 'play/recommendations', icon: 'lightbulb', name: 'What to play' },
                 { path: 'play/history', icon: 'history', name: 'History' },
             ],
         },

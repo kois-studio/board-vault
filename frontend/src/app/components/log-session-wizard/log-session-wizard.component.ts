@@ -19,11 +19,13 @@ import { SpinnerComponent } from '../../components/ui/spinner/spinner.component'
 import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
 import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
-import { CardAccountComponent } from '../card-account/card-account.component'
+import { ImageProfileComponent } from '../image-profile/image-profile.component'
 import { ToastService } from '../toast/toast.service'
 import { ImageBackgroundComponent } from '../ui/image-background/image-background.component'
 
-type SessionStep = 'group' | 'date' | 'attendees' | 'games' | 'matrix' | 'notes' | 'review'
+type SessionStep = 'who' | 'games' | 'save'
+
+const STEP_ORDER: Array<SessionStep> = ['who', 'games', 'save']
 
 interface AttendeeSelection {
     user: PublicUserType & {
@@ -49,9 +51,18 @@ interface StepInfo {
     key: SessionStep
     label: string
     description: string
-    summary?: string
 }
 
+/** Today in the browser's timezone, as the date input expects it (YYYY-MM-DD). */
+function todayInputValue(): string {
+    const now = new Date()
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+}
+
+/**
+ * Records a game night that already happened, in three steps: who came and
+ * when, what they played (and who played each game), and an optional note.
+ */
 @Component({
     selector: 'app-log-session-wizard',
     templateUrl: './log-session-wizard.component.html',
@@ -62,7 +73,7 @@ interface StepInfo {
         PageHeaderComponent,
         ContainerWrapperComponent,
         IconComponent,
-        CardAccountComponent,
+        ImageProfileComponent,
         ImageBackgroundComponent,
         ButtonComponent,
         RouterLink,
@@ -90,256 +101,157 @@ export class LogSessionWizardComponent {
     // --------------------------------------------------------------------------
     //        WIZARD STATE
     // --------------------------------------------------------------------------
-    public currentStep = signal<SessionStep>('group')
+    public currentStep = signal<SessionStep>('who')
     public isLoading = signal<boolean>(false)
 
-    // Track which steps the user has actually interacted with
-    public completedSteps = signal<Set<SessionStep>>(new Set())
-
-    // --------------------------------------------------------------------------
-    //        STEPS MODEL
-    // --------------------------------------------------------------------------
     public steps: StepInfo[] = [
-        { key: 'group', label: 'Group', description: 'Choose the group for this play session' },
-        { key: 'date', label: 'Date', description: 'When did this session take place?' },
-        { key: 'attendees', label: 'Attendees', description: 'Select who attended this session' },
-        { key: 'games', label: 'Games', description: 'Select which games were played' },
-        { key: 'matrix', label: 'Who played what?', description: 'Tell the group who played each game' },
-        { key: 'notes', label: 'Notes', description: 'Add a note about this session (optional)' },
-        { key: 'review', label: 'Review', description: 'Check the memory before saving it' },
+        { key: 'who', label: 'Who and when', description: 'Pick the group, the day, and who came.' },
+        { key: 'games', label: 'Games', description: 'Tick the games you played. Everyone who came is marked as a player; untick anyone who sat a game out.' },
+        { key: 'save', label: 'Note and save', description: 'Add a note if you like, check the details, and save.' },
     ]
 
     // --------------------------------------------------------------------------
-    //        STEP 1: GROUP SELECTION
+    //        STEP 1: WHO AND WHEN
     // --------------------------------------------------------------------------
     public selectedGroup = signal<GroupWithMembersAndGames | null>(null)
     public groupPeople = signal<Array<GroupPersonWorkspaceType>>([])
     public groupPersonCatalog = signal<Array<GameCompleteType>>([])
     public usesGroupPeople = signal(false)
+    public readonly today = todayInputValue()
 
-    // --------------------------------------------------------------------------
-    //        STEP 2: DATE SELECTION
-    // --------------------------------------------------------------------------
-    public sessionDate = new FormControl('', [
+    public sessionDate = new FormControl(this.today, [
         Validators.required,
-        (control) => {
-            if (!control.value) return null
-            const selectedDate = new Date(control.value)
-            const today = new Date(new Date().toISOString().split('T')[0])
-            return selectedDate <= today ? null : { futureDate: true }
-        },
+        (control) => (!control.value || control.value <= todayInputValue() ? null : { futureDate: true }),
     ])
 
-    // --------------------------------------------------------------------------
-    //        STEP 3: ATTENDEE SELECTION
-    // --------------------------------------------------------------------------
     public attendees = signal<AttendeeSelection[]>([])
 
     // --------------------------------------------------------------------------
-    //        STEP 4: GAME SELECTION
+    //        STEP 2: GAMES AND PLAYERS
     // --------------------------------------------------------------------------
     public games = signal<GameSelection[]>([])
-
-    // --------------------------------------------------------------------------
-    //        STEP 5: MATRIX
-    // --------------------------------------------------------------------------
     public matrix = signal<MatrixCell[]>([])
+    /** Player choices the person made, kept when an attendee or game is removed and added back. */
+    private readonly playerChoices = new Map<string, boolean>()
+    public gameQuery = signal('')
+    /** The offered games matching the search; chosen games always stay visible. */
+    public readonly visibleGames = computed(() => {
+        const query = this.gameQuery().trim().toLowerCase()
+        return this.games().filter((selection) => selection.selected || !query || this.getGameTitle(selection.game).toLowerCase().includes(query))
+    })
 
     // --------------------------------------------------------------------------
-    //        STEP 6: SESSION MEMORY
+    //        STEP 3: NOTE AND SAVE
     // --------------------------------------------------------------------------
     public sessionNotes = new FormControl('', [Validators.maxLength(1000)])
 
     // --------------------------------------------------------------------------
-    //        STEP COMPLETION TRACKING
+    //        STEP COMPLETION
     // --------------------------------------------------------------------------
-    public isStepComplete = (step: SessionStep): boolean => {
-        // Check if the step has valid data
-        const hasValidData = (() => {
-            switch (step) {
-                case 'group':
-                    return this.selectedGroup() !== null
-                case 'date':
-                    return this.sessionDate.valid && this.sessionDate.value !== null
-                case 'attendees':
-                    return this.attendees().some((a) => a.selected)
-                case 'games':
-                    return this.games().some((g) => g.selected)
-                case 'matrix':
-                    return this.hasParticipantsForEveryGame()
-                case 'notes':
-                    return true
-                case 'review':
-                    return this.selectedGroup() !== null && this.hasParticipantsForEveryGame()
-                default:
-                    return false
-            }
-        })()
+    /** A step is complete once it is valid and the person has moved past it. */
+    public isStepComplete = (step: SessionStep): boolean =>
+        STEP_ORDER.indexOf(step) < STEP_ORDER.indexOf(this.currentStep()) && this.isStepValid(step)
 
-        // For steps with valid data, mark as complete if:
-        // 1. User has explicitly interacted with the step, OR
-        // 2. User has navigated past this step (meaning they've seen it and it was valid)
-        if (hasValidData) {
-            if (this.completedSteps().has(step)) {
-                return true
-            }
-
-            // Check if user has navigated past this step
-            const stepOrder = ['group', 'date', 'attendees', 'games', 'matrix', 'notes', 'review']
-            const currentStepIndex = stepOrder.indexOf(this.currentStep())
-            const stepIndex = stepOrder.indexOf(step)
-
-            return stepIndex < currentStepIndex
+    private isStepValid(step: SessionStep): boolean {
+        switch (step) {
+            case 'who':
+                return (
+                    this.selectedGroup() !== null &&
+                    this.sessionDate.valid &&
+                    this.sessionDate.value !== null &&
+                    this.attendees().some((a) => a.selected)
+                )
+            case 'games':
+                return this.hasParticipantsForEveryGame()
+            case 'save':
+                return this.isStepValid('who') && this.isStepValid('games') && this.sessionNotes.valid
         }
-
-        return false
     }
 
     public getStepSummary = (step: SessionStep): string => {
-        // Only show summary if step is actually complete
-        if (!this.isStepComplete(step)) {
-            return ''
-        }
+        if (!this.isStepComplete(step)) return ''
 
         switch (step) {
-            case 'group': {
-                const group = this.selectedGroup()
-                return group ? group.name : ''
-            }
-            case 'date':
-                return this.sessionDate.value ? new Date(this.sessionDate.value).toLocaleDateString() : ''
-            case 'attendees': {
-                const selectedAttendees = this.attendees().filter((a) => a.selected)
-                return selectedAttendees.length > 0 ? `${selectedAttendees.length} selected` : ''
+            case 'who': {
+                const people = this.getSelectedAttendees().length
+                return `${this.selectedGroup()?.name} · ${people} ${people === 1 ? 'person' : 'people'}`
             }
             case 'games': {
-                const selectedGames = this.games().filter((g) => g.selected)
-                return selectedGames.length > 0 ? `${selectedGames.length} selected` : ''
+                const games = this.getSelectedGames().length
+                return `${games} ${games === 1 ? 'game' : 'games'}`
             }
-            case 'matrix': {
-                const selectedGames = this.getSelectedGames()
-                const selectedParticipants = selectedGames.reduce(
-                    (total, game) => total + this.getSelectedParticipantCount(game.game.id),
-                    0,
-                )
-                return selectedGames.length > 0 ? `${selectedParticipants} player choices` : ''
-            }
-            case 'notes':
-                return this.sessionNotes.value?.trim() ? 'Added' : 'Optional'
-            case 'review':
-                return 'Ready to save'
             default:
                 return ''
         }
     }
 
-    // Helper method to mark a step as interacted with
-    private markStepAsInteracted(step: SessionStep): void {
-        const currentCompleted = this.completedSteps()
-        if (!currentCompleted.has(step)) {
-            this.completedSteps.set(new Set([...currentCompleted, step]))
-        }
-    }
-
     constructor() {
-        // Set today as default date
-        const today = new Date().toISOString().split('T')[0]
-        this.sessionDate.setValue(today)
-
-        // Track date field interactions
-        this.sessionDate.valueChanges.subscribe(() => {
-            this.markStepAsInteracted('date')
+        // With a single group there is nothing to choose.
+        effect(() => {
+            const groups = this.userGroups()
+            if (groups.length === 1 && untracked(() => this.selectedGroup()) === null) this.selectGroup(groups[0])
         })
 
         effect(() => {
             const group = this.selectedGroup()
             if (!group) return
 
-            // Only choosing a group resets the wizard. Signals read while initializing (such as
-            // currentStep) must not be tracked, or every step change would clear the attendees.
+            // Only choosing a group resets the wizard. Signals read while initializing must not be
+            // tracked, or a later change to them would clear the attendees.
             untracked(() => this.initializeForGroup(group))
         })
 
+        // Offer the games the people who came own, keeping any game already ticked that is still offered.
         effect(() => {
             const selectedAttendees = this.attendees().filter((a) => a.selected)
+            const chosenGameIds = new Set(
+                untracked(() => this.games())
+                    .filter((selection) => selection.selected)
+                    .map((selection) => selection.game.id),
+            )
 
-            // Filter games based on selected attendees
-            if (selectedAttendees.length > 0) {
-                const availableGames = new Map<number, GameCompleteType>()
-                for (const attendee of selectedAttendees) {
-                    for (const game of attendee.user.games) {
-                        if (!availableGames.has(game.id)) {
-                            availableGames.set(game.id, game)
-                        }
-                    }
-                }
-
-                this.games.set(
-                    Array.from(availableGames.values()).map((game) => ({
-                        game,
-                        selected: false,
-                    })),
-                )
-            } else {
-                // If no attendees selected, clear games
-                this.games.set([])
+            const availableGames = new Map<number, GameCompleteType>()
+            for (const attendee of selectedAttendees) {
+                for (const game of attendee.user.games) availableGames.set(game.id, game)
             }
+
+            this.games.set(
+                [...availableGames.values()]
+                    .sort((a, b) => this.getGameTitle(a).localeCompare(this.getGameTitle(b)))
+                    .map((game) => ({ game, selected: chosenGameIds.has(game.id) })),
+            )
         })
 
+        // One cell per attendee and chosen game. New cells start ticked; existing ones keep their value.
         effect(() => {
             const selectedAttendees = this.attendees().filter((a) => a.selected)
             const selectedGames = this.games().filter((g) => g.selected)
+            const previous = new Map(untracked(() => this.matrix()).map((cell) => [`${cell.attendeeId}:${cell.gameId}`, cell.selected]))
 
-            // Rebuild matrix when selections change - set all cells to selected by default
-            const newMatrix: MatrixCell[] = []
-            for (const attendee of selectedAttendees) {
-                for (const game of selectedGames) {
-                    newMatrix.push({
+            this.matrix.set(
+                selectedAttendees.flatMap((attendee) =>
+                    selectedGames.map((game) => ({
                         attendeeId: attendee.user.id,
                         gameId: game.game.id,
-                        selected: true, // Default to selected
-                    })
-                }
-            }
-            this.matrix.set(newMatrix)
+                        selected:
+                            previous.get(`${attendee.user.id}:${game.game.id}`) ??
+                            this.playerChoices.get(`${attendee.user.id}:${game.game.id}`) ??
+                            true,
+                    })),
+                ),
+            )
         })
     }
 
     private initializeForGroup(group: GroupWithMembersAndGames): void {
-        // Only auto-advance if we're currently on step 1
-        if (this.currentStep() === 'group') {
-            this.currentStep.set('date')
-            this.markStepAsInteracted('group')
-        }
-
-        // Initialize attendees from group members
-        this.attendees.set(
-            group.members.map((member) => ({
-                user: member,
-                selected: false,
-            })),
-        )
+        this.attendees.set(group.members.map((member) => ({ user: member, selected: false })))
+        this.games.set([])
+        this.matrix.set([])
+        this.playerChoices.clear()
         this.groupPersonCatalog.set([])
         this.groupPeople.set([])
         this.usesGroupPeople.set(false)
         this.loadGroupPeople(group)
-
-        // Initialize games from all group members' games (will be filtered later based on selected attendees)
-        const allGames = new Map<number, GameCompleteType>()
-        for (const member of group.members) {
-            for (const game of member.games) {
-                if (!allGames.has(game.id)) {
-                    allGames.set(game.id, game)
-                }
-            }
-        }
-
-        this.games.set(
-            Array.from(allGames.values()).map((game) => ({
-                game,
-                selected: false,
-            })),
-        )
     }
 
     private loadGroupPeople(group: GroupWithMembersAndGames): void {
@@ -431,215 +343,69 @@ export class LogSessionWizardComponent {
     //        STEP NAVIGATION
     // --------------------------------------------------------------------------
     public canProceedToNextStep(): boolean {
-        // Check if current step has valid data to proceed to next step
-        switch (this.currentStep()) {
-            case 'group':
-                return this.selectedGroup() !== null
-            case 'date':
-                return this.sessionDate.valid && this.sessionDate.value !== null
-            case 'attendees':
-                return this.attendees().some((a) => a.selected)
-            case 'games':
-                return this.games().some((g) => g.selected)
-            case 'matrix':
-                return this.hasParticipantsForEveryGame()
-            case 'notes':
-                return true
-            case 'review':
-                // "Save session" is this step's next action; mirror what submitSession() requires.
-                return (
-                    this.selectedGroup() !== null &&
-                    this.sessionDate.valid &&
-                    this.sessionDate.value !== null &&
-                    this.attendees().some((a) => a.selected) &&
-                    this.games().some((g) => g.selected) &&
-                    this.hasParticipantsForEveryGame()
-                )
-            default:
-                return false
-        }
+        return this.isStepValid(this.currentStep())
     }
 
     public nextStep(): void {
-        switch (this.currentStep()) {
-            case 'group':
-                this.currentStep.set('date')
-                // Mark group step as complete
-                this.markStepAsInteracted('group')
-                // Mark date step as complete if it has valid data
-                if (this.sessionDate.valid && this.sessionDate.value) {
-                    this.markStepAsInteracted('date')
-                }
-                break
-            case 'date':
-                this.currentStep.set('attendees')
-                // Mark date step as complete
-                this.markStepAsInteracted('date')
-                break
-            case 'attendees':
-                this.currentStep.set('games')
-                // Mark attendees step as complete
-                this.markStepAsInteracted('attendees')
-                break
-            case 'games':
-                this.currentStep.set('matrix')
-                // Mark games step as complete
-                this.markStepAsInteracted('games')
-                break
-            case 'matrix':
-                this.currentStep.set('notes')
-                this.markStepAsInteracted('matrix')
-                break
-            case 'notes':
-                this.currentStep.set('review')
-                this.markStepAsInteracted('notes')
-                break
-            case 'review':
-                this.submitSession()
-                break
+        if (!this.canProceedToNextStep()) return
+        const step = this.currentStep()
+        if (step === 'save') {
+            void this.submitSession()
+            return
         }
+        this.currentStep.set(STEP_ORDER[STEP_ORDER.indexOf(step) + 1])
     }
 
     public previousStep(): void {
-        switch (this.currentStep()) {
-            case 'date':
-                this.currentStep.set('group')
-                break
-            case 'attendees':
-                this.currentStep.set('date')
-                break
-            case 'games':
-                this.currentStep.set('attendees')
-                break
-            case 'matrix':
-                this.currentStep.set('games')
-                break
-            case 'notes':
-                this.currentStep.set('matrix')
-                break
-            case 'review':
-                this.currentStep.set('notes')
-                break
-        }
+        const index = STEP_ORDER.indexOf(this.currentStep())
+        if (index > 0) this.currentStep.set(STEP_ORDER[index - 1])
+    }
+
+    /** Steps already passed can be reopened from the progress bar. */
+    public goToStep(step: SessionStep): void {
+        if (STEP_ORDER.indexOf(step) < STEP_ORDER.indexOf(this.currentStep())) this.currentStep.set(step)
     }
 
     // --------------------------------------------------------------------------
-    //        GROUP SELECTION
+    //        GROUP AND ATTENDEES
     // --------------------------------------------------------------------------
     public selectGroup(group: GroupWithMembersAndGames): void {
         this.selectedGroup.set(group)
-        this.markStepAsInteracted('group')
     }
 
-    // --------------------------------------------------------------------------
-    //        ATTENDEE SELECTION
-    // --------------------------------------------------------------------------
     public toggleAttendee(attendeeId: number): void {
-        const updatedAttendees = this.attendees().map((attendee) =>
-            attendee.user.id === attendeeId ? { ...attendee, selected: !attendee.selected } : attendee,
+        this.attendees.update((attendees) =>
+            attendees.map((attendee) => (attendee.user.id === attendeeId ? { ...attendee, selected: !attendee.selected } : attendee)),
         )
-        this.attendees.set(updatedAttendees)
-        this.markStepAsInteracted('attendees')
     }
 
     public selectAllAttendees(): void {
-        const updatedAttendees = this.attendees().map((attendee) => ({
-            ...attendee,
-            selected: true,
-        }))
-        this.attendees.set(updatedAttendees)
-        this.markStepAsInteracted('attendees')
+        this.attendees.update((attendees) => attendees.map((attendee) => ({ ...attendee, selected: true })))
     }
 
     public deselectAllAttendees(): void {
-        const updatedAttendees = this.attendees().map((attendee) => ({
-            ...attendee,
-            selected: false,
-        }))
-        this.attendees.set(updatedAttendees)
-        this.markStepAsInteracted('attendees')
+        this.attendees.update((attendees) => attendees.map((attendee) => ({ ...attendee, selected: false })))
     }
 
     // --------------------------------------------------------------------------
-    //        GAME SELECTION
+    //        GAMES AND PLAYERS
     // --------------------------------------------------------------------------
     public toggleGame(gameId: number): void {
-        const updatedGames = this.games().map((game) => (game.game.id === gameId ? { ...game, selected: !game.selected } : game))
-        this.games.set(updatedGames)
-        this.markStepAsInteracted('games')
+        this.games.update((games) => games.map((game) => (game.game.id === gameId ? { ...game, selected: !game.selected } : game)))
     }
 
-    public selectAllGames(): void {
-        const updatedGames = this.games().map((game) => ({
-            ...game,
-            selected: true,
-        }))
-        this.games.set(updatedGames)
-        this.markStepAsInteracted('games')
-    }
-
-    public deselectAllGames(): void {
-        const updatedGames = this.games().map((game) => ({
-            ...game,
-            selected: false,
-        }))
-        this.games.set(updatedGames)
-        this.markStepAsInteracted('games')
-    }
-
-    // --------------------------------------------------------------------------
-    //        MATRIX OPERATIONS
-    // --------------------------------------------------------------------------
     public toggleMatrixCell(attendeeId: number, gameId: number): void {
-        const updatedMatrix = this.matrix().map((cell) =>
-            cell.attendeeId === attendeeId && cell.gameId === gameId ? { ...cell, selected: !cell.selected } : cell,
+        this.matrix.update((matrix) =>
+            matrix.map((cell) => {
+                if (cell.attendeeId !== attendeeId || cell.gameId !== gameId) return cell
+                this.playerChoices.set(`${attendeeId}:${gameId}`, !cell.selected)
+                return { ...cell, selected: !cell.selected }
+            }),
         )
-        this.matrix.set(updatedMatrix)
-        this.markStepAsInteracted('matrix')
-    }
-
-    public toggleAllForAttendee(attendeeId: number): void {
-        const attendeeCells = this.matrix().filter((cell) => cell.attendeeId === attendeeId)
-        const allSelected = attendeeCells.every((cell) => cell.selected)
-
-        const updatedMatrix = this.matrix().map((cell) => (cell.attendeeId === attendeeId ? { ...cell, selected: !allSelected } : cell))
-        this.matrix.set(updatedMatrix)
-        this.markStepAsInteracted('matrix')
-    }
-
-    public toggleAllForGame(gameId: number): void {
-        const gameCells = this.matrix().filter((cell) => cell.gameId === gameId)
-        const allSelected = gameCells.every((cell) => cell.selected)
-
-        const updatedMatrix = this.matrix().map((cell) => (cell.gameId === gameId ? { ...cell, selected: !allSelected } : cell))
-        this.matrix.set(updatedMatrix)
-        this.markStepAsInteracted('matrix')
-    }
-
-    public selectAllForAttendee(attendeeId: number): void {
-        const updatedMatrix = this.matrix().map((cell) => (cell.attendeeId === attendeeId ? { ...cell, selected: true } : cell))
-        this.matrix.set(updatedMatrix)
-        this.markStepAsInteracted('matrix')
-    }
-
-    public selectAllForGame(gameId: number): void {
-        const updatedMatrix = this.matrix().map((cell) => (cell.gameId === gameId ? { ...cell, selected: true } : cell))
-        this.matrix.set(updatedMatrix)
-        this.markStepAsInteracted('matrix')
     }
 
     public isMatrixCellSelected(attendeeId: number, gameId: number): boolean {
         return this.matrix().some((cell) => cell.attendeeId === attendeeId && cell.gameId === gameId && cell.selected)
-    }
-
-    public isAllSelectedForAttendee(attendeeId: number): boolean {
-        const attendeeCells = this.matrix().filter((cell) => cell.attendeeId === attendeeId)
-        return attendeeCells.length > 0 && attendeeCells.every((cell) => cell.selected)
-    }
-
-    public isAllSelectedForGame(gameId: number): boolean {
-        const gameCells = this.matrix().filter((cell) => cell.gameId === gameId)
-        return gameCells.length > 0 && gameCells.every((cell) => cell.selected)
     }
 
     public getSelectedParticipantCount(gameId: number): number {
@@ -662,7 +428,7 @@ export class LogSessionWizardComponent {
         const selectedGames = this.games().filter((game) => game.selected)
 
         if (!group || !sessionDate || selectedAttendees.length === 0 || selectedGames.length === 0) {
-            this.toastService.error('Select a group, attendees, and at least one game before saving the session.')
+            this.toastService.error('Choose a group, who came, and at least one game before saving.')
             return
         }
 
@@ -714,14 +480,12 @@ export class LogSessionWizardComponent {
     // --------------------------------------------------------------------------
     //        UTILITY METHODS
     // --------------------------------------------------------------------------
-    public getStepTitle(): string {
-        const currentStepInfo = this.steps.find((s) => s.key === this.currentStep())
-        return currentStepInfo?.label || ''
+    public getStepInfo(): StepInfo {
+        return this.steps.find((step) => step.key === this.currentStep()) ?? this.steps[0]
     }
 
-    public getStepDescription(): string {
-        const currentStepInfo = this.steps.find((s) => s.key === this.currentStep())
-        return currentStepInfo?.description || ''
+    public getStepIndex(step: SessionStep): number {
+        return STEP_ORDER.indexOf(step)
     }
 
     public getSelectedAttendees(): AttendeeSelection[] {
@@ -734,8 +498,25 @@ export class LogSessionWizardComponent {
             .join(', ')
     }
 
+    public getPlayerNames(gameId: number): string {
+        return this.getSelectedAttendees()
+            .filter((attendee) => this.isMatrixCellSelected(attendee.user.id, gameId))
+            .map((attendee) => attendee.user.displayName || attendee.user.username)
+            .join(', ')
+    }
+
     public getSelectedGames(): GameSelection[] {
         return this.games().filter((g) => g.selected)
+    }
+
+    public getGameTitle(game: GameCompleteType): string {
+        return game.titleTranslations.en || game.title || 'Untitled game'
+    }
+
+    public getSessionDateLabel(): string {
+        const value = this.sessionDate.value
+        if (!value) return 'Not set'
+        return new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(`${value}T12:00:00`))
     }
 
     public retryGroups(): void {

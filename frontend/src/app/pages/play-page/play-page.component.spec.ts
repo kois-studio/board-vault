@@ -7,7 +7,7 @@ import { LoadingService } from '../../core/services/loading.service'
 import { PlayPageComponent } from './play-page.component'
 
 describe('PlayPageComponent', () => {
-    const setup = async (meetsError = false) => {
+    const setup = async (meetsError = false, extraMeets: Array<object> = []) => {
         await TestBed.configureTestingModule({
             imports: [PlayPageComponent],
             providers: [
@@ -17,9 +17,14 @@ describe('PlayPageComponent', () => {
                         userGroups: signal([{ id: 7, name: 'Friday crew', members: [] }]),
                         userMeets: signal([
                             { id: 1, groupId: 7, status: 'completed', meetDate: '2026-09-01T18:00:00Z', timezone: 'UTC' },
-                            { id: 2, groupId: 7, status: 'scheduled', meetDate: '2026-12-01T18:00:00Z', timezone: 'UTC' },
+                            { id: 2, groupId: 7, status: 'scheduled', meetDate: '2099-12-01T18:00:00Z', timezone: 'UTC' },
+                            ...extraMeets,
                         ]),
-                        userHistory: signal([{}, {}, {}]),
+                        userHistory: signal([
+                            { meetData: { groupId: 7, meetDate: '2026-09-01T18:00:00Z' } },
+                            { meetData: { groupId: 7, meetDate: '2026-08-01T18:00:00Z' } },
+                            { meetData: { groupId: 7, meetDate: '2026-07-01T18:00:00Z' } },
+                        ]),
                         userMeetsError: signal(meetsError),
                         userHistoryError: signal(false),
                     },
@@ -45,13 +50,20 @@ describe('PlayPageComponent', () => {
         const cards = Array.from(element.querySelectorAll('app-card-section'))
         expect(cards.map((card) => card.getAttribute('cardlink'))).toEqual([
             '/play/upcoming-sessions',
-            '/play/history',
             '/play/recommendations',
+            '/play/history',
             '/play/log-session',
         ])
-        expect(cards[0].textContent).toContain('1 sessions')
+        expect(cards[0].textContent).toContain('1 session')
         expect(cards[0].textContent).toContain('Next: Friday crew')
-        expect(cards[1].textContent).toContain('3 sessions')
+        expect(cards[2].textContent).toContain('3 sessions')
+        expect(cards[2].textContent).toContain('Last: Friday crew')
+    })
+
+    it('flags planned sessions whose night has passed', async () => {
+        const element = await setup(false, [{ id: 3, groupId: 7, status: 'scheduled', meetDate: '2026-01-01T18:00:00Z', timezone: 'UTC' }])
+
+        expect(element.querySelector('app-card-section')?.textContent).toContain('1 session waiting for results')
     })
 
     it('says when sessions could not be loaded instead of showing zero', async () => {

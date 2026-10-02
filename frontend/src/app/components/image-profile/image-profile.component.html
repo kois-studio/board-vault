@@ -4,25 +4,27 @@
         [style.background-color]="colours().background"
         [style.color]="colours().color"
         [ngClass]="{
+            'w-7 h-7 text-sm': size() === 'small',
             'w-10 h-10 text-2xl': size() === 'base',
             'w-20 h-20 text-5xl': size() === 'large',
         }"
     >
         @if (avatar.type === 'icon' && avatar.iconName) {
-            <app-icon [name]="avatar.iconName" [size]="size() === 'large' ? 44 : 24" aria-hidden="true" />
+            <app-icon [name]="avatar.iconName" [size]="size() === 'large' ? 44 : size() === 'small' ? 16 : 24" aria-hidden="true" />
         }
         @if (avatar.type === 'emoji' && avatar.emoji) {
             <span class="">{{ avatar.emoji }}</span>
         }
         @if (avatar.type === 'initials' && avatar.initials) {
-            <span class="font-bold -translate-y-[1px] ">{{ avatar.initials }}</span>
+            <span class="font-bold -translate-y-[1px]" [class.text-xs]="size() === 'small'">{{ avatar.initials }}</span>
         }
     </div>
 } @else {
     <div class="rounded-full bg-bv-border flex items-center justify-center" [ngClass]="{
+        'w-7 h-7': size() === 'small',
         'w-10 h-10': size() === 'base',
         'w-20 h-20': size() === 'large'
     }">
-        <app-icon name="user-circle" [size]="20" className="text-bv-text-muted" aria-hidden="true" />
+        <app-icon name="user-circle" [size]="size() === 'small' ? 14 : 20" className="text-bv-text-muted" aria-hidden="true" />
     </div>
 }

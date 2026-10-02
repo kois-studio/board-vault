@@ -7336,7 +7336,7 @@
         "properties": {
           "reasons": {
             "example": [
-              "Owned by 2 of 3 selected people (Carlos, Ana)",
+              "Owned by 2 of 3 selected people",
               "Fits 3 players"
             ],
             "type": "array",

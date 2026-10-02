@@ -24,7 +24,7 @@ describe('RecommendationsPageComponent history context', () => {
         expect(component.getDecisionLensLabel('favorite')).toBe('Group favorite')
     })
 
-    it('can restore or clear the attendee context without retaining stale results', () => {
+    it('keeps suggestions while people change and clears them when nobody is coming', () => {
         const component = Object.create(RecommendationsPageComponent.prototype) as RecommendationsPageComponent
         const selectedAttendeeIds = signal([2])
         const recommendations = signal({ recommendations: [] } as never)
@@ -44,18 +44,21 @@ describe('RecommendationsPageComponent history context', () => {
             selectedGroup: signal(group),
         })
 
+        // Changing the people keeps the current suggestions on screen until the new ones arrive.
         component.selectAllAttendees()
         expect(selectedAttendeeIds()).toEqual([1, 2, 3])
-        expect(recommendations()).toBeNull()
-        expect(recommendationSignals()).toBeNull()
-        expect(feedbackState()).toEqual({})
+        expect(recommendations()).not.toBeNull()
         expect(errorMessage()).toBeNull()
 
         component.setDecisionLens('fresh')
         expect(decisionLens()).toBe('fresh')
         expect(component.decisionLensLabel).toBe('Something new')
 
+        // With nobody coming there is nothing to suggest.
         component.clearAttendees()
         expect(selectedAttendeeIds()).toEqual([])
+        expect(recommendations()).toBeNull()
+        expect(recommendationSignals()).toBeNull()
+        expect(feedbackState()).toEqual({})
     })
 })

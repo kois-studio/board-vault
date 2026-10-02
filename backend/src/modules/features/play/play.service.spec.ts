@@ -214,8 +214,8 @@ describe('PlayService history', () => {
                 expect.objectContaining({
                     explanation: expect.objectContaining({
                         reasons: expect.arrayContaining([
-                            'Owned by 2 of 2 selected people (Ana, Carlos)',
-                            'Preferences from Ana, Carlos favor this game',
+                            'Owned by 2 of 2 selected people',
+                            'The preferences of the people coming favor this game',
                         ]),
                     }),
                 }),

@@ -1,35 +1,48 @@
 <app-page-header titleText="Upcoming" [showActionButton]="true">
-    Game nights your groups have planned.
+    Game nights your groups have planned, and the ones still waiting for their results.
     <div class="action-button flex flex-wrap gap-2">
         <a appButton variant="secondary" class="text-center" routerLink="/play/log-session">Record a past session</a>
-        <button appButton icon="plus-lg" (click)="isSchedulingASession.set(true)" [disabled]="isSchedulingASession()">Plan a session</button>
+        @if (onlyGroup(); as group) {
+            <a appButton icon="plus-lg" class="text-center" [routerLink]="['/groups', group.id, 'sessions', 'new']">Plan a session</a>
+        } @else {
+            <button appButton icon="plus-lg" (click)="isSchedulingASession.set(true)" [disabled]="isSchedulingASession()" [attr.aria-expanded]="isSchedulingASession()" aria-controls="plan-session-panel">Plan a session</button>
+        }
     </div>
 </app-page-header>
 
 <container-wrapper>
     @if (isSchedulingASession()) {
-        <section class="mb-8 rounded-3xl border border-bv-primary/30 bg-bv-primary-soft p-6" aria-labelledby="schedule-start-heading">
-            <div class="flex flex-wrap items-start justify-between gap-4">
-                <div><p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary">Start with the group</p><h2 id="schedule-start-heading" class="mt-2 text-2xl font-bold">Which group is this game night for?</h2><p class="mt-2 text-secondary">The next page will help you choose the time, attendees, shortlist, and context.</p></div>
-                <button type="button" class="text-sm font-medium text-secondary underline" (click)="isSchedulingASession.set(false)">Cancel</button>
+        <section id="plan-session-panel" class="mb-8 rounded-lg border border-bv-border bg-bv-surface p-5 shadow-sm" aria-labelledby="plan-session-heading">
+            <div class="flex items-start justify-between gap-4">
+                <div>
+                    <h2 id="plan-session-heading" class="text-lg font-semibold">Which group is it for?</h2>
+                    <p class="mt-1 text-sm text-bv-text-muted">Next you choose the date, who is invited, and a shortlist of games.</p>
+                </div>
+                <button type="button" class="rounded text-sm font-medium text-bv-text-muted underline underline-offset-2 hover:text-bv-text" (click)="isSchedulingASession.set(false)">Cancel</button>
             </div>
             @if (isLoadingGroups()) {
-                <p class="text-secondary">Loading groups…</p>
+                <p class="mt-4 text-sm text-bv-text-muted" role="status">Loading groups…</p>
             } @else if (groupsError()) {
-                <div class="text-secondary" role="alert">
+                <div class="mt-4 text-sm text-bv-text-muted" role="alert">
                     <p>Groups could not be loaded.</p>
-                    <button appButton class="mt-4" icon="arrow-repeat" (click)="retryGroups()">Retry</button>
+                    <button appButton class="mt-3" size="small" icon="arrow-repeat" (click)="retryGroups()">Retry</button>
                 </div>
             } @else if (userGroups$().length === 0) {
-                <p class="text-secondary">Create or join a group before scheduling a session.</p>
-                <div class="mt-4 flex flex-wrap justify-center gap-3">
+                <p class="mt-4 text-sm text-bv-text-muted">Create or join a group before planning a session.</p>
+                <div class="mt-3 flex flex-wrap gap-3">
                     <a appButton routerLink="/create-group">Create a group</a>
                     <a appButton variant="secondary" routerLink="/dashboard">View invitations</a>
                 </div>
             } @else {
-                <div class="mt-5 grid gap-3 sm:grid-cols-2">
+                <div class="mt-4 grid gap-3 sm:grid-cols-2">
                     @for (group of userGroups$(); track group.id) {
-                        <a class="rounded-2xl border border-bv-border/80 bg-bv-surface p-4 text-left font-semibold text-bv-text shadow-sm transition hover:border-bv-primary" [routerLink]="['/groups', group.id, 'sessions', 'new']"><span class="block">{{ group.name }}</span><span class="mt-1 block text-sm font-normal text-secondary">Plan this group’s next night</span></a>
+                        <a class="flex items-center justify-between gap-3 rounded-lg border border-bv-border p-4 transition hover:border-bv-primary/50 hover:bg-bv-primary-soft" [routerLink]="['/groups', group.id, 'sessions', 'new']">
+                            <span class="min-w-0">
+                                <span class="block font-semibold wrap-anywhere">{{ group.name }}</span>
+                                <span class="block text-sm text-bv-text-muted">{{ getGroupContext(group.id) }}</span>
+                            </span>
+                            <app-icon name="chevron-right" [size]="18" className="shrink-0 text-bv-text-muted" aria-hidden="true" />
+                        </a>
                     }
                 </div>
             }
@@ -37,45 +50,57 @@
     }
 
     @if (isLoadingMeets()) {
-        <div class="text-center py-8 text-secondary" role="status" aria-live="polite">Loading upcoming sessions…</div>
+        <div class="py-8 text-center text-bv-text-muted" role="status" aria-live="polite">Loading upcoming sessions…</div>
     } @else if (meetsError()) {
-        <div class="text-center py-8 text-secondary" role="alert">
+        <div class="py-8 text-center text-bv-text-muted" role="alert">
             <p>Upcoming sessions could not be loaded.</p>
-            <p class="text-sm mt-2 mb-4">Check your connection and try again.</p>
+            <p class="mb-4 mt-2 text-sm">Check your connection and try again.</p>
             <button appButton icon="arrow-repeat" (click)="retrySessions()">Retry</button>
         </div>
-    } @else if (upcomingSessions().length === 0) {
-        <div class="rounded-3xl border border-dashed border-bv-border px-6 py-12 text-center">
-            <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-bv-primary-soft text-bv-on-primary-soft" aria-hidden="true"><app-icon name="calendar-plus" [size]="28" /></div>
-            <h2 class="mt-5 text-xl font-bold text-bv-text">Your next game night is not planned yet</h2>
-            <p class="mx-auto mt-2 max-w-lg text-sm leading-6 text-secondary">Choose a group to coordinate the people, time, and games. The session stays editable until the night begins.</p>
-            <button appButton class="mt-6" icon="plus-lg" (click)="isSchedulingASession.set(true)">Plan a future session</button>
+    } @else if (sections().length === 0) {
+        <div class="rounded-lg border border-dashed border-bv-border px-6 py-12 text-center">
+            <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-lg bg-bv-primary-soft text-bv-on-primary-soft" aria-hidden="true"><app-icon name="calendar-plus" [size]="28" /></div>
+            <h2 class="mt-5 text-xl font-bold text-bv-text">No game nights planned</h2>
+            <p class="mx-auto mt-2 max-w-lg text-sm leading-6 text-bv-text-muted">Pick a group, a date, and a few games. Everyone invited can answer and suggest more.</p>
+            @if (onlyGroup(); as group) {
+                <a appButton class="mt-6" icon="plus-lg" [routerLink]="['/groups', group.id, 'sessions', 'new']">Plan a session</a>
+            } @else {
+                <button appButton class="mt-6" icon="plus-lg" (click)="isSchedulingASession.set(true)">Plan a session</button>
+            }
         </div>
     } @else {
-        <ul class="space-y-3 py-6">
-            @for (session of upcomingSessions(); track session.id) {
-                @let when = dateParts(session);
-                <li>
-                    <a [routerLink]="['/sessions', session.id]" class="flex items-center gap-4 rounded-2xl border border-bv-border bg-bv-surface p-4 transition hover:border-bv-primary/30 hover:shadow-sm sm:gap-5 sm:p-5">
-                        <span class="flex w-16 shrink-0 flex-col items-center rounded-xl bg-bv-primary-soft py-2 text-bv-on-primary-soft" aria-hidden="true">
-                            <span class="text-xs font-semibold uppercase">{{ when.month }}</span>
-                            <span class="text-2xl font-bold leading-none">{{ when.day }}</span>
-                        </span>
-                        <span class="min-w-0 flex-1">
-                            <span class="block truncate font-semibold">{{ getGroupName(session.groupId) }}</span>
-                            <span class="block text-sm text-secondary">{{ when.weekday }} · {{ when.time }} · {{ getGroupContext(session.groupId) }}</span>
-                            @if (session.notes) {
-                                <span class="mt-1 block truncate text-sm italic text-secondary">“{{ session.notes }}”</span>
-                            }
-                        </span>
-                        <span
-                            class="shrink-0 rounded-full px-3 py-1 text-xs font-semibold"
-                            [class]="session.status === 'active' ? 'bg-bv-success/10 text-bv-success' : 'bg-bv-primary-soft text-bv-on-primary-soft'"
-                        >{{ getStatusLabel(session.status) }}</span>
-                        <span class="sr-only">{{ session.meetDate | customDate: true: session.timezone }}</span>
-                    </a>
-                </li>
+        <div class="space-y-10">
+            @for (section of sections(); track section.state) {
+                <section [attr.aria-labelledby]="'upcoming-' + section.state">
+                    <div class="mb-3 flex items-baseline justify-between gap-3">
+                        <h2 class="text-lg font-semibold" [id]="'upcoming-' + section.state">{{ section.title }}</h2>
+                        <span class="text-sm text-bv-text-muted">{{ section.hint }}</span>
+                    </div>
+                    <ul class="space-y-3">
+                        @for (session of section.sessions; track session.id) {
+                            @let when = dateParts(session);
+                            <li>
+                                <a [routerLink]="['/sessions', session.id]" class="group flex items-center gap-4 rounded-lg border bg-bv-surface p-4 transition hover:shadow-sm sm:gap-5" [class]="STATE_STYLES[section.state].row">
+                                    <span class="flex w-14 shrink-0 flex-col items-center rounded-lg py-2" [class]="STATE_STYLES[section.state].date" aria-hidden="true">
+                                        <span class="text-xs font-semibold uppercase">{{ when.month }}</span>
+                                        <span class="text-2xl font-bold leading-none">{{ when.day }}</span>
+                                    </span>
+                                    <span class="min-w-0 flex-1">
+                                        <span class="block font-semibold wrap-anywhere">{{ getGroupName(session.groupId) }}</span>
+                                        <span class="block text-sm text-bv-text-muted">{{ when.weekday }} · {{ when.time }} · {{ relativeDay(session.meetDate) }}</span>
+                                        @if (session.notes) {
+                                            <span class="mt-1 block truncate text-sm italic text-bv-text-muted">“{{ session.notes }}”</span>
+                                        }
+                                    </span>
+                                    <span class="hidden shrink-0 rounded-full px-3 py-1 text-xs font-semibold sm:inline" [class]="STATE_STYLES[section.state].pill">{{ STATE_STYLES[section.state].action }}</span>
+                                    <app-icon name="chevron-right" [size]="18" className="shrink-0 text-bv-text-muted transition group-hover:translate-x-0.5" aria-hidden="true" />
+                                    <span class="sr-only">{{ session.meetDate | customDate: true: session.timezone }}</span>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </section>
             }
-        </ul>
+        </div>
     }
 </container-wrapper>

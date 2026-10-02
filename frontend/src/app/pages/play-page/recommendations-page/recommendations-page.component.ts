@@ -1,5 +1,4 @@
-import { Component, computed, effect, inject, signal } from '@angular/core'
-import { FormsModule } from '@angular/forms'
+import { Component, computed, effect, inject, signal, untracked } from '@angular/core'
 import { ActivatedRoute, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../../api/api'
@@ -8,11 +7,17 @@ import type {
     GroupWithMembersAndGames,
     RecommendationSignalsType,
     RecommendationsType,
+    RecommendationType,
+    UserType,
 } from '../../../api/api.types'
+import { ImageProfileComponent } from '../../../components/image-profile/image-profile.component'
+import { BadgeComponent } from '../../../components/ui/badge/badge.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
+import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../../../components/ui/image-background/image-background.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
+import { SpinnerComponent } from '../../../components/ui/spinner/spinner.component'
 import { LOADING_KEYS } from '../../../core/enums/loading-keys-enum'
 import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { DataService } from '../../../core/services/data.service'
@@ -20,14 +25,36 @@ import { LoadingService } from '../../../core/services/loading.service'
 
 type RecommendationDecisionLens = 'balanced' | 'fresh' | 'favorite'
 
+type AttendeeOption = { id: number; name: string; avatar: UserType['avatar'] | null; games: number }
+
+const DURATION_OPTIONS: Array<{ label: string; minutes: number | null }> = [
+    { label: '30 min', minutes: 30 },
+    { label: '1 h', minutes: 60 },
+    { label: '1½ h', minutes: 90 },
+    { label: '2 h', minutes: 120 },
+    { label: '3 h', minutes: 180 },
+    { label: 'No limit', minutes: null },
+]
+const LENS_OPTIONS: Array<RecommendationDecisionLens> = ['balanced', 'fresh', 'favorite']
+const LENS_HINTS: Record<RecommendationDecisionLens, string> = {
+    balanced: 'A mix of proven hits and games you have not played much.',
+    fresh: 'Favours games this group has not played yet.',
+    favorite: 'Favours the games this group rates and plays the most.',
+}
+/** Wait this long after the last change before asking for suggestions. */
+const RELOAD_DELAY_MS = 300
+
 @Component({
     imports: [
-        FormsModule,
         RouterLink,
+        BadgeComponent,
         ButtonComponent,
         ContainerWrapperComponent,
+        IconComponent,
         ImageBackgroundComponent,
+        ImageProfileComponent,
         PageHeaderComponent,
+        SpinnerComponent,
         CustomDatePipe,
     ],
     templateUrl: 'recommendations-page.component.html',
@@ -55,6 +82,42 @@ export class RecommendationsPageComponent {
     public readonly feedbackErrors = signal<Record<number, string>>({})
     public readonly selectedGroup = computed(() => this.userGroups().find((group) => group.id === this.selectedGroupId()) ?? null)
     public readonly pageTitle = computed(() => this.getDecisionTitle(this.selectedGroup()))
+    public readonly lensHint = computed(() => LENS_HINTS[this.decisionLens()])
+    public readonly durationLabel = computed(() => {
+        const minutes = this.availableMinutes()
+        return minutes
+            ? `up to ${DURATION_OPTIONS.find((option) => option.minutes === minutes)?.label ?? `${minutes} min`}`
+            : 'no time limit'
+    })
+    /** The group's active people, or its members when the people list is unavailable. */
+    public readonly attendeeOptions = computed((): Array<AttendeeOption> => {
+        const group = this.selectedGroup()
+        if (!group) return []
+        const people = this.groupPeople().filter((person) => person.person.status === 'active')
+        if (people.length === 0) {
+            return group.members.map((member) => ({
+                id: member.id,
+                name: member.displayName || member.username,
+                avatar: member.avatar,
+                games: member.games.length,
+            }))
+        }
+        return people.map((person) => ({
+            id: person.person.id,
+            name: person.person.displayName,
+            // Linked people keep their avatar on the account.
+            avatar:
+                person.person.avatar ??
+                group.members.find((member) => member.id === person.person.accountId)?.avatar ??
+                this.initialsAvatar(person.person.displayName),
+            games: this.getGroupPersonGameCount(person),
+        }))
+    })
+
+    protected readonly DURATION_OPTIONS = DURATION_OPTIONS
+    protected readonly LENS_OPTIONS = LENS_OPTIONS
+    /** Counts requests, so a slow answer for an older choice cannot replace a newer one. */
+    private requestId = 0
 
     constructor() {
         effect(() => {
@@ -66,6 +129,16 @@ export class RecommendationsPageComponent {
                 const requestedAttendeeIds = this.readRequestedAttendeeIds(group)
                 this.selectGroup(group.id, requestedAttendeeIds)
             }
+        })
+
+        // Suggestions follow the choices: reload shortly after the group, people, time, or lens change.
+        effect((onCleanup) => {
+            const ready = this.selectedGroupId() !== null && !this.groupPeopleLoading() && this.selectedAttendeeIds().length > 0
+            this.availableMinutes()
+            this.decisionLens()
+            if (!ready) return
+            const timer = setTimeout(() => untracked(() => void this.loadRecommendations()), RELOAD_DELAY_MS)
+            onCleanup(() => clearTimeout(timer))
         })
     }
 
@@ -98,9 +171,7 @@ export class RecommendationsPageComponent {
 
     public toggleAttendee(accountId: number): void {
         this.selectedAttendeeIds.update((ids) => (ids.includes(accountId) ? ids.filter((id) => id !== accountId) : [...ids, accountId]))
-        this.recommendations.set(null)
-        this.recommendationSignals.set(null)
-        this.feedbackState.set({})
+        this.errorMessage.set(null)
     }
 
     public selectAllAttendees(): void {
@@ -110,9 +181,11 @@ export class RecommendationsPageComponent {
         const people = typeof this.groupPeople === 'function' ? this.groupPeople() : []
 
         this.selectedAttendeeIds.set(
-            people.length > 0 ? people.map((person) => person.person.id) : group.members.map((member) => member.id),
+            people.length > 0
+                ? people.filter((person) => person.person.status === 'active').map((person) => person.person.id)
+                : group.members.map((member) => member.id),
         )
-        this.resetRecommendationState()
+        this.errorMessage.set(null)
     }
 
     public clearAttendees(): void {
@@ -120,11 +193,15 @@ export class RecommendationsPageComponent {
         this.resetRecommendationState()
     }
 
+    public setAvailableMinutes(minutes: number | null): void {
+        this.availableMinutes.set(minutes)
+    }
+
     public setDecisionLens(value: string): void {
         if (value !== 'balanced' && value !== 'fresh' && value !== 'favorite') return
 
         this.decisionLens.set(value)
-        this.resetRecommendationState()
+        this.errorMessage.set(null)
     }
 
     public get decisionLensLabel(): string {
@@ -165,34 +242,36 @@ export class RecommendationsPageComponent {
             return
         }
 
+        const requestId = ++this.requestId
         this.isLoading.set(true)
         this.errorMessage.set(null)
         try {
             const availableMinutes = this.availableMinutes()
             const groupPeople = this.groupPeople()
-            this.recommendations.set(
-                await firstValueFrom(
-                    groupPeople.length > 0
-                        ? this.api.getParticipantRecommendations({
-                              groupId,
-                              groupPersonIds: attendeeIds,
-                              ...(availableMinutes ? { availableMinutes } : {}),
-                              decisionLens: this.decisionLens(),
-                          })
-                        : this.api.getRecommendations({
-                              groupId,
-                              attendeeIds,
-                              ...(availableMinutes ? { availableMinutes } : {}),
-                              decisionLens: this.decisionLens(),
-                          }),
-                ),
+            const result = await firstValueFrom(
+                groupPeople.length > 0
+                    ? this.api.getParticipantRecommendations({
+                          groupId,
+                          groupPersonIds: attendeeIds,
+                          ...(availableMinutes ? { availableMinutes } : {}),
+                          decisionLens: this.decisionLens(),
+                      })
+                    : this.api.getRecommendations({
+                          groupId,
+                          attendeeIds,
+                          ...(availableMinutes ? { availableMinutes } : {}),
+                          decisionLens: this.decisionLens(),
+                      }),
             )
+            if (requestId !== this.requestId) return
+            this.recommendations.set(result)
             void this.loadRecommendationSignals(groupId)
         } catch {
+            if (requestId !== this.requestId) return
             this.recommendations.set(null)
-            this.errorMessage.set('Recommendations could not be loaded. Please try again.')
+            this.errorMessage.set('Suggestions could not be loaded. Check your connection and try again.')
         } finally {
-            this.isLoading.set(false)
+            if (requestId === this.requestId) this.isLoading.set(false)
         }
     }
 
@@ -280,6 +359,22 @@ export class RecommendationsPageComponent {
             })
             this.feedbackErrors.update((state) => ({ ...state, [gameId]: 'Feedback could not be saved. Try again.' }))
         }
+    }
+
+    public getGameTitle(recommendation: RecommendationType): string {
+        const titles = recommendation.gameData.titleTranslations
+        return titles.en || titles.es || recommendation.gameData.title || 'Untitled game'
+    }
+
+    private initialsAvatar(name: string): UserType['avatar'] {
+        const initials = name
+            .split(/\s+/)
+            .filter(Boolean)
+            .map((word) => word[0])
+            .join('')
+            .slice(0, 2)
+            .toUpperCase()
+        return { type: 'initials', initials, backgroundColor: '#64748b', iconName: null, emoji: null }
     }
 
     public getMemberName(group: GroupWithMembersAndGames, accountId: number): string {

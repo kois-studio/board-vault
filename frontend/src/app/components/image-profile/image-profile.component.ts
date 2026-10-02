@@ -11,7 +11,7 @@ import { IconComponent } from '../ui/icon/icon.component'
 })
 export class ImageProfileComponent {
     readonly avatar = input.required<null | undefined | UserType['avatar']>()
-    readonly size = input<'base' | 'large'>('base')
+    readonly size = input<'small' | 'base' | 'large'>('base')
 
     protected readonly colours = computed(() => playerColourStyle(this.avatar()?.backgroundColor))
 }

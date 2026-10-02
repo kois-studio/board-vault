@@ -1,44 +1,48 @@
 <app-page-header titleText="Play" [showActionButton]="true">
-    Schedule game sessions and keep a reliable history of what your group played.
-    <a appButton class="action-button text-center" routerLink="/play/log-session">Log a session</a>
+    Plan game nights, pick what to play, and keep a record of what your groups played.
+    <a appButton class="action-button text-center" icon="plus-lg" routerLink="/play/upcoming-sessions" [queryParams]="{ plan: 1 }">Plan a session</a>
 </app-page-header>
 
 <container-wrapper>
     <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <app-card-section icon="calendar3" titleText="Upcoming Sessions" description="View and manage your scheduled game nights" cardLink="/play/upcoming-sessions">
-            <app-badge class="app-card-section-badge" [text]="isLoadingMeets() ? 'Loading…' : userMeetsError() ? 'Unavailable' : upcomingSessions().length + ' sessions'" />
+        <app-card-section icon="calendar-clock" tone="primary" titleText="Upcoming" description="Game nights your groups have planned" cardLink="/play/upcoming-sessions">
+            <app-badge class="app-card-section-badge" tone="primary" [text]="isLoadingMeets() ? 'Loading…' : userMeetsError() ? 'Unavailable' : countLabel(upcomingSessions().length, 'session')" />
             @if (isLoadingMeets()) {
-                <p class="text-secondary">Loading your scheduled sessions…</p>
+                <p class="text-sm text-bv-text-muted">Loading your sessions…</p>
             } @else if (userMeetsError()) {
-                <p class="text-secondary">Sessions could not be loaded. Open the page to retry.</p>
-            } @else if (upcomingSessions().length > 0) {
-                <p class="min-w-0 text-secondary wrap-anywhere">Next: {{ getGroupName(upcomingSessions()[0].groupId) }} · {{ upcomingSessions()[0].meetDate | customDate: true: upcomingSessions()[0].timezone }}</p>
+                <p class="text-sm text-bv-text-muted">Sessions could not be loaded. Open the page to retry.</p>
+            } @else if (wrapUpCount() > 0) {
+                <p class="min-w-0 text-sm font-medium text-bv-warning">{{ countLabel(wrapUpCount(), 'session') }} waiting for results</p>
+            } @else if (nextSession(); as next) {
+                <p class="min-w-0 text-sm text-bv-text-muted wrap-anywhere">Next: {{ getGroupName(next.groupId) }} · {{ relativeDay(next.meetDate) }}</p>
             } @else {
-                <p class="text-secondary">No upcoming sessions yet.</p>
+                <p class="text-sm text-bv-text-muted">Nothing planned yet.</p>
             }
-            <span class="flex shrink-0 items-center text-sm font-medium text-bv-primary group-hover:underline">Open sessions &gt;</span>
+            <span class="flex shrink-0 items-center text-sm font-medium text-bv-primary group-hover:underline">Open &gt;</span>
         </app-card-section>
 
-        <app-card-section icon="clock" titleText="Session History" description="Browse games played in completed sessions" cardLink="/play/history">
-            <app-badge class="app-card-section-badge" [text]="isLoadingHistory() ? 'Loading…' : userHistoryError() ? 'Unavailable' : userHistory$().length + ' sessions'" />
-            @if (isLoadingHistory()) {
-                <p class="text-secondary">Loading your recorded history…</p>
-            } @else if (userHistoryError()) {
-                <p class="text-secondary">History could not be loaded. Open the page to retry.</p>
-            } @else {
-                <p class="text-secondary">Your recorded play history.</p>
-            }
-            <span class="flex shrink-0 items-center text-sm font-medium text-bv-primary group-hover:underline">View history &gt;</span>
-        </app-card-section>
-
-        <app-card-section icon="lightbulb" titleText="Game Recommendations" description="Find games that fit the selected attendees and available time." cardLink="/play/recommendations">
-            <p class="text-secondary">Start with your group’s shared collection and clear explanations for every result.</p>
+        <app-card-section icon="lightbulb" tone="accent" titleText="What to play" description="Suggestions for the people coming and the time you have" cardLink="/play/recommendations">
+            <div></div>
             <span class="flex shrink-0 items-center text-sm font-medium text-bv-primary group-hover:underline">Find a game &gt;</span>
         </app-card-section>
 
-        <app-card-section icon="dice-5-fill" titleText="Log a Session" description="Record who attended and which games were played." cardLink="/play/log-session">
+        <app-card-section icon="history" tone="success" titleText="History" description="Every game night your groups have recorded" cardLink="/play/history">
+            <app-badge class="app-card-section-badge" tone="success" [text]="isLoadingHistory() ? 'Loading…' : userHistoryError() ? 'Unavailable' : countLabel(userHistory$().length, 'session')" />
+            @if (isLoadingHistory()) {
+                <p class="text-sm text-bv-text-muted">Loading your history…</p>
+            } @else if (userHistoryError()) {
+                <p class="text-sm text-bv-text-muted">History could not be loaded. Open the page to retry.</p>
+            } @else if (lastSession(); as last) {
+                <p class="min-w-0 text-sm text-bv-text-muted wrap-anywhere">Last: {{ getGroupName(last.meetData.groupId) }} · {{ relativeDay(last.meetData.meetDate) }}</p>
+            } @else {
+                <p class="text-sm text-bv-text-muted">No sessions recorded yet.</p>
+            }
+            <span class="flex shrink-0 items-center text-sm font-medium text-bv-primary group-hover:underline">View all &gt;</span>
+        </app-card-section>
+
+        <app-card-section icon="notebook-pen" tone="warning" titleText="Record a session" description="Add a game night that already happened" cardLink="/play/log-session">
             <div></div>
-            <span class="flex shrink-0 items-center text-sm font-medium text-bv-primary group-hover:underline">Start logging &gt;</span>
+            <span class="flex shrink-0 items-center text-sm font-medium text-bv-primary group-hover:underline">Start &gt;</span>
         </app-card-section>
     </div>
 </container-wrapper>

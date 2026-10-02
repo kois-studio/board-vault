@@ -82,9 +82,9 @@ test.describe('two-account social session flow', () => {
             const memoryCard = memberPage.locator('article').filter({ hasText: groupName ?? '' }).first()
             await expect(memoryCard).toBeVisible()
             await expect(memoryCard.getByText(gameTitle ?? '').first()).toBeVisible()
-            await expect(memoryCard.getByRole('link', { name: 'Open session memory' })).toBeVisible()
+            await expect(memoryCard.getByRole('link', { name: /Open the session of/ })).toBeVisible()
             await memberPage.locator('#history-group-filter').selectOption({ label: groupName ?? '' })
-            await expect(memberPage.getByRole('link', { name: 'Get a recommendation for this group' })).toHaveAttribute(
+            await expect(memberPage.getByRole('link', { name: 'What should this group play next?' })).toHaveAttribute(
                 'href',
                 /\/play\/recommendations\?groupId=\d+/,
             )

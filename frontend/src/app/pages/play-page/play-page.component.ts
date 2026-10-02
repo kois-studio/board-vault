@@ -6,21 +6,13 @@ import { ButtonComponent } from '../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'
 import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
-import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
+import { relativeDay, upcomingState } from '../../core/utils/sessionTiming'
 
 /** The Play landing page: one card per subpage. */
 @Component({
-    imports: [
-        ButtonComponent,
-        PageHeaderComponent,
-        ContainerWrapperComponent,
-        CardSectionComponent,
-        BadgeComponent,
-        RouterLink,
-        CustomDatePipe,
-    ],
+    imports: [ButtonComponent, PageHeaderComponent, ContainerWrapperComponent, CardSectionComponent, BadgeComponent, RouterLink],
     templateUrl: 'play-page.component.html',
 })
 export class PlayPageComponent {
@@ -40,11 +32,24 @@ export class PlayPageComponent {
     public readonly isLoadingHistory = computed(() => this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_GAMES_HISTORY])
     public readonly upcomingSessions = computed(() =>
         [...this.userMeets$()]
-            .filter((meet) => meet.status === 'scheduled' || meet.status === 'active')
+            .filter((meet) => upcomingState(meet) !== null)
             .sort((a, b) => new Date(a.meetDate).getTime() - new Date(b.meetDate).getTime()),
     )
+    public readonly wrapUpCount = computed(() => this.upcomingSessions().filter((meet) => upcomingState(meet) === 'wrap-up').length)
+    public readonly nextSession = computed(() => this.upcomingSessions().find((meet) => upcomingState(meet) !== 'wrap-up') ?? null)
+    public readonly lastSession = computed(
+        () =>
+            [...this.userHistory$()].sort((a, b) => new Date(b.meetData.meetDate).getTime() - new Date(a.meetData.meetDate).getTime())[0] ??
+            null,
+    )
+
+    public readonly relativeDay = relativeDay
 
     public getGroupName(groupId: number): string {
         return this.userGroups$().find((group) => group.id === groupId)?.name ?? `Group ${groupId}`
+    }
+
+    public countLabel(count: number, noun: string): string {
+        return `${count} ${noun}${count === 1 ? '' : 's'}`
     }
 }

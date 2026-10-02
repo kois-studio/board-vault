@@ -110,15 +110,11 @@ describe('LogSessionWizardComponent games step', () => {
         fixture.detectChanges()
     }
 
-    // Walk the wizard the way a person does: group, date, attendees, then the games step.
+    // Walk the wizard the way a person does: group, day, and attendees, then the games step.
     const reachGamesStepWith = (attendeeNames: Array<string>) => {
         component.selectGroup(group)
         fixture.detectChanges()
-        expect(component.currentStep()).toBe('date')
-
-        component.nextStep()
-        fixture.detectChanges()
-        expect(component.currentStep()).toBe('attendees')
+        expect(component.currentStep()).toBe('who')
 
         for (const name of attendeeNames) {
             const attendee = component.attendees().find((candidate) => candidate.user.displayName === name)
@@ -147,7 +143,7 @@ describe('LogSessionWizardComponent games step', () => {
                 .map((attendee) => attendee.user.displayName),
         ).toEqual(['Bloody'])
         expect(offeredGames()).toEqual(['Neko Syndicate'])
-        expect(component.isStepComplete('attendees')).toBe(true)
+        expect(component.isStepComplete('who')).toBe(true)
     })
 
     it('offers the games owned by the selected members when the group has no group people', async () => {
@@ -162,8 +158,6 @@ describe('LogSessionWizardComponent games step', () => {
         const slowPeople = new Subject<{ people: Array<ReturnType<typeof linkedPerson>> }>()
         await setup(slowPeople)
         component.selectGroup(group)
-        fixture.detectChanges()
-        component.nextStep()
         fixture.detectChanges()
 
         // Still showing account members: tick Bloody (account 6) before the people list loads.
@@ -206,18 +200,16 @@ describe('LogSessionWizardComponent games step', () => {
         reachGamesStepWith(['Bloody'])
         component.toggleGame(48)
         fixture.detectChanges()
-        for (const step of ['matrix', 'notes', 'review']) {
-            component.nextStep()
-            fixture.detectChanges()
-            expect(component.currentStep()).toBe(step)
-        }
+        component.nextStep()
+        fixture.detectChanges()
+        expect(component.currentStep()).toBe('save')
     }
     const saveButton = () =>
         [...(fixture.nativeElement as HTMLElement).querySelectorAll('button')].find((button) =>
             button.textContent?.includes('Save session'),
         ) as HTMLButtonElement
 
-    it('enables Save session on the review step and saves the recorded session', async () => {
+    it('enables Save session on the last step and saves the recorded session', async () => {
         await setup([linkedPerson(1, 1, 'David', [10]), linkedPerson(3, 6, 'Bloody', [48])])
         const api = TestBed.inject(Api)
         vi.mocked(api.createPlaySession).mockReturnValue(of({ sessionId: 99 }) as never)
@@ -283,5 +275,44 @@ describe('LogSessionWizardComponent games step', () => {
                 .map((attendee) => attendee.user.displayName),
         ).toEqual(['Bloody'])
         expect(offeredGames()).toEqual(['Neko Syndicate'])
+    })
+
+    it('keeps the chosen games and players when the attendees change', async () => {
+        await setup([linkedPerson(1, 1, 'David', [10]), linkedPerson(3, 6, 'Bloody', [48])])
+        reachGamesStepWith(['Bloody', 'David'])
+        component.toggleGame(48)
+        fixture.detectChanges()
+        component.toggleMatrixCell(1, 48)
+        fixture.detectChanges()
+
+        // David leaves the list and comes back: Neko Syndicate stays chosen, and he still did not play it.
+        component.previousStep()
+        component.toggleAttendee(1)
+        fixture.detectChanges()
+        component.toggleAttendee(1)
+        fixture.detectChanges()
+
+        expect(component.getSelectedGames().map((selection) => selection.game.id)).toEqual([48])
+        expect(component.isMatrixCellSelected(3, 48)).toBe(true)
+        expect(component.isMatrixCellSelected(1, 48)).toBe(false)
+    })
+
+    it('filters the games by title but keeps the chosen ones in view', async () => {
+        await setup([linkedPerson(1, 1, 'David', [10, 48])])
+        reachGamesStepWith(['David'])
+        component.toggleGame(48)
+        component.gameQuery.set('carc')
+        fixture.detectChanges()
+
+        expect(component.visibleGames().map((selection) => selection.game.title)).toEqual(['Carcassonne', 'Neko Syndicate'])
+        component.gameQuery.set('zzz')
+        expect(component.visibleGames().map((selection) => selection.game.title)).toEqual(['Neko Syndicate'])
+    })
+
+    it('rejects a day in the future', async () => {
+        await setup([])
+        component.sessionDate.setValue('2999-01-01')
+
+        expect(component.sessionDate.hasError('futureDate')).toBe(true)
     })
 })

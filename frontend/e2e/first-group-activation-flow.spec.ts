@@ -56,12 +56,11 @@ test.describe('first-group activation flow', () => {
             await ownerPage.getByRole('link', { name: 'Find a game', exact: true }).click()
 
             await expect(ownerPage.getByRole('heading', { name: `What should ${groupName} play?` })).toBeVisible()
-            await ownerPage.getByLabel('Decision lens').selectOption('fresh')
-            await ownerPage.getByRole('button', { name: 'Recommend games' }).click()
+            await ownerPage.getByRole('button', { name: 'Something new', exact: true }).click()
             const suggestion = ownerPage.locator('article').filter({ hasText: gameTitle }).first()
             await expect(suggestion).toBeVisible()
             await expect(suggestion).toContainText('Owned by')
-            await suggestion.getByRole('link', { name: 'Schedule with this game' }).click()
+            await suggestion.getByRole('link', { name: 'Plan with this game' }).click()
 
             await expect(ownerPage).toHaveURL(new RegExp(`/groups/${groupId}/sessions/new\\?plannedGameId=\\d+`))
             await expect(ownerPage.getByRole('heading', { name: 'Plan a game night' })).toBeVisible()

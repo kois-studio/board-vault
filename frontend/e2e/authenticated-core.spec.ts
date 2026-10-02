@@ -77,23 +77,24 @@ test.describe('authenticated core navigation', () => {
     test('opens the past-session recorder', async ({ page }) => {
         await page.goto('/play/log-session')
 
-        await expect(page.getByRole('heading', { name: /Record a past session/i })).toBeVisible()
-        await expect(page.getByText(/Choose the group for this play session/i)).toBeVisible()
-        await expect(page.getByRole('link', { name: /Plan a future session/i })).toHaveAttribute('href', '/play/upcoming-sessions')
+        await expect(page.getByRole('heading', { name: 'Record a session', level: 1 })).toBeVisible()
+        await expect(page.getByText(/Pick the group, the day, and who came/i)).toBeVisible()
+        await expect(page.getByRole('link', { name: 'Plan a session', exact: true })).toHaveAttribute('href', '/play/upcoming-sessions?plan=1')
     })
 
     test('opens upcoming sessions with a scheduling action', async ({ page }) => {
         await page.goto('/play/upcoming-sessions')
 
         await expect(page.getByRole('heading', { name: 'Upcoming' })).toBeVisible()
-        await expect(page.getByRole('button', { name: /Plan a session/i }).first()).toBeVisible()
+        // A link straight to the group when there is only one, otherwise a button that asks which group.
+        await expect(page.locator('a, button').filter({ hasText: 'Plan a session' }).first()).toBeVisible()
     })
 
     test('opens completed session history', async ({ page }) => {
         await page.goto('/play/history')
 
         await expect(page.getByRole('heading', { name: /History/i })).toBeVisible()
-        await expect(page.getByRole('button', { name: /Record a past session/i })).toBeVisible()
+        await expect(page.getByRole('link', { name: 'Record a session' }).first()).toBeVisible()
     })
 
     test('recovers from a stale history group filter', async ({ page }) => {
@@ -107,6 +108,6 @@ test.describe('authenticated core navigation', () => {
         await page.goto('/play/recommendations')
 
         await expect(page.getByRole('heading', { name: /(?:What should .* play|Decide what to play)/i })).toBeVisible()
-        await expect(page.locator('body')).toContainText(/Create or join a group first|Who is attending\?/i)
+        await expect(page.locator('body')).toContainText(/Create or join a group first|Who is coming\?/i)
     })
 })

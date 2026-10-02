@@ -1,159 +1,163 @@
 <app-page-header [titleText]="historyTitle()" [showActionButton]="true">
     @if (groupIdFilter()) {
-        Your group’s shared memory of completed sessions
+        The game nights this group has recorded, newest first.
     } @else {
-        Remember the people, games, and nights that brought your groups together
+        The game nights your groups have recorded, newest first.
     }
-    <a appButton class="action-button" icon="plus-lg" routerLink="/play/log-session">Record a past session</a>
+    <a appButton class="action-button text-center" icon="plus-lg" routerLink="/play/log-session">Record a session</a>
 </app-page-header>
 
 <container-wrapper>
-    <!-- Loading state -->
     @if (isLoadingHistory()) {
-        <div role="status" aria-live="polite"><span class="sr-only">Loading shared history…</span><app-skeleton-history /></div>
+        <div role="status" aria-live="polite"><span class="sr-only">Loading history…</span><app-skeleton-history /></div>
     } @else if (historyError()) {
-        <div class="text-center py-8 text-secondary" role="alert">
+        <div class="py-8 text-center text-bv-text-muted" role="alert">
             <p>History could not be loaded.</p>
-            <p class="text-sm mt-2 mb-4">Check your connection and try again.</p>
+            <p class="mb-4 mt-2 text-sm">Check your connection and try again.</p>
             <button appButton icon="arrow-repeat" (click)="retryHistory()">Retry</button>
         </div>
     } @else {
-        <section class="mb-8 rounded-3xl border border-bv-primary/30 bg-bv-primary-soft p-5 sm:p-6" aria-labelledby="history-intro-heading">
-            <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-                <div>
-                    <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary">Shared memory</p>
-                    <h2 id="history-intro-heading" class="mt-2 text-2xl font-bold text-bv-text">What should your group remember?</h2>
-                    <p class="mt-2 max-w-2xl text-sm leading-6 text-bv-text-muted">History is here to make the next decision easier. Keep the useful context close: who came, what hit the table, and when you last played it.</p>
-                </div>
-                <div class="w-full lg:max-w-xs">
-                    <label for="history-group-filter" class="mb-2 block text-sm font-semibold text-bv-text">Show history for</label>
+        <section class="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between" aria-label="History summary">
+            @if (hasFilteredHistory()) {
+                <dl class="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:flex-1">
+                    <div class="rounded-lg border border-bv-border bg-bv-surface px-4 py-3"><dt class="text-xs text-bv-text-muted">Sessions</dt><dd class="text-2xl font-bold">{{ historySummary().sessions }}</dd></div>
+                    <div class="rounded-lg border border-bv-border bg-bv-surface px-4 py-3"><dt class="text-xs text-bv-text-muted">Games played</dt><dd class="text-2xl font-bold">{{ historySummary().gamesPlayed }}</dd></div>
+                    <div class="rounded-lg border border-bv-border bg-bv-surface px-4 py-3"><dt class="text-xs text-bv-text-muted">Different games</dt><dd class="text-2xl font-bold">{{ historySummary().uniqueGames }}</dd></div>
+                    <div class="rounded-lg border border-bv-border bg-bv-surface px-4 py-3"><dt class="text-xs text-bv-text-muted">People</dt><dd class="text-2xl font-bold">{{ historySummary().people }}</dd></div>
+                </dl>
+            }
+            @if (userGroups$().length > 1 || groupIdFilter()) {
+                <label class="grid gap-1 text-sm lg:w-64">
+                    <span class="font-medium">Group</span>
                     <select id="history-group-filter" class="app-input" [value]="groupIdFilter() ?? ''" (change)="setGroupFilter($event)">
                         <option value="" [selected]="!groupIdFilter()">All groups</option>
                         @for (group of userGroups$(); track group.id) {
                             <option [value]="group.id" [selected]="group.id === groupIdFilter()">{{ group.name }}</option>
                         }
                     </select>
-                </div>
-            </div>
-            @if (hasFilteredHistory()) {
-                <dl class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-                    <div class="rounded-2xl bg-bv-surface/80 p-4"><dt class="text-xs uppercase tracking-wide text-secondary">Sessions</dt><dd class="mt-1 text-2xl font-bold text-bv-text">{{ historySummary().sessions }}</dd></div>
-                    <div class="rounded-2xl bg-bv-surface/80 p-4"><dt class="text-xs uppercase tracking-wide text-secondary">Games played</dt><dd class="mt-1 text-2xl font-bold text-bv-text">{{ historySummary().gamesPlayed }}</dd></div>
-                    <div class="rounded-2xl bg-bv-surface/80 p-4"><dt class="text-xs uppercase tracking-wide text-secondary">Different games</dt><dd class="mt-1 text-2xl font-bold text-bv-text">{{ historySummary().uniqueGames }}</dd></div>
-                    <div class="rounded-2xl bg-bv-surface/80 p-4"><dt class="text-xs uppercase tracking-wide text-secondary">People recorded</dt><dd class="mt-1 text-2xl font-bold text-bv-text">{{ historySummary().people }}</dd></div>
-                </dl>
-                @if (mostPlayedSummary(); as mostPlayed) {
-                    <p class="mt-4 text-sm text-secondary">Most played in this view: <strong class="text-bv-text">{{ mostPlayed }}</strong></p>
-                }
-                @if (groupIdFilter()) {
-                    <a appButton variant="secondary" class="mt-5 text-center" routerLink="/play/recommendations" [queryParams]="{ groupId: groupIdFilter() }">Get a recommendation for this group</a>
-                }
+                </label>
             }
         </section>
 
-        @if (isUnknownGroupFilter()) {
-        <div class="rounded-3xl border border-dashed border-bv-border px-6 py-12 text-center" role="alert">
-            <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-bv-warning/10 text-bv-warning" aria-hidden="true"><app-icon name="lock" [size]="28" /></div>
-            <h2 class="mt-5 text-xl font-bold text-bv-text">That group is not available</h2>
-            <p class="mx-auto mt-2 max-w-lg text-sm leading-6 text-secondary">This history link may be outdated, or you may no longer belong to that private group. Choose one of your current groups to continue.</p>
-            <a appButton class="mt-6" routerLink="/dashboard">Back to your groups</a>
-        </div>
-        } @else if (!hasFilteredHistory()) {
-        <div class="rounded-3xl border border-dashed border-bv-border px-6 py-12 text-center">
-            @if (groupIdFilter()) {
-                <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-bv-primary-soft text-bv-on-primary-soft" aria-hidden="true"><app-icon name="book-plus" [size]="28" /></div>
-                <h2 class="mt-5 text-xl font-bold text-bv-text">{{ historyGroupName() }} has no recorded sessions yet</h2>
-                <p class="mx-auto mt-2 max-w-lg text-sm leading-6 text-secondary">Plan the first night with this group. Once it is complete, this page will keep the people, games, and notes ready for the next decision.</p>
-                <a appButton class="mt-6" [routerLink]="['/groups', groupIdFilter(), 'sessions', 'new']">Plan the first session</a>
-            } @else {
-                <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-bv-primary-soft text-bv-on-primary-soft" aria-hidden="true"><app-icon name="history" [size]="28" /></div>
-                <h2 class="mt-5 text-xl font-bold text-bv-text">Your group memory starts with one session</h2>
-                <p class="mx-auto mt-2 max-w-lg text-sm leading-6 text-secondary">Record a past game night or open a group workspace to plan the next one. Board Vault becomes more useful as your real play history grows.</p>
-                <div class="mt-6 flex flex-col justify-center gap-3 sm:flex-row"><a appButton class="text-center" routerLink="/play/upcoming-sessions">Plan a session</a><a appButton variant="secondary" class="text-center" routerLink="/play/log-session">Record past play</a></div>
-            }
-        </div>
-        } @else {
-            <div class="relative ml-2 border-l-2 border-bv-primary/30 pl-6 sm:ml-4 sm:pl-8">
-            @for (historyRecord of sortedUserHistoryComputed(); track historyRecord.meetData.id) {
-                <article class="app-bg-secondary relative mb-8 rounded-3xl p-5 shadow-sm sm:p-6" [attr.aria-labelledby]="'history-session-' + historyRecord.meetData.id">
-                    <span class="absolute -left-[2.05rem] top-6 h-4 w-4 rounded-full border-4 border-bv-border bg-bv-primary" aria-hidden="true"></span>
-                    <div class="flex flex-wrap items-start justify-between gap-4">
-                    <div class="min-w-0">
-                        <p class="text-sm font-semibold text-bv-primary">{{ getGroupName(historyRecord.meetData.groupId) }}</p>
-                        <h2 class="mt-1 text-xl font-bold text-bv-text" [id]="'history-session-' + historyRecord.meetData.id">
-                            {{ historyRecord.meetData.meetDate | customDate: true: historyRecord.meetData.timezone }}
-                        </h2>
-                        <p class="mt-2 text-sm text-secondary wrap-anywhere">{{ getAttendeeSummary(getAttendees(historyRecord)) }} · {{ historyRecord.gamesPlayed.length }} game{{ historyRecord.gamesPlayed.length === 1 ? '' : 's' }} played</p>
-                    </div>
-                    <a appButton variant="secondary" class="text-center text-sm" [routerLink]="['/sessions', historyRecord.meetData.id]">Open session memory</a>
-                    </div>
-
-                    @if (historyRecord.meetData.notes) {
-                        <p class="mt-5 rounded-2xl bg-bv-bg p-4 text-sm leading-6 text-secondary wrap-anywhere"><span class="font-semibold text-bv-text">Session note:</span> {{ historyRecord.meetData.notes }}</p>
-                    }
-
-                    <ul class="mt-5 grid gap-4 lg:grid-cols-2">
-                    @for (gamePlayed of historyRecord.gamesPlayed; track gamePlayed.gameData.id) {
-                        <li class="app-bg-tertiary flex min-w-0 gap-4 rounded-2xl p-4">
-                            <!-- Game image -->
-                            <a
-                                [routerLink]="['/games/', gamePlayed.gameData.id]"
-                                [attr.aria-label]="'View ' + getGameTitle(gamePlayed.gameData)"
-                                class="relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-bv-primary-soft text-lg font-bold text-bv-on-primary-soft"
-                            >
-                                <span aria-hidden="true">{{ getGameInitials(getGameTitle(gamePlayed.gameData)) }}</span>
-                                @if (gamePlayed.gameData.imageUrl) {
-                                    <img
-                                        [src]="gamePlayed.gameData.imageUrl"
-                                        [alt]="getGameTitle(gamePlayed.gameData)"
-                                        loading="lazy"
-                                        class="absolute inset-0 h-full w-full object-cover"
-                                        (error)="hideBrokenImage($event)"
-                                    />
-                                }
-                            </a>
-
-                            <!-- Game info -->
-                            <div class="flex min-w-0 flex-col justify-between flex-1">
-                                <h3 class="text-lg font-semibold text-bv-text">{{ getGameTitle(gamePlayed.gameData) }}</h3>
-
-                                <div class="flex min-w-0 justify-between items-end">
-                                    
-                                    <!-- Players -->
-                                    <div class="relative h-8 flex min-w-0 items-center">
-                                        <!-- Player avatars -->
-                                        <div class="flex -space-x-2">
-                                            @for (player of getPlayers(gamePlayed); track player.key) {
-                                                <app-image-profile
-                                                    [title]="player.username"
-                                                    class="border-2 rounded-full border-bv-primary/30"
-                                                    [avatar]="player.avatar"
-                                                    [style.zIndex]="$index"
-                                                />
-                                            }
-                                        </div>
-                                        @if (getPlayers(gamePlayed).length === 0) {
-                                            <span class="ml-3 text-xs text-secondary">Players not recorded</span>
-                                        } @else {
-                                            <span class="ml-3 min-w-0 line-clamp-2 text-xs text-secondary wrap-anywhere" [attr.aria-label]="'Played by ' + getPlayedBySummary(getPlayers(gamePlayed))" [title]="'Played by ' + getPlayedBySummary(getPlayers(gamePlayed))">Played by {{ getPlayedBySummary(getPlayers(gamePlayed)) }}</span>
-                                        }
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                    }
-                    </ul>
-                </article>
-            }
-            </div>
-            <div class="mt-2 flex flex-col items-center justify-between gap-4 rounded-2xl border border-bv-border bg-bv-surface p-5 text-center sm:flex-row sm:text-left">
-                <p class="text-sm text-secondary">Ready to make another memory?</p>
+        @if (hasFilteredHistory() && (mostPlayedSummary() || groupIdFilter())) {
+            <div class="-mt-4 mb-8 flex flex-wrap items-center justify-between gap-3 text-sm">
+                @if (mostPlayedSummary(); as mostPlayed) {
+                    <p class="text-bv-text-muted">Most played: <strong class="text-bv-text">{{ mostPlayed }}</strong></p>
+                }
                 @if (groupIdFilter()) {
-                    <a appButton class="text-center" [routerLink]="['/groups', groupIdFilter(), 'sessions', 'new']">Plan the next session</a>
-                } @else {
-                    <a appButton class="text-center" routerLink="/play/upcoming-sessions">Plan the next session</a>
+                    <a class="font-medium text-bv-primary underline underline-offset-2" routerLink="/play/recommendations" [queryParams]="{ groupId: groupIdFilter() }">What should this group play next?</a>
                 }
             </div>
+        }
+
+        @if (isUnknownGroupFilter()) {
+            <div class="rounded-lg border border-dashed border-bv-border px-6 py-12 text-center" role="alert">
+                <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-lg bg-bv-warning/10 text-bv-warning" aria-hidden="true"><app-icon name="lock" [size]="28" /></div>
+                <h2 class="mt-5 text-xl font-bold">That group is not available</h2>
+                <p class="mx-auto mt-2 max-w-lg text-sm leading-6 text-bv-text-muted">This link may be out of date, or you may no longer belong to that private group.</p>
+                <a appButton class="mt-6" routerLink="/dashboard">Back to your groups</a>
+            </div>
+        } @else if (!hasFilteredHistory()) {
+            <div class="rounded-lg border border-dashed border-bv-border px-6 py-12 text-center">
+                <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-lg bg-bv-success/15 text-bv-success" aria-hidden="true"><app-icon name="history" [size]="28" /></div>
+                @if (groupIdFilter()) {
+                    <h2 class="mt-5 text-xl font-bold wrap-anywhere">{{ historyGroupName() }} has no recorded sessions yet</h2>
+                    <p class="mx-auto mt-2 max-w-lg text-sm leading-6 text-bv-text-muted">Plan the first night with this group, or record one you already played.</p>
+                    <div class="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
+                        <a appButton class="text-center" [routerLink]="['/groups', groupIdFilter(), 'sessions', 'new']">Plan the first session</a>
+                        <a appButton variant="secondary" class="text-center" routerLink="/play/log-session">Record a past session</a>
+                    </div>
+                } @else {
+                    <h2 class="mt-5 text-xl font-bold">No game nights recorded yet</h2>
+                    <p class="mx-auto mt-2 max-w-lg text-sm leading-6 text-bv-text-muted">Once a session is complete it shows up here: who came, what you played, and any notes.</p>
+                    <div class="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
+                        <a appButton class="text-center" routerLink="/play/upcoming-sessions" [queryParams]="{ plan: 1 }">Plan a session</a>
+                        <a appButton variant="secondary" class="text-center" routerLink="/play/log-session">Record a past session</a>
+                    </div>
+                }
+            </div>
+        } @else {
+            <div class="space-y-10">
+                @for (month of visibleMonths(); track month.key) {
+                    <section [attr.aria-labelledby]="'history-month-' + month.key">
+                        <h2 class="mb-3 flex items-baseline gap-3 text-lg font-semibold" [id]="'history-month-' + month.key">
+                            {{ month.label }}
+                            <span class="text-sm font-normal text-bv-text-muted">{{ month.records.length }} session{{ month.records.length === 1 ? '' : 's' }}</span>
+                        </h2>
+                        <ul class="space-y-4">
+                            @for (historyRecord of month.records; track historyRecord.meetData.id) {
+                                @let when = dateParts(historyRecord.meetData);
+                                @let attendees = getAttendees(historyRecord);
+                                <li>
+                                    <article class="rounded-lg border border-bv-border bg-bv-surface p-4 shadow-sm sm:p-5" [attr.aria-labelledby]="'history-session-' + historyRecord.meetData.id">
+                                        <div class="flex gap-4">
+                                            <span class="flex w-14 shrink-0 flex-col items-center self-start rounded-lg bg-bv-success/15 py-2 text-bv-success" aria-hidden="true">
+                                                <span class="text-xs font-semibold uppercase">{{ when.weekday }}</span>
+                                                <span class="text-2xl font-bold leading-none">{{ when.day }}</span>
+                                            </span>
+                                            <div class="min-w-0 flex-1">
+                                                <div class="flex items-start justify-between gap-3">
+                                                    <div class="min-w-0">
+                                                        <h3 class="font-semibold wrap-anywhere" [id]="'history-session-' + historyRecord.meetData.id">{{ getGroupName(historyRecord.meetData.groupId) }}</h3>
+                                                        <p class="text-sm text-bv-text-muted">{{ historyRecord.meetData.meetDate | customDate: true: historyRecord.meetData.timezone }} · {{ historyRecord.gamesPlayed.length }} game{{ historyRecord.gamesPlayed.length === 1 ? '' : 's' }}</p>
+                                                    </div>
+                                                    <a class="flex shrink-0 items-center gap-1 rounded text-sm font-medium text-bv-primary hover:underline" [routerLink]="['/sessions', historyRecord.meetData.id]" [attr.aria-label]="'Open the session of ' + (historyRecord.meetData.meetDate | customDate: true: historyRecord.meetData.timezone)">
+                                                        Open <app-icon name="chevron-right" [size]="16" aria-hidden="true" />
+                                                    </a>
+                                                </div>
+
+                                                <div class="mt-3 flex min-w-0 items-center gap-3">
+                                                    @if (attendees.length > 0) {
+                                                        <div class="flex shrink-0 -space-x-2" aria-hidden="true">
+                                                            @for (person of attendees.slice(0, 6); track person.key) {
+                                                                <app-image-profile size="small" class="rounded-full ring-2 ring-bv-surface" [avatar]="avatarFor(person)" [title]="person.displayName" />
+                                                            }
+                                                        </div>
+                                                    }
+                                                    <p class="min-w-0 text-sm text-bv-text-muted wrap-anywhere">{{ getAttendeeSummary(attendees) }}</p>
+                                                </div>
+
+                                                @if (historyRecord.meetData.notes) {
+                                                    <p class="mt-3 line-clamp-3 text-sm italic text-bv-text-muted wrap-anywhere" [title]="historyRecord.meetData.notes">“{{ historyRecord.meetData.notes }}”</p>
+                                                }
+
+                                                <ul class="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+                                                    @for (gamePlayed of historyRecord.gamesPlayed; track gamePlayed.gameData.id) {
+                                                        @let players = getPlayers(gamePlayed);
+                                                        <li class="flex min-w-0 items-center gap-3 rounded-lg bg-bv-surface-2 p-2">
+                                                            <a [routerLink]="['/games', gamePlayed.gameData.id]" [attr.aria-label]="'View ' + getGameTitle(gamePlayed.gameData)" class="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded bg-bv-primary-soft text-sm font-bold text-bv-on-primary-soft">
+                                                                <span aria-hidden="true">{{ getGameInitials(getGameTitle(gamePlayed.gameData)) }}</span>
+                                                                @if (gamePlayed.gameData.imageUrl) {
+                                                                    <img [src]="gamePlayed.gameData.imageUrl" alt="" loading="lazy" class="absolute inset-0 h-full w-full object-cover" (error)="hideBrokenImage($event)" />
+                                                                }
+                                                            </a>
+                                                            <div class="min-w-0">
+                                                                <p class="truncate text-sm font-semibold" [title]="getGameTitle(gamePlayed.gameData)">{{ getGameTitle(gamePlayed.gameData) }}</p>
+                                                                @if (players.length === 0) {
+                                                                    <p class="text-xs text-bv-text-muted">Players not recorded</p>
+                                                                } @else {
+                                                                    <p class="min-w-0 line-clamp-2 text-xs text-bv-text-muted wrap-anywhere" [attr.aria-label]="'Played by ' + getPlayedBySummary(players)" [title]="'Played by ' + getPlayedBySummary(players)">
+                                                                        {{ playedEveryone(players, attendees) ? 'Everyone played' : getPlayedBySummary(players) }}
+                                                                    </p>
+                                                                }
+                                                            </div>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </article>
+                                </li>
+                            }
+                        </ul>
+                    </section>
+                }
+            </div>
+            @if (hiddenCount() > 0) {
+                <div class="mt-8 text-center">
+                    <button appButton variant="secondary" (click)="showMore()">Show older sessions ({{ hiddenCount() }})</button>
+                </div>
+            }
         }
     }
 </container-wrapper>

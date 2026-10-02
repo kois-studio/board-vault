@@ -58,6 +58,30 @@ operational details.
   - My Games shows its filters from 12 games and filters by player count
     instead of sorting by maximum players.
   - Recent activity updates after changes instead of on the next sign-in.
+- Play pages, after a redesign:
+  - The Play hub cards each have a colour (Upcoming plum, What to play
+    Sunglow, History green, Record a session amber) and match the tabs.
+    "Discover" is now "What to play", and the hub's main button plans a
+    session.
+  - Upcoming separates sessions waiting for results (planned nights that
+    are over but were never completed), live sessions, and planned ones,
+    with "in 6 days" style dates. "Plan a session" goes straight to the
+    group when you only have one.
+  - What to play uses chips for the group, the people coming, the time, and
+    the mood, and updates the suggestions as you change them. Interested
+    and Not for us are thumbs on each suggestion, and the best fit is
+    marked as the top pick.
+  - History is grouped by month, with compact session cards (avatars, games
+    with who played them, "Everyone played"), shows ten sessions at a time,
+    and gives people without an account their initials instead of a blank
+    avatar.
+  - Record a session has three steps instead of seven: who and when, the
+    games with their players, and a note with a summary. Games can be
+    searched, and changing the attendees keeps the games and players
+    already chosen.
+- Suggestion reasons no longer list everyone coming as the owners of a game
+  ("Owned by 1 of 3 selected people (Ana, Bo, Cris)"); they give the count
+  only, as the names were not the owners.
 - Buttons share one component: `appButton` goes on a native `<button>` or
   `<a>` (replacing the `<app-button>` wrapper and hand-written `app-btn-*`
   classes), primary buttons are indigo everywhere, and every button shrinks

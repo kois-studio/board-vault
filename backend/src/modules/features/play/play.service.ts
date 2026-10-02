@@ -289,13 +289,10 @@ export class PlayService {
                   : 0
         const ownershipScore = Math.round(20 * (attendeeOwnerCount / attendeeCount))
         const ratingScore = averageReview === null ? 0 : Math.round(20 * (averageReview / 10))
-        const participantLabel =
-            participantNames.length > 0 ? ` (${participantNames.slice(0, 3).join(', ')}${participantNames.length > 3 ? ', …' : ''})` : ''
+        // The names of the people coming are not the owners or the people with preferences, so the
+        // reasons give counts only.
         const selectedLabel = participantNames.length > 0 ? 'selected people' : 'selected attendees'
-        const reasons = [
-            `Owned by ${attendeeOwnerCount} of ${attendeeCount} ${selectedLabel}${participantLabel}`,
-            `Fits ${attendeeCount} players`,
-        ]
+        const reasons = [`Owned by ${attendeeOwnerCount} of ${attendeeCount} ${selectedLabel}`, `Fits ${attendeeCount} players`]
 
         if (availableMinutes !== undefined) {
             reasons.push(gameAvgDuration > 0 ? `Estimated duration: ${gameAvgDuration} minutes` : 'Duration is not available')
@@ -312,9 +309,7 @@ export class PlayService {
             reasons.push(`${feedback.notForUsCount} selected participant${feedback.notForUsCount === 1 ? '' : 's'} passed on this before`)
         }
         if (participantPreferenceScore > 0) {
-            reasons.push(
-                `Preferences from ${participantNames.slice(0, 3).join(', ')}${participantNames.length > 3 ? ' and others' : ''} favor this game`,
-            )
+            reasons.push('The preferences of the people coming favor this game')
         } else if (participantPreferenceScore < 0) {
             reasons.push(`Some selected people have marked this game to avoid`)
         }

@@ -13,6 +13,11 @@ import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
 import { formatAttendeeSummary } from '../../../core/utils/formatAttendeeSummary'
 import { type HistoryParticipant, mergeHistoryParticipants } from '../../../core/utils/historyParticipants'
+import { sessionDateParts } from '../../../core/utils/sessionTiming'
+
+/** Sessions shown at first, and added by each "Show older sessions". */
+const PAGE_SIZE = 10
+const MONTH_FORMAT = new Intl.DateTimeFormat('en-GB', { month: 'long', year: 'numeric' })
 
 @Component({
     imports: [
@@ -69,6 +74,21 @@ export class HistoryPageComponent {
     })
 
     public readonly hasFilteredHistory = computed(() => this.sortedUserHistoryComputed().length > 0)
+    public readonly visibleCount = signal(PAGE_SIZE)
+    public readonly hiddenCount = computed(() => Math.max(0, this.sortedUserHistoryComputed().length - this.visibleCount()))
+    /** The visible sessions, grouped by the month they were played in. */
+    public readonly visibleMonths = computed(() => {
+        const months: Array<{ key: string; label: string; records: Array<HistoryRecordType> }> = []
+        for (const record of this.sortedUserHistoryComputed().slice(0, this.visibleCount())) {
+            const date = new Date(record.meetData.meetDate)
+            const key = `${date.getFullYear()}-${date.getMonth() + 1}`
+            const month = months.at(-1)
+            if (month?.key === key) month.records.push(record)
+            else months.push({ key, label: MONTH_FORMAT.format(date), records: [record] })
+        }
+        return months
+    })
+    public readonly dateParts = sessionDateParts
     public readonly historySummary = computed(() => {
         const records = this.sortedUserHistoryComputed()
         const gameCounts = new Map<number, { title: string; count: number }>()
@@ -116,6 +136,30 @@ export class HistoryPageComponent {
         return mergeHistoryParticipants(game.playedBy, game.playedByPeople)
     }
 
+    /** People without an avatar (no account) show their initials. */
+    public avatarFor(person: HistoryParticipant): HistoryParticipant['avatar'] {
+        return (
+            person.avatar ?? {
+                type: 'initials',
+                initials: this.getGameInitials(person.displayName),
+                backgroundColor: '#64748b',
+                iconName: null,
+                emoji: null,
+            }
+        )
+    }
+
+    /** True when every attendee played the game, so the card can say "Everyone played". */
+    public playedEveryone(players: Array<HistoryParticipant>, attendees: Array<HistoryParticipant>): boolean {
+        if (attendees.length < 2) return false
+        const playerKeys = new Set(players.map((player) => player.key))
+        return attendees.every((attendee) => playerKeys.has(attendee.key))
+    }
+
+    public showMore(): void {
+        this.visibleCount.update((count) => count + PAGE_SIZE)
+    }
+
     public getAttendeeSummary(attendees: Array<{ displayName: string; username: string }>): string {
         return formatAttendeeSummary(attendees)
     }
@@ -133,6 +177,7 @@ export class HistoryPageComponent {
         const groupId = Number(value)
         const nextGroupId = Number.isInteger(groupId) && groupId > 0 ? groupId : null
         this.groupIdFilter.set(nextGroupId)
+        this.visibleCount.set(PAGE_SIZE)
         void this.router.navigate([], {
             relativeTo: this.route,
             queryParams: { groupId: nextGroupId },
@@ -144,6 +189,7 @@ export class HistoryPageComponent {
         return game.titleTranslations.en || game.title || 'Untitled game'
     }
 
+    /** First letters of the first two words: "Love Letter" is "LL". */
     public getGameInitials(title: string): string {
         return title
             .split(/\s+/)
