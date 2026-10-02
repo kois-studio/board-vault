@@ -72,32 +72,32 @@ export class FormGameSubmissionComponent implements OnInit, OnChanges {
     // Input classes
     get titleClass() {
         if (!this.title?.dirty && !this.title?.touched) return ''
-        return this.title?.valid ? 'border-green-500' : 'border-red-500'
+        return this.title?.valid ? 'border-bv-success' : 'border-bv-danger'
     }
 
     get imageUrlClass() {
         if (!this.imageUrl?.dirty && !this.imageUrl?.touched) return ''
-        return this.imageUrl?.valid ? 'border-green-500' : 'border-red-500'
+        return this.imageUrl?.valid ? 'border-bv-success' : 'border-bv-danger'
     }
 
     get gameAvgDurationClass() {
         if (!this.gameAvgDuration?.dirty && !this.gameAvgDuration?.touched) return ''
-        return this.gameAvgDuration?.valid ? 'border-green-500' : 'border-red-500'
+        return this.gameAvgDuration?.valid ? 'border-bv-success' : 'border-bv-danger'
     }
 
     get minPlayersClass() {
         if (!this.minPlayers?.dirty && !this.minPlayers?.touched) return ''
-        return this.minPlayers?.valid ? 'border-green-500' : 'border-red-500'
+        return this.minPlayers?.valid ? 'border-bv-success' : 'border-bv-danger'
     }
 
     get maxPlayersClass() {
         if (!this.maxPlayers?.dirty && !this.maxPlayers?.touched) return ''
-        return this.maxPlayers?.valid ? 'border-green-500' : 'border-red-500'
+        return this.maxPlayers?.valid ? 'border-bv-success' : 'border-bv-danger'
     }
 
     get notesClass() {
         if (!this.notes?.dirty && !this.notes?.touched) return ''
-        return this.notes?.valid ? 'border-green-500' : 'border-red-500'
+        return this.notes?.valid ? 'border-bv-success' : 'border-bv-danger'
     }
 
     public async onSubmit() {

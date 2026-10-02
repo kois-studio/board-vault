@@ -50,7 +50,7 @@ describe('ModalGameSubmissionComponent', () => {
         const backdrop = dialog.parentElement as HTMLElement
         // The panel must be a child of the fixed backdrop: as a sibling it was painted underneath it.
         expect(backdrop.classList).toContain('fixed')
-        expect(backdrop.classList).toContain('bg-zinc-900/60')
+        expect(backdrop.classList).toContain('bg-black/50')
         expect(backdrop.className).not.toMatch(/bg-opacity-/)
         expect(dialog.getAttribute('aria-modal')).toBe('true')
         expect(dialog.getAttribute('aria-labelledby')).toBe('modal-title')

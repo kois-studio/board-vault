@@ -41,7 +41,8 @@ export class ClerkService {
             const { Clerk: ClerkConstructor } = await import('@clerk/clerk-js')
             const clerkUiCtor = await this.loadClerkUiScript()
             const clerk = new ClerkConstructor(environment.clerkPublishableKey)
-            await clerk.load({ ui: { ClerkUI: clerkUiCtor } })
+            // Clerk's own UI takes the palette's light-mode primary (docs/design-system.md).
+            await clerk.load({ ui: { ClerkUI: clerkUiCtor }, appearance: { variables: { colorPrimary: '#8A2C7A' } } })
 
             this.clerk = clerk
             this.syncState()

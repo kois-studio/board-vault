@@ -1,9 +1,9 @@
 <div class="p-4 md:p-6 space-y-8">
     <header class="mb-6">
-        <h1 class="text-3xl font-bold text-zinc-800 dark:text-zinc-100">
+        <h1 class="text-3xl font-bold text-bv-text">
             Manage Games
         </h1>
-        <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+        <p class="text-sm text-bv-text-muted mt-1">
             Manage game translations and tags for the BoardVault catalog.
         </p>
     </header>
@@ -16,22 +16,22 @@
                 id="admin-game-search"
                 type="text" 
                 placeholder="Search games..." 
-                class="w-full p-3 pl-10 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-zinc-700 dark:text-zinc-100"
+                class="w-full p-3 pl-10 border border-bv-border rounded-md focus:outline-none focus:ring-2 focus:ring-bv-primary focus:border-bv-primary dark:bg-bv-border dark:text-bv-text"
                 [formControl]="searchControl"
             />
             <div class="absolute left-3 top-3">
-                <app-icon name="search" [size]="18" className="text-zinc-400" />
+                <app-icon name="search" [size]="18" className="text-bv-text-muted" />
             </div>
             @if (isSearching$()) {
                 <div class="absolute right-3 top-3">
-                <app-icon name="refresh" [size]="18" className="text-zinc-400 motion-safe:animate-spin" />
+                <app-icon name="refresh" [size]="18" className="text-bv-text-muted motion-safe:animate-spin" />
                 </div>
             }
         </div>
     </div>
 
     @if (searchError(); as error) {
-        <div class="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-200" role="alert">
+        <div class="rounded-xl border border-bv-danger/30 bg-bv-danger/10 p-4 text-sm text-bv-danger" role="alert">
             {{ error }} Search again to retry.
         </div>
     }
@@ -43,7 +43,7 @@
         </div>
     } @else if (gamesList$().length === 0) {
         <!-- no data -->
-        <div class="text-center text-zinc-500 dark:text-zinc-400 py-8">
+        <div class="text-center text-bv-text-muted py-8">
             @if (searchTerm$() && searchTerm$().trim().length >= 3) {
                 <p>No games found matching "{{searchTerm$().trim()}}"</p>
             } @else if (searchTerm$() && searchTerm$().trim().length > 0) {
@@ -55,14 +55,14 @@
     } @else {
         <div class="space-y-4">
             @for (game of gamesList$(); track $index + '-' + game.id) {
-                <div class="bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700 p-4">
+                <div class="bg-bv-surface rounded-lg border border-bv-border p-4">
                     <div class="flex items-start justify-between">
                         <div class="flex-1">
                             <div class="flex items-center gap-3 mb-2">
                                 <image-background class="block h-12 w-12 rounded-md" [src]="game.imageUrl" [alt]="game.title + ' cover'" />
                                 <div>
-                                    <h3 class="font-medium text-zinc-900 dark:text-zinc-100">{{ game.title }}</h3>
-                                    <p class="text-sm text-zinc-500 dark:text-zinc-400">
+                                    <h3 class="font-medium text-bv-text">{{ game.title }}</h3>
+                                    <p class="text-sm text-bv-text-muted">
                                         {{ game.minPlayers }}-{{ game.maxPlayers }} players • {{ game.gameAvgDuration }} min
                                     </p>
                                 </div>
@@ -70,10 +70,10 @@
 
                             <!-- Translations -->
                             <div class="mb-3">
-                                <h4 class="text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Translations:</h4>
+                                <h4 class="text-sm font-medium text-bv-text-muted mb-1">Translations:</h4>
                                 <div class="flex flex-wrap gap-2">
                                     @for (translation of getTranslationEntries(game.translations); track $index + '-' + translation[0]) {
-                                        <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-zinc-100 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300">
+                                        <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-bv-surface-2 text-bv-text-muted">
                                             <span class="font-medium mr-1">{{ translation[0] }}:</span>
                                             {{ translation[1] }}
                                         </span>
@@ -83,11 +83,11 @@
 
                             <!-- Tags -->
                             <div>
-                                <h4 class="text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Tags:</h4>
+                                <h4 class="text-sm font-medium text-bv-text-muted mb-1">Tags:</h4>
                                 @if (game.tags.length > 0) {
                                     <app-tags [tags]="getTagsForDisplay(game.tags)" />
                                 } @else {
-                                    <span class="text-sm text-zinc-500 dark:text-zinc-400">No tags assigned</span>
+                                    <span class="text-sm text-bv-text-muted">No tags assigned</span>
                                 }
                             </div>
                         </div>
@@ -117,8 +117,8 @@
     }
 
     @if (pagination(); as page) {
-        <nav class="flex flex-wrap items-center justify-between gap-3 border-t border-zinc-200 pt-4 dark:border-zinc-700" aria-label="Game management pagination">
-            <p class="text-sm text-zinc-500 dark:text-zinc-400">Showing {{ (page.currentPage - 1) * page.itemsPerPage + 1 }}–{{ Math.min(page.currentPage * page.itemsPerPage, page.totalItems) }} of {{ page.totalItems }}</p>
+        <nav class="flex flex-wrap items-center justify-between gap-3 border-t border-bv-border pt-4" aria-label="Game management pagination">
+            <p class="text-sm text-bv-text-muted">Showing {{ (page.currentPage - 1) * page.itemsPerPage + 1 }}–{{ Math.min(page.currentPage * page.itemsPerPage, page.totalItems) }} of {{ page.totalItems }}</p>
             <div class="flex gap-2">
                 <button appButton variant="secondary" type="button" [disabled]="page.currentPage <= 1 || isSearching$()" (click)="onPageChange(page.currentPage - 1)">Previous</button>
                 <button appButton variant="secondary" type="button" [disabled]="page.currentPage >= page.totalPages || isSearching$()" (click)="onPageChange(page.currentPage + 1)">Next</button>

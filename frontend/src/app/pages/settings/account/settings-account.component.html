@@ -4,7 +4,7 @@
 <section aria-labelledby="avatar-heading" class="py-4">
     <h3 id="avatar-heading" class="text-sm font-semibold text-secondary">Profile avatar</h3>
     <div class="lg:items-center flex justify-start items-center pt-3">
-    <div class="relative border-4 border-white rounded-full">
+    <div class="relative border-4 border-bv-border rounded-full">
         <!-- Original Image Profile Component -->
         <app-image-profile [avatar]="$safeNavigationMigration(currentUser$()?.avatar)" size="large" />
 
@@ -12,7 +12,7 @@
         <button
             type="button"
             aria-label="Edit profile avatar"
-            class="absolute bottom-0 right-0 top-0 bg-zinc-900/70 text-white font-bold tracking-wider rounded-full h-full w-full flex items-center justify-center opacity-90 focus-visible:opacity-100 motion-safe:transition-opacity duration-200 cursor-pointer"
+            class="absolute bottom-0 right-0 top-0 bg-black/60 text-white font-bold tracking-wider rounded-full h-full w-full flex items-center justify-center opacity-90 focus-visible:opacity-100 motion-safe:transition-opacity duration-200 cursor-pointer"
             (click)="showAvatarEditor()"
         >
             <span class="text-sm">Edit</span>
@@ -23,12 +23,12 @@
 </section>
 
 <div class="lg:items-center items-start py-4">
-    <h3 class="text-gray-400 pb-1">Display Name</h3>
+    <h3 class="text-bv-text-muted pb-1">Display Name</h3>
     <form-update-display-name />
 </div>
 
 <div class="lg:items-center items-start py-4">
-    <h3 class="text-gray-400 pb-1">Username</h3>
+    <h3 class="text-bv-text-muted pb-1">Username</h3>
     <form-update-username />
 </div>
 

@@ -54,15 +54,15 @@ export class SubmissionsPageComponent {
     public getStatusBadgeClass(status: GameProposalType['status']): string {
         switch (status) {
             case 'pending':
-                return 'bg-yellow-100 text-yellow-800 border-yellow-200'
+                return 'bg-bv-warning/10 text-bv-warning border-bv-warning/30'
             case 'approved':
-                return 'bg-green-100 text-green-800 border-green-200'
+                return 'bg-bv-success/10 text-bv-success border-bv-success/30'
             case 'rejected':
-                return 'bg-red-100 text-red-800 border-red-200'
+                return 'bg-bv-danger/10 text-bv-danger border-bv-danger/30'
             case 'duplicate':
-                return 'bg-gray-100 text-gray-800 border-gray-200'
+                return 'bg-bv-surface-2 text-bv-text border-bv-border'
             default:
-                return 'bg-gray-100 text-gray-800 border-gray-200'
+                return 'bg-bv-surface-2 text-bv-text border-bv-border'
         }
     }
 

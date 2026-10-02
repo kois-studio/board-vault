@@ -17,19 +17,19 @@
         <header class="app-bg-secondary rounded-lg p-6 lg:p-8">
             <div class="flex flex-wrap items-start justify-between gap-4">
                 <div>
-                    <p class="text-sm font-medium text-indigo-600 dark:text-indigo-400">{{ groupData?.name }}</p>
+                    <p class="text-sm font-medium text-bv-primary">{{ groupData?.name }}</p>
                     <h1 class="text-3xl font-bold mt-1">{{ sessionHeading }} · {{ (meetData?.meetDate ?? null) | customDate:true:$safeNavigationMigration(meetData?.timezone) }}</h1>
                     <p class="text-secondary mt-3 max-w-2xl">{{ sessionStatusDescription }}</p>
                 </div>
-                <span class="inline-flex rounded-full bg-indigo-100 px-3 py-1 text-sm font-medium text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-200">{{ sessionStatusLabel }}</span>
+                <span class="inline-flex rounded-full bg-bv-primary-soft px-3 py-1 text-sm font-medium text-bv-on-primary-soft">{{ sessionStatusLabel }}</span>
             </div>
 
             @if (meetData?.notes) {
-                <p class="mt-6 rounded-lg border border-indigo-100 bg-indigo-50 px-4 py-3 text-secondary dark:border-indigo-900/50 dark:bg-indigo-950/30">{{ meetData?.notes }}</p>
+                <p class="mt-6 rounded-lg border border-bv-primary/30 bg-bv-primary-soft px-4 py-3 text-secondary">{{ meetData?.notes }}</p>
             }
 
             @if (canManageLifecycle && canEditSession) {
-                <div class="flex flex-wrap gap-3 mt-6 pt-6 border-t border-zinc-200 dark:border-zinc-700">
+                <div class="flex flex-wrap gap-3 mt-6 pt-6 border-t border-bv-border">
                     @if (meetData?.status === 'scheduled') {
                         <button appButton type="button" [disabled]="isUpdatingStatus" (click)="updateStatus('active')">Start game night</button>
                         <p class="basis-full text-sm text-secondary">Start the session when the group is playing. Then record attendance and the games you actually play before saving the memory.</p>
@@ -41,7 +41,7 @@
             }
 
             @if (canRespondToRsvp) {
-                <div class="mt-6 rounded-xl border border-indigo-200 bg-indigo-50 p-4 dark:border-indigo-900/60 dark:bg-indigo-950/30">
+                <div class="mt-6 rounded-xl border border-bv-primary/30 bg-bv-primary-soft p-4">
                     <p class="font-medium">Can you make it?</p>
                     <p class="text-secondary text-sm mt-1">Your RSVP helps the organizer plan. Final attendance is recorded separately after the game night.</p>
                     <div class="flex flex-wrap gap-3 mt-3">
@@ -52,7 +52,7 @@
             }
 
             @if (actionError(); as actionErrorMessage) {
-                <div class="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-200" role="alert">
+                <div class="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-bv-danger/30 bg-bv-danger/10 p-4 text-sm text-bv-danger" role="alert">
                     <span>{{ actionErrorMessage }}</span>
                     <button type="button" class="font-medium underline" (click)="actionError.set(null)">Dismiss</button>
                 </div>
@@ -64,12 +64,12 @@
                 <section
                     appDialog
                     (dialogClosed)="cancelStatusUpdate()"
-                    class="w-full max-w-lg rounded-3xl border border-zinc-200 bg-white p-6 shadow-2xl dark:border-zinc-700 dark:bg-zinc-900"
+                    class="w-full max-w-lg rounded-3xl border border-bv-border bg-bv-surface p-6 shadow-2xl"
                     aria-labelledby="session-status-confirmation-title"
                     aria-describedby="session-status-confirmation-description"
                     (click)="$event.stopPropagation()"
                 >
-                    <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Review session change</p>
+                    <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary">Review session change</p>
                     <h2 id="session-status-confirmation-title" class="mt-2 text-2xl font-bold">{{ requestedStatus === 'completed' ? 'Finish this game night?' : 'Cancel this session?' }}</h2>
                     <p id="session-status-confirmation-description" class="mt-2 text-secondary">
                         @if (requestedStatus === 'completed') {
@@ -79,9 +79,9 @@
                         }
                     </p>
                     <dl class="mt-5 grid gap-3 sm:grid-cols-3">
-                        <div class="rounded-2xl bg-zinc-50 p-3 dark:bg-zinc-800"><dt class="text-xs text-secondary">Played</dt><dd class="mt-1 text-xl font-bold">{{ playedGamesCount }}</dd></div>
-                        <div class="rounded-2xl bg-zinc-50 p-3 dark:bg-zinc-800"><dt class="text-xs text-secondary">Still planned</dt><dd class="mt-1 text-xl font-bold">{{ remainingPlannedGamesCount }}</dd></div>
-                        <div class="rounded-2xl bg-zinc-50 p-3 dark:bg-zinc-800"><dt class="text-xs text-secondary">Already skipped</dt><dd class="mt-1 text-xl font-bold">{{ skippedGamesCount }}</dd></div>
+                        <div class="rounded-2xl bg-bv-bg p-3"><dt class="text-xs text-secondary">Played</dt><dd class="mt-1 text-xl font-bold">{{ playedGamesCount }}</dd></div>
+                        <div class="rounded-2xl bg-bv-bg p-3"><dt class="text-xs text-secondary">Still planned</dt><dd class="mt-1 text-xl font-bold">{{ remainingPlannedGamesCount }}</dd></div>
+                        <div class="rounded-2xl bg-bv-bg p-3"><dt class="text-xs text-secondary">Already skipped</dt><dd class="mt-1 text-xl font-bold">{{ skippedGamesCount }}</dd></div>
                     </dl>
                     <p class="mt-4 text-sm text-secondary">Remaining planned games will not be recorded as played. They stay unplayed so the group can revisit the shortlist later.</p>
                     <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
@@ -135,9 +135,9 @@
                             [attr.aria-label]="getGroupPersonToggleLabel(person.person.id)"
                             [attr.aria-pressed]="meetData?.participants?.includes(person.person.id)"
                             class="rounded-lg border p-2 flex items-center justify-start text-left transition-colors disabled:cursor-not-allowed"
-                            [ngClass]="meetData?.participants?.includes(person.person.id) ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20' : 'border-zinc-200 dark:border-zinc-700'"
+                            [ngClass]="meetData?.participants?.includes(person.person.id) ? 'border-bv-primary bg-bv-primary-soft' : 'border-bv-border'"
                         >
-                            <div class="h-3 w-3 shrink-0 rounded-full ml-3 mr-2" [ngClass]="meetData?.participants?.includes(person.person.id) ? 'bg-green-500' : 'bg-zinc-300 dark:bg-zinc-600'"></div>
+                            <div class="h-3 w-3 shrink-0 rounded-full ml-3 mr-2" [ngClass]="meetData?.participants?.includes(person.person.id) ? 'bg-bv-success' : 'bg-bv-border'"></div>
                             <span class="min-w-0 truncate font-medium">{{ person.person.displayName }}</span>
                             <span class="text-secondary text-sm ml-auto mr-3 shrink-0 pl-2 text-right">{{ getGroupPersonRsvpStatus(person.person.id) }}<br /><span class="text-xs">{{ getGroupPersonAttendanceStatus(person.person.id) }} · {{ getGroupPersonGameCount(person) }} games</span></span>
                         </button>
@@ -153,11 +153,11 @@
                         [attr.aria-pressed]="meetData?.attendees?.includes(member.id)"
                         class="rounded-lg border p-2 flex items-center justify-start text-left transition-colors disabled:cursor-not-allowed"
                         [ngClass]="{
-                            'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20': $safeNavigationMigration(meetData?.attendees?.includes(member.id)),
-                            'border-zinc-200 dark:border-zinc-700': !meetData?.attendees?.includes(member.id),
+                            'border-bv-primary bg-bv-primary-soft': $safeNavigationMigration(meetData?.attendees?.includes(member.id)),
+                            'border-bv-border': !meetData?.attendees?.includes(member.id),
                         }"
                     >
-                        <div class="h-3 w-3 shrink-0 rounded-full ml-3 mr-2" [ngClass]="meetData?.attendees?.includes(member.id) ? 'bg-green-500' : 'bg-zinc-300 dark:bg-zinc-600'"></div>
+                        <div class="h-3 w-3 shrink-0 rounded-full ml-3 mr-2" [ngClass]="meetData?.attendees?.includes(member.id) ? 'bg-bv-success' : 'bg-bv-border'"></div>
                         <app-card-account [member]="member" [ngClass]="{ 'opacity-50': !meetData?.attendees?.includes(member.id) }" />
                         <span class="text-secondary text-sm ml-auto mr-3 shrink-0 pl-2 text-right">{{ getMemberRsvpStatus(member.id) }}<br /><span class="text-xs">{{ getMemberAttendanceStatus(member.id) }} · {{ member.games.length }} games</span></span>
                     </button>
@@ -166,17 +166,17 @@
             </div>
 
             @if (canEditSession && attendeeCount === 1) {
-                <p class="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-200" role="status">
+                <p class="mt-4 rounded-lg border border-bv-warning/30 bg-bv-warning/10 px-3 py-2 text-sm text-bv-warning" role="status">
                     Keep at least one attendee in the session. Add another person before removing the last one.
                 </p>
             } @else if (canEditSession && hasPlayedGameAttendeeLock) {
-                <p class="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-200" role="status">
+                <p class="mt-4 rounded-lg border border-bv-warning/30 bg-bv-warning/10 px-3 py-2 text-sm text-bv-warning" role="status">
                     People recorded for a played game stay in the attendee list. Remove their game participation first if the record needs correcting.
                 </p>
             }
 
             @if (canRecordAttendance) {
-                <div class="mt-6 border-t border-zinc-200 pt-5 dark:border-zinc-700">
+                <div class="mt-6 border-t border-bv-border pt-5">
                     <div class="flex flex-wrap items-start justify-between gap-3">
                         <div>
                             <h3 class="font-semibold">Who actually attended?</h3>
@@ -190,7 +190,7 @@
                         @if (isGroupPersonSession) {
                         @for (person of groupPeople; track person.person.id) {
                             @if (meetData?.participants?.includes(person.person.id)) {
-                                <button type="button" class="flex max-w-full items-center gap-1 rounded-lg border px-3 py-2 sm:max-w-xs text-sm transition-colors disabled:cursor-not-allowed" [disabled]="isUpdatingAttendance" [attr.aria-pressed]="getGroupPersonAttendanceStatus(person.person.id) === 'Was there'" [ngClass]="getGroupPersonAttendanceStatus(person.person.id) === 'Was there' ? 'border-green-500 bg-green-50 dark:bg-green-900/20' : 'border-zinc-200 dark:border-zinc-700'" (click)="toggleGroupPersonAttendance(person.person.id)">
+                                <button type="button" class="flex max-w-full items-center gap-1 rounded-lg border px-3 py-2 sm:max-w-xs text-sm transition-colors disabled:cursor-not-allowed" [disabled]="isUpdatingAttendance" [attr.aria-pressed]="getGroupPersonAttendanceStatus(person.person.id) === 'Was there'" [ngClass]="getGroupPersonAttendanceStatus(person.person.id) === 'Was there' ? 'border-bv-success bg-bv-success/10' : 'border-bv-border'" (click)="toggleGroupPersonAttendance(person.person.id)">
                                     <span class="min-w-0 truncate">{{ person.person.displayName }}</span><span class="shrink-0">· {{ getGroupPersonAttendanceStatus(person.person.id) === 'Was there' ? 'There' : 'Not there' }}</span>
                                 </button>
                             }
@@ -198,7 +198,7 @@
                         } @else {
                         @for (member of groupData?.members; track member.id) {
                             @if (meetData?.attendees?.includes(member.id)) {
-                                <button type="button" class="flex max-w-full items-center gap-1 rounded-lg border px-3 py-2 sm:max-w-xs text-sm transition-colors disabled:cursor-not-allowed" [disabled]="isUpdatingAttendance" [attr.aria-pressed]="getMemberAttendanceStatus(member.id) === 'Was there'" [ngClass]="getMemberAttendanceStatus(member.id) === 'Was there' ? 'border-green-500 bg-green-50 dark:bg-green-900/20' : 'border-zinc-200 dark:border-zinc-700'" (click)="toggleAttendance(member.id)">
+                                <button type="button" class="flex max-w-full items-center gap-1 rounded-lg border px-3 py-2 sm:max-w-xs text-sm transition-colors disabled:cursor-not-allowed" [disabled]="isUpdatingAttendance" [attr.aria-pressed]="getMemberAttendanceStatus(member.id) === 'Was there'" [ngClass]="getMemberAttendanceStatus(member.id) === 'Was there' ? 'border-bv-success bg-bv-success/10' : 'border-bv-border'" (click)="toggleAttendance(member.id)">
                                     <span class="min-w-0 truncate">{{ member.displayName || member.username }}</span><span class="shrink-0">· {{ getMemberAttendanceStatus(member.id) === 'Was there' ? 'There' : 'Not there' }}</span>
                                 </button>
                             }
@@ -215,18 +215,18 @@
                 <p class="text-secondary text-sm mt-1">Games the group chose to consider when this session was planned.</p>
             </div>
             @if (canManageLifecycle && canEditSession) {
-                <button type="button" class="mb-4 text-sm font-semibold text-indigo-600 hover:underline dark:text-indigo-400" [attr.aria-expanded]="isEditingShortlist" (click)="isEditingShortlist = !isEditingShortlist">
+                <button type="button" class="mb-4 text-sm font-semibold text-bv-primary hover:underline" [attr.aria-expanded]="isEditingShortlist" (click)="isEditingShortlist = !isEditingShortlist">
                     {{ isEditingShortlist ? 'Close the editor' : 'Edit shortlist' }}
                 </button>
             }
             @if (canManageLifecycle && canEditSession && isEditingShortlist) {
-                <fieldset class="mb-5 rounded-lg border border-indigo-200 p-4 dark:border-indigo-900/60">
+                <fieldset class="mb-5 rounded-lg border border-bv-primary/30 p-4">
                     <legend class="px-1 font-medium">Update the shortlist</legend>
                     <p class="text-secondary text-sm mt-1 mb-3">Choose games from the invited players’ collections. You can change this while the night is scheduled or live.</p>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         @for (game of totalGames; track game.id) {
                             @if (game.active) {
-                                <label class="flex items-center gap-3 rounded-lg border border-zinc-200 p-3 dark:border-zinc-700">
+                                <label class="flex items-center gap-3 rounded-lg border border-bv-border p-3">
                                     <input type="checkbox" [checked]="isPlannedGame(game.id)" [disabled]="isUpdatingShortlist" (change)="togglePlannedGame(game.id)" />
                                     <span class="min-w-0 truncate">{{ game.titleTranslations.en || game.title || 'Untitled game' }}</span>
                                 </label>
@@ -239,11 +239,11 @@
                 </fieldset>
             }
             @if (plannedGames.length === 0) {
-                <p class="rounded-lg border border-dashed border-zinc-300 dark:border-zinc-700 p-4 text-secondary text-sm">No games were shortlisted. Use the play recommendations or choose from the group library before the night.</p>
+                <p class="rounded-lg border border-dashed border-bv-border p-4 text-secondary text-sm">No games were shortlisted. Use the play recommendations or choose from the group library before the night.</p>
             } @else {
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     @for (game of plannedGames; track game.id) {
-                        <a [routerLink]="['/games', game.id]" class="flex items-center gap-3 rounded-lg border border-indigo-400/60 bg-indigo-50/50 p-3 hover:border-indigo-600 dark:bg-indigo-900/20">
+                        <a [routerLink]="['/games', game.id]" class="flex items-center gap-3 rounded-lg border border-bv-primary/60 bg-bv-primary-soft/50 p-3 hover:border-bv-primary">
                             <image-background [src]="game.imageUrl" [alt]="(game.titleTranslations.en || game.title || 'Game') + ' cover'" class="h-14 w-14 shrink-0" />
                             <span class="font-medium">{{ game.titleTranslations.en || game.title || 'Untitled game' }}</span>
                         </a>
@@ -253,7 +253,7 @@
         </section>
 
         @if (meetData?.status === 'scheduled' && !(meetData?.playedGames?.length)) {
-            <p class="mt-6 rounded-lg border border-dashed border-zinc-300 p-4 text-sm text-secondary dark:border-zinc-700">When the night starts, you'll mark here the games the group actually plays.</p>
+            <p class="mt-6 rounded-lg border border-dashed border-bv-border p-4 text-sm text-secondary">When the night starts, you'll mark here the games the group actually plays.</p>
         } @else {
         <section class="app-bg-secondary rounded-lg p-6 mt-6" aria-labelledby="played-heading">
             <div class="flex flex-wrap items-start justify-between gap-3 mb-4">
@@ -267,17 +267,17 @@
             </div>
 
             @if (!canEditSession && playedSectionGames.length === 0) {
-                <p class="rounded-lg border border-dashed border-zinc-300 dark:border-zinc-700 p-4 text-secondary text-sm">No games were recorded for this session.</p>
+                <p class="rounded-lg border border-dashed border-bv-border p-4 text-secondary text-sm">No games were recorded for this session.</p>
             } @else if (totalGames.length === 0) {
-                <p class="rounded-lg border border-dashed border-zinc-300 dark:border-zinc-700 p-4 text-secondary text-sm">There are no games in the selected attendees’ collections yet.</p>
+                <p class="rounded-lg border border-dashed border-bv-border p-4 text-secondary text-sm">There are no games in the selected attendees’ collections yet.</p>
             } @else {
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     @for (game of playedSectionGames; track game.id) {
                         <div
                             class="rounded-lg border p-2 transition-colors"
                             [ngClass]="{
-                                'border-green-500 bg-green-50 dark:bg-green-900/20': $safeNavigationMigration(meetData?.playedGames?.includes(game.id)),
-                                'border-zinc-200 dark:border-zinc-700': !meetData?.playedGames?.includes(game.id),
+                                'border-bv-success bg-bv-success/10': $safeNavigationMigration(meetData?.playedGames?.includes(game.id)),
+                                'border-bv-border': !meetData?.playedGames?.includes(game.id),
                                 'opacity-50': !game.active && !meetData?.playedGames?.includes(game.id),
                             }"
                         >
@@ -293,7 +293,7 @@
                                     <p class="font-semibold truncate">{{ game.titleTranslations.en || game.title || 'Untitled game' }}</p>
                                     <p class="text-secondary text-sm mt-1">{{ game.gameAvgDuration }} mins · {{ game.minPlayers }}–{{ game.maxPlayers }} players</p>
                                     @if (meetData?.playedGames?.includes(game.id)) {
-                                        <p class="text-green-600 dark:text-green-400 text-sm mt-1">Played</p>
+                                        <p class="text-bv-success text-sm mt-1">Played</p>
                                     } @else if (!game.active) {
                                         <p class="text-secondary text-sm mt-1">Not in attendee collections</p>
                                     }
@@ -301,13 +301,13 @@
                             </button>
 
                             @if (meetData?.playedGames?.includes(game.id)) {
-                                <fieldset class="mt-3 min-w-0 border-t border-green-200 pt-3 dark:border-green-900/50">
+                                <fieldset class="mt-3 min-w-0 border-t border-bv-success/30 pt-3">
                                     <legend class="px-1 text-xs font-medium text-secondary">Played by</legend>
                                     <div class="flex flex-wrap gap-2">
                                         @if (isGroupPersonSession) {
                                         @for (person of groupPeople; track person.person.id) {
                                             @if (meetData?.participants?.includes(person.person.id)) {
-                                                <label class="inline-flex max-w-full items-center gap-1.5 rounded-md border px-2 py-1 text-xs" [ngClass]="isGroupPersonGameParticipant(game.id, person.person.id) ? 'border-green-500 bg-green-100 dark:bg-green-900/40' : 'border-zinc-200 dark:border-zinc-700'">
+                                                <label class="inline-flex max-w-full items-center gap-1.5 rounded-md border px-2 py-1 text-xs" [ngClass]="isGroupPersonGameParticipant(game.id, person.person.id) ? 'border-bv-success bg-bv-success/10' : 'border-bv-border'">
                                                     <input
                                                         type="checkbox"
                                                         [checked]="isGroupPersonGameParticipant(game.id, person.person.id)"
@@ -321,7 +321,7 @@
                                         } @else {
                                         @for (member of groupData?.members; track member.id) {
                                             @if (meetData?.attendees?.includes(member.id)) {
-                                                <label class="inline-flex max-w-full items-center gap-1.5 rounded-md border px-2 py-1 text-xs" [ngClass]="isGameParticipant(game.id, member.id) ? 'border-green-500 bg-green-100 dark:bg-green-900/40' : 'border-zinc-200 dark:border-zinc-700'">
+                                                <label class="inline-flex max-w-full items-center gap-1.5 rounded-md border px-2 py-1 text-xs" [ngClass]="isGameParticipant(game.id, member.id) ? 'border-bv-success bg-bv-success/10' : 'border-bv-border'">
                                                     <input
                                                         type="checkbox"
                                                         [checked]="isGameParticipant(game.id, member.id)"
@@ -343,7 +343,7 @@
                     }
                 </div>
                 @if (!showAllGamesForPlayed && hiddenPlayableGameCount > 0) {
-                    <button type="button" class="mt-4 text-sm font-semibold text-indigo-600 hover:underline dark:text-indigo-400" (click)="showAllGamesForPlayed = true">
+                    <button type="button" class="mt-4 text-sm font-semibold text-bv-primary hover:underline" (click)="showAllGamesForPlayed = true">
                         Show {{ hiddenPlayableGameCount }} more games nobody attending owns
                     </button>
                 }
@@ -359,7 +359,7 @@
                 </div>
                 <div class="grid gap-3 sm:grid-cols-2">
                     @for (game of playedGameDetails; track game.id) {
-                        <label class="flex items-center gap-3 rounded-lg border border-zinc-200 p-3 dark:border-zinc-700">
+                        <label class="flex items-center gap-3 rounded-lg border border-bv-border p-3">
                             <image-background [src]="game.imageUrl" [alt]="(game.titleTranslations.en || game.title || 'Game') + ' cover'" class="h-12 w-12 shrink-0" />
                             <span class="min-w-0 flex-1 truncate font-medium">{{ game.titleTranslations.en || game.title || 'Untitled game' }}</span>
                             <select class="app-input w-24" [disabled]="savingPostSessionRatings[game.id]" [value]="getMyRating(game.id) ?? ''" [attr.aria-label]="'Your rating for ' + (game.titleTranslations.en || game.title || 'this game')" (change)="savePostSessionRating(game.id, +$any($event.target).value)">
@@ -380,7 +380,7 @@
                 <p class="text-secondary text-sm mt-1 mb-4">Keep these visible so the group can revisit them next time.</p>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     @for (game of skippedGames; track game.id) {
-                        <a [routerLink]="['/games', game.id]" class="flex items-center gap-3 rounded-lg border border-zinc-300 bg-zinc-50 p-3 opacity-75 dark:border-zinc-700 dark:bg-zinc-800/50">
+                        <a [routerLink]="['/games', game.id]" class="flex items-center gap-3 rounded-lg border border-bv-border bg-bv-bg p-3 opacity-75">
                             <image-background [src]="game.imageUrl" [alt]="(game.titleTranslations.en || game.title || 'Game') + ' cover'" class="h-14 w-14 shrink-0" />
                             <span class="font-medium">{{ game.titleTranslations.en || game.title || 'Untitled game' }}</span>
                         </a>

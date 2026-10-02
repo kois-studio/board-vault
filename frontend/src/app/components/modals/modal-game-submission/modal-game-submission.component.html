@@ -1,22 +1,22 @@
 @if (isVisible()) {
     <!-- Backdrop. The panel is its child so it always paints above it; the backdrop scrolls when the form is taller than the screen. -->
-    <div class="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-zinc-900/60 p-4 sm:items-center" (click)="hideDialog()">
+    <div class="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/50 p-4 sm:items-center" (click)="hideDialog()">
         <!-- Modal panel -->
         <div
             appDialog
             (dialogClosed)="hideDialog()"
             aria-labelledby="modal-title"
-            class="relative my-auto w-full max-w-2xl overflow-hidden rounded-lg bg-white text-left shadow-xl"
+            class="relative my-auto w-full max-w-2xl overflow-hidden rounded-lg bg-bv-surface text-left shadow-xl"
             (click)="$event.stopPropagation()"
         >
-            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+            <div class="bg-bv-surface px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                 <div class="sm:flex sm:items-start">
                     <div class="mt-3 text-center sm:mt-0 sm:text-left w-full">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4" id="modal-title">
+                        <h3 class="text-lg leading-6 font-medium text-bv-text mb-4" id="modal-title">
                             Submit Game Proposal
                         </h3>
                         <div class="mt-2">
-                            <p class="text-sm text-gray-500 mb-6">
+                            <p class="text-sm text-bv-text-muted mb-6">
                                 Help us expand our game collection! Submit a proposal for a game you'd like to see added to BoardVault.
                             </p>
                             <form-game-submission (proposalSubmitted)="onProposalSubmitted()"></form-game-submission>
@@ -24,7 +24,7 @@
                     </div>
                 </div>
             </div>
-            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+            <div class="bg-bv-bg px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                 <button appButton variant="secondary"
                     type="button"
                     (click)="hideDialog()"

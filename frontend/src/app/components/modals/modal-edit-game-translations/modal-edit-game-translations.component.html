@@ -1,15 +1,15 @@
 @if (isVisible()) {
-    <div class="fixed inset-0 bg-zinc-900/60 flex items-center justify-center z-50" (click)="hideDialog()">
-        <div appDialog (dialogClosed)="hideDialog()" class="bg-white dark:bg-zinc-800 rounded-lg shadow-xl max-w-md w-full mx-4" (click)="$event.stopPropagation()">
+    <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" (click)="hideDialog()">
+        <div appDialog (dialogClosed)="hideDialog()" class="bg-bv-surface rounded-lg shadow-xl max-w-md w-full mx-4" (click)="$event.stopPropagation()">
             <!-- Header -->
-            <div class="flex items-center justify-between p-6 border-b border-zinc-200 dark:border-zinc-700">
-                <h2 class="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+            <div class="flex items-center justify-between p-6 border-b border-bv-border">
+                <h2 class="text-xl font-semibold text-bv-text">
                     Edit Game Translations
                 </h2>
                 <button
                     (click)="onCancel()"
                     aria-label="Close edit game translations dialog"
-                    class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 cursor-pointer"
+                    class="text-bv-text-muted cursor-pointer"
                 >
                     <app-icon name="x" [size]="24" aria-hidden="true" />
                 </button>
@@ -19,10 +19,10 @@
             <div class="p-6">
                 @if (game()) {
                     <div class="mb-4">
-                        <h3 class="font-medium text-zinc-900 dark:text-zinc-100 mb-2">
+                        <h3 class="font-medium text-bv-text mb-2">
                             {{ game()!.title }}
                         </h3>
-                        <p class="text-sm text-zinc-500 dark:text-zinc-400">
+                        <p class="text-sm text-bv-text-muted">
                             Update the game title translations for different languages.
                         </p>
                     </div>
@@ -30,18 +30,18 @@
                     <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
                         <!-- English Translation -->
                         <div>
-                            <label for="en" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                            <label for="en" class="block text-sm font-medium text-bv-text-muted mb-1">
                                 English Title
                             </label>
                             <input
                                 id="en"
                                 type="text"
                                 formControlName="en"
-                                class="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:text-zinc-100"
+                                class="w-full px-3 py-2 border border-bv-border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-bv-primary focus:border-bv-primary dark:bg-bv-border dark:text-bv-text"
                                 placeholder="Enter English title"
                             />
                             @if (form.get('en')?.invalid && form.get('en')?.touched) {
-                                <p class="mt-1 text-sm text-red-600 dark:text-red-400">
+                                <p class="mt-1 text-sm text-bv-danger">
                                     English title is required.
                                 </p>
                             }
@@ -49,18 +49,18 @@
 
                         <!-- Spanish Translation -->
                         <div>
-                            <label for="es" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                            <label for="es" class="block text-sm font-medium text-bv-text-muted mb-1">
                                 Spanish Title
                             </label>
                             <input
                                 id="es"
                                 type="text"
                                 formControlName="es"
-                                class="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:text-zinc-100"
+                                class="w-full px-3 py-2 border border-bv-border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-bv-primary focus:border-bv-primary dark:bg-bv-border dark:text-bv-text"
                                 placeholder="Enter Spanish title"
                             />
                             @if (form.get('es')?.invalid && form.get('es')?.touched) {
-                                <p class="mt-1 text-sm text-red-600 dark:text-red-400">
+                                <p class="mt-1 text-sm text-bv-danger">
                                     Spanish title is required.
                                 </p>
                             }

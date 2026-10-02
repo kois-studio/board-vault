@@ -12,17 +12,17 @@
         @if (displayName?.invalid && (displayName?.dirty || displayName?.touched)) {
           <div>
             @if (displayName?.hasError('required')) {
-              <div class="text-sm text-red-500 py-1">
+              <div class="text-sm text-bv-danger py-1">
                 <app-icon name="circle-alert" [size]="16" /> display name is required.
               </div>
             }
             @if (displayName?.hasError('minlength')) {
-              <div class="text-sm text-red-500 py-1">
+              <div class="text-sm text-bv-danger py-1">
                 <app-icon name="circle-alert" [size]="16" /> display name is too short.
               </div>
             }
             @if (displayName?.hasError('maxlength')) {
-              <div class="text-sm text-red-500 py-1">
+              <div class="text-sm text-bv-danger py-1">
                 <app-icon name="circle-alert" [size]="16" /> display name is too long.
               </div>
             }

@@ -27,7 +27,7 @@
         <section class="grid grid-cols-2 gap-4 py-6 sm:grid-cols-3 lg:grid-cols-5">
             @for (game of userWishlist$(); track $index) {
                 <div class="relative flex flex-col">
-                    <a [routerLink]="['/games', game.id]" class="block flex-1 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">
+                    <a [routerLink]="['/games', game.id]" class="block flex-1 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bv-primary">
                         <app-card-game
                             [title]="game.titleTranslations.en"
                             [imageUrl]="game.imageUrl"
@@ -44,7 +44,7 @@
                             title="Remove from wishlist"
                             (click)="toggleWishlist(game.id)"
                             [disabled]="preventSpamIsLoadingWishlist"
-                            class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-zinc-200 bg-white/90 p-2 text-rose-500 motion-safe:transition-transform motion-safe:hover:scale-110 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+                            class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-bv-border bg-bv-surface/90 p-2 text-bv-danger motion-safe:transition-transform motion-safe:hover:scale-110 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
                         >
                             <app-icon name="heart-off" [size]="18" />
                         </button>

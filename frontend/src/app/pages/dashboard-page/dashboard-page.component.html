@@ -7,19 +7,19 @@
     <div class="space-y-12 pb-16 pt-8">
         <!-- Invitations come first: they are the only thing waiting on you. -->
         @if (!isLoadingInvitations() && userInvitationsError()) {
-            <section class="rounded-2xl border border-amber-200 bg-amber-50 p-6 dark:border-amber-900/60 dark:bg-amber-950/30" aria-labelledby="invitations-error-heading">
+            <section class="rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-6" aria-labelledby="invitations-error-heading">
                 <h2 id="invitations-error-heading" class="text-lg font-bold">Invitations are temporarily unavailable</h2>
                 <p class="mt-2 text-sm text-secondary">We could not refresh your pending group invitations. Your groups are still available below.</p>
                 <button appButton variant="secondary" type="button" class="mt-4" (click)="retryInvitations()">Retry invitations</button>
             </section>
         } @else if (!isLoadingInvitations() && userInvitations$().length > 0) {
-            <section class="rounded-2xl border border-indigo-200 bg-indigo-50 p-6 dark:border-indigo-900/60 dark:bg-indigo-950/30" aria-labelledby="pending-invitations-heading">
+            <section class="rounded-2xl border border-bv-primary/30 bg-bv-primary-soft p-6" aria-labelledby="pending-invitations-heading">
                 <div class="flex flex-wrap items-start justify-between gap-3">
                     <div>
                         <h2 id="pending-invitations-heading" class="text-xl font-bold">Invitations waiting for you</h2>
                         <p class="mt-1 text-sm text-secondary">Accept to join the group’s shared games and history, or decline if it is not for you.</p>
                     </div>
-                    <span class="rounded-full bg-white px-3 py-1 text-sm font-semibold text-indigo-700 dark:bg-zinc-900 dark:text-indigo-300">{{ userInvitations$().length }} pending</span>
+                    <span class="rounded-full bg-bv-surface px-3 py-1 text-sm font-semibold text-bv-primary">{{ userInvitations$().length }} pending</span>
                 </div>
                 <ul class="mt-5 grid gap-4 lg:grid-cols-2">
                     @for (invitation of userInvitations$(); track invitation.id) {
@@ -33,21 +33,21 @@
         <section aria-labelledby="upcoming-heading">
             <div class="mb-4 flex items-end justify-between gap-3">
                 <h2 id="upcoming-heading" class="text-xl font-bold">Next game nights</h2>
-                <a routerLink="/play/upcoming-sessions" class="text-sm font-semibold text-indigo-600 hover:underline dark:text-indigo-400">All upcoming</a>
+                <a routerLink="/play/upcoming-sessions" class="text-sm font-semibold text-bv-primary hover:underline">All upcoming</a>
             </div>
             @if (isLoadingMeets() && upcomingSessions().length === 0) {
                 <div class="grid gap-4 md:grid-cols-3" aria-busy="true">
                     @for (item of [1, 2, 3]; track item) {
-                        <div class="h-24 animate-pulse rounded-2xl bg-zinc-100 dark:bg-zinc-800"></div>
+                        <div class="h-24 animate-pulse rounded-2xl bg-bv-surface-2"></div>
                     }
                 </div>
             } @else if (userMeetsError()) {
-                <p class="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm dark:border-amber-900/50 dark:bg-amber-950/30" role="alert">
+                <p class="rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-5 text-sm" role="alert">
                     Upcoming sessions could not be loaded.
                     <button type="button" class="ml-2 font-semibold underline" (click)="retryGroups()">Retry</button>
                 </p>
             } @else if (upcomingSessions().length === 0) {
-                <div class="flex flex-col items-start justify-between gap-4 rounded-2xl border border-dashed border-zinc-300 p-5 sm:flex-row sm:items-center dark:border-zinc-700">
+                <div class="flex flex-col items-start justify-between gap-4 rounded-2xl border border-dashed border-bv-border p-5 sm:flex-row sm:items-center">
                     <p class="text-secondary">Nothing planned yet. Pick a date and let the group decide what to play.</p>
                     @if (firstGroupId(); as groupId) {
                         <a appButton variant="secondary" class="shrink-0 text-center" [routerLink]="['/groups', groupId, 'sessions', 'new']">Plan a session</a>
@@ -57,13 +57,13 @@
                 <ul class="grid gap-4 md:grid-cols-3">
                     @for (meet of upcomingSessions(); track meet.id) {
                         <li>
-                            <a [routerLink]="['/sessions', meet.id]" class="flex h-full items-start gap-4 rounded-2xl border border-zinc-200 bg-white p-5 transition hover:border-indigo-300 hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-indigo-700">
-                                <span class="rounded-xl bg-indigo-50 p-3 text-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-300" aria-hidden="true"><app-icon name="calendar" [size]="22" /></span>
+                            <a [routerLink]="['/sessions', meet.id]" class="flex h-full items-start gap-4 rounded-2xl border border-bv-border bg-bv-surface p-5 transition hover:border-bv-primary/30 hover:shadow-sm">
+                                <span class="rounded-xl bg-bv-primary-soft p-3 text-bv-on-primary-soft" aria-hidden="true"><app-icon name="calendar" [size]="22" /></span>
                                 <span class="min-w-0">
                                     <span class="block font-semibold">{{ meet.meetDate | customDate: true: meet.timezone }}</span>
                                     <span class="mt-1 block truncate text-sm text-secondary">{{ groupName(meet.groupId) }}</span>
                                     @if (meet.status === 'active') {
-                                        <span class="mt-2 inline-block rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">Happening now</span>
+                                        <span class="mt-2 inline-block rounded-full bg-bv-success/10 px-2 py-0.5 text-xs font-semibold text-bv-success">Happening now</span>
                                     }
                                 </span>
                             </a>
@@ -88,14 +88,14 @@
                     }
                 </div>
             } @else if (userGroupsError()) {
-                <div class="rounded-2xl border border-amber-200 bg-amber-50 p-8 text-center dark:border-amber-900/50 dark:bg-amber-950/30" role="alert">
+                <div class="rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-8 text-center" role="alert">
                     <p class="text-lg font-medium">Your groups could not be loaded.</p>
                     <p class="mt-2 text-secondary">Try again without losing your saved groups.</p>
                     <button appButton type="button" class="mt-4" (click)="retryGroups()">Retry</button>
                 </div>
             } @else if (userGroups$().length === 0) {
-                <div class="rounded-2xl border border-dashed border-indigo-300 bg-indigo-50 p-8 text-center dark:border-indigo-800 dark:bg-indigo-950/30">
-                    <app-icon name="users" [size]="36" className="text-indigo-500" aria-hidden="true" />
+                <div class="rounded-2xl border border-dashed border-bv-primary/30 bg-bv-primary-soft p-8 text-center">
+                    <app-icon name="users" [size]="36" className="text-bv-primary" aria-hidden="true" />
                     <p class="mt-3 text-xl font-semibold">Start with the people you play with</p>
                     <p class="mx-auto mt-2 max-w-xl text-secondary">Create a private group, invite your friends, and add the games you actually own. Invitations you receive appear at the top of this page.</p>
                     <a appButton routerLink="/create-group" class="mt-5">Create your first group</a>
@@ -105,7 +105,7 @@
                     @for (group of userGroups$(); track group.id) {
                         <app-card-group [group]="group" [invitations]="invitationsGroupIndex$()[group.id]" />
                     }
-                    <a routerLink="/create-group" class="flex min-h-40 flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-zinc-300 p-6 text-secondary transition hover:border-indigo-400 hover:text-indigo-600 dark:border-zinc-700 dark:hover:border-indigo-600 dark:hover:text-indigo-400">
+                    <a routerLink="/create-group" class="flex min-h-40 flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-bv-border p-6 text-secondary transition hover:border-bv-primary hover:text-bv-primary">
                         <app-icon name="circle-plus" [size]="28" aria-hidden="true" />
                         <span class="font-semibold">Create another group</span>
                     </a>
@@ -118,12 +118,12 @@
             <section aria-labelledby="recent-heading">
                 <div class="mb-4 flex items-end justify-between gap-3">
                     <h2 id="recent-heading" class="text-xl font-bold">Recently played</h2>
-                    <a routerLink="/play/history" class="text-sm font-semibold text-indigo-600 hover:underline dark:text-indigo-400">Full history</a>
+                    <a routerLink="/play/history" class="text-sm font-semibold text-bv-primary hover:underline">Full history</a>
                 </div>
-                <ul class="divide-y divide-zinc-200 rounded-2xl border border-zinc-200 bg-white dark:divide-zinc-800 dark:border-zinc-800 dark:bg-zinc-900">
+                <ul class="divide-y divide-bv-border rounded-2xl border border-bv-border bg-bv-surface">
                     @for (record of recentlyPlayed(); track record.meetData.id) {
                         <li>
-                            <a [routerLink]="['/sessions', record.meetData.id]" class="flex flex-col gap-1 p-4 transition hover:bg-zinc-50 sm:flex-row sm:items-center sm:justify-between dark:hover:bg-zinc-800/60">
+                            <a [routerLink]="['/sessions', record.meetData.id]" class="flex flex-col gap-1 p-4 transition hover:bg-bv-bg sm:flex-row sm:items-center sm:justify-between">
                                 <span class="min-w-0">
                                     <span class="block truncate font-semibold">{{ gameTitles(record) || 'No games recorded' }}</span>
                                     <span class="block text-sm text-secondary">{{ groupName(record.meetData.groupId) }} · {{ peopleCount(record) }} {{ peopleCount(record) === 1 ? 'person' : 'people' }}</span>
@@ -141,18 +141,18 @@
             <section aria-labelledby="setup-heading">
                 <h2 id="setup-heading" class="mb-4 text-xl font-bold">Getting started</h2>
                 <div class="grid gap-4 md:grid-cols-3">
-                    <a routerLink="/collection/browse" class="rounded-2xl border border-zinc-200 bg-white p-5 transition hover:border-indigo-300 hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-indigo-700">
-                        <span class="text-indigo-600 dark:text-indigo-400" aria-hidden="true"><app-icon name="circle-plus" [size]="26" /></span>
+                    <a routerLink="/collection/browse" class="rounded-2xl border border-bv-border bg-bv-surface p-5 transition hover:border-bv-primary/30 hover:shadow-sm">
+                        <span class="text-bv-primary" aria-hidden="true"><app-icon name="circle-plus" [size]="26" /></span>
                         <h3 class="mt-3 font-semibold">Add the games you own</h3>
                         <p class="mt-1 text-sm text-secondary">Your collection is private; groups only use it when you decide together.</p>
                     </a>
-                    <a routerLink="/create-group" class="rounded-2xl border border-zinc-200 bg-white p-5 transition hover:border-indigo-300 hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-indigo-700">
-                        <span class="text-indigo-600 dark:text-indigo-400" aria-hidden="true"><app-icon name="users" [size]="26" /></span>
+                    <a routerLink="/create-group" class="rounded-2xl border border-bv-border bg-bv-surface p-5 transition hover:border-bv-primary/30 hover:shadow-sm">
+                        <span class="text-bv-primary" aria-hidden="true"><app-icon name="users" [size]="26" /></span>
                         <h3 class="mt-3 font-semibold">Create a group</h3>
                         <p class="mt-1 text-sm text-secondary">Invite friends, or add them as group people until they have an account.</p>
                     </a>
-                    <a routerLink="/play/log-session" class="rounded-2xl border border-zinc-200 bg-white p-5 transition hover:border-indigo-300 hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-indigo-700">
-                        <span class="text-indigo-600 dark:text-indigo-400" aria-hidden="true"><app-icon name="history" [size]="26" /></span>
+                    <a routerLink="/play/log-session" class="rounded-2xl border border-bv-border bg-bv-surface p-5 transition hover:border-bv-primary/30 hover:shadow-sm">
+                        <span class="text-bv-primary" aria-hidden="true"><app-icon name="history" [size]="26" /></span>
                         <h3 class="mt-3 font-semibold">Record a past session</h3>
                         <p class="mt-1 text-sm text-secondary">Start the group’s history with a night you already played.</p>
                     </a>

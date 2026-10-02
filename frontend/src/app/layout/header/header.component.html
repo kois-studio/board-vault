@@ -1,4 +1,4 @@
-<header class="border-b border-zinc-200 bg-white p-2 dark:border-zinc-700 dark:bg-zinc-800">
+<header class="border-b border-bv-border bg-bv-surface p-2">
     <nav class="relative z-40 flex items-center justify-between px-4" aria-label="Primary navigation">
         <a routerLink="/" aria-label="Board Vault home">
             <img src="/images/logo.webp" alt="Board Vault" class="w-16" />
@@ -8,7 +8,7 @@
             <app-dark-mode-toggle />
             <button
                 type="button"
-                class="rounded-lg p-2 text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-700 lg:hidden"
+                class="rounded-lg p-2 text-bv-text-muted hover:bg-bv-surface-2 lg:hidden"
                 [attr.aria-expanded]="isMobileNavigationOpen()"
                 aria-controls="mobile-navigation"
                 [attr.aria-label]="isMobileNavigationOpen() ? 'Close navigation' : 'Open navigation'"
@@ -29,7 +29,7 @@
                             @if (selfRegistrationEnabled()) {
                                 <button appButton type="button" (click)="openClerkSignUp()">Sign Up</button>
                             } @else {
-                                <a routerLink="/register" class="font-medium text-indigo-600 dark:text-indigo-400">Private beta</a>
+                                <a routerLink="/register" class="font-medium text-bv-primary">Private beta</a>
                             }
                         }
                     } @else {
@@ -37,12 +37,12 @@
                         @if (selfRegistrationEnabled()) {
                             <a appButton routerLink="/register">Sign Up</a>
                         } @else {
-                            <a routerLink="/register" class="font-medium text-indigo-600 dark:text-indigo-400">Private beta</a>
+                            <a routerLink="/register" class="font-medium text-bv-primary">Private beta</a>
                         }
                     }
                 } @else if (isAuthenticated()) {
                     @if (isCurrentUserAdmin()) {
-                        <a routerLink="/admin" class="text-sm font-medium hover:underline text-red-600 dark:text-red-400" aria-label="Admin Panel">
+                        <a routerLink="/admin" class="text-sm font-medium hover:underline text-bv-danger" aria-label="Admin Panel">
                             Admin Panel
                         </a>
                     }
@@ -53,13 +53,13 @@
     </nav>
 
     @if (isMobileNavigationOpen()) {
-        <nav id="mobile-navigation" class="mt-3 border-t border-zinc-200 px-2 pt-3 dark:border-zinc-700 lg:hidden" aria-label="Mobile navigation">
+        <nav id="mobile-navigation" class="mt-3 border-t border-bv-border px-2 pt-3 lg:hidden" aria-label="Mobile navigation">
             <div class="grid grid-cols-2 gap-2 pb-2 sm:grid-cols-3">
                 @for (item of isAuthenticated() ? mobileNavigation : mobilePublicNavigation; track item.path) {
                     <a
                         [routerLink]="item.path"
-                        routerLinkActive="bg-indigo-50 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300"
-                        class="flex min-h-11 items-center gap-2 rounded-lg px-3 py-3 text-sm font-medium text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-700"
+                        routerLinkActive="bg-bv-primary-soft text-bv-on-primary-soft"
+                        class="flex min-h-11 items-center gap-2 rounded-lg px-3 py-3 text-sm font-medium text-bv-text-muted hover:bg-bv-surface-2"
                         (click)="closeMobileNavigation()"
                     >
                         <app-icon [name]="item.icon" [size]="18" aria-hidden="true" />

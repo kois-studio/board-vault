@@ -1,54 +1,54 @@
 <main>
-    <section class="bg-gradient-to-b from-white to-indigo-50 px-4 py-20 dark:from-zinc-900 dark:to-zinc-800 sm:px-6 lg:px-8 lg:py-32">
+    <section class="bg-gradient-to-b from-bv-surface to-bv-primary-soft px-4 py-20 sm:px-6 lg:px-8 lg:py-32">
         <div class="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
             <div>
-                <p class="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400">Board Vault</p>
-                <h1 class="text-4xl font-bold tracking-tight text-zinc-900 dark:text-white md:text-6xl">
+                <p class="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-bv-primary">Board Vault</p>
+                <h1 class="text-4xl font-bold tracking-tight text-bv-text md:text-6xl">
                     Make the next game night easier.
                 </h1>
-                <p class="mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
+                <p class="mt-6 max-w-2xl text-lg leading-8 text-bv-text-muted">
                     Board Vault helps a recurring group decide what to play, coordinate the night, and remember what happened afterwards.
                 </p>
                 <div class="mt-10 flex flex-col gap-4 sm:flex-row">
                     <a
                         routerLink="/register"
-                        class="rounded-lg bg-indigo-600 px-6 py-3 text-center font-medium text-white shadow-lg transition hover:bg-indigo-700 hover:shadow-xl"
+                        class="rounded-lg bg-bv-primary px-6 py-3 text-center font-medium text-bv-on-primary shadow-lg transition hover:bg-bv-primary/90 hover:shadow-xl"
                     >
                         {{ registrationCta() }}
                     </a>
                     <a
                         routerLink="/login"
-                        class="rounded-lg border border-zinc-300 px-6 py-3 text-center font-medium text-zinc-700 transition hover:bg-white dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800"
+                        class="rounded-lg border border-bv-border px-6 py-3 text-center font-medium text-bv-text-muted transition hover:bg-bv-surface"
                     >
                         Sign in
                     </a>
                 </div>
-                <p class="mt-5 text-sm text-zinc-500 dark:text-zinc-400">
+                <p class="mt-5 text-sm text-bv-text-muted">
                     {{ selfRegistrationEnabled() ? 'Start with the people and games you already know.' : 'Start with an invitation from a friend while we finish the core group experience.' }}
                 </p>
             </div>
 
-            <div class="rounded-3xl border border-indigo-100 bg-white/80 p-8 shadow-2xl dark:border-zinc-700 dark:bg-zinc-900/80">
+            <div class="rounded-3xl border border-bv-primary/30 bg-bv-surface/80 p-8 shadow-2xl">
                 <div class="mb-8 flex items-center gap-3">
                     <img src="/images/logo.webp" alt="Board Vault logo" class="h-12 w-12 rounded-xl" />
                     <div>
-                        <p class="font-semibold text-zinc-900 dark:text-white">One shared memory for game night</p>
-                        <p class="text-sm text-zinc-600 dark:text-zinc-300">From “what can we play?” to “remember that session?”</p>
+                        <p class="font-semibold text-bv-text">One shared memory for game night</p>
+                        <p class="text-sm text-bv-text-muted">From “what can we play?” to “remember that session?”</p>
                     </div>
                 </div>
                 <div class="space-y-4">
-                    <div class="rounded-2xl bg-indigo-50 p-5 dark:bg-indigo-950/40">
-                        <p class="text-sm font-medium text-indigo-700 dark:text-indigo-300">Decide together</p>
-                        <p class="mt-1 text-2xl font-bold text-zinc-900 dark:text-white">Use your group’s games, people, and time</p>
+                    <div class="rounded-2xl bg-bv-primary-soft p-5">
+                        <p class="text-sm font-medium text-bv-primary">Decide together</p>
+                        <p class="mt-1 text-2xl font-bold text-bv-text">Use your group’s games, people, and time</p>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
-                        <div class="rounded-2xl bg-zinc-100 p-5 dark:bg-zinc-800">
-                            <p class="text-sm text-zinc-600 dark:text-zinc-300">Coordinate</p>
-                            <p class="mt-1 font-semibold text-zinc-900 dark:text-white">Plan the night</p>
+                        <div class="rounded-2xl bg-bv-surface-2 p-5">
+                            <p class="text-sm text-bv-text-muted">Coordinate</p>
+                            <p class="mt-1 font-semibold text-bv-text">Plan the night</p>
                         </div>
-                        <div class="rounded-2xl bg-zinc-100 p-5 dark:bg-zinc-800">
-                            <p class="text-sm text-zinc-600 dark:text-zinc-300">Remember</p>
-                            <p class="mt-1 font-semibold text-zinc-900 dark:text-white">Build useful history</p>
+                        <div class="rounded-2xl bg-bv-surface-2 p-5">
+                            <p class="text-sm text-bv-text-muted">Remember</p>
+                            <p class="mt-1 font-semibold text-bv-text">Build useful history</p>
                         </div>
                     </div>
                 </div>
@@ -56,69 +56,69 @@
         </div>
     </section>
 
-    <section id="features" class="bg-white px-4 py-20 dark:bg-zinc-950 sm:px-6 lg:px-8">
+    <section id="features" class="bg-bv-surface px-4 py-20 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-6xl">
             <div class="max-w-2xl">
-                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400">The foundation</p>
-                <h2 class="mt-3 text-3xl font-bold text-zinc-900 dark:text-white">Everything starts with trustworthy shared data.</h2>
-                <p class="mt-4 text-lg text-zinc-600 dark:text-zinc-300">
+                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-bv-primary">The foundation</p>
+                <h2 class="mt-3 text-3xl font-bold text-bv-text">Everything starts with trustworthy shared data.</h2>
+                <p class="mt-4 text-lg text-bv-text-muted">
                     Your personal collection is the input. Your group’s decisions and play history are the value.
                 </p>
             </div>
 
             <div class="mt-12 grid gap-6 md:grid-cols-3">
-                <article class="rounded-2xl border border-zinc-200 p-6 dark:border-zinc-800">
-                    <h3 class="text-xl font-semibold text-zinc-900 dark:text-white">Bring your shelf</h3>
-                    <p class="mt-3 leading-7 text-zinc-600 dark:text-zinc-300">Keep a lightweight record of the games you can bring. It gives your group a trustworthy starting point.</p>
-                    <a routerLink="/register" class="mt-5 inline-flex font-medium text-indigo-600 hover:underline dark:text-indigo-400">{{ registrationCta() }}</a>
+                <article class="rounded-2xl border border-bv-border p-6">
+                    <h3 class="text-xl font-semibold text-bv-text">Bring your shelf</h3>
+                    <p class="mt-3 leading-7 text-bv-text-muted">Keep a lightweight record of the games you can bring. It gives your group a trustworthy starting point.</p>
+                    <a routerLink="/register" class="mt-5 inline-flex font-medium text-bv-primary hover:underline">{{ registrationCta() }}</a>
                 </article>
-                <article class="rounded-2xl border border-zinc-200 p-6 dark:border-zinc-800">
-                    <h3 class="text-xl font-semibold text-zinc-900 dark:text-white">Decide as a group</h3>
-                    <p class="mt-3 leading-7 text-zinc-600 dark:text-zinc-300">See what fits the people attending, capture shared signals, and turn “maybe” into a useful next choice.</p>
-                    <a routerLink="/register" class="mt-5 inline-flex font-medium text-indigo-600 hover:underline dark:text-indigo-400">{{ registrationCta() }}</a>
+                <article class="rounded-2xl border border-bv-border p-6">
+                    <h3 class="text-xl font-semibold text-bv-text">Decide as a group</h3>
+                    <p class="mt-3 leading-7 text-bv-text-muted">See what fits the people attending, capture shared signals, and turn “maybe” into a useful next choice.</p>
+                    <a routerLink="/register" class="mt-5 inline-flex font-medium text-bv-primary hover:underline">{{ registrationCta() }}</a>
                 </article>
-                <article class="rounded-2xl border border-zinc-200 p-6 dark:border-zinc-800">
-                    <h3 class="text-xl font-semibold text-zinc-900 dark:text-white">Remember the night</h3>
-                    <p class="mt-3 leading-7 text-zinc-600 dark:text-zinc-300">Record who came, what you played, and the notes that make the next session easier to plan.</p>
-                    <a routerLink="/register" class="mt-5 inline-flex font-medium text-indigo-600 hover:underline dark:text-indigo-400">{{ registrationCta() }}</a>
+                <article class="rounded-2xl border border-bv-border p-6">
+                    <h3 class="text-xl font-semibold text-bv-text">Remember the night</h3>
+                    <p class="mt-3 leading-7 text-bv-text-muted">Record who came, what you played, and the notes that make the next session easier to plan.</p>
+                    <a routerLink="/register" class="mt-5 inline-flex font-medium text-bv-primary hover:underline">{{ registrationCta() }}</a>
                 </article>
             </div>
         </div>
     </section>
 
-    <section id="how-it-works" class="bg-zinc-50 px-4 py-20 dark:bg-zinc-900 sm:px-6 lg:px-8">
+    <section id="how-it-works" class="bg-bv-bg px-4 py-20 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-6xl">
             <div class="max-w-2xl">
-                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400">How it works today</p>
-                <h2 class="mt-3 text-3xl font-bold text-zinc-900 dark:text-white">Start with one group and one real game night.</h2>
+                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-bv-primary">How it works today</p>
+                <h2 class="mt-3 text-3xl font-bold text-bv-text">Start with one group and one real game night.</h2>
             </div>
             <ol class="mt-12 grid gap-6 md:grid-cols-3">
-                <li class="rounded-2xl bg-white p-6 shadow-sm dark:bg-zinc-800">
-                    <span class="text-sm font-bold text-indigo-600 dark:text-indigo-400">01</span>
-                    <h3 class="mt-3 text-xl font-semibold text-zinc-900 dark:text-white">{{ selfRegistrationEnabled() ? 'Create your account' : 'Join your group' }}</h3>
-                    <p class="mt-3 leading-7 text-zinc-600 dark:text-zinc-300">{{ selfRegistrationEnabled() ? 'Set up the identity your group will recognize, then create or join a private group.' : 'Use a private invitation from a friend or group owner to enter the shared workspace.' }}</p>
+                <li class="rounded-2xl bg-bv-surface p-6 shadow-sm">
+                    <span class="text-sm font-bold text-bv-primary">01</span>
+                    <h3 class="mt-3 text-xl font-semibold text-bv-text">{{ selfRegistrationEnabled() ? 'Create your account' : 'Join your group' }}</h3>
+                    <p class="mt-3 leading-7 text-bv-text-muted">{{ selfRegistrationEnabled() ? 'Set up the identity your group will recognize, then create or join a private group.' : 'Use a private invitation from a friend or group owner to enter the shared workspace.' }}</p>
                 </li>
-                <li class="rounded-2xl bg-white p-6 shadow-sm dark:bg-zinc-800">
-                    <span class="text-sm font-bold text-indigo-600 dark:text-indigo-400">02</span>
-                    <h3 class="mt-3 text-xl font-semibold text-zinc-900 dark:text-white">Add the games you can bring</h3>
-                    <p class="mt-3 leading-7 text-zinc-600 dark:text-zinc-300">Your personal shelf tells the group what is actually available—not everything on the internet.</p>
+                <li class="rounded-2xl bg-bv-surface p-6 shadow-sm">
+                    <span class="text-sm font-bold text-bv-primary">02</span>
+                    <h3 class="mt-3 text-xl font-semibold text-bv-text">Add the games you can bring</h3>
+                    <p class="mt-3 leading-7 text-bv-text-muted">Your personal shelf tells the group what is actually available—not everything on the internet.</p>
                 </li>
-                <li class="rounded-2xl bg-white p-6 shadow-sm dark:bg-zinc-800">
-                    <span class="text-sm font-bold text-indigo-600 dark:text-indigo-400">03</span>
-                    <h3 class="mt-3 text-xl font-semibold text-zinc-900 dark:text-white">Choose the next game night</h3>
-                    <p class="mt-3 leading-7 text-zinc-600 dark:text-zinc-300">Decide with the people attending, plan the session, and let the shared history improve future choices.</p>
+                <li class="rounded-2xl bg-bv-surface p-6 shadow-sm">
+                    <span class="text-sm font-bold text-bv-primary">03</span>
+                    <h3 class="mt-3 text-xl font-semibold text-bv-text">Choose the next game night</h3>
+                    <p class="mt-3 leading-7 text-bv-text-muted">Decide with the people attending, plan the session, and let the shared history improve future choices.</p>
                 </li>
             </ol>
         </div>
     </section>
 
-    <section class="bg-indigo-700 px-4 py-20 text-white sm:px-6 lg:px-8">
+    <section class="bg-bv-primary px-4 py-20 text-bv-on-primary sm:px-6 lg:px-8">
         <div class="mx-auto flex max-w-6xl flex-col items-start justify-between gap-8 md:flex-row md:items-center">
             <div>
                 <h2 class="text-3xl font-bold">Ready to make your group’s next choice easier?</h2>
-                <p class="mt-3 max-w-xl text-indigo-100">Board Vault is for the people you already play with—not a public encyclopedia of every game.</p>
+                <p class="mt-3 max-w-xl text-bv-on-primary/90">Board Vault is for the people you already play with—not a public encyclopedia of every game.</p>
             </div>
-            <a routerLink="/register" class="rounded-lg bg-white px-6 py-3 font-semibold text-indigo-700 transition hover:bg-indigo-50">{{ registrationCta() }}</a>
+            <a routerLink="/register" class="rounded-lg bg-bv-surface px-6 py-3 font-semibold text-bv-primary transition hover:bg-bv-primary-soft">{{ registrationCta() }}</a>
         </div>
     </section>
 </main>

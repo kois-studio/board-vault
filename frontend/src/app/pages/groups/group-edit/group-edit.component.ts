@@ -106,7 +106,7 @@ export class GroupEditComponent {
 
     get usernameClass() {
         if (!this.usernameToInvite.dirty && !this.usernameToInvite.touched) return ''
-        return this.usernameToInvite.valid ? 'border-green-500' : 'border-red-500'
+        return this.usernameToInvite.valid ? 'border-bv-success' : 'border-bv-danger'
     }
 
     get isGroupOwner() {

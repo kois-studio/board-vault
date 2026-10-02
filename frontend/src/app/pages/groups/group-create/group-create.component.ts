@@ -27,7 +27,7 @@ export class GroupCreateComponent {
 
     get groupNameClass() {
         if (!this.groupNameForm.dirty && !this.groupNameForm.touched) return ''
-        return this.groupNameForm.valid ? 'border-green-500' : 'border-red-500'
+        return this.groupNameForm.valid ? 'border-bv-success' : 'border-bv-danger'
     }
 
     get disableCreateButton() {

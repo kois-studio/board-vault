@@ -1,5 +1,5 @@
 <div
-    class="flex h-full w-full items-center justify-center overflow-hidden rounded bg-zinc-100 dark:bg-zinc-800"
+    class="flex h-full w-full items-center justify-center overflow-hidden rounded bg-bv-surface-2"
     [attr.role]="src() && !hasError() ? null : 'img'"
     [attr.aria-label]="src() && !hasError() ? null : alt() + ' unavailable'"
 >
@@ -13,6 +13,6 @@
             (error)="handleImageError()"
         />
     } @else {
-        <span class="px-2 text-center text-xs text-zinc-500 dark:text-zinc-400">Artwork unavailable</span>
+        <span class="px-2 text-center text-xs text-bv-text-muted">Artwork unavailable</span>
     }
 </div>

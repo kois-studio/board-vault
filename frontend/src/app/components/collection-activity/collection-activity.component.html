@@ -1,30 +1,31 @@
-    <h2 class="text-lg font-medium text-zinc-900 dark:text-white mb-4 flex items-center justify-between gap-2 w-full">
+    <h2 class="text-lg font-medium text-bv-text mb-4 flex items-center justify-between gap-2 w-full">
         Recent Activity
-        <app-icon name="circle-help" [size]="18" className="text-zinc-500 dark:text-zinc-400" label="What is recent activity?" />
+        <app-icon name="circle-help" [size]="18" className="text-bv-text-muted" label="What is recent activity?" />
     </h2>
-    <div class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 overflow-hidden">
+    <div class="bg-bv-surface rounded-xl shadow-sm border border-bv-border overflow-hidden">
         @if (userCollectionActivity$().length === 0) {
-            <div class="p-8 text-center text-zinc-500 dark:text-zinc-400">
+            <div class="p-8 text-center text-bv-text-muted">
                 <p>No recent activity found.</p>
             </div>
         } @else {
-            <ul class="divide-y divide-zinc-200 dark:divide-zinc-700">
+            <ul class="divide-y divide-bv-border">
                 @for (activity of userCollectionActivitySortedComputed() | slice:0:(showAllActivity ? userCollectionActivitySortedComputed().length : 5); track activity.id) {
-                    <li class="p-4 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition">
+                    <li class="p-4 hover:bg-bv-bg transition">
                         <div class="flex items-center">
                             <!-- Icon based on action type -->
-                            <div class="w-10 h-10 rounded-full flex items-center justify-center mr-4" [ngClass]="{
-                                'bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400': activity.actionType === 'wishlisted' || activity.actionType === 'unwishlisted',
-                                'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400': activity.actionType === 'added',
-                                'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400': activity.actionType === 'rated',
-                                'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400': activity.actionType === 'updated',
-                                'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400': activity.actionType === 'removed',
-                            }">
+                            <div class="mr-4 flex h-10 w-10 shrink-0 items-center justify-center rounded-full" [class]="{
+                                added: 'bg-bv-success/15 text-bv-success',
+                                rated: 'bg-bv-accent text-bv-on-accent',
+                                wishlisted: 'bg-bv-primary-soft text-bv-on-primary-soft',
+                                unwishlisted: 'bg-bv-surface-2 text-bv-text-muted',
+                                updated: 'bg-bv-primary-soft text-bv-on-primary-soft',
+                                removed: 'bg-bv-surface-2 text-bv-text-muted',
+                            }[activity.actionType]">
                                 <app-icon [name]="getActivityIcon(activity.actionType)" [size]="18" [fill]="activity.actionType === 'rated' || activity.actionType === 'wishlisted' ? 'currentColor' : 'none'" />
                             </div>
                             
                             <div>
-                                <p class="text-sm text-zinc-900 dark:text-white">
+                                <p class="text-sm text-bv-text">
                                     {{
                                         {
                                             added: 'You added',
@@ -47,17 +48,17 @@
                                         }[activity.actionType]
                                     }}
                                 </p>
-                                <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">{{ formatTimeAgo(activity.createdAt) }}</p>
+                                <p class="text-xs text-bv-text-muted mt-1">{{ formatTimeAgo(activity.createdAt) }}</p>
                             </div>
                         </div>
                     </li>
                 }
             </ul>
             @if (userCollectionActivity$().length > 5) {
-                <div class="bg-zinc-50 dark:bg-zinc-900/50 p-4 text-center">
+                <div class="bg-bv-bg p-4 text-center">
                     <button 
                         (click)="showAllActivity = !showAllActivity" 
-                        class="text-sm text-indigo-600 dark:text-indigo-400 font-medium hover:underline cursor-pointer">
+                        class="text-sm text-bv-primary font-medium hover:underline cursor-pointer">
                         {{ showAllActivity ? 'Show less' : 'View all activity' }}
                     </button>
                 </div>

@@ -2,50 +2,149 @@
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
 
+/*
+ * Colour tokens: the "Ciruela" palette (docs/design-system.md). Components use
+ * them through the Tailwind colours below (`bg-bv-surface`, `text-bv-primary`),
+ * which switch with the theme, so templates need no `dark:` colour pairs.
+ * on-success, on-warning, and on-danger are additions for filled status
+ * buttons; everything else is the designer's table as written.
+ */
+:root {
+    color-scheme: light;
+    --bv-bg: #f3edf9;
+    --bv-surface: #ffffff;
+    --bv-surface-2: #ece2f4;
+    --bv-border: #dccde8;
+    --bv-text: #24121e;
+    --bv-text-muted: #66505e;
+    --bv-primary: #8a2c7a;
+    --bv-on-primary: #ffffff;
+    --bv-primary-soft: #f7e3f1;
+    --bv-on-primary-soft: #6b1b5d;
+    --bv-accent: #ffd166;
+    --bv-on-accent: #3a0b30;
+    --bv-success: #2a7a4b;
+    --bv-on-success: #ffffff;
+    --bv-warning: #8c5a08;
+    --bv-on-warning: #ffffff;
+    --bv-danger: #b3262e;
+    --bv-on-danger: #ffffff;
+    --bv-player-1: #c0392b;
+    --bv-player-2: #b45309;
+    --bv-player-3: #4d7c0f;
+    --bv-player-4: #047857;
+    --bv-player-5: #0e7490;
+    --bv-player-6: #1d4ed8;
+    --bv-player-7: #7e22ce;
+    --bv-player-8: #be185d;
+    --bv-on-player: #ffffff;
+}
+
+.dark {
+    color-scheme: dark;
+    --bv-bg: #201c20;
+    --bv-surface: #292429;
+    --bv-surface-2: #352d34;
+    --bv-border: #483e46;
+    --bv-text: #f6eef3;
+    --bv-text-muted: #bfa9b8;
+    --bv-primary: #e58ad0;
+    --bv-on-primary: #3a0b30;
+    --bv-primary-soft: #3d1e36;
+    --bv-on-primary-soft: #f4b8e4;
+    --bv-accent: #ffd166;
+    --bv-on-accent: #3a0b30;
+    --bv-success: #63c993;
+    --bv-on-success: #14101a;
+    --bv-warning: #f0b65e;
+    --bv-on-warning: #3a0b30;
+    --bv-danger: #ff7f86;
+    --bv-on-danger: #3a0b30;
+    --bv-player-1: #ff9c8f;
+    --bv-player-2: #fdba74;
+    --bv-player-3: #bef264;
+    --bv-player-4: #6ee7b7;
+    --bv-player-5: #67e8f9;
+    --bv-player-6: #93c5fd;
+    --bv-player-7: #d8b4fe;
+    --bv-player-8: #f9a8d4;
+    --bv-on-player: #14101a;
+}
+
+@theme inline {
+    --color-bv-bg: var(--bv-bg);
+    --color-bv-surface: var(--bv-surface);
+    --color-bv-surface-2: var(--bv-surface-2);
+    --color-bv-border: var(--bv-border);
+    --color-bv-text: var(--bv-text);
+    --color-bv-text-muted: var(--bv-text-muted);
+    --color-bv-primary: var(--bv-primary);
+    --color-bv-on-primary: var(--bv-on-primary);
+    --color-bv-primary-soft: var(--bv-primary-soft);
+    --color-bv-on-primary-soft: var(--bv-on-primary-soft);
+    --color-bv-accent: var(--bv-accent);
+    --color-bv-on-accent: var(--bv-on-accent);
+    --color-bv-success: var(--bv-success);
+    --color-bv-on-success: var(--bv-on-success);
+    --color-bv-warning: var(--bv-warning);
+    --color-bv-on-warning: var(--bv-on-warning);
+    --color-bv-danger: var(--bv-danger);
+    --color-bv-on-danger: var(--bv-on-danger);
+    --color-bv-player-1: var(--bv-player-1);
+    --color-bv-player-2: var(--bv-player-2);
+    --color-bv-player-3: var(--bv-player-3);
+    --color-bv-player-4: var(--bv-player-4);
+    --color-bv-player-5: var(--bv-player-5);
+    --color-bv-player-6: var(--bv-player-6);
+    --color-bv-player-7: var(--bv-player-7);
+    --color-bv-player-8: var(--bv-player-8);
+    --color-bv-on-player: var(--bv-on-player);
+}
+
 @layer components {
     .app-input {
-        @apply rounded border border-zinc-400 dark:border-zinc-700 bg-white dark:bg-zinc-900 disabled:bg-zinc-200 dark:disabled:bg-zinc-800 px-4 py-2 w-full;
+        @apply w-full rounded-lg border border-bv-border bg-bv-surface px-4 py-2 text-bv-text placeholder:text-bv-text-muted disabled:bg-bv-surface-2;
     }
 
     .app-bg-primary {
-        @apply bg-white dark:bg-zinc-950;
+        @apply bg-bv-bg text-bv-text;
     }
 
     .app-bg-secondary {
-        @apply bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm;
+        @apply border border-bv-border bg-bv-surface shadow-sm;
     }
 
     .app-bg-tertiary {
-        @apply bg-zinc-200 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 shadow-sm;
+        @apply border border-bv-border bg-bv-surface-2 shadow-sm;
     }
 
     /*
-     * Buttons: one recipe for <app-button> and for links that look like
-     * buttons (`<a class="app-btn-primary">`). Pick one variant class; add
-     * app-btn-sm or app-btn-lg to change the size. Pressing shrinks the
-     * button slightly so it feels pushed.
+     * Button internals for ButtonComponent (`appButton`); templates use the
+     * component, not these classes. Primary is the one main action of a
+     * screen; secondary is an outline button. Pressing shrinks the button
+     * slightly so it feels pushed.
      */
     .app-btn-primary,
     .app-btn-secondary,
     .app-btn-danger,
     .app-btn-success {
-        @apply inline-flex cursor-pointer select-none items-center justify-center gap-2 rounded-lg px-4 py-2 font-semibold tracking-wide shadow-sm transition duration-150 ease-out not-disabled:active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50;
+        @apply inline-flex cursor-pointer select-none items-center justify-center gap-2 rounded-lg border px-4 py-2 font-semibold tracking-wide transition duration-150 ease-out not-disabled:active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50;
     }
 
     .app-btn-primary {
-        @apply bg-indigo-600 text-white not-disabled:hover:bg-indigo-500;
+        @apply border-transparent bg-bv-primary text-bv-on-primary shadow-sm not-disabled:hover:bg-bv-primary/90;
     }
 
     .app-btn-secondary {
-        @apply bg-zinc-100 text-zinc-900 not-disabled:hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-100 dark:not-disabled:hover:bg-zinc-700;
+        @apply border-bv-border bg-bv-surface text-bv-text not-disabled:hover:bg-bv-surface-2;
     }
 
     .app-btn-danger {
-        @apply bg-red-600 text-white not-disabled:hover:bg-red-700;
+        @apply border-transparent bg-bv-danger text-bv-on-danger shadow-sm not-disabled:hover:bg-bv-danger/90;
     }
 
     .app-btn-success {
-        @apply bg-green-600 text-white not-disabled:hover:bg-green-700;
+        @apply border-transparent bg-bv-success text-bv-on-success shadow-sm not-disabled:hover:bg-bv-success/90;
     }
 
     .app-btn-sm {
@@ -57,7 +156,7 @@
     }
 
     .text-secondary {
-        @apply text-zinc-600 dark:text-zinc-400;
+        @apply text-bv-text-muted;
     }
 }
 
@@ -67,7 +166,11 @@
     input,
     select,
     textarea {
-        @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-zinc-900;
+        @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bv-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bv-surface;
+    }
+
+    ::selection {
+        @apply bg-bv-primary-soft text-bv-on-primary-soft;
     }
 }
 

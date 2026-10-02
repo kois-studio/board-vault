@@ -1,5 +1,5 @@
 @if (isLoadingGameData()) {
-  <p class="flex min-h-[50vh] flex-col items-center justify-center gap-x-2 text-gray-500">
+  <p class="flex min-h-[50vh] flex-col items-center justify-center gap-x-2 text-bv-text-muted">
     <app-spinner size="large" />
     Loading game data...
   </p>
@@ -14,7 +14,7 @@
     <div class="space-y-12 pb-16 pt-6">
       <!-- Hero: cover, facts, ratings, and the actions that matter -->
       <section class="grid gap-8 md:grid-cols-[minmax(0,320px)_1fr] lg:gap-12" aria-labelledby="game-title">
-        <div class="mx-auto aspect-square w-full max-w-xs overflow-hidden rounded-2xl border border-zinc-200 bg-white p-3 shadow-sm md:max-w-none dark:border-zinc-800 dark:bg-zinc-900">
+        <div class="mx-auto aspect-square w-full max-w-xs overflow-hidden rounded-2xl border border-bv-border bg-bv-surface p-3 shadow-sm md:max-w-none">
           <image-background [src]="game.gameData.imageUrl" [alt]="game.gameData.titleTranslations.en + ' cover'" loading="eager" />
         </div>
 
@@ -26,12 +26,12 @@
 
           <ul class="mt-4 flex flex-wrap gap-2 text-sm" aria-label="Game facts">
             @if (game.gameData.gameAvgDuration) {
-              <li class="inline-flex items-center gap-1.5 rounded-full bg-zinc-100 px-3 py-1.5 dark:bg-zinc-800">
+              <li class="inline-flex items-center gap-1.5 rounded-full bg-bv-surface-2 px-3 py-1.5">
                 <app-icon name="clock" [size]="15" aria-hidden="true" /> ~{{ game.gameData.gameAvgDuration }} min
               </li>
             }
             @if (playersLabelComputed(); as players) {
-              <li class="inline-flex items-center gap-1.5 rounded-full bg-zinc-100 px-3 py-1.5 dark:bg-zinc-800">
+              <li class="inline-flex items-center gap-1.5 rounded-full bg-bv-surface-2 px-3 py-1.5">
                 <app-icon name="users" [size]="15" aria-hidden="true" /> {{ players }}
               </li>
             }
@@ -42,14 +42,14 @@
 
           <!-- Ratings: what your groups think, what everyone thinks, what you think -->
           <dl class="mt-6 grid grid-cols-2 gap-3 sm:max-w-md">
-            <div class="rounded-2xl border border-zinc-200 p-4 dark:border-zinc-800">
+            <div class="rounded-2xl border border-bv-border p-4">
               <dt class="text-xs font-semibold uppercase tracking-wide text-secondary">Your groups</dt>
               <dd class="mt-1 flex items-baseline gap-1">
                 <span class="text-2xl font-bold">{{ outOfFive(game.ratingData.avgGroupsRating?.review) }}</span>
                 <span class="text-sm text-secondary">/ 5 · {{ game.ratingData.avgGroupsRating?.count ?? 0 }} rating{{ (game.ratingData.avgGroupsRating?.count ?? 0) === 1 ? '' : 's' }}</span>
               </dd>
             </div>
-            <div class="rounded-2xl border border-zinc-200 p-4 dark:border-zinc-800">
+            <div class="rounded-2xl border border-bv-border p-4">
               <dt class="text-xs font-semibold uppercase tracking-wide text-secondary">Everyone</dt>
               <dd class="mt-1 flex items-baseline gap-1">
                 <span class="text-2xl font-bold">{{ outOfFive(game.ratingData.avgGlobalRating?.review) }}</span>
@@ -73,7 +73,7 @@
                     name="star"
                     [size]="24"
                     [fill]="star <= gameUserReviewComputed() ? 'currentColor' : 'none'"
-                    [className]="star <= gameUserReviewComputed() ? 'text-yellow-400' : 'text-zinc-400'"
+                    [className]="star <= gameUserReviewComputed() ? 'fill-bv-warning text-bv-warning dark:fill-bv-accent dark:text-bv-accent' : 'text-bv-text-muted'"
                   />
                 </button>
               }
@@ -81,9 +81,9 @@
           </div>
 
           <!-- Collection actions -->
-          <div class="mt-6 flex flex-wrap items-center gap-3 border-t border-zinc-200 pt-6 dark:border-zinc-800">
+          <div class="mt-6 flex flex-wrap items-center gap-3 border-t border-bv-border pt-6">
             @if (game.ownedGameData) {
-              <span class="inline-flex items-center gap-2 rounded-full bg-emerald-100 px-4 py-2 text-sm font-semibold text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200">
+              <span class="inline-flex items-center gap-2 rounded-full bg-bv-success/10 px-4 py-2 text-sm font-semibold text-bv-success">
                 <app-icon name="circle-check" [size]="16" aria-hidden="true" /> In your games
               </span>
               <button appButton variant="secondary" size="small" (click)="removeFromCollection()" [loading]="PREVENT_SPAM.isLoadingRemoveFromCollection">Remove</button>
@@ -95,8 +95,8 @@
                 [attr.aria-pressed]="isWishlistedComputed()"
                 class="inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-semibold transition"
                 [ngClass]="{
-                  'border-rose-300 bg-rose-50 text-rose-700 dark:border-rose-800 dark:bg-rose-950/40 dark:text-rose-300': isWishlistedComputed(),
-                  'border-zinc-300 hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800': !isWishlistedComputed(),
+                  'border-bv-danger/30 bg-bv-danger/10 text-bv-danger': isWishlistedComputed(),
+                  'border-bv-border hover:bg-bv-bg': !isWishlistedComputed(),
                   'scale-105': wishlistAnimation,
                 }"
               >
@@ -113,19 +113,19 @@
         <section aria-labelledby="owners-heading">
           <h2 id="owners-heading" class="mb-3 text-xl font-bold">In your groups</h2>
           @if (groupOwnershipComputed().length) {
-            <ul class="divide-y divide-zinc-200 rounded-2xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
+            <ul class="divide-y divide-bv-border rounded-2xl border border-bv-border">
               @for (entry of groupOwnershipComputed(); track entry.group.id) {
                 <li class="flex items-center justify-between gap-4 p-4">
                   <span class="min-w-0">
                     <a [routerLink]="['/groups', entry.group.id]" class="block truncate font-semibold hover:underline">{{ entry.group.name }}</a>
                     <span class="block truncate text-sm text-secondary">Owned by {{ entry.owners.join(', ') }}</span>
                   </span>
-                  <a class="shrink-0 text-sm font-semibold text-indigo-600 hover:underline dark:text-indigo-400" routerLink="/play/recommendations" [queryParams]="{ groupId: entry.group.id }">Plan with it</a>
+                  <a class="shrink-0 text-sm font-semibold text-bv-primary hover:underline" routerLink="/play/recommendations" [queryParams]="{ groupId: entry.group.id }">Plan with it</a>
                 </li>
               }
             </ul>
           } @else {
-            <p class="rounded-2xl border border-dashed border-zinc-300 p-5 text-secondary dark:border-zinc-700">Nobody in your groups owns it yet.</p>
+            <p class="rounded-2xl border border-dashed border-bv-border p-5 text-secondary">Nobody in your groups owns it yet.</p>
           }
         </section>
 
@@ -139,17 +139,17 @@
             }
           </h2>
           @if (userHistoryFilteredComputed().length) {
-            <ul class="divide-y divide-zinc-200 rounded-2xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
+            <ul class="divide-y divide-bv-border rounded-2xl border border-bv-border">
               @for (session of userHistoryFilteredComputed().slice(0, 6); track session.meetData.id) {
                 <li>
-                  <a [routerLink]="['/sessions', session.meetData.id]" class="flex items-center justify-between gap-4 p-4 transition hover:bg-zinc-50 dark:hover:bg-zinc-800/60">
+                  <a [routerLink]="['/sessions', session.meetData.id]" class="flex items-center justify-between gap-4 p-4 transition hover:bg-bv-bg">
                     <span class="min-w-0">
                       <span class="block font-semibold">{{ session.meetData.meetDate | customDate: false: session.meetData.timezone }}</span>
                       <span class="block truncate text-sm text-secondary">{{ getGroupName(session.meetData.groupId) }}</span>
                     </span>
                     <span class="flex shrink-0 -space-x-2">
                       @for (player of (session.gamePlayed?.playedBy ?? []).slice(0, 5); track player.id) {
-                        <app-image-profile [title]="player.username" class="rounded-full border-2 border-white dark:border-zinc-900" [avatar]="player.avatar" />
+                        <app-image-profile [title]="player.username" class="rounded-full border-2 border-bv-border" [avatar]="player.avatar" />
                       }
                     </span>
                   </a>
@@ -157,33 +157,33 @@
               }
             </ul>
           } @else {
-            <p class="rounded-2xl border border-dashed border-zinc-300 p-5 text-secondary dark:border-zinc-700">You haven't played it in a recorded session yet.</p>
+            <p class="rounded-2xl border border-dashed border-bv-border p-5 text-secondary">You haven't played it in a recorded session yet.</p>
           }
         </section>
       </div>
 
       <!-- Your copy: purchase details, folded away until needed -->
       @if (game.ownedGameData) {
-        <details class="group rounded-2xl border border-zinc-200 dark:border-zinc-800">
+        <details class="group rounded-2xl border border-bv-border">
           <summary class="flex cursor-pointer list-none items-center justify-between gap-3 p-4 font-semibold">
             <span>Your copy <span class="font-normal text-secondary">· purchase date, price, notes</span></span>
             <app-icon name="chevron-down" [size]="18" className="transition group-open:rotate-180" aria-hidden="true" />
           </summary>
-          <form [formGroup]="ownershipFormGroup" class="grid gap-4 border-t border-zinc-200 p-4 sm:grid-cols-2 dark:border-zinc-800" (ngSubmit)="saveOwnedGameDetails()">
+          <form [formGroup]="ownershipFormGroup" class="grid gap-4 border-t border-bv-border p-4 sm:grid-cols-2" (ngSubmit)="saveOwnedGameDetails()">
             <label class="block text-sm font-medium">
               Bought on <span class="text-xs text-secondary">(optional)</span>
-              <input type="date" formControlName="purchaseDate" class="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900" />
+              <input type="date" formControlName="purchaseDate" class="mt-1 w-full rounded-lg border border-bv-border px-3 py-2 dark:bg-bv-surface" />
             </label>
             <label class="block text-sm font-medium">
               Price paid <span class="text-xs text-secondary">(optional)</span>
-              <input type="number" formControlName="purchasePrice" min="0" step="0.01" placeholder="0.00" class="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900" />
+              <input type="number" formControlName="purchasePrice" min="0" step="0.01" placeholder="0.00" class="mt-1 w-full rounded-lg border border-bv-border px-3 py-2 dark:bg-bv-surface" />
               @if (ownershipFormGroup.get('purchasePrice')?.errors?.['positiveNumber']) {
-                <span class="mt-1 block text-sm text-red-600">Enter a positive number.</span>
+                <span class="mt-1 block text-sm text-bv-danger">Enter a positive number.</span>
               }
             </label>
             <label class="block text-sm font-medium sm:col-span-2">
               Notes <span class="text-xs text-secondary">(optional)</span>
-              <textarea formControlName="purchaseNotes" rows="2" maxlength="128" placeholder="For example: gift from Ana, missing one meeple" class="mt-1 w-full resize-none rounded-lg border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"></textarea>
+              <textarea formControlName="purchaseNotes" rows="2" maxlength="128" placeholder="For example: gift from Ana, missing one meeple" class="mt-1 w-full resize-none rounded-lg border border-bv-border px-3 py-2 dark:bg-bv-surface"></textarea>
             </label>
             <div class="flex justify-end sm:col-span-2">
               <button appButton type="submit" [loading]="PREVENT_SPAM.isLoadingUpdateOwnership" [disabled]="ownershipFormGroup.invalid">Save</button>

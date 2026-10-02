@@ -12,17 +12,17 @@
         @if (username?.invalid && (username?.dirty || username?.touched)) {
           <div>
             @if (username?.hasError('required')) {
-              <div class="text-sm text-red-500 py-1">
+              <div class="text-sm text-bv-danger py-1">
                 <app-icon name="circle-alert" [size]="16" /> username is required.
               </div>
             }
             @if (username?.hasError('minlength')) {
-              <div class="text-sm text-red-500 py-1">
+              <div class="text-sm text-bv-danger py-1">
                 <app-icon name="circle-alert" [size]="16" /> username is too short.
               </div>
             }
             @if (username?.hasError('maxlength')) {
-              <div class="text-sm text-red-500 py-1">
+              <div class="text-sm text-bv-danger py-1">
                 <app-icon name="circle-alert" [size]="16" /> username is too long.
               </div>
             }

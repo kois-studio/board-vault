@@ -6,7 +6,7 @@
 <container-wrapper>
     <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
         <app-card-section icon="calendar3" titleText="Upcoming Sessions" description="View and manage your scheduled game nights" cardLink="/play/upcoming-sessions">
-            <app-badge class="app-card-section-badge" color="indigo" [text]="isLoadingMeets() ? 'Loading…' : userMeetsError() ? 'Unavailable' : upcomingSessions().length + ' sessions'" />
+            <app-badge class="app-card-section-badge" [text]="isLoadingMeets() ? 'Loading…' : userMeetsError() ? 'Unavailable' : upcomingSessions().length + ' sessions'" />
             @if (isLoadingMeets()) {
                 <p class="text-secondary">Loading your scheduled sessions…</p>
             } @else if (userMeetsError()) {
@@ -16,11 +16,11 @@
             } @else {
                 <p class="text-secondary">No upcoming sessions yet.</p>
             }
-            <span class="flex shrink-0 items-center text-sm font-medium text-indigo-600 group-hover:underline dark:text-indigo-400">Open sessions &gt;</span>
+            <span class="flex shrink-0 items-center text-sm font-medium text-bv-primary group-hover:underline">Open sessions &gt;</span>
         </app-card-section>
 
-        <app-card-section icon="clock" color="green" titleText="Session History" description="Browse games played in completed sessions" cardLink="/play/history">
-            <app-badge class="app-card-section-badge" color="green" [text]="isLoadingHistory() ? 'Loading…' : userHistoryError() ? 'Unavailable' : userHistory$().length + ' sessions'" />
+        <app-card-section icon="clock" titleText="Session History" description="Browse games played in completed sessions" cardLink="/play/history">
+            <app-badge class="app-card-section-badge" [text]="isLoadingHistory() ? 'Loading…' : userHistoryError() ? 'Unavailable' : userHistory$().length + ' sessions'" />
             @if (isLoadingHistory()) {
                 <p class="text-secondary">Loading your recorded history…</p>
             } @else if (userHistoryError()) {
@@ -28,17 +28,17 @@
             } @else {
                 <p class="text-secondary">Your recorded play history.</p>
             }
-            <span class="flex shrink-0 items-center text-sm font-medium text-green-600 group-hover:underline dark:text-green-400">View history &gt;</span>
+            <span class="flex shrink-0 items-center text-sm font-medium text-bv-primary group-hover:underline">View history &gt;</span>
         </app-card-section>
 
-        <app-card-section icon="lightbulb" color="fuchsia" titleText="Game Recommendations" description="Find games that fit the selected attendees and available time." cardLink="/play/recommendations">
+        <app-card-section icon="lightbulb" titleText="Game Recommendations" description="Find games that fit the selected attendees and available time." cardLink="/play/recommendations">
             <p class="text-secondary">Start with your group’s shared collection and clear explanations for every result.</p>
-            <span class="flex shrink-0 items-center text-sm font-medium text-fuchsia-600 group-hover:underline dark:text-fuchsia-400">Find a game &gt;</span>
+            <span class="flex shrink-0 items-center text-sm font-medium text-bv-primary group-hover:underline">Find a game &gt;</span>
         </app-card-section>
 
-        <app-card-section icon="dice-5-fill" color="cyan" titleText="Log a Session" description="Record who attended and which games were played." cardLink="/play/log-session">
+        <app-card-section icon="dice-5-fill" titleText="Log a Session" description="Record who attended and which games were played." cardLink="/play/log-session">
             <div></div>
-            <span class="flex shrink-0 items-center text-sm font-medium text-cyan-600 group-hover:underline dark:text-cyan-400">Start logging &gt;</span>
+            <span class="flex shrink-0 items-center text-sm font-medium text-bv-primary group-hover:underline">Start logging &gt;</span>
         </app-card-section>
     </div>
 </container-wrapper>

@@ -1,17 +1,17 @@
 <!-- Dialog overlay -->
 @if (isVisible()) {
-<div class="fixed inset-0 bg-zinc-900/60 flex justify-center items-center z-50" (click)="hideDialog()">
+<div class="fixed inset-0 bg-black/50 flex justify-center items-center z-50" (click)="hideDialog()">
     <!-- Dialog box -->
-    <div appDialog (dialogClosed)="hideDialog()" class="bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700 w-full max-w-md mx-4 relative" (click)="$event.stopPropagation()">
+    <div appDialog (dialogClosed)="hideDialog()" class="bg-bv-surface rounded-lg border border-bv-border w-full max-w-md mx-4 relative" (click)="$event.stopPropagation()">
         <!-- Header -->
-        <div class="flex items-center justify-between p-6 border-b border-zinc-200 dark:border-zinc-700">
-            <h3 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+        <div class="flex items-center justify-between p-6 border-b border-bv-border">
+            <h3 class="text-lg font-semibold text-bv-text">
                 Edit Tag
             </h3>
             <button 
                 (click)="hideDialog()" 
                 aria-label="Close edit tag dialog"
-                class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors cursor-pointer"
+                class="text-bv-text-muted transition-colors cursor-pointer"
             >
                 <app-icon name="x" [size]="18" />
             </button>
@@ -23,14 +23,14 @@
                 <div class="space-y-4">
                     <!-- Tag Name Input -->
                     <div>
-                        <label for="tagName" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
+                        <label for="tagName" class="block text-sm font-medium text-bv-text-muted mb-2">
                             Tag Name
                         </label>
                         <input
                             id="tagName"
                             type="text"
                             formControlName="name"
-                            class="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-zinc-700 dark:text-zinc-100"
+                            class="w-full px-3 py-2 border border-bv-border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-bv-primary focus:border-bv-primary dark:bg-bv-border dark:text-bv-text"
                             [class]="nameClass"
                             placeholder="Enter tag name"
                             required
@@ -38,7 +38,7 @@
                         
                         <!-- Validation errors -->
                         @if (nameControl?.invalid && (nameControl?.dirty || nameControl?.touched)) {
-                            <div class="mt-1 text-sm text-red-600 dark:text-red-400">
+                            <div class="mt-1 text-sm text-bv-danger">
                                 @if (nameControl?.hasError('required')) {
                                     <div><app-icon name="circle-alert" [size]="16" /> Tag name is required.</div>
                                 }
@@ -54,13 +54,13 @@
 
                     <!-- Category Selection -->
                     <div>
-                        <label for="categorySelect" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
+                        <label for="categorySelect" class="block text-sm font-medium text-bv-text-muted mb-2">
                             Category
                         </label>
                         <select
                             id="categorySelect"
                             formControlName="categoryId"
-                            class="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-zinc-700 dark:text-zinc-100"
+                            class="w-full px-3 py-2 border border-bv-border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-bv-primary focus:border-bv-primary dark:bg-bv-border dark:text-bv-text"
                             [class]="categoryIdClass"
                             required
                         >
@@ -72,7 +72,7 @@
                         
                         <!-- Validation errors -->
                         @if (categoryIdControl?.invalid && (categoryIdControl?.dirty || categoryIdControl?.touched)) {
-                            <div class="mt-1 text-sm text-red-600 dark:text-red-400">
+                            <div class="mt-1 text-sm text-bv-danger">
                                 @if (categoryIdControl?.hasError('required')) {
                                     <div><app-icon name="circle-alert" [size]="16" /> Please select a category.</div>
                                 }

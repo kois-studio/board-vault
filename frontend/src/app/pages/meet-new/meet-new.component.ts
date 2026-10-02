@@ -100,7 +100,7 @@ export class MeetNewComponent {
 
     get dateClass() {
         if (!this.dateForm.dirty && !this.dateForm.touched) return ''
-        return this.dateForm.valid ? 'border-green-500' : 'border-red-500'
+        return this.dateForm.valid ? 'border-bv-success' : 'border-bv-danger'
     }
 
     get availableGames(): Array<GameCompleteType> {

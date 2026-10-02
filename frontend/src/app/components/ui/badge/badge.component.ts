@@ -1,43 +1,34 @@
-import { CommonModule } from '@angular/common'
-import { Component, input } from '@angular/core'
-import { TailwindColor } from '../../../types/tailwind.type'
+import { Component, computed, input } from '@angular/core'
+import type { Tone } from '../../../types/tone.type'
 
+const BADGE: Record<Tone, string> = {
+    primary: 'bg-bv-primary-soft text-bv-on-primary-soft',
+    accent: 'bg-bv-accent text-bv-on-accent',
+    success: 'bg-bv-success/15 text-bv-success',
+    warning: 'bg-bv-warning/15 text-bv-warning',
+    danger: 'bg-bv-danger/15 text-bv-danger',
+    neutral: 'bg-bv-surface-2 text-bv-text-muted',
+}
+
+const INDICATOR: Record<Tone, string> = {
+    primary: 'bg-bv-primary',
+    accent: 'bg-bv-on-accent',
+    success: 'bg-bv-success',
+    warning: 'bg-bv-warning',
+    danger: 'bg-bv-danger',
+    neutral: 'bg-bv-text-muted',
+}
+
+/** A small informative label, such as a count on a card. */
 @Component({
-    imports: [CommonModule],
     selector: 'app-badge',
     templateUrl: './badge.component.html',
 })
 export class BadgeComponent {
     readonly showIndicator = input(false)
-    readonly color = input<TailwindColor>('indigo')
+    readonly tone = input<Tone>('primary')
     readonly text = input.required<string | number>()
 
-    public get indicatorClass(): string {
-        const classes: Record<TailwindColor, string> = {
-            red: 'bg-red-600',
-            orange: 'bg-orange-600',
-            amber: 'bg-amber-600',
-            yellow: 'bg-yellow-600',
-            lime: 'bg-lime-600',
-            green: 'bg-green-600',
-            emerald: 'bg-emerald-600',
-            teal: 'bg-teal-600',
-            cyan: 'bg-cyan-600',
-            sky: 'bg-sky-600',
-            blue: 'bg-blue-600',
-            indigo: 'bg-indigo-600',
-            violet: 'bg-violet-600',
-            purple: 'bg-purple-600',
-            fuchsia: 'bg-fuchsia-600',
-            pink: 'bg-pink-600',
-            rose: 'bg-rose-600',
-            slate: 'bg-slate-600',
-            gray: 'bg-gray-600',
-            zinc: 'bg-zinc-600',
-            neutral: 'bg-neutral-600',
-            stone: 'bg-stone-600',
-        }
-
-        return classes[this.color()] ?? classes.indigo
-    }
+    protected readonly badgeClass = computed(() => BADGE[this.tone()])
+    protected readonly indicatorClass = computed(() => INDICATOR[this.tone()])
 }

@@ -1,17 +1,17 @@
 <!-- Dialog overlay -->
 @if (isVisible()) {
-<div class="fixed inset-0 bg-zinc-900/60 flex justify-center items-center z-50" (click)="hideDialog()">
+<div class="fixed inset-0 bg-black/50 flex justify-center items-center z-50" (click)="hideDialog()">
     <!-- Dialog box -->
-    <div appDialog (dialogClosed)="hideDialog()" class="bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700 w-full max-w-md mx-4 relative" (click)="$event.stopPropagation()">
+    <div appDialog (dialogClosed)="hideDialog()" class="bg-bv-surface rounded-lg border border-bv-border w-full max-w-md mx-4 relative" (click)="$event.stopPropagation()">
         <!-- Header -->
-        <div class="flex items-center justify-between p-6 border-b border-zinc-200 dark:border-zinc-700">
-            <h3 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+        <div class="flex items-center justify-between p-6 border-b border-bv-border">
+            <h3 class="text-lg font-semibold text-bv-text">
                 Delete Tag
             </h3>
             <button 
                 (click)="hideDialog()" 
                 aria-label="Close delete tag dialog"
-                class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors cursor-pointer"
+                class="text-bv-text-muted transition-colors cursor-pointer"
             >
                 <app-icon name="x" [size]="18" />
             </button>
@@ -22,42 +22,42 @@
             <div class="space-y-4">
                 <!-- Warning Icon -->
                 <div class="flex justify-center">
-                    <div class="w-12 h-12 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center">
-                        <app-icon name="triangle-alert" [size]="22" className="text-red-600 dark:text-red-400" />
+                    <div class="w-12 h-12 bg-bv-danger/10 rounded-full flex items-center justify-center">
+                        <app-icon name="triangle-alert" [size]="22" className="text-bv-danger" />
                     </div>
                 </div>
 
                 <!-- Warning Message -->
                 <div class="text-center">
-                    <h4 class="text-lg font-medium text-zinc-900 dark:text-zinc-100 mb-2">
+                    <h4 class="text-lg font-medium text-bv-text mb-2">
                         Are you sure you want to delete this tag?
                     </h4>
-                    <p class="text-sm text-zinc-600 dark:text-zinc-400">
+                    <p class="text-sm text-bv-text-muted">
                         This will permanently delete the tag "<strong>{{ tag()?.name }}</strong>".
                     </p>
                 </div>
 
                 <!-- Tag Details -->
-                <div class="bg-zinc-50 dark:bg-zinc-700/50 rounded-lg p-4">
-                    <div class="text-sm text-zinc-600 dark:text-zinc-400">
+                <div class="bg-bv-bg rounded-lg p-4">
+                    <div class="text-sm text-bv-text-muted">
                         <div class="flex justify-between">
                             <span>Tag Name:</span>
-                            <span class="font-medium text-zinc-900 dark:text-zinc-100">{{ tag()?.name }}</span>
+                            <span class="font-medium text-bv-text">{{ tag()?.name }}</span>
                         </div>
                         <div class="flex justify-between mt-1">
                             <span>Category:</span>
-                            <span class="font-medium text-zinc-900 dark:text-zinc-100">{{ categoryName() }}</span>
+                            <span class="font-medium text-bv-text">{{ categoryName() }}</span>
                         </div>
                         <div class="flex justify-between mt-1">
                             <span>Games with Tag:</span>
-                            <span class="font-medium text-zinc-900 dark:text-zinc-100">{{ tag()?.gameCount }}</span>
+                            <span class="font-medium text-bv-text">{{ tag()?.gameCount }}</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Warning Note -->
-                <div class="bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 rounded-lg p-3">
-                    <p class="text-sm text-red-700 dark:text-red-300">
+                <div class="bg-bv-danger/10 border border-bv-danger/30 rounded-lg p-3">
+                    <p class="text-sm text-bv-danger">
                         <app-icon name="circle-alert" [size]="16" className="mr-1" />
                         This action cannot be undone. The tag will be removed from all games.
                     </p>

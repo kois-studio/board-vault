@@ -10,18 +10,18 @@
 
 <container-wrapper>
     @if (isLoadingGroups()) {
-        <div class="rounded-2xl border border-zinc-200 bg-white p-8 text-center shadow-sm dark:border-zinc-800 dark:bg-zinc-900" role="status" aria-live="polite">
+        <div class="rounded-2xl border border-bv-border bg-bv-surface p-8 text-center shadow-sm" role="status" aria-live="polite">
             <p class="text-lg font-semibold">Loading your group…</p>
             <p class="mt-2 text-secondary">We are checking the group and its shared context.</p>
         </div>
     } @else if (userGroupsError()) {
-        <div class="rounded-2xl border border-amber-200 bg-amber-50 p-8 text-center dark:border-amber-900/50 dark:bg-amber-950/30" role="alert">
+        <div class="rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-8 text-center" role="alert">
             <p class="text-lg font-semibold">This group could not be loaded.</p>
             <p class="mt-2 text-secondary">Your group data is safe. Try again when the connection is ready.</p>
             <button appButton type="button" class="mt-5" (click)="retryGroups()">Retry group</button>
         </div>
     } @else if (!groupData$()) {
-        <div class="rounded-2xl border border-amber-200 bg-amber-50 p-8 text-center dark:border-amber-900/50 dark:bg-amber-950/30" role="alert">
+        <div class="rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-8 text-center" role="alert">
             <p class="text-lg font-semibold">This group is not available.</p>
             <p class="mt-2 text-secondary">It may have been deleted, or your membership may have changed.</p>
             <a appButton class="mt-5" routerLink="/dashboard">Back to groups</a>
@@ -29,7 +29,7 @@
     } @else {
         @if (groupData$(); as group) {
         <div class="flex flex-col space-y-8 py-6">
-            <nav class="flex flex-col gap-3 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 sm:flex-row sm:items-center sm:justify-between" aria-label="Current group context">
+            <nav class="flex flex-col gap-3 rounded-2xl border border-bv-border bg-bv-surface p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between" aria-label="Current group context">
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-[0.18em] text-secondary">Current group</p>
                     <p class="mt-1 text-sm text-secondary">All decisions, games, and sessions stay scoped to this private group.</p>
@@ -38,7 +38,7 @@
                     <label class="sr-only" for="current-group-switcher">Switch current group</label>
                     <select
                         id="current-group-switcher"
-                        class="min-h-11 min-w-48 rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm font-semibold text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white"
+                        class="min-h-11 min-w-48 rounded-xl border border-bv-border bg-bv-surface px-3 py-2 text-sm font-semibold text-bv-text"
                         [value]="group.id"
                         (change)="onGroupSwitcherChange($event)"
                     >
@@ -51,48 +51,48 @@
             </nav>
 
             @if (needsFirstGroupSetup()) {
-                <section class="rounded-3xl border border-indigo-100 bg-indigo-50 p-6 dark:border-indigo-900/60 dark:bg-indigo-950/30 sm:p-8" aria-labelledby="first-group-setup-heading">
-                    <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">First steps for this group</p>
+                <section class="rounded-3xl border border-bv-primary/30 bg-bv-primary-soft p-6 sm:p-8" aria-labelledby="first-group-setup-heading">
+                    <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary">First steps for this group</p>
                     <div class="mt-3 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                         <div>
-                            <h2 id="first-group-setup-heading" class="text-2xl font-bold text-zinc-900 dark:text-white sm:text-3xl">Make {{ group.name }} ready for a game night</h2>
+                            <h2 id="first-group-setup-heading" class="text-2xl font-bold text-bv-text sm:text-3xl">Make {{ group.name }} ready for a game night</h2>
                             <p class="mt-2 max-w-2xl leading-7 text-secondary">This space is ready. Add the people and games that make its decisions useful, then plan the first night together.</p>
                         </div>
                         <a appButton variant="secondary" class="shrink-0 text-center" appInPageLink="sessions">Skip to session planning</a>
                     </div>
 
                     <ol class="mt-6 grid gap-3 lg:grid-cols-3">
-                        <li class="rounded-2xl border border-white/80 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+                        <li class="rounded-2xl border border-bv-border/80 bg-bv-surface p-4">
                             <div class="flex items-start gap-3">
-                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-sm font-bold text-white">1</span>
+                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-bv-primary text-sm font-bold text-bv-on-primary">1</span>
                                 <div>
-                                    <h3 class="font-semibold text-zinc-900 dark:text-white">Bring in your people</h3>
+                                    <h3 class="font-semibold text-bv-text">Bring in your people</h3>
                                     @if (isGroupOwnerComputed()) {
                                         <p class="mt-1 text-sm leading-6 text-secondary">Invite the friends who make this a real game night.</p>
-                                        <a class="mt-3 inline-block text-sm font-semibold text-indigo-600 hover:underline dark:text-indigo-400" [routerLink]="['/groups', group.id, 'edit']">Invite friends</a>
+                                        <a class="mt-3 inline-block text-sm font-semibold text-bv-primary hover:underline" [routerLink]="['/groups', group.id, 'edit']">Invite friends</a>
                                     } @else {
                                         <p class="mt-1 text-sm leading-6 text-secondary">Ask the group owner to invite the rest of your table.</p>
                                     }
                                 </div>
                             </div>
                         </li>
-                        <li class="rounded-2xl border border-white/80 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+                        <li class="rounded-2xl border border-bv-border/80 bg-bv-surface p-4">
                             <div class="flex items-start gap-3">
-                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-sm font-bold text-white">2</span>
+                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-bv-primary text-sm font-bold text-bv-on-primary">2</span>
                                 <div>
-                                    <h3 class="font-semibold text-zinc-900 dark:text-white">Add useful games</h3>
+                                    <h3 class="font-semibold text-bv-text">Add useful games</h3>
                                     <p class="mt-1 text-sm leading-6 text-secondary">Add the games you actually own so the shared shelf reflects reality.</p>
-                                    <a class="mt-3 inline-block text-sm font-semibold text-indigo-600 hover:underline dark:text-indigo-400" routerLink="/collection/browse">Add games</a>
+                                    <a class="mt-3 inline-block text-sm font-semibold text-bv-primary hover:underline" routerLink="/collection/browse">Add games</a>
                                 </div>
                             </div>
                         </li>
-                        <li class="rounded-2xl border border-white/80 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+                        <li class="rounded-2xl border border-bv-border/80 bg-bv-surface p-4">
                             <div class="flex items-start gap-3">
-                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-sm font-bold text-white">3</span>
+                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-bv-primary text-sm font-bold text-bv-on-primary">3</span>
                                 <div>
-                                    <h3 class="font-semibold text-zinc-900 dark:text-white">Plan the first night</h3>
+                                    <h3 class="font-semibold text-bv-text">Plan the first night</h3>
                                     <p class="mt-1 text-sm leading-6 text-secondary">Choose a date and let the group turn this space into a memory.</p>
-                                    <a class="mt-3 inline-block text-sm font-semibold text-indigo-600 hover:underline dark:text-indigo-400" [routerLink]="['/groups', group.id, 'sessions', 'new']">Plan a session</a>
+                                    <a class="mt-3 inline-block text-sm font-semibold text-bv-primary hover:underline" [routerLink]="['/groups', group.id, 'sessions', 'new']">Plan a session</a>
                                 </div>
                             </div>
                         </li>
@@ -100,21 +100,21 @@
                 </section>
             }
 
-            <nav class="overflow-x-auto rounded-2xl border border-zinc-200 bg-white p-2 shadow-sm dark:border-zinc-800 dark:bg-zinc-900" aria-label="Group workspace areas">
+            <nav class="overflow-x-auto rounded-2xl border border-bv-border bg-bv-surface p-2 shadow-sm" aria-label="Group workspace areas">
                 <div class="flex min-w-max gap-2">
-                    <a appInPageLink="decide" class="rounded-xl px-3 py-2 text-sm font-medium text-indigo-700 transition hover:bg-indigo-50 dark:text-indigo-300 dark:hover:bg-indigo-950/40">Decide</a>
-                    <a appInPageLink="acquire" class="rounded-xl px-3 py-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800">Games to acquire</a>
-                    <a appInPageLink="people" class="rounded-xl px-3 py-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800">People</a>
-                    <a appInPageLink="sessions" class="rounded-xl px-3 py-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800">Sessions</a>
-                    <a appInPageLink="library" class="rounded-xl px-3 py-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800">Group library</a>
-                    <a appInPageLink="history" class="rounded-xl px-3 py-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800">History & insights</a>
+                    <a appInPageLink="decide" class="rounded-xl px-3 py-2 text-sm font-medium text-bv-primary transition hover:bg-bv-primary-soft">Decide</a>
+                    <a appInPageLink="acquire" class="rounded-xl px-3 py-2 text-sm font-medium text-bv-text-muted transition hover:bg-bv-surface-2">Games to acquire</a>
+                    <a appInPageLink="people" class="rounded-xl px-3 py-2 text-sm font-medium text-bv-text-muted transition hover:bg-bv-surface-2">People</a>
+                    <a appInPageLink="sessions" class="rounded-xl px-3 py-2 text-sm font-medium text-bv-text-muted transition hover:bg-bv-surface-2">Sessions</a>
+                    <a appInPageLink="library" class="rounded-xl px-3 py-2 text-sm font-medium text-bv-text-muted transition hover:bg-bv-surface-2">Group library</a>
+                    <a appInPageLink="history" class="rounded-xl px-3 py-2 text-sm font-medium text-bv-text-muted transition hover:bg-bv-surface-2">History & insights</a>
                 </div>
             </nav>
 
-            <section id="people" class="order-4 scroll-mt-24 rounded-2xl border border-indigo-100 bg-indigo-50/60 p-6 dark:border-indigo-900/60 dark:bg-indigo-950/20" aria-labelledby="people-heading">
+            <section id="people" class="order-4 scroll-mt-24 rounded-2xl border border-bv-primary/30 bg-bv-primary-soft/60 p-6" aria-labelledby="people-heading">
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Group people</p>
+                        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary">Group people</p>
                         <h2 id="people-heading" class="mt-1 text-2xl font-bold">Set up the people around your table</h2>
                         <p class="mt-1 max-w-2xl text-secondary">Add friends as group profiles first. They do not need an account yet, and their history can be linked later.</p>
                     </div>
@@ -123,7 +123,7 @@
                             <label class="sr-only" for="new-group-person-name">Person name</label>
                             <input
                                 id="new-group-person-name"
-                                class="min-w-0 flex-1 rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900 sm:w-48"
+                                class="min-w-0 flex-1 rounded-xl border border-bv-border bg-bv-surface px-3 py-2 text-sm sm:w-48"
                                 [value]="newGroupPersonName()"
                                 (input)="newGroupPersonName.set($any($event.target).value)"
                                 (keyup.enter)="addGroupPerson()"
@@ -137,13 +137,13 @@
                 </div>
 
                 @if (claimableGroupPersonComputed(); as claimablePerson) {
-                    <div class="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-900/60 dark:bg-emerald-950/30" role="status">
-                        <p class="font-semibold text-emerald-900 dark:text-emerald-100">A group person is waiting for you</p>
+                    <div class="mt-5 rounded-2xl border border-bv-success/30 bg-bv-success/10 p-4" role="status">
+                        <p class="font-semibold text-bv-success">A group person is waiting for you</p>
                         <p class="mt-1 text-sm text-secondary">Review the games and preferences recorded for {{ claimablePerson.person.displayName }}, then link that history to your account.</p>
                         <a appButton class="mt-3" [routerLink]="['/groups', group.id, 'people', claimablePerson.person.id, 'claim']">Review and claim</a>
                     </div>
                 } @else if (!currentUserHasGroupPersonComputed() && !isGroupOwnerComputed()) {
-                    <div class="mt-5 rounded-2xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+                    <div class="mt-5 rounded-2xl border border-bv-border bg-bv-surface p-4">
                         <p class="font-semibold">Represent yourself in this group</p>
                         <p class="mt-1 text-sm text-secondary">Your account is already a member, but is not yet represented in this group’s participant history. This only adds a group-scoped person record; it does not grant access or invite anyone.</p>
                         <button appButton variant="secondary" type="button" class="mt-3" [disabled]="groupPersonMutationId() !== null" (click)="joinAsNewGroupPerson()">Add me to group history</button>
@@ -151,26 +151,26 @@
                 }
 
                 @if (groupPeopleLoading()) {
-                    <div class="mt-5 rounded-2xl border border-dashed border-indigo-200 p-6 text-center text-secondary dark:border-indigo-900" role="status">Loading group people…</div>
+                    <div class="mt-5 rounded-2xl border border-dashed border-bv-primary/30 p-6 text-center text-secondary" role="status">Loading group people…</div>
                 } @else if (groupPeopleError()) {
-                    <div class="mt-5 rounded-2xl border border-amber-200 bg-amber-50 p-6 text-center dark:border-amber-900/50 dark:bg-amber-950/30" role="alert">
+                    <div class="mt-5 rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-6 text-center" role="alert">
                         <p class="font-medium">Group people could not be loaded.</p>
                         <button appButton variant="secondary" type="button" class="mt-4" (click)="retryGroupPeople()">Retry</button>
                     </div>
                 } @else if (groupPeople$().length === 0) {
-                    <div class="mt-5 rounded-2xl border border-dashed border-indigo-200 p-6 text-center dark:border-indigo-900">
+                    <div class="mt-5 rounded-2xl border border-dashed border-bv-primary/30 p-6 text-center">
                         <p class="font-medium">No group profiles yet.</p>
                         <p class="mt-1 text-sm text-secondary">Add the people who usually play with you so recommendations and history can include them.</p>
                     </div>
                 } @else {
                     <div class="mt-5 grid gap-4 md:grid-cols-2">
                         @for (person of groupPeople$(); track person.person.id) {
-                            <article class="rounded-2xl border border-white bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+                            <article class="rounded-2xl border border-bv-border bg-bv-surface p-4 shadow-sm">
                                 <div class="flex items-start justify-between gap-3">
                                     <div class="min-w-0">
                                         <div class="flex flex-wrap items-center gap-2">
                                             <h3 class="max-w-full truncate font-semibold">{{ person.person.displayName }}</h3>
-                                            <span class="rounded-full bg-zinc-100 px-2 py-1 text-xs text-secondary dark:bg-zinc-800">{{ person.person.kind === 'linked' ? 'Member' : 'No account yet' }}</span>
+                                            <span class="rounded-full bg-bv-surface-2 px-2 py-1 text-xs text-secondary">{{ person.person.kind === 'linked' ? 'Member' : 'No account yet' }}</span>
                                         </div>
                                         <p class="mt-1 text-xs text-secondary">{{ getGroupPersonOwnedGameCount(person) }} games · {{ person.preferences.length }} preferences</p>
                                     </div>
@@ -182,7 +182,7 @@
                                 @if (ownedGames.length) {
                                     <ul class="mt-3 flex flex-wrap gap-1.5" aria-label="Games {{ person.person.displayName }} owns">
                                         @for (game of ownedGames.slice(0, 8); track game.id) {
-                                            <li class="max-w-full truncate rounded-full bg-zinc-100 px-2.5 py-1 text-xs dark:bg-zinc-800">{{ game.titleTranslations.en || game.title }}</li>
+                                            <li class="max-w-full truncate rounded-full bg-bv-surface-2 px-2.5 py-1 text-xs">{{ game.titleTranslations.en || game.title }}</li>
                                         }
                                         @if (ownedGames.length > 8) {
                                             <li class="rounded-full px-2.5 py-1 text-xs text-secondary">+{{ ownedGames.length - 8 }} more</li>
@@ -192,16 +192,16 @@
                                     <p class="mt-3 text-sm text-secondary">No games recorded yet.</p>
                                 }
                                 @if (groupPersonAvailableGamesComputed().length > 0 && isGroupOwnerComputed()) {
-                                    <button type="button" class="mt-3 text-sm font-semibold text-indigo-600 hover:underline dark:text-indigo-400" [attr.aria-expanded]="editingGroupPersonId() === person.person.id" (click)="toggleGroupPersonEditor(person.person.id)">
+                                    <button type="button" class="mt-3 text-sm font-semibold text-bv-primary hover:underline" [attr.aria-expanded]="editingGroupPersonId() === person.person.id" (click)="toggleGroupPersonEditor(person.person.id)">
                                         {{ editingGroupPersonId() === person.person.id ? 'Done' : 'Edit games and preferences' }}
                                     </button>
                                     @if (editingGroupPersonId() === person.person.id) {
-                                        <div class="mt-3 rounded-xl border border-zinc-200 dark:border-zinc-800">
-                                            <label class="block border-b border-zinc-200 p-2 dark:border-zinc-800">
+                                        <div class="mt-3 rounded-xl border border-bv-border">
+                                            <label class="block border-b border-bv-border p-2">
                                                 <span class="sr-only">Filter games for {{ person.person.displayName }}</span>
-                                                <input type="search" class="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900" placeholder="Filter games" [value]="groupPersonGameFilter()" (input)="groupPersonGameFilter.set($any($event.target).value)" />
+                                                <input type="search" class="w-full rounded-lg border border-bv-border px-3 py-2 text-sm dark:bg-bv-surface" placeholder="Filter games" [value]="groupPersonGameFilter()" (input)="groupPersonGameFilter.set($any($event.target).value)" />
                                             </label>
-                                            <ul class="max-h-96 divide-y divide-zinc-100 overflow-y-auto dark:divide-zinc-800">
+                                            <ul class="max-h-96 divide-y divide-bv-border overflow-y-auto">
                                                 @for (game of getGroupPersonEditorGames(person); track game.id) {
                                                     <li class="grid grid-cols-[1fr_auto_auto] items-center gap-2 px-3 py-2">
                                                         <span class="min-w-0">
@@ -211,7 +211,7 @@
                                                             }
                                                         </span>
                                                         <select
-                                                            class="rounded-lg border border-zinc-300 bg-white px-2 py-1.5 text-xs dark:border-zinc-700 dark:bg-zinc-900"
+                                                            class="rounded-lg border border-bv-border bg-bv-surface px-2 py-1.5 text-xs"
                                                             [attr.aria-label]="(game.titleTranslations.en || 'Game') + ' ownership for ' + person.person.displayName"
                                                             [value]="getGroupPersonOwnershipStatus(person, game.id) ?? ''"
                                                             [disabled]="groupPersonMutationId() !== null"
@@ -223,7 +223,7 @@
                                                             <option value="rejected">Doesn't own</option>
                                                         </select>
                                                         <select
-                                                            class="rounded-lg border border-zinc-300 bg-white px-2 py-1.5 text-xs dark:border-zinc-700 dark:bg-zinc-900"
+                                                            class="rounded-lg border border-bv-border bg-bv-surface px-2 py-1.5 text-xs"
                                                             [attr.aria-label]="(game.titleTranslations.en || 'Game') + ' preference for ' + person.person.displayName"
                                                             [value]="getGroupPersonPreference(person, game.id) ?? ''"
                                                             [disabled]="groupPersonMutationId() !== null"
@@ -250,35 +250,35 @@
             </section>
 
             <section class="order-1 grid gap-4 lg:grid-cols-3" aria-label="Group overview">
-                <article class="rounded-2xl bg-indigo-700 p-6 text-white shadow-lg lg:col-span-2">
-                    <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-200">Next game night</p>
+                <article class="rounded-2xl bg-bv-primary p-6 text-bv-on-primary shadow-lg lg:col-span-2">
+                    <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-on-primary/80">Next game night</p>
                     @if (nextMeetingComputed(); as nextMeeting) {
                         <div class="mt-3 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                             <div>
                                 <h2 class="text-3xl font-bold">{{ nextMeeting.meetDate | customDate: true: nextMeeting.timezone }}</h2>
-                                <p class="mt-2 text-indigo-100">{{ nextMeeting.status === 'active' ? 'This session is happening now.' : 'Your next planned session.' }}</p>
+                                <p class="mt-2 text-bv-on-primary/90">{{ nextMeeting.status === 'active' ? 'This session is happening now.' : 'Your next planned session.' }}</p>
                             </div>
                             <a appButton variant="secondary" class="text-center" [routerLink]="['/sessions', nextMeeting.id]">Open session</a>
                         </div>
                     } @else {
                         <h2 class="mt-3 text-3xl font-bold">Nothing planned yet</h2>
-                        <p class="mt-2 max-w-xl text-indigo-100">Give the group a date and let everyone know what you might play.</p>
+                        <p class="mt-2 max-w-xl text-bv-on-primary/90">Give the group a date and let everyone know what you might play.</p>
                         <a appButton variant="secondary" class="mt-5" [routerLink]="['/groups', group.id, 'sessions', 'new']">Plan a session</a>
                     }
                 </article>
 
-                <article class="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-                    <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Group pulse</p>
+                <article class="rounded-2xl border border-bv-border bg-bv-surface p-6 shadow-sm">
+                    <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary">Group pulse</p>
                     <dl class="mt-5 grid grid-cols-3 gap-3 text-center">
-                        <div class="rounded-xl bg-zinc-50 p-3 dark:bg-zinc-800">
+                        <div class="rounded-xl bg-bv-bg p-3">
                             <dt class="text-xs text-secondary">People</dt>
                             <dd class="mt-1 text-2xl font-bold">{{ group.members.length }}</dd>
                         </div>
-                        <div class="rounded-xl bg-zinc-50 p-3 dark:bg-zinc-800">
+                        <div class="rounded-xl bg-bv-bg p-3">
                             <dt class="text-xs text-secondary">Games</dt>
                             <dd class="mt-1 text-2xl font-bold">{{ totalUniqueGamesComputed().length }}</dd>
                         </div>
-                        <div class="rounded-xl bg-zinc-50 p-3 dark:bg-zinc-800">
+                        <div class="rounded-xl bg-bv-bg p-3">
                             <dt class="text-xs text-secondary">Sessions</dt>
                             @if (isLoading()) {
                                 <dd class="mt-1 text-2xl font-bold" aria-label="Sessions loading">—</dd>
@@ -291,10 +291,10 @@
                 </article>
             </section>
 
-            <section id="decide" class="order-2 scroll-mt-24 rounded-2xl border border-indigo-100 bg-indigo-50 p-6 dark:border-indigo-900/60 dark:bg-indigo-950/30" aria-labelledby="decide-heading">
+            <section id="decide" class="order-2 scroll-mt-24 rounded-2xl border border-bv-primary/30 bg-bv-primary-soft p-6" aria-labelledby="decide-heading">
                 <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Make the next decision easy</p>
+                        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary">Make the next decision easy</p>
                         <h2 id="decide-heading" class="mt-2 text-2xl font-bold">What should this group play?</h2>
                         <p class="mt-2 max-w-2xl text-secondary">Use the people attending and the games they own to get a short, explainable list of suggestions.</p>
                     </div>
@@ -313,7 +313,7 @@
             <section id="acquire" class="order-5 scroll-mt-24" aria-labelledby="acquisition-heading">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Group decisions</p>
+                        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary">Group decisions</p>
                         <h2 id="acquisition-heading" class="mt-1 text-2xl font-bold">Games the group wants next</h2>
                         <p class="mt-1 text-secondary">A shared shortlist for games nobody in the group owns yet. Interest is explicit, so purchase suggestions stay social.</p>
                     </div>
@@ -321,15 +321,15 @@
                 </div>
 
                 @if (acquisitionBoardLoading()) {
-                    <div class="mt-5 rounded-2xl border border-dashed border-zinc-300 p-6 text-center text-secondary dark:border-zinc-700" role="status">Loading the group shortlist…</div>
+                    <div class="mt-5 rounded-2xl border border-dashed border-bv-border p-6 text-center text-secondary" role="status">Loading the group shortlist…</div>
                 } @else if (acquisitionBoardError()) {
-                    <div class="mt-5 rounded-2xl border border-amber-200 bg-amber-50 p-6 text-center dark:border-amber-900/50 dark:bg-amber-950/30" role="alert">
+                    <div class="mt-5 rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-6 text-center" role="alert">
                         <p class="font-medium">The group shortlist could not be loaded.</p>
                         <button appButton class="mt-4" icon="arrow-repeat" (click)="retryAcquisitionBoard()">Retry</button>
                     </div>
                 } @else if (acquisitionBoard$().length === 0) {
-                    <div class="mt-5 rounded-2xl border border-dashed border-zinc-300 p-8 text-center dark:border-zinc-700">
-                        <app-icon name="shopping-bag" [size]="40" className="text-indigo-500" />
+                    <div class="mt-5 rounded-2xl border border-dashed border-bv-border p-8 text-center">
+                        <app-icon name="shopping-bag" [size]="40" className="text-bv-primary" />
                         <h3 class="mt-3 text-lg font-semibold">No group acquisition ideas yet</h3>
                         <p class="mt-2 text-secondary">Browse the catalog and add games that would make a good next group purchase.</p>
                         <a appButton class="mt-5" [routerLink]="['/collection/browse']" [queryParams]="{ groupId: group.id }">Find a game to add</a>
@@ -337,7 +337,7 @@
                 } @else {
                     <div class="mt-5 grid gap-4 md:grid-cols-2">
                         @for (entry of acquisitionBoard$(); track entry.gameData.id) {
-                            <article class="flex min-w-0 gap-4 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+                            <article class="flex min-w-0 gap-4 rounded-2xl border border-bv-border bg-bv-surface p-4 shadow-sm">
                                 <a
                                     [routerLink]="['/games', entry.gameData.id]"
                                     class="block h-20 w-20 shrink-0"
@@ -351,24 +351,24 @@
                                     </div>
                                     <p class="mt-2 text-sm text-secondary">{{ entry.gameData.gameAvgDuration }} min · {{ entry.gameData.minPlayers }}–{{ entry.gameData.maxPlayers }} players</p>
                                         <div class="mt-3 flex flex-wrap gap-2 text-xs text-secondary">
-                                            <span class="rounded-full bg-indigo-50 px-2 py-1 dark:bg-indigo-950/40">{{ entry.interestCount }} interested</span>
+                                            <span class="rounded-full bg-bv-primary-soft px-2 py-1">{{ entry.interestCount }} interested</span>
                                             <span
                                             class="rounded-full px-2 py-1"
-                                            [ngClass]="entry.decisionStatus === 'planned' ? 'bg-green-100 text-green-800 dark:bg-green-950/40 dark:text-green-300' : entry.decisionStatus === 'not_now' ? 'bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300' : 'bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300'"
+                                            [ngClass]="entry.decisionStatus === 'planned' ? 'bg-bv-success/10 text-bv-success' : entry.decisionStatus === 'not_now' ? 'bg-bv-surface-2 text-bv-text-muted' : 'bg-bv-warning/10 text-bv-warning'"
                                         >{{ getAcquisitionDecisionLabel(entry.decisionStatus) }}</span>
                                     </div>
                                     <p class="mt-3 text-xs text-secondary">Interested: {{ getInterestNames(entry) || 'No one yet' }}</p>
                                     <p class="mt-2 text-xs text-secondary">Your interest is personal; the group owner controls the shared acquisition decision.</p>
                                     <div class="mt-3 flex flex-wrap items-center gap-3">
                                         @if (isCurrentUserInterested(entry)) {
-                                            <span class="text-xs font-medium text-emerald-700 dark:text-emerald-300" role="status">You are interested</span>
+                                            <span class="text-xs font-medium text-bv-success" role="status">You are interested</span>
                                             <button type="button" class="shrink-0 text-xs text-secondary underline" [disabled]="acquisitionMutationGameId() === entry.gameData.id" (click)="removeAcquisitionInterest(entry.gameData.id)">Remove my interest</button>
                                         } @else {
                                             <button appButton variant="secondary" type="button" class="text-xs" [disabled]="acquisitionMutationGameId() === entry.gameData.id" (click)="addAcquisitionInterest(entry.gameData.id)">{{ acquisitionMutationGameId() === entry.gameData.id ? 'Saving…' : 'Add my interest' }}</button>
                                         }
                                     </div>
                                     @if (acquisitionMutationErrors()[entry.gameData.id]; as interestError) {
-                                        <p class="mt-2 text-xs text-red-700 dark:text-red-300" role="alert">{{ interestError }}</p>
+                                        <p class="mt-2 text-xs text-bv-danger" role="alert">{{ interestError }}</p>
                                     }
                                     @if (entry.decisionBy; as decisionBy) {
                                         <p class="mt-2 text-xs text-secondary">Last decision by {{ decisionBy.displayName || decisionBy.username }}</p>
@@ -377,13 +377,13 @@
                                         <div class="mt-3 flex flex-wrap gap-2">
                                             <button
                                                 type="button"
-                                                class="rounded-lg border border-green-300 px-3 py-2 text-xs font-medium text-green-800 disabled:opacity-60 dark:border-green-800 dark:text-green-300"
+                                                class="rounded-lg border border-bv-success/30 px-3 py-2 text-xs font-medium text-bv-success disabled:opacity-60"
                                                 [disabled]="acquisitionDecisionMutationGameId() === entry.gameData.id || entry.decisionStatus === 'planned'"
                                                 (click)="updateAcquisitionDecision(entry.gameData.id, 'planned')"
                                             >Plan to acquire</button>
                                             <button
                                                 type="button"
-                                                class="rounded-lg border border-zinc-300 px-3 py-2 text-xs font-medium text-zinc-700 disabled:opacity-60 dark:border-zinc-700 dark:text-zinc-300"
+                                                class="rounded-lg border border-bv-border px-3 py-2 text-xs font-medium text-bv-text-muted disabled:opacity-60"
                                                 [disabled]="acquisitionDecisionMutationGameId() === entry.gameData.id || entry.decisionStatus === 'not_now'"
                                                 (click)="updateAcquisitionDecision(entry.gameData.id, 'not_now')"
                                             >Not now</button>
@@ -401,7 +401,7 @@
                                         <p class="mt-3 text-xs text-secondary">The group owner sets whether this stays open, is planned, or is not wanted now.</p>
                                     }
                                     @if (acquisitionDecisionErrors()[entry.gameData.id]; as decisionError) {
-                                        <p class="mt-2 text-xs text-red-700 dark:text-red-300" role="alert">{{ decisionError }}</p>
+                                        <p class="mt-2 text-xs text-bv-danger" role="alert">{{ decisionError }}</p>
                                     }
                                 </div>
                             </article>
@@ -410,14 +410,14 @@
                 }
             </section>
 
-            <section id="sessions" class="order-3 scroll-mt-24 rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900" aria-labelledby="members-heading">
+            <section id="sessions" class="order-3 scroll-mt-24 rounded-2xl border border-bv-border bg-bv-surface p-6 shadow-sm" aria-labelledby="members-heading">
                 <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Session context</p>
+                        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary">Session context</p>
                         <h2 id="members-heading" class="mt-1 text-2xl font-bold">Who is playing?</h2>
                         <p class="mt-1 text-secondary">Select the people you are considering. This also filters the shared library below.</p>
                     </div>
-                    <span class="text-sm font-medium text-indigo-600 dark:text-indigo-400">{{ selectedMembersLabel() }}</span>
+                    <span class="text-sm font-medium text-bv-primary">{{ selectedMembersLabel() }}</span>
                 </div>
 
                 <div class="mt-5 grid gap-3 md:grid-cols-2">
@@ -428,13 +428,13 @@
                             class="flex items-center gap-3 rounded-xl border p-3 text-left transition-colors"
                             [attr.aria-pressed]="selectedMembers$().includes(member.id)"
                             [ngClass]="{
-                                'border-indigo-500 bg-indigo-50 dark:border-indigo-400 dark:bg-indigo-950/30': selectedMembers$().includes(member.id),
-                                'border-zinc-200 bg-zinc-50 opacity-60 dark:border-zinc-700 dark:bg-zinc-800': !selectedMembers$().includes(member.id),
+                                'border-bv-primary bg-bv-primary-soft': selectedMembers$().includes(member.id),
+                                'border-bv-border bg-bv-bg opacity-60': !selectedMembers$().includes(member.id),
                             }"
                         >
                             <span
                                 class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2"
-                                [ngClass]="selectedMembers$().includes(member.id) ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-zinc-400'"
+                                [ngClass]="selectedMembers$().includes(member.id) ? 'border-bv-primary bg-bv-primary text-bv-on-primary' : 'border-bv-border'"
                                 aria-hidden="true"
                             >
                                 @if (selectedMembers$().includes(member.id)) {
@@ -460,7 +460,7 @@
             <section id="library" class="order-6 scroll-mt-24" aria-labelledby="library-heading">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Shared library</p>
+                        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary">Shared library</p>
                         <h2 id="library-heading" class="mt-1 text-2xl font-bold">Games this group can play</h2>
                         <p class="mt-1 text-secondary">Ownership, ratings, and play memory for the selected group members—not a global catalog ranking.</p>
                     </div>
@@ -468,21 +468,21 @@
                         <button
                             type="button"
                             class="rounded-lg border px-3 py-2 text-sm transition-colors"
-                            [ngClass]="isRecalculatingReviews$() ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30' : 'border-zinc-200 dark:border-zinc-700'"
+                            [ngClass]="isRecalculatingReviews$() ? 'border-bv-primary bg-bv-primary-soft' : 'border-bv-border'"
                             [attr.aria-pressed]="isRecalculatingReviews$()"
                             (click)="toggleRecalculateReviews()"
                         ><app-icon name="star" [size]="16" className="mr-1" />Selected ratings</button>
                         <button
                             type="button"
                             class="rounded-lg border px-3 py-2 text-sm transition-colors"
-                            [ngClass]="isHidingMaxPlayers$() ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30' : 'border-zinc-200 dark:border-zinc-700'"
+                            [ngClass]="isHidingMaxPlayers$() ? 'border-bv-primary bg-bv-primary-soft' : 'border-bv-border'"
                             [attr.aria-pressed]="isHidingMaxPlayers$()"
                             (click)="toggleMaxPlayersFilter()"
                         ><app-icon name="users" [size]="16" className="mr-1" />Fit {{ selectedMembers$().length }} players</button>
                         <button
                             type="button"
                             class="rounded-lg border px-3 py-2 text-sm transition-colors"
-                            [ngClass]="isFilteringGames$() ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30' : 'border-zinc-200 dark:border-zinc-700'"
+                            [ngClass]="isFilteringGames$() ? 'border-bv-primary bg-bv-primary-soft' : 'border-bv-border'"
                             [attr.aria-pressed]="isFilteringGames$()"
                             (click)="toggleGamesFilter()"
                         ><app-icon name="filter" [size]="16" className="mr-1" />Only playable</button>
@@ -490,15 +490,15 @@
                 </div>
 
                 @if (totalUniqueGamesComputed().length === 0) {
-                    <div class="mt-5 rounded-2xl border border-dashed border-zinc-300 p-8 text-center dark:border-zinc-700">
-                        <app-icon name="dice" [size]="40" className="text-indigo-500" />
+                    <div class="mt-5 rounded-2xl border border-dashed border-bv-border p-8 text-center">
+                        <app-icon name="dice" [size]="40" className="text-bv-primary" />
                         <h3 class="mt-3 text-lg font-semibold">No games match this context yet</h3>
                         <p class="mt-2 text-secondary">Select more members, clear a filter, or add games to a member’s collection.</p>
                     </div>
                 } @else {
                     <div class="mt-5 grid gap-4 md:grid-cols-2">
                         @for (game of totalUniqueGamesComputed(); track game.id) {
-                            <article class="flex min-w-0 gap-4 rounded-2xl border p-3 transition-colors dark:border-zinc-800" [ngClass]="game.active ? 'border-zinc-200 bg-white dark:bg-zinc-900' : 'border-zinc-200 bg-zinc-100 opacity-50 dark:bg-zinc-800'">
+                            <article class="flex min-w-0 gap-4 rounded-2xl border p-3 transition-colors dark:border-bv-border" [ngClass]="game.active ? 'border-bv-border bg-bv-surface' : 'border-bv-border bg-bv-surface-2 opacity-50'">
                                 <a
                                     [routerLink]="['/games', game.id]"
                                     class="block h-24 w-24 shrink-0"
@@ -510,17 +510,17 @@
                                     <div class="flex items-start justify-between gap-3">
                                         <a [routerLink]="['/games', game.id]" class="font-semibold hover:underline">{{ game.titleTranslations.en }}</a>
                                         @if (avgReviewsIndexComputed()[game.id]; as review) {
-                                            <span class="shrink-0 text-sm font-medium text-amber-600 dark:text-amber-400">★ {{ review.average }}</span>
+                                            <span class="shrink-0 text-sm font-medium text-bv-warning">★ {{ review.average }}</span>
                                         }
                                     </div>
                                     <p class="mt-2 text-sm text-secondary">{{ game.gameAvgDuration }} min · {{ game.minPlayers }}–{{ game.maxPlayers }} players</p>
                                     <div class="mt-3 flex flex-wrap gap-2 text-xs text-secondary">
-                                        <span class="rounded-full bg-zinc-100 px-2 py-1 dark:bg-zinc-800">{{ game.quantity }} owner{{ game.quantity === 1 ? '' : 's' }}</span>
+                                        <span class="rounded-full bg-bv-surface-2 px-2 py-1">{{ game.quantity }} owner{{ game.quantity === 1 ? '' : 's' }}</span>
                                         @if (avgReviewsIndexComputed()[game.id]; as review) {
-                                            <span class="rounded-full bg-zinc-100 px-2 py-1 dark:bg-zinc-800">{{ review.voters }} rating{{ review.voters === 1 ? '' : 's' }}</span>
+                                            <span class="rounded-full bg-bv-surface-2 px-2 py-1">{{ review.voters }} rating{{ review.voters === 1 ? '' : 's' }}</span>
                                         }
                                         @if (groupLibraryContextComputed()[game.id]; as libraryContext) {
-                                            <span class="rounded-full bg-zinc-100 px-2 py-1 dark:bg-zinc-800">{{ libraryContext.playCount }} played</span>
+                                            <span class="rounded-full bg-bv-surface-2 px-2 py-1">{{ libraryContext.playCount }} played</span>
                                         }
                                     </div>
                                     @if (groupLibraryContextComputed()[game.id]; as libraryContext) {
@@ -543,7 +543,7 @@
             <section id="history" class="order-7 scroll-mt-24" aria-labelledby="history-heading">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Group memory</p>
+                        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary">Group memory</p>
                         <h2 id="history-heading" class="mt-1 text-2xl font-bold">Recent sessions</h2>
                         <p class="mt-1 text-secondary">A compact record of what this group has actually played together.</p>
                     </div>
@@ -553,14 +553,14 @@
                 @if (isLoading()) {
                     <div class="mt-5" role="status" aria-live="polite"><span class="sr-only">Loading recent sessions…</span><app-skeleton-history /></div>
                 } @else if (groupHistoryError()) {
-                    <div class="mt-5 rounded-2xl border border-amber-200 bg-amber-50 p-8 text-center dark:border-amber-900/50 dark:bg-amber-950/30" role="alert">
+                    <div class="mt-5 rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-8 text-center" role="alert">
                         <p class="font-medium">Recent sessions could not be loaded.</p>
                         <p class="mt-2 text-sm text-secondary">Your group data is safe. Try again when the connection is ready.</p>
                         <button appButton class="mt-4" icon="arrow-repeat" (click)="retryGroupHistory()">Retry</button>
                     </div>
                 } @else if (groupHistory$().length === 0) {
-                    <div class="mt-5 rounded-2xl border border-dashed border-zinc-300 p-8 text-center dark:border-zinc-700">
-                        <app-icon name="calendar-heart" [size]="40" className="text-indigo-500" />
+                    <div class="mt-5 rounded-2xl border border-dashed border-bv-border p-8 text-center">
+                        <app-icon name="calendar-heart" [size]="40" className="text-bv-primary" />
                         <h3 class="mt-3 text-lg font-semibold">Your group history starts here</h3>
                         <p class="mt-2 text-secondary">Record the next game night so recommendations can learn from what you really play.</p>
                         <button appButton class="mt-5" icon="plus-lg" (click)="onClickNewMeet()">Plan a session</button>
@@ -568,17 +568,17 @@
                 } @else {
                     <div class="mt-5 grid gap-4 lg:grid-cols-3">
                         @for (historyRecord of recentGroupHistoryComputed(); track historyRecord.meetData.id) {
-                            <article class="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+                            <article class="rounded-2xl border border-bv-border bg-bv-surface p-5 shadow-sm">
                                 <div class="flex items-start justify-between gap-3">
                                     <div class="min-w-0">
                                         <p class="font-semibold">{{ historyRecord.meetData.meetDate | customDate: true: historyRecord.meetData.timezone }}</p>
                                         <p class="mt-1 text-sm text-secondary wrap-anywhere">{{ getAttendeeSummary(historyRecord.attendedBy, historyRecord.attendedByPeople ?? []) }}</p>
                                         <p class="mt-1 text-sm text-secondary">{{ historyRecord.gamesPlayed.length }} game{{ historyRecord.gamesPlayed.length === 1 ? '' : 's' }} played</p>
                                     </div>
-                                    <a [routerLink]="['/sessions', historyRecord.meetData.id]" class="text-sm text-indigo-600 hover:underline dark:text-indigo-400">View</a>
+                                    <a [routerLink]="['/sessions', historyRecord.meetData.id]" class="text-sm text-bv-primary hover:underline">View</a>
                                 </div>
                                 @if (historyRecord.meetData.notes) {
-                                    <p class="mt-4 rounded-xl bg-zinc-50 p-3 text-sm text-secondary dark:bg-zinc-800">{{ historyRecord.meetData.notes }}</p>
+                                    <p class="mt-4 rounded-xl bg-bv-bg p-3 text-sm text-secondary">{{ historyRecord.meetData.notes }}</p>
                                 }
                                 <ul class="mt-4 space-y-3">
                                     @for (gamePlayed of historyRecord.gamesPlayed; track gamePlayed.gameData.id) {
@@ -597,7 +597,7 @@
                         }
                     </div>
                     @if (groupHistory$().length > 3) {
-                        <a routerLink="/play/history" [queryParams]="{ groupId: group.id }" class="mt-5 inline-block text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400">See all {{ group.name }} sessions</a>
+                        <a routerLink="/play/history" [queryParams]="{ groupId: group.id }" class="mt-5 inline-block text-sm font-medium text-bv-primary hover:underline">See all {{ group.name }} sessions</a>
                     }
                 }
             </section>
@@ -605,12 +605,12 @@
             @if (groupHistory$().length > 0) {
                 <section id="insights" class="order-8 scroll-mt-24" aria-labelledby="insights-heading">
                     <div>
-                        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">What your group returns to</p>
+                        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary">What your group returns to</p>
                         <h2 id="insights-heading" class="mt-1 text-2xl font-bold">Small group insights</h2>
                         <p class="mt-1 text-secondary">Built from completed sessions and actual participation—not global rankings.</p>
                     </div>
                     <div class="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-2">
-                        <article class="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+                        <article class="rounded-2xl border border-bv-border bg-bv-surface p-5 shadow-sm">
                             <h3 class="font-semibold">Most played</h3>
                             @if (mostPlayedGamesComputed().length === 0) {
                                 <p class="mt-3 text-sm text-secondary">No games have been recorded yet.</p>
@@ -627,7 +627,7 @@
                                 </ol>
                             }
                         </article>
-                        <article class="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+                        <article class="rounded-2xl border border-bv-border bg-bv-surface p-5 shadow-sm">
                             <h3 class="font-semibold">Participation</h3>
                             @if (memberParticipationComputed().length === 0) {
                                 <p class="mt-3 text-sm text-secondary">Attendance will appear after the first completed session.</p>
@@ -648,7 +648,7 @@
                                 </ol>
                             }
                         </article>
-                        <article class="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+                        <article class="rounded-2xl border border-bv-border bg-bv-surface p-5 shadow-sm">
                             <h3 class="font-semibold">Recently played</h3>
                             <p class="mt-1 text-sm text-secondary">The latest game memories from this group.</p>
                             @if (recentlyPlayedGamesComputed().length === 0) {
@@ -665,7 +665,7 @@
                                 </ul>
                             }
                         </article>
-                        <article class="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+                        <article class="rounded-2xl border border-bv-border bg-bv-surface p-5 shadow-sm">
                             <h3 class="font-semibold">Worth revisiting</h3>
                             <p class="mt-1 text-sm text-secondary">Games your group has enjoyed before but not in its latest three sessions.</p>
                             @if (revisitGamesComputed().length === 0) {
@@ -691,21 +691,21 @@
 </container-wrapper>
 
 @if (isLeaveDialogOpen()) {
-    <div class="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/70 p-4" role="presentation" (click)="cancelLeaveGroup()">
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" role="presentation" (click)="cancelLeaveGroup()">
         <section
             appDialog
             (dialogClosed)="cancelLeaveGroup()"
-            class="w-full max-w-md rounded-3xl border border-zinc-200 bg-white p-6 shadow-2xl dark:border-zinc-700 dark:bg-zinc-900"
+            class="w-full max-w-md rounded-3xl border border-bv-border bg-bv-surface p-6 shadow-2xl"
             aria-labelledby="leave-group-dialog-title"
             aria-describedby="leave-group-dialog-description"
             (click)="$event.stopPropagation()"
         >
             <div class="flex items-start gap-4">
-                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-amber-100 text-xl text-amber-700 dark:bg-amber-950/60 dark:text-amber-300" aria-hidden="true">
+                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-bv-warning/10 text-xl text-bv-warning" aria-hidden="true">
                     <app-icon name="arrow-right" [size]="20" />
                 </div>
                 <div>
-                    <h2 id="leave-group-dialog-title" class="text-xl font-bold text-zinc-900 dark:text-white">Leave {{ groupData$()?.name }}?</h2>
+                    <h2 id="leave-group-dialog-title" class="text-xl font-bold text-bv-text">Leave {{ groupData$()?.name }}?</h2>
                     <p id="leave-group-dialog-description" class="mt-2 text-sm leading-6 text-secondary">You will lose access to this group’s games, plans, and shared play history. The owner can invite you again later.</p>
                 </div>
             </div>

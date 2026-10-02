@@ -52,7 +52,7 @@ export class FormUpdateUsernameComponent {
     // Input classes
     get usernameClass() {
         if (!this.username?.dirty && !this.username?.touched) return ''
-        return this.username?.valid ? 'border-green-500' : 'border-red-500'
+        return this.username?.valid ? 'border-bv-success' : 'border-bv-danger'
     }
 
     public onCancel() {

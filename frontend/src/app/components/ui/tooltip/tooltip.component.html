@@ -4,7 +4,7 @@
     @if (isVisible) {
     <div
         [id]="tooltipId"
-        class="absolute z-10 whitespace-nowrap rounded bg-zinc-800 px-2 py-1 text-sm text-white transition-opacity duration-200 motion-reduce:transition-none"
+        class="absolute z-10 whitespace-nowrap rounded bg-bv-text px-2 py-1 text-sm text-bv-surface transition-opacity duration-200 motion-reduce:transition-none"
         [ngClass]="{
             'bottom-full': position() === 'top',
             'top-full': position() === 'bottom',
@@ -40,10 +40,10 @@
                 'top-1/2': position() === 'left' || position() === 'right',
                 '-translate-y-1/2': position() === 'left' || position() === 'right',
 
-                'border-t-gray-800': position() === 'top',
-                'border-b-gray-800': position() === 'bottom',
-                'border-r-gray-800': position() === 'right',
-                'border-l-gray-800': position() === 'left'
+                'border-t-bv-text-muted': position() === 'top',
+                'border-b-bv-text-muted': position() === 'bottom',
+                'border-r-bv-text-muted': position() === 'right',
+                'border-l-bv-text-muted': position() === 'left'
             }"
         ></div>
     </div>

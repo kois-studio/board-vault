@@ -1,22 +1,22 @@
-<main class="min-h-[calc(100vh-8rem)] bg-gradient-to-b from-indigo-50 to-white px-4 py-16 dark:from-zinc-900 dark:to-zinc-950 sm:px-6 lg:py-24">
-    <section class="mx-auto max-w-xl rounded-3xl border border-zinc-200 bg-white p-8 shadow-xl dark:border-zinc-800 dark:bg-zinc-900 sm:p-12">
+<main class="min-h-[calc(100vh-8rem)] bg-gradient-to-b from-bv-primary-soft to-bv-surface px-4 py-16 sm:px-6 lg:py-24">
+    <section class="mx-auto max-w-xl rounded-3xl border border-bv-border bg-bv-surface p-8 shadow-xl sm:p-12">
         @if (isInvitationFlow()) {
             <div class="text-center">
-                <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-100 text-3xl text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-300" aria-hidden="true">
+                <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-bv-success/10 text-3xl text-bv-success" aria-hidden="true">
                     <app-icon name="mail" [size]="30" />
                 </div>
-                <p class="mt-6 text-sm font-semibold uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400">You are invited</p>
-                <h1 class="mt-3 text-4xl font-bold tracking-tight text-zinc-900 dark:text-white">Join your Board Vault group</h1>
+                <p class="mt-6 text-sm font-semibold uppercase tracking-[0.2em] text-bv-success">You are invited</p>
+                <h1 class="mt-3 text-4xl font-bold tracking-tight text-bv-text">Join your Board Vault group</h1>
                 @if (isInvitationSignIn()) {
-                    <p class="mt-5 text-lg leading-8 text-zinc-600 dark:text-zinc-300">Use your existing Board Vault account to join the group that invited you.</p>
+                    <p class="mt-5 text-lg leading-8 text-bv-text-muted">Use your existing Board Vault account to join the group that invited you.</p>
                 } @else {
-                    <p class="mt-5 text-lg leading-8 text-zinc-600 dark:text-zinc-300">Choose a Board Vault username and password to join the group that invited you.</p>
+                    <p class="mt-5 text-lg leading-8 text-bv-text-muted">Choose a Board Vault username and password to join the group that invited you.</p>
                 }
                 @if (clerkIsAvailable()) {
                     @if (isInvitationSignIn()) {
-                        <div class="mt-8 rounded-2xl border border-indigo-200 bg-indigo-50 p-5 text-left dark:border-indigo-900/60 dark:bg-indigo-950/30" role="status">
-                            <p class="font-semibold text-zinc-900 dark:text-white">Your Board Vault account is already registered.</p>
-                            <p class="mt-2 text-sm leading-6 text-zinc-600 dark:text-zinc-300">Continue with this secure invitation link and we’ll add you to the group. No new password is needed.</p>
+                        <div class="mt-8 rounded-2xl border border-bv-primary/30 bg-bv-primary-soft p-5 text-left" role="status">
+                            <p class="font-semibold text-bv-text">Your Board Vault account is already registered.</p>
+                            <p class="mt-2 text-sm leading-6 text-bv-text-muted">Continue with this secure invitation link and we’ll add you to the group. No new password is needed.</p>
                             <button appButton type="button" class="mt-5 w-full" [disabled]="isInvitationSubmitting" (click)="completeInvitationSignUp()">
                                 {{ isInvitationSubmitting ? 'Joining…' : 'Continue to the group' }}
                             </button>
@@ -27,19 +27,19 @@
                                 <label for="invitation-username" class="mb-2 block text-sm font-medium">Choose a username</label>
                                 <input id="invitation-username" type="text" autocomplete="username" class="app-input" formControlName="username" />
                                 @if (invitationForm.controls.username.invalid && invitationForm.controls.username.touched) {
-                                    <p class="mt-1 text-xs text-red-600 dark:text-red-300">Use 4–64 characters for your username.</p>
+                                    <p class="mt-1 text-xs text-bv-danger">Use 4–64 characters for your username.</p>
                                 }
                             </div>
                             <div>
                                 <label for="invitation-password" class="mb-2 block text-sm font-medium">Create a password</label>
                                 <input id="invitation-password" type="password" autocomplete="new-password" class="app-input" formControlName="password" />
-                                <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">Use at least 15 characters.</p>
+                                <p class="mt-1 text-xs text-bv-text-muted">Use at least 15 characters.</p>
                             </div>
                             <div>
                                 <label for="invitation-confirm-password" class="mb-2 block text-sm font-medium">Confirm your password</label>
                                 <input id="invitation-confirm-password" type="password" autocomplete="new-password" class="app-input" formControlName="confirmPassword" />
                                 @if (invitationForm.controls.confirmPassword.touched && !invitationPasswordsMatch) {
-                                    <p class="mt-1 text-xs text-red-600 dark:text-red-300">Passwords must match.</p>
+                                    <p class="mt-1 text-xs text-bv-danger">Passwords must match.</p>
                                 }
                             </div>
                             <div id="clerk-captcha" aria-live="polite"></div>
@@ -49,53 +49,53 @@
                         </form>
                     }
                 } @else {
-                    <p class="mt-8 rounded-lg border border-amber-400/30 bg-amber-50 p-4 text-sm text-amber-800 dark:bg-amber-950/30 dark:text-amber-200">The secure sign-up service is still loading. Refresh this page to continue.</p>
+                    <p class="mt-8 rounded-lg border border-bv-warning/30 bg-bv-warning/10 p-4 text-sm text-bv-warning">The secure sign-up service is still loading. Refresh this page to continue.</p>
                 }
                 @if (invitationError()) {
-                    <div class="mt-4 rounded-lg border border-red-400/30 bg-red-50 p-4 text-left text-sm text-red-800 dark:bg-red-950/30 dark:text-red-200" role="alert">
+                    <div class="mt-4 rounded-lg border border-bv-danger/30 bg-bv-danger/10 p-4 text-left text-sm text-bv-danger" role="alert">
                         <p>{{ invitationError() }}</p>
                         <button type="button" class="mt-3 font-semibold underline" (click)="returnToPrivateBeta()">Return to private-beta access</button>
                     </div>
                 }
-                <p class="mt-6 text-sm text-zinc-500 dark:text-zinc-400">This link is private and expires. Do not share it publicly.</p>
+                <p class="mt-6 text-sm text-bv-text-muted">This link is private and expires. Do not share it publicly.</p>
             </div>
         } @else if (!selfRegistrationEnabled()) {
             <div class="text-center">
-                <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-100 text-3xl text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-300" aria-hidden="true">
+                <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-bv-primary-soft text-3xl text-bv-on-primary-soft" aria-hidden="true">
                     <app-icon name="users" [size]="30" />
                 </div>
-                <p class="mt-6 text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400">Private beta</p>
-                <h1 class="mt-3 text-4xl font-bold tracking-tight text-zinc-900 dark:text-white">Board Vault is still invite-only</h1>
-                <p class="mt-5 text-lg leading-8 text-zinc-600 dark:text-zinc-300">
+                <p class="mt-6 text-sm font-semibold uppercase tracking-[0.2em] text-bv-primary">Private beta</p>
+                <h1 class="mt-3 text-4xl font-bold tracking-tight text-bv-text">Board Vault is still invite-only</h1>
+                <p class="mt-5 text-lg leading-8 text-bv-text-muted">
                     Board Vault helps a group of friends organize its games, choose what to play, and remember every session.
                 </p>
-                <p class="mt-4 text-zinc-600 dark:text-zinc-300">We are still building the core experience, so new accounts are created by invitation only.</p>
-                <div class="mt-6 rounded-2xl border border-indigo-100 bg-indigo-50 p-5 text-left dark:border-indigo-900/60 dark:bg-indigo-950/30">
-                    <p class="font-semibold text-zinc-900 dark:text-white">How to get access</p>
-                    <p class="mt-2 text-sm leading-6 text-zinc-600 dark:text-zinc-300">Ask a friend or group organizer who already uses Board Vault to invite you. Once invited, use the secure Clerk sign-up link they provide.</p>
+                <p class="mt-4 text-bv-text-muted">We are still building the core experience, so new accounts are created by invitation only.</p>
+                <div class="mt-6 rounded-2xl border border-bv-primary/30 bg-bv-primary-soft p-5 text-left">
+                    <p class="font-semibold text-bv-text">How to get access</p>
+                    <p class="mt-2 text-sm leading-6 text-bv-text-muted">Ask a friend or group organizer who already uses Board Vault to invite you. Once invited, use the secure Clerk sign-up link they provide.</p>
                 </div>
                 <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
                     <a appButton routerLink="/login" class="text-center">Sign in</a>
                     <a appButton variant="secondary" routerLink="/" class="text-center">Back to home</a>
                 </div>
-                <p class="mt-8 text-sm text-zinc-500 dark:text-zinc-400">Already have access? Sign in with your existing Board Vault account.</p>
+                <p class="mt-8 text-sm text-bv-text-muted">Already have access? Sign in with your existing Board Vault account.</p>
             </div>
         } @else if (clerkIsAvailable()) {
             <div class="text-center">
-                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400">Create your shelf</p>
-                <h1 class="mt-3 text-4xl font-bold tracking-tight text-zinc-900 dark:text-white">Create your Board Vault account</h1>
-                <p class="mt-5 text-zinc-600 dark:text-zinc-300">Set up your identity securely with Clerk.</p>
+                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-bv-primary">Create your shelf</p>
+                <h1 class="mt-3 text-4xl font-bold tracking-tight text-bv-text">Create your Board Vault account</h1>
+                <p class="mt-5 text-bv-text-muted">Set up your identity securely with Clerk.</p>
                 <button appButton type="button" class="mt-8" (click)="openClerkSignUp()">Open secure sign-up</button>
-                <p class="mt-6 text-sm text-zinc-500 dark:text-zinc-400">Already have an account? <a routerLink="/login" class="underline">Sign in</a></p>
+                <p class="mt-6 text-sm text-bv-text-muted">Already have an account? <a routerLink="/login" class="underline">Sign in</a></p>
             </div>
         } @else {
             <div class="text-center">
-                <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-100 text-3xl text-amber-600 dark:bg-amber-950/60 dark:text-amber-300" aria-hidden="true">
+                <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-bv-warning/10 text-3xl text-bv-warning" aria-hidden="true">
                     <app-icon name="shield-alert" [size]="30" />
                 </div>
-                <p class="mt-6 text-sm font-semibold uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400">Secure sign-up unavailable</p>
-                <h1 class="mt-3 text-4xl font-bold tracking-tight text-zinc-900 dark:text-white">We are reconnecting the sign-up service</h1>
-                <p class="mt-5 text-zinc-600 dark:text-zinc-300">Your account has not been created. Please try again shortly or ask your group owner to send a fresh invitation.</p>
+                <p class="mt-6 text-sm font-semibold uppercase tracking-[0.2em] text-bv-warning">Secure sign-up unavailable</p>
+                <h1 class="mt-3 text-4xl font-bold tracking-tight text-bv-text">We are reconnecting the sign-up service</h1>
+                <p class="mt-5 text-bv-text-muted">Your account has not been created. Please try again shortly or ask your group owner to send a fresh invitation.</p>
                 <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
                     @if (clerkIsConfigured()) {
                         <button appButton type="button" (click)="openClerkSignUp()">Try secure sign-up again</button>

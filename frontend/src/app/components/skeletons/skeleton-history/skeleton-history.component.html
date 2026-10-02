@@ -1,18 +1,18 @@
 <div class="grid gap-6 motion-safe:animate-pulse" role="status" aria-label="Loading history">
     @for (session of [1, 2]; track session) {
         <section class="app-bg-secondary relative rounded-lg p-4">
-            <div class="h-6 w-48 rounded bg-zinc-300 dark:bg-zinc-700"></div>
-            <div class="absolute right-4 top-4 h-4 w-28 rounded bg-zinc-300 dark:bg-zinc-700"></div>
+            <div class="h-6 w-48 rounded bg-bv-border"></div>
+            <div class="absolute right-4 top-4 h-4 w-28 rounded bg-bv-border"></div>
 
             <div class="mt-5 grid gap-4 lg:grid-cols-2">
                 @for (game of [1, 2]; track game) {
                     <div class="app-bg-tertiary rounded-lg p-4 flex gap-4">
-                        <div class="h-24 w-24 shrink-0 rounded-lg bg-zinc-300 dark:bg-zinc-700"></div>
+                        <div class="h-24 w-24 shrink-0 rounded-lg bg-bv-border"></div>
                         <div class="flex min-w-0 flex-1 flex-col justify-between gap-4">
-                            <div class="h-5 w-3/4 rounded bg-zinc-300 dark:bg-zinc-700"></div>
+                            <div class="h-5 w-3/4 rounded bg-bv-border"></div>
                             <div class="flex gap-2">
                                 @for (avatar of [1, 2, 3]; track avatar) {
-                                    <div class="h-8 w-8 rounded-full bg-zinc-300 dark:bg-zinc-700"></div>
+                                    <div class="h-8 w-8 rounded-full bg-bv-border"></div>
                                 }
                             </div>
                         </div>

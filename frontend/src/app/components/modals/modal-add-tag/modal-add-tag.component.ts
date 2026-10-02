@@ -97,12 +97,12 @@ export class ModalAddTagComponent {
 
     get nameClass() {
         if (!this.nameControl?.dirty && !this.nameControl?.touched) return ''
-        return this.nameControl?.valid ? 'border-green-500' : 'border-red-500'
+        return this.nameControl?.valid ? 'border-bv-success' : 'border-bv-danger'
     }
 
     get categoryIdClass() {
         if (!this.categoryIdControl?.dirty && !this.categoryIdControl?.touched) return ''
-        return this.categoryIdControl?.valid ? 'border-green-500' : 'border-red-500'
+        return this.categoryIdControl?.valid ? 'border-bv-success' : 'border-bv-danger'
     }
 
     get isFormValid() {

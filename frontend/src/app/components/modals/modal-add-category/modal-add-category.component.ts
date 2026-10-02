@@ -84,7 +84,7 @@ export class ModalAddCategoryComponent {
 
     get nameClass() {
         if (!this.nameControl?.dirty && !this.nameControl?.touched) return ''
-        return this.nameControl?.valid ? 'border-green-500' : 'border-red-500'
+        return this.nameControl?.valid ? 'border-bv-success' : 'border-bv-danger'
     }
 
     get isFormValid() {

@@ -2,24 +2,24 @@
     <h1 class="sr-only">Settings</h1>
     <div class="flex flex-col md:flex-row">
         <!-- Left sidebar -->
-        <div class="lg:w-1/4 border-b-4 border-r-0 md:border-r-4 md:border-b-0 border-zinc-200 dark:border-zinc-700 p-4 md:min-h-[30rem]">
+        <div class="lg:w-1/4 border-b-4 border-r-0 md:border-r-4 md:border-b-0 border-bv-border p-4 md:min-h-[30rem]">
             <app-card-account [member]="currentUser$()" />
 
             <nav class="pt-4 grid gap-2" aria-label="Settings sections">
                 <a
                     routerLink="/settings/account"
-                    [routerLinkActive]="['bg-zinc-200', 'dark:bg-indigo-800']"
+                    [routerLinkActive]="['bg-bv-surface-2', 'dark:bg-bv-primary-soft']"
                     [attr.aria-current]="router.isActive('/settings/account', false) ? 'page' : null"
-                    class="flex min-h-11 items-center gap-2 rounded-lg px-4 py-2 hover:bg-zinc-300 dark:hover:bg-indigo-600 w-full"
+                    class="flex min-h-11 items-center gap-2 rounded-lg px-4 py-2 hover:bg-bv-border w-full"
                 >
                     <app-icon name="user-circle" [size]="18" aria-hidden="true" />
                     <span>Profile</span>
                 </a>
                 <a
                     routerLink="/settings/security"
-                    [routerLinkActive]="['bg-zinc-200', 'dark:bg-indigo-800']"
+                    [routerLinkActive]="['bg-bv-surface-2', 'dark:bg-bv-primary-soft']"
                     [attr.aria-current]="router.isActive('/settings/security', false) ? 'page' : null"
-                    class="flex min-h-11 items-center gap-2 rounded-lg px-4 py-2 hover:bg-zinc-300 dark:hover:bg-indigo-600 w-full"
+                    class="flex min-h-11 items-center gap-2 rounded-lg px-4 py-2 hover:bg-bv-border w-full"
                 >
                     <app-icon name="shield-lock" [size]="18" aria-hidden="true" />
                     <span>Security</span>

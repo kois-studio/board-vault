@@ -1,25 +1,25 @@
 <!-- src/app/pages/admin/tags-manage/admin-tags-manage.component.html -->
 <div class="p-4 md:p-6 space-y-8">
 	<header class="mb-6">
-		<h1 class="text-3xl font-bold text-zinc-800 dark:text-zinc-100">
+		<h1 class="text-3xl font-bold text-bv-text">
 			Manage Tags & Categories
 		</h1>
-		<p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+		<p class="text-sm text-bv-text-muted mt-1">
 			Oversee the taxonomy used to classify games in BoardVault.
 		</p>
 	</header>
 
 	@if (errorMessage(); as error) {
-	<div class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-200" role="alert">
+	<div class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-bv-danger/30 bg-bv-danger/10 p-4 text-sm text-bv-danger" role="alert">
 		<span>{{ error }}</span>
 		<button type="button" class="font-medium underline" (click)="retryData()">Retry</button>
 	</div>
 	}
 
 	<!-- Section for Tag Categories -->
-	<section class="bg-white dark:bg-zinc-800 shadow-lg rounded-lg p-6">
+	<section class="bg-bv-surface shadow-lg rounded-lg p-6">
 		<div class="flex justify-between items-center mb-4">
-			<h2 class="text-xl font-semibold text-zinc-700 dark:text-zinc-200">
+			<h2 class="text-xl font-semibold text-bv-text-muted">
 				Tag Categories
 			</h2>
 			<button appButton (click)="onAddCategory()" variant="primary" icon="plus-lg">
@@ -34,25 +34,25 @@
 		} @else {
 		<div class="overflow-x-auto">
 			<table
-				class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700"
+				class="min-w-full divide-y divide-bv-border"
 			>
-				<thead class="bg-zinc-50 dark:bg-zinc-700/50">
+				<thead class="bg-bv-bg">
 					<tr>
 						<th
 							scope="col"
-							class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider"
+							class="px-6 py-3 text-left text-xs font-medium text-bv-text-muted uppercase tracking-wider"
 						>
 							Name
 						</th>
 						<th
 							scope="col"
-							class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider"
+							class="px-6 py-3 text-left text-xs font-medium text-bv-text-muted uppercase tracking-wider"
 						>
 							Tags in Category
 						</th>
 						<th
 							scope="col"
-							class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider"
+							class="px-6 py-3 text-left text-xs font-medium text-bv-text-muted uppercase tracking-wider"
 						>
 							Games with Category
 						</th>
@@ -62,22 +62,22 @@
 					</tr>
 				</thead>
 				<tbody
-					class="bg-white dark:bg-zinc-800 divide-y divide-zinc-200 dark:divide-zinc-700"
+					class="bg-bv-surface divide-y divide-bv-border"
 				>
 					@for (category of tagCategories(); track category.id) {
 					<tr>
 						<td
-							class="px-6 py-4 whitespace-nowrap text-sm font-medium text-zinc-900 dark:text-zinc-100"
+							class="px-6 py-4 whitespace-nowrap text-sm font-medium text-bv-text"
 						>
 							{{ category.name }}
 						</td>
 						<td
-							class="px-6 py-4 whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-300"
+							class="px-6 py-4 whitespace-nowrap text-sm text-bv-text-muted"
 						>
 							{{ category.tags.length }}
 						</td>
 						<td
-							class="px-6 py-4 whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-300"
+							class="px-6 py-4 whitespace-nowrap text-sm text-bv-text-muted"
 						>
 							{{ category.gameCount }}
 						</td>
@@ -86,13 +86,13 @@
 						>
 							<button
 								(click)="onEditCategory(category)"
-								class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200 cursor-pointer"
+								class="text-bv-primary hover:text-bv-on-primary-soft cursor-pointer"
 							>
 								Edit
 							</button>
 							<button
 								(click)="onDeleteCategory(category)"
-								class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200 cursor-pointer"
+								class="text-bv-danger cursor-pointer"
 							>
 								Delete
 							</button>
@@ -102,7 +102,7 @@
 					<tr>
 						<td
 							colspan="4"
-							class="px-6 py-4 text-center text-sm text-zinc-500 dark:text-zinc-400"
+							class="px-6 py-4 text-center text-sm text-bv-text-muted"
 						>
 							No tag categories found.
 						</td>
@@ -115,9 +115,9 @@
 	</section>
 
 	<!-- Section for Tags -->
-	<section class="bg-white dark:bg-zinc-800 shadow-lg rounded-lg p-6">
+	<section class="bg-bv-surface shadow-lg rounded-lg p-6">
 		<div class="flex justify-between items-center mb-4">
-			<h2 class="text-xl font-semibold text-zinc-700 dark:text-zinc-200">
+			<h2 class="text-xl font-semibold text-bv-text-muted">
 				Tags
 			</h2>
 			<button appButton (click)="onAddTag()" variant="primary" icon="plus-lg">
@@ -132,25 +132,25 @@
 		} @else {
 		<div class="overflow-x-auto">
 			<table
-				class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700"
+				class="min-w-full divide-y divide-bv-border"
 			>
-				<thead class="bg-zinc-50 dark:bg-zinc-700/50">
+				<thead class="bg-bv-bg">
 					<tr>
 						<th
 							scope="col"
-							class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider"
+							class="px-6 py-3 text-left text-xs font-medium text-bv-text-muted uppercase tracking-wider"
 						>
 							Name
 						</th>
 						<th
 							scope="col"
-							class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider"
+							class="px-6 py-3 text-left text-xs font-medium text-bv-text-muted uppercase tracking-wider"
 						>
 							Category
 						</th>
 						<th
 							scope="col"
-							class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider"
+							class="px-6 py-3 text-left text-xs font-medium text-bv-text-muted uppercase tracking-wider"
 						>
 							Games with Tag
 						</th>
@@ -160,22 +160,22 @@
 					</tr>
 				</thead>
 				<tbody
-					class="bg-white dark:bg-zinc-800 divide-y divide-zinc-200 dark:divide-zinc-700"
+					class="bg-bv-surface divide-y divide-bv-border"
 				>
 					@for (tag of tagsWithCategory(); track tag.id) {
 					<tr>
 						<td
-							class="px-6 py-4 whitespace-nowrap text-sm font-medium text-zinc-900 dark:text-zinc-100"
+							class="px-6 py-4 whitespace-nowrap text-sm font-medium text-bv-text"
 						>
 							{{ tag.name }}
 						</td>
 						<td
-							class="px-6 py-4 whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-300"
+							class="px-6 py-4 whitespace-nowrap text-sm text-bv-text-muted"
 						>
 							{{ tag.categoryName?.name }}
 						</td>
 						<td
-							class="px-6 py-4 whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-300"
+							class="px-6 py-4 whitespace-nowrap text-sm text-bv-text-muted"
 						>
 							{{ tag.gameCount }}
 						</td>
@@ -184,13 +184,13 @@
 						>
 							<button
 								(click)="onEditTag(tag)"
-								class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200 cursor-pointer"
+								class="text-bv-primary hover:text-bv-on-primary-soft cursor-pointer"
 							>
 								Edit
 							</button>
 							<button
 								(click)="onDeleteTag(tag)"
-								class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200 cursor-pointer"
+								class="text-bv-danger cursor-pointer"
 							>
 								Delete
 							</button>
@@ -200,7 +200,7 @@
 					<tr>
 						<td
 							colspan="4"
-							class="px-6 py-4 text-center text-sm text-zinc-500 dark:text-zinc-400"
+							class="px-6 py-4 text-center text-sm text-bv-text-muted"
 						>
 							No tags found.
 						</td>

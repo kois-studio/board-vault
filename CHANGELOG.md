@@ -36,6 +36,11 @@ operational details.
   compact upcoming sessions, and shorter group and session pages.
   `/collection` and `/play` open a hub with a card for each subpage and its
   count; recent collection activity sits under the Collection cards.
+- New colour palette, "Ciruela": plum primary, Sunglow accent, and lilac or
+  plum-charcoal backgrounds, in light and dark mode. Colours come from theme
+  tokens (`bg-bv-surface`, `text-bv-primary`) instead of Tailwind's palette,
+  secondary buttons are outlined, and avatars use eight player colours that
+  follow the theme (earlier avatar colours map onto them).
 - Buttons share one component: `appButton` goes on a native `<button>` or
   `<a>` (replacing the `<app-button>` wrapper and hand-written `app-btn-*`
   classes), primary buttons are indigo everywhere, and every button shrinks

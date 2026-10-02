@@ -19,28 +19,90 @@ and remembers games together:
 - **Quiet under pressure:** loading, empty, error, permission, and partial
   states should be useful and actionable rather than theatrical.
 
-## Semantic color tokens
+## Colour: the "Ciruela" palette
 
-Use the existing Tailwind palette through semantic roles. Pair every light
-theme value with a dark theme value and check text, icons, borders, focus
-rings, and disabled states together.
+Plum is the primary colour, Sunglow the accent, and the backgrounds are lilac
+(light) or plum charcoal (dark). The tokens are CSS variables in
+[`styles.css`](../frontend/src/styles.css) and Tailwind colours named
+`bv-*`. Each class switches with the theme on its own, so write `bg-bv-surface`,
+not `bg-white dark:bg-zinc-900`. **Do not use Tailwind's palette colours
+(`zinc`, `indigo`, `red`, …) in templates.**
 
-| Role | Light theme | Dark theme | Use |
-| --- | --- | --- | --- |
-| Canvas | `white` | `zinc-950` | App background and private pages |
-| Surface | `zinc-50` | `zinc-900` | Cards, panels, and grouped content |
-| Raised surface | `white` | `zinc-900` | Dialogs and elevated controls |
-| Border | `zinc-200` | `zinc-800` | Separation without heavy decoration |
-| Primary text | `zinc-900` | `zinc-100` | Headings and essential values |
-| Secondary text | `zinc-600` | `zinc-400` | Supporting explanation and metadata |
-| Action | `indigo-600` | `indigo-500` | Primary actions, links, active navigation |
-| Success | `emerald-600` | `emerald-400` | Confirmed or completed state |
-| Warning | `amber-600` | `amber-400` | Attention needed before continuing |
-| Destructive | `red-600` | `red-400` | Irreversible or privacy-sensitive action |
+| Token | Tailwind class example | Use | Light | Dark |
+| --- | --- | --- | --- | --- |
+| `--bv-bg` | `bg-bv-bg` | App background | `#F3EDF9` | `#201C20` |
+| `--bv-surface` | `bg-bv-surface` | Cards, panels, dialogs | `#FFFFFF` | `#292429` |
+| `--bv-surface-2` | `bg-bv-surface-2` | Chips, rows, fields, hover | `#ECE2F4` | `#352D34` |
+| `--bv-border` | `border-bv-border` | Borders and dividers | `#DCCDE8` | `#483E46` |
+| `--bv-text` | `text-bv-text` | Main text | `#24121E` | `#F6EEF3` |
+| `--bv-text-muted` | `text-bv-text-muted` | Secondary text, metadata | `#66505E` | `#BFA9B8` |
+| `--bv-primary` | `bg-bv-primary`, `text-bv-primary` | Main action, links, active state | `#8A2C7A` | `#E58AD0` |
+| `--bv-on-primary` | `text-bv-on-primary` | Text on primary | `#FFFFFF` | `#3A0B30` |
+| `--bv-primary-soft` | `bg-bv-primary-soft` | Labels and soft backgrounds | `#F7E3F1` | `#3D1E36` |
+| `--bv-on-primary-soft` | `text-bv-on-primary-soft` | Text on primary-soft | `#6B1B5D` | `#F4B8E4` |
+| `--bv-accent` | `bg-bv-accent` | Sunglow: favourites, winners, highlights | `#FFD166` | `#FFD166` |
+| `--bv-on-accent` | `text-bv-on-accent` | Text on accent | `#3A0B30` | `#3A0B30` |
+| `--bv-success` | `text-bv-success` | Confirmed, reasons for | `#2A7A4B` | `#63C993` |
+| `--bv-warning` | `text-bv-warning` | Maybe, warnings | `#8C5A08` | `#F0B65E` |
+| `--bv-danger` | `text-bv-danger` | Can't come, errors, destructive actions | `#B3262E` | `#FF7F86` |
 
-The semantic role matters more than the exact shade. Avoid introducing a new
-brand color for a single page. Use `lucide-angular` icons alongside text;
-icons are supporting language, not the only label for an action.
+`--bv-on-success`, `--bv-on-warning`, and `--bv-on-danger` are our additions
+(white in light mode, dark plum in dark mode) for text on a filled status
+colour, such as the danger button.
+
+### Rules
+
+- **Primary** only for the main action of a screen and for the active state
+  (current tab, selected chip). Other buttons are outlined: `appButton
+  variant="secondary"`.
+- **Sunglow (accent)** in light mode is always a fill with `on-accent` on top
+  (chips, winner badges, the Reviews tile). Never use it as text or a lone
+  icon on a light background: it fails contrast (1.4:1). In dark mode it may
+  be an icon colour, so rating stars are `text-bv-warning
+  dark:text-bv-accent`.
+- **primary-soft with on-primary-soft** for informative labels ("In the
+  group", "92% match", counts on cards): `<app-badge>`.
+- **success, warning, danger** for attendance states and recommendation
+  reasons, always with text or an icon, never colour alone. For a tinted
+  background use opacity: `bg-bv-danger/10 border-bv-danger/30
+  text-bv-danger`. Don't use them as decoration (a wishlist heart is not
+  danger).
+- **Player colours** always with the initial or the name visible.
+- On a primary fill, secondary text uses `text-bv-on-primary/80`, not a soft
+  token.
+- Modal backdrops are `bg-black/50` in both themes.
+- Tinting a component: `<app-badge>` and `<app-card-section>` take a `tone`
+  (`primary`, `accent`, `success`, `warning`, `danger`, `neutral`;
+  `types/tone.type.ts`).
+
+### Player colours
+
+Eight colours identify players (avatars, owners, winners). Avatars store the
+light hex; [`playerColour.ts`](../frontend/src/app/core/utils/playerColour.ts)
+renders it through `--bv-player-N` so it follows the theme, and maps colours
+from the earlier avatar palette onto the nearest player colour.
+
+| Token | Light | Dark |
+| --- | --- | --- |
+| `--bv-player-1` | `#C0392B` | `#FF9C8F` |
+| `--bv-player-2` | `#B45309` | `#FDBA74` |
+| `--bv-player-3` | `#4D7C0F` | `#BEF264` |
+| `--bv-player-4` | `#047857` | `#6EE7B7` |
+| `--bv-player-5` | `#0E7490` | `#67E8F9` |
+| `--bv-player-6` | `#1D4ED8` | `#93C5FD` |
+| `--bv-player-7` | `#7E22CE` | `#D8B4FE` |
+| `--bv-player-8` | `#BE185D` | `#F9A8D4` |
+| `--bv-on-player` | `#FFFFFF` | `#14101A` |
+
+### Contrast (WCAG AA)
+
+Text needs 4.5:1, large text and icons 3:1. Every text pair in the table
+above passes in both themes (the lowest is muted text on surface-2, 5.8:1);
+the one failing pair is Sunglow as an icon on a light surface (1.4:1), which
+the rules above forbid. Check new pairs before adding them.
+
+Use `lucide-angular` icons alongside text; icons are supporting language,
+not the only label for an action.
 
 ## Type and spacing
 

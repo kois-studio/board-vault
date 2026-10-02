@@ -1,32 +1,32 @@
-<main class="min-h-[calc(100vh-8rem)] bg-gradient-to-b from-indigo-50 to-white px-4 py-16 dark:from-zinc-900 dark:to-zinc-950 sm:px-6 lg:py-24">
-    <section class="mx-auto max-w-xl rounded-3xl border border-zinc-200 bg-white p-8 shadow-xl dark:border-zinc-800 dark:bg-zinc-900 sm:p-12">
+<main class="min-h-[calc(100vh-8rem)] bg-gradient-to-b from-bv-primary-soft to-bv-surface px-4 py-16 sm:px-6 lg:py-24">
+    <section class="mx-auto max-w-xl rounded-3xl border border-bv-border bg-bv-surface p-8 shadow-xl sm:p-12">
         <div class="text-center">
-            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400">Welcome back</p>
-            <h1 class="mt-3 text-4xl font-bold tracking-tight text-zinc-900 dark:text-white">Sign in to Board Vault</h1>
-            <p class="mt-5 text-zinc-600 dark:text-zinc-300">Return to the groups, games, and sessions you are building with your friends.</p>
+            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-bv-primary">Welcome back</p>
+            <h1 class="mt-3 text-4xl font-bold tracking-tight text-bv-text">Sign in to Board Vault</h1>
+            <p class="mt-5 text-bv-text-muted">Return to the groups, games, and sessions you are building with your friends.</p>
         </div>
 
         @if (clerkIsAvailable()) {
-            <div class="mt-8 rounded-2xl border border-indigo-100 bg-indigo-50 p-5 text-center dark:border-indigo-900/60 dark:bg-indigo-950/30">
-                <p class="font-medium text-zinc-900 dark:text-white">Use secure sign-in</p>
-                <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-300">Sign in with your email and password, or with a one-time email code.</p>
+            <div class="mt-8 rounded-2xl border border-bv-primary/30 bg-bv-primary-soft p-5 text-center">
+                <p class="font-medium text-bv-text">Use secure sign-in</p>
+                <p class="mt-1 text-sm text-bv-text-muted">Sign in with your email and password, or with a one-time email code.</p>
                 <button appButton type="button" class="mt-4" (click)="openClerkSignIn()">Continue with secure sign-in</button>
             </div>
-            <p class="mt-5 text-center text-sm text-zinc-500 dark:text-zinc-400">Forgot your password? Choose “Forgot password?” in the sign-in window.</p>
+            <p class="mt-5 text-center text-sm text-bv-text-muted">Forgot your password? Choose “Forgot password?” in the sign-in window.</p>
         } @else if (!clerkIsLoaded()) {
-            <p class="mt-8 rounded-lg border border-zinc-200 bg-zinc-50 p-4 text-center text-sm text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-zinc-300" role="status">Loading secure sign-in…</p>
+            <p class="mt-8 rounded-lg border border-bv-border bg-bv-bg p-4 text-center text-sm text-bv-text-muted" role="status">Loading secure sign-in…</p>
         } @else if (!clerkIsConfigured()) {
-            <p class="mt-8 rounded-lg border border-red-400/30 bg-red-50 p-4 text-center text-sm text-red-800 dark:bg-red-950/30 dark:text-red-200" role="alert">
+            <p class="mt-8 rounded-lg border border-bv-danger/30 bg-bv-danger/10 p-4 text-center text-sm text-bv-danger" role="alert">
                 Sign-in is not configured for this environment. Set <code>CLERK_PUBLISHABLE_KEY</code> and restart the app.
             </p>
         } @else {
-            <p class="mt-8 rounded-lg border border-amber-400/30 bg-amber-50 p-4 text-center text-sm text-amber-800 dark:bg-amber-950/30 dark:text-amber-200" role="alert">
+            <p class="mt-8 rounded-lg border border-bv-warning/30 bg-bv-warning/10 p-4 text-center text-sm text-bv-warning" role="alert">
                 The secure sign-in service could not be reached. Refresh this page to try again.
             </p>
         }
 
-        <p class="mt-8 text-center text-sm text-zinc-500 dark:text-zinc-400">
-            Need access? <a routerLink="/register" class="font-medium text-indigo-600 underline dark:text-indigo-400">View private-beta access</a>
+        <p class="mt-8 text-center text-sm text-bv-text-muted">
+            Need access? <a routerLink="/register" class="font-medium text-bv-primary underline">View private-beta access</a>
         </p>
     </section>
 </main>

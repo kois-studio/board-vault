@@ -1,38 +1,38 @@
-<footer class="mt-24 border-t border-zinc-700 bg-zinc-800 px-4 py-12 text-zinc-300 sm:px-6 lg:px-8">
+<footer class="mt-24 border-t border-bv-border bg-bv-surface px-4 py-12 text-bv-text-muted sm:px-6 lg:px-8">
     <div class="mx-auto grid max-w-6xl gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
         <div>
             <div class="flex items-center gap-3">
                 <img src="/images/logo.webp" alt="Board Vault logo" class="h-10 w-10 rounded-lg" />
-                <span class="text-xl font-semibold text-white">Board Vault</span>
+                <span class="text-xl font-semibold text-bv-text">Board Vault</span>
             </div>
             <p class="mt-4 max-w-sm leading-7">A practical home for the games your group owns and the sessions you remember.</p>
         </div>
 
         <div>
-            <h2 class="text-sm font-semibold uppercase tracking-wider text-zinc-400">Explore</h2>
+            <h2 class="text-sm font-semibold uppercase tracking-wider text-bv-text-muted">Explore</h2>
             <ul class="mt-4 space-y-3">
-                <li><a routerLink="/" fragment="features" class="transition hover:text-white">Features</a></li>
-                <li><a routerLink="/" fragment="how-it-works" class="transition hover:text-white">How it works</a></li>
-                <li><a routerLink="/collection" class="transition hover:text-white">Collection</a></li>
-                <li><a routerLink="/dashboard" class="transition hover:text-white">Your groups</a></li>
+                <li><a routerLink="/" fragment="features" class="transition hover:text-bv-primary">Features</a></li>
+                <li><a routerLink="/" fragment="how-it-works" class="transition hover:text-bv-primary">How it works</a></li>
+                <li><a routerLink="/collection" class="transition hover:text-bv-primary">Collection</a></li>
+                <li><a routerLink="/dashboard" class="transition hover:text-bv-primary">Your groups</a></li>
             </ul>
         </div>
 
         <div>
-            <h2 class="text-sm font-semibold uppercase tracking-wider text-zinc-400">Account</h2>
+            <h2 class="text-sm font-semibold uppercase tracking-wider text-bv-text-muted">Account</h2>
             <ul class="mt-4 space-y-3">
                 @if (isAuthenticated()) {
-                    <li><a routerLink="/settings" class="transition hover:text-white">Account settings</a></li>
+                    <li><a routerLink="/settings" class="transition hover:text-bv-primary">Account settings</a></li>
                 } @else {
-                    <li><a routerLink="/login" class="transition hover:text-white">Sign in</a></li>
-                    <li><a routerLink="/register" class="transition hover:text-white">Private beta access</a></li>
+                    <li><a routerLink="/login" class="transition hover:text-bv-primary">Sign in</a></li>
+                    <li><a routerLink="/register" class="transition hover:text-bv-primary">Private beta access</a></li>
                 }
             </ul>
-            <p class="mt-6 text-sm text-zinc-300">Board Vault is an early product; privacy, terms, and support content will be added before public launch.</p>
+            <p class="mt-6 text-sm">Board Vault is an early product; privacy, terms, and support content will be added before public launch.</p>
         </div>
     </div>
 </footer>
 
-<div class="bg-zinc-900 px-4 py-6">
-    <p class="text-center text-sm text-zinc-300">&copy; {{ date }} Board Vault.</p>
+<div class="border-t border-bv-border bg-bv-surface px-4 py-6">
+    <p class="text-center text-sm text-bv-text-muted">&copy; {{ date }} Board Vault.</p>
 </div>

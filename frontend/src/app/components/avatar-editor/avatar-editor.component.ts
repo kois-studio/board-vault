@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common'
 import { Component, input, linkedSignal, OnInit, output } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import type { UserType } from '../../api/api.types'
+import { PLAYER_COLOURS, playerColourStyle } from '../../core/utils/playerColour'
 import { ImageProfileComponent } from '../image-profile/image-profile.component'
 import { IconComponent } from '../ui/icon/icon.component'
 @Component({
@@ -22,21 +23,8 @@ export class AvatarEditorComponent implements OnInit {
     activeTab: 'icon' | 'emoji' | 'initials' = 'icon'
     searchTerm = ''
 
-    // Curated color palette
-    colorPalette = [
-        '#EF4444', // Red-500
-        '#F97316', // Orange-500
-        '#F59E0B', // Amber-500
-        '#10B981', // Emerald-500
-        '#06B6D4', // Cyan-500
-        '#3B82F6', // Blue-500
-        '#6366F1', // Indigo-500
-        '#8B5CF6', // Violet-500
-        '#EC4899', // Pink-500
-        '#6B7280', // Gray-500
-        '#1F2937', // Gray-800
-        '#0F172A', // Slate-900
-    ]
+    // The eight player colours; they adapt to the theme when rendered.
+    colorPalette = PLAYER_COLOURS
 
     // Sample Bootstrap icons (add more as needed)
     bootstrapIcons = [
@@ -71,6 +59,10 @@ export class AvatarEditorComponent implements OnInit {
 
     get filteredIcons(): string[] {
         return this.bootstrapIcons.filter((icon) => icon.toLowerCase().includes(this.searchTerm.toLowerCase()))
+    }
+
+    swatchColour(color: string): string {
+        return playerColourStyle(color).background
     }
 
     selectColor(color: string): void {

@@ -56,7 +56,7 @@ export class FormUpdateDisplayNameComponent {
     // Input classes
     get displayNameClass() {
         if (!this.displayName?.dirty && !this.displayName?.touched) return ''
-        return this.displayName?.valid ? 'border-green-500' : 'border-red-500'
+        return this.displayName?.valid ? 'border-bv-success' : 'border-bv-danger'
     }
 
     public onCancel() {

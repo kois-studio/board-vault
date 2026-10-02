@@ -3,7 +3,7 @@
 </app-page-header>
 
 <div class="mx-auto mb-6 max-w-5xl px-4 sm:px-6 lg:px-8">
-    <div class="rounded-lg border border-indigo-200 bg-indigo-50 px-4 py-3 text-sm text-indigo-950 dark:border-indigo-900/60 dark:bg-indigo-950/30 dark:text-indigo-100">
+    <div class="rounded-lg border border-bv-primary/30 bg-bv-primary-soft px-4 py-3 text-sm text-bv-on-primary-soft">
         Planning a future game night instead?
         <a class="font-semibold underline" routerLink="/play/upcoming-sessions">Plan a future session</a>
         to choose a group, date, attendees, and shortlist.
@@ -17,11 +17,11 @@
             @for (step of steps; track step.key) {
             <li class="flex items-center gap-2">
                 <div
-                    class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors text-white"
+                    class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
                     [ngClass]="{
-                        'bg-blue-600': currentStep() === step.key,
-                        'bg-green-600': isStepComplete(step.key) && currentStep() !== step.key,
-                        'bg-gray-200 dark:bg-zinc-700 text-gray-600 dark:text-gray-400':
+                        'bg-bv-primary text-bv-on-primary': currentStep() === step.key,
+                        'bg-bv-success text-bv-on-success': isStepComplete(step.key) && currentStep() !== step.key,
+                        'bg-bv-surface-2 text-bv-text-muted':
                             !isStepComplete(step.key) && currentStep() !== step.key
                     }"
                     [attr.aria-current]="currentStep() === step.key ? 'step' : null"
@@ -32,22 +32,22 @@
                     <span
                         class="text-sm font-medium"
                         [ngClass]="{
-                            'text-blue-600 dark:text-blue-400': currentStep() === step.key,
-                            'text-green-600 dark:text-green-400': isStepComplete(step.key) && currentStep() !== step.key,
-                            'text-gray-500 dark:text-gray-400':
+                            'text-bv-primary': currentStep() === step.key,
+                            'text-bv-success': isStepComplete(step.key) && currentStep() !== step.key,
+                            'text-bv-text-muted':
                                 !isStepComplete(step.key) && currentStep() !== step.key
                         }"
                     >
                         {{ step.label }}
                     </span>
                     @if (isStepComplete(step.key) && getStepSummary(step.key)) {
-                    <span class="text-xs text-gray-500 dark:text-gray-400">
+                    <span class="text-xs text-bv-text-muted">
                         {{ getStepSummary(step.key) }}
                     </span>
                     }
                 </div>
                 @if (steps.indexOf(step) < steps.length - 1) {
-                <div class="w-8 h-0.5 bg-gray-200 dark:bg-zinc-700"></div>
+                <div class="w-8 h-0.5 bg-bv-surface-2"></div>
                 }
             </li>
             }
@@ -55,11 +55,11 @@
     </nav>
 
     <!-- Step Content -->
-    <div class="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-gray-200 dark:border-zinc-700 p-6">
+    <div class="bg-bv-surface rounded-lg shadow-sm border border-bv-border p-6">
         <!-- Step Header -->
         <div class="mb-6">
-            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">{{ getStepTitle() }}</h2>
-            <p class="text-gray-600 dark:text-gray-400 mt-1">{{ getStepDescription() }}</p>
+            <h2 class="text-xl font-semibold text-bv-text">{{ getStepTitle() }}</h2>
+            <p class="text-bv-text-muted mt-1">{{ getStepDescription() }}</p>
         </div>
 
         <!-- Step 1: Group Selection -->
@@ -68,18 +68,18 @@
             @if (isLoadingGroups()) {
             <div class="flex flex-col items-center justify-center py-12">
                 <app-spinner size="large" />
-                <p class="text-gray-500 dark:text-gray-400 mt-4">Loading groups...</p>
+                <p class="text-bv-text-muted mt-4">Loading groups...</p>
             </div>
             } @else if (userGroupsError()) {
             <div class="py-12 text-center" role="alert">
-                <p class="text-gray-700 dark:text-gray-300">Your groups could not be loaded.</p>
-                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Check your connection and try again.</p>
+                <p class="text-bv-text-muted">Your groups could not be loaded.</p>
+                <p class="mt-2 text-sm text-bv-text-muted">Check your connection and try again.</p>
                 <button appButton class="mt-4" icon="arrow-repeat" (click)="retryGroups()">Retry</button>
             </div>
             } @else if (userGroups().length === 0) {
             <div class="py-12 text-center">
-                <p class="text-gray-700 dark:text-gray-300">Create or join a group before logging a session.</p>
-                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">A group gives this session its attendees and available games.</p>
+                <p class="text-bv-text-muted">Create or join a group before logging a session.</p>
+                <p class="mt-2 text-sm text-bv-text-muted">A group gives this session its attendees and available games.</p>
                 <div class="mt-5 flex flex-wrap justify-center gap-3">
                     <a appButton routerLink="/create-group">Create a group</a>
                     <a appButton variant="secondary" routerLink="/dashboard">View invitations</a>
@@ -90,22 +90,22 @@
                 @for (group of userGroups(); track group.id) {
                 <button
                     type="button"
-                    class="p-4 border rounded-lg cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-zinc-700"
+                    class="p-4 border rounded-lg cursor-pointer transition-colors hover:bg-bv-bg"
                     [attr.aria-pressed]="selectedGroup()?.id === group.id"
                     [class]="
                         selectedGroup()?.id === group.id
-                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                            : 'border-gray-200 dark:border-zinc-600'
+                            ? 'border-bv-primary bg-bv-primary-soft'
+                            : 'border-bv-border'
                     "
                     (click)="selectGroup(group)"
                 >
                     <div class="flex items-center justify-between">
                         <div>
-                            <h3 class="font-medium text-gray-900 dark:text-white">{{ group.name }}</h3>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ group.members.length }} members</p>
+                            <h3 class="font-medium text-bv-text">{{ group.name }}</h3>
+                            <p class="text-sm text-bv-text-muted">{{ group.members.length }} members</p>
                         </div>
                         @if (selectedGroup()?.id === group.id) {
-                        <div class="text-blue-600">
+                        <div class="text-bv-primary">
                             <app-icon name="check" [size]="20" aria-hidden="true" />
                         </div>
                         }
@@ -121,16 +121,16 @@
         @if (currentStep() === 'date') {
         <div class="space-y-4">
             <div>
-                <label for="session-date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"> Session Date </label>
+                <label for="session-date" class="block text-sm font-medium text-bv-text-muted mb-2"> Session Date </label>
                 <input
                     id="session-date"
                     type="date"
                     [formControl]="sessionDate"
-                    class="w-full px-3 py-2 border border-gray-300 dark:border-zinc-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:text-white"
-                    [class]="sessionDate.invalid && (sessionDate.dirty || sessionDate.touched) ? 'border-red-500' : ''"
+                    class="w-full px-3 py-2 border border-bv-border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-bv-primary focus:border-bv-primary dark:bg-bv-border dark:text-bv-text"
+                    [class]="sessionDate.invalid && (sessionDate.dirty || sessionDate.touched) ? 'border-bv-danger' : ''"
                 />
                 @if (sessionDate.invalid && (sessionDate.dirty || sessionDate.touched)) {
-                <div class="mt-1 text-sm text-red-600">
+                <div class="mt-1 text-sm text-bv-danger">
                     @if (sessionDate.hasError('required')) {
                     <div>Date is required</div>
                     } @if (sessionDate.hasError('futureDate')) {
@@ -146,7 +146,7 @@
         @if (currentStep() === 'attendees') {
         <div class="space-y-4">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Select Attendees</h3>
+                <h3 class="text-lg font-medium text-bv-text">Select Attendees</h3>
                 <div class="flex space-x-2">
                     <button appButton variant="primary" size="small" (click)="selectAllAttendees()"> Select All </button>
                     <button appButton variant="secondary" size="small" (click)="deselectAllAttendees()"> Deselect All </button>
@@ -160,8 +160,8 @@
                     class="rounded-lg cursor-pointer flex items-center justify-start border"
                     [attr.aria-pressed]="attendee.selected"
                     [ngClass]="{
-                        'bg-zinc-200 dark:bg-zinc-800/30 border-zinc-300 dark:border-zinc-800': !attendee.selected,
-                        'bg-white dark:bg-zinc-800 border-green-400': attendee.selected,
+                        'bg-bv-surface-2 border-bv-border': !attendee.selected,
+                        'bg-bv-surface border-bv-success': attendee.selected,
                     }"
                 >
                     <!-- indicator -->
@@ -169,8 +169,8 @@
                         <span
                             class="h-4 w-4 rounded-full"
                             [ngClass]="{
-                                'bg-gray-400': !attendee.selected,
-                                'bg-green-400': attendee.selected,
+                                'bg-bv-text-muted': !attendee.selected,
+                                'bg-bv-success/30': attendee.selected,
                             }"
                         ></span>
                     </div>
@@ -182,7 +182,7 @@
                                 'opacity-30': !attendee.selected,
                             }"
                         />
-                        <div class="text-gray-400 text-sm mr-4">
+                        <div class="text-bv-text-muted text-sm mr-4">
                             {{ attendee.user.games.length }} {{ attendee.user.games.length === 1 ? 'game' : 'games' }}
                         </div>
                     </div>
@@ -196,7 +196,7 @@
         @if (currentStep() === 'games') {
         <div class="space-y-4">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Select Games</h3>
+                <h3 class="text-lg font-medium text-bv-text">Select Games</h3>
                 <div class="flex space-x-2">
                     <button appButton variant="primary" size="small" (click)="selectAllGames()"> Select All </button>
                     <button appButton variant="secondary" size="small" (click)="deselectAllGames()"> Deselect All </button>
@@ -210,8 +210,8 @@
                     class="rounded-lg cursor-pointer flex items-center justify-start border"
                     [attr.aria-pressed]="game.selected"
                     [ngClass]="{
-                        'bg-zinc-200 dark:bg-zinc-800/30 border-zinc-300 dark:border-zinc-800': !game.selected,
-                        'bg-white dark:bg-zinc-800 border-green-400': game.selected,
+                        'bg-bv-surface-2 border-bv-border': !game.selected,
+                        'bg-bv-surface border-bv-success': game.selected,
                     }"
                 >
                     <!-- indicator -->
@@ -219,8 +219,8 @@
                         <span
                             class="h-4 w-4 rounded-full"
                             [ngClass]="{
-                                'bg-gray-400': !game.selected,
-                                'bg-green-400': game.selected,
+                                'bg-bv-text-muted': !game.selected,
+                                'bg-bv-success/30': game.selected,
                             }"
                         ></span>
                     </div>
@@ -249,19 +249,19 @@
         <!-- Step 5: Who played what? -->
         @if (currentStep() === 'matrix') {
         <div class="space-y-4">
-            <p class="text-gray-600 dark:text-gray-400">
+            <p class="text-bv-text-muted">
                 Everyone is selected by default. Deselect anyone who did not play a particular game. This helps your group history stay useful.
             </p>
             <div class="grid gap-4">
                 @for (game of getSelectedGames(); track game.game.id) {
-                <fieldset class="rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-zinc-700 dark:bg-zinc-800/60">
+                <fieldset class="rounded-xl border border-bv-border bg-bv-bg p-4">
                     <legend class="sr-only">Players for {{ game.game.titleTranslations.en || game.game.title || 'Untitled game' }}</legend>
                     <div class="flex flex-wrap items-start justify-between gap-3">
                         <div class="flex min-w-0 items-center gap-3">
                             <image-background [src]="game.game.imageUrl" [alt]="(game.game.titleTranslations.en || game.game.title || 'Game') + ' cover'" class="h-12 w-12 shrink-0" />
                             <div class="min-w-0">
-                                <h3 class="truncate font-semibold text-gray-900 dark:text-white">{{ game.game.titleTranslations.en || game.game.title || 'Untitled game' }}</h3>
-                                <p class="text-sm text-gray-600 dark:text-gray-400" aria-live="polite">{{ getSelectedParticipantCount(game.game.id) }} player{{ getSelectedParticipantCount(game.game.id) === 1 ? '' : 's' }}</p>
+                                <h3 class="truncate font-semibold text-bv-text">{{ game.game.titleTranslations.en || game.game.title || 'Untitled game' }}</h3>
+                                <p class="text-sm text-bv-text-muted" aria-live="polite">{{ getSelectedParticipantCount(game.game.id) }} player{{ getSelectedParticipantCount(game.game.id) === 1 ? '' : 's' }}</p>
                             </div>
                         </div>
                         <button appButton
@@ -274,13 +274,13 @@
                     </div>
                     <div class="mt-4 grid gap-2 sm:grid-cols-2">
                         @for (attendee of getSelectedAttendees(); track attendee.user.id) {
-                        <label class="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-colors has-[:checked]:border-green-500 has-[:checked]:bg-green-50 dark:border-zinc-700 dark:bg-zinc-900 dark:has-[:checked]:border-green-500 dark:has-[:checked]:bg-green-900/20">
+                        <label class="flex cursor-pointer items-center gap-3 rounded-lg border border-bv-border bg-bv-surface p-3 transition-colors has-[:checked]:border-bv-success has-[:checked]:bg-bv-success/10">
                             <input
                                 type="checkbox"
                                 [checked]="isMatrixCellSelected(attendee.user.id, game.game.id)"
                                 (change)="toggleMatrixCell(attendee.user.id, game.game.id)"
                                 [attr.aria-label]="'Mark ' + (attendee.user.displayName || attendee.user.username) + ' as a player of ' + (game.game.titleTranslations.en || game.game.title || 'this game')"
-                                class="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-2 focus:ring-green-500 dark:border-zinc-600 dark:bg-zinc-700"
+                                class="h-4 w-4 rounded border-bv-border text-bv-success focus:ring-2 focus:ring-bv-success dark:bg-bv-border"
                             />
                             <app-card-account [member]="attendee.user" format="compact" />
                         </label>
@@ -290,7 +290,7 @@
                 }
             </div>
             @if (!hasParticipantsForEveryGame()) {
-                <p class="text-sm text-red-600 dark:text-red-400" role="alert">Choose at least one player for every selected game to continue.</p>
+                <p class="text-sm text-bv-danger" role="alert">Choose at least one player for every selected game to continue.</p>
             }
         </div>
         }
@@ -299,17 +299,17 @@
         @if (currentStep() === 'notes') {
         <div class="space-y-4">
             <div>
-                <label for="session-notes" class="block text-lg font-medium text-gray-900 dark:text-white">Add a note <span class="font-normal text-gray-500">(optional)</span></label>
-                <p class="mt-1 text-gray-600 dark:text-gray-400">Capture why you chose these games, what happened, or anything useful for the next game night.</p>
+                <label for="session-notes" class="block text-lg font-medium text-bv-text">Add a note <span class="font-normal text-bv-text-muted">(optional)</span></label>
+                <p class="mt-1 text-bv-text-muted">Capture why you chose these games, what happened, or anything useful for the next game night.</p>
                 <textarea
                     id="session-notes"
                     [formControl]="sessionNotes"
                     maxlength="1000"
                     rows="5"
-                    class="mt-4 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white"
+                    class="mt-4 w-full rounded-md border border-bv-border px-3 py-2 shadow-sm focus:border-bv-primary focus:outline-none focus:ring-2 focus:ring-bv-primary dark:bg-bv-border dark:text-bv-text"
                     placeholder="For example: We finally finished the campaign and everyone wants a rematch."
                 ></textarea>
-                <div class="mt-1 flex justify-between text-sm text-gray-500 dark:text-gray-400">
+                <div class="mt-1 flex justify-between text-sm text-bv-text-muted">
                     <span>Optional — you can save without writing anything.</span>
                     <span>{{ sessionNotes.value?.length ?? 0 }}/1000</span>
                 </div>
@@ -321,20 +321,20 @@
         @if (currentStep() === 'review') {
         <section class="space-y-5" aria-labelledby="review-heading">
             <div>
-                <h3 id="review-heading" class="text-lg font-medium text-gray-900 dark:text-white">Review this group memory</h3>
-                <p class="mt-1 text-gray-600 dark:text-gray-400">Check the people and games before saving. You can go back to any step without losing your selections.</p>
+                <h3 id="review-heading" class="text-lg font-medium text-bv-text">Review this group memory</h3>
+                <p class="mt-1 text-bv-text-muted">Check the people and games before saving. You can go back to any step without losing your selections.</p>
             </div>
             <dl class="grid gap-3 sm:grid-cols-2">
-                <div class="rounded-xl border border-gray-200 p-4 dark:border-zinc-700"><dt class="text-sm text-secondary">Group</dt><dd class="mt-1 font-semibold">{{ selectedGroup()?.name }}</dd></div>
-                <div class="rounded-xl border border-gray-200 p-4 dark:border-zinc-700"><dt class="text-sm text-secondary">Session date</dt><dd class="mt-1 font-semibold">{{ sessionDate.value || 'Not set' }}</dd></div>
-                <div class="rounded-xl border border-gray-200 p-4 dark:border-zinc-700"><dt class="text-sm text-secondary">Attendees</dt><dd class="mt-1 font-semibold">{{ getSelectedAttendees().length }}</dd><dd class="mt-2 text-sm text-secondary">{{ getSelectedAttendeeNames() }}</dd></div>
-                <div class="rounded-xl border border-gray-200 p-4 dark:border-zinc-700"><dt class="text-sm text-secondary">Note</dt><dd class="mt-1 text-sm text-secondary">{{ sessionNotes.value?.trim() || 'No note added' }}</dd></div>
+                <div class="rounded-xl border border-bv-border p-4"><dt class="text-sm text-secondary">Group</dt><dd class="mt-1 font-semibold">{{ selectedGroup()?.name }}</dd></div>
+                <div class="rounded-xl border border-bv-border p-4"><dt class="text-sm text-secondary">Session date</dt><dd class="mt-1 font-semibold">{{ sessionDate.value || 'Not set' }}</dd></div>
+                <div class="rounded-xl border border-bv-border p-4"><dt class="text-sm text-secondary">Attendees</dt><dd class="mt-1 font-semibold">{{ getSelectedAttendees().length }}</dd><dd class="mt-2 text-sm text-secondary">{{ getSelectedAttendeeNames() }}</dd></div>
+                <div class="rounded-xl border border-bv-border p-4"><dt class="text-sm text-secondary">Note</dt><dd class="mt-1 text-sm text-secondary">{{ sessionNotes.value?.trim() || 'No note added' }}</dd></div>
             </dl>
-            <div class="rounded-xl border border-gray-200 p-4 dark:border-zinc-700">
+            <div class="rounded-xl border border-bv-border p-4">
                 <h4 class="font-semibold">Games and players</h4>
                 <ul class="mt-3 space-y-3">
                     @for (game of getSelectedGames(); track game.game.id) {
-                    <li class="flex flex-col gap-1 rounded-lg bg-gray-50 p-3 dark:bg-zinc-800/60 sm:flex-row sm:items-center sm:justify-between">
+                    <li class="flex flex-col gap-1 rounded-lg bg-bv-bg p-3 sm:flex-row sm:items-center sm:justify-between">
                         <span class="font-medium">{{ game.game.titleTranslations.en || game.game.title || 'Untitled game' }}</span>
                         <span class="text-sm text-secondary">{{ getSelectedParticipantCount(game.game.id) }} player{{ getSelectedParticipantCount(game.game.id) === 1 ? '' : 's' }}</span>
                     </li>
@@ -345,7 +345,7 @@
         }
 
         <!-- Navigation Buttons -->
-        <div class="flex justify-between items-center mt-8 pt-6 border-t border-gray-200 dark:border-zinc-600">
+        <div class="flex justify-between items-center mt-8 pt-6 border-t border-bv-border">
             @if (currentStep() !== 'group') {
             <button appButton variant="secondary" (click)="previousStep()"> Previous </button>
             } @else {

@@ -6,29 +6,29 @@
 <container-wrapper>
     <!-- Stats Section -->
     <div class="mb-8">
-        <h2 class="text-lg font-semibold text-gray-900 mb-4">Your Submission Stats</h2>
+        <h2 class="text-lg font-semibold text-bv-text mb-4">Your Submission Stats</h2>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="bg-white p-4 rounded-lg border border-gray-200">
-                <div class="text-2xl font-bold text-blue-600">{{ proposalStatsLoading() || proposalStatsError() ? '—' : userProposalStats$().totalProposals }}</div>
-                <div class="text-sm text-gray-600">Total Proposals</div>
+            <div class="bg-bv-surface p-4 rounded-lg border border-bv-border">
+                <div class="text-2xl font-bold text-bv-primary">{{ proposalStatsLoading() || proposalStatsError() ? '—' : userProposalStats$().totalProposals }}</div>
+                <div class="text-sm text-bv-text-muted">Total Proposals</div>
             </div>
-            <div class="bg-white p-4 rounded-lg border border-gray-200">
-                <div class="text-2xl font-bold text-green-600">{{ proposalStatsLoading() || proposalStatsError() ? '—' : userProposalStats$().approvedProposals }}</div>
-                <div class="text-sm text-gray-600">Approved</div>
+            <div class="bg-bv-surface p-4 rounded-lg border border-bv-border">
+                <div class="text-2xl font-bold text-bv-success">{{ proposalStatsLoading() || proposalStatsError() ? '—' : userProposalStats$().approvedProposals }}</div>
+                <div class="text-sm text-bv-text-muted">Approved</div>
             </div>
-            <div class="bg-white p-4 rounded-lg border border-gray-200">
-                <div class="text-2xl font-bold text-red-600">{{ proposalStatsLoading() || proposalStatsError() ? '—' : userProposalStats$().rejectedProposals }}</div>
-                <div class="text-sm text-gray-600">Rejected</div>
+            <div class="bg-bv-surface p-4 rounded-lg border border-bv-border">
+                <div class="text-2xl font-bold text-bv-danger">{{ proposalStatsLoading() || proposalStatsError() ? '—' : userProposalStats$().rejectedProposals }}</div>
+                <div class="text-sm text-bv-text-muted">Rejected</div>
             </div>
-            <div class="bg-white p-4 rounded-lg border border-gray-200">
-                <div class="text-2xl font-bold text-purple-600">{{ proposalStatsLoading() || proposalStatsError() ? '—' : userProposalStats$().reputationScore }}</div>
-                <div class="text-sm text-gray-600">Reputation Score</div>
+            <div class="bg-bv-surface p-4 rounded-lg border border-bv-border">
+                <div class="text-2xl font-bold text-bv-primary">{{ proposalStatsLoading() || proposalStatsError() ? '—' : userProposalStats$().reputationScore }}</div>
+                <div class="text-sm text-bv-text-muted">Reputation Score</div>
             </div>
         </div>
     </div>
 
     @if (proposalStatsError() || proposalsError()) {
-        <div class="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900" role="alert">
+        <div class="mb-6 rounded-lg border border-bv-warning/30 bg-bv-warning/10 p-4 text-sm text-bv-warning" role="alert">
             <p>Submission data could not be loaded.</p>
             <button appButton class="mt-3" icon="arrow-repeat" (click)="retryProposals()">Retry</button>
         </div>
@@ -36,17 +36,17 @@
 
     <!-- Proposals List -->
     <div>
-        <h2 class="text-lg font-semibold text-gray-900 mb-4">Your Game Proposals</h2>
+        <h2 class="text-lg font-semibold text-bv-text mb-4">Your Game Proposals</h2>
         @if (proposalsLoading()) {
-            <div class="py-12 text-center text-gray-500" role="status">Loading your proposals…</div>
+            <div class="py-12 text-center text-bv-text-muted" role="status">Loading your proposals…</div>
         } @else if (!proposalsError() && userProposals$().length === 0) {
             <div class="text-center py-12">
-                <div class="text-gray-500 mb-4">
-                    <app-icon name="file-text" [size]="48" className="mx-auto text-gray-400" aria-hidden="true" />
+                <div class="text-bv-text-muted mb-4">
+                    <app-icon name="file-text" [size]="48" className="mx-auto text-bv-text-muted" aria-hidden="true" />
  
                 </div>
-                <h3 class="text-lg font-medium text-gray-900 mb-2">No proposals yet</h3>
-                <p class="text-gray-500 mb-4">Start contributing to our game collection by submitting your first proposal!</p>
+                <h3 class="text-lg font-medium text-bv-text mb-2">No proposals yet</h3>
+                <p class="text-bv-text-muted mb-4">Start contributing to our game collection by submitting your first proposal!</p>
                 <button appButton icon="plus-lg" (click)="showSubmissionModal()">Submit Your First Game</button>
             </div>
         }
@@ -54,11 +54,11 @@
         @if (userProposals$().length > 0) {
             <div class="space-y-4">
                 @for (proposal of userProposals$(); track proposal.id) {
-                    <div class="bg-white border border-gray-200 rounded-lg p-6">
+                    <div class="bg-bv-surface border border-bv-border rounded-lg p-6">
                         <div class="flex items-start justify-between">
                             <div class="flex-1">
                                 <div class="flex items-center gap-3 mb-2">
-                                    <h3 class="text-lg font-semibold text-gray-900">{{ proposal.title }}</h3>
+                                    <h3 class="text-lg font-semibold text-bv-text">{{ proposal.title }}</h3>
                                     <span 
                                         class="px-2 py-1 text-xs font-medium rounded-full border"
                                         [class]="getStatusBadgeClass(proposal.status)"
@@ -70,22 +70,22 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     @if (proposal.imageUrl) {
                                         <div class="flex items-center gap-2">
-                                            <span class="text-sm font-medium text-gray-600">Image:</span>
-                                            <a [href]="proposal.imageUrl" target="_blank" class="text-blue-600 hover:underline text-sm">View Image</a>
+                                            <span class="text-sm font-medium text-bv-text-muted">Image:</span>
+                                            <a [href]="proposal.imageUrl" target="_blank" class="text-bv-primary hover:underline text-sm">View Image</a>
                                         </div>
                                     }
                                     
                                     @if (proposal.gameAvgDuration) {
                                         <div class="flex items-center gap-2">
-                                            <span class="text-sm font-medium text-gray-600">Duration:</span>
-                                            <span class="text-sm text-gray-900">{{ proposal.gameAvgDuration }} minutes</span>
+                                            <span class="text-sm font-medium text-bv-text-muted">Duration:</span>
+                                            <span class="text-sm text-bv-text">{{ proposal.gameAvgDuration }} minutes</span>
                                         </div>
                                     }
                                     
                                     @if (proposal.minPlayers || proposal.maxPlayers) {
                                         <div class="flex items-center gap-2">
-                                            <span class="text-sm font-medium text-gray-600">Players:</span>
-                                            <span class="text-sm text-gray-900">
+                                            <span class="text-sm font-medium text-bv-text-muted">Players:</span>
+                                            <span class="text-sm text-bv-text">
                                                 {{ proposal.minPlayers || '?' }}-{{ proposal.maxPlayers || '?' }}
                                             </span>
                                         </div>
@@ -93,27 +93,27 @@
                                     
                                     @if (proposal.proposedTags) {
                                         <div class="flex items-center gap-2">
-                                            <span class="text-sm font-medium text-gray-600">Tags:</span>
-                                            <span class="text-sm text-gray-900">{{ proposal.proposedTags }}</span>
+                                            <span class="text-sm font-medium text-bv-text-muted">Tags:</span>
+                                            <span class="text-sm text-bv-text">{{ proposal.proposedTags }}</span>
                                         </div>
                                     }
                                 </div>
                                 
                                 @if (proposal.notes) {
                                     <div class="mb-4">
-                                        <span class="text-sm font-medium text-gray-600">Notes:</span>
-                                        <p class="text-sm text-gray-900 mt-1">{{ proposal.notes }}</p>
+                                        <span class="text-sm font-medium text-bv-text-muted">Notes:</span>
+                                        <p class="text-sm text-bv-text mt-1">{{ proposal.notes }}</p>
                                     </div>
                                 }
                                 
                                 @if (proposal.reviewNotes) {
                                     <div class="mb-4">
-                                        <span class="text-sm font-medium text-gray-600">Review Notes:</span>
-                                        <p class="text-sm text-gray-900 mt-1">{{ proposal.reviewNotes }}</p>
+                                        <span class="text-sm font-medium text-bv-text-muted">Review Notes:</span>
+                                        <p class="text-sm text-bv-text mt-1">{{ proposal.reviewNotes }}</p>
                                     </div>
                                 }
                                 
-                                <div class="flex items-center gap-4 text-sm text-gray-500">
+                                <div class="flex items-center gap-4 text-sm text-bv-text-muted">
                                     <span>Submitted: {{ formatDate(proposal.submittedAt) }}</span>
                                     @if (proposal.reviewedAt) {
                                         <span>Reviewed: {{ formatDate(proposal.reviewedAt) }}</span>
