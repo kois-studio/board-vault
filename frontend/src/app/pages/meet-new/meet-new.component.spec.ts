@@ -25,7 +25,7 @@ describe('MeetNewComponent social handoff', () => {
         ],
     }
 
-    const setup = async (queryParams: Record<string, string> = {}) => {
+    const setup = async (queryParams: Record<string, string> = {}, groupData = group) => {
         const api = {
             scheduleSession: vi
                 .fn()
@@ -40,7 +40,7 @@ describe('MeetNewComponent social handoff', () => {
         }
         const dataService = {
             currentUser: signal({ id: 1 }),
-            userGroups: signal([group]),
+            userGroups: signal([groupData]),
             invitationsGroupIndex: signal({}),
             userGroupsError: signal(false),
             refreshUserMeets: vi.fn().mockName('refreshUserMeets'),
@@ -65,6 +65,23 @@ describe('MeetNewComponent social handoff', () => {
         fixture.detectChanges()
         return { fixture, component: fixture.componentInstance, api, dataService, loadingService }
     }
+
+    it('lets a long unbroken attendee name wrap instead of overflowing its card', async () => {
+        const longName = '⸻'.repeat(20)
+        const { fixture } = await setup({}, { ...group, members: [group.members[0], { ...group.members[1], displayName: longName }] })
+
+        const label = [...fixture.nativeElement.querySelectorAll('label')].find((element: HTMLElement) =>
+            element.textContent?.includes(longName),
+        ) as HTMLLabelElement
+        const [name, gameCount] = [...label.querySelectorAll('span')] as Array<HTMLSpanElement>
+
+        // jsdom has no layout: assert the classes that let the name shrink and wrap, and keep the count on one line.
+        expect(name.textContent?.trim()).toBe(longName)
+        expect(name.classList).toContain('min-w-0')
+        expect(name.classList).toContain('wrap-anywhere')
+        expect(gameCount.classList).toContain('shrink-0')
+        expect(gameCount.classList).toContain('whitespace-nowrap')
+    })
 
     it('restores selected attendees and the recommended game from the decision handoff', async () => {
         const { component } = await setup({ attendeeIds: '2', plannedGameId: '42' })

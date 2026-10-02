@@ -89,16 +89,16 @@
                   @for (person of groupPeople; track person.person.id) {
                     <label class="flex items-center gap-3 rounded-lg border border-zinc-200 dark:border-zinc-700 p-3 cursor-pointer has-[:checked]:border-indigo-500">
                       <input type="checkbox" [checked]="selectedAttendeeIds.includes(person.person.id)" (change)="toggleAttendee(person.person.id)" />
-                      <span>{{ getGroupPersonName(person) }}</span>
-                      <span class="text-secondary text-sm ml-auto">{{ getGroupPersonGameCount(person) }} games</span>
+                      <span class="min-w-0 wrap-anywhere">{{ getGroupPersonName(person) }}</span>
+                      <span class="text-secondary text-sm ml-auto shrink-0 whitespace-nowrap">{{ getGroupPersonGameCount(person) }} games</span>
                     </label>
                   }
                 } @else {
                   @for (member of groupData?.members ?? []; track member.id) {
                     <label class="flex items-center gap-3 rounded-lg border border-zinc-200 dark:border-zinc-700 p-3 cursor-pointer has-[:checked]:border-indigo-500">
                       <input type="checkbox" [checked]="selectedAttendeeIds.includes(member.id)" (change)="toggleAttendee(member.id)" />
-                      <span>{{ member.displayName || member.username }}</span>
-                      <span class="text-secondary text-sm ml-auto">{{ member.games.length }} games</span>
+                      <span class="min-w-0 wrap-anywhere">{{ member.displayName || member.username }}</span>
+                      <span class="text-secondary text-sm ml-auto shrink-0 whitespace-nowrap">{{ member.games.length }} games</span>
                     </label>
                   }
                 }

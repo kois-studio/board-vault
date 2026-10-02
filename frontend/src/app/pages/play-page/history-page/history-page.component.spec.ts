@@ -86,4 +86,52 @@ describe('HistoryPageComponent shared-memory summaries', () => {
         expect(fixture.nativeElement.textContent).toContain('That group is not available')
         expect(fixture.nativeElement.textContent).not.toContain('has no recorded sessions yet')
     })
+
+    it('keeps long unbroken player names inside the session card', async () => {
+        const longName = '⸻'.repeat(20)
+        const dataService = {
+            currentUser: signal(null),
+            userGroups: signal([{ id: 7, name: 'Friday Crew' }]),
+            userGroupsError: signal(false),
+            userHistory: signal([
+                {
+                    meetData: { id: 11, groupId: 7, meetDate: '2026-09-05T19:00:00.000Z', timezone: 'Europe/Madrid', notes: null },
+                    attendedBy: [{ id: 5, displayName: longName, username: 'long-name' }],
+                    gamesPlayed: [
+                        {
+                            gameData: { id: 42, title: 'Cascadia', titleTranslations: { en: 'Cascadia' } },
+                            playedBy: [{ id: 5, displayName: longName, username: 'long-name' }],
+                        },
+                    ],
+                },
+            ]),
+            userHistoryError: signal(false),
+            refreshUserHistory: vi.fn().mockName('refreshUserHistory'),
+        }
+
+        await TestBed.configureTestingModule({
+            imports: [HistoryPageComponent],
+            providers: [
+                { provide: DataService, useValue: dataService },
+                { provide: LoadingService, useValue: { loadingStatesIndex: signal({ [LOADING_KEYS.USER_GAMES_HISTORY]: false }) } },
+                { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: convertToParamMap({}) } } },
+                provideRouter([]),
+            ],
+        }).compileComponents()
+
+        const fixture = TestBed.createComponent(HistoryPageComponent)
+        fixture.detectChanges()
+
+        // jsdom has no layout: assert the classes that keep the text inside the card.
+        const playedBy = fixture.nativeElement.querySelector('[title^="Played by"]') as HTMLElement
+        expect(playedBy.title).toBe(`Played by ${longName}`)
+        expect(playedBy.getAttribute('aria-label')).toBe(`Played by ${longName}`)
+        expect([...playedBy.classList]).toEqual(expect.arrayContaining(['min-w-0', 'line-clamp-2', 'wrap-anywhere']))
+
+        const attendees = [...fixture.nativeElement.querySelectorAll('article p')].find((element: HTMLElement) =>
+            element.textContent?.includes(longName),
+        ) as HTMLParagraphElement
+        expect(attendees.classList).toContain('wrap-anywhere')
+        expect(attendees.parentElement?.classList).toContain('min-w-0')
+    })
 })
