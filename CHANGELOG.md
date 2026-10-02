@@ -69,6 +69,9 @@ operational details.
   "Skip to main content" link stay on the current page. Under
   `<base href="/">` they resolved to `/#section` and reloaded the app on the
   landing page; they now scroll to the section and move focus to it.
+- "Submit Your First Game" and "Submit New Game" show the game proposal
+  form again. The dialog's Tailwind 3 backdrop was opaque and painted over
+  the form under Tailwind 4.
 
 ### Added
 

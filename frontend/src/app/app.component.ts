@@ -82,8 +82,18 @@ export class AppComponent {
             },
             {
                 match: /^\/dashboard$/,
-                title: 'Dashboard — Board Vault',
+                title: 'Home — Board Vault',
                 description: 'See what your group should do next, from one focused workspace.',
+            },
+            {
+                match: /^\/submissions$/,
+                title: 'My submissions — Board Vault',
+                description: 'Propose games for the shared catalogue and follow their review.',
+            },
+            {
+                match: /^\/create-group$/,
+                title: 'Create a group — Board Vault',
+                description: 'Start a private board-game group and invite the people you play with.',
             },
             {
                 match: /^\/groups(?:\/|$)/,
