@@ -1,4 +1,6 @@
-import { DatabaseService } from './database.service'
+import { ProviderTimeoutError } from '../../../common/http/provider-timeout'
+
+import { DatabaseService, isReadOnlySql } from './database.service'
 
 import type { ConfigService } from '@nestjs/config'
 
@@ -1210,5 +1212,65 @@ describe('DatabaseService logging', () => {
         expect(transaction.execute).toHaveBeenCalledTimes(1)
         expect(transaction.commit).toHaveBeenCalledTimes(1)
         expect(transaction.rollback).not.toHaveBeenCalled()
+    })
+})
+
+describe('DatabaseService timeouts', () => {
+    const serviceWith = (execute: jest.Mock) => {
+        const service = new DatabaseService({} as ConfigService)
+
+        ;(service as unknown as { tursoClient: { execute: jest.Mock } }).tursoClient = { execute }
+        jest.spyOn((service as unknown as { LOGGER: { warn: (message: string) => void } }).LOGGER, 'warn').mockImplementation()
+        return service
+    }
+
+    it('retries a read once when Turso times out, and logs the retry without the SQL', async () => {
+        const execute = jest
+            .fn()
+            .mockRejectedValueOnce(new ProviderTimeoutError('database'))
+            .mockResolvedValueOnce({ rows: [{ id: 6 }] })
+        const service = serviceWith(execute)
+        const statement = { sql: 'SELECT id FROM Account WHERE clerkUserId = ?', args: ['user_123'] }
+
+        await expect(service.execute(statement)).resolves.toEqual({ rows: [{ id: 6 }] })
+        expect(execute).toHaveBeenCalledTimes(2)
+        expect(execute).toHaveBeenNthCalledWith(2, statement)
+        const warn = (service as unknown as { LOGGER: { warn: jest.Mock } }).LOGGER.warn
+
+        expect(warn).toHaveBeenCalledWith('{"event":"database.retry","reason":"timeout"}')
+    })
+
+    it('gives up after the retry so a slow database still answers with a timeout', async () => {
+        const execute = jest.fn().mockRejectedValue(new ProviderTimeoutError('database'))
+
+        await expect(serviceWith(execute).execute('SELECT 1')).rejects.toBeInstanceOf(ProviderTimeoutError)
+        expect(execute).toHaveBeenCalledTimes(2)
+    })
+
+    it('never retries a write, which may have been applied before the timeout', async () => {
+        const execute = jest.fn().mockRejectedValue(new ProviderTimeoutError('database'))
+
+        await expect(serviceWith(execute).execute({ sql: 'INSERT INTO Meet (groupId) VALUES (?)', args: [1] })).rejects.toBeInstanceOf(
+            ProviderTimeoutError,
+        )
+        expect(execute).toHaveBeenCalledTimes(1)
+    })
+
+    it('does not retry errors other than a timeout', async () => {
+        const execute = jest.fn().mockRejectedValue(new Error('SQLITE_ERROR: no such table'))
+
+        await expect(serviceWith(execute).execute('SELECT * FROM Missing')).rejects.toThrow('no such table')
+        expect(execute).toHaveBeenCalledTimes(1)
+    })
+
+    it('treats only statements without write keywords as reads', () => {
+        expect(isReadOnlySql('SELECT id, isDeleted, updated_at FROM Account')).toBe(true)
+        expect(isReadOnlySql('\n    WITH selected_people AS (SELECT 1) SELECT * FROM selected_people')).toBe(true)
+        expect(isReadOnlySql('select 1')).toBe(true)
+        expect(isReadOnlySql('INSERT INTO Meet (groupId) VALUES (?)')).toBe(false)
+        expect(isReadOnlySql('UPDATE Account SET isAdmin = 1')).toBe(false)
+        expect(isReadOnlySql('DELETE FROM Meet WHERE id = ?')).toBe(false)
+        expect(isReadOnlySql('WITH old AS (SELECT id FROM Meet) DELETE FROM Meet WHERE id IN (SELECT id FROM old)')).toBe(false)
+        expect(isReadOnlySql('SELECT 1 RETURNING id; UPDATE Account SET username = ?')).toBe(false)
     })
 })

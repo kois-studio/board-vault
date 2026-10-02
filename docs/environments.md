@@ -88,5 +88,6 @@ Only public values may go there. The API base URL is fixed per build in
 - **Logs:** on Vercel the API writes one JSON object per line. Every line
   inside a request has its `requestId` (also returned as `X-Request-Id` and in
   error bodies); `http.request.completed` adds the route template, status,
-  duration, and account id; `provider.timeout` marks a slow provider. Search
+  duration, and account id; `provider.timeout` marks a slow provider and
+  `database.retry` a read retried after a database timeout. Search
   Vercel logs by any of these values. No bodies, emails, or tokens are logged.
