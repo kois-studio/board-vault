@@ -1,5 +1,5 @@
 <!-- Dialog overlay -->
-@if (isVisible) {
+@if (isVisible()) {
 <div class="fixed inset-0 bg-zinc-900/60 flex justify-center items-center" role="presentation" (click)="hideDialog()">
     <!-- Dialog box -->
     <div appDialog (dialogClosed)="hideDialog()" class="relative max-h-[90vh] w-[calc(100%-2rem)] max-w-xl overflow-y-auto rounded border border-zinc-700 bg-zinc-900" aria-labelledby="invitations-dialog-title" (click)="$event.stopPropagation()">

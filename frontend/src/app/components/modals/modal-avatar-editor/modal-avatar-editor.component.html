@@ -1,5 +1,5 @@
 <!-- Dialog overlay -->
-@if (isVisible) {
+@if (isVisible()) {
 <div class="fixed inset-0 bg-zinc-900/60 flex justify-center items-center z-50" (click)="hideDialog()">
     <!-- Dialog box -->
     <div appDialog (dialogClosed)="hideDialog()" class="bg-white dark:bg-zinc-800 rounded border border-zinc-700 w-full h-full sm:h-auto sm:w-3/4 max-w-xl relative pt-4" (click)="$event.stopPropagation()">

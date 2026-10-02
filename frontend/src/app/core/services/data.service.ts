@@ -409,7 +409,7 @@ export class DataService {
                     this.toastService.success('User data updated')
                 },
                 error: () => {
-                    this.toastService.error('Error getting users email, log again')
+                    this.toastService.error('Your profile could not be updated. Please try again.')
                 },
             })
     }

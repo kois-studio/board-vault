@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core'
+import { Component, inject, signal } from '@angular/core'
 import { CardNotificationComponent } from '../../../../components/card-notification/card-notification.component'
 import { DialogDirective } from '../../../../components/ui/dialog/dialog.directive'
 import { IconComponent } from '../../../../components/ui/icon/icon.component'
@@ -12,16 +12,16 @@ import { DataService } from '../../../../core/services/data.service'
 })
 export class ModalProfileNotificationsComponent {
     private readonly dataService = inject(DataService)
-    public isVisible = false
+    public readonly isVisible = signal(false)
     public readonly userNotifications = this.dataService.userNotifications
     public readonly isLoading = this.dataService.userNotificationsLoading
     public readonly hasError = this.dataService.userNotificationsError
     public showDialog() {
-        this.isVisible = true
+        this.isVisible.set(true)
     }
 
     public hideDialog() {
-        this.isVisible = false
+        this.isVisible.set(false)
     }
 
     public retry() {

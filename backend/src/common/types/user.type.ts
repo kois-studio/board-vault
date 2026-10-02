@@ -1,8 +1,33 @@
 import { ApiProperty, PickType } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
-import { ArrayMaxSize, IsArray, IsIn, IsInt, IsNotEmpty, IsOptional, IsString, MaxLength, Min, ValidateNested } from 'class-validator'
+import {
+    ArrayMaxSize,
+    IsArray,
+    IsIn,
+    IsInt,
+    IsNotEmpty,
+    IsOptional,
+    IsString,
+    isNotEmpty,
+    MaxLength,
+    Min,
+    ValidateBy,
+    ValidateNested,
+} from 'class-validator'
 
 import { GameCompleteDto } from './game.type'
+
+// Initials are only shown, and so only required, on an initials avatar. Icon
+// and emoji avatars may keep empty initials, and the API must accept back the
+// avatar it returned.
+const RequiredForInitialsAvatar = () =>
+    ValidateBy({
+        name: 'requiredForInitialsAvatar',
+        validator: {
+            validate: (value, args) => (args?.object as AvatarDto | undefined)?.type !== 'initials' || isNotEmpty(value),
+            defaultMessage: () => 'initials should not be empty for an initials avatar',
+        },
+    })
 
 export class AvatarDto {
     @ApiProperty({ example: '#3B82F6' })
@@ -29,7 +54,7 @@ export class AvatarDto {
 
     @ApiProperty({ example: 'AB' })
     @IsString()
-    @IsNotEmpty()
+    @RequiredForInitialsAvatar()
     @MaxLength(8)
     initials: string
 }
