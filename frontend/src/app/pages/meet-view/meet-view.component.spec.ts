@@ -1,7 +1,7 @@
 import { signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
-import { ActivatedRoute, convertToParamMap } from '@angular/router'
-import { of, throwError } from 'rxjs'
+import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router'
+import { of, Subject, throwError } from 'rxjs'
 import { Api } from '../../api/api'
 import type { MeetWithAttendeesAndGamesType } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
@@ -220,5 +220,101 @@ describe('MeetViewComponent participant safeguards', () => {
         await component.toggleGroupPersonGameParticipant(42, 12)
         expect(api.updateSessionPlayedGames).toHaveBeenCalledTimes(1)
         expect(toastService.error).toHaveBeenCalledWith('Keep at least one participant for each played game.')
+    })
+})
+
+describe('MeetViewComponent rendered lifecycle actions', () => {
+    const scheduledMeet = (): MeetWithAttendeesAndGamesType => ({
+        id: 59,
+        groupId: 7,
+        createdBy: 1,
+        meetDate: '2026-10-14T17:00:00.000Z',
+        isConfirmed: false,
+        status: 'scheduled',
+        timezone: 'Europe/Madrid',
+        notes: null,
+        attendees: [1],
+        attendeeStatuses: [{ accountId: 1, rsvpStatus: 'pending', attendanceStatus: 'unknown' }],
+        playedGames: [],
+        plannedGames: [],
+        skippedGames: [],
+        playedGameParticipants: [],
+    })
+
+    // The API answers after the click handler returns, as a real request does.
+    const setup = async () => {
+        const statusResponse = new Subject<{ sessionId: number; status: 'active' }>()
+        const rsvpResponse = new Subject<{ sessionId: number; rsvpStatus: 'accepted' }>()
+        const api = {
+            getSessionDetailsById: vi.fn().mockReturnValue(of(scheduledMeet())),
+            getGroupPeople: vi.fn().mockReturnValue(of({ people: [] })),
+            updateSessionStatus: vi.fn().mockReturnValue(statusResponse),
+            updateSessionRsvp: vi.fn().mockReturnValue(rsvpResponse),
+        }
+        const dataService = {
+            currentUser: signal({ id: 1, username: 'ana', displayName: 'Ana', avatar: null }),
+            userGroups: signal([
+                {
+                    id: 7,
+                    name: 'Thursday group',
+                    createdBy: 1,
+                    members: [{ id: 1, username: 'ana', displayName: 'Ana', avatar: null, games: [], reviews: [] }],
+                    games: [],
+                },
+            ]),
+            userReviews: signal([]),
+            refreshUserMeets: vi.fn(),
+            refreshUserHistory: vi.fn(),
+        }
+
+        await TestBed.configureTestingModule({
+            imports: [MeetViewComponent],
+            providers: [
+                provideRouter([]),
+                { provide: Api, useValue: api },
+                { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ sessionId: '59' }) } } },
+                { provide: DataService, useValue: dataService },
+                { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn() } },
+            ],
+        }).compileComponents()
+
+        const fixture = TestBed.createComponent(MeetViewComponent)
+        fixture.autoDetectChanges()
+        await fixture.whenStable()
+        const element = fixture.nativeElement as HTMLElement
+        const button = (name: string) => [...element.querySelectorAll('button')].find((b) => b.textContent?.trim() === name)
+        return { fixture, element, button, statusResponse, rsvpResponse }
+    }
+
+    it('shows the live session once Start game night is saved', async () => {
+        const { fixture, element, button, statusResponse } = await setup()
+
+        button('Start game night')?.click()
+        await fixture.whenStable()
+        expect(button('Start game night')?.disabled).toBe(true)
+
+        statusResponse.next({ sessionId: 59, status: 'active' })
+        statusResponse.complete()
+        await fixture.whenStable()
+
+        expect(button('Start game night')).toBeUndefined()
+        expect(button('Finish and save memory')?.disabled).toBe(false)
+        expect(button('Cancel session')?.disabled).toBe(false)
+        expect(element.textContent).toContain('Game night is live')
+    })
+
+    it('marks you as going and frees the RSVP buttons once the RSVP is saved', async () => {
+        const { fixture, button, rsvpResponse } = await setup()
+
+        button('I’m going')?.click()
+        await fixture.whenStable()
+        expect(button('I’m going')?.disabled).toBe(true)
+
+        rsvpResponse.next({ sessionId: 59, rsvpStatus: 'accepted' })
+        rsvpResponse.complete()
+        await fixture.whenStable()
+
+        expect(button('Going ✓')?.disabled).toBe(false)
+        expect(button('Can’t make it')?.disabled).toBe(false)
     })
 })

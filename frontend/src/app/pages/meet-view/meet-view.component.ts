@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, effect, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, effect, signal } from '@angular/core'
 import { ActivatedRoute, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../api/api'
@@ -35,6 +35,10 @@ import type { Nullable } from '../../core/types/commons.type'
         DialogDirective,
     ],
     templateUrl: 'meet-view.component.html',
+    // Angular 22 makes components OnPush. This page keeps most of its state in plain fields
+    // that change after each request (status, RSVP, attendance, shortlist), so it must be
+    // checked eagerly or the view stays as it was before the click.
+    changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class MeetViewComponent {
     public loaded = false

@@ -110,6 +110,11 @@ operational details.
   notifications dialogs in the profile menu open again. They had stopped
   rendering under Angular 22's default `OnPush` change detection. Saving an
   avatar now sends one profile update instead of two.
+- The session page updates after its actions again. Start game night, the
+  RSVP buttons, attendance, the shortlist, and ratings were saved but the page
+  kept showing the old state with the buttons disabled until a reload, because
+  it keeps its state in plain fields that Angular 22's default `OnPush` change
+  detection does not watch. The page is checked eagerly now.
 - Avatar changes save again for icon and emoji avatars with empty initials:
   the API requires initials only for an initials avatar. The editor no longer
   shows an unsaved avatar as if it were saved, and a failed profile update
