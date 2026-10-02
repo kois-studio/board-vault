@@ -78,7 +78,7 @@
                             Cancelling keeps the session for context but prevents later RSVP, attendance, shortlist, and played-game edits.
                         }
                     </p>
-                    <dl class="mt-5 grid gap-3 sm:grid-cols-3">
+                    <dl class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
                         <div class="rounded-2xl bg-bv-bg p-3"><dt class="text-xs text-secondary">Played</dt><dd class="mt-1 text-xl font-bold">{{ playedGamesCount }}</dd></div>
                         <div class="rounded-2xl bg-bv-bg p-3"><dt class="text-xs text-secondary">Still planned</dt><dd class="mt-1 text-xl font-bold">{{ remainingPlannedGamesCount }}</dd></div>
                         <div class="rounded-2xl bg-bv-bg p-3"><dt class="text-xs text-secondary">Already skipped</dt><dd class="mt-1 text-xl font-bold">{{ skippedGamesCount }}</dd></div>
@@ -92,7 +92,7 @@
             </div>
         }
 
-        <section class="grid gap-3 sm:grid-cols-2 lg:grid-cols-5 mt-6" aria-label="Session summary">
+        <section class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5 mt-6" aria-label="Session summary">
             <div class="app-bg-secondary rounded-lg p-4">
                 <p class="text-secondary text-sm">{{ meetData?.status === 'scheduled' || meetData?.status === 'active' ? 'Expected players' : 'Invited players' }}</p>
                 <p class="text-2xl font-bold mt-1">{{ attendeeCount }}</p>
@@ -357,7 +357,7 @@
                     <h2 id="feedback-heading" class="text-xl font-semibold">How did it go for you?</h2>
                     <p class="text-secondary text-sm mt-1">Rate the games you actually played. Your rating helps this group choose better next time.</p>
                 </div>
-                <div class="grid gap-3 sm:grid-cols-2">
+                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     @for (game of playedGameDetails; track game.id) {
                         <label class="flex items-center gap-3 rounded-lg border border-bv-border p-3">
                             <image-background [src]="game.imageUrl" [alt]="(game.titleTranslations.en || game.title || 'Game') + ' cover'" class="h-12 w-12 shrink-0" />

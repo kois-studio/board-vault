@@ -21,7 +21,7 @@
                     </div>
                     <span class="rounded-full bg-bv-surface px-3 py-1 text-sm font-semibold text-bv-primary">{{ userInvitations$().length }} pending</span>
                 </div>
-                <ul class="mt-5 grid gap-4 lg:grid-cols-2">
+                <ul class="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-2">
                     @for (invitation of userInvitations$(); track invitation.id) {
                         <li><app-card-invitation [invitation]="invitation" /></li>
                     }
@@ -36,7 +36,7 @@
                 <a routerLink="/play/upcoming-sessions" class="text-sm font-semibold text-bv-primary hover:underline">All upcoming</a>
             </div>
             @if (isLoadingMeets() && upcomingSessions().length === 0) {
-                <div class="grid gap-4 md:grid-cols-3" aria-busy="true">
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-3" aria-busy="true">
                     @for (item of [1, 2, 3]; track item) {
                         <div class="h-24 animate-pulse rounded-2xl bg-bv-surface-2"></div>
                     }
@@ -54,7 +54,7 @@
                     }
                 </div>
             } @else {
-                <ul class="grid gap-4 md:grid-cols-3">
+                <ul class="grid grid-cols-1 gap-4 md:grid-cols-3">
                     @for (meet of upcomingSessions(); track meet.id) {
                         <li>
                             <a [routerLink]="['/sessions', meet.id]" class="flex h-full items-start gap-4 rounded-2xl border border-bv-border bg-bv-surface p-5 transition hover:border-bv-primary/30 hover:shadow-sm">
@@ -82,7 +82,7 @@
                 }
             </div>
             @if (isLoadingGroups() && userGroups$().length === 0) {
-                <div class="grid gap-6 xl:grid-cols-2" aria-busy="true" aria-label="Loading your groups">
+                <div class="grid grid-cols-1 gap-6 xl:grid-cols-2" aria-busy="true" aria-label="Loading your groups">
                     @for (item of [1, 2]; track item) {
                         <app-skeleton-card-group />
                     }
@@ -101,7 +101,7 @@
                     <a appButton routerLink="/create-group" class="mt-5">Create your first group</a>
                 </div>
             } @else {
-                <div class="grid gap-6 xl:grid-cols-2">
+                <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
                     @for (group of userGroups$(); track group.id) {
                         <app-card-group [group]="group" [invitations]="invitationsGroupIndex$()[group.id]" />
                     }
@@ -140,7 +140,7 @@
         @if (showGettingStarted()) {
             <section aria-labelledby="setup-heading">
                 <h2 id="setup-heading" class="mb-4 text-xl font-bold">Getting started</h2>
-                <div class="grid gap-4 md:grid-cols-3">
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
                     <a routerLink="/collection/browse" class="rounded-2xl border border-bv-border bg-bv-surface p-5 transition hover:border-bv-primary/30 hover:shadow-sm">
                         <span class="text-bv-primary" aria-hidden="true"><app-icon name="circle-plus" [size]="26" /></span>
                         <h3 class="mt-3 font-semibold">Add the games you own</h3>

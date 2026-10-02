@@ -61,7 +61,7 @@
                         <a appButton variant="secondary" class="shrink-0 text-center" appInPageLink="sessions">Skip to session planning</a>
                     </div>
 
-                    <ol class="mt-6 grid gap-3 lg:grid-cols-3">
+                    <ol class="mt-6 grid grid-cols-1 gap-3 lg:grid-cols-3">
                         <li class="rounded-2xl border border-bv-border/80 bg-bv-surface p-4">
                             <div class="flex items-start gap-3">
                                 <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-bv-primary text-sm font-bold text-bv-on-primary">1</span>
@@ -163,9 +163,9 @@
                         <p class="mt-1 text-sm text-secondary">Add the people who usually play with you so recommendations and history can include them.</p>
                     </div>
                 } @else {
-                    <div class="mt-5 grid gap-4 md:grid-cols-2">
+                    <div class="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
                         @for (person of groupPeople$(); track person.person.id) {
-                            <article class="rounded-2xl border border-bv-border bg-bv-surface p-4 shadow-sm">
+                            <article class="min-w-0 rounded-2xl border border-bv-border bg-bv-surface p-4 shadow-sm">
                                 <div class="flex items-start justify-between gap-3">
                                     <div class="min-w-0">
                                         <div class="flex flex-wrap items-center gap-2">
@@ -249,7 +249,7 @@
                 }
             </section>
 
-            <section class="order-1 grid gap-4 lg:grid-cols-3" aria-label="Group overview">
+            <section class="order-1 grid grid-cols-1 gap-4 lg:grid-cols-3" aria-label="Group overview">
                 <article class="rounded-2xl bg-bv-primary p-6 text-bv-on-primary shadow-lg lg:col-span-2">
                     <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-on-primary/80">Next game night</p>
                     @if (nextMeetingComputed(); as nextMeeting) {
@@ -335,7 +335,7 @@
                         <a appButton class="mt-5" [routerLink]="['/collection/browse']" [queryParams]="{ groupId: group.id }">Find a game to add</a>
                     </div>
                 } @else {
-                    <div class="mt-5 grid gap-4 md:grid-cols-2">
+                    <div class="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
                         @for (entry of acquisitionBoard$(); track entry.gameData.id) {
                             <article class="flex min-w-0 gap-4 rounded-2xl border border-bv-border bg-bv-surface p-4 shadow-sm">
                                 <a
@@ -420,7 +420,7 @@
                     <span class="text-sm font-medium text-bv-primary">{{ selectedMembersLabel() }}</span>
                 </div>
 
-                <div class="mt-5 grid gap-3 md:grid-cols-2">
+                <div class="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2">
                     @for (member of group.members; track member.id) {
                         <button
                             type="button"
@@ -496,7 +496,7 @@
                         <p class="mt-2 text-secondary">Select more members, clear a filter, or add games to a member’s collection.</p>
                     </div>
                 } @else {
-                    <div class="mt-5 grid gap-4 md:grid-cols-2">
+                    <div class="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
                         @for (game of totalUniqueGamesComputed(); track game.id) {
                             <article class="flex min-w-0 gap-4 rounded-2xl border p-3 transition-colors dark:border-bv-border" [ngClass]="game.active ? 'border-bv-border bg-bv-surface' : 'border-bv-border bg-bv-surface-2 opacity-50'">
                                 <a
@@ -566,7 +566,7 @@
                         <button appButton class="mt-5" icon="plus-lg" (click)="onClickNewMeet()">Plan a session</button>
                     </div>
                 } @else {
-                    <div class="mt-5 grid gap-4 lg:grid-cols-3">
+                    <div class="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-3">
                         @for (historyRecord of recentGroupHistoryComputed(); track historyRecord.meetData.id) {
                             <article class="rounded-2xl border border-bv-border bg-bv-surface p-5 shadow-sm">
                                 <div class="flex items-start justify-between gap-3">
