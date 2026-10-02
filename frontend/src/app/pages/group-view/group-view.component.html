@@ -585,8 +585,8 @@
                                         <li class="flex items-center gap-3">
                                             <image-background class="block h-10 w-10 shrink-0 rounded-lg" [src]="gamePlayed.gameData.imageUrl" [alt]="gamePlayed.gameData.titleTranslations.en + ' cover'" />
                                             <span class="min-w-0 flex-1 truncate text-sm font-medium">{{ gamePlayed.gameData.titleTranslations.en }}</span>
-                                            @if (gamePlayed.playedBy.length + (gamePlayed.playedByPeople?.length ?? 0) > 0) {
-                                                <span class="text-xs text-secondary">{{ gamePlayed.playedBy.length + (gamePlayed.playedByPeople?.length ?? 0) }} played</span>
+                                            @if (getPlayerCount(gamePlayed) > 0) {
+                                                <span class="text-xs text-secondary">{{ getPlayerCount(gamePlayed) }} played</span>
                                             } @else {
                                                 <span class="text-xs text-secondary">Players not recorded</span>
                                             }

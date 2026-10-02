@@ -400,11 +400,11 @@ export type AdminGamesResultType = {
 export type HistoryRecordType = {
     meetData: MeetType
     attendedBy: Array<PublicUserType>
-    attendedByPeople?: Array<{ id: number; displayName: string; avatar: PublicUserType['avatar'] | null }>
+    attendedByPeople?: Array<{ id: number; displayName: string; avatar: PublicUserType['avatar'] | null; accountId?: number | null }>
     gamesPlayed: Array<{
         gameData: GameCompleteType
         playedBy: Array<PublicUserType>
-        playedByPeople?: Array<{ id: number; displayName: string; avatar: PublicUserType['avatar'] | null }>
+        playedByPeople?: Array<{ id: number; displayName: string; avatar: PublicUserType['avatar'] | null; accountId?: number | null }>
     }>
 }
 

@@ -1,5 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
+import type { HistoryRecordType } from '../../../api/api.types'
 import { ImageProfileComponent } from '../../../components/image-profile/image-profile.component'
 import { SkeletonHistoryComponent } from '../../../components/skeletons/skeleton-history/skeleton-history.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
@@ -11,6 +12,7 @@ import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
 import { formatAttendeeSummary } from '../../../core/utils/formatAttendeeSummary'
+import { type HistoryParticipant, mergeHistoryParticipants } from '../../../core/utils/historyParticipants'
 
 @Component({
     imports: [
@@ -70,13 +72,13 @@ export class HistoryPageComponent {
     public readonly historySummary = computed(() => {
         const records = this.sortedUserHistoryComputed()
         const gameCounts = new Map<number, { title: string; count: number }>()
-        const people = new Set<number>()
+        const people = new Set<string>()
         let gamesPlayed = 0
 
         for (const record of records) {
-            for (const attendee of record.attendedBy) people.add(attendee.id)
+            for (const attendee of this.getAttendees(record)) people.add(attendee.key)
             for (const game of record.gamesPlayed) {
-                for (const player of game.playedBy) people.add(player.id)
+                for (const player of this.getPlayers(game)) people.add(player.key)
                 gamesPlayed += 1
                 const current = gameCounts.get(game.gameData.id)
                 gameCounts.set(game.gameData.id, {
@@ -102,6 +104,16 @@ export class HistoryPageComponent {
 
     public getGroupName(groupId: number): string {
         return this.userGroups$().find((group) => group.id === groupId)?.name ?? 'Selected group'
+    }
+
+    /** Attendees recorded as accounts, group people, or both, each listed once. */
+    public getAttendees(record: HistoryRecordType): Array<HistoryParticipant> {
+        return mergeHistoryParticipants(record.attendedBy, record.attendedByPeople)
+    }
+
+    /** Players of one game, recorded as accounts, group people, or both, each listed once. */
+    public getPlayers(game: HistoryRecordType['gamesPlayed'][number]): Array<HistoryParticipant> {
+        return mergeHistoryParticipants(game.playedBy, game.playedByPeople)
     }
 
     public getAttendeeSummary(attendees: Array<{ displayName: string; username: string }>): string {

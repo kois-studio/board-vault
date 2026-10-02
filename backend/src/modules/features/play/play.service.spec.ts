@@ -52,6 +52,75 @@ describe('PlayService history', () => {
         expect(database.sessions.getHistoryDetailsByMeetIds).toHaveBeenCalledWith([10])
     })
 
+    it('links history people to their accounts and uses the account avatar when the person has none', async () => {
+        const accountAvatar = { backgroundColor: '#EF4444', iconName: null, emoji: '😎', type: 'emoji', initials: '' }
+        const guestAvatar = { backgroundColor: '#64748B', iconName: null, emoji: null, type: 'initials', initials: 'GU' }
+        const meets = {
+            getMeetsByIdsForAccount: jest.fn().mockResolvedValue([
+                {
+                    id: 58,
+                    groupId: 7,
+                    createdBy: 6,
+                    meetDate: '2026-10-01T10:00:00.000Z',
+                    isConfirmed: true,
+                    status: 'completed',
+                    timezone: 'UTC',
+                },
+            ]),
+        }
+        // A session recorded only with group people: no MeetAttendee or MeetAccountGame rows.
+        const database = fakeDatabase({
+            getDistinctCompletedMeetIdsForAccountHistory: jest.fn().mockResolvedValue([58]),
+            getHistoryDetailsByMeetIds: jest.fn().mockResolvedValue({
+                attendedAccountIds: new Map(),
+                attendedPersonIds: new Map([[58, [3, 9]]]),
+                playedGameIds: new Map([[58, [42]]]),
+                personPlays: new Map([
+                    [
+                        58,
+                        [
+                            { gameId: 42, personId: 3 },
+                            { gameId: 42, personId: 9 },
+                        ],
+                    ],
+                ]),
+                accountPlays: new Map(),
+            }),
+            getGroupPeople: jest.fn().mockResolvedValue({
+                rows: [
+                    [3, 7, 6, 'linked', 'active', 'bloddsword', null],
+                    [9, 7, null, 'placeholder', 'active', 'Guest', JSON.stringify(guestAvatar)],
+                ],
+            }),
+        })
+        const usersService = {
+            getPublicUsersByIds: jest.fn().mockImplementation(async (ids: Array<number>) => {
+                const users = new Map([[6, { id: 6, username: 'Bloody', displayName: 'Bloody', avatar: accountAvatar }]])
+
+                return new Map(ids.filter(id => users.has(id)).map(id => [id, users.get(id)]))
+            }),
+        }
+        const service = new PlayService(
+            usersService as unknown as UsersService,
+            database,
+            { getGamesByIds: jest.fn().mockResolvedValue(new Map([[42, { id: 42, imageUrl: 'image' }]])) } as unknown as GamesService,
+            meets as unknown as MeetsService,
+            {} as unknown as MeetAccountGamesService,
+            { getTranslationsByGameIds: jest.fn().mockResolvedValue(new Map([[42, { en: 'Game' }]])) } as unknown as GameTranslationService,
+        )
+
+        const [record] = await service.getUserGamesHistory(6)
+
+        const expectedPeople = [
+            { id: 3, displayName: 'bloddsword', accountId: 6, avatar: accountAvatar },
+            { id: 9, displayName: 'Guest', accountId: null, avatar: guestAvatar },
+        ]
+
+        expect(record.attendedBy).toEqual([])
+        expect(record.attendedByPeople).toEqual(expectedPeople)
+        expect(record.gamesPlayed[0].playedByPeople).toEqual(expectedPeople)
+    })
+
     it('sorts a user meet list without mutating the database response contract', async () => {
         const meets = {
             getMeetsForAccount: jest.fn().mockResolvedValue([

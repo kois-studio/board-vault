@@ -431,6 +431,7 @@ const historyRecordSchema: z.ZodType<HistoryRecordType> = z.object({
                 id: z.number(),
                 displayName: z.string(),
                 avatar: avatarSchema.nullable(),
+                accountId: z.number().nullable().optional(),
             }),
         )
         .optional(),
@@ -444,6 +445,7 @@ const historyRecordSchema: z.ZodType<HistoryRecordType> = z.object({
                         id: z.number(),
                         displayName: z.string(),
                         avatar: avatarSchema.nullable(),
+                        accountId: z.number().nullable().optional(),
                     }),
                 )
                 .optional(),

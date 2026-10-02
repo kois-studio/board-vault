@@ -15,8 +15,16 @@ export class HistoryPersonDto {
     @ApiProperty({ example: 'Ana' })
     displayName: string
 
-    @ApiProperty({ type: AvatarDto, nullable: true })
+    @ApiProperty({ type: AvatarDto, nullable: true, description: "The person's avatar, or their linked account's when they have none." })
     avatar: AvatarDto | null
+
+    @ApiProperty({
+        type: Number,
+        nullable: true,
+        example: 7,
+        description: 'The linked account, also listed in attendedBy/playedBy for sessions recorded with accounts.',
+    })
+    accountId: number | null
 }
 
 class GamePlayedDto {

@@ -44,8 +44,18 @@ describe('shouldShowFirstGroupSetup', () => {
 describe('group participant history presentation', () => {
     it('includes placeholder attendees and players in the same summaries as account members', () => {
         const component = Object.create(GroupViewComponent.prototype) as GroupViewComponent
-        expect(component.getAttendeeSummary([{ displayName: 'Carlos', username: 'carlos' } as never], [{ displayName: 'Ana' }])).toBe(
-            'With Carlos, Ana',
+        const ana = { id: 9, displayName: 'Ana', avatar: null, accountId: null }
+        expect(component.getAttendeeSummary([{ id: 4, displayName: 'Carlos', username: 'carlos' } as never], [ana])).toBe(
+            'With Ana, Carlos',
         )
+    })
+
+    it('lists a member once when a session records both their account and their group person', () => {
+        const component = Object.create(GroupViewComponent.prototype) as GroupViewComponent
+        const carlosAccount = { id: 4, displayName: 'Carlos', username: 'carlos' } as never
+        const carlosPerson = { id: 2, displayName: 'Carlos G.', avatar: null, accountId: 4 }
+
+        expect(component.getAttendeeSummary([carlosAccount], [carlosPerson])).toBe('With Carlos G.')
+        expect(component.getPlayerCount({ gameData: {} as never, playedBy: [carlosAccount], playedByPeople: [carlosPerson] })).toBe(1)
     })
 })
