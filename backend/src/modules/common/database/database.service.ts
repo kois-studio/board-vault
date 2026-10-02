@@ -2,7 +2,8 @@ import { Client, createClient, type InStatement, type TransactionMode } from '@l
 import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 
-import { fetchWithTimeout } from '../../../common/http/provider-timeout'
+import { fetchWithTimeout, ProviderTimeoutError } from '../../../common/http/provider-timeout'
+import { structuredLog } from '../../../common/logging/structured-log'
 
 import { AccountQueries } from './queries/accounts.queries'
 import { CollectionQueries } from './queries/collection.queries'
@@ -14,6 +15,14 @@ import { RecommendationQueries } from './queries/recommendations.queries'
 import { SessionQueries } from './queries/sessions.queries'
 
 export const CURRENT_SCHEMA_VERSION = '0015'
+
+/**
+ * True for a statement that only reads, so running it twice is harmless.
+ * Conservative: any write keyword, even inside a `WITH`, makes it a write.
+ */
+export function isReadOnlySql(sql: string): boolean {
+    return /^\s*(SELECT|WITH)\b/i.test(sql) && !/\b(INSERT|UPDATE|DELETE|REPLACE|CREATE|DROP|ALTER)\b/i.test(sql)
+}
 
 /**
  * The database connection. Queries live in per-domain classes under
@@ -66,12 +75,22 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
      * Use this instead of the client's `execute` to log the parameterized SQL template before executing it.
      * Bound values are intentionally excluded because they may contain secrets or personal data.
      */
-    execute(stmt: InStatement) {
+    async execute(stmt: InStatement) {
         const sql = typeof stmt === 'string' ? stmt : stmt.sql
 
         this.LOGGER.log(sql)
 
-        return this.tursoClient.execute(stmt)
+        try {
+            return await this.tursoClient.execute(stmt)
+        } catch (error) {
+            // Turso can take seconds to answer the first query after a short idle spell, and the
+            // next one is fast. A read that timed out is retried once; a write is not, because the
+            // timed-out attempt may still have been applied.
+            if (!(error instanceof ProviderTimeoutError) || !isReadOnlySql(sql)) throw error
+
+            this.LOGGER.warn(structuredLog('database.retry', { reason: 'timeout' }))
+            return this.tursoClient.execute(stmt)
+        }
     }
 
     transaction(mode: TransactionMode) {

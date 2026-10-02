@@ -148,6 +148,10 @@ operational details.
   DatabaseService split), linked people show their account avatar and
   username, and Play › History and Home show the new session without a
   reload.
+- Pages no longer fail with a database timeout after a few idle seconds.
+  Turso can take seconds to answer the first query after a short idle spell;
+  a read that times out is now retried once (logged as `database.retry`),
+  while writes still fail rather than risk running twice.
 
 ### Added
 
