@@ -48,6 +48,28 @@ export class MeetPlayedGameParticipantsDto {
     participantIds: Array<number>
 }
 
+export class GameResultEntryDto {
+    @ApiProperty({ example: 1, nullable: true, description: 'Set for sessions recorded with accounts; null otherwise.' })
+    accountId: number | null
+
+    @ApiProperty({ example: null, nullable: true, description: 'Set for sessions recorded with group people; null otherwise.' })
+    groupPersonId: number | null
+
+    @ApiProperty({ example: true })
+    isWinner: boolean
+
+    @ApiProperty({ example: 42, nullable: true })
+    score: number | null
+}
+
+export class MeetGameResultsDto {
+    @ApiProperty({ example: 42 })
+    gameId: number
+
+    @ApiProperty({ type: [GameResultEntryDto], description: 'Only participants with a result; an empty list means nobody won.' })
+    results: Array<GameResultEntryDto>
+}
+
 export class MeetPersonAttendeeStatusDto {
     @ApiProperty({ example: 12345 })
     groupPersonId: number
@@ -86,4 +108,7 @@ export class MeetWithAttendeesAndGames extends MeetDto {
 
     @ApiProperty({ type: [MeetPlayedGameParticipantsDto] })
     playedGamePersonParticipants?: Array<MeetPlayedGameParticipantsDto>
+
+    @ApiProperty({ type: [MeetGameResultsDto], description: 'Winners and scores of the played games that have results.' })
+    gameResults: Array<MeetGameResultsDto>
 }

@@ -30,6 +30,7 @@ export async function buildHistoryRecords(meets: Array<MeetDto>, sources: Histor
         const gameIds = details.playedGameIds.get(meet.id) ?? []
         const personPlays = details.personPlays.get(meet.id) ?? []
         const accountPlays = details.accountPlays.get(meet.id) ?? []
+        const winners = details.winners?.get(meet.id) ?? []
 
         return {
             meet,
@@ -40,6 +41,7 @@ export async function buildHistoryRecords(meets: Array<MeetDto>, sources: Histor
                 gameId,
                 participantIds: personPlays.filter(play => play.gameId === gameId).map(play => play.personId),
             })),
+            winners,
             accountParticipants: new Map(
                 gameIds.map(gameId => [gameId, accountPlays.filter(play => play.gameId === gameId).map(play => play.accountId)]),
             ),
@@ -92,6 +94,12 @@ export async function buildHistoryRecords(meets: Array<MeetDto>, sources: Histor
                     session.meet.groupId,
                     session.personParticipants.find(participants => participants.gameId === gameId)?.participantIds ?? [],
                 ),
+                winnerAccountIds: session.winners
+                    .filter(winner => winner.gameId === gameId && winner.accountId !== null)
+                    .map(winner => winner.accountId as number),
+                winnerPersonIds: session.winners
+                    .filter(winner => winner.gameId === gameId && winner.personId !== null)
+                    .map(winner => winner.personId as number),
             })),
         attendedBy: toUsers(session.attendedByIds),
         attendedByPeople: toPeople(session.meet.groupId, session.attendedByPersonIds),

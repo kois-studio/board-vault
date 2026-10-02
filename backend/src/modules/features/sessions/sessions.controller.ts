@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
+import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Put, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { AuthGuard } from '../../../common/guards/auth.guard'
@@ -20,6 +20,8 @@ import {
     UpdateSessionRsvpBody,
     UpdateSessionAttendanceBody,
     UpdateSessionStatusBody,
+    UpdateGameResultsBody,
+    GameResultsUpdatedDto,
 } from '../../../common/types/session.type'
 
 import { SessionsService } from './sessions.service'
@@ -128,5 +130,19 @@ export class SessionsController {
         @Body() body: UpdateSessionStatusBody,
     ) {
         return this.sessionsService.updateSessionStatus(request.user.userId, sessionId, body)
+    }
+
+    @Put(':sessionId/games/:gameId/results')
+    @ApiOperation({ summary: 'Replace who won a played game, with optional scores' })
+    @ApiResponse({ status: 200, type: GameResultsUpdatedDto })
+    @ApiResponse({ status: 400, description: 'The game was not played, or a result names someone who did not play it.' })
+    @ApiResponse({ status: 404, description: 'Session not found or not visible to the current member.' })
+    updateGameResults(
+        @Req() request: { user: { userId: number } },
+        @Param('sessionId', ParseIntPipe) sessionId: number,
+        @Param('gameId', ParseIntPipe) gameId: number,
+        @Body() body: UpdateGameResultsBody,
+    ) {
+        return this.sessionsService.updateGameResults(request.user.userId, sessionId, gameId, body)
     }
 }

@@ -32,5 +32,21 @@ export function mapMeetDetailsResult(resultSet: ResultSet): MeetWithAttendeesAnd
                   ) as MeetWithAttendeesAndGames['playedGamePersonParticipants'],
               }
             : {}),
+        gameResults: groupGameResults(row.length > 17 ? row[17] : null),
     }
+}
+
+type GameResultRow = { gameId: number; accountId: number | null; groupPersonId: number | null; isWinner: number; score: number | null }
+
+function groupGameResults(value: unknown): MeetWithAttendeesAndGames['gameResults'] {
+    const rows = JSON.parse(String(value ?? '[]')) as Array<GameResultRow>
+    const byGame = new Map<number, MeetWithAttendeesAndGames['gameResults'][number]['results']>()
+
+    for (const row of rows) {
+        byGame.set(row.gameId, [
+            ...(byGame.get(row.gameId) ?? []),
+            { accountId: row.accountId, groupPersonId: row.groupPersonId, isWinner: row.isWinner === 1, score: row.score },
+        ])
+    }
+    return [...byGame.entries()].map(([gameId, results]) => ({ gameId, results }))
 }

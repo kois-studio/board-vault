@@ -25,6 +25,29 @@ type ScheduledSessionInput = {
     plannedGameIds: Array<number>
 }
 
+/** A result only stays while its person is still recorded as playing that game. */
+function deleteOrphanedResults(meetId: number): InStatement {
+    return {
+        sql: `
+            DELETE FROM MeetGameResult
+            WHERE meetId = ?
+              AND (
+                (accountId IS NOT NULL AND NOT EXISTS (
+                    SELECT 1 FROM MeetAccountGame mag
+                    WHERE mag.meetId = MeetGameResult.meetId AND mag.gameId = MeetGameResult.gameId AND mag.accountId = MeetGameResult.accountId
+                ))
+                OR (groupPersonId IS NOT NULL AND NOT EXISTS (
+                    SELECT 1 FROM MeetPersonGame mpg
+                    WHERE mpg.meetId = MeetGameResult.meetId AND mpg.gameId = MeetGameResult.gameId AND mpg.groupPersonId = MeetGameResult.groupPersonId
+                ))
+              )
+        `,
+        args: [meetId],
+    }
+}
+
+export type GameResultRow = { accountId: number | null; groupPersonId: number | null; isWinner: boolean; score: number | null }
+
 /** Game sessions (`Meet` tables): attendees, played games, and per-account games. */
 export class SessionQueries {
     constructor(private readonly database: DatabaseService) {}
@@ -57,12 +80,12 @@ export class SessionQueries {
     }
 
     /**
-     * Everything a history record needs about many sessions, in five queries
+     * Everything a history record needs about many sessions, in six queries
      * whatever the number of sessions.
      */
     async getHistoryDetailsByMeetIds(meetIds: Array<number>) {
         const ids = meetIds.map(() => '?').join(', ')
-        const [attendedAccounts, attendedPeople, playedGames, personPlays, accountPlays] = await Promise.all([
+        const [attendedAccounts, attendedPeople, playedGames, personPlays, accountPlays, winners] = await Promise.all([
             this.database.execute({
                 sql: `SELECT meetId, accountId FROM MeetAttendee WHERE meetId IN (${ids}) AND attendanceStatus = 'attended'`,
                 args: meetIds,
@@ -83,6 +106,10 @@ export class SessionQueries {
                 sql: `SELECT DISTINCT meetId, gameId, accountId FROM MeetAccountGame WHERE meetId IN (${ids}) ORDER BY accountId`,
                 args: meetIds,
             }),
+            this.database.execute({
+                sql: `SELECT meetId, gameId, accountId, groupPersonId FROM MeetGameResult WHERE meetId IN (${ids}) AND isWinner = 1`,
+                args: meetIds,
+            }),
         ])
         const group = <T>(rows: Array<Record<string, unknown>>, value: (row: Record<string, unknown>) => T) => {
             const byMeet = new Map<number, Array<T>>()
@@ -97,6 +124,11 @@ export class SessionQueries {
             playedGameIds: group(playedGames.rows, row => Number(row.gameId)),
             personPlays: group(personPlays.rows, row => ({ gameId: Number(row.gameId), personId: Number(row.groupPersonId) })),
             accountPlays: group(accountPlays.rows, row => ({ gameId: Number(row.gameId), accountId: Number(row.accountId) })),
+            winners: group(winners.rows, row => ({
+                gameId: Number(row.gameId),
+                accountId: row.accountId === null ? null : Number(row.accountId),
+                personId: row.groupPersonId === null ? null : Number(row.groupPersonId),
+            })),
         }
     }
 
@@ -282,6 +314,8 @@ export class SessionQueries {
             }
             if (personParticipantStatements.length > 0) await transaction.batch(personParticipantStatements)
 
+            await transaction.execute(deleteOrphanedResults(meetId))
+
             const result = await transaction.execute({
                 sql: "SELECT gameId, gameStatus FROM MeetGame WHERE meetId = ? AND gameStatus IN ('played', 'skipped')",
                 args: [meetId],
@@ -378,6 +412,8 @@ export class SessionQueries {
                 }
             }
             if (participantStatements.length > 0) await transaction.batch(participantStatements)
+
+            await transaction.execute(deleteOrphanedResults(meetId))
 
             const result = await transaction.execute({
                 sql: "SELECT gameId, gameStatus FROM MeetGame WHERE meetId = ? AND gameStatus IN ('played', 'skipped')",
@@ -549,7 +585,18 @@ export class SessionQueries {
                     )), '[]')
                     FROM MeetGame mg
                     WHERE mg.meetId = m.id AND mg.gameStatus = 'played'
-                ) AS playedGamePersonParticipants
+                ) AS playedGamePersonParticipants,
+                (
+                    SELECT json_group_array(json_object(
+                        'gameId', r.gameId,
+                        'accountId', r.accountId,
+                        'groupPersonId', r.groupPersonId,
+                        'isWinner', r.isWinner,
+                        'score', r.score
+                    ))
+                    FROM MeetGameResult r
+                    WHERE r.meetId = m.id
+                ) AS gameResults
             FROM Meet m
             INNER JOIN GroupMembership gm ON gm.groupId = m.groupId
             WHERE m.id = ? AND gm.accountId = ?
@@ -1111,6 +1158,52 @@ export class SessionQueries {
             })
             await transaction.commit()
             return result
+        } catch (error) {
+            await transaction.rollback()
+            throw error
+        } finally {
+            transaction.close()
+        }
+    }
+
+    async getPlayedGameParticipantIds(
+        meetId: number,
+        gameId: number,
+    ): Promise<{ played: boolean; accountIds: Array<number>; personIds: Array<number> }> {
+        const [game, accounts, people] = await Promise.all([
+            this.database.execute({
+                sql: "SELECT 1 FROM MeetGame WHERE meetId = ? AND gameId = ? AND gameStatus = 'played'",
+                args: [meetId, gameId],
+            }),
+            this.database.execute({ sql: 'SELECT accountId FROM MeetAccountGame WHERE meetId = ? AND gameId = ?', args: [meetId, gameId] }),
+            this.database.execute({
+                sql: 'SELECT groupPersonId FROM MeetPersonGame WHERE meetId = ? AND gameId = ?',
+                args: [meetId, gameId],
+            }),
+        ])
+
+        return {
+            played: game.rows.length > 0,
+            accountIds: accounts.rows.map(row => Number(row[0])),
+            personIds: people.rows.map(row => Number(row[0])),
+        }
+    }
+
+    /** Replaces the results of one game in one transaction; an empty list clears them. */
+    async replaceGameResults(meetId: number, gameId: number, results: Array<GameResultRow>): Promise<void> {
+        const statements: Array<InStatement> = [
+            { sql: 'DELETE FROM MeetGameResult WHERE meetId = ? AND gameId = ?', args: [meetId, gameId] },
+            ...results.map(result => ({
+                sql: 'INSERT INTO MeetGameResult (meetId, gameId, accountId, groupPersonId, isWinner, score) VALUES (?, ?, ?, ?, ?, ?)',
+                args: [meetId, gameId, result.accountId, result.groupPersonId, result.isWinner ? 1 : 0, result.score],
+            })),
+        ]
+
+        const transaction = await this.database.transaction('write')
+
+        try {
+            await transaction.batch(statements)
+            await transaction.commit()
         } catch (error) {
             await transaction.rollback()
             throw error

@@ -155,6 +155,9 @@ operational details.
 
 ### Added
 
+- Sessions record who won each played game, with optional scores. Ties,
+  co-op wins, and nobody winning are all possible, and results can be
+  corrected after the night is over (API and migration 0016).
 - Turso and Clerk calls time out after 5 seconds with a `503` and a stable
   error code; the database client closes on shutdown.
 - JSON logs on Vercel with the request id on every line, and an uptime check

@@ -152,4 +152,65 @@ describe('recording a past session with group people (e2e)', () => {
             body: { sessionId: expect.any(Number), status: 'scheduled' },
         })
     })
+
+    it('records who won a played game, reads it back, and drops results of someone taken off the game', async () => {
+        const { groupId, personIds } = await createGroupWithPeople()
+        const [organizerPersonId, memberPersonId] = personIds
+
+        const scheduled = await request(app.getHttpServer())
+            .post('/sessions/scheduled')
+            .set(withAuth)
+            .send({ groupId, sessionDate: '2026-10-20T18:00:00.000Z', timezone: 'Europe/Madrid', groupPersonIds: personIds })
+            .expect(201)
+        const sessionId = Number(scheduled.body.sessionId)
+
+        await request(app.getHttpServer()).patch(`/sessions/${sessionId}/status`).set(withAuth).send({ status: 'active' }).expect(200)
+        await request(app.getHttpServer())
+            .patch(`/sessions/${sessionId}/played-games`)
+            .set(withAuth)
+            .send({ playedGameIds: [10], games: [{ gameId: 10, participantPersonIds: personIds }] })
+            .expect(200)
+
+        await request(app.getHttpServer())
+            .put(`/sessions/${sessionId}/games/10/results`)
+            .set(withAuth)
+            .send({
+                results: [
+                    { groupPersonId: memberPersonId, isWinner: true, score: 42 },
+                    { groupPersonId: organizerPersonId, isWinner: false, score: 30 },
+                ],
+            })
+            .expect(200)
+
+        const details = await request(app.getHttpServer()).get(`/sessions/${sessionId}`).set(withAuth).expect(200)
+
+        expect(details.body.gameResults).toEqual([
+            {
+                gameId: 10,
+                results: expect.arrayContaining([
+                    { accountId: null, groupPersonId: memberPersonId, isWinner: true, score: 42 },
+                    { accountId: null, groupPersonId: organizerPersonId, isWinner: false, score: 30 },
+                ]),
+            },
+        ])
+
+        // Someone who did not play the game cannot win it.
+        await request(app.getHttpServer())
+            .put(`/sessions/${sessionId}/games/11/results`)
+            .set(withAuth)
+            .send({ results: [{ groupPersonId: memberPersonId, isWinner: true }] })
+            .expect(400)
+
+        await request(app.getHttpServer())
+            .patch(`/sessions/${sessionId}/played-games`)
+            .set(withAuth)
+            .send({ playedGameIds: [10], games: [{ gameId: 10, participantPersonIds: [organizerPersonId] }] })
+            .expect(200)
+
+        const afterChange = await request(app.getHttpServer()).get(`/sessions/${sessionId}`).set(withAuth).expect(200)
+
+        expect(afterChange.body.gameResults).toEqual([
+            { gameId: 10, results: [{ accountId: null, groupPersonId: organizerPersonId, isWinner: false, score: 30 }] },
+        ])
+    })
 })

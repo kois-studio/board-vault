@@ -10,7 +10,7 @@ The database is SQLite through libSQL: a local file in development, Turso in
 production. The schema is
 [`database/schema/schema.sql`](../database/schema/schema.sql) (the 0001–0005
 baseline) plus the numbered files in
-[`database/migrations/`](../database/migrations/). Current version: **0015**.
+[`database/migrations/`](../database/migrations/). Current version: **0016**.
 All SQL lives in the per-domain query classes in
 [`database/queries/`](../backend/src/modules/common/database/queries/).
 
@@ -27,8 +27,8 @@ sessions they created, and more.
   ([`account-invariants.spec.ts`](../backend/src/modules/common/database/account-invariants.spec.ts))
   fails if either statement appears in the backend.
 - Column removal uses `ALTER TABLE … DROP COLUMN`, which does not fire cascades.
-- `MeetPersonAttendee` and `MeetPersonGame` use `RESTRICT` on `GroupPerson`: a
-  group person with session history cannot be deleted.
+- `MeetPersonAttendee`, `MeetPersonGame`, and `MeetGameResult` use `RESTRICT`
+  on `GroupPerson`: a group person with session history cannot be deleted.
 
 ## Tables
 
@@ -54,6 +54,7 @@ sessions they created, and more.
 | `Meet` | A session (named `Meet` for historical reasons): date, status, timezone, notes. | `UserGroup`, creator `Account` (cascade) |
 | `MeetAttendee`, `MeetPersonAttendee` | Account and group-person attendance, RSVP. | `Meet` (cascade); `Account` (cascade) / `GroupPerson` (restrict) |
 | `MeetGame`, `MeetAccountGame`, `MeetPersonGame` | Shortlisted and played games, and who played them. | `Meet`, `Game` (cascade); `Account` (cascade) / `GroupPerson` (restrict) |
+| `MeetGameResult` | Who won a played game (`isWinner`) and an optional integer `score`, one row per participant with a result. A row names an account or a group person, never both (CHECK). Rows for someone no longer recorded as playing that game are deleted when played games change. Ties and co-op wins are several winner rows; nobody winning is no rows. | `Meet`, `Game`, `Account` (cascade) / `GroupPerson` (restrict) |
 | `RecommendationFeedback`, `RecommendationFeedbackParticipant` | Feedback on recommendations, per account or participant set. | `UserGroup`, `Account`, `Game` (cascade) |
 | `FeatureFlags` | Runtime feature switches. | — |
 | `SchemaMigrations` | Applied migration versions. The API's readiness check compares the latest one with the version it expects. | — |

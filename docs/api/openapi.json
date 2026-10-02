@@ -4706,6 +4706,66 @@
           "sessions"
         ]
       }
+    },
+    "/sessions/{sessionId}/games/{gameId}/results": {
+      "put": {
+        "operationId": "SessionsController_updateGameResults",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "gameId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateGameResultsBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameResultsUpdatedDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The game was not played, or a result names someone who did not play it."
+          },
+          "404": {
+            "description": "Session not found or not visible to the current member."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Replace who won a played game, with optional scores",
+        "tags": [
+          "sessions"
+        ]
+      }
     }
   },
   "info": {
@@ -6003,6 +6063,58 @@
           "attendanceStatus"
         ]
       },
+      "GameResultEntryDto": {
+        "type": "object",
+        "properties": {
+          "accountId": {
+            "type": "object",
+            "example": 1,
+            "nullable": true,
+            "description": "Set for sessions recorded with accounts; null otherwise."
+          },
+          "groupPersonId": {
+            "type": "object",
+            "example": null,
+            "nullable": true,
+            "description": "Set for sessions recorded with group people; null otherwise."
+          },
+          "isWinner": {
+            "type": "boolean",
+            "example": true
+          },
+          "score": {
+            "type": "object",
+            "example": 42,
+            "nullable": true
+          }
+        },
+        "required": [
+          "accountId",
+          "groupPersonId",
+          "isWinner",
+          "score"
+        ]
+      },
+      "MeetGameResultsDto": {
+        "type": "object",
+        "properties": {
+          "gameId": {
+            "type": "number",
+            "example": 42
+          },
+          "results": {
+            "description": "Only participants with a result; an empty list means nobody won.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GameResultEntryDto"
+            }
+          }
+        },
+        "required": [
+          "gameId",
+          "results"
+        ]
+      },
       "MeetWithAttendeesAndGames": {
         "type": "object",
         "properties": {
@@ -6105,6 +6217,13 @@
             "items": {
               "$ref": "#/components/schemas/MeetPlayedGameParticipantsDto"
             }
+          },
+          "gameResults": {
+            "description": "Winners and scores of the played games that have results.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MeetGameResultsDto"
+            }
           }
         },
         "required": [
@@ -6123,7 +6242,8 @@
           "playedGameParticipants",
           "participants",
           "participantStatuses",
-          "playedGamePersonParticipants"
+          "playedGamePersonParticipants",
+          "gameResults"
         ]
       },
       "NotificationDto": {
@@ -7249,11 +7369,33 @@
             "items": {
               "$ref": "#/components/schemas/HistoryPersonDto"
             }
+          },
+          "winnerAccountIds": {
+            "example": [
+              1
+            ],
+            "description": "Accounts recorded as winning this game (sessions recorded with accounts).",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "winnerPersonIds": {
+            "example": [
+              10
+            ],
+            "description": "Group people recorded as winning this game.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         },
         "required": [
           "gameData",
-          "playedBy"
+          "playedBy",
+          "winnerAccountIds",
+          "winnerPersonIds"
         ]
       },
       "HistoryRecordDto": {
@@ -8452,6 +8594,72 @@
         "required": [
           "sessionId",
           "status"
+        ]
+      },
+      "GameResultBody": {
+        "type": "object",
+        "properties": {
+          "accountId": {
+            "type": "number",
+            "example": 1,
+            "description": "For sessions recorded with accounts. Send exactly one of accountId or groupPersonId."
+          },
+          "groupPersonId": {
+            "type": "number",
+            "example": 10,
+            "description": "For sessions recorded with group people."
+          },
+          "isWinner": {
+            "type": "boolean",
+            "example": true
+          },
+          "score": {
+            "type": "object",
+            "example": 42,
+            "nullable": true
+          }
+        },
+        "required": [
+          "isWinner"
+        ]
+      },
+      "UpdateGameResultsBody": {
+        "type": "object",
+        "properties": {
+          "results": {
+            "description": "The full result set for one played game. It replaces the previous one; an empty list clears it.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GameResultBody"
+            }
+          }
+        },
+        "required": [
+          "results"
+        ]
+      },
+      "GameResultsUpdatedDto": {
+        "type": "object",
+        "properties": {
+          "sessionId": {
+            "type": "number",
+            "example": 12
+          },
+          "gameId": {
+            "type": "number",
+            "example": 42
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GameResultEntryDto"
+            }
+          }
+        },
+        "required": [
+          "sessionId",
+          "gameId",
+          "results"
         ]
       }
     }

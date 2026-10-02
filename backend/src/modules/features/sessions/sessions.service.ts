@@ -21,6 +21,8 @@ import type {
     UpdateSessionAttendanceBody,
     UpdateSessionRsvpBody,
     UpdateSessionStatusBody,
+    UpdateGameResultsBody,
+    GameResultsUpdatedDto,
 } from '../../../common/types/session.type'
 
 @Injectable()
@@ -516,6 +518,70 @@ export class SessionsService {
         }
 
         return { sessionId, attendedIds, attendedPersonIds: invitedPersonIds.size > 0 ? attendedPersonIds : undefined }
+    }
+
+    /**
+     * Replaces who won one played game, and their scores. Any member of the
+     * group can record results, also after the session is completed.
+     */
+    async updateGameResults(
+        actorAccountId: number,
+        sessionId: number,
+        gameId: number,
+        body: UpdateGameResultsBody,
+    ): Promise<GameResultsUpdatedDto> {
+        const session = await this.databaseService.sessions.getMeetByIdForAccount(sessionId, actorAccountId)
+
+        if (session.rows.length === 0) {
+            throw new NotFoundException(`Session with id ${sessionId} not found`)
+        }
+
+        const participants = await this.databaseService.sessions.getPlayedGameParticipantIds(sessionId, gameId)
+
+        if (!participants.played) {
+            throw new BadRequestException('Results can only be recorded for a game marked as played')
+        }
+
+        const accountIds = new Set(participants.accountIds)
+        const personIds = new Set(participants.personIds)
+        const seen = new Set<string>()
+        const results = []
+
+        for (const entry of body.results) {
+            const hasAccount = entry.accountId !== undefined
+            const hasPerson = entry.groupPersonId !== undefined
+
+            if (hasAccount === hasPerson) {
+                throw new BadRequestException('Each result names exactly one of accountId or groupPersonId')
+            }
+
+            const key = hasAccount ? `a${entry.accountId}` : `p${entry.groupPersonId}`
+            const played = hasAccount ? accountIds.has(entry.accountId as number) : personIds.has(entry.groupPersonId as number)
+
+            if (!played) {
+                throw new BadRequestException('Only people who played this game can have a result')
+            }
+            if (seen.has(key)) {
+                throw new BadRequestException('Each person may only have one result per game')
+            }
+            seen.add(key)
+
+            const score = entry.score ?? null
+
+            // A loser without a score says nothing the absence of a row doesn't.
+            if (!entry.isWinner && score === null) continue
+
+            results.push({
+                accountId: hasAccount ? (entry.accountId as number) : null,
+                groupPersonId: hasPerson ? (entry.groupPersonId as number) : null,
+                isWinner: entry.isWinner,
+                score,
+            })
+        }
+
+        await this.databaseService.sessions.replaceGameResults(sessionId, gameId, results)
+
+        return { sessionId, gameId, results }
     }
 
     // Call queries on their domain object (databaseService.groups / .sessions): they read

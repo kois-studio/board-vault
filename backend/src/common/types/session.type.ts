@@ -5,15 +5,19 @@ import {
     ArrayMinSize,
     ArrayUnique,
     IsArray,
+    IsBoolean,
     IsISO8601,
     IsIn,
     IsInt,
     IsOptional,
     IsString,
+    Max,
     MaxLength,
     Min,
     ValidateNested,
 } from 'class-validator'
+
+import { GameResultEntryDto } from './meet.type'
 
 export class PlaySessionGameBody {
     @ApiProperty({ example: 42 })
@@ -315,4 +319,56 @@ export class SessionAttendanceUpdatedDto {
 
     @ApiProperty({ example: [10, 11], required: false })
     attendedPersonIds?: Array<number>
+}
+
+export class GameResultBody {
+    @ApiProperty({
+        example: 1,
+        required: false,
+        description: 'For sessions recorded with accounts. Send exactly one of accountId or groupPersonId.',
+    })
+    @IsOptional()
+    @IsInt()
+    @Min(1)
+    accountId?: number
+
+    @ApiProperty({ example: 10, required: false, description: 'For sessions recorded with group people.' })
+    @IsOptional()
+    @IsInt()
+    @Min(1)
+    groupPersonId?: number
+
+    @ApiProperty({ example: true })
+    @IsBoolean()
+    isWinner: boolean
+
+    @ApiProperty({ example: 42, required: false, nullable: true })
+    @IsOptional()
+    @IsInt()
+    @Min(-1_000_000)
+    @Max(1_000_000)
+    score?: number | null
+}
+
+export class UpdateGameResultsBody {
+    @ApiProperty({
+        type: [GameResultBody],
+        description: 'The full result set for one played game. It replaces the previous one; an empty list clears it.',
+    })
+    @IsArray()
+    @ArrayMaxSize(50)
+    @ValidateNested({ each: true })
+    @Type(() => GameResultBody)
+    results: Array<GameResultBody>
+}
+
+export class GameResultsUpdatedDto {
+    @ApiProperty({ example: 12 })
+    sessionId: number
+
+    @ApiProperty({ example: 42 })
+    gameId: number
+
+    @ApiProperty({ type: [GameResultEntryDto] })
+    results: Array<GameResultEntryDto>
 }

@@ -82,6 +82,7 @@ describe('SessionsService', () => {
             status: 'completed',
             timezone: 'Europe/Madrid',
             notes: 'A memorable night',
+            gameResults: [],
         })
         expect(database.getMeetDetailsByIdForAccount).toHaveBeenCalledWith(12, 2)
     })
@@ -600,5 +601,95 @@ describe('SessionsService', () => {
 
         await expect(service.updateSessionAttendees(1, 12, { attendeeIds: [1] })).rejects.toThrow(BadRequestException)
         expect(database.replaceMeetAttendees).not.toHaveBeenCalled()
+    })
+
+    describe('game results', () => {
+        const visibleSession = { rows: [[12, 7, 1, '2026-08-16T19:30:00.000Z', 0, 'completed', 'Europe/Madrid', null]] }
+        const setup = (
+            participants: { played: boolean; accountIds: Array<number>; personIds: Array<number> } = {
+                played: true,
+                accountIds: [],
+                personIds: [10, 11, 12],
+            },
+        ) => {
+            const database = {
+                ...createDatabaseMock(),
+                getMeetByIdForAccount: jest.fn().mockResolvedValue(visibleSession),
+                getPlayedGameParticipantIds: jest.fn().mockResolvedValue(participants),
+                replaceGameResults: jest.fn().mockResolvedValue(undefined),
+            }
+
+            return { database, service: new SessionsService(fakeDatabase(database)) }
+        }
+
+        it('records several winners and keeps scores, also on a completed session', async () => {
+            const { database, service } = setup()
+
+            await expect(
+                service.updateGameResults(2, 12, 42, {
+                    results: [
+                        { groupPersonId: 10, isWinner: true, score: 31 },
+                        { groupPersonId: 11, isWinner: true, score: 31 },
+                        { groupPersonId: 12, isWinner: false, score: 18 },
+                    ],
+                }),
+            ).resolves.toEqual({
+                sessionId: 12,
+                gameId: 42,
+                results: [
+                    { accountId: null, groupPersonId: 10, isWinner: true, score: 31 },
+                    { accountId: null, groupPersonId: 11, isWinner: true, score: 31 },
+                    { accountId: null, groupPersonId: 12, isWinner: false, score: 18 },
+                ],
+            })
+            expect(database.getMeetByIdForAccount).toHaveBeenCalledWith(12, 2)
+        })
+
+        it('stores nothing for a loser without a score, so nobody winning is an empty set', async () => {
+            const { database, service } = setup()
+
+            await service.updateGameResults(2, 12, 42, { results: [{ groupPersonId: 10, isWinner: false }] })
+
+            expect(database.replaceGameResults).toHaveBeenCalledWith(12, 42, [])
+        })
+
+        it('records winners for sessions kept with accounts', async () => {
+            const { database, service } = setup({ played: true, accountIds: [1, 2], personIds: [] })
+
+            await service.updateGameResults(2, 12, 42, { results: [{ accountId: 2, isWinner: true }] })
+
+            expect(database.replaceGameResults).toHaveBeenCalledWith(12, 42, [
+                { accountId: 2, groupPersonId: null, isWinner: true, score: null },
+            ])
+        })
+
+        it('hides the session from non-members', async () => {
+            const { database, service } = setup()
+
+            database.getMeetByIdForAccount.mockResolvedValue({ rows: [] })
+
+            await expect(service.updateGameResults(99, 12, 42, { results: [] })).rejects.toThrow(NotFoundException)
+            expect(database.replaceGameResults).not.toHaveBeenCalled()
+        })
+
+        it.each([
+            ['a game that was not played', { played: false, accountIds: [], personIds: [10] }, [{ groupPersonId: 10, isWinner: true }]],
+            ['someone who did not play it', undefined, [{ groupPersonId: 99, isWinner: true }]],
+            ['a result with both kinds of id', undefined, [{ groupPersonId: 10, accountId: 1, isWinner: true }]],
+            ['a result with no id', undefined, [{ isWinner: true }]],
+            [
+                'the same person twice',
+                undefined,
+                [
+                    { groupPersonId: 10, isWinner: true },
+                    { groupPersonId: 10, isWinner: false },
+                ],
+            ],
+        ])('rejects %s', async (_case, participants, results) => {
+            const { database, service } = setup(participants)
+
+            await expect(service.updateGameResults(2, 12, 42, { results })).rejects.toThrow(BadRequestException)
+            expect(database.replaceGameResults).not.toHaveBeenCalled()
+        })
     })
 })

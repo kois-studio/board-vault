@@ -36,6 +36,12 @@ class GamePlayedDto {
 
     @ApiProperty({ type: [HistoryPersonDto], required: false })
     playedByPeople?: Array<HistoryPersonDto>
+
+    @ApiProperty({ example: [1], description: 'Accounts recorded as winning this game (sessions recorded with accounts).' })
+    winnerAccountIds: Array<number>
+
+    @ApiProperty({ example: [10], description: 'Group people recorded as winning this game.' })
+    winnerPersonIds: Array<number>
 }
 
 export class HistoryRecordDto {
