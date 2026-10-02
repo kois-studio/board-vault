@@ -25,7 +25,7 @@
                     <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-success">History linked</p>
                     <h2 id="claim-complete-heading" class="mt-2 text-2xl font-bold text-bv-success">Your choices are saved</h2>
                     <p class="mt-2 text-secondary">This group person is now linked to your account. The group history stays private to its members.</p>
-                    <dl class="mt-5 grid gap-3 sm:grid-cols-2">
+                    <dl class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
                         <div class="rounded-2xl bg-bv-surface/70 p-4"><dt class="text-sm text-secondary">Ownership kept</dt><dd class="mt-1 text-2xl font-bold">{{ summary.ownershipKept }}</dd></div>
                         <div class="rounded-2xl bg-bv-surface/70 p-4"><dt class="text-sm text-secondary">Preferences kept</dt><dd class="mt-1 text-2xl font-bold">{{ summary.preferencesKept }}</dd></div>
                         <div class="rounded-2xl bg-bv-surface/70 p-4"><dt class="text-sm text-secondary">Entries discarded</dt><dd class="mt-1 text-2xl font-bold">{{ summary.ownershipDiscarded + summary.preferencesDiscarded }}</dd></div>
@@ -40,7 +40,7 @@
                     @if (assertedOwnershipCount(groupPerson) === 0) {
                         <p class="mt-4 rounded-2xl border border-dashed border-bv-border p-4 text-sm text-secondary" role="status">No ownership entries were recorded for this profile.</p>
                     } @else {
-                        <div class="mt-4 grid gap-3 sm:grid-cols-2">
+                        <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
                             @for (ownership of groupPerson.ownership; track ownership.gameId) {
                                 @if (ownership.status === 'asserted') {
                                     <label class="flex items-start gap-3 rounded-2xl border p-3" [class.border-bv-primary]="selectedOwnership().has(ownership.gameId)" [class.bg-bv-primary-soft]="selectedOwnership().has(ownership.gameId)" [class.border-bv-border]="!selectedOwnership().has(ownership.gameId)">
@@ -59,7 +59,7 @@
                     @if (groupPerson.preferences.length === 0) {
                         <p class="mt-4 rounded-2xl border border-dashed border-bv-border p-4 text-sm text-secondary" role="status">No preferences were recorded for this profile.</p>
                     } @else {
-                        <div class="mt-4 grid gap-3 sm:grid-cols-2">
+                        <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
                             @for (preference of groupPerson.preferences; track preference.gameId) {
                                 <label class="flex items-start gap-3 rounded-2xl border p-3" [class.border-bv-primary]="selectedPreferences().has(preference.gameId)" [class.bg-bv-primary-soft]="selectedPreferences().has(preference.gameId)" [class.border-bv-border]="!selectedPreferences().has(preference.gameId)">
                                     <input type="checkbox" class="mt-1" [checked]="selectedPreferences().has(preference.gameId)" (change)="togglePreference(preference.gameId)" />
@@ -72,7 +72,7 @@
 
                 <section class="mt-6 rounded-3xl border border-bv-border bg-bv-surface p-6 shadow-sm" aria-labelledby="claim-summary-heading">
                     <h2 id="claim-summary-heading" class="text-xl font-bold">Before you save</h2>
-                    <dl class="mt-4 grid gap-3 sm:grid-cols-2">
+                    <dl class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
                         <div class="rounded-2xl bg-bv-bg p-4"><dt class="text-sm text-secondary">Ownership kept / discarded</dt><dd class="mt-1 text-lg font-semibold">{{ ownershipKeptCount() }} / {{ ownershipDiscardedCount(groupPerson) }}</dd></div>
                         <div class="rounded-2xl bg-bv-bg p-4"><dt class="text-sm text-secondary">Preferences kept / discarded</dt><dd class="mt-1 text-lg font-semibold">{{ preferencesKeptCount() }} / {{ preferencesDiscardedCount(groupPerson) }}</dd></div>
                     </dl>

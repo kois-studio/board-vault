@@ -5,8 +5,8 @@
 }">
     <app-image-profile [avatar]="member.avatar" />
     <div class="ml-3 min-w-0 text-start">
-        <p class="max-w-[140px] truncate font-semibold">{{ member.displayName }}</p>
-        <p class="max-w-[140px] truncate text-sm text-secondary">
+        <p class="truncate font-semibold" [ngClass]="format() === 'compact' ? 'max-w-full' : 'max-w-[140px]'">{{ member.displayName }}</p>
+        <p class="truncate text-sm text-secondary" [ngClass]="format() === 'compact' ? 'max-w-full' : 'max-w-[140px]'">
             <span>{{ member.username }}</span>
             @if (isOwner()) {
             <span class="text-bv-primary pl-2">owner</span>

@@ -13,7 +13,7 @@
   <container-wrapper>
     <div class="space-y-12 pb-16 pt-6">
       <!-- Hero: cover, facts, ratings, and the actions that matter -->
-      <section class="grid gap-8 md:grid-cols-[minmax(0,320px)_1fr] lg:gap-12" aria-labelledby="game-title">
+      <section class="grid grid-cols-1 gap-8 md:grid-cols-[minmax(0,320px)_1fr] lg:gap-12" aria-labelledby="game-title">
         <div class="relative mx-auto aspect-square w-full max-w-xs rounded-2xl border border-bv-border bg-bv-surface p-3 shadow-sm md:max-w-none">
           <div class="h-full w-full overflow-hidden rounded-xl">
             <image-background class="h-full" [src]="game.gameData.imageUrl" [alt]="game.gameData.titleTranslations.en + ' cover'" loading="eager" />
@@ -99,7 +99,7 @@
         </div>
       </section>
 
-      <div class="grid gap-8 lg:grid-cols-2">
+      <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
         <!-- Who has it in your groups -->
         <section aria-labelledby="owners-heading">
           <h2 id="owners-heading" class="mb-3 text-xl font-bold">In your groups</h2>
@@ -160,7 +160,7 @@
             <span>Your copy <span class="font-normal text-secondary">· purchase date, price, notes</span></span>
             <app-icon name="chevron-down" [size]="18" className="transition group-open:rotate-180" aria-hidden="true" />
           </summary>
-          <form [formGroup]="ownershipFormGroup" class="grid gap-4 border-t border-bv-border p-4 sm:grid-cols-2" (ngSubmit)="saveOwnedGameDetails()">
+          <form [formGroup]="ownershipFormGroup" class="grid grid-cols-1 gap-4 border-t border-bv-border p-4 sm:grid-cols-2" (ngSubmit)="saveOwnedGameDetails()">
             <label class="block text-sm font-medium">
               Bought on <span class="text-xs text-secondary">(optional)</span>
               <input type="date" formControlName="purchaseDate" class="mt-1 w-full rounded-lg border border-bv-border px-3 py-2 bg-bv-surface" />

@@ -171,7 +171,7 @@
   <!-- Where the approved game goes -->
   <fieldset>
     <legend class="mb-2 block text-sm font-medium text-bv-text-muted">When it is approved</legend>
-    <div class="grid gap-2 sm:grid-cols-3">
+    <div class="grid grid-cols-1 gap-2 sm:grid-cols-3">
       @for (option of addToOptions; track option.value) {
         <label class="flex cursor-pointer items-start gap-2 rounded-lg border border-bv-border p-3 has-checked:border-bv-primary has-checked:bg-bv-primary-soft">
           <input type="radio" formControlName="addTo" [value]="option.value" class="mt-1" />

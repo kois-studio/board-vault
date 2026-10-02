@@ -155,6 +155,12 @@ operational details.
   page on phones. They wrap in attendee pickers, group and session cards, and
   recommendation explanations, and history's "Played by" line stops at two
   lines.
+- Long names without spaces no longer widen the group page or the session
+  page on phones (the group People cards made the page 714 px wide at 390 px).
+  Responsive grids now declare a single column on phones (`grid-cols-1`), so
+  a long name or title truncates inside its card instead of stretching it.
+  On Home group cards, member names use the whole row up to the "owned"
+  count instead of stopping at 140 px.
 - Local checks on Windows: `.gitattributes` keeps LF line endings regardless
   of `core.autocrlf`, and backend e2e cleanup tolerates the SQLite file lock
   that the native libsql driver holds until the test process exits.

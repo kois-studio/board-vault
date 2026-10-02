@@ -151,7 +151,7 @@
             </div>
         }
 
-        <div class="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
+        <div class="mt-8 grid gap-8 grid-cols-1 lg:grid-cols-[minmax(0,1fr)_20rem]">
             <div class="min-w-0 space-y-8">
                 <!-- Played games -->
                 @if (meet.status !== 'scheduled' || playedGamesCount > 0) {
@@ -358,7 +358,7 @@
                     <section aria-labelledby="feedback-heading">
                         <h2 id="feedback-heading" class="text-lg font-semibold">How did it go for you?</h2>
                         <p class="mb-3 mt-1 text-sm text-bv-text-muted">Your ratings help the group choose next time.</p>
-                        <ul class="grid gap-2 sm:grid-cols-2">
+                        <ul class="grid gap-2 grid-cols-1 sm:grid-cols-2">
                             @for (game of playedGameDetails; track game.id) {
                                 <li class="flex min-w-0 items-center gap-3 rounded-lg border border-bv-border bg-bv-surface p-2">
                                     <image-background [src]="game.imageUrl" [alt]="gameTitle(game) + ' cover'" class="h-10 w-10 shrink-0" />

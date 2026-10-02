@@ -32,7 +32,7 @@
                             <button type="button" class="app-chip" [attr.aria-pressed]="dateForm.value === option.value" (click)="pickDate(option.value)">{{ option.label }}</button>
                         }
                     </div>
-                    <div class="mt-4 grid gap-4 sm:grid-cols-[12rem_9rem_1fr] sm:items-end">
+                    <div class="mt-4 grid gap-4 grid-cols-1 sm:grid-cols-[12rem_9rem_1fr] sm:items-end">
                         <div>
                             <label for="session-date" class="mb-1 block text-sm font-medium">Day</label>
                             <input id="session-date" type="date" class="app-input" [formControl]="dateForm" [min]="today" [class.border-bv-danger]="dateForm.invalid && (dateForm.dirty || dateForm.touched)" [attr.aria-invalid]="dateForm.invalid" aria-describedby="session-date-error" required />
@@ -65,7 +65,7 @@
                     @if (people().length === 0) {
                         <p class="mt-3 text-sm text-bv-text-muted">Nobody in this group yet.</p>
                     } @else {
-                        <div class="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                        <div class="mt-3 grid gap-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                             @for (person of people(); track person.id) {
                                 @let invited = isInvited(person.id);
                                 <button
@@ -111,7 +111,7 @@
                                 <input type="search" class="app-input pl-9" placeholder="Find a game" [value]="gameQuery()" (input)="gameQuery.set($any($event.target).value)" />
                             </label>
                         }
-                        <div class="mt-4 grid max-h-[28rem] gap-2 overflow-y-auto pr-1 sm:grid-cols-2">
+                        <div class="mt-4 grid max-h-[28rem] gap-2 overflow-y-auto pr-1 grid-cols-1 sm:grid-cols-2">
                             @for (entry of shortlistGames(); track entry.game.id) {
                                 @let chosen = isShortlisted(entry.game.id);
                                 <button
