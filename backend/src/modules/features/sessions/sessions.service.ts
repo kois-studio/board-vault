@@ -518,28 +518,34 @@ export class SessionsService {
         return { sessionId, attendedIds, attendedPersonIds: invitedPersonIds.size > 0 ? attendedPersonIds : undefined }
     }
 
+    // Call queries on their domain object (databaseService.groups / .sessions): they read
+    // this.database, so calling them with databaseService as `this` fails at runtime.
     private async getMeetPersonIds(sessionId: number): Promise<Array<number>> {
-        const method = this.databaseService.sessions.getMeetPersonIds
+        const sessions = this.databaseService.sessions
 
-        return typeof method === 'function' ? method.call(this.databaseService, sessionId) : []
+        return typeof sessions.getMeetPersonIds === 'function' ? sessions.getMeetPersonIds(sessionId) : []
     }
 
     private async getGroupPeople(groupId: number) {
-        const method = this.databaseService.groups.getGroupPeople
+        const groups = this.databaseService.groups
 
-        return typeof method === 'function' ? method.call(this.databaseService, groupId) : { rows: [] }
+        return typeof groups.getGroupPeople === 'function' ? groups.getGroupPeople(groupId) : { rows: [] }
     }
 
     private async getGroupAvailableGameIdsForPeople(groupId: number, groupPersonIds: Array<number>): Promise<Array<number>> {
         if (groupPersonIds.length === 0) return []
-        const method = this.databaseService.groups.getGroupAvailableGameIdsForPeople
+        const groups = this.databaseService.groups
 
-        return typeof method === 'function' ? method.call(this.databaseService, groupId, groupPersonIds) : []
+        return typeof groups.getGroupAvailableGameIdsForPeople === 'function'
+            ? groups.getGroupAvailableGameIdsForPeople(groupId, groupPersonIds)
+            : []
     }
 
     private async getMeetPlayedGameParticipants(meetId: number): Promise<Array<{ gameId: number; participantIds: Array<number> }>> {
-        const method = this.databaseService.sessions.getMeetPlayedGamePersonParticipants
+        const sessions = this.databaseService.sessions
 
-        return typeof method === 'function' ? method.call(this.databaseService, meetId) : []
+        return typeof sessions.getMeetPlayedGamePersonParticipants === 'function'
+            ? sessions.getMeetPlayedGamePersonParticipants(meetId)
+            : []
     }
 }

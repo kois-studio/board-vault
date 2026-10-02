@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, computed, effect, inject, signal } from '@angular/core'
+import { Component, computed, effect, inject, signal, untracked } from '@angular/core'
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
@@ -116,7 +116,6 @@ export class LogSessionWizardComponent {
     public groupPeople = signal<Array<GroupPersonWorkspaceType>>([])
     public groupPersonCatalog = signal<Array<GameCompleteType>>([])
     public usesGroupPeople = signal(false)
-    private peopleLoadedForGroupId: number | null = null
 
     // --------------------------------------------------------------------------
     //        STEP 2: DATE SELECTION
@@ -254,40 +253,11 @@ export class LogSessionWizardComponent {
 
         effect(() => {
             const group = this.selectedGroup()
-            if (group) {
-                // Only auto-advance if we're currently on step 1
-                if (this.currentStep() === 'group') {
-                    this.currentStep.set('date')
-                    this.markStepAsInteracted('group')
-                }
+            if (!group) return
 
-                // Initialize attendees from group members
-                this.attendees.set(
-                    group.members.map((member) => ({
-                        user: member,
-                        selected: false,
-                    })),
-                )
-                this.groupPersonCatalog.set([])
-                this.loadGroupPeople(group)
-
-                // Initialize games from all group members' games (will be filtered later based on selected attendees)
-                const allGames = new Map<number, GameCompleteType>()
-                for (const member of group.members) {
-                    for (const game of member.games) {
-                        if (!allGames.has(game.id)) {
-                            allGames.set(game.id, game)
-                        }
-                    }
-                }
-
-                this.games.set(
-                    Array.from(allGames.values()).map((game) => ({
-                        game,
-                        selected: false,
-                    })),
-                )
-            }
+            // Only choosing a group resets the wizard. Signals read while initializing (such as
+            // currentStep) must not be tracked, or every step change would clear the attendees.
+            untracked(() => this.initializeForGroup(group))
         })
 
         effect(() => {
@@ -335,15 +305,53 @@ export class LogSessionWizardComponent {
         })
     }
 
-    private loadGroupPeople(group: GroupWithMembersAndGames): void {
-        if (this.peopleLoadedForGroupId === group.id) return
-        this.peopleLoadedForGroupId = group.id
+    private initializeForGroup(group: GroupWithMembersAndGames): void {
+        // Only auto-advance if we're currently on step 1
+        if (this.currentStep() === 'group') {
+            this.currentStep.set('date')
+            this.markStepAsInteracted('group')
+        }
 
+        // Initialize attendees from group members
+        this.attendees.set(
+            group.members.map((member) => ({
+                user: member,
+                selected: false,
+            })),
+        )
+        this.groupPersonCatalog.set([])
+        this.groupPeople.set([])
+        this.usesGroupPeople.set(false)
+        this.loadGroupPeople(group)
+
+        // Initialize games from all group members' games (will be filtered later based on selected attendees)
+        const allGames = new Map<number, GameCompleteType>()
+        for (const member of group.members) {
+            for (const game of member.games) {
+                if (!allGames.has(game.id)) {
+                    allGames.set(game.id, game)
+                }
+            }
+        }
+
+        this.games.set(
+            Array.from(allGames.values()).map((game) => ({
+                game,
+                selected: false,
+            })),
+        )
+    }
+
+    private loadGroupPeople(group: GroupWithMembersAndGames): void {
         const loader = this.api.getGroupPeople
         if (typeof loader !== 'function') return
 
+        // Ignore a slow response for a group that is no longer selected.
+        const isCurrentGroup = () => this.selectedGroup()?.id === group.id
+
         loader.call(this.api, group.id).subscribe({
             next: (response) => {
+                if (!isCurrentGroup()) return
                 const activePeople = response.people.filter((person) => person.person.status === 'active')
                 if (activePeople.length === 0) return
 
@@ -353,6 +361,15 @@ export class LogSessionWizardComponent {
                 }
 
                 const applyPeople = (catalog: Array<GameCompleteType>) => {
+                    if (!isCurrentGroup()) return
+                    // Members ticked before the people list arrived stay selected as their linked person.
+                    const selectedAccountIds = new Set(
+                        this.usesGroupPeople()
+                            ? []
+                            : this.attendees()
+                                  .filter((attendee) => attendee.selected)
+                                  .map((attendee) => attendee.user.id),
+                    )
                     for (const game of catalog) groupGames.set(game.id, game)
                     this.groupPersonCatalog.set(catalog)
                     this.groupPeople.set(activePeople)
@@ -365,23 +382,29 @@ export class LogSessionWizardComponent {
                                     .map((ownership) => ownership.gameId),
                             )
                             const games = [...groupGames.values()].filter((game) => ownedGameIds.has(game.id))
+                            // A linked person's avatar and username live on their account.
+                            const member =
+                                person.person.accountId === null
+                                    ? undefined
+                                    : group.members.find((candidate) => candidate.id === person.person.accountId)
                             return {
                                 user: {
                                     id: person.person.id,
-                                    username: person.person.displayName.toLowerCase().replace(/\s+/g, '-'),
+                                    username: member?.username ?? person.person.displayName.toLowerCase().replace(/\s+/g, '-'),
                                     displayName: person.person.displayName,
-                                    avatar: person.person.avatar ?? {
-                                        backgroundColor: '#64748b',
-                                        iconName: null,
-                                        emoji: null,
-                                        type: 'initials' as const,
-                                        initials: person.person.displayName.slice(0, 2).toUpperCase(),
-                                    },
+                                    avatar: person.person.avatar ??
+                                        member?.avatar ?? {
+                                            backgroundColor: '#64748b',
+                                            iconName: null,
+                                            emoji: null,
+                                            type: 'initials' as const,
+                                            initials: person.person.displayName.slice(0, 2).toUpperCase(),
+                                        },
                                     joinedAt: person.person.createdAt,
                                     games,
                                     reviews: [],
                                 },
-                                selected: false,
+                                selected: person.person.accountId !== null && selectedAccountIds.has(person.person.accountId),
                             }
                         }),
                     )
@@ -397,6 +420,7 @@ export class LogSessionWizardComponent {
                 }
             },
             error: () => {
+                if (!isCurrentGroup()) return
                 this.groupPeople.set([])
                 this.usesGroupPeople.set(false)
             },
@@ -421,6 +445,16 @@ export class LogSessionWizardComponent {
                 return this.hasParticipantsForEveryGame()
             case 'notes':
                 return true
+            case 'review':
+                // "Save session" is this step's next action; mirror what submitSession() requires.
+                return (
+                    this.selectedGroup() !== null &&
+                    this.sessionDate.valid &&
+                    this.sessionDate.value !== null &&
+                    this.attendees().some((a) => a.selected) &&
+                    this.games().some((g) => g.selected) &&
+                    this.hasParticipantsForEveryGame()
+                )
             default:
                 return false
         }
@@ -666,6 +700,9 @@ export class LogSessionWizardComponent {
             )
 
             this.toastService.success('Session saved.')
+            // Play › History and Home read these cached lists; reload them so the new session shows up.
+            this.dataService.refreshUserHistory()
+            this.dataService.refreshUserMeets()
             await this.router.navigate(['/sessions', result.sessionId])
         } catch {
             this.toastService.error('Could not save the session. Please review your selections and try again.')
