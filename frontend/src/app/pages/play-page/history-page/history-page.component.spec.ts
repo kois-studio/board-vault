@@ -142,3 +142,58 @@ describe('HistoryPageComponent shared-memory summaries', () => {
         expect(note.classList).toContain('wrap-anywhere')
     })
 })
+
+describe('HistoryPageComponent sessions recorded with group people', () => {
+    it('shows the attendees and players of a session recorded only with group people', async () => {
+        const avatar = { backgroundColor: '#EF4444', iconName: null, emoji: '😎', type: 'emoji' as const, initials: '' }
+        const people = [
+            { id: 3, displayName: 'bloddsword', avatar, accountId: 6 },
+            { id: 1, displayName: 'David M. Fajardo', avatar: null, accountId: 1 },
+            { id: 9, displayName: 'Guest', avatar: null, accountId: null },
+        ]
+        const dataService = {
+            currentUser: signal(null),
+            userGroups: signal([{ id: 7, name: 'DuckDevs TestGroup' }]),
+            userGroupsError: signal(false),
+            userHistory: signal([
+                {
+                    meetData: { id: 58, groupId: 7, meetDate: '2026-10-01T10:00:00.000Z', timezone: 'Europe/Madrid', notes: null },
+                    attendedBy: [],
+                    attendedByPeople: people,
+                    gamesPlayed: [
+                        {
+                            gameData: { id: 42, title: 'Casting Shadows', titleTranslations: { en: 'Casting Shadows' } },
+                            playedBy: [],
+                            playedByPeople: people,
+                        },
+                    ],
+                },
+            ]),
+            userHistoryError: signal(false),
+            refreshUserHistory: vi.fn().mockName('refreshUserHistory'),
+        }
+
+        await TestBed.configureTestingModule({
+            imports: [HistoryPageComponent],
+            providers: [
+                { provide: DataService, useValue: dataService },
+                { provide: LoadingService, useValue: { loadingStatesIndex: signal({ [LOADING_KEYS.USER_GAMES_HISTORY]: false }) } },
+                { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: convertToParamMap({}) } } },
+                provideRouter([]),
+            ],
+        }).compileComponents()
+
+        const fixture = TestBed.createComponent(HistoryPageComponent)
+        fixture.detectChanges()
+        const text = fixture.nativeElement.textContent as string
+
+        expect(text).not.toContain('Attendance not recorded')
+        expect(text).not.toContain('Players not recorded')
+        expect(text).toContain('With bloddsword, David M. Fajardo, Guest')
+        expect(fixture.nativeElement.querySelector('[title^="Played by"]')?.getAttribute('title')).toBe(
+            'Played by bloddsword, David M. Fajardo, Guest',
+        )
+        expect(fixture.nativeElement.querySelectorAll('app-image-profile').length).toBe(3)
+        expect(fixture.componentInstance.historySummary().people).toBe(3)
+    })
+})

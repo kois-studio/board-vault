@@ -57,8 +57,28 @@ export async function buildHistoryRecords(meets: Array<MeetDto>, sources: Histor
             groupIds.map(async groupId => [groupId, peopleById(await databaseService.groups.getGroupPeople(groupId))] as const),
         ).then(entries => new Map(entries)),
     ])
+    // Linked people keep their avatar on the account: load any linked account not already loaded (at most one query).
+    const missingAccountIds = [
+        ...new Set(
+            [...peopleByGroup.values()]
+                .flatMap(people => [...people.values()])
+                .filter(person => person.avatar === null && person.accountId !== null && !users.has(person.accountId))
+                .map(person => person.accountId as number),
+        ),
+    ]
+
+    if (missingAccountIds.length > 0) {
+        for (const [id, user] of await usersService.getPublicUsersByIds(missingAccountIds)) users.set(id, user)
+    }
+
     const toPeople = (groupId: number, ids: Array<number>) =>
-        ids.map(id => peopleByGroup.get(groupId)?.get(id)).filter((person): person is HistoryPersonDto => person !== undefined)
+        ids
+            .map(id => peopleByGroup.get(groupId)?.get(id))
+            .filter((person): person is HistoryPersonDto => person !== undefined)
+            .map(person => ({
+                ...person,
+                avatar: person.avatar ?? (person.accountId === null ? null : (users.get(person.accountId)?.avatar ?? null)),
+            }))
     const toUsers = (ids: Array<number>) => ids.map(id => users.get(id)).filter(user => user !== undefined)
 
     return sessions.map(session => ({
@@ -80,7 +100,15 @@ export async function buildHistoryRecords(meets: Array<MeetDto>, sources: Histor
 
 function peopleById(groupPeople: Awaited<ReturnType<DatabaseService['groups']['getGroupPeople']>>): Map<number, HistoryPersonDto> {
     return new Map(
-        groupPeople.rows.map(row => [Number(row[0]), { id: Number(row[0]), displayName: String(row[5]), avatar: parseAvatar(row[6]) }]),
+        groupPeople.rows.map(row => [
+            Number(row[0]),
+            {
+                id: Number(row[0]),
+                displayName: String(row[5]),
+                avatar: parseAvatar(row[6]),
+                accountId: row[2] === null || row[2] === undefined ? null : Number(row[2]),
+            },
+        ]),
     )
 }
 

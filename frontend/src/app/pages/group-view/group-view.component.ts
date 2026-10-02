@@ -28,6 +28,7 @@ import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
 import { LocalStorageService } from '../../core/services/local-storage.service'
 import { formatAttendeeSummary } from '../../core/utils/formatAttendeeSummary'
+import { type HistoryParticipant, mergeHistoryParticipants } from '../../core/utils/historyParticipants'
 import { GroupViewService } from './group-view.service'
 
 type GroupLibraryContext = {
@@ -188,7 +189,7 @@ export class GroupViewComponent {
         for (const record of this.groupHistory$()) {
             for (const playedGame of record.gamesPlayed) {
                 const existing = games.get(playedGame.gameData.id)
-                const participantCount = playedGame.playedBy.length + (playedGame.playedByPeople?.length ?? 0)
+                const participantCount = mergeHistoryParticipants(playedGame.playedBy, playedGame.playedByPeople).length
                 if (existing) {
                     existing.sessionCount += 1
                     existing.playerCount += participantCount
@@ -219,41 +220,33 @@ export class GroupViewComponent {
             })
         }
 
+        // A participant linked to a current member counts on that member; anyone else on their group person.
+        const statsFor = (participant: HistoryParticipant): GroupParticipation | undefined => {
+            const memberStats = participant.accountId === null ? undefined : participation.get(`account:${participant.accountId}`)
+            if (memberStats || participant.personId === null) return memberStats
+
+            const key = `person:${participant.personId}`
+            const stats = participation.get(key) ?? {
+                id: participant.personId,
+                name: participant.displayName,
+                sessionCount: 0,
+                gameCount: 0,
+                kind: 'person' as const,
+            }
+            participation.set(key, stats)
+            return stats
+        }
+
         for (const record of this.groupHistory$()) {
             for (const game of record.gamesPlayed) {
-                for (const member of game.playedBy) {
-                    const stats = participation.get(`account:${member.id}`)
-                    if (!stats) continue
-                    stats.gameCount += 1
-                }
-                for (const person of game.playedByPeople ?? []) {
-                    const key = `person:${person.id}`
-                    const stats = participation.get(key) ?? {
-                        id: person.id,
-                        name: person.displayName,
-                        sessionCount: 0,
-                        gameCount: 0,
-                        kind: 'person' as const,
-                    }
-                    stats.gameCount += 1
-                    participation.set(key, stats)
+                for (const player of mergeHistoryParticipants(game.playedBy, game.playedByPeople)) {
+                    const stats = statsFor(player)
+                    if (stats) stats.gameCount += 1
                 }
             }
-            for (const member of record.attendedBy) {
-                const stats = participation.get(`account:${member.id}`)
+            for (const attendee of mergeHistoryParticipants(record.attendedBy, record.attendedByPeople)) {
+                const stats = statsFor(attendee)
                 if (stats) stats.sessionCount += 1
-            }
-            for (const person of record.attendedByPeople ?? []) {
-                const key = `person:${person.id}`
-                const stats = participation.get(key) ?? {
-                    id: person.id,
-                    name: person.displayName,
-                    sessionCount: 0,
-                    gameCount: 0,
-                    kind: 'person' as const,
-                }
-                stats.sessionCount += 1
-                participation.set(key, stats)
             }
         }
 
@@ -271,7 +264,7 @@ export class GroupViewComponent {
                     games.set(playedGame.gameData.id, {
                         gameData: playedGame.gameData,
                         lastPlayedAt: record.meetData.meetDate,
-                        participantCount: playedGame.playedBy.length + (playedGame.playedByPeople?.length ?? 0),
+                        participantCount: mergeHistoryParticipants(playedGame.playedBy, playedGame.playedByPeople).length,
                     })
                 }
             }
@@ -337,11 +330,13 @@ export class GroupViewComponent {
         return `${selectedCount} of ${this.groupData$()?.members.length ?? 0} selected`
     })
 
-    public getAttendeeSummary(attendees: Array<PublicUserType>, people: Array<{ displayName: string }> = []): string {
-        return formatAttendeeSummary([
-            ...attendees,
-            ...people.map((person) => ({ displayName: person.displayName, username: person.displayName })),
-        ])
+    public getAttendeeSummary(attendees: Array<PublicUserType>, people: HistoryRecordType['attendedByPeople'] = []): string {
+        // Older sessions list the same people as accounts and as group people: count each once.
+        return formatAttendeeSummary(mergeHistoryParticipants(attendees, people))
+    }
+
+    public getPlayerCount(game: HistoryRecordType['gamesPlayed'][number]): number {
+        return mergeHistoryParticipants(game.playedBy, game.playedByPeople).length
     }
 
     public readonly isGroupOwnerComputed = computed(() => {

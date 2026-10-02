@@ -7204,18 +7204,26 @@
           },
           "avatar": {
             "nullable": true,
+            "description": "The person's avatar, or their linked account's when they have none.",
             "type": "object",
             "allOf": [
               {
                 "$ref": "#/components/schemas/AvatarDto"
               }
             ]
+          },
+          "accountId": {
+            "type": "number",
+            "nullable": true,
+            "example": 7,
+            "description": "The linked account, also listed in attendedBy/playedBy for sessions recorded with accounts."
           }
         },
         "required": [
           "id",
           "displayName",
-          "avatar"
+          "avatar",
+          "accountId"
         ]
       },
       "GamePlayedDto": {

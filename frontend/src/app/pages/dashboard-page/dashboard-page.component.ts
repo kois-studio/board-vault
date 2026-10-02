@@ -12,6 +12,7 @@ import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
+import { mergeHistoryParticipants } from '../../core/utils/historyParticipants'
 
 /**
  * Home: the signed-in starting point. Groups live here (there is no separate
@@ -83,9 +84,9 @@ export class DashboardPageComponent {
         () => !this.isLoadingGroups() && !this.userGroupsError() && (this.userGroups$().length === 0 || !this.hasGames()),
     )
 
-    /** Group people include members' own entries, so prefer them over accounts. */
+    /** Attendees recorded as accounts, group people, or both, each counted once. */
     public peopleCount(record: HistoryRecordType): number {
-        return record.attendedByPeople?.length || record.attendedBy.length
+        return mergeHistoryParticipants(record.attendedBy, record.attendedByPeople).length
     }
 
     public gameTitles(record: HistoryRecordType): string {

@@ -83,7 +83,7 @@
                         <h2 class="mt-1 text-xl font-bold text-bv-text" [id]="'history-session-' + historyRecord.meetData.id">
                             {{ historyRecord.meetData.meetDate | customDate: true: historyRecord.meetData.timezone }}
                         </h2>
-                        <p class="mt-2 text-sm text-secondary wrap-anywhere">{{ getAttendeeSummary(historyRecord.attendedBy) }} · {{ historyRecord.gamesPlayed.length }} game{{ historyRecord.gamesPlayed.length === 1 ? '' : 's' }} played</p>
+                        <p class="mt-2 text-sm text-secondary wrap-anywhere">{{ getAttendeeSummary(getAttendees(historyRecord)) }} · {{ historyRecord.gamesPlayed.length }} game{{ historyRecord.gamesPlayed.length === 1 ? '' : 's' }} played</p>
                     </div>
                     <a appButton variant="secondary" class="text-center text-sm" [routerLink]="['/sessions', historyRecord.meetData.id]">Open session memory</a>
                     </div>
@@ -123,7 +123,7 @@
                                     <div class="relative h-8 flex min-w-0 items-center">
                                         <!-- Player avatars -->
                                         <div class="flex -space-x-2">
-                                            @for (player of gamePlayed.playedBy; track player.id) {
+                                            @for (player of getPlayers(gamePlayed); track player.key) {
                                                 <app-image-profile
                                                     [title]="player.username"
                                                     class="border-2 rounded-full border-bv-primary/30"
@@ -132,10 +132,10 @@
                                                 />
                                             }
                                         </div>
-                                        @if (gamePlayed.playedBy.length === 0) {
+                                        @if (getPlayers(gamePlayed).length === 0) {
                                             <span class="ml-3 text-xs text-secondary">Players not recorded</span>
                                         } @else {
-                                            <span class="ml-3 min-w-0 line-clamp-2 text-xs text-secondary wrap-anywhere" [attr.aria-label]="'Played by ' + getPlayedBySummary(gamePlayed.playedBy)" [title]="'Played by ' + getPlayedBySummary(gamePlayed.playedBy)">Played by {{ getPlayedBySummary(gamePlayed.playedBy) }}</span>
+                                            <span class="ml-3 min-w-0 line-clamp-2 text-xs text-secondary wrap-anywhere" [attr.aria-label]="'Played by ' + getPlayedBySummary(getPlayers(gamePlayed))" [title]="'Played by ' + getPlayedBySummary(getPlayers(gamePlayed))">Played by {{ getPlayedBySummary(getPlayers(gamePlayed)) }}</span>
                                         }
                                     </div>
                                 </div>

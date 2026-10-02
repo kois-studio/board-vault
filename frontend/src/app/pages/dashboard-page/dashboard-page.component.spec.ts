@@ -96,4 +96,29 @@ describe('DashboardPageComponent (Home)', () => {
         expect(fixture.nativeElement.textContent).toContain('Root')
         expect(fixture.nativeElement.textContent).toContain('3 people')
     })
+
+    it('counts a session recorded only with group people, and members recorded both ways once', async () => {
+        const person = (id: number, accountId: number | null) => ({ id, displayName: `P${id}`, avatar: null, accountId })
+        const fixture = await renderHome({
+            userHistory: signal([
+                {
+                    meetData: meet(7, 10, -3, 'completed'),
+                    // Accounts 1 and 2 are also listed as their linked group people 11 and 12.
+                    attendedBy: [{ id: 1 }, { id: 2 }],
+                    attendedByPeople: [person(11, 1), person(12, 2), person(13, null)],
+                    gamesPlayed: [{ gameData: { titleTranslations: { en: 'Root', es: 'Root' } }, playedBy: [] }],
+                },
+                {
+                    meetData: meet(7, 11, -2, 'completed'),
+                    // Recorded with the wizard: group people only.
+                    attendedBy: [],
+                    attendedByPeople: [person(11, 1), person(13, null)],
+                    gamesPlayed: [{ gameData: { titleTranslations: { en: 'Azul', es: 'Azul' } }, playedBy: [] }],
+                },
+            ]),
+        })
+
+        expect(fixture.nativeElement.textContent).toContain('3 people')
+        expect(fixture.nativeElement.textContent).toContain('2 people')
+    })
 })

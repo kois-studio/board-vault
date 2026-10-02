@@ -92,6 +92,12 @@ operational details.
   shows an accurate error.
 - Approved game proposals without artwork no longer point to a dead
   third-party placeholder image.
+- Play › History lists the attendees and players of sessions recorded with
+  group people (the session wizard records them that way) instead of
+  "Attendance not recorded". The group page and Home count each person once
+  when a session lists both their account and their group person, and
+  history people include the linked `accountId` and fall back to the
+  account's avatar.
 - Long names without spaces no longer overflow their cards or widen the
   page on phones. They wrap in attendee pickers, group and session cards, and
   recommendation explanations, and history's "Played by" line stops at two
