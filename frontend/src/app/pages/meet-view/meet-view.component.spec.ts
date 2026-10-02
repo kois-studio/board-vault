@@ -34,6 +34,7 @@ describe('MeetViewComponent participant safeguards', () => {
             updateSessionAttendees: vi.fn().mockName('updateSessionAttendees'),
             updateSessionAttendance: vi.fn().mockName('updateSessionAttendance'),
             updateSessionPlayedGames: vi.fn().mockName('updateSessionPlayedGames'),
+            updateSessionStatus: vi.fn().mockName('updateSessionStatus'),
         }
         const dataService = {
             currentUser: signal(null),
@@ -41,6 +42,8 @@ describe('MeetViewComponent participant safeguards', () => {
             userReviews: signal([]),
             updateSessionAttendees: vi.fn().mockName('updateSessionAttendees'),
             refreshGameReviews: vi.fn().mockName('refreshGameReviews'),
+            refreshUserMeets: vi.fn().mockName('refreshUserMeets'),
+            refreshUserHistory: vi.fn().mockName('refreshUserHistory'),
         }
         const toastService = {
             success: vi.fn().mockName('success'),
@@ -91,6 +94,26 @@ describe('MeetViewComponent participant safeguards', () => {
 
         expect(component.playedGamesCount).toBe(1)
         expect(component.skippedGamesCount).toBe(2)
+    })
+
+    it('reloads the cached history when a session is completed', async () => {
+        const { component, api, dataService } = await setup()
+        api.updateSessionStatus.mockReturnValue(of({ sessionId: 99, status: 'completed' }))
+
+        await component.updateStatus('completed')
+
+        expect(dataService.refreshUserMeets).toHaveBeenCalledOnce()
+        expect(dataService.refreshUserHistory).toHaveBeenCalledOnce()
+    })
+
+    it('leaves the cached history alone when a session is cancelled', async () => {
+        const { component, api, dataService } = await setup()
+        api.updateSessionStatus.mockReturnValue(of({ sessionId: 99, status: 'cancelled' }))
+
+        await component.updateStatus('cancelled')
+
+        expect(dataService.refreshUserMeets).toHaveBeenCalledOnce()
+        expect(dataService.refreshUserHistory).not.toHaveBeenCalled()
     })
 
     it('requires an explicit review before completing or cancelling', async () => {

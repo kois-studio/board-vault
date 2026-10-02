@@ -496,6 +496,8 @@ export class MeetViewComponent {
             this.meetData.status = result.status
             this.meetDataCopyOriginal = JSON.parse(JSON.stringify(this.meetData))
             this.dataService.refreshUserMeets()
+            // A completed session joins the history shown in Play › History and on Home.
+            if (result.status === 'completed') this.dataService.refreshUserHistory()
             this.toastService.success(`Session marked as ${status}.`)
         } catch {
             this.actionError.set('Could not update the session status. Try again from this page.')

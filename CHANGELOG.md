@@ -84,6 +84,13 @@ operational details.
   the form under Tailwind 4.
 - Red buttons such as "Delete group" show white text in light mode again;
   the danger button style had no text colour.
+- "Record a past session" works end to end again. Attendees no longer reset
+  when you move to the Games step, Save session is enabled on the review
+  step, saving a session with group people no longer fails with a 500 (the
+  session service called group queries with the wrong `this` after the
+  DatabaseService split), linked people show their account avatar and
+  username, and Play › History and Home show the new session without a
+  reload.
 
 ### Added
 
