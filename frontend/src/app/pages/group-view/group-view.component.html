@@ -578,7 +578,7 @@
                                     <a [routerLink]="['/sessions', historyRecord.meetData.id]" class="text-sm text-bv-primary hover:underline">View</a>
                                 </div>
                                 @if (historyRecord.meetData.notes) {
-                                    <p class="mt-4 rounded-xl bg-bv-bg p-3 text-sm text-secondary">{{ historyRecord.meetData.notes }}</p>
+                                    <p class="mt-4 rounded-xl bg-bv-bg p-3 text-sm text-secondary wrap-anywhere">{{ historyRecord.meetData.notes }}</p>
                                 }
                                 <ul class="mt-4 space-y-3">
                                     @for (gamePlayed of historyRecord.gamesPlayed; track gamePlayed.gameData.id) {

@@ -106,6 +106,9 @@ operational details.
 - "Submit Your First Game" and "Submit New Game" show the game proposal
   form again. The dialog's Tailwind 3 backdrop was opaque and painted over
   the form under Tailwind 4.
+- Long session and proposal notes without spaces wrap inside their cards on
+  the group page, the session page, Play › History, My submissions, and the
+  wizard's review step, which also wraps long attendee, group, and game names.
 - Red buttons such as "Delete group" show white text in light mode again;
   the danger button style had no text colour.
 - "Record a past session" works end to end again. Attendees no longer reset

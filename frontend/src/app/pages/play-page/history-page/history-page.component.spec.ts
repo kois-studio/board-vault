@@ -87,15 +87,16 @@ describe('HistoryPageComponent shared-memory summaries', () => {
         expect(fixture.nativeElement.textContent).not.toContain('has no recorded sessions yet')
     })
 
-    it('keeps long unbroken player names inside the session card', async () => {
+    it('keeps long unbroken player names and notes inside the session card', async () => {
         const longName = '⸻'.repeat(20)
+        const longNote = `Hicieron ${'trahgioubneriog'.repeat(20)} y más.`
         const dataService = {
             currentUser: signal(null),
             userGroups: signal([{ id: 7, name: 'Friday Crew' }]),
             userGroupsError: signal(false),
             userHistory: signal([
                 {
-                    meetData: { id: 11, groupId: 7, meetDate: '2026-09-05T19:00:00.000Z', timezone: 'Europe/Madrid', notes: null },
+                    meetData: { id: 11, groupId: 7, meetDate: '2026-09-05T19:00:00.000Z', timezone: 'Europe/Madrid', notes: longNote },
                     attendedBy: [{ id: 5, displayName: longName, username: 'long-name' }],
                     gamesPlayed: [
                         {
@@ -133,5 +134,11 @@ describe('HistoryPageComponent shared-memory summaries', () => {
         ) as HTMLParagraphElement
         expect(attendees.classList).toContain('wrap-anywhere')
         expect(attendees.parentElement?.classList).toContain('min-w-0')
+
+        const note = [...fixture.nativeElement.querySelectorAll('article p')].find((element: HTMLElement) =>
+            element.textContent?.includes('Session note:'),
+        ) as HTMLParagraphElement
+        expect(note.textContent).toContain(longNote)
+        expect(note.classList).toContain('wrap-anywhere')
     })
 })
