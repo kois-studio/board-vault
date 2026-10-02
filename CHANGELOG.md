@@ -99,6 +99,8 @@ operational details.
 
 ### Fixed
 
+- A long name without spaces no longer makes the group page wider than a
+  phone screen; it is cut off with an ellipsis in its card.
 - The Collection tabs fit on a phone screen; Wishlist was cut off.
 - Search boxes, filters, and form fields have a background in light mode
   again (they were see-through after the palette change).
