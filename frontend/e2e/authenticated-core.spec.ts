@@ -30,10 +30,11 @@ test.describe('authenticated core navigation', () => {
 
         await page.goto('/collection')
 
-        // Collection opens on My Games.
+        // Collection opens on a page with one card per subpage.
+        await expect(page.getByRole('heading', { name: 'Collection', level: 1 })).toBeVisible()
+        await expect(page.getByRole('link', { name: 'Add games' })).toBeVisible()
+        await page.getByRole('main').getByRole('link', { name: /My Games/ }).click()
         await expect(page).toHaveURL(/\/collection\/games$/)
-        await expect(page.getByRole('heading', { name: 'My Games' })).toBeVisible()
-        await expect(page.getByRole('link', { name: /Add (?:games|your first game)/i }).first()).toBeVisible()
     })
 
     test('explains when a group is no longer available', async ({ page }) => {

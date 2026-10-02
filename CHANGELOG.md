@@ -34,7 +34,8 @@ operational details.
   copy, owners in each group, play count, similar games), a filterable and
   sortable My Games grid, a Browse page that lists games before you search,
   compact upcoming sessions, and shorter group and session pages.
-  `/collection` and `/play` open My Games and Upcoming directly.
+  `/collection` and `/play` open a hub with a card for each subpage and its
+  count; recent collection activity sits under the Collection cards.
 - Group cards count the group's people without an account and the games
   they own.
 - The groups overview and history load games, titles, and people in

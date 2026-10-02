@@ -61,10 +61,9 @@ export const routes: Routes = [
                 canActivate: [AuthOnlyGuard],
             },
             {
-                // Collection opens on My Games.
                 path: 'collection',
-                pathMatch: 'full',
-                redirectTo: 'collection/games',
+                loadComponent: () => import('./pages/collection-page/collection-page.component').then((m) => m.CollectionPageComponent),
+                canActivate: [AuthOnlyGuard],
             },
             {
                 path: 'collection/games',
@@ -95,10 +94,9 @@ export const routes: Routes = [
                 canActivate: [AuthOnlyGuard],
             },
             {
-                // Play opens on what is coming up.
                 path: 'play',
-                pathMatch: 'full',
-                redirectTo: 'play/upcoming-sessions',
+                loadComponent: () => import('./pages/play-page/play-page.component').then((m) => m.PlayPageComponent),
+                canActivate: [AuthOnlyGuard],
             },
             {
                 path: 'play/recommendations',

@@ -32,7 +32,7 @@ test.describe('five-game collection activation', () => {
             }
         }
 
-        await page.goto('/collection')
+        await page.goto('/collection/games')
         await expect(page.getByRole('heading', { name: 'My Games' })).toBeVisible()
         await expect(page.getByText(/^\d+ games$/)).toBeVisible()
     })

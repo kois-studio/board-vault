@@ -1,0 +1,35 @@
+<app-page-header titleText="Collection" [showActionButton]="true">
+    Manage your board games, wishlist and reviews
+    <a class="app-btn-primary action-button text-center" routerLink="/collection/browse">Add games</a>
+</app-page-header>
+
+<container-wrapper>
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <app-card-section icon="collection-fill" color="blue" titleText="My Games" description="Browse and manage your board game collection" cardLink="/collection/games">
+            <app-badge class="app-card-section-badge" color="blue" [text]="isLoadingUserGames() ? 'Loading…' : userGames$().length + ' games'" />
+            <div></div>
+            <span class="flex items-center text-sm font-medium text-blue-600 group-hover:underline dark:text-blue-400">View all &gt;</span>
+        </app-card-section>
+
+        <app-card-section icon="search" color="green" titleText="Browse" description="Find new games to add to your collection" cardLink="/collection/browse">
+            <div></div>
+            <span class="flex items-center text-sm font-medium text-green-600 group-hover:underline dark:text-green-400">Browse games &gt;</span>
+        </app-card-section>
+
+        <app-card-section icon="star-fill" color="orange" titleText="Reviews" description="Rate and review the games you've played" cardLink="/collection/reviews">
+            <app-badge class="app-card-section-badge" color="orange" [text]="userReviews$().length + ' reviews'" />
+            <div></div>
+            <span class="flex items-center text-nowrap text-sm font-medium text-orange-600 group-hover:underline dark:text-orange-400">View all &gt;</span>
+        </app-card-section>
+
+        <app-card-section icon="suit-heart-fill" color="red" titleText="Wishlist" description="Keep track of games you want to add to your collection" cardLink="/collection/wishlist">
+            <app-badge class="app-card-section-badge" color="red" [text]="userWishlist$().length + ' games'" />
+            <div></div>
+            <span class="flex items-center text-sm font-medium text-red-600 group-hover:underline dark:text-red-400">View all &gt;</span>
+        </app-card-section>
+    </div>
+
+    <section class="py-12" aria-label="Recent collection activity">
+        <app-collection-activity />
+    </section>
+</container-wrapper>

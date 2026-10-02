@@ -13,7 +13,6 @@ describe('MyGamesPageComponent private collection boundary', () => {
             userGames: signal<Array<{ id: number }>>([]),
             userGamesError: signal(false),
             userWishlist: signal([]),
-            userCollectionActivity: signal([]),
         }
 
         await TestBed.configureTestingModule({

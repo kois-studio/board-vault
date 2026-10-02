@@ -111,9 +111,9 @@ List `AuthGuard` first; the others read `request.user`.
 | `/create-group`, `/groups/:groupId/edit` | `AuthOnlyGuard` | Group create and settings (invitations) |
 | `/groups/:groupId/people/:personId/claim` | `AuthOnlyGuard` | Claim a group person |
 | `/groups/:groupId/sessions/new`, `/sessions/:sessionId` | `AuthOnlyGuard` | Plan and view sessions |
-| `/collection/…` | `AuthOnlyGuard` | My Games (`/collection` redirects there), browse, reviews, wishlist, propose a game |
+| `/collection`, `/collection/…` | `AuthOnlyGuard` | Collection hub (a card per subpage and recent activity); My Games, browse, reviews, wishlist, propose a game |
 | `/games/:gameId` | `AuthOnlyGuard` | Game detail |
-| `/play/…` | `AuthOnlyGuard` | Upcoming (`/play` redirects there), recommendations, log a session, history |
+| `/play`, `/play/…` | `AuthOnlyGuard` | Play hub (a card per subpage); upcoming, recommendations, log a session, history |
 | `/settings/account`, `/settings/security` | `AuthOnlyGuard` | Profile and Clerk account security |
 | `/admin/…` | `AdminGuard` | Catalogue administration |
 
