@@ -1,14 +1,14 @@
-@if (member) {
+@if (member(); as member) {
 <div class="flex min-w-0 items-center justify-start" [ngClass]="{
-    'p-4': format === 'default',
-    'p-2': format === 'compact',
+    'p-4': format() === 'default',
+    'p-2': format() === 'compact',
 }">
     <app-image-profile [avatar]="member.avatar" />
     <div class="ml-3 min-w-0 text-start">
         <p class="max-w-[140px] truncate font-semibold">{{ member.displayName }}</p>
         <p class="max-w-[140px] truncate text-sm text-secondary">
             <span>{{ member.username }}</span>
-            @if (isOwner) {
+            @if (isOwner()) {
             <span class="text-blue-500 pl-2">owner</span>
             }
         </p>

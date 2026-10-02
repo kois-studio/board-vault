@@ -17,7 +17,7 @@
         <section class="app-bg-secondary rounded-lg p-6 text-center">
             <h2 class="text-xl font-semibold mb-2">Create or join a group first</h2>
             <p class="text-secondary mb-5">Recommendations use games owned by the selected attendees in a group.</p>
-            <a class="app-btn-primary inline-block" routerLink="/dashboard">Open groups</a>
+            <a class="app-btn-primary" routerLink="/dashboard">Open groups</a>
         </section>
     } @else {
         @if (selectedGroup(); as group) {
@@ -124,7 +124,7 @@
                     <div class="app-bg-secondary rounded-lg p-6 text-center">
                         <p class="text-secondary">{{ result.noResultReason }}</p>
                         <p class="mt-2 text-sm text-secondary">Try changing the attendees or time, or add a new game to the group’s shared shelf.</p>
-                        <a class="app-btn-secondary mt-4 inline-block" [routerLink]="['/collection/browse']" [queryParams]="{ groupId: result.groupId }">Browse games for this group</a>
+                        <a class="app-btn-secondary mt-4" [routerLink]="['/collection/browse']" [queryParams]="{ groupId: result.groupId }">Browse games for this group</a>
                     </div>
                 } @else {
                     <div class="grid gap-4 lg:grid-cols-2">
@@ -162,7 +162,7 @@
                                         </p>
                                     }
                                     <a
-                                        class="app-btn-secondary inline-block mt-3 text-sm"
+                                        class="app-btn-secondary mt-3 text-sm"
                                         [routerLink]="['/groups', result.groupId, 'sessions', 'new']"
                                         [queryParams]="{ plannedGameId: recommendation.gameData.id, participantIds: getRecommendationParticipantIds(result) }"
                                     >Schedule with this game</a>

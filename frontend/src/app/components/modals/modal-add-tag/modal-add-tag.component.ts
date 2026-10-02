@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Output, signal } from '@angular/core'
+import { Component, inject, output, signal } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Api } from '../../../api/api'
 import type { TagCategoryType, TagType } from '../../../api/api.types'
@@ -28,7 +28,7 @@ export class ModalAddTagComponent {
     // --------------------------------------------------------------------------
     //        Events
     // --------------------------------------------------------------------------
-    @Output() tagCreated = new EventEmitter<TagType>()
+    readonly tagCreated = output<TagType>()
 
     // --------------------------------------------------------------------------
     //        Form

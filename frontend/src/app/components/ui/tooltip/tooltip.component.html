@@ -6,44 +6,44 @@
         [id]="tooltipId"
         class="absolute z-10 whitespace-nowrap rounded bg-zinc-800 px-2 py-1 text-sm text-white transition-opacity duration-200 motion-reduce:transition-none"
         [ngClass]="{
-            'bottom-full': position === 'top',
-            'top-full': position === 'bottom',
-            'left-full': position === 'right',
-            'right-full': position === 'left',
+            'bottom-full': position() === 'top',
+            'top-full': position() === 'bottom',
+            'left-full': position() === 'right',
+            'right-full': position() === 'left',
 
-            'left-1/2': position === 'top' || position === 'bottom',
-            '-translate-x-1/2': position === 'top' || position === 'bottom',
+            'left-1/2': position() === 'top' || position() === 'bottom',
+            '-translate-x-1/2': position() === 'top' || position() === 'bottom',
 
-            'top-1/2': position === 'left' || position === 'right',
-            '-translate-y-1/2': position === 'left' || position === 'right',
+            'top-1/2': position() === 'left' || position() === 'right',
+            '-translate-y-1/2': position() === 'left' || position() === 'right',
 
-            'mb-2': position === 'top',
-            'mt-2': position === 'bottom',
-            'ml-2': position === 'right',
-            'mr-2': position === 'left'
+            'mb-2': position() === 'top',
+            'mt-2': position() === 'bottom',
+            'ml-2': position() === 'right',
+            'mr-2': position() === 'left'
         }"
         role="tooltip"
     >
-        {{ text }}
+        {{ text() }}
 
         <div
             class="absolute w-0 h-0 border-8 border-solid border-transparent"
             [ngClass]="{
-                'top-full': position === 'top',
-                'bottom-full': position === 'bottom',
-                'right-full': position === 'right',
-                'left-full': position === 'left',
+                'top-full': position() === 'top',
+                'bottom-full': position() === 'bottom',
+                'right-full': position() === 'right',
+                'left-full': position() === 'left',
 
-                'left-1/2': position === 'top' || position === 'bottom',
-                '-translate-x-1/2': position === 'top' || position === 'bottom',
+                'left-1/2': position() === 'top' || position() === 'bottom',
+                '-translate-x-1/2': position() === 'top' || position() === 'bottom',
 
-                'top-1/2': position === 'left' || position === 'right',
-                '-translate-y-1/2': position === 'left' || position === 'right',
+                'top-1/2': position() === 'left' || position() === 'right',
+                '-translate-y-1/2': position() === 'left' || position() === 'right',
 
-                'border-t-gray-800': position === 'top',
-                'border-b-gray-800': position === 'bottom',
-                'border-r-gray-800': position === 'right',
-                'border-l-gray-800': position === 'left'
+                'border-t-gray-800': position() === 'top',
+                'border-b-gray-800': position() === 'bottom',
+                'border-r-gray-800': position() === 'right',
+                'border-l-gray-800': position() === 'left'
             }"
         ></div>
     </div>

@@ -3,14 +3,14 @@
         <div class="flex flex-col md:flex-row md:items-center md:justify-between">
             <div>
                 <h1 class="text-2xl font-bold">
-                    {{ titleText }}
+                    {{ titleText() }}
                 </h1>
                 <p class="mt-1 text-sm text-secondary">
                     <ng-content />
                 </p>
             </div>
 
-            @if (showActionButton) {
+            @if (showActionButton()) {
             <div class="mt-4 md:mt-0">
                 <ng-content select=".action-button" />
             </div>

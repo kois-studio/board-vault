@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Output, signal } from '@angular/core'
+import { Component, inject, output, signal } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Api } from '../../../api/api'
 import type { TagCategoryType } from '../../../api/api.types'
@@ -28,7 +28,10 @@ export class ModalEditCategoryComponent {
     // --------------------------------------------------------------------------
     //        Events
     // --------------------------------------------------------------------------
-    @Output() categoryUpdated = new EventEmitter<{ id: number; name: string }>()
+    readonly categoryUpdated = output<{
+        id: number
+        name: string
+    }>()
 
     // --------------------------------------------------------------------------
     //        Form

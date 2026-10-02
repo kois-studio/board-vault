@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, Input } from '@angular/core'
+import { Component, input } from '@angular/core'
 import { UserType } from '../../api/api.types'
 import { IconComponent } from '../ui/icon/icon.component'
 
@@ -9,6 +9,6 @@ import { IconComponent } from '../ui/icon/icon.component'
     templateUrl: 'image-profile.component.html',
 })
 export class ImageProfileComponent {
-    @Input({ required: true }) avatar: null | undefined | UserType['avatar'] = null
-    @Input() size: 'base' | 'large' = 'base'
+    readonly avatar = input.required<null | undefined | UserType['avatar']>()
+    readonly size = input<'base' | 'large'>('base')
 }

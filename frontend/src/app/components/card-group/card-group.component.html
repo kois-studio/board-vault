@@ -4,9 +4,9 @@
             <div class="min-w-0">
                 <p class="text-xs font-semibold uppercase tracking-[0.18em] text-indigo-200">Shared group workspace</p>
                 <h2 class="mt-2 truncate text-2xl font-bold tracking-tight">
-                    <a [routerLink]="['/groups', group.id]" class="rounded-sm hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-white">{{ group.name }}</a>
+                    <a [routerLink]="['/groups', group().id]" class="rounded-sm hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-white">{{ group().name }}</a>
                 </h2>
-                <p class="mt-2 text-sm text-indigo-100">{{ peopleCount }} {{ peopleCount === 1 ? 'person' : 'people' }} · {{ sharedGameCount }} shared game{{ sharedGameCount === 1 ? '' : 's' }}</p>
+                <p class="mt-2 text-sm text-indigo-100">{{ peopleCount() }} {{ peopleCount() === 1 ? 'person' : 'people' }} · {{ sharedGameCount() }} shared game{{ sharedGameCount() === 1 ? '' : 's' }}</p>
             </div>
             <app-icon name="users" [size]="24" className="mt-1 text-indigo-200" aria-hidden="true" />
         </div>
@@ -21,14 +21,14 @@
                     <a [routerLink]="['/sessions', nextMeeting.id]" class="mt-1 inline-block text-sm text-indigo-700 underline hover:no-underline dark:text-indigo-300">Open plan</a>
                 } @else {
                     <p class="mt-2 font-semibold">Nothing planned yet</p>
-                    <a [routerLink]="['/groups', group.id, 'sessions', 'new']" class="mt-1 inline-block text-sm text-indigo-700 underline hover:no-underline dark:text-indigo-300">Plan a game night</a>
+                    <a [routerLink]="['/groups', group().id, 'sessions', 'new']" class="mt-1 inline-block text-sm text-indigo-700 underline hover:no-underline dark:text-indigo-300">Plan a game night</a>
                 }
             </div>
             <div class="rounded-xl bg-zinc-50 p-4 dark:bg-zinc-800">
                 <p class="text-xs font-semibold uppercase tracking-wide text-secondary">Shared memory</p>
                 @if (lastMeetingComputed(); as lastMeeting) {
                     <p class="mt-2 font-semibold">Last session {{ lastMeeting.meetDate | customDate: true: lastMeeting.timezone }}</p>
-                    <a [routerLink]="['/play/history']" [queryParams]="{ groupId: group.id }" class="mt-1 inline-block text-sm text-indigo-700 underline hover:no-underline dark:text-indigo-300">Open group history</a>
+                    <a [routerLink]="['/play/history']" [queryParams]="{ groupId: group().id }" class="mt-1 inline-block text-sm text-indigo-700 underline hover:no-underline dark:text-indigo-300">Open group history</a>
                 } @else {
                     <p class="mt-2 font-semibold">No sessions recorded yet</p>
                     <span class="mt-1 inline-block text-sm text-secondary">Your first game night starts here.</span>
@@ -36,19 +36,19 @@
             </div>
         </section>
 
-        <section [attr.aria-labelledby]="'group-members-' + group.id">
+        <section [attr.aria-labelledby]="'group-members-' + group().id">
             <div class="mb-3 flex items-center justify-between gap-3">
-                <h3 [id]="'group-members-' + group.id" class="text-sm font-semibold uppercase tracking-wide text-secondary">People in this group</h3>
-                <span class="text-xs text-secondary">{{ sharedGameCount }} games available</span>
+                <h3 [id]="'group-members-' + group().id" class="text-sm font-semibold uppercase tracking-wide text-secondary">People in this group</h3>
+                <span class="text-xs text-secondary">{{ sharedGameCount() }} games available</span>
             </div>
             <div class="grid gap-2 sm:grid-cols-2">
-                @for (member of group.members; track member.id) {
+                @for (member of group().members; track member.id) {
                     <div class="flex min-w-0 items-center justify-between rounded-xl bg-zinc-50 dark:bg-zinc-800">
-                        <app-card-account [member]="member" [isOwner]="group.createdBy === member.id" format="compact" />
+                        <app-card-account [member]="member" [isOwner]="group().createdBy === member.id" format="compact" />
                         <span class="mr-3 shrink-0 text-xs text-secondary">{{ member.games.length }} owned</span>
                     </div>
                 }
-                @for (person of group.placeholders ?? []; track person.id) {
+                @for (person of group().placeholders ?? []; track person.id) {
                     <div class="flex min-w-0 items-center justify-between gap-3 rounded-xl bg-zinc-50 p-2 dark:bg-zinc-800">
                         <div class="flex min-w-0 items-center gap-3">
                             <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-dashed border-zinc-300 text-sm font-semibold text-zinc-500 dark:border-zinc-600 dark:text-zinc-300" aria-hidden="true">{{ person.displayName.charAt(0).toUpperCase() }}</span>
@@ -63,18 +63,18 @@
             </div>
         </section>
 
-        @if (invitations && invitations.length > 0) {
+        @if (invitations()?.length) {
             <p class="flex items-center gap-2 border-t border-zinc-200 pt-4 text-sm text-secondary dark:border-zinc-700">
                 <app-icon name="mail" [size]="16" aria-hidden="true" />
-                {{ invitations.length }} pending invitation{{ invitations.length === 1 ? '' : 's' }}
-                <a [routerLink]="['/groups', group.id, 'edit']" class="text-indigo-700 underline hover:no-underline dark:text-indigo-300">Manage invitations</a>
+                {{ invitations()?.length }} pending invitation{{ invitations()?.length === 1 ? '' : 's' }}
+                <a [routerLink]="['/groups', group().id, 'edit']" class="text-indigo-700 underline hover:no-underline dark:text-indigo-300">Manage invitations</a>
             </p>
         }
     </div>
 
     <footer class="flex flex-wrap gap-2 border-t border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-950/40">
-        <a [routerLink]="['/groups', group.id]" class="app-btn-primary">Open workspace</a>
-        <a [routerLink]="['/play/recommendations']" [queryParams]="{ groupId: group.id }" class="app-btn-secondary">Decide what to play</a>
-        <a [routerLink]="['/groups', group.id, 'sessions', 'new']" class="app-btn-secondary">Plan session</a>
+        <a [routerLink]="['/groups', group().id]" class="app-btn-primary">Open workspace</a>
+        <a [routerLink]="['/play/recommendations']" [queryParams]="{ groupId: group().id }" class="app-btn-secondary">Decide what to play</a>
+        <a [routerLink]="['/groups', group().id, 'sessions', 'new']" class="app-btn-secondary">Plan session</a>
     </footer>
 </article>

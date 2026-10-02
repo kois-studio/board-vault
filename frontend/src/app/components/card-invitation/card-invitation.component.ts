@@ -1,4 +1,4 @@
-import { Component, Input, signal } from '@angular/core'
+import { Component, input, signal } from '@angular/core'
 import { firstValueFrom } from 'rxjs'
 import { InvitationWithExtraData } from '../../api/api.types'
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
@@ -12,7 +12,7 @@ import { IconComponent } from '../ui/icon/icon.component'
     templateUrl: 'card-invitation.component.html',
 })
 export class CardInvitationComponent {
-    @Input({ required: true }) invitation: null | InvitationWithExtraData = null
+    readonly invitation = input.required<null | InvitationWithExtraData>()
     public isLoading = false
     public isConfirmingDecline = false
     public readonly actionError = signal<string | null>(null)
@@ -20,12 +20,13 @@ export class CardInvitationComponent {
     constructor(private readonly dataService: DataService) {}
 
     async acceptInvitation() {
-        if (!this.invitation || this.isLoading) return
+        const invitation = this.invitation()
+        if (!invitation || this.isLoading) return
         this.isConfirmingDecline = false
         this.actionError.set(null)
         this.isLoading = true
         try {
-            await firstValueFrom(this.dataService.acceptInvitation(this.invitation.id))
+            await firstValueFrom(this.dataService.acceptInvitation(invitation.id))
         } catch {
             this.actionError.set(
                 'We could not accept this invitation. It may have expired or the group may no longer be available. Try again or refresh your invitations.',
@@ -36,7 +37,8 @@ export class CardInvitationComponent {
     }
 
     async rejectInvitation() {
-        if (!this.invitation || this.isLoading) return
+        const invitation = this.invitation()
+        if (!invitation || this.isLoading) return
 
         if (!this.isConfirmingDecline) {
             this.isConfirmingDecline = true
@@ -46,7 +48,7 @@ export class CardInvitationComponent {
         this.actionError.set(null)
         this.isLoading = true
         try {
-            await firstValueFrom(this.dataService.rejectInvitation(this.invitation.id))
+            await firstValueFrom(this.dataService.rejectInvitation(invitation.id))
         } catch {
             this.actionError.set('We could not decline this invitation right now. Try again or refresh your invitations.')
         } finally {

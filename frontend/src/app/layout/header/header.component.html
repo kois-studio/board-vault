@@ -35,7 +35,7 @@
                     } @else {
                         <a routerLink="/login">Log In</a>
                         @if (selfRegistrationEnabled()) {
-                            <app-button routerLink="/register">Sign Up</app-button>
+                            <app-button link="/register">Sign Up</app-button>
                         } @else {
                             <a routerLink="/register" class="font-medium text-indigo-600 dark:text-indigo-400">Private beta</a>
                         }

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Output, signal } from '@angular/core'
+import { Component, inject, output, signal } from '@angular/core'
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../../api/api'
@@ -40,7 +40,10 @@ export class ModalEditGameTranslationsComponent {
     // --------------------------------------------------------------------------
     //        Events
     // --------------------------------------------------------------------------
-    @Output() public translationsUpdated = new EventEmitter<{ id: number; translations: Record<SupportedLanguage, string> }>()
+    public readonly translationsUpdated = output<{
+        id: number
+        translations: Record<SupportedLanguage, string>
+    }>()
 
     // --------------------------------------------------------------------------
     //        Methods

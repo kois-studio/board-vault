@@ -178,7 +178,7 @@
                                                 <button
                                                     type="button"
                                                     (click)="onApproveProposal(proposal.id)"
-                                                    class="px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+                                                    class="app-btn-success app-btn-sm text-xs"
                                                     title="Approve proposal"
                                                     aria-label="Approve proposal"
                                                 >
@@ -187,7 +187,7 @@
                                                 <button
                                                     type="button"
                                                     (click)="onRejectProposal(proposal.id)"
-                                                    class="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                                                    class="app-btn-danger app-btn-sm text-xs"
                                                     title="Reject proposal"
                                                     aria-label="Reject proposal"
                                                 >
@@ -196,7 +196,7 @@
                                                 <button
                                                     type="button"
                                                     (click)="onMarkAsDuplicate(proposal.id)"
-                                                    class="px-2 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors"
+                                                    class="app-btn-secondary app-btn-sm text-xs"
                                                     title="Mark as duplicate"
                                                     aria-label="Mark proposal as duplicate"
                                                 >
@@ -206,7 +206,7 @@
                                             <button
                                                 type="button"
                                                 (click)="onDeleteProposal(proposal.id)"
-                                                class="px-2 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+                                                class="app-btn-danger app-btn-sm text-xs"
                                                 title="Delete proposal"
                                                 aria-label="Delete proposal"
                                             >
@@ -233,7 +233,7 @@
                                 @if (pagination()!.currentPage > 1) {
                                     <button
                                         (click)="onPageChange(pagination()!.currentPage - 1)"
-                                        class="px-3 py-1 text-sm bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-600 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors"
+                                        class="app-btn-secondary app-btn-sm"
                                     >
                                         Previous
                                     </button>
@@ -241,7 +241,7 @@
                                 @if (pagination()!.currentPage < pagination()!.totalPages) {
                                     <button
                                         (click)="onPageChange(pagination()!.currentPage + 1)"
-                                        class="px-3 py-1 text-sm bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-600 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors"
+                                        class="app-btn-secondary app-btn-sm"
                                     >
                                         Next
                                     </button>

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, signal } from '@angular/core'
+import { Component, output, signal } from '@angular/core'
 import { FormGameSubmissionComponent } from '../../forms/form-game-submission/form-game-submission.component'
 import { DialogDirective } from '../../ui/dialog/dialog.directive'
 
@@ -16,7 +16,7 @@ export class ModalGameSubmissionComponent {
     // --------------------------------------------------------------------------
     //        Events
     // --------------------------------------------------------------------------
-    @Output() proposalSubmitted = new EventEmitter<void>()
+    readonly proposalSubmitted = output<void>()
 
     // --------------------------------------------------------------------------
     //        Methods

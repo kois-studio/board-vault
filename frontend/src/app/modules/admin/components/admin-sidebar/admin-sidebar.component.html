@@ -7,20 +7,20 @@
     id="admin-navigation"
     class="bg-zinc-100 dark:bg-zinc-800 h-full shadow-md flex flex-col transition-[width,padding] duration-300 ease-in-out motion-reduce:transition-none p-4"
     [ngClass]="{
-        'absolute inset-y-0 left-0 z-30 w-0 overflow-hidden p-0 md:relative md:w-16 md:p-4': collapsed,
-        'absolute inset-y-0 left-0 z-30 w-64 md:relative md:w-64': !collapsed
+        'absolute inset-y-0 left-0 z-30 w-0 overflow-hidden p-0 md:relative md:w-16 md:p-4': collapsed(),
+        'absolute inset-y-0 left-0 z-30 w-64 md:relative md:w-64': !collapsed()
     }"
 >
     <!-- Admin Title / Icon -->
     <div
         class="h-[40px] mb-6 flex items-center"
         [ngClass]="{
-            'justify-center': collapsed,
-            'justify-start': !collapsed
+            'justify-center': collapsed(),
+            'justify-start': !collapsed()
         }"
     >
         <app-icon name="shield-lock" [size]="28" />
-        @if (!collapsed) {
+        @if (!collapsed()) {
         <h2 class="text-xl font-semibold text-zinc-800 dark:text-zinc-100 truncate ml-2">Admin</h2>
         }
     </div>
@@ -31,8 +31,8 @@
             @for (item of menuItems; track item.routerLink) {
             <li
                 [ngClass]="{
-                    'flex': collapsed,
-                    'block': !collapsed,
+                    'flex': collapsed(),
+                    'block': !collapsed(),
                 }"
             >
                 <a
@@ -45,7 +45,7 @@
                 >
                     <span class="block text-nowrap overflow-hidden">
                         <app-icon [name]="item.icon" [size]="20" />
-                        @if (!collapsed) {
+                        @if (!collapsed()) {
                         <span class="transition-opacity duration-300 ease-in-out ml-2">{{ item.label }}</span>
                         }
                     </span>
@@ -56,7 +56,7 @@
     </nav>
 
     <!-- Exit Button - go back to app -->
-    @if (!collapsed) {
+    @if (!collapsed()) {
     <div class="mt-auto p-2 border-t border-zinc-200 dark:border-zinc-700 text-lg">
         <!-- Dark Mode Toggle -->
         <div class="flex items-center justify-center mb-3">

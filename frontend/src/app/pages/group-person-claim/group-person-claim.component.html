@@ -31,7 +31,7 @@
                         <div class="rounded-2xl bg-white/70 p-4 dark:bg-zinc-900/60"><dt class="text-sm text-secondary">Entries discarded</dt><dd class="mt-1 text-2xl font-bold">{{ summary.ownershipDiscarded + summary.preferencesDiscarded }}</dd></div>
                         <div class="rounded-2xl bg-white/70 p-4 dark:bg-zinc-900/60"><dt class="text-sm text-secondary">Private collection import</dt><dd class="mt-1 font-semibold">{{ summary.importedOwnership ? 'Included' : 'Not included' }}</dd></div>
                     </dl>
-                    <a class="app-btn-primary mt-6 inline-block" [routerLink]="['/groups', route.snapshot.paramMap.get('groupId')]">Return to group</a>
+                    <a class="app-btn-primary mt-6" [routerLink]="['/groups', route.snapshot.paramMap.get('groupId')]">Return to group</a>
                 </section>
             } @else {
                 <section class="mt-6 rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900" aria-labelledby="ownership-heading">

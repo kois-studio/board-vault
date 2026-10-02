@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core'
+import { Component, computed, input } from '@angular/core'
 import type { NotificationType } from '../../api/api.types'
 import { DataService } from '../../core/services/data.service'
 import { formatDate } from '../../core/utils/formatDate'
@@ -9,31 +9,24 @@ import { IconComponent } from '../ui/icon/icon.component'
     selector: 'app-card-notification',
     templateUrl: 'card-notification.component.html',
 })
-export class CardNotificationComponent implements OnInit {
-    @Input({ required: true }) notification: null | NotificationType = null
+export class CardNotificationComponent {
+    readonly notification = input.required<null | NotificationType>()
 
     constructor(private readonly dataService: DataService) {}
 
-    public notificationDate = ''
-
-    ngOnInit() {
-        if (this.notification) {
-            const date = new Date(this.notification?.createdAt)
-            this.notificationDate = formatDate(date.getTime())
-        }
-    }
+    public readonly notificationDate = computed(() => {
+        const notification = this.notification()
+        return notification ? formatDate(new Date(notification.createdAt).getTime()) : ''
+    })
 
     markAsRead() {
-        if (!this.notification) return
-        const notificationId = this.notification.id
-        this.dataService.updateNotification(notificationId)
+        const notification = this.notification()
+        if (notification) this.dataService.updateNotification(notification.id)
     }
 
     deleteNotification() {
-        if (this.notification) {
-            const notificationId = this.notification.id
-            this.dataService.deleteNotification(notificationId)
-        }
+        const notification = this.notification()
+        if (notification) this.dataService.deleteNotification(notification.id)
     }
 
     public iconFor(type: NotificationType['type']): string {

@@ -1,21 +1,14 @@
-@if (!avatar) {
-    <div class="rounded-full bg-zinc-300 dark:bg-zinc-900 flex items-center justify-center" [ngClass]="{
-        'w-10 h-10': size === 'base',
-        'w-20 h-20': size === 'large'
-    }">
-        <app-icon name="user-circle" [size]="20" className="text-zinc-600" aria-hidden="true" />
-    </div>
-} @else {
+@if (avatar(); as avatar) {
     <div
         class="rounded-full flex items-center justify-center text-white overflow-hidden"
         [style.background-color]="avatar.backgroundColor"
         [ngClass]="{
-            'w-10 h-10 text-2xl': size === 'base',
-            'w-20 h-20 text-5xl': size === 'large',
+            'w-10 h-10 text-2xl': size() === 'base',
+            'w-20 h-20 text-5xl': size() === 'large',
         }"
     >
         @if (avatar.type === 'icon' && avatar.iconName) {
-            <app-icon [name]="avatar.iconName" [size]="size === 'large' ? 44 : 24" aria-hidden="true" />
+            <app-icon [name]="avatar.iconName" [size]="size() === 'large' ? 44 : 24" aria-hidden="true" />
         }
         @if (avatar.type === 'emoji' && avatar.emoji) {
             <span class="">{{ avatar.emoji }}</span>
@@ -23,5 +16,12 @@
         @if (avatar.type === 'initials' && avatar.initials) {
             <span class="font-bold -translate-y-[1px] ">{{ avatar.initials }}</span>
         }
+    </div>
+} @else {
+    <div class="rounded-full bg-zinc-300 dark:bg-zinc-900 flex items-center justify-center" [ngClass]="{
+        'w-10 h-10': size() === 'base',
+        'w-20 h-20': size() === 'large'
+    }">
+        <app-icon name="user-circle" [size]="20" className="text-zinc-600" aria-hidden="true" />
     </div>
 }

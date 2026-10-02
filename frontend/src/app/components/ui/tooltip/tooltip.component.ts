@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, HostListener, Input } from '@angular/core'
+import { Component, HostListener, input } from '@angular/core'
 
 @Component({
     imports: [CommonModule],
@@ -7,8 +7,11 @@ import { Component, HostListener, Input } from '@angular/core'
     templateUrl: './tooltip.component.html',
 })
 export class TooltipComponent {
-    @Input() text = ''
-    @Input() position: 'top' | 'bottom' | 'left' | 'right' = 'top'
+    readonly text = input('')
+    readonly position = input<'top' | 'bottom' | 'left' | 'right'>(
+        'top',
+        // Component logic
+    )
 
     // Component logic
     public isVisible = false

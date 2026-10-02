@@ -1,14 +1,14 @@
-import { Component, Input } from '@angular/core'
+import { Component, input } from '@angular/core'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { ImageBackgroundComponent } from './image-background.component'
 
 @Component({
     imports: [ImageBackgroundComponent],
-    template: '<image-background [src]="src" [alt]="alt" />',
+    template: '<image-background [src]="src()" [alt]="alt()" />',
 })
 class ImageHostComponent {
-    @Input() src = ''
-    @Input() alt = 'Example game cover'
+    readonly src = input('')
+    readonly alt = input('Example game cover')
 }
 
 describe('ImageBackgroundComponent', () => {

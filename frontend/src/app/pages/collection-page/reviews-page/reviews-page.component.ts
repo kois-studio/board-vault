@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common'
 import { Component, computed, effect, inject } from '@angular/core'
-import { RouterLink } from '@angular/router'
 import type { GameType, UserType } from '../../../api/api.types'
 import { SkeletonReviewGameComponent } from '../../../components/skeletons/skeleton-review-game/skeleton-review-game.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
@@ -17,7 +16,6 @@ import { ReviewRowComponent } from './review-row/review-row.component'
         ContainerWrapperComponent,
         PageHeaderComponent,
         ButtonComponent,
-        RouterLink,
         ReviewRowComponent,
         SkeletonReviewGameComponent,
     ],

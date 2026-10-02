@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, Input } from '@angular/core'
+import { Component, input } from '@angular/core'
 import { IconComponent } from '../icon/icon.component'
 
 @Component({
@@ -8,17 +8,17 @@ import { IconComponent } from '../icon/icon.component'
     templateUrl: 'review-display.component.html',
 })
 export class ReviewDisplayComponent {
-    @Input({ required: true }) review = 0
+    readonly review = input.required<number>()
 
     // Optional props
-    @Input() flexCol = false
+    readonly flexCol = input(false)
 
     get fullStars(): number[] {
-        return Array(Math.floor(this.review / 2)).fill(0)
+        return Array(Math.floor(this.review() / 2)).fill(0)
     }
 
     get halfStars(): number[] {
-        return this.review % 2 >= 1 ? [0] : []
+        return this.review() % 2 >= 1 ? [0] : []
     }
 
     get emptyStars(): number[] {
@@ -30,10 +30,10 @@ export class ReviewDisplayComponent {
     }
 
     public get hasRating(): boolean {
-        return this.review > 0
+        return this.review() > 0
     }
 
     public get ratingLabel(): string {
-        return this.hasRating ? `Rating ${this.parseReview(this.review)} out of 5` : 'Not rated yet'
+        return this.hasRating ? `Rating ${this.parseReview(this.review())} out of 5` : 'Not rated yet'
     }
 }

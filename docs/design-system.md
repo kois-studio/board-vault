@@ -71,6 +71,19 @@ icons are supporting language, not the only label for an action.
 - Respect `prefers-reduced-motion`; motion must not be required to understand
   state or complete a task.
 
+### Buttons
+
+- Use `<app-button>` (`components/ui/button/`) for actions. Set `link` to
+  make it navigate; it then renders a real link. Variants: `primary`,
+  `secondary`, `danger`, `success`; sizes: `small`, `medium`, `large`.
+- A link or native `<button>` that must look like a button uses the same
+  classes: one of `app-btn-primary`, `app-btn-secondary`, `app-btn-danger`,
+  `app-btn-success`, plus `app-btn-sm` or `app-btn-lg` if needed. Do not
+  rebuild a button from colour utilities.
+- Coloured buttons keep white text in both themes; buttons shrink by 5% while
+  pressed. Toggle chips, tabs, and menu items are not buttons in this sense
+  and keep their own styles.
+
 ## Layout patterns
 
 - **App shell:** one landmark, one page heading, responsive navigation, and a

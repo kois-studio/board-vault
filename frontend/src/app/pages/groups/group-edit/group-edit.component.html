@@ -14,7 +14,7 @@
             <section class="mt-8 rounded-3xl border border-amber-200 bg-amber-50 p-8 text-center dark:border-amber-900/50 dark:bg-amber-950/30" role="alert">
                 <p class="text-lg font-semibold">This group is not available.</p>
                 <p class="mt-2 text-secondary">It may have been deleted, or your membership may have changed.</p>
-                <a class="app-btn-primary mt-5 inline-block" routerLink="/dashboard">Back to groups</a>
+                <a class="app-btn-primary mt-5" routerLink="/dashboard">Back to groups</a>
             </section>
         } @else if (groupData) {
             <header class="mt-8 flex flex-col gap-5 rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 sm:p-8 lg:flex-row lg:items-end lg:justify-between">
@@ -214,7 +214,7 @@
                 <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Shared context</p>
                 <h2 id="shared-context-heading" class="mt-1 text-2xl font-bold text-zinc-900 dark:text-white">{{ totalGames.length }} games are currently available to this group</h2>
                 <p class="mt-2 max-w-2xl text-secondary">The shared shelf comes from what members own. It is the foundation for recommendations and session planning—not a public catalog.</p>
-                <a class="app-btn-secondary mt-5 inline-block" [routerLink]="['/groups', groupData.id]" fragment="library">Open the shared library</a>
+                <a class="app-btn-secondary mt-5" [routerLink]="['/groups', groupData.id]" fragment="library">Open the shared library</a>
             </section>
 
             @if (isGroupOwner) {

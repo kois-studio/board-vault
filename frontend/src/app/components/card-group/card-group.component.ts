@@ -1,6 +1,6 @@
-import { Component, computed, Input, inject } from '@angular/core'
+import { Component, computed, inject, input } from '@angular/core'
 import { RouterLink } from '@angular/router'
-import type { GameType, GroupWithMembersAndGames, InvitationWithAccountsData } from '../../api/api.types'
+import type { GroupWithMembersAndGames, InvitationWithAccountsData } from '../../api/api.types'
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { DataService } from '../../core/services/data.service'
 import { CardAccountComponent } from '../card-account/card-account.component'
@@ -21,12 +21,15 @@ export class CardGroupComponent {
     public readonly currentUser$ = this.dataService.currentUser
     public readonly userMeets$ = this.dataService.userMeets
 
+    readonly group = input.required<GroupWithMembersAndGames>()
+    readonly invitations = input.required<undefined | Array<InvitationWithAccountsData>>()
+
     // --------------------------------------------------------------------------
     //        Component props
     // --------------------------------------------------------------------------
     public readonly lastMeetingComputed = computed(() => {
         const sortedMeets = this.userMeets$()
-            .filter((meet) => meet.groupId === this.group.id && meet.status === 'completed')
+            .filter((meet) => meet.groupId === this.group().id && meet.status === 'completed')
             .sort((a, b) => new Date(b.meetDate).getTime() - new Date(a.meetDate).getTime())
 
         return sortedMeets.length >= 1 ? sortedMeets[0] : null
@@ -34,39 +37,21 @@ export class CardGroupComponent {
 
     public readonly nextMeetingComputed = computed(() => {
         const upcomingMeets = this.userMeets$()
-            .filter((meet) => meet.groupId === this.group.id && (meet.status === 'scheduled' || meet.status === 'active'))
+            .filter((meet) => meet.groupId === this.group().id && (meet.status === 'scheduled' || meet.status === 'active'))
             .sort((a, b) => new Date(a.meetDate).getTime() - new Date(b.meetDate).getTime())
 
         return upcomingMeets[0] ?? null
     })
 
-    @Input({ required: true }) group!: GroupWithMembersAndGames
-    @Input({ required: true }) invitations: undefined | Array<InvitationWithAccountsData> = []
-
-    get totalGames(): Array<GameType> {
-        // index all games by gameId so we don't duplicate games
-        const games: Record<GameType['id'], GameType> = {}
-
-        for (const member of this.group.members) {
-            for (const game of member.games) {
-                games[game.id] = game
-            }
-        }
-
-        return Object.values(games)
-    }
-
     /** Members plus people without an account. */
-    get peopleCount(): number {
-        return this.group.members.length + (this.group.placeholders?.length ?? 0)
-    }
+    public readonly peopleCount = computed(() => this.group().members.length + (this.group().placeholders?.length ?? 0))
 
     /** Distinct games owned by anyone in the group, members or placeholders. */
-    get sharedGameCount(): number {
-        const ids = new Set(this.totalGames.map((game) => game.id))
-        for (const person of this.group.placeholders ?? []) {
+    public readonly sharedGameCount = computed(() => {
+        const ids = new Set(this.group().members.flatMap((member) => member.games.map((game) => game.id)))
+        for (const person of this.group().placeholders ?? []) {
             for (const gameId of person.gameIds) ids.add(gameId)
         }
         return ids.size
-    }
+    })
 }

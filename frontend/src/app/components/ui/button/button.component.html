@@ -1,40 +1,23 @@
-<button
-    [type]="type"
-    [disabled]="disabled || loading"
-    [routerLink]="routerLink"
-    class="rounded-lg shadow-sm tracking-wide transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:cursor-not-allowed disabled:opacity-50 dark:focus-visible:ring-offset-zinc-950"
-    [attr.aria-busy]="loading"
-    [ngClass]="{
-        'px-2 py-1 font-semibold text-sm': size === 'small',
-        'px-4 py-2 font-semibold text-base': size === 'medium',
-        'px-6 py-4 font-bold text-lg': size === 'large',
-        'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-500/50': variant === 'primary',
-        'bg-zinc-100 hover:bg-zinc-200 shadow-zinc-300/50 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:shadow-zinc-950/50': variant === 'secondary',
-        'bg-red-500 hover:bg-red-800 shadow-red-500/50': variant === 'danger',
-        'bg-green-600 hover:bg-green-800 shadow-green-500/50': variant === 'success',
-        'text-white': variant === 'primary' || variant === 'danger' || variant === 'success',
-        'text-zinc-900 dark:text-zinc-100': variant === 'secondary',
-        'block w-full mx-auto': wide,
-    }"
->
-    <div class="flex items-center justify-center">
-        @if (!loading) {
-            <ng-container>
-                @if (icon) {
-                    <app-icon
-                        [name]="icon"
-                        className="mr-2 shrink-0"
-                        [size]="size === 'small' ? 16 : size === 'large' ? 21 : 18"
-                    />
-                }
-                <ng-content></ng-content>
-            </ng-container>
-        } @else {
-            <span class="inline-flex items-center">
-                <app-icon name="loader" className="mr-2 shrink-0 motion-safe:animate-spin" [size]="16" />
-                Working…
-            </span>
-        }
-        
-    </div>
-</button>
+<ng-template #content>
+    @if (loading()) {
+        <app-icon name="loader" className="shrink-0 motion-safe:animate-spin" [size]="iconSize()" aria-hidden="true" />
+    } @else if (icon(); as icon) {
+        <app-icon [name]="icon" className="shrink-0" [size]="iconSize()" aria-hidden="true" />
+    }
+    <ng-content />
+</ng-template>
+
+@if (link(); as link) {
+    <a
+        [class]="classes()"
+        [routerLink]="disabled() ? null : link"
+        [queryParams]="queryParams()"
+        [attr.aria-disabled]="disabled() || null"
+    >
+        <ng-container [ngTemplateOutlet]="content" />
+    </a>
+} @else {
+    <button [type]="type()" [class]="classes()" [disabled]="disabled() || loading()" [attr.aria-busy]="loading() || null">
+        <ng-container [ngTemplateOutlet]="content" />
+    </button>
+}

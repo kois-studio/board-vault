@@ -62,7 +62,8 @@ describe('CardGroupComponent social entry surface', () => {
         }).compileComponents()
 
         fixture = TestBed.createComponent(CardGroupComponent)
-        fixture.componentInstance.group = group
+        fixture.componentRef.setInput('group', group)
+        fixture.componentRef.setInput('invitations', [])
         fixture.detectChanges()
     })
 

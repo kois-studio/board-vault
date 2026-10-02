@@ -1,24 +1,36 @@
+import { TestBed } from '@angular/core/testing'
 import { IconComponent } from './icon.component'
 
 describe('IconComponent', () => {
     // The first import of the Lucide barrel is slow on a cold, busy runner.
     beforeAll(() => import('@lucide/angular'), 30_000)
 
+    const render = (name: string) => {
+        const fixture = TestBed.createComponent(IconComponent)
+        fixture.componentRef.setInput('name', name)
+        fixture.detectChanges()
+        return fixture
+    }
+
     it('resolves the mobile menu icon through the shared Lucide adapter', async () => {
-        const component = new IconComponent()
+        const fixture = render('menu')
 
-        component.name = 'menu'
-        component.ngOnChanges()
-
-        await vi.waitFor(() => expect(component.iconComponent()?.name).toContain('LucideMenu'))
+        await vi.waitFor(() => expect(fixture.componentInstance.iconComponent()?.name).toContain('LucideMenu'))
     })
 
     it('uses the help icon for an unknown name instead of rendering an empty icon', async () => {
-        const component = new IconComponent()
+        const fixture = render('not-a-real-icon')
 
-        component.name = 'not-a-real-icon'
-        component.ngOnChanges()
+        await vi.waitFor(() => expect(fixture.componentInstance.iconComponent()?.name).toContain('LucideCircleQuestionMark'))
+    })
 
-        await vi.waitFor(() => expect(component.iconComponent()?.name).toContain('LucideCircleQuestionMark'))
+    it('loads the new icon when the name changes', async () => {
+        const fixture = render('menu')
+        await vi.waitFor(() => expect(fixture.componentInstance.iconComponent()?.name).toContain('LucideMenu'))
+
+        fixture.componentRef.setInput('name', 'x')
+        fixture.detectChanges()
+
+        await vi.waitFor(() => expect(fixture.componentInstance.iconComponent()?.name).toContain('LucideX'))
     })
 })

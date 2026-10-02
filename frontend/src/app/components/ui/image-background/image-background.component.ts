@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core'
+import { Component, effect, input, signal, untracked } from '@angular/core'
 
 @Component({
     imports: [],
@@ -6,20 +6,22 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core'
     host: { class: 'block' },
     templateUrl: 'image-background.component.html',
 })
-export class ImageBackgroundComponent implements OnChanges {
-    @Input({ required: true }) src = ''
-    @Input() alt = 'Game artwork'
-    @Input() loading: 'eager' | 'lazy' = 'lazy'
+export class ImageBackgroundComponent {
+    readonly src = input.required<string>()
+    readonly alt = input('Game artwork')
+    readonly loading = input<'eager' | 'lazy'>('lazy')
 
-    public hasError = false
+    public readonly hasError = signal(false)
 
-    ngOnChanges(changes: SimpleChanges): void {
-        if (changes['src']) {
-            this.hasError = false
-        }
+    constructor() {
+        // A new image gets a fresh chance to load.
+        effect(() => {
+            this.src()
+            untracked(() => this.hasError.set(false))
+        })
     }
 
     public handleImageError(): void {
-        this.hasError = true
+        this.hasError.set(true)
     }
 }

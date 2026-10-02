@@ -1,5 +1,5 @@
-<div class="flex items-center gap-x-2" [ngClass]="{ 'flex-col': flexCol }">
-    <span class="font-medium">{{ hasRating ? parseReview(review) : '—' }}</span>
+<div class="flex items-center gap-x-2" [ngClass]="{ 'flex-col': flexCol() }">
+    <span class="font-medium">{{ hasRating ? parseReview(review()) : '—' }}</span>
     <div class="flex items-center" role="img" [attr.aria-label]="ratingLabel">
         @for (star of fullStars; track $index) {
             <app-icon name="star" [size]="16" className="fill-yellow-400 text-yellow-500" />

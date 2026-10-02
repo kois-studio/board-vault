@@ -16,11 +16,11 @@
       <section class="rounded-3xl border border-zinc-200 bg-white p-8 text-center shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
         <h1 class="text-2xl font-bold">This group is no longer available</h1>
         <p class="mt-2 text-secondary">You may have left the group, or this link may be out of date.</p>
-        <a class="app-btn-primary mt-6 inline-block" routerLink="/dashboard">Return to groups</a>
+        <a class="app-btn-primary mt-6" routerLink="/dashboard">Return to groups</a>
       </section>
     }
     <div [hidden]="isLoadingGroups || groupsError || groupUnavailable">
-      <a [routerLink]="['/groups', $safeNavigationMigration(groupData?.id)]" class="app-btn-secondary inline-block mb-6">Back to group</a>
+      <a [routerLink]="['/groups', $safeNavigationMigration(groupData?.id)]" class="app-btn-secondary mb-6">Back to group</a>
 
       <div class="app-bg-secondary shadow-md rounded-lg p-6 lg:p-8">
         <header class="mb-8">

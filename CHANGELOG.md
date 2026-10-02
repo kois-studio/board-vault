@@ -36,6 +36,10 @@ operational details.
   compact upcoming sessions, and shorter group and session pages.
   `/collection` and `/play` open a hub with a card for each subpage and its
   count; recent collection activity sits under the Collection cards.
+- Buttons share one style: links and buttons that look like buttons use the
+  same recipe as `<app-button>`, primary buttons are indigo everywhere, and
+  every button shrinks slightly when pressed. `<app-button link="…">` renders
+  a real link.
 - Group cards count the group's people without an account and the games
   they own.
 - The groups overview and history load games, titles, and people in
@@ -73,6 +77,8 @@ operational details.
 - "Submit Your First Game" and "Submit New Game" show the game proposal
   form again. The dialog's Tailwind 3 backdrop was opaque and painted over
   the form under Tailwind 4.
+- Red buttons such as "Delete group" show white text in light mode again;
+  the danger button style had no text colour.
 
 ### Added
 

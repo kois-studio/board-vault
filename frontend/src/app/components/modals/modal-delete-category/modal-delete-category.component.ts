@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Output, signal } from '@angular/core'
+import { Component, inject, output, signal } from '@angular/core'
 import { Api } from '../../../api/api'
 import type { TagCategoryType, TagType } from '../../../api/api.types'
 import { LogService } from '../../../core/services/log.service'
@@ -29,7 +29,7 @@ export class ModalDeleteCategoryComponent {
     // --------------------------------------------------------------------------
     //        Events
     // --------------------------------------------------------------------------
-    @Output() categoryDeleted = new EventEmitter<number>()
+    readonly categoryDeleted = output<number>()
 
     // --------------------------------------------------------------------------
     //        Methods
@@ -66,7 +66,7 @@ export class ModalDeleteCategoryComponent {
             next: () => {
                 this.isLoading.set(false)
                 this.toastService.success('Category deleted successfully!')
-                this.categoryDeleted.emit(this.category()?.id)
+                this.categoryDeleted.emit(category.id)
                 this.hideDialog()
             },
             error: (error: any) => {

@@ -1,4 +1,4 @@
-import { Directive, DOCUMENT, ElementRef, EventEmitter, HostListener, inject, NgZone, OnDestroy, Output, Renderer2 } from '@angular/core'
+import { Directive, DOCUMENT, ElementRef, HostListener, inject, NgZone, OnDestroy, output, Renderer2 } from '@angular/core'
 
 const FOCUSABLE_SELECTOR =
     'a[href], area[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
@@ -11,7 +11,7 @@ export class DialogDirective implements OnDestroy {
     private static activeDialogCount = 0
     private static previousBodyOverflow = ''
 
-    @Output() readonly dialogClosed = new EventEmitter<void>()
+    readonly dialogClosed = output<void>()
 
     private readonly previousActiveElement: HTMLElement | null
     private readonly hostElement: HTMLElement

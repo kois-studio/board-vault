@@ -3,7 +3,7 @@
     <div class="mb-6 text-center">
         <h2 class="text-xl font-semibold mb-3">Avatar Preview</h2>
         <div class="flex items-center justify-center">
-            <app-image-profile [avatar]="avatar" size="large" />
+            <app-image-profile [avatar]="draft()" size="large" />
         </div>
     </div>
 
@@ -15,9 +15,9 @@
             <button
                 [style.background-color]="color"
                 class="w-10 h-10 rounded-full motion-safe:transition-transform motion-safe:hover:scale-110 duration-200 shadow-sm"
-                [class.ring-2]="color === avatar.backgroundColor"
-                [class.ring-offset-2]="color === avatar.backgroundColor"
-                [class.ring-blue-500]="color === avatar.backgroundColor"
+                [class.ring-2]="color === draft().backgroundColor"
+                [class.ring-offset-2]="color === draft().backgroundColor"
+                [class.ring-blue-500]="color === draft().backgroundColor"
                 (click)="selectColor(color)"
                 [attr.aria-label]="'Choose avatar background color ' + color"
             ></button>
@@ -81,7 +81,7 @@
                 (click)="selectIcon(icon)"
                 [attr.aria-label]="'Choose ' + icon + ' avatar icon'"
                 class="h-12 w-12 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors duration-200 cursor-pointer"
-                [class.bg-blue-100]="avatar.iconName === icon"
+                [class.bg-blue-100]="draft().iconName === icon"
             >
                 <app-icon [name]="icon" [size]="28" />
             </button>
@@ -98,7 +98,7 @@
             <button
                 (click)="selectEmoji(emoji)"
                 class="h-12 w-12 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors duration-200 text-2xl cursor-pointer"
-                [class.bg-blue-100]="avatar.emoji === emoji"
+                [class.bg-blue-100]="draft().emoji === emoji"
             >
                 {{ emoji }}
             </button>
@@ -114,8 +114,8 @@
             <label class="block mb-1">Your Initials</label>
             <input
                 type="text"
-                [(ngModel)]="avatar.initials"
-                (input)="setInitials(avatar.initials || '')"
+                [ngModel]="draft().initials"
+                (ngModelChange)="setInitials($event || '')"
                 maxlength="2"
                 placeholder="AB"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"

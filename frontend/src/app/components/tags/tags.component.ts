@@ -1,9 +1,14 @@
-import { Component, Input } from '@angular/core'
+import { Component, input } from '@angular/core'
 
 @Component({
     selector: 'app-tags',
     templateUrl: 'tags.component.html',
 })
 export class TagsComponent {
-    @Input() tags: Array<{ tag: string; category: string }> = []
+    readonly tags = input<
+        Array<{
+            tag: string
+            category: string
+        }>
+    >([])
 }

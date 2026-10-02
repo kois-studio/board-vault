@@ -1,77 +1,77 @@
 <div
     class="rounded-xl shadow-sm border hover:shadow-md transition overflow-hidden group relative h-full"
     [ngClass]="{
-        'border-red-200     dark:border-red-800     hover:border-red-200     dark:hover:border-red-800      bg-red-100      dark:bg-red-800/20': color === 'red',
-        'border-orange-200  dark:border-orange-800  hover:border-orange-200  dark:hover:border-orange-800   bg-orange-100   dark:bg-orange-800/20': color === 'orange',
-        'border-amber-200   dark:border-amber-800   hover:border-amber-200   dark:hover:border-amber-800    bg-amber-100    dark:bg-amber-800/20': color === 'amber',
-        'border-yellow-200  dark:border-yellow-800  hover:border-yellow-200  dark:hover:border-yellow-800   bg-yellow-100   dark:bg-yellow-800/20': color === 'yellow',
-        'border-lime-200    dark:border-lime-800    hover:border-lime-200    dark:hover:border-lime-800     bg-lime-100     dark:bg-lime-800/20': color === 'lime',
-        'border-green-200   dark:border-green-800   hover:border-green-200   dark:hover:border-green-800    bg-green-100    dark:bg-green-800/20': color === 'green',
-        'border-emerald-200 dark:border-emerald-800 hover:border-emerald-200 dark:hover:border-emerald-800  bg-emerald-100  dark:bg-emerald-800/20': color === 'emerald',
-        'border-teal-200    dark:border-teal-800    hover:border-teal-200    dark:hover:border-teal-800     bg-teal-100     dark:bg-teal-800/20': color === 'teal',
-        'border-cyan-200    dark:border-cyan-800    hover:border-cyan-200    dark:hover:border-cyan-800     bg-cyan-100     dark:bg-cyan-800/20': color === 'cyan',
-        'border-sky-200     dark:border-sky-800     hover:border-sky-200     dark:hover:border-sky-800      bg-sky-100      dark:bg-sky-800/20': color === 'sky',
-        'border-blue-200    dark:border-blue-800    hover:border-blue-200    dark:hover:border-blue-800     bg-blue-100     dark:bg-blue-800/20': color === 'blue',
-        'border-indigo-200  dark:border-indigo-800  hover:border-indigo-200  dark:hover:border-indigo-800   bg-indigo-100   dark:bg-indigo-800/20': color === 'indigo',
-        'border-violet-200  dark:border-violet-800  hover:border-violet-200  dark:hover:border-violet-800   bg-violet-100   dark:bg-violet-800/20': color === 'violet',
-        'border-purple-200  dark:border-purple-800  hover:border-purple-200  dark:hover:border-purple-800   bg-purple-100   dark:bg-purple-800/20': color === 'purple',
-        'border-fuchsia-200 dark:border-fuchsia-800 hover:border-fuchsia-200 dark:hover:border-fuchsia-800  bg-fuchsia-100  dark:bg-fuchsia-800/20': color === 'fuchsia',
-        'border-pink-200    dark:border-pink-800    hover:border-pink-200    dark:hover:border-pink-800     bg-pink-100     dark:bg-pink-800/20': color === 'pink',
-        'border-rose-200    dark:border-rose-800    hover:border-rose-200    dark:hover:border-rose-800     bg-rose-100     dark:bg-rose-800/20': color === 'rose',
-        'border-slate-200   dark:border-slate-800   hover:border-slate-200   dark:hover:border-slate-800    bg-slate-100    dark:bg-slate-800/20': color === 'slate',
-        'border-gray-200    dark:border-gray-800    hover:border-gray-200    dark:hover:border-gray-800     bg-gray-100     dark:bg-gray-800/20': color === 'gray',
-        'border-zinc-200    dark:border-zinc-800    hover:border-zinc-200    dark:hover:border-zinc-800     bg-zinc-100     dark:bg-zinc-800/20': color === 'zinc',
-        'border-neutral-200 dark:border-neutral-800 hover:border-neutral-200 dark:hover:border-neutral-800  bg-neutral-100  dark:bg-neutral-800/20': color === 'neutral',
-        'border-stone-200   dark:border-stone-800   hover:border-stone-200   dark:hover:border-stone-800    bg-stone-100    dark:bg-stone-800/20': color === 'stone',
-        'opacity-60 cursor-not-allowed': comingSoon
+        'border-red-200     dark:border-red-800     hover:border-red-200     dark:hover:border-red-800      bg-red-100      dark:bg-red-800/20': color() === 'red',
+        'border-orange-200  dark:border-orange-800  hover:border-orange-200  dark:hover:border-orange-800   bg-orange-100   dark:bg-orange-800/20': color() === 'orange',
+        'border-amber-200   dark:border-amber-800   hover:border-amber-200   dark:hover:border-amber-800    bg-amber-100    dark:bg-amber-800/20': color() === 'amber',
+        'border-yellow-200  dark:border-yellow-800  hover:border-yellow-200  dark:hover:border-yellow-800   bg-yellow-100   dark:bg-yellow-800/20': color() === 'yellow',
+        'border-lime-200    dark:border-lime-800    hover:border-lime-200    dark:hover:border-lime-800     bg-lime-100     dark:bg-lime-800/20': color() === 'lime',
+        'border-green-200   dark:border-green-800   hover:border-green-200   dark:hover:border-green-800    bg-green-100    dark:bg-green-800/20': color() === 'green',
+        'border-emerald-200 dark:border-emerald-800 hover:border-emerald-200 dark:hover:border-emerald-800  bg-emerald-100  dark:bg-emerald-800/20': color() === 'emerald',
+        'border-teal-200    dark:border-teal-800    hover:border-teal-200    dark:hover:border-teal-800     bg-teal-100     dark:bg-teal-800/20': color() === 'teal',
+        'border-cyan-200    dark:border-cyan-800    hover:border-cyan-200    dark:hover:border-cyan-800     bg-cyan-100     dark:bg-cyan-800/20': color() === 'cyan',
+        'border-sky-200     dark:border-sky-800     hover:border-sky-200     dark:hover:border-sky-800      bg-sky-100      dark:bg-sky-800/20': color() === 'sky',
+        'border-blue-200    dark:border-blue-800    hover:border-blue-200    dark:hover:border-blue-800     bg-blue-100     dark:bg-blue-800/20': color() === 'blue',
+        'border-indigo-200  dark:border-indigo-800  hover:border-indigo-200  dark:hover:border-indigo-800   bg-indigo-100   dark:bg-indigo-800/20': color() === 'indigo',
+        'border-violet-200  dark:border-violet-800  hover:border-violet-200  dark:hover:border-violet-800   bg-violet-100   dark:bg-violet-800/20': color() === 'violet',
+        'border-purple-200  dark:border-purple-800  hover:border-purple-200  dark:hover:border-purple-800   bg-purple-100   dark:bg-purple-800/20': color() === 'purple',
+        'border-fuchsia-200 dark:border-fuchsia-800 hover:border-fuchsia-200 dark:hover:border-fuchsia-800  bg-fuchsia-100  dark:bg-fuchsia-800/20': color() === 'fuchsia',
+        'border-pink-200    dark:border-pink-800    hover:border-pink-200    dark:hover:border-pink-800     bg-pink-100     dark:bg-pink-800/20': color() === 'pink',
+        'border-rose-200    dark:border-rose-800    hover:border-rose-200    dark:hover:border-rose-800     bg-rose-100     dark:bg-rose-800/20': color() === 'rose',
+        'border-slate-200   dark:border-slate-800   hover:border-slate-200   dark:hover:border-slate-800    bg-slate-100    dark:bg-slate-800/20': color() === 'slate',
+        'border-gray-200    dark:border-gray-800    hover:border-gray-200    dark:hover:border-gray-800     bg-gray-100     dark:bg-gray-800/20': color() === 'gray',
+        'border-zinc-200    dark:border-zinc-800    hover:border-zinc-200    dark:hover:border-zinc-800     bg-zinc-100     dark:bg-zinc-800/20': color() === 'zinc',
+        'border-neutral-200 dark:border-neutral-800 hover:border-neutral-200 dark:hover:border-neutral-800  bg-neutral-100  dark:bg-neutral-800/20': color() === 'neutral',
+        'border-stone-200   dark:border-stone-800   hover:border-stone-200   dark:hover:border-stone-800    bg-stone-100    dark:bg-stone-800/20': color() === 'stone',
+        'opacity-60 cursor-not-allowed': comingSoon()
     }"
 >
     <!-- Coming Soon badge -->
-    @if (comingSoon) {
+    @if (comingSoon()) {
         <div class="absolute top-0 right-0 bg-gray-800 text-white px-3 py-1 text-sm font-medium z-10 rounded-bl-lg">Coming Soon</div>
     }
 
-    <a [routerLink]="comingSoon ? null : cardLink" [attr.disabled]="comingSoon ? true : null" class="block p-6 h-full">
+    <a [routerLink]="comingSoon() ? null : cardLink()" [attr.disabled]="comingSoon() ? true : null" class="block p-6 h-full">
         <div class="flex items-start h-full">
             <!-- Icon -->
             <div
                 class="w-12 h-12 shrink-0 rounded-lg flex items-center justify-center mr-4 transition"
                 [ngClass]="{
-                    'bg-red-200     dark:bg-red-900/30      text-red-600     dark:text-red-400      group-hover:bg-red-300      dark:group-hover:bg-red-900/50': color === 'red',
-                    'bg-orange-200  dark:bg-orange-900/30   text-orange-600  dark:text-orange-400   group-hover:bg-orange-300   dark:group-hover:bg-orange-900/50': color === 'orange',
-                    'bg-amber-200   dark:bg-amber-900/30    text-amber-600   dark:text-amber-400    group-hover:bg-amber-300    dark:group-hover:bg-amber-900/50': color === 'amber',
-                    'bg-yellow-200  dark:bg-yellow-900/30   text-yellow-600  dark:text-yellow-400   group-hover:bg-yellow-300   dark:group-hover:bg-yellow-900/50': color === 'yellow',
-                    'bg-lime-200    dark:bg-lime-900/30     text-lime-600    dark:text-lime-400     group-hover:bg-lime-300     dark:group-hover:bg-lime-900/50': color === 'lime',
-                    'bg-green-200   dark:bg-green-900/30    text-green-600   dark:text-green-400    group-hover:bg-green-300    dark:group-hover:bg-green-900/50': color === 'green',
-                    'bg-emerald-200 dark:bg-emerald-900/30  text-emerald-600 dark:text-emerald-400  group-hover:bg-emerald-300  dark:group-hover:bg-emerald-900/50': color === 'emerald',
-                    'bg-teal-200    dark:bg-teal-900/30     text-teal-600    dark:text-teal-400     group-hover:bg-teal-300     dark:group-hover:bg-teal-900/50': color === 'teal',
-                    'bg-cyan-200    dark:bg-cyan-900/30     text-cyan-600    dark:text-cyan-400     group-hover:bg-cyan-300     dark:group-hover:bg-cyan-900/50': color === 'cyan',
-                    'bg-sky-200     dark:bg-sky-900/30      text-sky-600     dark:text-sky-400      group-hover:bg-sky-300      dark:group-hover:bg-sky-900/50': color === 'sky',
-                    'bg-blue-200    dark:bg-blue-900/30     text-blue-600    dark:text-blue-400     group-hover:bg-blue-300     dark:group-hover:bg-blue-900/50': color === 'blue',
-                    'bg-indigo-200  dark:bg-indigo-900/30   text-indigo-600  dark:text-indigo-400   group-hover:bg-indigo-300   dark:group-hover:bg-indigo-900/50': color === 'indigo',
-                    'bg-violet-200  dark:bg-violet-900/30   text-violet-600  dark:text-violet-400   group-hover:bg-violet-300   dark:group-hover:bg-violet-900/50': color === 'violet',
-                    'bg-purple-200  dark:bg-purple-900/30   text-purple-600  dark:text-purple-400   group-hover:bg-purple-300   dark:group-hover:bg-purple-900/50': color === 'purple',
-                    'bg-fuchsia-200 dark:bg-fuchsia-900/30  text-fuchsia-600 dark:text-fuchsia-400  group-hover:bg-fuchsia-300  dark:group-hover:bg-fuchsia-900/50': color === 'fuchsia',
-                    'bg-pink-200    dark:bg-pink-900/30     text-pink-600    dark:text-pink-400     group-hover:bg-pink-300     dark:group-hover:bg-pink-900/50': color === 'pink',
-                    'bg-rose-200    dark:bg-rose-900/30     text-rose-600    dark:text-rose-400     group-hover:bg-rose-300     dark:group-hover:bg-rose-900/50': color === 'rose',
-                    'bg-slate-200   dark:bg-slate-900/30    text-slate-600   dark:text-slate-400    group-hover:bg-slate-300    dark:group-hover:bg-slate-900/50': color === 'slate',
-                    'bg-gray-200    dark:bg-gray-900/30     text-gray-600    dark:text-gray-400     group-hover:bg-gray-300     dark:group-hover:bg-gray-900/50': color === 'gray',
-                    'bg-zinc-200    dark:bg-zinc-900/30     text-zinc-600    dark:text-zinc-400     group-hover:bg-zinc-300     dark:group-hover:bg-zinc-900/50': color === 'zinc',
-                    'bg-neutral-200 dark:bg-neutral-900/30  text-neutral-600 dark:text-neutral-400  group-hover:bg-neutral-300  dark:group-hover:bg-neutral-900/50': color === 'neutral',
-                    'bg-stone-200   dark:bg-stone-900/30    text-stone-600   dark:text-stone-400    group-hover:bg-stone-300    dark:group-hover:bg-stone-900/50': color === 'stone',
+                    'bg-red-200     dark:bg-red-900/30      text-red-600     dark:text-red-400      group-hover:bg-red-300      dark:group-hover:bg-red-900/50': color() === 'red',
+                    'bg-orange-200  dark:bg-orange-900/30   text-orange-600  dark:text-orange-400   group-hover:bg-orange-300   dark:group-hover:bg-orange-900/50': color() === 'orange',
+                    'bg-amber-200   dark:bg-amber-900/30    text-amber-600   dark:text-amber-400    group-hover:bg-amber-300    dark:group-hover:bg-amber-900/50': color() === 'amber',
+                    'bg-yellow-200  dark:bg-yellow-900/30   text-yellow-600  dark:text-yellow-400   group-hover:bg-yellow-300   dark:group-hover:bg-yellow-900/50': color() === 'yellow',
+                    'bg-lime-200    dark:bg-lime-900/30     text-lime-600    dark:text-lime-400     group-hover:bg-lime-300     dark:group-hover:bg-lime-900/50': color() === 'lime',
+                    'bg-green-200   dark:bg-green-900/30    text-green-600   dark:text-green-400    group-hover:bg-green-300    dark:group-hover:bg-green-900/50': color() === 'green',
+                    'bg-emerald-200 dark:bg-emerald-900/30  text-emerald-600 dark:text-emerald-400  group-hover:bg-emerald-300  dark:group-hover:bg-emerald-900/50': color() === 'emerald',
+                    'bg-teal-200    dark:bg-teal-900/30     text-teal-600    dark:text-teal-400     group-hover:bg-teal-300     dark:group-hover:bg-teal-900/50': color() === 'teal',
+                    'bg-cyan-200    dark:bg-cyan-900/30     text-cyan-600    dark:text-cyan-400     group-hover:bg-cyan-300     dark:group-hover:bg-cyan-900/50': color() === 'cyan',
+                    'bg-sky-200     dark:bg-sky-900/30      text-sky-600     dark:text-sky-400      group-hover:bg-sky-300      dark:group-hover:bg-sky-900/50': color() === 'sky',
+                    'bg-blue-200    dark:bg-blue-900/30     text-blue-600    dark:text-blue-400     group-hover:bg-blue-300     dark:group-hover:bg-blue-900/50': color() === 'blue',
+                    'bg-indigo-200  dark:bg-indigo-900/30   text-indigo-600  dark:text-indigo-400   group-hover:bg-indigo-300   dark:group-hover:bg-indigo-900/50': color() === 'indigo',
+                    'bg-violet-200  dark:bg-violet-900/30   text-violet-600  dark:text-violet-400   group-hover:bg-violet-300   dark:group-hover:bg-violet-900/50': color() === 'violet',
+                    'bg-purple-200  dark:bg-purple-900/30   text-purple-600  dark:text-purple-400   group-hover:bg-purple-300   dark:group-hover:bg-purple-900/50': color() === 'purple',
+                    'bg-fuchsia-200 dark:bg-fuchsia-900/30  text-fuchsia-600 dark:text-fuchsia-400  group-hover:bg-fuchsia-300  dark:group-hover:bg-fuchsia-900/50': color() === 'fuchsia',
+                    'bg-pink-200    dark:bg-pink-900/30     text-pink-600    dark:text-pink-400     group-hover:bg-pink-300     dark:group-hover:bg-pink-900/50': color() === 'pink',
+                    'bg-rose-200    dark:bg-rose-900/30     text-rose-600    dark:text-rose-400     group-hover:bg-rose-300     dark:group-hover:bg-rose-900/50': color() === 'rose',
+                    'bg-slate-200   dark:bg-slate-900/30    text-slate-600   dark:text-slate-400    group-hover:bg-slate-300    dark:group-hover:bg-slate-900/50': color() === 'slate',
+                    'bg-gray-200    dark:bg-gray-900/30     text-gray-600    dark:text-gray-400     group-hover:bg-gray-300     dark:group-hover:bg-gray-900/50': color() === 'gray',
+                    'bg-zinc-200    dark:bg-zinc-900/30     text-zinc-600    dark:text-zinc-400     group-hover:bg-zinc-300     dark:group-hover:bg-zinc-900/50': color() === 'zinc',
+                    'bg-neutral-200 dark:bg-neutral-900/30  text-neutral-600 dark:text-neutral-400  group-hover:bg-neutral-300  dark:group-hover:bg-neutral-900/50': color() === 'neutral',
+                    'bg-stone-200   dark:bg-stone-900/30    text-stone-600   dark:text-stone-400    group-hover:bg-stone-300    dark:group-hover:bg-stone-900/50': color() === 'stone',
                 }"
             >
-                <app-icon [name]="icon" [size]="28" [className]="'text-' + color + '-600 dark:text-' + color + '-400'" />
+                <app-icon [name]="icon()" [size]="28" [className]="'text-' + color() + '-600 dark:text-' + color() + '-400'" />
             </div>
 
             <!-- Title and description -->
             <div class="flex min-w-0 flex-col justify-between items-start h-full w-full">
                 <div class="w-full">
                     <div class="flex justify-between items-center gap-3 mb-2">
-                        <h2 class="text-xl font-bold text-zinc-900 dark:text-white">{{ titleText }}</h2>
+                        <h2 class="text-xl font-bold text-zinc-900 dark:text-white">{{ titleText() }}</h2>
                         <ng-content select=".app-card-section-badge" />
                     </div>
-                    <p class="text-zinc-600 dark:text-zinc-300">{{ description }}</p>
+                    <p class="text-zinc-600 dark:text-zinc-300">{{ description() }}</p>
                 </div>
 
                 <div class="mt-6 flex justify-between items-center gap-3 w-full">

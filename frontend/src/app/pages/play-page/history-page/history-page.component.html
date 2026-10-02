@@ -4,7 +4,7 @@
     } @else {
         Remember the people, games, and nights that brought your groups together
     }
-    <app-button class="action-button" icon="plus-lg" routerLink="/play/log-session">Record a past session</app-button>
+    <app-button class="action-button" icon="plus-lg" link="/play/log-session">Record a past session</app-button>
 </app-page-header>
 
 <container-wrapper>
@@ -46,7 +46,7 @@
                     <p class="mt-4 text-sm text-secondary">Most played in this view: <strong class="text-zinc-900 dark:text-white">{{ mostPlayed }}</strong></p>
                 }
                 @if (groupIdFilter()) {
-                    <a class="app-btn-secondary mt-5 inline-block text-center" routerLink="/play/recommendations" [queryParams]="{ groupId: groupIdFilter() }">Get a recommendation for this group</a>
+                    <a class="app-btn-secondary mt-5 text-center" routerLink="/play/recommendations" [queryParams]="{ groupId: groupIdFilter() }">Get a recommendation for this group</a>
                 }
             }
         </section>
@@ -56,7 +56,7 @@
             <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300" aria-hidden="true"><app-icon name="lock" [size]="28" /></div>
             <h2 class="mt-5 text-xl font-bold text-zinc-900 dark:text-white">That group is not available</h2>
             <p class="mx-auto mt-2 max-w-lg text-sm leading-6 text-secondary">This history link may be outdated, or you may no longer belong to that private group. Choose one of your current groups to continue.</p>
-            <a class="app-btn-primary mt-6 inline-block" routerLink="/dashboard">Back to your groups</a>
+            <a class="app-btn-primary mt-6" routerLink="/dashboard">Back to your groups</a>
         </div>
         } @else if (!hasFilteredHistory()) {
         <div class="rounded-3xl border border-dashed border-zinc-300 px-6 py-12 text-center dark:border-zinc-700">
@@ -64,7 +64,7 @@
                 <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-300" aria-hidden="true"><app-icon name="book-plus" [size]="28" /></div>
                 <h2 class="mt-5 text-xl font-bold text-zinc-900 dark:text-white">{{ historyGroupName() }} has no recorded sessions yet</h2>
                 <p class="mx-auto mt-2 max-w-lg text-sm leading-6 text-secondary">Plan the first night with this group. Once it is complete, this page will keep the people, games, and notes ready for the next decision.</p>
-                <a class="app-btn-primary mt-6 inline-block" [routerLink]="['/groups', groupIdFilter(), 'sessions', 'new']">Plan the first session</a>
+                <a class="app-btn-primary mt-6" [routerLink]="['/groups', groupIdFilter(), 'sessions', 'new']">Plan the first session</a>
             } @else {
                 <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-300" aria-hidden="true"><app-icon name="history" [size]="28" /></div>
                 <h2 class="mt-5 text-xl font-bold text-zinc-900 dark:text-white">Your group memory starts with one session</h2>

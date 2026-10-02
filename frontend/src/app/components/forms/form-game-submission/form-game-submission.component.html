@@ -173,14 +173,14 @@
     <button
       type="button"
       (click)="resetForm()"
-      class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+      class="app-btn-secondary text-sm"
       >
       Reset
     </button>
     <button
       type="submit"
       [disabled]="gameSubmissionForm.invalid || isSubmitting"
-      class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+      class="app-btn-primary text-sm"
       >
       @if (!isSubmitting) {
         <span>Submit Proposal</span>

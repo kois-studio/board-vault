@@ -2,20 +2,20 @@
     <!-- Main content wrapper with flex-col on mobile -->
     <div class="flex flex-col sm:flex-row gap-3">
         <!-- First row wrapper -->
-        <a routerLink="/games/{{ game.id }}" class="flex items-center gap-3 w-full">
+        <a routerLink="/games/{{ game().id }}" class="flex items-center gap-3 w-full">
             <!-- Image and game info (unchanged) -->
-            <image-background class="block h-16 w-16 shrink-0 rounded-lg border border-zinc-700" [src]="game.imageUrl" [alt]="game.titleTranslations.en + ' cover'" />
+            <image-background class="block h-16 w-16 shrink-0 rounded-lg border border-zinc-700" [src]="game().imageUrl" [alt]="game().titleTranslations.en + ' cover'" />
 
             <div class="grow min-w-0">
-                <h3 class="text-lg font-semibold mb-1 truncate">{{ game.titleTranslations.en }}</h3>
+                <h3 class="text-lg font-semibold mb-1 truncate">{{ game().titleTranslations.en }}</h3>
                 <div class="flex items-center gap-3 text-secondary text-xs">
                     <span class="flex items-center gap-1">
                         <app-icon name="clock" [size]="14" />
-                        {{ game.gameAvgDuration }} mins
+                        {{ game().gameAvgDuration }} mins
                     </span>
                     <span class="flex items-center gap-1">
                         <app-icon name="users" [size]="14" />
-                        {{ game.minPlayers }} - {{ game.maxPlayers }}
+                        {{ game().minPlayers }} - {{ game().maxPlayers }}
                     </span>
                 </div>
             </div>
@@ -27,20 +27,20 @@
             <div class="flex items-center gap-0.5">
                 @for (star of [2, 4, 6, 8, 10]; track $index) {
                 <button
-                    (click)="setReview(game.id, star)"
+                    (click)="setReview(game().id, star)"
                     (mouseover)="hoverRating = star"
                     (mouseleave)="hoverRating = 0"
                     (focus)="hoverRating = star"
                     (blur)="hoverRating = 0"
-                    [attr.aria-label]="'Rate ' + star / 2 + ' out of 5 stars for ' + game.titleTranslations.en"
-                    [attr.aria-pressed]="review === star"
+                    [attr.aria-label]="'Rate ' + star / 2 + ' out of 5 stars for ' + game().titleTranslations.en"
+                    [attr.aria-pressed]="review() === star"
                     class="p-0.5 motion-safe:transition-transform motion-safe:hover:scale-110 cursor-pointer"
                 >
                     <app-icon
                         name="star"
                         [size]="20"
-                        [fill]="star <= (hoverRating || review) ? 'currentColor' : 'none'"
-                        [className]="star <= (hoverRating || review) ? 'text-yellow-400' : 'text-zinc-500'"
+                        [fill]="star <= (hoverRating || review()) ? 'currentColor' : 'none'"
+                        [className]="star <= (hoverRating || review()) ? 'text-yellow-400' : 'text-zinc-500'"
                     />
                 </button>
                 }

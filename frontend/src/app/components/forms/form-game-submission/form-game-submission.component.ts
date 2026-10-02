@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, inject, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core'
+import { Component, inject, input, OnChanges, OnInit, output, SimpleChanges } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../../api/api'
@@ -24,8 +24,8 @@ export class FormGameSubmissionComponent implements OnInit, OnChanges {
     // --------------------------------------------------------------------------
     //        Component props
     // --------------------------------------------------------------------------
-    @Input() initialTitle?: string
-    @Output() proposalSubmitted = new EventEmitter<void>()
+    readonly initialTitle = input<string>()
+    readonly proposalSubmitted = output<void>()
 
     public isSubmitting = false
 
@@ -161,14 +161,16 @@ export class FormGameSubmissionComponent implements OnInit, OnChanges {
 
     ngOnInit() {
         // Set initial title if provided
-        if (this.initialTitle && !this.title?.value) {
-            this.title?.setValue(this.initialTitle)
+        const initialTitle = this.initialTitle()
+        if (initialTitle && !this.title?.value) {
+            this.title?.setValue(initialTitle)
         }
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        if (changes['initialTitle'] && this.initialTitle && !this.title?.value) {
-            this.title?.setValue(this.initialTitle)
+        const initialTitle = this.initialTitle()
+        if (changes['initialTitle'] && initialTitle && !this.title?.value) {
+            this.title?.setValue(initialTitle)
         }
     }
 }

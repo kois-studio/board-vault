@@ -1,42 +1,52 @@
-import { CommonModule } from '@angular/common'
-import { Component, HostBinding, Input } from '@angular/core'
-import { RouterLink } from '@angular/router'
+import { NgTemplateOutlet } from '@angular/common'
+import { Component, computed, input } from '@angular/core'
+import { type Params, RouterLink } from '@angular/router'
 import { IconComponent } from '../icon/icon.component'
 
+export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'success'
+export type ButtonSize = 'small' | 'medium' | 'large'
+
+const SIZE_CLASS: Record<ButtonSize, string> = { small: 'app-btn-sm', medium: '', large: 'app-btn-lg' }
+const ICON_SIZE: Record<ButtonSize, number> = { small: 16, medium: 18, large: 21 }
+
 /**
- * @description
- * A button component that can be used to create a button with a variety of variants and types.
+ * The app's button. It renders a native `<button>`, or a link when `link` is
+ * set, so navigation stays a real link (new tab, copy address). Its look comes
+ * from the shared `app-btn-*` classes in `styles.css`, which links styled as
+ * buttons use too.
  *
  * @example
  * ```html
- * <app-button>Click me</app-button>
- * <app-button variant="secondary">Secondary Action</app-button>
- * <app-button variant="danger">Delete</app-button>
- * <app-button variant="success">Confirm</app-button>
- * <app-button [loading]="true">Processing</app-button>
- * <app-button type="submit">Submit Form</app-button>
- * <app-button [disabled]="true">Unavailable</app-button>
+ * <app-button (click)="save()">Save</app-button>
+ * <app-button variant="secondary" icon="plus">Add</app-button>
+ * <app-button variant="danger" [loading]="isDeleting()">Delete</app-button>
+ * <app-button type="submit" [disabled]="form.invalid">Submit</app-button>
+ * <app-button link="/collection/browse" icon="plus">Add games</app-button>
  * ```
  */
 @Component({
     selector: 'app-button',
     templateUrl: './button.component.html',
-    imports: [CommonModule, RouterLink, IconComponent],
+    imports: [NgTemplateOutlet, RouterLink, IconComponent],
+    host: { class: 'inline-flex', '[class.w-full]': 'wide()' },
 })
 export class ButtonComponent {
-    /**
-     * RouterLink can add a tabindex to the host when routerLink is passed to
-     * this component. The native button below is the only interactive control
-     * that should appear in the keyboard order.
-     */
-    @HostBinding('attr.tabindex') public readonly hostTabIndex = '-1'
+    readonly variant = input<ButtonVariant>('primary')
+    readonly size = input<ButtonSize>('medium')
+    readonly type = input<'button' | 'submit' | 'reset'>('button')
+    /** Icon shown before the label. */
+    readonly icon = input<string>()
+    readonly disabled = input(false)
+    /** Shows a spinner and blocks clicks while an action runs. */
+    readonly loading = input(false)
+    /** Fills the width of its container. */
+    readonly wide = input(false)
+    /** Renders a link to this route instead of a button. */
+    readonly link = input<string | Array<string | number> | null>(null)
+    readonly queryParams = input<Params | null>(null)
 
-    @Input() variant: 'primary' | 'secondary' | 'danger' | 'success' = 'primary'
-    @Input() size: 'small' | 'medium' | 'large' = 'medium'
-    @Input() type: 'button' | 'submit' | 'reset' = 'button'
-    @Input() icon?: string // The icon to display in the button
-    @Input() disabled = false
-    @Input() loading = false
-    @Input() wide = false
-    @Input() routerLink: string | Array<string | number> | null = null
+    public readonly classes = computed(() =>
+        [`app-btn-${this.variant()}`, SIZE_CLASS[this.size()], this.wide() ? 'w-full' : ''].filter(Boolean).join(' '),
+    )
+    public readonly iconSize = computed(() => ICON_SIZE[this.size()])
 }

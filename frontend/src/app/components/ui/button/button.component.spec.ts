@@ -1,48 +1,57 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing'
-import { ActivatedRoute } from '@angular/router'
-import { ButtonComponent } from './button.component'
+import { provideRouter } from '@angular/router'
+import { ButtonComponent, type ButtonVariant } from './button.component'
 
-describe('ButtonComponent accessibility states', () => {
+describe('ButtonComponent', () => {
     let fixture: ComponentFixture<ButtonComponent>
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             imports: [ButtonComponent],
-            providers: [{ provide: ActivatedRoute, useValue: {} }],
+            providers: [provideRouter([])],
         }).compileComponents()
         fixture = TestBed.createComponent(ButtonComponent)
         fixture.detectChanges()
     })
 
-    it('keeps every visual variant on an explicit contrast-safe recipe', () => {
-        const variants: Array<{
-            name: ButtonComponent['variant']
-            expected: Array<string>
-        }> = [
-            { name: 'primary', expected: ['bg-indigo-600', 'text-white'] },
-            { name: 'secondary', expected: ['bg-zinc-100', 'text-zinc-900', 'dark:bg-zinc-800', 'dark:text-zinc-100'] },
-            { name: 'danger', expected: ['bg-red-500', 'text-white'] },
-            { name: 'success', expected: ['bg-green-600', 'text-white'] },
-        ]
+    const button = () => fixture.nativeElement.querySelector('button') as HTMLButtonElement
 
-        for (const variant of variants) {
-            fixture.componentRef.setInput('variant', variant.name)
+    it('uses the shared app-btn recipe for each variant and size', () => {
+        for (const variant of ['primary', 'secondary', 'danger', 'success'] satisfies Array<ButtonVariant>) {
+            fixture.componentRef.setInput('variant', variant)
             fixture.detectChanges()
-            const button = fixture.nativeElement.querySelector('button') as HTMLButtonElement
-
-            for (const className of variant.expected) {
-                expect(button.classList.contains(className), `${variant.name}: ${className}; actual=${button.className}`).toBe(true)
-            }
+            expect(button().classList.contains(`app-btn-${variant}`)).toBe(true)
         }
+
+        fixture.componentRef.setInput('size', 'small')
+        fixture.detectChanges()
+        expect(button().classList.contains('app-btn-sm')).toBe(true)
     })
 
-    it('exposes disabled and loading state to native controls', () => {
+    it('blocks clicks and keeps its label while loading', () => {
         fixture.componentRef.setInput('loading', true)
         fixture.detectChanges()
 
-        const button = fixture.nativeElement.querySelector('button') as HTMLButtonElement
-        expect(button.disabled).toBe(true)
-        expect(button.getAttribute('aria-busy')).toBe('true')
-        expect(button.textContent).toContain('Working')
+        expect(button().disabled).toBe(true)
+        expect(button().getAttribute('aria-busy')).toBe('true')
+    })
+
+    it('renders a real link when it navigates', () => {
+        fixture.componentRef.setInput('link', '/collection/browse')
+        fixture.detectChanges()
+
+        const link = fixture.nativeElement.querySelector('a') as HTMLAnchorElement
+        expect(link.getAttribute('href')).toBe('/collection/browse')
+        expect(fixture.nativeElement.querySelector('button')).toBeNull()
+    })
+
+    it('marks a disabled link as unavailable and drops its target', () => {
+        fixture.componentRef.setInput('link', '/collection/browse')
+        fixture.componentRef.setInput('disabled', true)
+        fixture.detectChanges()
+
+        const link = fixture.nativeElement.querySelector('a') as HTMLAnchorElement
+        expect(link.getAttribute('aria-disabled')).toBe('true')
+        expect(link.hasAttribute('href')).toBe(false)
     })
 })

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core'
+import { Component, input, linkedSignal, OnInit, output } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import type { UserType } from '../../api/api.types'
 import { ImageProfileComponent } from '../image-profile/image-profile.component'
@@ -11,18 +11,13 @@ import { IconComponent } from '../ui/icon/icon.component'
     styleUrls: ['./avatar-editor.component.scss'],
 })
 export class AvatarEditorComponent implements OnInit {
+    readonly avatar = input.required<UserType['avatar']>()
+
     // Edit a copy: the caller's avatar is shared user state until the save succeeds.
-    private draft!: UserType['avatar']
+    // Each change replaces the draft so OnPush children such as the preview see a new object.
+    readonly draft = linkedSignal(() => ({ ...this.avatar() }))
 
-    @Input({ required: true })
-    set avatar(value: UserType['avatar']) {
-        this.draft = { ...value }
-    }
-    get avatar(): UserType['avatar'] {
-        return this.draft
-    }
-
-    @Output() configChange = new EventEmitter<UserType['avatar']>()
+    readonly configChange = output<UserType['avatar']>()
 
     activeTab: 'icon' | 'emoji' | 'initials' = 'icon'
     searchTerm = ''
@@ -71,34 +66,39 @@ export class AvatarEditorComponent implements OnInit {
     emojis = ['😀', '😎', '🚀', '💼', '💻', '📱', '🎮', '🎨', '📚', '🎵', '🏆', '💡', '🔍', '⚙️', '🛠️', '📊', '📈', '🌟', '🔥', '✨']
 
     ngOnInit(): void {
-        this.activeTab = this.avatar.type
+        this.activeTab = this.avatar().type
     }
 
     get filteredIcons(): string[] {
         return this.bootstrapIcons.filter((icon) => icon.toLowerCase().includes(this.searchTerm.toLowerCase()))
     }
 
-    // Each change replaces the draft so OnPush children such as the preview see a new object.
     selectColor(color: string): void {
-        this.draft = { ...this.draft, backgroundColor: color }
+        this.draft.update((draft) => ({ ...draft, backgroundColor: color }))
         this.emitChange()
     }
 
     selectIcon(iconName: string): void {
-        this.draft = { ...this.draft, iconName, emoji: null, type: 'icon' }
+        this.draft.update((draft) => ({ ...draft, iconName, emoji: null, type: 'icon' }))
         this.emitChange()
     }
 
     selectEmoji(emoji: string): void {
-        this.draft = { ...this.draft, emoji, iconName: null, type: 'emoji' }
+        this.draft.update((draft) => ({ ...draft, emoji, iconName: null, type: 'emoji' }))
         this.emitChange()
     }
 
     setInitials(initials: string): void {
-        this.draft = { ...this.draft, initials: initials.substring(0, 2).toUpperCase(), iconName: null, emoji: null, type: 'initials' }
+        this.draft.update((draft) => ({
+            ...draft,
+            initials: initials.substring(0, 2).toUpperCase(),
+            iconName: null,
+            emoji: null,
+            type: 'initials',
+        }))
 
         // An initials avatar needs initials; wait until there is something to save.
-        if (this.draft.initials.trim()) {
+        if (this.draft().initials.trim()) {
             this.emitChange()
         }
     }
@@ -108,6 +108,6 @@ export class AvatarEditorComponent implements OnInit {
     }
 
     emitChange(): void {
-        this.configChange.emit({ ...this.avatar })
+        this.configChange.emit({ ...this.draft() })
     }
 }

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, Input } from '@angular/core'
+import { Component, input } from '@angular/core'
 import { TailwindColor } from '../../../types/tailwind.type'
 
 @Component({
@@ -8,9 +8,9 @@ import { TailwindColor } from '../../../types/tailwind.type'
     templateUrl: './badge.component.html',
 })
 export class BadgeComponent {
-    @Input() showIndicator = false
-    @Input() color: TailwindColor = 'indigo'
-    @Input({ required: true }) text!: string | number
+    readonly showIndicator = input(false)
+    readonly color = input<TailwindColor>('indigo')
+    readonly text = input.required<string | number>()
 
     public get indicatorClass(): string {
         const classes: Record<TailwindColor, string> = {
@@ -38,6 +38,6 @@ export class BadgeComponent {
             stone: 'bg-stone-600',
         }
 
-        return classes[this.color] ?? classes.indigo
+        return classes[this.color()] ?? classes.indigo
     }
 }

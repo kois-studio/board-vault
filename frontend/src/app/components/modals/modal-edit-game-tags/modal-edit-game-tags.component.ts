@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Output, signal } from '@angular/core'
+import { Component, inject, output, signal } from '@angular/core'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../../api/api'
 import type { GameWithTagsAndTranslationsType, TagCategoryType, TagType } from '../../../api/api.types'
@@ -31,7 +31,10 @@ export class ModalEditGameTagsComponent {
     // --------------------------------------------------------------------------
     //        Events
     // --------------------------------------------------------------------------
-    @Output() public tagsUpdated = new EventEmitter<{ id: number; tagIds: number[] }>()
+    public readonly tagsUpdated = output<{
+        id: number
+        tagIds: number[]
+    }>()
 
     // --------------------------------------------------------------------------
     //        Methods

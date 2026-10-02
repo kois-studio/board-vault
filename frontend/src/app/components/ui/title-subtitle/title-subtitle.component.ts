@@ -1,4 +1,4 @@
-import { Component, HostListener, Input } from '@angular/core'
+import { Component, HostListener, input } from '@angular/core'
 import { IconComponent } from '../icon/icon.component'
 
 @Component({
@@ -7,8 +7,10 @@ import { IconComponent } from '../icon/icon.component'
     templateUrl: 'title-subtitle.component.html',
 })
 export class TitleSubtitleComponent {
-    @Input({ required: true }) titleText = '' // cannot be "title" or it triggers HTML's one
-    @Input() helpText?: string // Optional help text for the popup
+    // Not "title": that would also set the host's native title attribute.
+    readonly titleText = input.required<string>()
+    /** Optional help text for the popup. */
+    readonly helpText = input<string>()
 
     isHelpVisible = false
 

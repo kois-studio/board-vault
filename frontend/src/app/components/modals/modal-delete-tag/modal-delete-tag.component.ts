@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Output, signal } from '@angular/core'
+import { Component, inject, output, signal } from '@angular/core'
 import { Api } from '../../../api/api'
 import type { TagType } from '../../../api/api.types'
 import { LogService } from '../../../core/services/log.service'
@@ -28,7 +28,7 @@ export class ModalDeleteTagComponent {
     // --------------------------------------------------------------------------
     //        Events
     // --------------------------------------------------------------------------
-    @Output() tagDeleted = new EventEmitter<number>()
+    readonly tagDeleted = output<number>()
 
     // --------------------------------------------------------------------------
     //        Methods
@@ -58,7 +58,7 @@ export class ModalDeleteTagComponent {
             next: () => {
                 this.isLoading.set(false)
                 this.toastService.success('Tag deleted successfully!')
-                this.tagDeleted.emit(this.tag()?.id)
+                this.tagDeleted.emit(tag.id)
                 this.hideDialog()
             },
             error: (error: any) => {

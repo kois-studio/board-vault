@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core'
+import { Component, input } from '@angular/core'
 import { ContainerWrapperComponent } from '../container-wrapper/container-wrapper.component'
 
 @Component({
@@ -8,12 +8,16 @@ import { ContainerWrapperComponent } from '../container-wrapper/container-wrappe
 })
 export class PageHeaderComponent {
     // Title text. (subtitle is displayed as <ng-content />)
-    @Input({ required: true }) titleText = ''
+    readonly titleText = input.required<string>()
 
     // Aside of the title/subtitle, you may display a main-action button
-    @Input() showActionButton = false
+    readonly showActionButton = input(
+        false,
+        // TODO: a (?) icon to display extra info? check title-subtitle.component.ts
+        // The text to display in the help text of the page header.
+    )
 
     // TODO: a (?) icon to display extra info? check title-subtitle.component.ts
     // The text to display in the help text of the page header.
-    @Input() helpText?: string
+    readonly helpText = input<string>()
 }

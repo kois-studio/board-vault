@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, Input } from '@angular/core'
+import { Component, input } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { DarkModeToggleComponent } from '../../../../components/ui/dark-mode-toggle/dark-mode-toggle.component'
 import { IconComponent } from '../../../../components/ui/icon/icon.component'
@@ -10,7 +10,7 @@ import { IconComponent } from '../../../../components/ui/icon/icon.component'
     templateUrl: './admin-sidebar.component.html',
 })
 export class AdminSidebarComponent {
-    @Input({ required: true }) collapsed = false
+    readonly collapsed = input.required<boolean>()
 
     // --------------------------------------------------------------------------
     //        Sidebar Menu Items

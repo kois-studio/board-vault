@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core'
+import { Component, input } from '@angular/core'
 import { IconComponent } from '../icon/icon.component'
 
 @Component({
@@ -7,7 +7,7 @@ import { IconComponent } from '../icon/icon.component'
     templateUrl: 'spinner.component.html',
 })
 export class SpinnerComponent {
-    @Input() size: 'small' | 'medium' | 'large' = 'small'
-    @Input() label: string | null = 'Loading'
-    @Input() text: string | null = null
+    readonly size = input<'small' | 'medium' | 'large'>('small')
+    readonly label = input<string | null>('Loading')
+    readonly text = input<string | null>(null)
 }

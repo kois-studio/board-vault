@@ -1,5 +1,5 @@
 import { NgComponentOutlet } from '@angular/common'
-import { Component, Input, OnChanges, signal, Type } from '@angular/core'
+import { Component, computed, effect, input, signal, Type } from '@angular/core'
 
 type LucideModule = typeof import('@lucide/angular')
 type IconType = Type<unknown>
@@ -121,54 +121,42 @@ const LEGACY_ALIASES: Record<string, string> = {
 
 @Component({
     selector: 'app-icon',
-    standalone: true,
     imports: [NgComponentOutlet],
-    template: '<ng-container *ngComponentOutlet="iconComponent(); inputs: iconInputs" />',
+    template: '<ng-container *ngComponentOutlet="iconComponent(); inputs: iconInputs()" />',
 })
-export class IconComponent implements OnChanges {
-    @Input({ required: true }) name = 'circle-help'
-    @Input() size: number | string = 20
-    @Input() strokeWidth: number | string = 2
-    @Input() fill = 'none'
-    @Input() label: string | null = null
-    @Input() className = ''
+export class IconComponent {
+    readonly name = input.required<string>()
+    readonly size = input<number | string>(20)
+    readonly strokeWidth = input<number | string>(2)
+    readonly fill = input('none')
+    readonly label = input<string | null>(null)
+    readonly className = input('')
 
     public readonly iconComponent = signal<IconType | null>(null)
-    private loadedName: string | null = null
+
+    public readonly iconInputs = computed(() => ({
+        class: `${this.className()} ${this.fill() === 'none' ? 'fill-none' : 'fill-current'}`.trim(),
+        size: this.size(),
+        strokeWidth: this.strokeWidth(),
+        title: this.label(),
+    }))
+
+    private readonly normalizedName = computed(() => {
+        const value = String(this.name()).replace(/^bi-/, '').replace(/^fa-/, '')
+        return LEGACY_ALIASES[value] ?? value
+    })
 
     constructor() {
-        void this.loadIcon()
+        effect(() => void this.loadIcon(this.normalizedName()))
     }
 
-    ngOnChanges(): void {
-        void this.loadIcon()
-    }
-
-    get iconInputs(): Record<string, unknown> {
-        return {
-            class: `${this.className} ${this.fill === 'none' ? 'fill-none' : 'fill-current'}`.trim(),
-            size: this.size,
-            strokeWidth: this.strokeWidth,
-            title: this.label,
-        }
-    }
-
-    private get normalizedName(): string {
-        const value = String(this.name).replace(/^bi-/, '').replace(/^fa-/, '')
-        return LEGACY_ALIASES[value] ?? value
-    }
-
-    private async loadIcon(): Promise<void> {
-        const normalizedName = this.normalizedName
-        if (this.loadedName === normalizedName && this.iconComponent()) return
-
-        this.loadedName = normalizedName
+    private async loadIcon(normalizedName: string): Promise<void> {
         const lucide = await LUCIDE_MODULE
         const exportName = ICON_EXPORTS[normalizedName] ?? ICON_EXPORTS['circle-help']
-        const icon = lucide[exportName] as unknown as IconType
 
-        if (this.normalizedName === normalizedName) {
-            this.iconComponent.set(icon)
+        // Ignore a load that finished after the name changed again.
+        if (this.normalizedName() === normalizedName) {
+            this.iconComponent.set(lucide[exportName] as unknown as IconType)
         }
     }
 }
