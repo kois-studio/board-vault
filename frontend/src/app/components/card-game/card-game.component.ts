@@ -15,4 +15,12 @@ export class CardGameComponent {
     @Input({ required: true }) minPlayers = 0
     @Input({ required: true }) maxPlayers = 0
     @Input() review: null | number = null
+
+    /** "2 players" or "2–4 players". */
+    get playersLabel(): string {
+        const min = this.minPlayers || this.maxPlayers
+        const max = this.maxPlayers || this.minPlayers
+        if (!min) return ''
+        return min === max ? `${min} player${min === 1 ? '' : 's'}` : `${min}–${max} players`
+    }
 }

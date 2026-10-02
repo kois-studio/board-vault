@@ -254,7 +254,8 @@ export class MeetViewComponent {
     }
 
     get playedGamesHeading(): string {
-        return this.meetData?.status === 'scheduled' ? 'What gets played?' : 'What was actually played?'
+        if (this.meetData?.status === 'scheduled') return 'What gets played?'
+        return this.canEditSession ? 'What was actually played?' : 'Games played'
     }
 
     get playedGamesDescription(): string {
@@ -578,6 +579,22 @@ export class MeetViewComponent {
         } finally {
             this.isUpdatingAttendance = false
         }
+    }
+
+    // Collapsed by default: the shortlist editor and games nobody attending owns.
+    public isEditingShortlist = false
+    public showAllGamesForPlayed = false
+
+    get hiddenPlayableGameCount(): number {
+        if (!this.canEditSession) return 0
+        return this.totalGames.filter((game) => !game.active && !this.meetData?.playedGames?.includes(game.id)).length
+    }
+
+    /** Read-only sessions show only what was played; editable ones show what can be marked. */
+    get playedSectionGames(): Array<GameCompleteType & { active: boolean }> {
+        const played = (game: GameCompleteType) => Boolean(this.meetData?.playedGames?.includes(game.id))
+        if (!this.canEditSession) return this.totalGames.filter(played)
+        return this.totalGames.filter((game) => this.showAllGamesForPlayed || game.active || played(game))
     }
 
     get totalGames(): Array<GameCompleteType & { active: boolean }> {

@@ -55,4 +55,18 @@ export class CardGroupComponent {
 
         return Object.values(games)
     }
+
+    /** Members plus people without an account. */
+    get peopleCount(): number {
+        return this.group.members.length + (this.group.placeholders?.length ?? 0)
+    }
+
+    /** Distinct games owned by anyone in the group, members or placeholders. */
+    get sharedGameCount(): number {
+        const ids = new Set(this.totalGames.map((game) => game.id))
+        for (const person of this.group.placeholders ?? []) {
+            for (const gameId of person.gameIds) ids.add(gameId)
+        }
+        return ids.size
+    }
 }

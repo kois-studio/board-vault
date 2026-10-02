@@ -102,6 +102,8 @@ export type GroupWithMembersAndGames = GroupType & {
             reviews: Array<GameReviewDto>
         }
     >
+    /** People in the group without an account (group-scoped placeholders). */
+    placeholders: Array<{ id: number; displayName: string; avatar: PublicUserType['avatar'] | null; gameIds: Array<number> }>
 }
 
 export type GroupPersonType = {

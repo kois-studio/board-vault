@@ -499,6 +499,35 @@ export class GroupViewComponent {
         return null
     }
 
+    // One person's game editor open at a time, with a title filter.
+    public readonly editingGroupPersonId = signal<number | null>(null)
+    public readonly groupPersonGameFilter = signal('')
+
+    public toggleGroupPersonEditor(personId: number): void {
+        this.groupPersonGameFilter.set('')
+        this.editingGroupPersonId.update((current) => (current === personId ? null : personId))
+    }
+
+    /** Games this person owns, by title, for the compact card. */
+    public getGroupPersonOwnedGames(person: GroupPersonWorkspaceType): Array<GameCompleteType> {
+        const owned = new Set(person.ownership.filter((ownership) => ownership.status === 'asserted').map((ownership) => ownership.gameId))
+        return this.groupPersonAvailableGamesComputed().filter((game) => owned.has(game.id))
+    }
+
+    /** Editor rows: filtered by title, games with something recorded first. */
+    public getGroupPersonEditorGames(person: GroupPersonWorkspaceType): Array<GameCompleteType> {
+        const query = this.groupPersonGameFilter().trim().toLowerCase()
+        const recorded = (gameId: number) =>
+            this.getGroupPersonOwnershipStatus(person, gameId) !== null || this.getGroupPersonPreference(person, gameId) !== null
+        return this.groupPersonAvailableGamesComputed()
+            .filter((game) => !query || (game.titleTranslations.en || game.title || '').toLowerCase().includes(query))
+            .sort(
+                (a, b) =>
+                    Number(recorded(b.id)) - Number(recorded(a.id)) ||
+                    (a.titleTranslations.en || '').localeCompare(b.titleTranslations.en || ''),
+            )
+    }
+
     public getGroupPersonOwnedGameCount(person: GroupPersonWorkspaceType): number {
         return person.ownership.filter((ownership) => ownership.status === 'asserted').length
     }

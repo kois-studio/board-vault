@@ -6,8 +6,8 @@ product decisions.
 | Term | Meaning | Avoid saying |
 | --- | --- | --- |
 | Group | A private workspace for one recurring game group. It owns shared decisions, sessions, and memory. | Community, public club |
-| Group person | A person represented inside one group. It may be linked to an account, or remain a group-scoped placeholder until its owner claims it. | Fake user, synthetic account |
-| Shelf | One account's private list of games they can bring. It is not automatically visible as a global catalogue. | Collection when the privacy boundary matters |
+| Group person | A person represented inside one group (`GroupPerson`). It is either `linked` to a member's account, or a `placeholder` with no account until its owner claims it. The UI marks placeholders as “No account yet”. | Fake user, synthetic account, phantom member |
+| Shelf | One account's private list of games they can bring, labelled “My Games” in the Collection section. It is not automatically visible as a global catalogue. | Library, catalogue |
 | Shared shelf | The group view derived from member-owned games and group-scoped ownership records. It is the input to recommendations and planning. | Marketplace, public library |
 | Session | One planned or completed game night. The API still contains historical `Meet` names for compatibility. | Event when discussing game-night state |
 | Shortlist | The games a group has chosen to consider for a session. A shortlisted game is not necessarily played. | Final selection |
@@ -18,8 +18,9 @@ product decisions.
 | Decision | The group owner's current resolution for an acquisition candidate: open, planned, or not now. It is a group coordination state, not a purchase record. | Order, transaction |
 
 When a phrase must be shortened, prefer “person in this group” in explanatory
-copy and “group person” in labels, API names, and documentation. Keep “my
-shelf” for the private account view and “shared shelf” for the group view.
+copy and “group person” in labels, API names, and documentation. In the UI the
+private list is “My Games” inside the “Collection” section; in documentation
+and API descriptions keep “shelf” for it and “shared shelf” for the group view.
 
 ## Pricing and currency boundary
 

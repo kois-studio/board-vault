@@ -7,7 +7,7 @@
 <container-wrapper>
     <!-- Loading state -->
     @if (isLoadingWishlist()) {
-        <section class="flex flex-wrap gap-4">
+        <section class="grid grid-cols-2 gap-4 py-6 sm:grid-cols-3 lg:grid-cols-5">
             <app-skeleton-card-game />
             <app-skeleton-card-game />
             <app-skeleton-card-game />
@@ -24,10 +24,10 @@
             <p>No games in your wishlist yet</p>
         </div>
     } @else {
-        <section class="flex flex-wrap gap-4">
+        <section class="grid grid-cols-2 gap-4 py-6 sm:grid-cols-3 lg:grid-cols-5">
             @for (game of userWishlist$(); track $index) {
-                <div class="relative">
-                    <a [routerLink]="['/games', game.id]" class="block rounded-lg focus-visible:outline-none">
+                <div class="relative flex flex-col">
+                    <a [routerLink]="['/games', game.id]" class="block flex-1 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">
                         <app-card-game
                             [title]="game.titleTranslations.en"
                             [imageUrl]="game.imageUrl"

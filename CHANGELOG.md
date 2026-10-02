@@ -30,8 +30,17 @@ operational details.
   live on Home, History is under Play, and Settings is in the profile menu.
   Home is redesigned around invitations, the next game nights, your groups,
   and recently played sessions.
+- Collection and Play pages are redesigned: a new game page (ratings, your
+  copy, owners in each group, play count, similar games), a filterable and
+  sortable My Games grid, a Browse page that lists games before you search,
+  compact upcoming sessions, and shorter group and session pages.
+  `/collection` and `/play` open My Games and Upcoming directly.
+- Group cards count the group's people without an account and the games
+  they own.
 - The groups overview and history load games, titles, and people in
   set-based queries (the groups overview went from about 650 queries to 15).
+  Personal and group history load session details in five queries,
+  whatever the number of sessions.
 - Backend queries are split into per-domain classes
   (`databaseService.groups.getGroupById`, …).
 - The backend deploys with Vercel's NestJS preset instead of the legacy

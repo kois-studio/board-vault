@@ -62,7 +62,7 @@ describe('UpcomingSessionsPageComponent social context', () => {
             } as never,
         ])
 
-        expect(component.getGroupContext(7)).toBe('2 people · 3 games available')
+        expect(component.getGroupContext(7)).toBe('2 people · 3 games')
         expect(component.getSessionPrompt('scheduled')).toBe('Review attendees and the game shortlist')
         expect(component.getSessionPrompt('active')).toBe('Record what the group actually plays')
     })

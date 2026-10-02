@@ -13,8 +13,9 @@ export class BrowsePageService {
     public readonly browseGamesList = signal<Array<GameCompleteType>>([])
     public readonly searchTerm = signal('')
     public readonly searchTermIsValidComputed = computed(() => {
+        // Empty lists the whole catalogue; otherwise search from two letters.
         const trimmedTerm = this.searchTerm().trim()
-        return trimmedTerm.length >= 3
+        return trimmedTerm.length === 0 || trimmedTerm.length >= 2
     })
     public readonly isSearching = signal(false)
     public readonly currentPage = signal(1)

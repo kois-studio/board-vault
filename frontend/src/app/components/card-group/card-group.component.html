@@ -6,7 +6,7 @@
                 <h2 class="mt-2 truncate text-2xl font-bold tracking-tight">
                     <a [routerLink]="['/groups', group.id]" class="rounded-sm hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-white">{{ group.name }}</a>
                 </h2>
-                <p class="mt-2 text-sm text-indigo-100">{{ group.members.length }} {{ group.members.length === 1 ? 'person' : 'people' }} · {{ totalGames.length }} shared game{{ totalGames.length === 1 ? '' : 's' }}</p>
+                <p class="mt-2 text-sm text-indigo-100">{{ peopleCount }} {{ peopleCount === 1 ? 'person' : 'people' }} · {{ sharedGameCount }} shared game{{ sharedGameCount === 1 ? '' : 's' }}</p>
             </div>
             <app-icon name="users" [size]="24" className="mt-1 text-indigo-200" aria-hidden="true" />
         </div>
@@ -39,13 +39,25 @@
         <section [attr.aria-labelledby]="'group-members-' + group.id">
             <div class="mb-3 flex items-center justify-between gap-3">
                 <h3 [id]="'group-members-' + group.id" class="text-sm font-semibold uppercase tracking-wide text-secondary">People in this group</h3>
-                <span class="text-xs text-secondary">{{ totalGames.length }} games available</span>
+                <span class="text-xs text-secondary">{{ sharedGameCount }} games available</span>
             </div>
             <div class="grid gap-2 sm:grid-cols-2">
                 @for (member of group.members; track member.id) {
                     <div class="flex min-w-0 items-center justify-between rounded-xl bg-zinc-50 dark:bg-zinc-800">
                         <app-card-account [member]="member" [isOwner]="group.createdBy === member.id" format="compact" />
                         <span class="mr-3 shrink-0 text-xs text-secondary">{{ member.games.length }} owned</span>
+                    </div>
+                }
+                @for (person of group.placeholders ?? []; track person.id) {
+                    <div class="flex min-w-0 items-center justify-between gap-3 rounded-xl bg-zinc-50 p-2 dark:bg-zinc-800">
+                        <div class="flex min-w-0 items-center gap-3">
+                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-dashed border-zinc-300 text-sm font-semibold text-zinc-500 dark:border-zinc-600 dark:text-zinc-300" aria-hidden="true">{{ person.displayName.charAt(0).toUpperCase() }}</span>
+                            <span class="min-w-0">
+                                <span class="block truncate font-semibold">{{ person.displayName }}</span>
+                                <span class="block text-xs text-secondary">No account yet</span>
+                            </span>
+                        </div>
+                        <span class="mr-1 shrink-0 text-xs text-secondary">{{ person.gameIds.length }} owned</span>
                     </div>
                 }
             </div>

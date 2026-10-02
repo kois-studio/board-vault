@@ -12,6 +12,8 @@ describe('MyGamesPageComponent private collection boundary', () => {
             currentUser: signal(null),
             userGames: signal<Array<{ id: number }>>([]),
             userGamesError: signal(false),
+            userWishlist: signal([]),
+            userCollectionActivity: signal([]),
         }
 
         await TestBed.configureTestingModule({
@@ -28,10 +30,10 @@ describe('MyGamesPageComponent private collection boundary', () => {
         return { fixture, dataService }
     }
 
-    it('turns an empty private shelf into actionable collection activation', async () => {
+    it('turns an empty collection into clear next actions', async () => {
         const { fixture } = await setup()
 
-        expect(fixture.nativeElement.textContent).toContain('Your shelf is private until you use it in a group decision.')
+        expect(fixture.nativeElement.textContent).toContain('Only you see this list')
         expect(fixture.nativeElement.textContent).toContain('Add your first game')
         expect(fixture.nativeElement.textContent).toContain('Go to groups')
     })

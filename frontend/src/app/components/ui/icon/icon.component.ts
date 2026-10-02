@@ -8,6 +8,7 @@ const LUCIDE_MODULE = import('@lucide/angular')
 const ICON_EXPORTS: Record<string, keyof LucideModule> = {
     'arrow-left': 'LucideArrowLeft',
     'arrow-right': 'LucideArrowRight',
+    'chevron-down': 'LucideChevronDown',
     ban: 'LucideBan',
     bell: 'LucideBell',
     'book-plus': 'LucideBookPlus',

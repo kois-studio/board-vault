@@ -20,7 +20,7 @@ export class CollectionActivityComponent {
     public readonly userCollectionActivity$ = this.dataService.userCollectionActivity
 
     public readonly userCollectionActivitySortedComputed = computed(() =>
-        this.userCollectionActivity$().sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+        [...this.userCollectionActivity$()].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
     )
 
     // --------------------------------------------------------------------------

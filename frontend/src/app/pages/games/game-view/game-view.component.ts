@@ -13,7 +13,6 @@ import { ButtonComponent } from '../../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../../components/ui/container-wrapper/container-wrapper.component'
 import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../../../components/ui/image-background/image-background.component'
-import { ReviewDisplayComponent } from '../../../components/ui/review-display/review-display.component'
 import { SpinnerComponent } from '../../../components/ui/spinner/spinner.component'
 import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { DataService } from '../../../core/services/data.service'
@@ -26,7 +25,6 @@ import { DataService } from '../../../core/services/data.service'
         ContainerWrapperComponent,
         ImageBackgroundComponent,
         IconComponent,
-        ReviewDisplayComponent,
         TagsComponent,
         ButtonComponent,
         CardGameComponent,
@@ -372,6 +370,38 @@ export class GameViewPageComponent implements OnDestroy {
                     this._loadGameData(currentUser.id, gameId)
                 },
             })
+    }
+
+    /** For each of your groups, who owns this game there (members and people without an account). */
+    public readonly groupOwnershipComputed = computed(() => {
+        const gameId = this.gameView$()?.gameData.id
+        if (!gameId) return []
+
+        return this.userGroups$()
+            .map((group) => ({
+                group,
+                owners: [
+                    ...group.members
+                        .filter((member) => member.games.some((game) => game.id === gameId))
+                        .map((member) => member.displayName || member.username),
+                    ...(group.placeholders ?? []).filter((person) => person.gameIds.includes(gameId)).map((person) => person.displayName),
+                ],
+            }))
+            .filter((entry) => entry.owners.length > 0)
+    })
+
+    /** "2 players", "2–4 players", or null when unknown. */
+    public readonly playersLabelComputed = computed(() => {
+        const game = this.gameView$()?.gameData
+        if (!game?.minPlayers && !game?.maxPlayers) return null
+        const min = game.minPlayers ?? game.maxPlayers
+        const max = game.maxPlayers ?? game.minPlayers
+        return min === max ? `${min} player${min === 1 ? '' : 's'}` : `${min}–${max} players`
+    })
+
+    /** Averages are stored out of 10 and shown out of 5. */
+    public outOfFive(review: number | undefined): string {
+        return review ? (review / 2).toFixed(1) : '–'
     }
 
     public getGroupName(groupId: number): string {

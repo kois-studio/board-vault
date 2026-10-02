@@ -1,12 +1,20 @@
-<div class="flex w-42 flex-col rounded-lg bg-zinc-100 shadow-md transition-shadow hover:shadow-lg motion-reduce:transition-none dark:bg-zinc-800">
-    <image-background class="aspect-square overflow-hidden rounded-t-lg" [src]="imageUrl" [alt]="title + ' cover'" />
+<div class="flex h-full w-full flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white transition hover:border-indigo-300 hover:shadow-md motion-reduce:transition-none dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-indigo-700">
+    <div class="aspect-square bg-zinc-50 p-2 dark:bg-zinc-800/60">
+        <image-background class="block h-full w-full" [src]="imageUrl" [alt]="title + ' cover'" />
+    </div>
 
-    <div class="overflow-hidden px-4 py-2">
-        <h3 class="font-medium overflow-hidden text-ellipsis whitespace-nowrap">{{ title }}</h3>
-        <p class="text-secondary flex items-center gap-1 text-sm"><app-icon name="clock" [size]="14" /> {{ gameAvgDuration }} mins</p>
-        <p class="text-secondary flex items-center gap-1 text-sm"><app-icon name="users" [size]="14" /> {{ minPlayers }} - {{ maxPlayers }}</p>
+    <div class="flex flex-1 flex-col gap-1 px-3 py-3">
+        <h3 class="truncate font-semibold" [title]="title">{{ title }}</h3>
+        <p class="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-sm text-secondary">
+            @if (gameAvgDuration) {
+                <span class="inline-flex items-center gap-1"><app-icon name="clock" [size]="13" aria-hidden="true" />~{{ gameAvgDuration }} min</span>
+            }
+            @if (playersLabel) {
+                <span class="inline-flex items-center gap-1"><app-icon name="users" [size]="13" aria-hidden="true" />{{ playersLabel }}</span>
+            }
+        </p>
         @if (review) {
-        <review-display [review]="review" />
+            <review-display [review]="review" />
         }
     </div>
 </div>

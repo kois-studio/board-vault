@@ -1,17 +1,12 @@
 <app-page-header titleText="My Games" [showActionButton]="true">
-    Your private shelf — games you can bring into group decisions
+    The games you can bring. Only you see this list; groups use it when you decide together.
 
-    <app-button class="action-button" icon="plus-lg" routerLink="/collection/browse">Explore Games</app-button>
+    <a class="app-btn-primary action-button text-center" routerLink="/collection/browse">Add games</a>
 </app-page-header>
 <container-wrapper>
-    <section class="mb-8 rounded-2xl border border-indigo-200 bg-indigo-50 p-6 dark:border-indigo-900/60 dark:bg-indigo-950/30" aria-labelledby="private-shelf-heading">
-        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">Personal collection</p>
-        <h2 id="private-shelf-heading" class="mt-2 text-2xl font-bold">Your shelf is private until you use it in a group decision.</h2>
-        <p class="mt-2 max-w-3xl text-secondary">Add the games you own here. Board Vault uses them as input when you and your friends choose a game; the group workspace shows only the shared context that helps everyone decide.</p>
-    </section>
 
     @if (isLoadingUserGames()) {
-        <section class="flex flex-wrap gap-4">
+        <section class="grid grid-cols-2 gap-4 pt-6 sm:grid-cols-3 lg:grid-cols-5">
             <app-skeleton-card-game />
             <app-skeleton-card-game />
             <app-skeleton-card-game />
@@ -33,13 +28,30 @@
             </div>
         </section>
     } @else {
-        <section class="mb-5 flex flex-wrap items-center justify-between gap-3" aria-label="Collection summary">
-            <p class="text-secondary">Only you manage this shelf. Open a group to see shared ownership, play memory, and decisions.</p>
-            <a class="text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400" routerLink="/dashboard">Open group workspace</a>
+        <section class="flex flex-col gap-3 py-6 sm:flex-row sm:items-center sm:justify-between" aria-label="Filter your games">
+            <p class="font-semibold">{{ userGames$().length }} game{{ userGames$().length === 1 ? '' : 's' }}</p>
+            <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+                <label class="relative block">
+                    <span class="sr-only">Filter your games</span>
+                    <app-icon name="search" [size]="16" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
+                    <input type="search" placeholder="Filter by title" autocomplete="off" class="w-full rounded-lg border border-zinc-300 py-2 pl-9 pr-3 sm:w-64 dark:border-zinc-700 dark:bg-zinc-900" [value]="filterText()" (input)="filterText.set($any($event.target).value)" />
+                </label>
+                <label class="flex items-center gap-2 text-sm">
+                    <span class="text-secondary">Sort</span>
+                    <select class="rounded-lg border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900" [value]="sortBy()" (change)="setSort($any($event.target).value)">
+                        <option value="title">A–Z</option>
+                        <option value="duration">Shortest first</option>
+                        <option value="players">Most players</option>
+                    </select>
+                </label>
+            </div>
         </section>
-        <section class="flex flex-wrap gap-4" aria-label="Your private games">
-            @for (game of userGames$(); track game.id) {
-                <a [routerLink]="['/games', game.id]" class="block rounded-lg focus-visible:outline-none">
+        @if (visibleGames().length === 0) {
+            <p class="rounded-2xl border border-dashed border-zinc-300 p-8 text-center text-secondary dark:border-zinc-700">No games match "{{ filterText() }}".</p>
+        }
+        <section class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5" aria-label="Your games">
+            @for (game of visibleGames(); track game.id) {
+                <a [routerLink]="['/games', game.id]" class="block h-full rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">
                     <app-card-game
                         [title]="game.titleTranslations.en"
                         [imageUrl]="game.imageUrl"
@@ -51,4 +63,7 @@
             }
         </section>
     }
+    <section class="py-12" aria-label="Recent collection activity">
+        <app-collection-activity />
+    </section>
 </container-wrapper>

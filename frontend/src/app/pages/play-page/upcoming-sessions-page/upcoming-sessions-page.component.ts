@@ -49,7 +49,27 @@ export class UpcomingSessionsPageComponent {
         if (!group) return 'Shared group context unavailable'
 
         const gameIds = new Set(group.members.flatMap((member) => member.games.map((game) => game.id)))
-        return `${group.members.length} people · ${gameIds.size} games available`
+        for (const person of group.placeholders ?? []) for (const gameId of person.gameIds) gameIds.add(gameId)
+        const people = group.members.length + (group.placeholders?.length ?? 0)
+        return `${people} ${people === 1 ? 'person' : 'people'} · ${gameIds.size} games`
+    }
+
+    /** Calendar parts in the session's own timezone, for the date block. */
+    public dateParts(meet: MeetType): { month: string; day: string; weekday: string; time: string } {
+        const date = new Date(meet.meetDate)
+        const part = (options: Intl.DateTimeFormatOptions) => {
+            try {
+                return new Intl.DateTimeFormat('en-GB', { ...options, timeZone: meet.timezone }).format(date)
+            } catch {
+                return new Intl.DateTimeFormat('en-GB', options).format(date)
+            }
+        }
+        return {
+            month: part({ month: 'short' }),
+            day: part({ day: 'numeric' }),
+            weekday: part({ weekday: 'long' }),
+            time: part({ hour: '2-digit', minute: '2-digit', hour12: false }),
+        }
     }
 
     public getStatusLabel(status: MeetType['status']): string {

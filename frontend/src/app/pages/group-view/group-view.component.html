@@ -169,8 +169,8 @@
                                 <div class="flex items-start justify-between gap-3">
                                     <div class="min-w-0">
                                         <div class="flex flex-wrap items-center gap-2">
-                                            <h3 class="font-semibold">{{ person.person.displayName }}</h3>
-                                            <span class="rounded-full bg-zinc-100 px-2 py-1 text-xs text-secondary dark:bg-zinc-800">{{ person.person.kind === 'linked' ? 'Account linked' : 'Placeholder' }}</span>
+                                            <h3 class="max-w-full truncate font-semibold">{{ person.person.displayName }}</h3>
+                                            <span class="rounded-full bg-zinc-100 px-2 py-1 text-xs text-secondary dark:bg-zinc-800">{{ person.person.kind === 'linked' ? 'Member' : 'No account yet' }}</span>
                                         </div>
                                         <p class="mt-1 text-xs text-secondary">{{ getGroupPersonOwnedGameCount(person) }} games · {{ person.preferences.length }} preferences</p>
                                     </div>
@@ -178,56 +178,70 @@
                                         <button type="button" class="text-xs text-secondary underline disabled:opacity-60" [disabled]="groupPersonMutationId() !== null" (click)="archiveGroupPerson(person)">{{ person.person.status === 'archived' ? 'Restore' : 'Archive' }}</button>
                                     }
                                 </div>
+                                @let ownedGames = getGroupPersonOwnedGames(person);
+                                @if (ownedGames.length) {
+                                    <ul class="mt-3 flex flex-wrap gap-1.5" aria-label="Games {{ person.person.displayName }} owns">
+                                        @for (game of ownedGames.slice(0, 8); track game.id) {
+                                            <li class="max-w-full truncate rounded-full bg-zinc-100 px-2.5 py-1 text-xs dark:bg-zinc-800">{{ game.titleTranslations.en || game.title }}</li>
+                                        }
+                                        @if (ownedGames.length > 8) {
+                                            <li class="rounded-full px-2.5 py-1 text-xs text-secondary">+{{ ownedGames.length - 8 }} more</li>
+                                        }
+                                    </ul>
+                                } @else {
+                                    <p class="mt-3 text-sm text-secondary">No games recorded yet.</p>
+                                }
                                 @if (groupPersonAvailableGamesComputed().length > 0 && isGroupOwnerComputed()) {
-                                    <div class="mt-4 grid gap-3 sm:grid-cols-2" aria-label="Games this person may own">
-                                        @for (game of groupPersonAvailableGamesComputed(); track game.id) {
-                                            <div class="min-w-0">
-                                                <label class="text-xs font-medium text-secondary" [for]="'group-person-ownership-' + person.person.id + '-' + game.id">
-                                                    {{ game.titleTranslations.en || game.title || 'Game' }} ownership
-                                                </label>
-                                                <select
-                                                    class="mt-1 min-h-11 w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
-                                                    [id]="'group-person-ownership-' + person.person.id + '-' + game.id"
-                                                    [value]="getGroupPersonOwnershipStatus(person, game.id) ?? ''"
-                                                    [disabled]="groupPersonMutationId() !== null"
-                                                    (change)="setGroupPersonOwnership(person, game.id, $event)"
-                                                >
-                                                    <option value="" [disabled]="getGroupPersonOwnershipStatus(person, game.id) !== null">Not recorded</option>
-                                                    <option value="asserted">Asserted ownership</option>
-                                                    <option value="disputed">Disputed</option>
-                                                    <option value="rejected">Rejected</option>
-                                                </select>
-                                                @if (getGroupPersonOwnershipSource(person, game.id); as source) {
-                                                    <p class="mt-1 text-xs text-secondary">{{ source }}</p>
+                                    <button type="button" class="mt-3 text-sm font-semibold text-indigo-600 hover:underline dark:text-indigo-400" [attr.aria-expanded]="editingGroupPersonId() === person.person.id" (click)="toggleGroupPersonEditor(person.person.id)">
+                                        {{ editingGroupPersonId() === person.person.id ? 'Done' : 'Edit games and preferences' }}
+                                    </button>
+                                    @if (editingGroupPersonId() === person.person.id) {
+                                        <div class="mt-3 rounded-xl border border-zinc-200 dark:border-zinc-800">
+                                            <label class="block border-b border-zinc-200 p-2 dark:border-zinc-800">
+                                                <span class="sr-only">Filter games for {{ person.person.displayName }}</span>
+                                                <input type="search" class="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900" placeholder="Filter games" [value]="groupPersonGameFilter()" (input)="groupPersonGameFilter.set($any($event.target).value)" />
+                                            </label>
+                                            <ul class="max-h-96 divide-y divide-zinc-100 overflow-y-auto dark:divide-zinc-800">
+                                                @for (game of getGroupPersonEditorGames(person); track game.id) {
+                                                    <li class="grid grid-cols-[1fr_auto_auto] items-center gap-2 px-3 py-2">
+                                                        <span class="min-w-0">
+                                                            <span class="block truncate text-sm font-medium">{{ game.titleTranslations.en || game.title || 'Game' }}</span>
+                                                            @if (getGroupPersonOwnershipSource(person, game.id); as source) {
+                                                                <span class="block truncate text-xs text-secondary">{{ source }}</span>
+                                                            }
+                                                        </span>
+                                                        <select
+                                                            class="rounded-lg border border-zinc-300 bg-white px-2 py-1.5 text-xs dark:border-zinc-700 dark:bg-zinc-900"
+                                                            [attr.aria-label]="(game.titleTranslations.en || 'Game') + ' ownership for ' + person.person.displayName"
+                                                            [value]="getGroupPersonOwnershipStatus(person, game.id) ?? ''"
+                                                            [disabled]="groupPersonMutationId() !== null"
+                                                            (change)="setGroupPersonOwnership(person, game.id, $event)"
+                                                        >
+                                                            <option value="" [disabled]="getGroupPersonOwnershipStatus(person, game.id) !== null">Owns? –</option>
+                                                            <option value="asserted">Owns it</option>
+                                                            <option value="disputed">Not sure</option>
+                                                            <option value="rejected">Doesn't own</option>
+                                                        </select>
+                                                        <select
+                                                            class="rounded-lg border border-zinc-300 bg-white px-2 py-1.5 text-xs dark:border-zinc-700 dark:bg-zinc-900"
+                                                            [attr.aria-label]="(game.titleTranslations.en || 'Game') + ' preference for ' + person.person.displayName"
+                                                            [value]="getGroupPersonPreference(person, game.id) ?? ''"
+                                                            [disabled]="groupPersonMutationId() !== null"
+                                                            (change)="setGroupPersonPreference(person, game.id, $event)"
+                                                        >
+                                                            <option value="">Likes? –</option>
+                                                            <option value="favorite">Favorite</option>
+                                                            <option value="like">Likes</option>
+                                                            <option value="neutral">Neutral</option>
+                                                            <option value="avoid">Avoids</option>
+                                                        </select>
+                                                    </li>
+                                                } @empty {
+                                                    <li class="p-4 text-center text-sm text-secondary">No games match.</li>
                                                 }
-                                            </div>
-                                        }
-                                    </div>
-                                    <div class="mt-4 grid gap-3 sm:grid-cols-2" aria-label="Games this person may prefer">
-                                        @for (game of groupPersonAvailableGamesComputed(); track game.id) {
-                                            <div class="min-w-0">
-                                                <label class="text-xs font-medium text-secondary" [for]="'group-person-preference-' + person.person.id + '-' + game.id">
-                                                    {{ game.titleTranslations.en || game.title || 'Game' }} preference
-                                                </label>
-                                                <select
-                                                    class="mt-1 min-h-11 w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
-                                                    [id]="'group-person-preference-' + person.person.id + '-' + game.id"
-                                                    [value]="getGroupPersonPreference(person, game.id) ?? ''"
-                                                    [disabled]="groupPersonMutationId() !== null"
-                                                    (change)="setGroupPersonPreference(person, game.id, $event)"
-                                                >
-                                                    <option value="">Not recorded</option>
-                                                    <option value="favorite">Favorite</option>
-                                                    <option value="like">Like</option>
-                                                    <option value="neutral">Neutral</option>
-                                                    <option value="avoid">Avoid</option>
-                                                </select>
-                                                @if (getGroupPersonPreferenceSource(person, game.id); as source) {
-                                                    <p class="mt-1 text-xs text-secondary">{{ source }}</p>
-                                                }
-                                            </div>
-                                        }
-                                    </div>
+                                            </ul>
+                                        </div>
+                                    }
                                 }
                             </article>
                         }

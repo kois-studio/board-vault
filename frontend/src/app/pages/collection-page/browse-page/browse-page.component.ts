@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, signal } from '@angular/core'
+import { Component, computed, effect, inject, signal, untracked } from '@angular/core'
 import { ReactiveFormsModule } from '@angular/forms'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
@@ -13,6 +13,9 @@ import { IconComponent } from '../../../components/ui/icon/icon.component'
 import { PageHeaderComponent } from '../../../components/ui/page-header/page-header.component'
 import { DataService } from '../../../core/services/data.service'
 import { BrowsePageService } from './browse-page.service'
+
+/** The API's maximum page size; five rows of four or four rows of five. */
+const BROWSE_PAGE_SIZE = 20
 
 @Component({
     imports: [
@@ -48,6 +51,7 @@ export class BrowsePageComponent {
     public readonly hasMoreGames$ = this.browsePageService.hasMoreGames
     public readonly searchControl = this.browsePageService.searchControl
     public readonly searchError = signal(false)
+    private initialLoadStarted = false
     public readonly acquisitionGroupId = signal<number | null>(null)
     public readonly acquisitionGroupName = computed(
         () => this.userGroups$().find((group) => group.id === this.acquisitionGroupId())?.name ?? 'this group',
@@ -104,8 +108,8 @@ export class BrowsePageComponent {
                 this.currentPage$.set(1) // Reset page when search changes
                 this.searchError.set(false)
 
-                // Only search if the term is valid
-                if (trimmedValue.length >= 3) {
+                // Search when empty (whole catalogue) or from two letters
+                if (trimmedValue.length === 0 || trimmedValue.length >= 2) {
                     this._searchGames()
                 } else {
                     // Clear results if search term is too short
@@ -113,6 +117,14 @@ export class BrowsePageComponent {
                     this.hasMoreGames$.set(false)
                 }
             })
+
+        // Show the catalogue as soon as the user is known, before any typing.
+        effect(() => {
+            if (this.currentUser$()?.id && !this.initialLoadStarted && this.browseGamesList$().length === 0 && this.searchTermIsValid$()) {
+                this.initialLoadStarted = true
+                untracked(() => this._searchGames())
+            }
+        })
 
         // Setup effect to monitor changes in games list and update hasMoreGames
         effect(() => {
@@ -122,7 +134,7 @@ export class BrowsePageComponent {
 
             // Only update hasMoreGames if we have games and the search is valid
             if (currentGames > 0 && searchTermValid) {
-                const hasMore = currentGames === 12 * currentPage // 12 is the limit set in your API
+                const hasMore = currentGames === BROWSE_PAGE_SIZE * currentPage
                 this.hasMoreGames$.set(hasMore)
             } else {
                 this.hasMoreGames$.set(false)
@@ -272,30 +284,23 @@ export class BrowsePageComponent {
         }
 
         // Fetch games with search term
-        this.api
-            .browseGamesNotOwnedByUser(
-                userId,
-                this.searchTerm$().trim(),
-                this.currentPage$(),
-                12, // limit
-            )
-            .subscribe({
-                next: (result) => {
-                    if (!isNextPage) {
-                        this.browseGamesList$.set(result.games)
-                    } else {
-                        this.browseGamesList$.update((games) => [...games, ...result.games])
-                    }
-                },
-                error: (error) => {
-                    console.error(error)
-                    this.searchError.set(true)
-                    this.isSearching$.set(false)
-                },
-                complete: () => {
-                    this.isSearching$.set(false)
-                },
-            })
+        this.api.browseGamesNotOwnedByUser(userId, this.searchTerm$().trim(), this.currentPage$(), BROWSE_PAGE_SIZE).subscribe({
+            next: (result) => {
+                if (!isNextPage) {
+                    this.browseGamesList$.set(result.games)
+                } else {
+                    this.browseGamesList$.update((games) => [...games, ...result.games])
+                }
+            },
+            error: (error) => {
+                console.error(error)
+                this.searchError.set(true)
+                this.isSearching$.set(false)
+            },
+            complete: () => {
+                this.isSearching$.set(false)
+            },
+        })
     }
 
     private loadAcquisitionBoard(groupId: number): void {

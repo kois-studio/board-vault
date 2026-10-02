@@ -268,12 +268,17 @@ const groupMemberSchema: z.ZodType<GroupWithMembersAndGames['members'][number]> 
     reviews: z.array(gameReviewSchema),
 })
 
-const groupWithMembersAndGamesSchema: z.ZodType<GroupWithMembersAndGames> = z.object({
+const groupWithMembersAndGamesSchema: z.ZodType<GroupWithMembersAndGames, z.ZodTypeDef, unknown> = z.object({
     id: z.number(),
     name: z.string(),
     createdBy: z.number(),
     createdAt: z.string(),
     members: z.array(groupMemberSchema),
+    // Older APIs do not send placeholders yet.
+    placeholders: z
+        .array(z.object({ id: z.number(), displayName: z.string(), avatar: avatarSchema.nullable(), gameIds: z.array(z.number()) }))
+        .optional()
+        .default([]),
 })
 
 export const userGroupsSchema = z.array(groupWithMembersAndGamesSchema)

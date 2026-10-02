@@ -2,27 +2,27 @@
     @if (acquisitionGroupId()) {
         Find a game for {{ acquisitionGroupName() }} to consider acquiring. Your shortlist is shared with the group.
     } @else {
-        Browse games to add to your collection
+        Every game in Board Vault. Add the ones you own, or save the ones you want.
     }
 </app-page-header>
 <container-wrapper>
     <!-- Search Bar -->
-    <div class="search-container mb-4">
+    <div class="search-container py-6">
         <div class="relative">
             <label for="game-search" class="sr-only">Search games</label>
-            <input 
+            <input
                 id="game-search"
-                type="text" 
-                placeholder="Search games..." 
-                class="w-full p-2 pl-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                type="search"
+                placeholder="Search by title, in English or Spanish"
+                class="w-full rounded-xl border border-zinc-300 py-3 pl-11 pr-10 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:border-zinc-700 dark:bg-zinc-900"
                 [formControl]="searchControl"
                 autocomplete="off"
             />
-            <div class="absolute left-3 top-2.5">
+            <div class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2">
                 <app-icon name="search" [size]="18" className="text-gray-400" />
             </div>
             @if (isSearching$()) {
-                <div class="absolute right-3 top-2.5">
+                <div class="absolute right-4 top-1/2 -translate-y-1/2">
                     <app-icon name="refresh" [size]="18" className="text-gray-400 motion-safe:animate-spin" />
                 </div>
             }
@@ -56,14 +56,14 @@
                     }
                 </div>
             } @else {
-                <p>Type a game name to search for!</p>
+                <p>Keep typing: search starts at two letters.</p>
             }
         </div>
     } @else {
-        <section class="flex flex-wrap gap-4">
+        <section class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
             @for (game of gamesListComputed(); track game.id) {
-                <div class="relative">
-                    <a [routerLink]="['/games', game.id]" class="block rounded-lg focus-visible:outline-none">
+                <div class="relative flex flex-col">
+                    <a [routerLink]="['/games', game.id]" class="block flex-1 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">
                         <app-card-game
                             [title]="game.titleTranslations.en"
                             [imageUrl]="game.imageUrl"
@@ -73,24 +73,25 @@
                         />
                     </a>
                     @if (game.isInCollection) {
-                        <div title="In my collection" class="absolute -top-1 right-1 text-blue-500 text-4xl" aria-label="In my collection">
-                            <app-icon name="bookmark-check" [size]="18" />
+                        <div title="In your games" class="absolute right-2 top-2 rounded-full bg-white/90 p-1.5 text-emerald-600 shadow-sm dark:bg-zinc-900/90" aria-label="In your games">
+                            <app-icon name="bookmark-check" [size]="16" />
                         </div>
                     }
                     @if (!acquisitionGroupId()) {
                         <button
                             type="button"
-                            class="app-btn-primary mt-2 w-full text-sm"
+                            class="mt-2 w-full rounded-lg border px-3 py-2 text-sm font-semibold transition disabled:cursor-default"
+                            [class]="game.isInCollection || collectionState()[game.id] === 'saved' ? 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300' : 'border-zinc-300 hover:border-indigo-400 hover:bg-indigo-50 dark:border-zinc-700 dark:hover:bg-indigo-950/40'"
                             [disabled]="game.isInCollection || !!collectionState()[game.id]"
                             [attr.aria-label]="game.isInCollection ? game.titleTranslations.en + ' is already in your collection' : 'Add ' + game.titleTranslations.en + ' to your collection'"
                             (click)="addGameToCollection(game.id)"
                         >
                             @if (game.isInCollection || collectionState()[game.id] === 'saved') {
-                                In my collection ✓
+                                In your games ✓
                             } @else if (collectionState()[game.id] === 'saving') {
                                 Adding…
                             } @else {
-                                Add to my collection
+                                I own it
                             }
                         </button>
                     }
@@ -132,6 +133,8 @@
                 <app-skeleton-card-game />
                 <app-skeleton-card-game />
                 <app-skeleton-card-game />
+                <app-skeleton-card-game />
+                <app-skeleton-card-game />
             }
         </section>
         
@@ -144,4 +147,9 @@
             </div>
         }
     }
+    <p class="py-10 text-center text-sm text-secondary">
+        Can't find a game?
+        <button type="button" class="font-semibold text-indigo-600 hover:underline dark:text-indigo-400" (click)="navigateToProposeGame()">Propose it</button>
+        and an admin will add it to the catalogue.
+    </p>
 </container-wrapper>

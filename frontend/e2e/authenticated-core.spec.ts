@@ -30,8 +30,10 @@ test.describe('authenticated core navigation', () => {
 
         await page.goto('/collection')
 
-        await expect(page.getByRole('heading', { name: 'Collection' })).toBeVisible()
-        await expect(page.getByRole('link', { name: /Browse games/i }).first()).toBeVisible()
+        // Collection opens on My Games.
+        await expect(page).toHaveURL(/\/collection\/games$/)
+        await expect(page.getByRole('heading', { name: 'My Games' })).toBeVisible()
+        await expect(page.getByRole('link', { name: /Add (?:games|your first game)/i }).first()).toBeVisible()
     })
 
     test('explains when a group is no longer available', async ({ page }) => {
@@ -82,8 +84,8 @@ test.describe('authenticated core navigation', () => {
     test('opens upcoming sessions with a scheduling action', async ({ page }) => {
         await page.goto('/play/upcoming-sessions')
 
-        await expect(page.getByRole('heading', { name: /Upcoming Sessions/i })).toBeVisible()
-        await expect(page.getByRole('button', { name: /Plan a future session/i }).first()).toBeVisible()
+        await expect(page.getByRole('heading', { name: 'Upcoming' })).toBeVisible()
+        await expect(page.getByRole('button', { name: /Plan a session/i }).first()).toBeVisible()
     })
 
     test('opens completed session history', async ({ page }) => {
