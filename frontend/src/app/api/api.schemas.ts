@@ -10,6 +10,7 @@ import type {
     GameCompleteType,
     GameOwnedType,
     GameProposalType,
+    GameResultsUpdatedType,
     GameReviewWithGameData,
     GameType,
     GameViewType,
@@ -369,6 +370,13 @@ export const userInvitationsSchema: z.ZodType<Array<InvitationWithExtraData>> = 
     }),
 )
 
+const gameResultEntrySchema = z.object({
+    accountId: z.number().nullable(),
+    groupPersonId: z.number().nullable(),
+    isWinner: z.boolean(),
+    score: z.number().nullable(),
+})
+
 const meetFields = z.object({
     id: z.number(),
     groupId: z.number(),
@@ -420,6 +428,14 @@ export const meetDetailsSchema: z.ZodType<MeetWithAttendeesAndGamesType> = meetF
         )
         .optional()
         .default([]),
+    gameResults: z
+        .array(
+            z.object({
+                gameId: z.number(),
+                results: z.array(gameResultEntrySchema),
+            }),
+        )
+        .optional(),
 })
 
 const historyRecordSchema: z.ZodType<HistoryRecordType> = z.object({
@@ -449,6 +465,8 @@ const historyRecordSchema: z.ZodType<HistoryRecordType> = z.object({
                     }),
                 )
                 .optional(),
+            winnerAccountIds: z.array(z.number()).optional(),
+            winnerPersonIds: z.array(z.number()).optional(),
         }),
     ),
 })
@@ -571,3 +589,9 @@ export const successSchema = z.object({ success: z.literal(true) })
 export const createdGroupSchema: z.ZodType<CreatedGroupType> = z.object({ success: z.literal(true), groupId: z.number().int().positive() })
 
 export const wishlistResponseSchema = z.object({ isWishlisted: z.boolean() })
+
+export const gameResultsUpdatedSchema: z.ZodType<GameResultsUpdatedType> = z.object({
+    sessionId: z.number(),
+    gameId: z.number(),
+    results: z.array(gameResultEntrySchema),
+})

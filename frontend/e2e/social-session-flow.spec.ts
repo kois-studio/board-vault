@@ -28,43 +28,43 @@ test.describe('two-account social session flow', () => {
 
         try {
             await memberPage.goto(`${baseURL}${sessionPath}`)
-            await expect(memberPage.getByRole('heading', { name: /Plan for game night/i })).toBeVisible()
+            await expect(memberPage.getByRole('heading', { name: /Game night/i })).toBeVisible()
             const goingButton = memberPage.getByRole('button', { name: /I.m going/i })
             if (await goingButton.count()) {
                 await goingButton.click()
             }
             await memberPage.reload()
-            await expect(memberPage.getByRole('button', { name: /Going ✓/ })).toBeVisible()
+            await expect(memberPage.getByRole('button', { name: /I.m going/i })).toHaveAttribute('aria-pressed', 'true')
 
             await ownerPage.goto(`${baseURL}${sessionPath}`)
             await ownerPage.getByRole('button', { name: 'Start game night' }).click()
             await ownerPage.reload()
             await expect(ownerPage.getByText('Live now')).toBeVisible()
 
-            const attendanceSection = ownerPage.locator('section').filter({
-                has: ownerPage.getByRole('heading', { name: 'Who actually attended?' }),
-            })
-            while (await attendanceSection.locator('button[aria-pressed="false"]').count()) {
-                const absentCount = await attendanceSection.locator('button[aria-pressed="false"]').count()
-                const absentMember = attendanceSection.locator('button[aria-pressed="false"]').first()
-                await absentMember.click()
-                await expect(attendanceSection.locator('button[aria-pressed="false"]')).toHaveCount(absentCount - 1)
+            const attendance = ownerPage.locator('aside').getByRole('button', { name: /was there/ })
+            while (await attendance.and(ownerPage.locator('[aria-pressed="false"]')).count()) {
+                const absentCount = await attendance.and(ownerPage.locator('[aria-pressed="false"]')).count()
+                await attendance.and(ownerPage.locator('[aria-pressed="false"]')).first().click()
+                await expect(attendance.and(ownerPage.locator('[aria-pressed="false"]'))).toHaveCount(absentCount - 1)
             }
-            await expect(ownerPage.getByText('2 of 2 members')).toBeVisible()
+            await expect(attendance.and(ownerPage.locator('[aria-pressed="true"]'))).toHaveCount(2)
 
             await ownerPage.getByRole('button', { name: new RegExp(gameTitle ?? '', 'i') }).click()
-            await expect(ownerPage.getByText('Played', { exact: true })).toBeVisible()
-            const participantInputs = ownerPage
-                .locator('fieldset')
-                .filter({ hasText: 'Played by' })
-                .locator('input[type="checkbox"]')
-            await expect(participantInputs).toHaveCount(2)
-            await expect(participantInputs.first()).toBeChecked()
-            await participantInputs.first().uncheck()
-            await expect(participantInputs.first()).not.toBeChecked()
-            await ownerPage.getByRole('button', { name: 'Finish and save memory' }).click()
+            const players = ownerPage.getByRole('group', { name: new RegExp(`Who played ${gameTitle}`, 'i') }).getByRole('button')
+            await expect(players).toHaveCount(2)
+            await expect(players.first()).toHaveAttribute('aria-pressed', 'true')
+            await players.first().click()
+            await expect(players.first()).toHaveAttribute('aria-pressed', 'false')
+
+            await ownerPage.getByRole('button', { name: 'Record who won' }).click()
+            await ownerPage.getByRole('button', { name: / won$/ }).first().click()
+            await ownerPage.getByRole('button', { name: 'Save results' }).click()
+            await expect(ownerPage.getByText('Results saved.')).toBeVisible()
+
+            await ownerPage.getByRole('button', { name: 'Finish game night' }).first().click()
+            await ownerPage.getByRole('dialog').getByRole('button', { name: 'Finish game night' }).click()
             await ownerPage.reload()
-            await expect(ownerPage.getByRole('heading', { name: /Game night memory/i })).toBeVisible()
+            await expect(ownerPage.getByText('Completed', { exact: true })).toBeVisible()
 
             await memberPage.goto(`${baseURL}${sessionPath}`)
             await expect(memberPage.getByText('How did it go for you?')).toBeVisible()
@@ -73,7 +73,7 @@ test.describe('two-account social session flow', () => {
             await expect(memberPage.getByRole('alert')).toContainText('This session could not be loaded.')
             await memberPage.unroute(`http://localhost:3000/sessions/${sessionId}`)
             await memberPage.getByRole('button', { name: 'Retry' }).click()
-            await expect(memberPage.getByRole('heading', { name: /Game night memory/i })).toBeVisible()
+            await expect(memberPage.getByText('Completed', { exact: true })).toBeVisible()
             await memberPage.locator(`select[aria-label*="${gameTitle}"]`).selectOption('9')
             await expect(memberPage.getByText('Your group rating was saved.')).toBeVisible()
             await memberPage.reload()
@@ -82,6 +82,7 @@ test.describe('two-account social session flow', () => {
             const memoryCard = memberPage.locator('article').filter({ hasText: groupName ?? '' }).first()
             await expect(memoryCard).toBeVisible()
             await expect(memoryCard.getByText(gameTitle ?? '').first()).toBeVisible()
+            await expect(memoryCard.getByText(/ won$/).first()).toBeVisible()
             await expect(memoryCard.getByRole('link', { name: /Open the session of/ })).toBeVisible()
             await memberPage.locator('#history-group-filter').selectOption({ label: groupName ?? '' })
             await expect(memberPage.getByRole('link', { name: 'What should this group play next?' })).toHaveAttribute(

@@ -133,6 +133,9 @@
                                                             </a>
                                                             <div class="min-w-0">
                                                                 <p class="truncate text-sm font-semibold" [title]="getGameTitle(gamePlayed.gameData)">{{ getGameTitle(gamePlayed.gameData) }}</p>
+                                                                @if (getWinners(gamePlayed); as winners) {
+                                                                    <p class="flex min-w-0 items-center gap-1 text-xs font-medium text-bv-success"><app-icon name="award-fill" [size]="12" className="shrink-0" aria-hidden="true" /><span class="min-w-0 truncate" [title]="winners">{{ winners }}</span></p>
+                                                                }
                                                                 @if (players.length === 0) {
                                                                     <p class="text-xs text-bv-text-muted">Players not recorded</p>
                                                                 } @else {

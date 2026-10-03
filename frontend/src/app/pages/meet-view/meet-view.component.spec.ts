@@ -27,6 +27,7 @@ describe('MeetViewComponent participant safeguards', () => {
         plannedGames: [42],
         skippedGames: [],
         playedGameParticipants: [{ gameId: 42, participantIds: [1, 2] }],
+        gameResults: [],
     })
 
     const setup = async () => {
@@ -35,6 +36,7 @@ describe('MeetViewComponent participant safeguards', () => {
             updateSessionAttendance: vi.fn().mockName('updateSessionAttendance'),
             updateSessionPlayedGames: vi.fn().mockName('updateSessionPlayedGames'),
             updateSessionStatus: vi.fn().mockName('updateSessionStatus'),
+            updateGameResults: vi.fn().mockName('updateGameResults'),
         }
         const dataService = {
             currentUser: signal(null),
@@ -66,6 +68,14 @@ describe('MeetViewComponent participant safeguards', () => {
         const fixture = TestBed.createComponent(MeetViewComponent)
         const component = fixture.componentInstance
         component.userData = { id: 1 } as typeof component.userData
+        component.groupData = {
+            id: 7,
+            name: 'Friday crew',
+            members: [
+                { id: 1, username: 'ana', displayName: 'Ana', avatar: null, games: [], reviews: [] },
+                { id: 2, username: 'bo', displayName: '', avatar: null, games: [], reviews: [] },
+            ],
+        } as never
         component.meetData = createMeet()
         component.meetDataCopyOriginal = structuredClone(component.meetData)
         return { component, api, dataService, toastService }
@@ -213,12 +223,129 @@ describe('MeetViewComponent participant safeguards', () => {
 
         expect(api.updateSessionPlayedGames).toHaveBeenCalledWith(99, {
             playedGameIds: [42],
-            games: [{ gameId: 42, participantIds: [], participantPersonIds: [12] }],
+            games: [{ gameId: 42, participantPersonIds: [12] }],
         })
         expect(component.getGameParticipantPersonIds(42)).toEqual([12])
 
         await component.toggleGroupPersonGameParticipant(42, 12)
         expect(api.updateSessionPlayedGames).toHaveBeenCalledTimes(1)
         expect(toastService.error).toHaveBeenCalledWith('Keep at least one participant for each played game.')
+    })
+
+    describe('game results', () => {
+        it('lists the players of a game and who won', async () => {
+            const { component } = await setup()
+            const meetData = component.meetData
+            if (!meetData) throw new Error('missing meet')
+            meetData.gameResults = [
+                {
+                    gameId: 42,
+                    results: [
+                        { accountId: 2, groupPersonId: null, isWinner: true, score: 31 },
+                        { accountId: 1, groupPersonId: null, isWinner: false, score: 40 },
+                    ],
+                },
+            ]
+
+            expect(component.playersOf(42).map((person) => person.displayName)).toEqual(['Ana', 'bo'])
+            expect(component.winnersSummary(42)).toBe('bo won')
+            expect(component.scoresOf(42).map((entry) => [entry.person.key, entry.score])).toEqual([
+                ['a1', 40],
+                ['a2', 31],
+            ])
+        })
+
+        it('names every winner of a shared win', async () => {
+            const { component } = await setup()
+            const meetData = component.meetData
+            if (!meetData) throw new Error('missing meet')
+            meetData.gameResults = [
+                {
+                    gameId: 42,
+                    results: [
+                        { accountId: 1, groupPersonId: null, isWinner: true, score: null },
+                        { accountId: 2, groupPersonId: null, isWinner: true, score: null },
+                    ],
+                },
+            ]
+
+            expect(component.winnersSummary(42)).toBe('Ana and bo won')
+        })
+
+        it('saves winners and scores, leaving out players with neither', async () => {
+            const { component, api, dataService, toastService } = await setup()
+            api.updateGameResults.mockReturnValue(
+                of({ sessionId: 99, gameId: 42, results: [{ accountId: 1, groupPersonId: null, isWinner: true, score: 12 }] }),
+            )
+
+            component.startEditingResults(42)
+            component.toggleDraftWinner('a1')
+            component.setDraftScore('a1', '12')
+            component.setDraftScore('a2', '')
+            await component.saveResults()
+
+            expect(api.updateGameResults).toHaveBeenCalledWith(99, 42, { results: [{ accountId: 1, isWinner: true, score: 12 }] })
+            expect(component.meetData?.gameResults).toEqual([
+                { gameId: 42, results: [{ accountId: 1, groupPersonId: null, isWinner: true, score: 12 }] },
+            ])
+            expect(component.editingResultsGameId).toBeNull()
+            expect(dataService.refreshUserHistory).toHaveBeenCalledOnce()
+            expect(toastService.success).toHaveBeenCalledWith('Results saved.')
+        })
+
+        it('keeps the form open when saving fails', async () => {
+            const { component, api, toastService } = await setup()
+            api.updateGameResults.mockReturnValue(throwError(() => new Error('temporary failure')))
+
+            component.startEditingResults(42)
+            component.toggleDraftWinner('a2')
+            await component.saveResults()
+
+            expect(component.editingResultsGameId).toBe(42)
+            expect(component.resultsDraft['a2']).toEqual({ isWinner: true, score: null })
+            expect(toastService.error).toHaveBeenCalledWith('Could not save the results.')
+        })
+
+        it('drops the result of a player taken out of the game', async () => {
+            const { component, api } = await setup()
+            const meetData = component.meetData
+            if (!meetData) throw new Error('missing meet')
+            meetData.gameResults = [{ gameId: 42, results: [{ accountId: 2, groupPersonId: null, isWinner: true, score: null }] }]
+            api.updateSessionPlayedGames.mockReturnValue(
+                of({
+                    sessionId: 99,
+                    playedGameIds: [42],
+                    skippedGameIds: [],
+                    playedGameParticipants: [{ gameId: 42, participantIds: [1] }],
+                }),
+            )
+
+            await component.toggleGameParticipant(42, 2)
+
+            expect(component.meetData?.gameResults).toEqual([])
+        })
+
+        it('only lets people record results once the night has started', async () => {
+            const { component } = await setup()
+            const meetData = component.meetData
+            if (!meetData) throw new Error('missing meet')
+
+            expect(component.canRecordResults).toBe(true)
+            meetData.status = 'completed'
+            expect(component.canRecordResults).toBe(true)
+            meetData.status = 'cancelled'
+            expect(component.canRecordResults).toBe(false)
+        })
+    })
+
+    it('offers the calendar only before the night is over', async () => {
+        const { component } = await setup()
+        const meetData = component.meetData
+        if (!meetData) throw new Error('missing meet')
+
+        expect(component.canAddToCalendar).toBe(true)
+        expect(component.googleCalendarLink).toContain('Game+night')
+        meetData.status = 'completed'
+        expect(component.canAddToCalendar).toBe(false)
     })
 })

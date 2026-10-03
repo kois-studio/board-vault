@@ -19,6 +19,7 @@ import {
     gameCompleteSchema,
     gameOwnedSchema,
     gameProposalSchema,
+    gameResultsUpdatedSchema,
     gamesSchema,
     gameViewSchema,
     groupAcquisitionBoardSchema,
@@ -66,6 +67,7 @@ import type {
     GameCompleteType,
     GameOwnedType,
     GameProposalType,
+    GameResultsUpdatedType,
     GameReviewWithGameData,
     GameType,
     GameViewType,
@@ -94,6 +96,7 @@ import type {
     TagCategoryType,
     TagType,
     UpdateGameOwnedType,
+    UpdateGameResultsRequest,
     UpdateSessionAttendanceRequest,
     UpdateSessionAttendeesRequest,
     UpdateSessionPlayedGamesRequest,
@@ -290,6 +293,12 @@ export class Api {
         return this.http
             .patch<SessionPlayedGamesUpdatedType>(`${this.url}/sessions/${sessionId}/played-games`, body)
             .pipe(map((response) => sessionPlayedGamesUpdatedSchema.parse(response)))
+    }
+
+    updateGameResults(sessionId: number, gameId: number, body: UpdateGameResultsRequest) {
+        return this.http
+            .put<GameResultsUpdatedType>(`${this.url}/sessions/${sessionId}/games/${gameId}/results`, body)
+            .pipe(map((response) => gameResultsUpdatedSchema.parse(response)))
     }
 
     updateSessionRsvp(sessionId: number, body: UpdateSessionRsvpRequest) {

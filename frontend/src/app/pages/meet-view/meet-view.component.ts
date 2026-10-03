@@ -1,10 +1,10 @@
-import { CommonModule } from '@angular/common'
-import { Component, effect, signal } from '@angular/core'
+import { ChangeDetectorRef, Component, effect, inject, signal } from '@angular/core'
 import { ActivatedRoute, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../api/api'
 import type {
     GameCompleteType,
+    GameResultEntryType,
     GameType,
     GroupPersonWorkspaceType,
     GroupWithMembersAndGames,
@@ -13,23 +13,42 @@ import type {
     PublicUserType,
     UserType,
 } from '../../api/api.types'
-import { CardAccountComponent } from '../../components/card-account/card-account.component'
+import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
 import { ToastService } from '../../components/toast/toast.service'
 import { ButtonComponent } from '../../components/ui/button/button.component'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
 import { DialogDirective } from '../../components/ui/dialog/dialog.directive'
+import { IconComponent } from '../../components/ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../../components/ui/image-background/image-background.component'
 import { CustomDatePipe } from '../../core/pipes/customDate.pipe'
 import { DataService } from '../../core/services/data.service'
 import type { Nullable } from '../../core/types/commons.type'
+import { formatWinners } from '../../core/utils/historyParticipants'
+import { downloadSessionIcs, googleCalendarUrl } from '../../core/utils/sessionCalendar'
+import { relativeDay, type SessionDateParts, sessionDateParts } from '../../core/utils/sessionTiming'
+
+/** Someone in this session: a member account, or a group person in sessions recorded with group people. */
+export type SessionPerson = {
+    /** `a<accountId>` or `p<groupPersonId>`, the same key the results use. */
+    key: string
+    accountId: number | null
+    personId: number | null
+    displayName: string
+    avatar: PublicUserType['avatar']
+}
+
+type ResultDraft = Record<string, { isWinner: boolean; score: number | null }>
+
+const resultKey = (entry: Pick<GameResultEntryType, 'accountId' | 'groupPersonId'>): string =>
+    entry.accountId !== null ? `a${entry.accountId}` : `p${entry.groupPersonId}`
 
 @Component({
     imports: [
         ButtonComponent,
-        CommonModule,
         RouterLink,
         CustomDatePipe,
-        CardAccountComponent,
+        IconComponent,
+        ImageProfileComponent,
         ImageBackgroundComponent,
         ContainerWrapperComponent,
         DialogDirective,
@@ -65,6 +84,12 @@ export class MeetViewComponent {
     public plannedGameIdsDraft: Array<number> = []
     public postSessionRatings: Record<number, number> = {}
     public savingPostSessionRatings: Record<number, boolean> = {}
+    public isEditingInvites = false
+    public editingResultsGameId: number | null = null
+    public resultsDraft: ResultDraft = {}
+    public isSavingResults = false
+    // Components are OnPush by default: state set after an await needs a nudge to render.
+    private readonly changeDetector = inject(ChangeDetectorRef)
 
     constructor(
         private readonly api: Api,
@@ -138,6 +163,7 @@ export class MeetViewComponent {
             this.loaded = false
             this.loadError.set(true)
         } finally {
+            this.changeDetector.markForCheck()
             this.isLoading.set(false)
         }
     }
@@ -163,14 +189,6 @@ export class MeetViewComponent {
     }
 
     // #region Getters
-
-    get disableSaveAttendees(): boolean {
-        if (!this.meetData || !this.meetDataCopyOriginal) {
-            return true
-        }
-
-        return JSON.stringify(this.meetData.attendees) === JSON.stringify(this.meetDataCopyOriginal.attendees)
-    }
 
     get canManageLifecycle(): boolean {
         return Boolean(this.meetData && this.userData && this.meetData.createdBy === this.userData.id)
@@ -210,64 +228,257 @@ export class MeetViewComponent {
     get sessionStatusDescription(): string {
         switch (this.meetData?.status) {
             case 'scheduled':
-                return 'This is the plan for your next game night. Update attendees as people confirm.'
+                return 'Answer if you can make it. The organizer starts the night when everyone is at the table.'
             case 'active':
-                return 'The session is live. Mark the people and games that actually took part.'
+                return 'Mark the games as you play them, who played, and who won.'
             case 'completed':
-                return 'This session is part of your group memory. The record is now read-only.'
+                return 'Part of the group’s history. You can still record who won each game.'
             case 'cancelled':
-                return 'This session was cancelled and is kept here for context.'
+                return 'This game night was cancelled. It stays here for reference.'
             default:
                 return ''
         }
     }
 
-    get sessionHeading(): string {
+    get dateParts(): SessionDateParts | null {
+        return this.meetData ? sessionDateParts(this.meetData) : null
+    }
+
+    get relativeDate(): string {
+        return this.meetData ? relativeDay(this.meetData.meetDate) : ''
+    }
+
+    /** Colours of the date block and status pill, per status. */
+    get statusTone(): { date: string; pill: string } {
         switch (this.meetData?.status) {
-            case 'scheduled':
-                return 'Plan for game night'
             case 'active':
-                return 'Game night is live'
+                return { date: 'bg-bv-success/15 text-bv-success', pill: 'bg-bv-success/15 text-bv-success' }
             case 'completed':
-                return 'Game night memory'
+                return { date: 'bg-bv-surface-2 text-bv-text', pill: 'bg-bv-surface-2 text-bv-text-muted' }
             case 'cancelled':
-                return 'Cancelled game night'
+                return { date: 'bg-bv-danger/10 text-bv-danger', pill: 'bg-bv-danger/10 text-bv-danger' }
             default:
-                return 'Game night'
+                return { date: 'bg-bv-primary-soft text-bv-on-primary-soft', pill: 'bg-bv-primary-soft text-bv-on-primary-soft' }
         }
     }
 
-    get attendeeHeading(): string {
-        return this.meetData?.status === 'completed' || this.meetData?.status === 'cancelled' ? 'Who was invited?' : 'Who is invited?'
-    }
+    // #region People
 
-    get attendeeDescription(): string {
-        if (this.meetData?.status === 'completed' || this.meetData?.status === 'cancelled') {
-            return 'The saved invite list, RSVP, and recorded attendance for this session.'
+    /** Everyone invited, in group order. */
+    get invitedPeople(): Array<SessionPerson> {
+        if (!this.meetData) return []
+        if (this.isGroupPersonSession) {
+            const invited = new Set(this.meetData.participants ?? [])
+            return this.groupPeople.filter((person) => invited.has(person.person.id)).map((person) => this.#fromGroupPerson(person))
         }
-
-        return this.canEditSession
-            ? 'The organizer manages the invite list. Each person’s RSVP appears below.'
-            : 'Invited people and their RSVP for this saved session.'
+        const invited = new Set(this.meetData.attendees)
+        return (this.groupData?.members ?? []).filter((member) => invited.has(member.id)).map((member) => this.#fromAccount(member))
     }
 
-    get shortlistHeading(): string {
-        return this.meetData?.status === 'scheduled' || this.meetData?.status === 'active' ? 'The shortlist' : 'What was shortlisted'
-    }
-
-    get playedGamesHeading(): string {
-        if (this.meetData?.status === 'scheduled') return 'What gets played?'
-        return this.canEditSession ? 'What was actually played?' : 'Games played'
-    }
-
-    get playedGamesDescription(): string {
-        if (this.meetData?.status === 'scheduled') {
-            return 'The organizer can record games during the night. Only games marked as played become part of group history.'
+    /** Everyone who could be invited: the members, or the group people. */
+    get invitablePeople(): Array<SessionPerson> {
+        if (this.isGroupPersonSession) {
+            return this.groupPeople.filter((person) => person.person.status !== 'archived').map((person) => this.#fromGroupPerson(person))
         }
+        return (this.groupData?.members ?? []).map((member) => this.#fromAccount(member))
+    }
 
-        return this.canEditSession
-            ? 'Mark each game as it gets played. This becomes part of your group history.'
-            : 'Games recorded in this session.'
+    isInvited(person: SessionPerson): boolean {
+        return person.personId !== null
+            ? Boolean(this.meetData?.participants?.includes(person.personId))
+            : Boolean(person.accountId !== null && this.meetData?.attendees.includes(person.accountId))
+    }
+
+    toggleInvite(person: SessionPerson): void {
+        if (person.personId !== null) void this.onClickGroupPerson(person.personId)
+        else if (person.accountId !== null) void this.onClickMember(person.accountId)
+    }
+
+    isInviteLocked(person: SessionPerson): boolean {
+        return person.personId !== null
+            ? this.isGroupPersonAttendeeRemovalBlocked(person.personId)
+            : person.accountId !== null && this.isAttendeeRemovalBlocked(person.accountId)
+    }
+
+    inviteToggleLabel(person: SessionPerson): string {
+        return person.personId !== null
+            ? this.getGroupPersonToggleLabel(person.personId)
+            : this.getAttendeeToggleLabel(person.accountId ?? 0)
+    }
+
+    rsvpOf(person: SessionPerson): 'pending' | 'accepted' | 'declined' {
+        const status =
+            person.personId !== null
+                ? this.meetData?.participantStatuses?.find((attendee) => attendee.groupPersonId === person.personId)?.rsvpStatus
+                : this.meetData?.attendeeStatuses.find((attendee) => attendee.accountId === person.accountId)?.rsvpStatus
+        return status ?? 'pending'
+    }
+
+    rsvpLabel(person: SessionPerson): string {
+        const rsvp = this.rsvpOf(person)
+        if (rsvp === 'accepted') return 'Going'
+        if (rsvp === 'declined') return 'Can’t make it'
+        // Group people without an account can't answer; the organizer speaks for them.
+        return person.personId !== null && person.accountId === null ? 'No reply needed' : 'Hasn’t answered'
+    }
+
+    attended(person: SessionPerson): boolean {
+        return person.personId !== null
+            ? this.getGroupPersonAttendanceStatus(person.personId) === 'Was there'
+            : this.getMemberAttendanceStatus(person.accountId ?? 0) === 'Was there'
+    }
+
+    toggleAttended(person: SessionPerson): void {
+        if (person.personId !== null) void this.toggleGroupPersonAttendance(person.personId)
+        else if (person.accountId !== null) void this.toggleAttendance(person.accountId)
+    }
+
+    get goingCount(): number {
+        return this.invitedPeople.filter((person) => this.rsvpOf(person) === 'accepted').length
+    }
+
+    // #region Players and results
+
+    /** The people recorded for a played game. */
+    playersOf(gameId: number): Array<SessionPerson> {
+        if (this.isGroupPersonSession) {
+            const ids = new Set(this.getGameParticipantPersonIds(gameId))
+            return this.invitedPeople.filter((person) => person.personId !== null && ids.has(person.personId))
+        }
+        const ids = new Set(this.getGameParticipantIds(gameId))
+        return this.invitedPeople.filter((person) => person.accountId !== null && ids.has(person.accountId))
+    }
+
+    isPlayer(gameId: number, person: SessionPerson): boolean {
+        return person.personId !== null
+            ? this.isGroupPersonGameParticipant(gameId, person.personId)
+            : this.isGameParticipant(gameId, person.accountId ?? 0)
+    }
+
+    togglePlayer(gameId: number, person: SessionPerson): void {
+        if (person.personId !== null) void this.toggleGroupPersonGameParticipant(gameId, person.personId)
+        else if (person.accountId !== null) void this.toggleGameParticipant(gameId, person.accountId)
+    }
+
+    /** Anyone in the group can record results once games are being played. */
+    get canRecordResults(): boolean {
+        return this.meetData?.status === 'active' || this.meetData?.status === 'completed'
+    }
+
+    resultsOf(gameId: number): Array<GameResultEntryType> {
+        return this.meetData?.gameResults?.find((game) => game.gameId === gameId)?.results ?? []
+    }
+
+    winnersOf(gameId: number): Array<SessionPerson> {
+        const winners = new Set(
+            this.resultsOf(gameId)
+                .filter((result) => result.isWinner)
+                .map(resultKey),
+        )
+        return this.playersOf(gameId).filter((person) => winners.has(person.key))
+    }
+
+    /** Players with a score, highest first. */
+    scoresOf(gameId: number): Array<{ person: SessionPerson; score: number }> {
+        const scores = new Map(
+            this.resultsOf(gameId)
+                .filter((result) => result.score !== null)
+                .map((result) => [resultKey(result), result.score as number]),
+        )
+        return this.playersOf(gameId)
+            .filter((person) => scores.has(person.key))
+            .map((person) => ({ person, score: scores.get(person.key) as number }))
+            .sort((a, b) => b.score - a.score)
+    }
+
+    namesOf(people: Array<SessionPerson>): string {
+        return people.map((person) => person.displayName).join(', ')
+    }
+
+    winnersSummary(gameId: number): string {
+        return formatWinners(this.winnersOf(gameId).map((person) => person.displayName))
+    }
+
+    startEditingResults(gameId: number): void {
+        const results = new Map(this.resultsOf(gameId).map((result) => [resultKey(result), result]))
+        this.resultsDraft = Object.fromEntries(
+            this.playersOf(gameId).map((person) => {
+                const result = results.get(person.key)
+                return [person.key, { isWinner: result?.isWinner ?? false, score: result?.score ?? null }]
+            }),
+        )
+        this.editingResultsGameId = gameId
+    }
+
+    cancelEditingResults(): void {
+        this.editingResultsGameId = null
+        this.resultsDraft = {}
+    }
+
+    toggleDraftWinner(key: string): void {
+        const entry = this.resultsDraft[key]
+        if (entry) entry.isWinner = !entry.isWinner
+    }
+
+    setDraftScore(key: string, value: string): void {
+        const entry = this.resultsDraft[key]
+        if (!entry) return
+        const score = Number.parseInt(value, 10)
+        entry.score = value.trim() === '' || Number.isNaN(score) ? null : score
+    }
+
+    async saveResults(): Promise<void> {
+        const gameId = this.editingResultsGameId
+        if (!this.meetData || gameId === null || !this.canRecordResults || this.isSavingResults) return
+
+        const results = this.playersOf(gameId)
+            .map((person) => ({ person, draft: this.resultsDraft[person.key] }))
+            .filter(({ draft }) => draft && (draft.isWinner || draft.score !== null))
+            .map(({ person, draft }) => ({
+                ...(person.personId !== null ? { groupPersonId: person.personId } : { accountId: person.accountId as number }),
+                isWinner: draft.isWinner,
+                score: draft.score,
+            }))
+
+        this.actionError.set(null)
+        this.isSavingResults = true
+        try {
+            const saved = await firstValueFrom(this.api.updateGameResults(this.meetData.id, gameId, { results }))
+            this.meetData.gameResults = [
+                ...(this.meetData.gameResults ?? []).filter((game) => game.gameId !== gameId),
+                ...(saved.results.length > 0 ? [{ gameId, results: saved.results }] : []),
+            ]
+            this.cancelEditingResults()
+            // Winners show in Play › History and the group page.
+            this.dataService.refreshUserHistory()
+            this.toastService.success('Results saved.')
+        } catch {
+            this.actionError.set('Could not save the results. Your changes are still in the form; try again.')
+            this.toastService.error('Could not save the results.')
+        } finally {
+            this.changeDetector.markForCheck()
+            this.isSavingResults = false
+        }
+    }
+
+    // #region Calendar
+
+    get canAddToCalendar(): boolean {
+        return this.meetData?.status === 'scheduled' || this.meetData?.status === 'active'
+    }
+
+    get googleCalendarLink(): string {
+        return this.meetData ? googleCalendarUrl(this.meetData, this.groupData?.name ?? 'Board Vault') : ''
+    }
+
+    downloadCalendarFile(): void {
+        if (this.meetData) downloadSessionIcs(this.meetData, this.groupData?.name ?? 'Board Vault')
+    }
+
+    // #endregion
+
+    gameTitle(game: GameCompleteType): string {
+        return game.titleTranslations.en || game.title || 'Untitled game'
     }
 
     get sessionStatusLabel(): string {
@@ -376,11 +587,6 @@ export class MeetViewComponent {
         return attendedIds && attendedIds.length > 0 ? attendedIds : [...(this.meetData?.participants ?? [])]
     }
 
-    getGameParticipants(gameId: number): Array<PublicUserType> {
-        const participantIds = new Set(this.getGameParticipantIds(gameId))
-        return (this.groupData?.members ?? []).filter((member) => participantIds.has(member.id))
-    }
-
     isGameParticipant(gameId: number, memberId: number): boolean {
         return this.getGameParticipantIds(gameId).includes(memberId)
     }
@@ -405,15 +611,9 @@ export class MeetViewComponent {
         } catch {
             this.toastService.error('Could not save your rating.')
         } finally {
+            this.changeDetector.markForCheck()
             this.savingPostSessionRatings[gameId] = false
         }
-    }
-
-    getMemberRsvpStatus(memberId: number): string {
-        const rsvpStatus = this.meetData?.attendeeStatuses.find((attendee) => attendee.accountId === memberId)?.rsvpStatus
-        if (rsvpStatus === 'accepted') return 'Going'
-        if (rsvpStatus === 'declined') return 'Can’t make it'
-        return 'Awaiting reply'
     }
 
     getMemberAttendanceStatus(memberId: number): string {
@@ -421,13 +621,6 @@ export class MeetViewComponent {
         if (attendanceStatus === 'attended') return 'Was there'
         if (attendanceStatus === 'absent') return 'Was absent'
         return 'Not recorded'
-    }
-
-    getGroupPersonRsvpStatus(personId: number): string {
-        const rsvpStatus = this.meetData?.participantStatuses?.find((attendee) => attendee.groupPersonId === personId)?.rsvpStatus
-        if (rsvpStatus === 'accepted') return 'Going'
-        if (rsvpStatus === 'declined') return 'Can’t make it'
-        return 'Organizer recorded'
     }
 
     getGroupPersonAttendanceStatus(personId: number): string {
@@ -454,10 +647,6 @@ export class MeetViewComponent {
             return `Keep ${name} as an attendee because they are recorded for a played game`
         }
         return `Remove ${name} from session attendees`
-    }
-
-    getGroupPersonGameCount(person: GroupPersonWorkspaceType): number {
-        return person.ownership.filter((ownership) => ownership.status === 'asserted').length
     }
 
     isAttendeeRemovalBlocked(memberId: number): boolean {
@@ -503,6 +692,7 @@ export class MeetViewComponent {
             this.actionError.set('Could not update the session status. Try again from this page.')
             this.toastService.error('Could not update the session status.')
         } finally {
+            this.changeDetector.markForCheck()
             this.isUpdatingStatus = false
         }
     }
@@ -527,6 +717,7 @@ export class MeetViewComponent {
             this.actionError.set('Could not save your RSVP. Try again from this page.')
             this.toastService.error('Could not save your RSVP.')
         } finally {
+            this.changeDetector.markForCheck()
             this.isUpdatingRsvp = false
         }
     }
@@ -554,6 +745,7 @@ export class MeetViewComponent {
             this.actionError.set('Could not save attendance. Your previous attendance state was restored; try again.')
             this.toastService.error('Could not save attendance.')
         } finally {
+            this.changeDetector.markForCheck()
             this.isUpdatingAttendance = false
         }
     }
@@ -581,6 +773,7 @@ export class MeetViewComponent {
             this.actionError.set('Could not save attendance. Your previous attendance state was restored; try again.')
             this.toastService.error('Could not save attendance.')
         } finally {
+            this.changeDetector.markForCheck()
             this.isUpdatingAttendance = false
         }
     }
@@ -707,6 +900,7 @@ export class MeetViewComponent {
             this.actionError.set('Could not save the shortlist. Your previous shortlist is still active; try again.')
             this.toastService.error('Could not save the shortlist.')
         } finally {
+            this.changeDetector.markForCheck()
             this.isUpdatingShortlist = false
         }
     }
@@ -749,6 +943,7 @@ export class MeetViewComponent {
         } catch {
             this.meetData.attendees = previousAttendees
         } finally {
+            this.changeDetector.markForCheck()
             this.isPersistingChanges = false
         }
     }
@@ -776,6 +971,7 @@ export class MeetViewComponent {
         } catch {
             this.meetData.participants = previousParticipants
         } finally {
+            this.changeDetector.markForCheck()
             this.isPersistingChanges = false
         }
     }
@@ -825,6 +1021,7 @@ export class MeetViewComponent {
             this.meetData.playedGamePersonParticipants = previousPersonParticipants
             this.actionError.set('Could not save the played-game state. Your previous state was restored; try again.')
         } finally {
+            this.changeDetector.markForCheck()
             this.isPersistingChanges = false
         }
     }
@@ -859,6 +1056,7 @@ export class MeetViewComponent {
             this.actionError.set('Could not save the played-game participants. Your previous state was restored; try again.')
             this.toastService.error('Could not save the played game changes.')
         } finally {
+            this.changeDetector.markForCheck()
             this.isPersistingChanges = false
         }
     }
@@ -900,11 +1098,61 @@ export class MeetViewComponent {
             this.actionError.set('Could not save the played-game participants. Your previous state was restored; try again.')
             this.toastService.error('Could not save the played game changes.')
         } finally {
+            this.changeDetector.markForCheck()
             this.isPersistingChanges = false
         }
     }
 
     // #region private methods
+
+    #fromAccount(member: PublicUserType): SessionPerson {
+        return {
+            key: `a${member.id}`,
+            accountId: member.id,
+            personId: null,
+            displayName: member.displayName || member.username,
+            avatar: member.avatar,
+        }
+    }
+
+    #fromGroupPerson({ person }: GroupPersonWorkspaceType): SessionPerson {
+        const linked = person.accountId === null ? undefined : this.groupData?.members.find((member) => member.id === person.accountId)
+        return {
+            key: `p${person.id}`,
+            accountId: person.accountId,
+            personId: person.id,
+            displayName: person.displayName,
+            avatar: person.avatar ??
+                linked?.avatar ?? {
+                    type: 'initials',
+                    initials: initialsOf(person.displayName),
+                    backgroundColor: '#64748b',
+                    iconName: null,
+                    emoji: null,
+                },
+        }
+    }
+
+    /** Drops results the server deleted with their player, so the page matches it without a reload. */
+    #pruneResults(): void {
+        if (!this.meetData) return
+        const meet = this.meetData
+        meet.gameResults = (meet.gameResults ?? [])
+            .filter((game) => meet.playedGames.includes(game.gameId))
+            .map((game) => {
+                const accounts = new Set(meet.playedGameParticipants.find((entry) => entry.gameId === game.gameId)?.participantIds ?? [])
+                const people = new Set(
+                    meet.playedGamePersonParticipants?.find((entry) => entry.gameId === game.gameId)?.participantIds ?? [],
+                )
+                return {
+                    gameId: game.gameId,
+                    results: game.results.filter((result) =>
+                        result.accountId !== null ? accounts.has(result.accountId) : people.has(result.groupPersonId as number),
+                    ),
+                }
+            })
+            .filter((game) => game.results.length > 0)
+    }
 
     async #saveAttendeesSelection(): Promise<void> {
         if (!this.meetData || !this.meetDataCopyOriginal) {
@@ -932,11 +1180,15 @@ export class MeetViewComponent {
         const result = await firstValueFrom(
             this.api.updateSessionPlayedGames(this.meetData.id, {
                 playedGameIds: this.meetData.playedGames,
+                // Sessions with group people send only participantPersonIds; an empty participantIds is rejected.
                 games: this.meetData.playedGames.map((gameId) => ({
                     gameId,
-                    participantIds: this.isGroupPersonSession
-                        ? []
-                        : (this.meetData?.playedGameParticipants.find((game) => game.gameId === gameId)?.participantIds ?? []),
+                    ...(this.isGroupPersonSession
+                        ? {}
+                        : {
+                              participantIds:
+                                  this.meetData?.playedGameParticipants.find((game) => game.gameId === gameId)?.participantIds ?? [],
+                          }),
                     ...(this.isGroupPersonSession
                         ? {
                               participantPersonIds:
@@ -953,6 +1205,7 @@ export class MeetViewComponent {
         this.meetData.plannedGames = this.meetData.plannedGames.filter(
             (gameId) => !result.playedGameIds.includes(gameId) && !result.skippedGameIds.includes(gameId),
         )
+        this.#pruneResults()
 
         // Update the original copy for future comparisons after the server confirms the canonical state.
         this.meetDataCopyOriginal.playedGames = [...result.playedGameIds]
@@ -967,4 +1220,14 @@ export class MeetViewComponent {
         this.meetDataCopyOriginal.plannedGames = [...this.meetData.plannedGames]
         this.meetDataCopyOriginal.skippedGames = [...result.skippedGameIds]
     }
+}
+
+function initialsOf(name: string): string {
+    return name
+        .split(/\s+/)
+        .filter(Boolean)
+        .map((word) => word[0])
+        .join('')
+        .slice(0, 2)
+        .toUpperCase()
 }

@@ -54,3 +54,28 @@ export function mergeHistoryParticipants(accounts: Array<PublicUserType>, people
 
     return [...fromPeople, ...fromAccounts]
 }
+
+/** The players of a history game who won it, as names; a player matches by group person or by account. */
+export function historyWinnerNames(game: {
+    playedBy: Array<PublicUserType>
+    playedByPeople?: Array<HistoryPerson>
+    winnerAccountIds?: Array<number>
+    winnerPersonIds?: Array<number>
+}): Array<string> {
+    const accounts = new Set(game.winnerAccountIds ?? [])
+    const people = new Set(game.winnerPersonIds ?? [])
+    if (accounts.size === 0 && people.size === 0) return []
+    return mergeHistoryParticipants(game.playedBy, game.playedByPeople)
+        .filter(
+            (player) =>
+                (player.personId !== null && people.has(player.personId)) || (player.accountId !== null && accounts.has(player.accountId)),
+        )
+        .map((player) => player.displayName)
+}
+
+/** "Ana won", "Ana and Bo won", "Ana, Bo and Cy won"; empty without winners. */
+export function formatWinners(names: Array<string>): string {
+    if (names.length === 0) return ''
+    if (names.length === 1) return `${names[0]} won`
+    return `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]} won`
+}

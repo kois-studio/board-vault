@@ -28,7 +28,7 @@ import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
 import { LocalStorageService } from '../../core/services/local-storage.service'
 import { formatAttendeeSummary } from '../../core/utils/formatAttendeeSummary'
-import { type HistoryParticipant, mergeHistoryParticipants } from '../../core/utils/historyParticipants'
+import { formatWinners, type HistoryParticipant, historyWinnerNames, mergeHistoryParticipants } from '../../core/utils/historyParticipants'
 import { GroupViewService } from './group-view.service'
 
 type GroupLibraryContext = {
@@ -333,6 +333,10 @@ export class GroupViewComponent {
     public getAttendeeSummary(attendees: Array<PublicUserType>, people: HistoryRecordType['attendedByPeople'] = []): string {
         // Older sessions list the same people as accounts and as group people: count each once.
         return formatAttendeeSummary(mergeHistoryParticipants(attendees, people))
+    }
+
+    public getWinners(game: HistoryRecordType['gamesPlayed'][number]): string {
+        return formatWinners(historyWinnerNames(game))
     }
 
     public getPlayerCount(game: HistoryRecordType['gamesPlayed'][number]): number {

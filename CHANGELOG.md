@@ -13,6 +13,9 @@ operational details.
 
 ### Changed
 
+- The session page is redesigned: a date header with the status, your RSVP
+  and the organizer's actions; the games played tonight with their players
+  and winners; the shortlist; and who's coming with attendance alongside.
 - Sign-in is Clerk-only (ADR-0012). The legacy password, email-verification,
   and password-reset flows and their endpoints are removed, and migration 0015
   drops the credential columns.
@@ -99,6 +102,12 @@ operational details.
 
 ### Fixed
 
+- Marking the first game of a live night no longer moves the rest of the
+  shortlist to "not played"; that happens when the night is finished.
+- Marking a game as played in a session with group people no longer fails
+  (the page sent an empty account list the API rejects).
+- The session page updates after saving attendance, players, or the
+  shortlist; it kept showing "Saving…" since Angular made OnPush the default.
 - Signing in no longer fails at random when the database is slow to answer
   its first query after a quiet spell: a read that times out is tried once more.
 - A long name without spaces no longer makes the group page wider than a
@@ -157,7 +166,11 @@ operational details.
 
 - Sessions record who won each played game, with optional scores. Ties,
   co-op wins, and nobody winning are all possible, and results can be
-  corrected after the night is over (API and migration 0016).
+  corrected after the night is over (API and migration 0016). Anyone in the
+  group marks the winners on the session page; History and the group page
+  show who won.
+- Add a planned game night to your calendar from its page: Google Calendar,
+  or an `.ics` file for Apple Calendar, Outlook and others.
 - Turso and Clerk calls time out after 5 seconds with a `503` and a stable
   error code; the database client closes on shutdown.
 - JSON logs on Vercel with the request id on every line, and an uptime check

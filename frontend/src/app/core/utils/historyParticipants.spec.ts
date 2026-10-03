@@ -1,5 +1,5 @@
 import type { PublicUserType } from '../../api/api.types'
-import { mergeHistoryParticipants } from './historyParticipants'
+import { formatWinners, historyWinnerNames, mergeHistoryParticipants } from './historyParticipants'
 
 const avatar = (emoji: string): PublicUserType['avatar'] => ({
     backgroundColor: '#000000',
@@ -53,5 +53,33 @@ describe('mergeHistoryParticipants', () => {
             mergeHistoryParticipants([david, bloody], [{ id: 3, displayName: 'bloddsword', avatar: null, accountId: 6 }]).map((p) => p.key),
         ).toEqual(['account:6', 'account:1'])
         expect(mergeHistoryParticipants([david]).map((p) => p.displayName)).toEqual(['David M. Fajardo'])
+    })
+})
+
+describe('historyWinnerNames', () => {
+    const people = [
+        { id: 3, displayName: 'bloddsword', avatar: null, accountId: 6 },
+        { id: 9, displayName: 'Guest', avatar: null, accountId: null },
+    ]
+
+    it('names winners recorded as group people or as accounts', () => {
+        expect(historyWinnerNames({ playedBy: [], playedByPeople: people, winnerAccountIds: [], winnerPersonIds: [9] })).toEqual(['Guest'])
+        expect(historyWinnerNames({ playedBy: [bloody, david], winnerAccountIds: [1], winnerPersonIds: [] })).toEqual(['David M. Fajardo'])
+        expect(historyWinnerNames({ playedBy: [bloody], playedByPeople: people, winnerAccountIds: [6], winnerPersonIds: [] })).toEqual([
+            'bloddsword',
+        ])
+    })
+
+    it('is empty when nobody won', () => {
+        expect(historyWinnerNames({ playedBy: [bloody], playedByPeople: people, winnerAccountIds: [], winnerPersonIds: [] })).toEqual([])
+    })
+})
+
+describe('formatWinners', () => {
+    it('joins names naturally', () => {
+        expect(formatWinners([])).toBe('')
+        expect(formatWinners(['Ana'])).toBe('Ana won')
+        expect(formatWinners(['Ana', 'Bo'])).toBe('Ana and Bo won')
+        expect(formatWinners(['Ana', 'Bo', 'Cy'])).toBe('Ana, Bo and Cy won')
     })
 })

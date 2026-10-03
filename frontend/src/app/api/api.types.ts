@@ -254,6 +254,31 @@ export type MeetWithAttendeesAndGamesType = MeetType & {
     participants?: Array<number>
     participantStatuses?: Array<MeetPersonAttendeeStatusType>
     playedGamePersonParticipants?: Array<MeetPlayedGameParticipantsType>
+    /** Missing from servers older than results. */
+    gameResults?: Array<MeetGameResultsType>
+}
+
+/** One participant's result in a played game: an account or a group person, never both. */
+export type GameResultEntryType = {
+    accountId: number | null
+    groupPersonId: number | null
+    isWinner: boolean
+    score: number | null
+}
+
+export type MeetGameResultsType = {
+    gameId: number
+    results: Array<GameResultEntryType>
+}
+
+export type UpdateGameResultsRequest = {
+    results: Array<{ accountId?: number; groupPersonId?: number; isWinner: boolean; score?: number | null }>
+}
+
+export type GameResultsUpdatedType = {
+    sessionId: number
+    gameId: number
+    results: Array<GameResultEntryType>
 }
 
 export type CreatePlaySessionRequest = {
@@ -405,6 +430,8 @@ export type HistoryRecordType = {
         gameData: GameCompleteType
         playedBy: Array<PublicUserType>
         playedByPeople?: Array<{ id: number; displayName: string; avatar: PublicUserType['avatar'] | null; accountId?: number | null }>
+        winnerAccountIds?: Array<number>
+        winnerPersonIds?: Array<number>
     }>
 }
 

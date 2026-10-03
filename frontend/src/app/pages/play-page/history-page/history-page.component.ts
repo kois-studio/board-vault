@@ -12,7 +12,12 @@ import { CustomDatePipe } from '../../../core/pipes/customDate.pipe'
 import { DataService } from '../../../core/services/data.service'
 import { LoadingService } from '../../../core/services/loading.service'
 import { formatAttendeeSummary } from '../../../core/utils/formatAttendeeSummary'
-import { type HistoryParticipant, mergeHistoryParticipants } from '../../../core/utils/historyParticipants'
+import {
+    formatWinners,
+    type HistoryParticipant,
+    historyWinnerNames,
+    mergeHistoryParticipants,
+} from '../../../core/utils/historyParticipants'
 import { sessionDateParts } from '../../../core/utils/sessionTiming'
 
 /** Sessions shown at first, and added by each "Show older sessions". */
@@ -132,6 +137,10 @@ export class HistoryPageComponent {
     }
 
     /** Players of one game, recorded as accounts, group people, or both, each listed once. */
+    public getWinners(game: HistoryRecordType['gamesPlayed'][number]): string {
+        return formatWinners(historyWinnerNames(game))
+    }
+
     public getPlayers(game: HistoryRecordType['gamesPlayed'][number]): Array<HistoryParticipant> {
         return mergeHistoryParticipants(game.playedBy, game.playedByPeople)
     }

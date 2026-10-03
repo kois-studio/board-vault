@@ -1,58 +1,116 @@
 @if (isLoading()) {
     <container-wrapper>
-        <div class="p-8 text-center text-secondary" role="status" aria-live="polite">Loading session…</div>
+        <div class="p-8 text-center text-bv-text-muted" role="status" aria-live="polite">Loading session…</div>
     </container-wrapper>
 } @else if (loadError()) {
     <container-wrapper>
-        <div class="p-8 text-center text-secondary" role="alert">
+        <div class="p-8 text-center text-bv-text-muted" role="alert">
             <p class="text-lg font-medium">This session could not be loaded.</p>
-            <p class="mt-2 mb-4 text-sm">Check your connection or access and try again.</p>
-            <button appButton type="button" (click)="retryLoad()">Retry</button>
+            <p class="mb-4 mt-2 text-sm">Check your connection or access and try again.</p>
+            <button appButton type="button" icon="arrow-repeat" (click)="retryLoad()">Retry</button>
         </div>
     </container-wrapper>
-} @else if (loaded) {
+} @else if (loaded && meetData; as meet) {
+    @let when = dateParts!;
+    @let tone = statusTone;
     <container-wrapper>
-        <a appButton variant="secondary" [routerLink]="['/groups', $safeNavigationMigration(groupData?.id)]" class="mb-6">Back to {{ groupData?.name }}</a>
+        <a class="mb-5 inline-flex max-w-full items-center gap-1 rounded text-sm font-medium text-bv-text-muted hover:text-bv-text" [routerLink]="['/groups', groupData?.id]">
+            <app-icon name="arrow-left" [size]="16" className="shrink-0" aria-hidden="true" />
+            <span class="truncate">{{ groupData?.name }}</span>
+        </a>
 
-        <header class="app-bg-secondary rounded-lg p-6 lg:p-8">
-            <div class="flex flex-wrap items-start justify-between gap-4">
-                <div>
-                    <p class="text-sm font-medium text-bv-primary">{{ groupData?.name }}</p>
-                    <h1 class="text-3xl font-bold mt-1">{{ sessionHeading }} · {{ (meetData?.meetDate ?? null) | customDate:true:$safeNavigationMigration(meetData?.timezone) }}</h1>
-                    <p class="text-secondary mt-3 max-w-2xl">{{ sessionStatusDescription }}</p>
+        <!-- Hero -->
+        <header class="rounded-lg border border-bv-border bg-bv-surface p-5 shadow-sm sm:p-6">
+            <div class="flex gap-4 sm:gap-5">
+                <span class="flex w-16 shrink-0 flex-col items-center self-start rounded-lg py-2 sm:w-20 sm:py-3" [class]="tone.date" aria-hidden="true">
+                    <span class="text-xs font-semibold uppercase">{{ when.month }}</span>
+                    <span class="text-3xl font-bold leading-none sm:text-4xl">{{ when.day }}</span>
+                    <span class="mt-1 text-xs font-medium">{{ when.weekday }}</span>
+                </span>
+                <div class="min-w-0 flex-1">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="rounded-full px-3 py-1 text-xs font-semibold" [class]="tone.pill">{{ sessionStatusLabel }}</span>
+                        @if (meet.status === 'scheduled' || meet.status === 'active') {
+                            <span class="text-sm text-bv-text-muted">{{ relativeDate }}</span>
+                        }
+                    </div>
+                    <h1 class="mt-2 text-2xl font-bold sm:text-3xl">
+                        Game night <span class="text-bv-text-muted">· {{ when.time }}</span>
+                        <span class="sr-only">, {{ meet.meetDate | customDate: true: meet.timezone }}</span>
+                    </h1>
+                    <p class="mt-1 text-sm text-bv-text-muted wrap-anywhere">{{ groupData?.name }} · {{ when.weekday }} {{ when.day }} {{ when.month }} {{ when.year }} · {{ meet.timezone }}</p>
+                    <p class="mt-3 max-w-2xl text-sm text-bv-text-muted">{{ sessionStatusDescription }}</p>
                 </div>
-                <span class="inline-flex rounded-full bg-bv-primary-soft px-3 py-1 text-sm font-medium text-bv-on-primary-soft">{{ sessionStatusLabel }}</span>
             </div>
 
-            @if (meetData?.notes) {
-                <p class="mt-6 rounded-lg border border-bv-primary/30 bg-bv-primary-soft px-4 py-3 text-secondary wrap-anywhere">{{ meetData?.notes }}</p>
+            @if (meet.notes) {
+                <p class="mt-5 rounded-lg bg-bv-surface-2 px-4 py-3 text-sm italic wrap-anywhere">“{{ meet.notes }}”</p>
             }
 
-            @if (canManageLifecycle && canEditSession) {
-                <div class="flex flex-wrap gap-3 mt-6 pt-6 border-t border-bv-border">
-                    @if (meetData?.status === 'scheduled') {
-                        <button appButton type="button" [disabled]="isUpdatingStatus" (click)="updateStatus('active')">Start game night</button>
-                        <p class="basis-full text-sm text-secondary">Start the session when the group is playing. Then record attendance and the games you actually play before saving the memory.</p>
-                    } @else if (meetData?.status === 'active') {
-                        <button appButton type="button" [disabled]="isUpdatingStatus" (click)="requestStatusUpdate('completed')">Finish and save memory</button>
-                    }
-                    <button appButton variant="danger" type="button" [disabled]="isUpdatingStatus" (click)="requestStatusUpdate('cancelled')">Cancel session</button>
-                </div>
-            }
+            <dl class="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm" aria-label="Session summary">
+                <div class="flex items-baseline gap-1.5"><dt class="text-bv-text-muted">Invited</dt><dd class="font-semibold">{{ attendeeCount }}</dd></div>
+                @if (meet.status === 'scheduled' || meet.status === 'active') {
+                    <div class="flex items-baseline gap-1.5"><dt class="text-bv-text-muted">Going</dt><dd class="font-semibold">{{ goingCount }}</dd></div>
+                } @else {
+                    <div class="flex items-baseline gap-1.5"><dt class="text-bv-text-muted">Attended</dt><dd class="font-semibold">{{ attendedCount }}</dd></div>
+                }
+                <div class="flex items-baseline gap-1.5"><dt class="text-bv-text-muted">Shortlisted</dt><dd class="font-semibold">{{ plannedGames.length }}</dd></div>
+                <div class="flex items-baseline gap-1.5"><dt class="text-bv-text-muted">Played</dt><dd class="font-semibold">{{ playedGamesCount }}</dd></div>
+                @if (skippedGamesCount > 0) {
+                    <div class="flex items-baseline gap-1.5"><dt class="text-bv-text-muted">Skipped</dt><dd class="font-semibold">{{ skippedGamesCount }}</dd></div>
+                }
+            </dl>
 
             @if (canRespondToRsvp) {
-                <div class="mt-6 rounded-xl border border-bv-primary/30 bg-bv-primary-soft p-4">
-                    <p class="font-medium">Can you make it?</p>
-                    <p class="text-secondary text-sm mt-1">Your RSVP helps the organizer plan. Final attendance is recorded separately after the game night.</p>
-                    <div class="flex flex-wrap gap-3 mt-3">
-                        <button appButton type="button" [disabled]="isUpdatingRsvp" (click)="updateRsvp('accepted')">{{ currentRsvpStatus === 'accepted' ? 'Going ✓' : 'I’m going' }}</button>
-                        <button appButton variant="secondary" type="button" [disabled]="isUpdatingRsvp" (click)="updateRsvp('declined')">{{ currentRsvpStatus === 'declined' ? 'Can’t make it ✓' : 'Can’t make it' }}</button>
+                <div class="mt-5 flex flex-wrap items-center gap-3 rounded-lg border border-bv-primary/30 bg-bv-primary-soft p-4">
+                    <p class="mr-auto font-medium text-bv-on-primary-soft">Can you make it?</p>
+                    <div class="flex flex-wrap gap-2" role="group" aria-label="Your answer">
+                        <button type="button" class="app-chip" [attr.aria-pressed]="currentRsvpStatus === 'accepted'" [disabled]="isUpdatingRsvp" (click)="updateRsvp('accepted')">
+                            <app-icon name="thumbs-up" [size]="16" aria-hidden="true" /> I’m going
+                        </button>
+                        <button type="button" class="app-chip" [attr.aria-pressed]="currentRsvpStatus === 'declined'" [disabled]="isUpdatingRsvp" (click)="updateRsvp('declined')">
+                            <app-icon name="thumbs-down" [size]="16" aria-hidden="true" /> Can’t make it
+                        </button>
                     </div>
                 </div>
             }
 
+            @if ((canManageLifecycle && canEditSession) || canAddToCalendar) {
+                <div class="mt-5 flex flex-wrap items-center gap-3 border-t border-bv-border pt-5">
+                    @if (canManageLifecycle && canEditSession) {
+                        @if (meet.status === 'scheduled') {
+                            <button appButton type="button" icon="dice-5" [disabled]="isUpdatingStatus" (click)="updateStatus('active')">Start game night</button>
+                        } @else {
+                            <button appButton type="button" icon="check" [disabled]="isUpdatingStatus" (click)="requestStatusUpdate('completed')">Finish game night</button>
+                        }
+                    }
+                    @if (canAddToCalendar) {
+                        <details class="group relative">
+                            <summary class="app-btn-secondary cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                                <app-icon name="calendar-plus" [size]="18" aria-hidden="true" /> Add to calendar
+                                <app-icon name="chevron-down" [size]="16" className="transition group-open:rotate-180" aria-hidden="true" />
+                            </summary>
+                            <div class="absolute left-0 z-20 mt-2 w-60 rounded-lg border border-bv-border bg-bv-surface p-1 shadow-lg">
+                                <a class="flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-bv-surface-2" [href]="googleCalendarLink" target="_blank" rel="noopener noreferrer">
+                                    <app-icon name="globe" [size]="16" aria-hidden="true" /> Google Calendar
+                                </a>
+                                <button type="button" class="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm hover:bg-bv-surface-2" (click)="downloadCalendarFile()">
+                                    <app-icon name="calendar" [size]="16" aria-hidden="true" /> Apple, Outlook and others (.ics)
+                                </button>
+                            </div>
+                        </details>
+                    }
+                    @if (canManageLifecycle && canEditSession) {
+                        <button type="button" class="ml-auto rounded text-sm font-medium text-bv-danger underline-offset-2 hover:underline disabled:opacity-60" [disabled]="isUpdatingStatus" (click)="requestStatusUpdate('cancelled')">Cancel game night</button>
+                    }
+                </div>
+                @if (canManageLifecycle && meet.status === 'scheduled') {
+                    <p class="mt-3 text-sm text-bv-text-muted">Start the night when the group sits down to play. Then mark the games you play, who played, and who won.</p>
+                }
+            }
+
             @if (actionError(); as actionErrorMessage) {
-                <div class="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-bv-danger/30 bg-bv-danger/10 p-4 text-sm text-bv-danger" role="alert">
+                <div class="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-bv-danger/30 bg-bv-danger/10 p-4 text-sm text-bv-danger" role="alert">
                     <span>{{ actionErrorMessage }}</span>
                     <button type="button" class="font-medium underline" (click)="actionError.set(null)">Dismiss</button>
                 </div>
@@ -64,329 +122,323 @@
                 <section
                     appDialog
                     (dialogClosed)="cancelStatusUpdate()"
-                    class="w-full max-w-lg rounded-3xl border border-bv-border bg-bv-surface p-6 shadow-2xl"
+                    class="w-full max-w-lg rounded-lg border border-bv-border bg-bv-surface p-6 shadow-2xl"
                     aria-labelledby="session-status-confirmation-title"
                     aria-describedby="session-status-confirmation-description"
                     (click)="$event.stopPropagation()"
                 >
-                    <p class="text-sm font-semibold uppercase tracking-[0.18em] text-bv-primary">Review session change</p>
-                    <h2 id="session-status-confirmation-title" class="mt-2 text-2xl font-bold">{{ requestedStatus === 'completed' ? 'Finish this game night?' : 'Cancel this session?' }}</h2>
-                    <p id="session-status-confirmation-description" class="mt-2 text-secondary">
+                    <h2 id="session-status-confirmation-title" class="text-2xl font-bold">{{ requestedStatus === 'completed' ? 'Finish this game night?' : 'Cancel this game night?' }}</h2>
+                    <p id="session-status-confirmation-description" class="mt-2 text-bv-text-muted">
                         @if (requestedStatus === 'completed') {
-                            Saving completion makes this session read-only and keeps the recorded games in group memory.
+                            The night joins the group’s history. Played games, players and attendance can no longer change, but anyone can still record who won.
                         } @else {
-                            Cancelling keeps the session for context but prevents later RSVP, attendance, shortlist, and played-game edits.
+                            The night stays here for reference, but nobody can answer, mark games or record attendance any more.
                         }
                     </p>
-                    <dl class="mt-5 grid gap-3 sm:grid-cols-3">
-                        <div class="rounded-2xl bg-bv-bg p-3"><dt class="text-xs text-secondary">Played</dt><dd class="mt-1 text-xl font-bold">{{ playedGamesCount }}</dd></div>
-                        <div class="rounded-2xl bg-bv-bg p-3"><dt class="text-xs text-secondary">Still planned</dt><dd class="mt-1 text-xl font-bold">{{ remainingPlannedGamesCount }}</dd></div>
-                        <div class="rounded-2xl bg-bv-bg p-3"><dt class="text-xs text-secondary">Already skipped</dt><dd class="mt-1 text-xl font-bold">{{ skippedGamesCount }}</dd></div>
+                    <dl class="mt-5 grid grid-cols-3 gap-3">
+                        <div class="rounded-lg bg-bv-surface-2 p-3"><dt class="text-xs text-bv-text-muted">Played</dt><dd class="mt-1 text-xl font-bold">{{ playedGamesCount }}</dd></div>
+                        <div class="rounded-lg bg-bv-surface-2 p-3"><dt class="text-xs text-bv-text-muted">Still shortlisted</dt><dd class="mt-1 text-xl font-bold">{{ remainingPlannedGamesCount }}</dd></div>
+                        <div class="rounded-lg bg-bv-surface-2 p-3"><dt class="text-xs text-bv-text-muted">Skipped</dt><dd class="mt-1 text-xl font-bold">{{ skippedGamesCount }}</dd></div>
                     </dl>
-                    <p class="mt-4 text-sm text-secondary">Remaining planned games will not be recorded as played. They stay unplayed so the group can revisit the shortlist later.</p>
+                    @if (requestedStatus === 'completed' && remainingPlannedGamesCount > 0) {
+                        <p class="mt-4 text-sm text-bv-text-muted">Shortlisted games you didn’t play are not recorded as played.</p>
+                    }
                     <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
                         <button appButton variant="secondary" type="button" (click)="cancelStatusUpdate()">Keep editing</button>
-                        <button appButton variant="danger" type="button" [disabled]="isUpdatingStatus" (click)="confirmStatusUpdate()">{{ requestedStatus === 'completed' ? 'Finish and save memory' : 'Cancel session' }}</button>
+                        <button appButton [variant]="requestedStatus === 'completed' ? 'primary' : 'danger'" type="button" [disabled]="isUpdatingStatus" (click)="confirmStatusUpdate()">{{ requestedStatus === 'completed' ? 'Finish game night' : 'Cancel game night' }}</button>
                     </div>
                 </section>
             </div>
         }
 
-        <section class="grid gap-3 sm:grid-cols-2 lg:grid-cols-5 mt-6" aria-label="Session summary">
-            <div class="app-bg-secondary rounded-lg p-4">
-                <p class="text-secondary text-sm">{{ meetData?.status === 'scheduled' || meetData?.status === 'active' ? 'Expected players' : 'Invited players' }}</p>
-                <p class="text-2xl font-bold mt-1">{{ attendeeCount }}</p>
-            </div>
-            <div class="app-bg-secondary rounded-lg p-4">
-                <p class="text-secondary text-sm">Shortlisted games</p>
-                <p class="text-2xl font-bold mt-1">{{ plannedGames.length }}</p>
-            </div>
-            <div class="app-bg-secondary rounded-lg p-4">
-                <p class="text-secondary text-sm">Played so far</p>
-                <p class="text-2xl font-bold mt-1">{{ playedGamesCount }}</p>
-            </div>
-            <div class="app-bg-secondary rounded-lg p-4">
-                <p class="text-secondary text-sm">Actually attended</p>
-                <p class="text-2xl font-bold mt-1">{{ attendedCount }}</p>
-            </div>
-            <div class="app-bg-secondary rounded-lg p-4">
-                <p class="text-secondary text-sm">Skipped</p>
-                <p class="text-2xl font-bold mt-1">{{ skippedGamesCount }}</p>
-            </div>
-        </section>
-
-        <section class="app-bg-secondary rounded-lg p-6 mt-6" aria-labelledby="attendees-heading">
-            <div class="flex flex-wrap items-start justify-between gap-3 mb-4">
-                <div>
-                    <h2 id="attendees-heading" class="text-xl font-semibold">{{ attendeeHeading }}</h2>
-                    <p class="text-secondary text-sm mt-1">{{ attendeeDescription }}</p>
-                </div>
-                <span class="text-secondary text-sm">{{ attendeeCount }} of {{ groupData?.members?.length ?? 0 }} members</span>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                @if (isGroupPersonSession) {
-                @for (person of groupPeople; track person.person.id) {
-                    @if (meetData?.participants?.includes(person.person.id)) {
-                        <button
-                            type="button"
-                            (click)="onClickGroupPerson(person.person.id)"
-                            [disabled]="!canEditSession || isPersistingChanges || isGroupPersonAttendeeRemovalBlocked(person.person.id)"
-                            [attr.aria-label]="getGroupPersonToggleLabel(person.person.id)"
-                            [attr.aria-pressed]="meetData?.participants?.includes(person.person.id)"
-                            class="rounded-lg border p-2 flex items-center justify-start text-left transition-colors disabled:cursor-not-allowed"
-                            [ngClass]="meetData?.participants?.includes(person.person.id) ? 'border-bv-primary bg-bv-primary-soft' : 'border-bv-border'"
-                        >
-                            <div class="h-3 w-3 shrink-0 rounded-full ml-3 mr-2" [ngClass]="meetData?.participants?.includes(person.person.id) ? 'bg-bv-success' : 'bg-bv-border'"></div>
-                            <span class="min-w-0 truncate font-medium">{{ person.person.displayName }}</span>
-                            <span class="text-secondary text-sm ml-auto mr-3 shrink-0 pl-2 text-right">{{ getGroupPersonRsvpStatus(person.person.id) }}<br /><span class="text-xs">{{ getGroupPersonAttendanceStatus(person.person.id) }} · {{ getGroupPersonGameCount(person) }} games</span></span>
-                        </button>
-                    }
-                }
-                } @else {
-                @for (member of groupData?.members; track member.id) {
-                    <button
-                        type="button"
-                        (click)="onClickMember(member.id)"
-                        [disabled]="!canEditSession || isPersistingChanges || isAttendeeRemovalBlocked(member.id)"
-                        [attr.aria-label]="getAttendeeToggleLabel(member.id)"
-                        [attr.aria-pressed]="meetData?.attendees?.includes(member.id)"
-                        class="rounded-lg border p-2 flex items-center justify-start text-left transition-colors disabled:cursor-not-allowed"
-                        [ngClass]="{
-                            'border-bv-primary bg-bv-primary-soft': $safeNavigationMigration(meetData?.attendees?.includes(member.id)),
-                            'border-bv-border': !meetData?.attendees?.includes(member.id),
-                        }"
-                    >
-                        <div class="h-3 w-3 shrink-0 rounded-full ml-3 mr-2" [ngClass]="meetData?.attendees?.includes(member.id) ? 'bg-bv-success' : 'bg-bv-border'"></div>
-                        <app-card-account [member]="member" [ngClass]="{ 'opacity-50': !meetData?.attendees?.includes(member.id) }" />
-                        <span class="text-secondary text-sm ml-auto mr-3 shrink-0 pl-2 text-right">{{ getMemberRsvpStatus(member.id) }}<br /><span class="text-xs">{{ getMemberAttendanceStatus(member.id) }} · {{ member.games.length }} games</span></span>
-                    </button>
-                }
-                }
-            </div>
-
-            @if (canEditSession && attendeeCount === 1) {
-                <p class="mt-4 rounded-lg border border-bv-warning/30 bg-bv-warning/10 px-3 py-2 text-sm text-bv-warning" role="status">
-                    Keep at least one attendee in the session. Add another person before removing the last one.
-                </p>
-            } @else if (canEditSession && hasPlayedGameAttendeeLock) {
-                <p class="mt-4 rounded-lg border border-bv-warning/30 bg-bv-warning/10 px-3 py-2 text-sm text-bv-warning" role="status">
-                    People recorded for a played game stay in the attendee list. Remove their game participation first if the record needs correcting.
-                </p>
-            }
-
-            @if (canRecordAttendance) {
-                <div class="mt-6 border-t border-bv-border pt-5">
-                    <div class="flex flex-wrap items-start justify-between gap-3">
-                        <div>
-                            <h3 class="font-semibold">Who actually attended?</h3>
-                            <p class="text-secondary text-sm mt-1">The organizer records this after the session. It is separate from each person’s RSVP.</p>
+        <div class="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
+            <div class="min-w-0 space-y-8">
+                <!-- Played games -->
+                @if (meet.status !== 'scheduled' || playedGamesCount > 0) {
+                    <section aria-labelledby="played-heading">
+                        <div class="mb-3 flex items-baseline justify-between gap-3">
+                            <h2 id="played-heading" class="text-lg font-semibold">{{ canEditSession ? 'Played tonight' : 'Played' }}</h2>
+                            @if (isPersistingChanges) {
+                                <span class="text-sm text-bv-text-muted" role="status">Saving…</span>
+                            }
                         </div>
-                        @if (isUpdatingAttendance) {
-                            <span class="text-secondary text-sm" role="status">Saving…</span>
-                        }
-                    </div>
-                    <div class="mt-4 flex flex-wrap gap-2">
-                        @if (isGroupPersonSession) {
-                        @for (person of groupPeople; track person.person.id) {
-                            @if (meetData?.participants?.includes(person.person.id)) {
-                                <button type="button" class="flex max-w-full items-center gap-1 rounded-lg border px-3 py-2 sm:max-w-xs text-sm transition-colors disabled:cursor-not-allowed" [disabled]="isUpdatingAttendance" [attr.aria-pressed]="getGroupPersonAttendanceStatus(person.person.id) === 'Was there'" [ngClass]="getGroupPersonAttendanceStatus(person.person.id) === 'Was there' ? 'border-bv-success bg-bv-success/10' : 'border-bv-border'" (click)="toggleGroupPersonAttendance(person.person.id)">
-                                    <span class="min-w-0 truncate">{{ person.person.displayName }}</span><span class="shrink-0">· {{ getGroupPersonAttendanceStatus(person.person.id) === 'Was there' ? 'There' : 'Not there' }}</span>
-                                </button>
-                            }
-                        }
+
+                        @if (playedGameDetails.length === 0) {
+                            <p class="rounded-lg border border-dashed border-bv-border p-4 text-sm text-bv-text-muted">
+                                {{ canEditSession ? 'Nothing marked yet. Tap a game below when the group starts playing it.' : 'No games were recorded for this game night.' }}
+                            </p>
                         } @else {
-                        @for (member of groupData?.members; track member.id) {
-                            @if (meetData?.attendees?.includes(member.id)) {
-                                <button type="button" class="flex max-w-full items-center gap-1 rounded-lg border px-3 py-2 sm:max-w-xs text-sm transition-colors disabled:cursor-not-allowed" [disabled]="isUpdatingAttendance" [attr.aria-pressed]="getMemberAttendanceStatus(member.id) === 'Was there'" [ngClass]="getMemberAttendanceStatus(member.id) === 'Was there' ? 'border-bv-success bg-bv-success/10' : 'border-bv-border'" (click)="toggleAttendance(member.id)">
-                                    <span class="min-w-0 truncate">{{ member.displayName || member.username }}</span><span class="shrink-0">· {{ getMemberAttendanceStatus(member.id) === 'Was there' ? 'There' : 'Not there' }}</span>
-                                </button>
-                            }
-                        }
-                        }
-                    </div>
-                </div>
-            }
-        </section>
+                            <ul class="space-y-3">
+                                @for (game of playedGameDetails; track game.id) {
+                                    @let players = playersOf(game.id);
+                                    @let winners = winnersOf(game.id);
+                                    @let scores = scoresOf(game.id);
+                                    <li>
+                                        <article class="rounded-lg border border-bv-border bg-bv-surface p-4 shadow-sm" [attr.aria-labelledby]="'played-game-' + game.id">
+                                            <div class="flex items-start gap-3">
+                                                <a [routerLink]="['/games', game.id]" class="shrink-0" [attr.aria-label]="'View ' + gameTitle(game)">
+                                                    <image-background [src]="game.imageUrl" [alt]="gameTitle(game) + ' cover'" class="h-14 w-14" />
+                                                </a>
+                                                <div class="min-w-0 flex-1">
+                                                    <h3 class="truncate font-semibold" [id]="'played-game-' + game.id" [title]="gameTitle(game)">{{ gameTitle(game) }}</h3>
+                                                    @if (winners.length > 0) {
+                                                        <p class="mt-0.5 flex min-w-0 items-center gap-1.5 text-sm font-medium text-bv-success">
+                                                            <app-icon name="award-fill" [size]="16" className="shrink-0" aria-hidden="true" />
+                                                            <span class="min-w-0 wrap-anywhere">{{ winnersSummary(game.id) }}</span>
+                                                        </p>
+                                                    } @else {
+                                                        <p class="mt-0.5 text-sm text-bv-text-muted">{{ players.length }} player{{ players.length === 1 ? '' : 's' }}</p>
+                                                    }
+                                                </div>
+                                                @if (canEditSession) {
+                                                    <button type="button" class="shrink-0 rounded text-sm font-medium text-bv-text-muted underline-offset-2 hover:text-bv-danger hover:underline disabled:opacity-60" [disabled]="isPersistingChanges" [attr.aria-label]="'Unmark ' + gameTitle(game) + ' as played'" (click)="onClickGame(game.id)">Unmark</button>
+                                                }
+                                            </div>
 
-        <section class="app-bg-secondary rounded-lg p-6 mt-6" aria-labelledby="shortlist-heading">
-            <div class="mb-4">
-                <h2 id="shortlist-heading" class="text-xl font-semibold">{{ shortlistHeading }}</h2>
-                <p class="text-secondary text-sm mt-1">Games the group chose to consider when this session was planned.</p>
-            </div>
-            @if (canManageLifecycle && canEditSession) {
-                <button type="button" class="mb-4 text-sm font-semibold text-bv-primary hover:underline" [attr.aria-expanded]="isEditingShortlist" (click)="isEditingShortlist = !isEditingShortlist">
-                    {{ isEditingShortlist ? 'Close the editor' : 'Edit shortlist' }}
-                </button>
-            }
-            @if (canManageLifecycle && canEditSession && isEditingShortlist) {
-                <fieldset class="mb-5 rounded-lg border border-bv-primary/30 p-4">
-                    <legend class="px-1 font-medium">Update the shortlist</legend>
-                    <p class="text-secondary text-sm mt-1 mb-3">Choose games from the invited players’ collections. You can change this while the night is scheduled or live.</p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        @for (game of totalGames; track game.id) {
-                            @if (game.active) {
-                                <label class="flex items-center gap-3 rounded-lg border border-bv-border p-3">
-                                    <input type="checkbox" [checked]="isPlannedGame(game.id)" [disabled]="isUpdatingShortlist" (change)="togglePlannedGame(game.id)" />
-                                    <span class="min-w-0 truncate">{{ game.titleTranslations.en || game.title || 'Untitled game' }}</span>
-                                </label>
-                            }
-                        }
-                    </div>
-                    <button appButton type="button" class="mt-4" [disabled]="!plannedGameIdsDraftChanged || isUpdatingShortlist" (click)="savePlannedGames()">
-                        {{ isUpdatingShortlist ? 'Saving…' : 'Save shortlist' }}
-                    </button>
-                </fieldset>
-            }
-            @if (plannedGames.length === 0) {
-                <p class="rounded-lg border border-dashed border-bv-border p-4 text-secondary text-sm">No games were shortlisted. Use the play recommendations or choose from the group library before the night.</p>
-            } @else {
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    @for (game of plannedGames; track game.id) {
-                        <a [routerLink]="['/games', game.id]" class="flex items-center gap-3 rounded-lg border border-bv-primary/60 bg-bv-primary-soft/50 p-3 hover:border-bv-primary">
-                            <image-background [src]="game.imageUrl" [alt]="(game.titleTranslations.en || game.title || 'Game') + ' cover'" class="h-14 w-14 shrink-0" />
-                            <span class="font-medium">{{ game.titleTranslations.en || game.title || 'Untitled game' }}</span>
-                        </a>
-                    }
-                </div>
-            }
-        </section>
+                                            @if (editingResultsGameId === game.id) {
+                                                <fieldset class="mt-4 min-w-0 rounded-lg border border-bv-primary/30 p-3">
+                                                    <legend class="px-1 text-sm font-semibold">Results</legend>
+                                                    <p class="mb-3 text-xs text-bv-text-muted">Mark the winners. Several people can share a win. Scores are optional.</p>
+                                                    <ul class="space-y-2">
+                                                        @for (person of players; track person.key) {
+                                                            <li class="flex min-w-0 items-center gap-2">
+                                                                <app-image-profile size="small" class="shrink-0" [avatar]="person.avatar" />
+                                                                <span class="min-w-0 flex-1 truncate text-sm">{{ person.displayName }}</span>
+                                                                <button type="button" class="app-chip shrink-0" [attr.aria-pressed]="resultsDraft[person.key]?.isWinner ?? false" [attr.aria-label]="person.displayName + ' won'" (click)="toggleDraftWinner(person.key)">
+                                                                    <app-icon name="award-fill" [size]="14" aria-hidden="true" /> Won
+                                                                </button>
+                                                                <input type="number" inputmode="numeric" class="app-input w-24 shrink-0 text-sm" placeholder="Score" min="-1000000" max="1000000" step="1" [value]="resultsDraft[person.key]?.score ?? ''" [attr.aria-label]="'Score for ' + person.displayName" (input)="setDraftScore(person.key, $any($event.target).value)" />
+                                                            </li>
+                                                        }
+                                                    </ul>
+                                                    <div class="mt-3 flex flex-wrap justify-end gap-2">
+                                                        <button appButton variant="secondary" size="small" type="button" (click)="cancelEditingResults()">Cancel</button>
+                                                        <button appButton size="small" type="button" [disabled]="isSavingResults" (click)="saveResults()">{{ isSavingResults ? 'Saving…' : 'Save results' }}</button>
+                                                    </div>
+                                                </fieldset>
+                                            } @else {
+                                                @if (scores.length > 0) {
+                                                    <ol class="mt-3 flex flex-wrap gap-2 text-sm" aria-label="Scores">
+                                                        @for (entry of scores; track entry.person.key) {
+                                                            <li class="flex max-w-full items-center gap-1.5 rounded-full bg-bv-surface-2 px-3 py-1">
+                                                                <span class="min-w-0 truncate">{{ entry.person.displayName }}</span>
+                                                                <strong class="shrink-0 tabular-nums">{{ entry.score }}</strong>
+                                                            </li>
+                                                        }
+                                                    </ol>
+                                                }
 
-        @if (meetData?.status === 'scheduled' && !(meetData?.playedGames?.length)) {
-            <p class="mt-6 rounded-lg border border-dashed border-bv-border p-4 text-sm text-secondary">When the night starts, you'll mark here the games the group actually plays.</p>
-        } @else {
-        <section class="app-bg-secondary rounded-lg p-6 mt-6" aria-labelledby="played-heading">
-            <div class="flex flex-wrap items-start justify-between gap-3 mb-4">
-                <div>
-                    <h2 id="played-heading" class="text-xl font-semibold">{{ playedGamesHeading }}</h2>
-                    <p class="text-secondary text-sm mt-1">{{ playedGamesDescription }}</p>
-                </div>
-                @if (isPersistingChanges) {
-                    <span class="text-secondary text-sm" role="status">Saving…</span>
-                }
-            </div>
+                                                @if (canEditSession) {
+                                                    <div class="mt-3" role="group" [attr.aria-label]="'Who played ' + gameTitle(game)">
+                                                        <p class="mb-2 text-xs font-medium text-bv-text-muted">Who played</p>
+                                                        <div class="flex flex-wrap gap-2">
+                                                            @for (person of invitedPeople; track person.key) {
+                                                                <button type="button" class="app-chip max-w-full" [attr.aria-pressed]="isPlayer(game.id, person)" [disabled]="isPersistingChanges" (click)="togglePlayer(game.id, person)">
+                                                                    <span class="truncate">{{ person.displayName }}</span>
+                                                                </button>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                } @else if (players.length > 0) {
+                                                    <div class="mt-3 flex min-w-0 items-center gap-2">
+                                                        <div class="flex shrink-0 -space-x-2" aria-hidden="true">
+                                                            @for (person of players.slice(0, 6); track person.key) {
+                                                                <app-image-profile size="small" class="rounded-full ring-2 ring-bv-surface" [avatar]="person.avatar" [title]="person.displayName" />
+                                                            }
+                                                        </div>
+                                                        <p class="min-w-0 text-sm text-bv-text-muted wrap-anywhere">Played by {{ namesOf(players) }}</p>
+                                                    </div>
+                                                }
 
-            @if (!canEditSession && playedSectionGames.length === 0) {
-                <p class="rounded-lg border border-dashed border-bv-border p-4 text-secondary text-sm">No games were recorded for this session.</p>
-            } @else if (totalGames.length === 0) {
-                <p class="rounded-lg border border-dashed border-bv-border p-4 text-secondary text-sm">There are no games in the selected attendees’ collections yet.</p>
-            } @else {
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    @for (game of playedSectionGames; track game.id) {
-                        <div
-                            class="rounded-lg border p-2 transition-colors"
-                            [ngClass]="{
-                                'border-bv-success bg-bv-success/10': $safeNavigationMigration(meetData?.playedGames?.includes(game.id)),
-                                'border-bv-border': !meetData?.playedGames?.includes(game.id),
-                                'opacity-50': !game.active && !meetData?.playedGames?.includes(game.id),
-                            }"
-                        >
-                            <button
-                                type="button"
-                                (click)="onClickGame(game.id)"
-                                [disabled]="!canEditSession || isPersistingChanges || !game.active"
-                                [attr.aria-pressed]="meetData?.playedGames?.includes(game.id)"
-                                class="w-full flex items-center text-left disabled:cursor-not-allowed"
-                            >
-                            <image-background [src]="game.imageUrl" [alt]="(game.titleTranslations.en || game.title || 'Game') + ' cover'" class="h-16 w-16 shrink-0" />
-                                <div class="ml-3 min-w-0">
-                                    <p class="font-semibold truncate">{{ game.titleTranslations.en || game.title || 'Untitled game' }}</p>
-                                    <p class="text-secondary text-sm mt-1">{{ game.gameAvgDuration }} mins · {{ game.minPlayers }}–{{ game.maxPlayers }} players</p>
-                                    @if (meetData?.playedGames?.includes(game.id)) {
-                                        <p class="text-bv-success text-sm mt-1">Played</p>
-                                    } @else if (!game.active) {
-                                        <p class="text-secondary text-sm mt-1">Not in attendee collections</p>
-                                    }
-                                </div>
-                            </button>
-
-                            @if (meetData?.playedGames?.includes(game.id)) {
-                                <fieldset class="mt-3 min-w-0 border-t border-bv-success/30 pt-3">
-                                    <legend class="px-1 text-xs font-medium text-secondary">Played by</legend>
-                                    <div class="flex flex-wrap gap-2">
-                                        @if (isGroupPersonSession) {
-                                        @for (person of groupPeople; track person.person.id) {
-                                            @if (meetData?.participants?.includes(person.person.id)) {
-                                                <label class="inline-flex max-w-full items-center gap-1.5 rounded-md border px-2 py-1 text-xs" [ngClass]="isGroupPersonGameParticipant(game.id, person.person.id) ? 'border-bv-success bg-bv-success/10' : 'border-bv-border'">
-                                                    <input
-                                                        type="checkbox"
-                                                        [checked]="isGroupPersonGameParticipant(game.id, person.person.id)"
-                                                        [disabled]="!canEditSession || isPersistingChanges"
-                                                        (change)="toggleGroupPersonGameParticipant(game.id, person.person.id)"
-                                                    />
-                                                    <span class="min-w-0 truncate">{{ person.person.displayName }}</span>
-                                                </label>
+                                                @if (canRecordResults && players.length > 0) {
+                                                    <button type="button" class="mt-3 inline-flex items-center gap-1.5 rounded text-sm font-semibold text-bv-primary hover:underline" (click)="startEditingResults(game.id)">
+                                                        <app-icon name="award-fill" [size]="16" aria-hidden="true" />
+                                                        {{ winners.length > 0 || scores.length > 0 ? 'Edit results' : 'Record who won' }}
+                                                    </button>
+                                                }
                                             }
-                                        }
-                                        } @else {
-                                        @for (member of groupData?.members; track member.id) {
-                                            @if (meetData?.attendees?.includes(member.id)) {
-                                                <label class="inline-flex max-w-full items-center gap-1.5 rounded-md border px-2 py-1 text-xs" [ngClass]="isGameParticipant(game.id, member.id) ? 'border-bv-success bg-bv-success/10' : 'border-bv-border'">
-                                                    <input
-                                                        type="checkbox"
-                                                        [checked]="isGameParticipant(game.id, member.id)"
-                                                        [disabled]="!canEditSession || isPersistingChanges"
-                                                        (change)="toggleGameParticipant(game.id, member.id)"
-                                                    />
-                                                    <span class="min-w-0 truncate">{{ member.displayName || member.username }}</span>
-                                                </label>
+                                        </article>
+                                    </li>
+                                }
+                            </ul>
+                        }
+
+                        @if (canEditSession) {
+                            @let markable = playedSectionGames;
+                            <div class="mt-6">
+                                <h3 class="mb-2 text-sm font-semibold">Mark a game as played</h3>
+                                @if (totalGames.length === 0) {
+                                    <p class="rounded-lg border border-dashed border-bv-border p-4 text-sm text-bv-text-muted">There are no games in the invited players’ collections yet.</p>
+                                } @else {
+                                    <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                                        @for (game of markable; track game.id) {
+                                            @if (!meet.playedGames.includes(game.id)) {
+                                                <button type="button" class="flex min-w-0 items-center gap-3 rounded-lg border border-bv-border bg-bv-surface p-2 text-left transition hover:border-bv-primary/50 disabled:cursor-not-allowed disabled:opacity-50" [disabled]="isPersistingChanges || !game.active" (click)="onClickGame(game.id)">
+                                                    <image-background [src]="game.imageUrl" [alt]="gameTitle(game) + ' cover'" class="h-10 w-10 shrink-0" />
+                                                    <span class="min-w-0 flex-1">
+                                                        <span class="block truncate text-sm font-medium">{{ gameTitle(game) }}</span>
+                                                        <span class="block text-xs text-bv-text-muted">
+                                                            @if (!game.active) {
+                                                                Nobody invited owns it
+                                                            } @else if (meet.plannedGames.includes(game.id)) {
+                                                                Shortlisted · {{ game.minPlayers }}–{{ game.maxPlayers }} players
+                                                            } @else {
+                                                                {{ game.gameAvgDuration }} min · {{ game.minPlayers }}–{{ game.maxPlayers }} players
+                                                            }
+                                                        </span>
+                                                    </span>
+                                                    <app-icon name="plus" [size]="18" className="shrink-0 text-bv-primary" aria-hidden="true" />
+                                                </button>
                                             }
-                                        }
                                         }
                                     </div>
-                                    @if (canEditSession) {
-                                        <p class="text-secondary mt-2 text-xs">Choose the people who played this specific game; it can differ from the full attendee list.</p>
+                                    @if (!showAllGamesForPlayed && hiddenPlayableGameCount > 0) {
+                                        <button type="button" class="mt-3 text-sm font-semibold text-bv-primary hover:underline" (click)="showAllGamesForPlayed = true">
+                                            Show {{ hiddenPlayableGameCount }} more games nobody invited owns
+                                        </button>
                                     }
-                                </fieldset>
+                                }
+                            </div>
+                        }
+                    </section>
+                }
+
+                <!-- Shortlist -->
+                <section aria-labelledby="shortlist-heading">
+                    <div class="mb-3 flex items-baseline justify-between gap-3">
+                        <h2 id="shortlist-heading" class="text-lg font-semibold">Shortlist</h2>
+                        @if (canManageLifecycle && canEditSession) {
+                            <button type="button" class="rounded text-sm font-semibold text-bv-primary hover:underline" [attr.aria-expanded]="isEditingShortlist" (click)="isEditingShortlist = !isEditingShortlist">
+                                {{ isEditingShortlist ? 'Close' : 'Edit' }}
+                            </button>
+                        }
+                    </div>
+                    @if (canManageLifecycle && canEditSession && isEditingShortlist) {
+                        <fieldset class="mb-4 rounded-lg border border-bv-primary/30 p-4">
+                            <legend class="px-1 text-sm font-semibold">Choose from the invited players’ games</legend>
+                            <div class="mt-2 flex flex-wrap gap-2">
+                                @for (game of totalGames; track game.id) {
+                                    @if (game.active) {
+                                        <button type="button" class="app-chip max-w-full" [attr.aria-pressed]="isPlannedGame(game.id)" [disabled]="isUpdatingShortlist" (click)="togglePlannedGame(game.id)">
+                                            <span class="truncate">{{ gameTitle(game) }}</span>
+                                        </button>
+                                    }
+                                }
+                            </div>
+                            <button appButton size="small" type="button" class="mt-4" [disabled]="!plannedGameIdsDraftChanged || isUpdatingShortlist" (click)="savePlannedGames()">
+                                {{ isUpdatingShortlist ? 'Saving…' : 'Save shortlist' }}
+                            </button>
+                        </fieldset>
+                    }
+                    @if (plannedGames.length === 0) {
+                        <p class="rounded-lg border border-dashed border-bv-border p-4 text-sm text-bv-text-muted">
+                            {{ canEditSession ? 'No games shortlisted yet.' : 'No games were shortlisted.' }}
+                        </p>
+                    } @else {
+                        <ul class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                            @for (game of plannedGames; track game.id) {
+                                <li>
+                                    <a [routerLink]="['/games', game.id]" class="flex min-w-0 items-center gap-3 rounded-lg border border-bv-border bg-bv-surface p-2 transition hover:border-bv-primary/50">
+                                        <image-background [src]="game.imageUrl" [alt]="gameTitle(game) + ' cover'" class="h-12 w-12 shrink-0" />
+                                        <span class="min-w-0">
+                                            <span class="block truncate font-medium">{{ gameTitle(game) }}</span>
+                                            <span class="block text-xs text-bv-text-muted">{{ game.gameAvgDuration }} min · {{ game.minPlayers }}–{{ game.maxPlayers }} players</span>
+                                        </span>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    @if (meet.status === 'scheduled' && playedGamesCount === 0) {
+                        <p class="mt-3 text-sm text-bv-text-muted">Once the night starts, mark here the games the group actually plays.</p>
+                    }
+                </section>
+
+                @if (canLeaveFeedback && playedGameDetails.length > 0) {
+                    <section aria-labelledby="feedback-heading">
+                        <h2 id="feedback-heading" class="text-lg font-semibold">How did it go for you?</h2>
+                        <p class="mb-3 mt-1 text-sm text-bv-text-muted">Your ratings help the group choose next time.</p>
+                        <ul class="grid gap-2 sm:grid-cols-2">
+                            @for (game of playedGameDetails; track game.id) {
+                                <li class="flex min-w-0 items-center gap-3 rounded-lg border border-bv-border bg-bv-surface p-2">
+                                    <image-background [src]="game.imageUrl" [alt]="gameTitle(game) + ' cover'" class="h-10 w-10 shrink-0" />
+                                    <span class="min-w-0 flex-1 truncate text-sm font-medium">{{ gameTitle(game) }}</span>
+                                    <select class="app-input w-24 shrink-0" [disabled]="savingPostSessionRatings[game.id]" [value]="getMyRating(game.id) ?? ''" [attr.aria-label]="'Your rating for ' + gameTitle(game)" (change)="savePostSessionRating(game.id, +$any($event.target).value)">
+                                        <option value="">Rate</option>
+                                        @for (rating of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; track rating) {
+                                            <option [value]="rating">{{ rating }}/10</option>
+                                        }
+                                    </select>
+                                </li>
+                            }
+                        </ul>
+                    </section>
+                }
+
+                @if (skippedGames.length > 0) {
+                    <section aria-labelledby="not-played-heading">
+                        <h2 id="not-played-heading" class="text-lg font-semibold">Shortlisted but not played</h2>
+                        <p class="mb-3 mt-1 text-sm text-bv-text-muted">Worth another look next time.</p>
+                        <ul class="flex flex-wrap gap-2">
+                            @for (game of skippedGames; track game.id) {
+                                <li class="max-w-full"><a [routerLink]="['/games', game.id]" class="app-chip max-w-full"><span class="truncate">{{ gameTitle(game) }}</span></a></li>
+                            }
+                        </ul>
+                    </section>
+                }
+            </div>
+
+            <!-- People -->
+            <aside class="min-w-0" aria-labelledby="people-heading">
+                <div class="rounded-lg border border-bv-border bg-bv-surface p-4 shadow-sm lg:sticky lg:top-4">
+                    <div class="flex items-baseline justify-between gap-3">
+                        <h2 id="people-heading" class="text-lg font-semibold">{{ meet.status === 'completed' ? 'Who came' : meet.status === 'cancelled' ? 'Who was invited' : 'Who’s coming' }}</h2>
+                        @if (canEditSession) {
+                            <button type="button" class="rounded text-sm font-semibold text-bv-primary hover:underline" [attr.aria-expanded]="isEditingInvites" (click)="isEditingInvites = !isEditingInvites">
+                                {{ isEditingInvites ? 'Done' : 'Edit' }}
+                            </button>
+                        }
+                    </div>
+
+                    @if (isEditingInvites && canEditSession) {
+                        <div class="mt-3 flex flex-wrap gap-2" role="group" aria-label="Who is invited">
+                            @for (person of invitablePeople; track person.key) {
+                                <button type="button" class="app-chip max-w-full" [attr.aria-pressed]="isInvited(person)" [attr.aria-label]="inviteToggleLabel(person)" [disabled]="isPersistingChanges || isInviteLocked(person)" (click)="toggleInvite(person)">
+                                    <span class="truncate">{{ person.displayName }}</span>
+                                </button>
                             }
                         </div>
+                        @if (attendeeCount === 1) {
+                            <p class="mt-3 text-xs text-bv-warning" role="status">Keep at least one person invited.</p>
+                        } @else if (hasPlayedGameAttendeeLock || isGroupPersonSession) {
+                            <p class="mt-3 text-xs text-bv-text-muted">People who played a game stay invited. Take them out of that game first.</p>
+                        }
                     }
-                </div>
-                @if (!showAllGamesForPlayed && hiddenPlayableGameCount > 0) {
-                    <button type="button" class="mt-4 text-sm font-semibold text-bv-primary hover:underline" (click)="showAllGamesForPlayed = true">
-                        Show {{ hiddenPlayableGameCount }} more games nobody attending owns
-                    </button>
-                }
-            }
-        </section>
-        }
 
-        @if (canLeaveFeedback && playedGameDetails.length > 0) {
-            <section class="app-bg-secondary rounded-lg p-6 mt-6" aria-labelledby="feedback-heading">
-                <div class="mb-4">
-                    <h2 id="feedback-heading" class="text-xl font-semibold">How did it go for you?</h2>
-                    <p class="text-secondary text-sm mt-1">Rate the games you actually played. Your rating helps this group choose better next time.</p>
-                </div>
-                <div class="grid gap-3 sm:grid-cols-2">
-                    @for (game of playedGameDetails; track game.id) {
-                        <label class="flex items-center gap-3 rounded-lg border border-bv-border p-3">
-                            <image-background [src]="game.imageUrl" [alt]="(game.titleTranslations.en || game.title || 'Game') + ' cover'" class="h-12 w-12 shrink-0" />
-                            <span class="min-w-0 flex-1 truncate font-medium">{{ game.titleTranslations.en || game.title || 'Untitled game' }}</span>
-                            <select class="app-input w-24" [disabled]="savingPostSessionRatings[game.id]" [value]="getMyRating(game.id) ?? ''" [attr.aria-label]="'Your rating for ' + (game.titleTranslations.en || game.title || 'this game')" (change)="savePostSessionRating(game.id, +$any($event.target).value)">
-                                <option value="">Rate</option>
-                                @for (rating of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; track rating) {
-                                    <option [value]="rating">{{ rating }}/10</option>
+                    <ul class="mt-3 divide-y divide-bv-border">
+                        @for (person of invitedPeople; track person.key) {
+                            @let rsvp = rsvpOf(person);
+                            <li class="flex min-w-0 items-center gap-3 py-2">
+                                <app-image-profile size="small" class="shrink-0" [avatar]="person.avatar" />
+                                <span class="min-w-0 flex-1">
+                                    <span class="block truncate text-sm font-medium">{{ person.displayName }}</span>
+                                    <span class="block text-xs" [class]="rsvp === 'accepted' ? 'text-bv-success' : rsvp === 'declined' ? 'text-bv-danger' : 'text-bv-text-muted'">{{ rsvpLabel(person) }}</span>
+                                </span>
+                                @if (canRecordAttendance) {
+                                    <button type="button" class="app-chip shrink-0" [attr.aria-pressed]="attended(person)" [attr.aria-label]="person.displayName + ' was there'" [disabled]="isUpdatingAttendance" (click)="toggleAttended(person)">
+                                        <app-icon name="check" [size]="14" aria-hidden="true" /> There
+                                    </button>
+                                } @else if (meet.status === 'completed' && attended(person)) {
+                                    <span class="shrink-0 text-xs text-bv-text-muted">Was there</span>
                                 }
-                            </select>
-                        </label>
+                            </li>
+                        }
+                    </ul>
+                    @if (canRecordAttendance) {
+                        <p class="mt-2 text-xs text-bv-text-muted">Mark who actually came. It can differ from who said they would.</p>
                     }
                 </div>
-            </section>
-        }
-
-        @if (skippedGames.length > 0) {
-            <section class="app-bg-secondary rounded-lg p-6 mt-6" aria-labelledby="not-played-heading">
-                <h2 id="not-played-heading" class="text-xl font-semibold">Shortlisted but not played</h2>
-                <p class="text-secondary text-sm mt-1 mb-4">Keep these visible so the group can revisit them next time.</p>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    @for (game of skippedGames; track game.id) {
-                        <a [routerLink]="['/games', game.id]" class="flex items-center gap-3 rounded-lg border border-bv-border bg-bv-bg p-3 opacity-75">
-                            <image-background [src]="game.imageUrl" [alt]="(game.titleTranslations.en || game.title || 'Game') + ' cover'" class="h-14 w-14 shrink-0" />
-                            <span class="font-medium">{{ game.titleTranslations.en || game.title || 'Untitled game' }}</span>
-                        </a>
-                    }
-                </div>
-            </section>
-        }
+            </aside>
+        </div>
     </container-wrapper>
 }

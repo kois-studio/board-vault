@@ -56,6 +56,14 @@ describe('group participant history presentation', () => {
         const carlosPerson = { id: 2, displayName: 'Carlos G.', avatar: null, accountId: 4 }
 
         expect(component.getAttendeeSummary([carlosAccount], [carlosPerson])).toBe('With Carlos G.')
-        expect(component.getPlayerCount({ gameData: {} as never, playedBy: [carlosAccount], playedByPeople: [carlosPerson] })).toBe(1)
+        expect(
+            component.getPlayerCount({
+                gameData: {} as never,
+                playedBy: [carlosAccount],
+                playedByPeople: [carlosPerson],
+                winnerAccountIds: [],
+                winnerPersonIds: [],
+            }),
+        ).toBe(1)
     })
 })
