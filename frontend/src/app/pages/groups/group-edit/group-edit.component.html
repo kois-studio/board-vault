@@ -78,7 +78,7 @@
                             <label for="group-username-invite" class="mt-5 block text-sm font-semibold text-bv-text">Their username</label>
                             <div class="mt-2 flex flex-col gap-3 sm:flex-row">
                                 <input id="group-username-invite" type="text" [formControl]="usernameToInvite" placeholder="friend_username" class="app-input min-w-0 flex-1" [class]="usernameClass" autocomplete="username" />
-                                <button appButton type="submit" class="shrink-0" [disabled]="disableInviteButton">{{ isLoading ? 'Inviting…' : 'Send invite' }}</button>
+                                <button appButton type="submit" class="shrink-0" [disabled]="disableInviteButton">{{ isLoading() ? 'Inviting…' : 'Send invite' }}</button>
                             </div>
                             <label for="group-username-claim-person" class="mt-4 block text-sm font-semibold text-bv-text">Optional: link them to a group person</label>
                             <select id="group-username-claim-person" class="app-input mt-2" [value]="selectedClaimPersonId() ?? ''" (change)="selectedClaimPersonId.set($any($event.target).value ? +$any($event.target).value : null)">
@@ -117,22 +117,22 @@
                             </select>
                             <div class="mt-2 flex flex-col gap-3 sm:flex-row">
                                 <input id="group-email-invite" type="email" [formControl]="emailToInvite" placeholder="friend@example.com" class="app-input min-w-0 flex-1" [class.border-bv-danger]="emailToInvite.invalid && (emailToInvite.dirty || emailToInvite.touched)" autocomplete="email" />
-                                <button appButton type="submit" class="shrink-0" [disabled]="isLoading || emailToInvite.invalid">{{ isLoading ? 'Sending…' : 'Send email invite' }}</button>
+                                <button appButton type="submit" class="shrink-0" [disabled]="isLoading() || emailToInvite.invalid">{{ isLoading() ? 'Sending…' : 'Send email invite' }}</button>
                             </div>
                             <p class="mt-2 text-sm text-secondary">They join this private group after accepting and verifying their account.</p>
                             @if (emailToInvite.touched && emailToInvite.hasError('required')) { <p class="mt-2 text-sm text-bv-danger">Enter an email address to continue.</p> }
                             @if (emailToInvite.touched && emailToInvite.hasError('email')) { <p class="mt-2 text-sm text-bv-danger">Enter a valid email address.</p> }
                             @if (newPersonInvitationError()) { <p class="mt-4 rounded-2xl border border-bv-danger/30 bg-bv-danger/10 p-4 text-sm text-bv-danger" role="alert">{{ newPersonInvitationError() }}</p> }
-                            @if (clerkInvitation) {
+                            @if (clerkInvitation(); as invitation) {
                                 <div class="mt-5 rounded-2xl border border-bv-success/30 bg-bv-success/10 p-4" role="status" aria-live="polite">
-                                    <p class="font-semibold text-bv-success">Invitation sent to {{ clerkInvitation.emailAddress }}.</p>
+                                    <p class="font-semibold text-bv-success">Invitation sent to {{ invitation.emailAddress }}.</p>
                                     <p class="mt-1 text-sm text-secondary">Share the secure link directly if the email does not arrive.</p>
                                     <div class="mt-3 flex flex-wrap gap-3">
                                         <button appButton variant="secondary" type="button" (click)="copyClerkInvitationLink()">Copy secure link</button>
-                                        <a appButton variant="secondary" [href]="clerkInvitation.url" target="_blank" rel="noreferrer">Open link</a>
+                                        <a appButton variant="secondary" [href]="invitation.url" target="_blank" rel="noreferrer">Open link</a>
                                     </div>
-                                    @if (copyLinkStatus !== 'idle') {
-                                        <p class="mt-2 text-xs text-secondary">{{ copyLinkStatus === 'copied' ? 'Secure link copied.' : copyLinkStatus === 'unavailable' ? 'Clipboard access is unavailable; use Open link.' : 'The link could not be copied; use Open link.' }}</p>
+                                    @if (copyLinkStatus() !== 'idle') {
+                                        <p class="mt-2 text-xs text-secondary">{{ copyLinkStatus() === 'copied' ? 'Secure link copied.' : copyLinkStatus() === 'unavailable' ? 'Clipboard access is unavailable; use Open link.' : 'The link could not be copied; use Open link.' }}</p>
                                     }
                                 </div>
                             }
@@ -160,8 +160,8 @@
                                 <li class="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-bv-bg p-4">
                                     <div><p class="font-medium text-bv-text">{{ invitation.emailAddress }}</p><p class="mt-1 text-xs text-secondary">Sent {{ invitation.createdAt | customDate: true }}</p></div>
                                     @if (pendingClerkRevokeId() === invitation.invitationId) {
-                                        <div class="flex flex-wrap items-center gap-2" role="group" aria-label="Confirm email invitation revocation"><span class="text-xs text-secondary">Revoke this link?</span><button appButton variant="danger" type="button" [disabled]="isLoading" (click)="revokeClerkInvitation(invitation.invitationId)">Yes, revoke</button><button appButton variant="secondary" type="button" [disabled]="isLoading" (click)="pendingClerkRevokeId.set(null)">Keep it</button></div>
-                                    } @else { <button appButton variant="danger" type="button" [disabled]="isLoading" (click)="requestClerkRevoke(invitation.invitationId)">Revoke</button> }
+                                        <div class="flex flex-wrap items-center gap-2" role="group" aria-label="Confirm email invitation revocation"><span class="text-xs text-secondary">Revoke this link?</span><button appButton variant="danger" type="button" [disabled]="isLoading()" (click)="revokeClerkInvitation(invitation.invitationId)">Yes, revoke</button><button appButton variant="secondary" type="button" [disabled]="isLoading()" (click)="pendingClerkRevokeId.set(null)">Keep it</button></div>
+                                    } @else { <button appButton variant="danger" type="button" [disabled]="isLoading()" (click)="requestClerkRevoke(invitation.invitationId)">Revoke</button> }
                                 </li>
                             }
                         </ul>
@@ -174,7 +174,7 @@
                                 @for (invitation of getPendingAccountInvitations(groupData.id); track invitation.id) {
                                     <li class="flex min-w-0 items-center justify-between gap-3 rounded-2xl bg-bv-bg p-4">
                                         <div class="flex min-w-0 items-center gap-3"><app-image-profile [avatar]="invitation.toAccount.avatar" /><div class="min-w-0"><p class="truncate font-medium text-bv-text">{{ invitation.toAccount.displayName }}</p><p class="truncate text-sm text-secondary">{{ invitation.toAccount.username }}</p></div></div>
-                                        <button appButton variant="danger" type="button" class="shrink-0" [attr.aria-pressed]="membersToRemoveFromGroup.includes(invitation.toAccountId)" (click)="markAsToRemove(invitation.toAccountId)">{{ membersToRemoveFromGroup.includes(invitation.toAccountId) ? 'Keep invitation' : 'Remove' }}</button>
+                                        <button appButton variant="danger" type="button" class="shrink-0" [attr.aria-pressed]="membersToRemoveFromGroup().includes(invitation.toAccountId)" (click)="markAsToRemove(invitation.toAccountId)">{{ membersToRemoveFromGroup().includes(invitation.toAccountId) ? 'Keep invitation' : 'Remove' }}</button>
                                     </li>
                                 }
                             </ul>
@@ -192,20 +192,20 @@
                         <h2 id="members-heading" class="mt-1 text-2xl font-bold text-bv-text">Current members</h2>
                         <p class="mt-2 text-secondary">These members’ collections and play history shape this group’s recommendations.</p>
                     </div>
-                    @if (membersToRemoveFromGroup.length > 0) { <span class="text-sm font-medium text-bv-warning" role="status" aria-live="polite">{{ membersToRemoveFromGroup.length }} change{{ membersToRemoveFromGroup.length === 1 ? '' : 's' }} waiting to save</span> }
+                    @if (membersToRemoveFromGroup().length > 0) { <span class="text-sm font-medium text-bv-warning" role="status" aria-live="polite">{{ membersToRemoveFromGroup().length }} change{{ membersToRemoveFromGroup().length === 1 ? '' : 's' }} waiting to save</span> }
                 </div>
                 <ul class="mt-5 grid gap-3 lg:grid-cols-2">
                     @for (member of groupData.members; track member.id) {
                         <li class="flex min-w-0 items-center justify-between gap-3 rounded-2xl border border-bv-border bg-bv-bg p-4">
                             <div class="flex min-w-0 items-center gap-3"><app-card-account [member]="member" [isOwner]="groupData.createdBy === member.id" class="min-w-0" /><span class="shrink-0 text-xs text-secondary">{{ member.games.length }} game{{ member.games.length === 1 ? '' : 's' }}</span></div>
-                            @if (isGroupOwner && groupData.createdBy !== member.id) { <button appButton variant="danger" type="button" class="shrink-0" [attr.aria-pressed]="membersToRemoveFromGroup.includes(member.id)" (click)="markAsToRemove(member.id)">{{ membersToRemoveFromGroup.includes(member.id) ? 'Keep member' : 'Remove' }}</button> }
+                            @if (isGroupOwner && groupData.createdBy !== member.id) { <button appButton variant="danger" type="button" class="shrink-0" [attr.aria-pressed]="membersToRemoveFromGroup().includes(member.id)" (click)="markAsToRemove(member.id)">{{ membersToRemoveFromGroup().includes(member.id) ? 'Keep member' : 'Remove' }}</button> }
                         </li>
                     }
                 </ul>
-                @if (isGroupOwner && membersToRemoveFromGroup.length > 0) {
+                @if (isGroupOwner && membersToRemoveFromGroup().length > 0) {
                     <div class="mt-5 flex flex-col gap-3 rounded-2xl border border-bv-warning/30 bg-bv-warning/10 p-4 sm:flex-row sm:items-center sm:justify-between" role="alert">
                         <p class="text-sm text-secondary">Removing someone takes away their access to this group’s plans and shared history. Save only if that is intentional.</p>
-                        <button appButton type="button" class="shrink-0" [disabled]="isLoading" (click)="onSaveChanges()">{{ isLoading ? 'Saving…' : 'Save membership changes' }}</button>
+                        <button appButton type="button" class="shrink-0" [disabled]="isLoading()" (click)="onSaveChanges()">{{ isLoading() ? 'Saving…' : 'Save membership changes' }}</button>
                     </div>
                 }
             </section>

@@ -85,7 +85,7 @@ describe('RegisterComponent invitation onboarding', () => {
             component.invitationError.set(null)
         }
 
-        expect(component.isInvitationSubmitting).toBe(false)
+        expect(component.isInvitationSubmitting()).toBe(false)
     })
 
     it('clears stale invitation state when returning to private-beta access', async () => {

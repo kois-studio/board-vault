@@ -62,7 +62,7 @@ describe('GroupCreateComponent onboarding handoff', () => {
 
         expect(component.createError()).toContain('could not create the group')
         expect(component.groupNameForm.value).toBe('Friday Crew')
-        expect(component.isLoading).toBe(false)
+        expect(component.isLoading()).toBe(false)
         expect(router.navigate).not.toHaveBeenCalled()
     })
 })

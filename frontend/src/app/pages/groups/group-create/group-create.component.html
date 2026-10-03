@@ -37,7 +37,7 @@
               <p class="mt-2 text-sm text-bv-danger" role="alert">Keep the group name under 20 characters.</p>
             }
           </div>
-          <button appButton class="mt-6" type="submit" [disabled]="disableCreateButton" [loading]="isLoading" variant="primary" [wide]="true">Create group</button>
+          <button appButton class="mt-6" type="submit" [disabled]="disableCreateButton" [loading]="isLoading()" variant="primary" [wide]="true">Create group</button>
           @if (createError()) {
             <p class="mt-4 rounded-2xl border border-bv-danger/30 bg-bv-danger/10 p-4 text-sm text-bv-danger" role="alert">{{ createError() }}</p>
           }

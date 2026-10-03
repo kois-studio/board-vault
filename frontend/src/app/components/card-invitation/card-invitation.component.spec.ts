@@ -62,7 +62,7 @@ describe('CardInvitationComponent', () => {
         declineButton.click()
         fixture.detectChanges()
 
-        expect(component.isConfirmingDecline).toBe(true)
+        expect(component.isConfirmingDecline()).toBe(true)
         expect(fixture.nativeElement.textContent).toContain('Decline this invitation?')
         expect(dataService.rejectInvitation).not.toHaveBeenCalled()
     })

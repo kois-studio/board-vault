@@ -1,4 +1,4 @@
-import { Component, inject, input, OnChanges, OnInit, output, SimpleChanges } from '@angular/core'
+import { Component, inject, input, OnChanges, OnInit, output, SimpleChanges, signal } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../../api/api'
@@ -28,7 +28,7 @@ export class FormGameSubmissionComponent implements OnInit, OnChanges {
     readonly initialTitle = input<string>()
     readonly proposalSubmitted = output<void>()
 
-    public isSubmitting = false
+    public readonly isSubmitting = signal(false)
 
     public gameSubmissionForm = new FormGroup({
         title: new FormControl('', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]),
@@ -101,7 +101,7 @@ export class FormGameSubmissionComponent implements OnInit, OnChanges {
     }
 
     public async onSubmit() {
-        if (this.gameSubmissionForm.invalid || this.isSubmitting) return
+        if (this.gameSubmissionForm.invalid || this.isSubmitting()) return
 
         const currentUser = this.currentUser$()
         if (!currentUser) {
@@ -109,7 +109,7 @@ export class FormGameSubmissionComponent implements OnInit, OnChanges {
             return
         }
 
-        this.isSubmitting = true
+        this.isSubmitting.set(true)
 
         try {
             const formData = this.gameSubmissionForm.value
@@ -137,7 +137,7 @@ export class FormGameSubmissionComponent implements OnInit, OnChanges {
             console.error('Error submitting game proposal:', error)
             this.toastService.error('Failed to submit game proposal. Please try again.')
         } finally {
-            this.isSubmitting = false
+            this.isSubmitting.set(false)
         }
     }
 

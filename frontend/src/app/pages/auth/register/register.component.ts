@@ -31,7 +31,7 @@ export class RegisterComponent {
         }),
         confirmPassword: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     })
-    public isInvitationSubmitting = false
+    public readonly isInvitationSubmitting = signal(false)
 
     public openClerkSignUp(): void {
         this.clerkService.openSignUp()
@@ -43,10 +43,13 @@ export class RegisterComponent {
 
     public async completeInvitationSignUp(): Promise<void> {
         this.invitationForm.markAllAsTouched()
-        if ((!this.isInvitationSignIn() && (this.invitationForm.invalid || !this.invitationPasswordsMatch)) || this.isInvitationSubmitting)
+        if (
+            (!this.isInvitationSignIn() && (this.invitationForm.invalid || !this.invitationPasswordsMatch)) ||
+            this.isInvitationSubmitting()
+        )
             return
 
-        this.isInvitationSubmitting = true
+        this.isInvitationSubmitting.set(true)
         this.invitationError.set(null)
 
         try {
@@ -58,7 +61,7 @@ export class RegisterComponent {
         } catch (error) {
             this.invitationError.set(this.getInvitationErrorMessage(error))
         } finally {
-            this.isInvitationSubmitting = false
+            this.isInvitationSubmitting.set(false)
         }
     }
 

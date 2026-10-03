@@ -17,18 +17,18 @@
         </div>
     
         <!-- RIGHT COL: buttons -->
-        <div class="flex flex-wrap gap-3" [attr.aria-busy]="isLoading">
-            <button appButton type="button" (click)="acceptInvitation()" [disabled]="isLoading" [attr.aria-label]="'Accept invitation to ' + invitation.group.name">
-                <app-icon name="check" [size]="16" /> {{ isLoading ? 'Working…' : 'Accept' }}
+        <div class="flex flex-wrap gap-3" [attr.aria-busy]="isLoading()">
+            <button appButton type="button" (click)="acceptInvitation()" [disabled]="isLoading()" [attr.aria-label]="'Accept invitation to ' + invitation.group.name">
+                <app-icon name="check" [size]="16" /> {{ isLoading() ? 'Working…' : 'Accept' }}
             </button>
-            @if (isConfirmingDecline) {
+            @if (isConfirmingDecline()) {
                 <div class="flex flex-wrap items-center gap-2 rounded-lg border border-bv-danger/30 bg-bv-danger/10 px-3 py-2 text-sm" role="group" aria-label="Confirm invitation decline">
                     <span class="text-bv-danger">Decline this invitation?</span>
-                    <button appButton variant="danger" type="button" (click)="rejectInvitation()" class="py-2!" [disabled]="isLoading">Yes, decline</button>
-                    <button appButton variant="secondary" type="button" (click)="isConfirmingDecline = false" class="py-2!" [disabled]="isLoading">Keep it</button>
+                    <button appButton variant="danger" type="button" (click)="rejectInvitation()" class="py-2!" [disabled]="isLoading()">Yes, decline</button>
+                    <button appButton variant="secondary" type="button" (click)="isConfirmingDecline.set(false)" class="py-2!" [disabled]="isLoading()">Keep it</button>
                 </div>
             } @else {
-                <button appButton variant="danger" type="button" (click)="rejectInvitation()" [disabled]="isLoading" [attr.aria-label]="'Decline invitation to ' + invitation.group.name">
+                <button appButton variant="danger" type="button" (click)="rejectInvitation()" [disabled]="isLoading()" [attr.aria-label]="'Decline invitation to ' + invitation.group.name">
                     <app-icon name="x" [size]="16" /> Decline
                 </button>
             }

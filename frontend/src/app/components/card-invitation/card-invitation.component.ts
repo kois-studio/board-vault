@@ -14,18 +14,18 @@ import { IconComponent } from '../ui/icon/icon.component'
 })
 export class CardInvitationComponent {
     readonly invitation = input.required<null | InvitationWithExtraData>()
-    public isLoading = false
-    public isConfirmingDecline = false
+    public readonly isLoading = signal(false)
+    public readonly isConfirmingDecline = signal(false)
     public readonly actionError = signal<string | null>(null)
 
     constructor(private readonly dataService: DataService) {}
 
     async acceptInvitation() {
         const invitation = this.invitation()
-        if (!invitation || this.isLoading) return
-        this.isConfirmingDecline = false
+        if (!invitation || this.isLoading()) return
+        this.isConfirmingDecline.set(false)
         this.actionError.set(null)
-        this.isLoading = true
+        this.isLoading.set(true)
         try {
             await firstValueFrom(this.dataService.acceptInvitation(invitation.id))
         } catch {
@@ -33,27 +33,27 @@ export class CardInvitationComponent {
                 'We could not accept this invitation. It may have expired or the group may no longer be available. Try again or refresh your invitations.',
             )
         } finally {
-            this.isLoading = false
+            this.isLoading.set(false)
         }
     }
 
     async rejectInvitation() {
         const invitation = this.invitation()
-        if (!invitation || this.isLoading) return
+        if (!invitation || this.isLoading()) return
 
-        if (!this.isConfirmingDecline) {
-            this.isConfirmingDecline = true
+        if (!this.isConfirmingDecline()) {
+            this.isConfirmingDecline.set(true)
             return
         }
 
         this.actionError.set(null)
-        this.isLoading = true
+        this.isLoading.set(true)
         try {
             await firstValueFrom(this.dataService.rejectInvitation(invitation.id))
         } catch {
             this.actionError.set('We could not decline this invitation right now. Try again or refresh your invitations.')
         } finally {
-            this.isLoading = false
+            this.isLoading.set(false)
         }
     }
 

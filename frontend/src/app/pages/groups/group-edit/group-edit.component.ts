@@ -42,10 +42,10 @@ export class GroupEditComponent {
     //        DATA for this component
     // --------------------------------------------------------------------------
     public groupData: null | (typeof this.userGroups)[number] = null
-    public membersToRemoveFromGroup: Array<number> = []
+    public readonly membersToRemoveFromGroup = signal<Array<number>>([])
     public usernameToInvite = new FormControl('', [Validators.required, Validators.minLength(4), Validators.maxLength(20)])
     public emailToInvite = new FormControl('', [Validators.required, Validators.email, Validators.maxLength(320)])
-    public clerkInvitation: ClerkGroupInvitationType | null = null
+    public readonly clerkInvitation = signal<ClerkGroupInvitationType | null>(null)
     public readonly clerkPendingInvitations = signal<Array<ClerkGroupInvitationSummaryType>>([])
     public readonly clerkInvitationsLoading = signal(false)
     public readonly clerkInvitationsError = signal(false)
@@ -58,8 +58,8 @@ export class GroupEditComponent {
     public readonly isDeletingGroup = signal(false)
     public readonly isResolvingGroup = signal(true)
     public readonly groupResolutionError = signal(false)
-    public copyLinkStatus: 'idle' | 'copied' | 'unavailable' | 'failed' = 'idle'
-    public isLoading = false
+    public readonly copyLinkStatus = signal<'idle' | 'copied' | 'unavailable' | 'failed'>('idle')
+    public readonly isLoading = signal(false)
     private loadedClerkInvitationsGroupId: number | null = null
 
     constructor(
@@ -127,7 +127,7 @@ export class GroupEditComponent {
         const isUserAlreadyInvited = (this.invitationsGroupIndex[this.groupData.id] ?? []).some(
             (invitation) => invitation.toAccount.username === this.usernameToInvite.value,
         )
-        return this.isLoading || this.usernameToInvite.invalid || isUserAlreadyInGroup || isUserAlreadyInvited
+        return this.isLoading() || this.usernameToInvite.invalid || isUserAlreadyInGroup || isUserAlreadyInvited
     }
 
     public onInviteUserSubmit(event: SubmitEvent): void {
@@ -158,16 +158,16 @@ export class GroupEditComponent {
     }
 
     markAsToRemove(accountId: number) {
-        if (this.membersToRemoveFromGroup.includes(accountId)) {
-            this.membersToRemoveFromGroup = this.membersToRemoveFromGroup.filter((id) => id !== accountId)
+        if (this.membersToRemoveFromGroup().includes(accountId)) {
+            this.membersToRemoveFromGroup.set(this.membersToRemoveFromGroup().filter((id) => id !== accountId))
         } else {
-            this.membersToRemoveFromGroup.push(accountId)
+            this.membersToRemoveFromGroup.update((ids) => [...ids, accountId])
         }
     }
 
     async onInviteUser() {
-        if (!this.isGroupOwner || !this.groupData || !this.usernameToInvite.value || this.isLoading) return
-        this.isLoading = true
+        if (!this.isGroupOwner || !this.groupData || !this.usernameToInvite.value || this.isLoading()) return
+        this.isLoading.set(true)
         this.existingInvitationError.set(null)
 
         try {
@@ -178,21 +178,22 @@ export class GroupEditComponent {
         } catch {
             this.existingInvitationError.set('We could not send this invite. Check the username and try again; your entry is still here.')
         } finally {
-            this.isLoading = false
+            this.isLoading.set(false)
         }
     }
 
     async onInviteNewPerson() {
-        if (!this.isGroupOwner || !this.groupData || !this.emailToInvite.value || this.emailToInvite.invalid || this.isLoading) return
-        this.isLoading = true
-        this.clerkInvitation = null
-        this.copyLinkStatus = 'idle'
+        if (!this.isGroupOwner || !this.groupData || !this.emailToInvite.value || this.emailToInvite.invalid || this.isLoading()) return
+        this.isLoading.set(true)
+        this.clerkInvitation.set(null)
+        this.copyLinkStatus.set('idle')
         this.newPersonInvitationError.set(null)
 
         try {
-            this.clerkInvitation = await firstValueFrom(
+            const invitation = await firstValueFrom(
                 this.dataService.inviteNewPersonToGroup(this.groupData.id, this.emailToInvite.value, this.selectedClaimPersonId()),
             )
+            this.clerkInvitation.set(invitation)
             this.emailToInvite.reset()
             await this.refreshClerkInvitations(this.groupData.id)
         } catch {
@@ -200,7 +201,7 @@ export class GroupEditComponent {
                 'We could not send the email invitation. Check the address and try again; your entry is still here.',
             )
         } finally {
-            this.isLoading = false
+            this.isLoading.set(false)
         }
     }
 
@@ -237,8 +238,8 @@ export class GroupEditComponent {
     }
 
     async revokeClerkInvitation(invitationId: string): Promise<void> {
-        if (!this.isGroupOwner || !this.groupData || this.pendingClerkRevokeId() !== invitationId || this.isLoading) return
-        this.isLoading = true
+        if (!this.isGroupOwner || !this.groupData || this.pendingClerkRevokeId() !== invitationId || this.isLoading()) return
+        this.isLoading.set(true)
 
         try {
             await firstValueFrom(this.api.revokeClerkGroupInvitation(this.groupData.id, invitationId))
@@ -248,33 +249,34 @@ export class GroupEditComponent {
         } catch {
             this.toastService.error('Error revoking email invitation')
         } finally {
-            this.isLoading = false
+            this.isLoading.set(false)
         }
     }
 
     async copyClerkInvitationLink() {
-        if (!this.clerkInvitation?.url) return
+        const url = this.clerkInvitation()?.url
+        if (!url) return
         if (!navigator.clipboard) {
-            this.copyLinkStatus = 'unavailable'
+            this.copyLinkStatus.set('unavailable')
             return
         }
 
         try {
-            await navigator.clipboard.writeText(this.clerkInvitation.url)
-            this.copyLinkStatus = 'copied'
+            await navigator.clipboard.writeText(url)
+            this.copyLinkStatus.set('copied')
         } catch {
-            this.copyLinkStatus = 'failed'
+            this.copyLinkStatus.set('failed')
         }
     }
 
     async onSaveChanges() {
-        if (!this.isGroupOwner || !this.groupData || this.isLoading) return
-        this.isLoading = true
+        if (!this.isGroupOwner || !this.groupData || this.isLoading()) return
+        this.isLoading.set(true)
         const groupData = this.groupData
 
         try {
             const invitations = this.invitationsGroupIndex[groupData.id] ?? []
-            const operations = this.membersToRemoveFromGroup.map((accountId) => {
+            const operations = this.membersToRemoveFromGroup().map((accountId) => {
                 const invitation = invitations.find((invitation) => invitation.toAccount.id === accountId)
                 return invitation
                     ? firstValueFrom(this.dataService.removeInvitedFromGroup(invitation.id))
@@ -282,11 +284,11 @@ export class GroupEditComponent {
             })
 
             await Promise.all(operations)
-            this.membersToRemoveFromGroup = []
+            this.membersToRemoveFromGroup.set([])
         } catch {
             // Individual services present the request error; keep selections for a retry.
         } finally {
-            this.isLoading = false
+            this.isLoading.set(false)
         }
     }
 

@@ -17,7 +17,7 @@ export class GroupCreateComponent {
     //        DATA for this component
     // --------------------------------------------------------------------------
     public groupNameForm = new FormControl('', [Validators.required, Validators.minLength(4), Validators.maxLength(20)])
-    public isLoading = false
+    public readonly isLoading = signal(false)
     public readonly createError = signal<string | null>(null)
     public readonly currentUser$ = this.dataService.currentUser
 
@@ -34,7 +34,7 @@ export class GroupCreateComponent {
         if (!this.groupNameForm.value || !this.currentUser$()) {
             return true
         }
-        return this.isLoading || this.groupNameForm.invalid
+        return this.isLoading() || this.groupNameForm.invalid
     }
 
     public onSubmit(event: SubmitEvent): void {
@@ -44,8 +44,8 @@ export class GroupCreateComponent {
 
     async onCreateGroup() {
         this.groupNameForm.markAsTouched()
-        if (!this.groupNameForm.value || this.groupNameForm.invalid || this.isLoading) return
-        this.isLoading = true
+        if (!this.groupNameForm.value || this.groupNameForm.invalid || this.isLoading()) return
+        this.isLoading.set(true)
         this.createError.set(null)
 
         try {
@@ -55,7 +55,7 @@ export class GroupCreateComponent {
         } catch {
             this.createError.set('We could not create the group. Check your connection and try again; your group name is still here.')
         } finally {
-            this.isLoading = false
+            this.isLoading.set(false)
         }
     }
 }

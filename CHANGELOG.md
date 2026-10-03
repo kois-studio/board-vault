@@ -106,8 +106,11 @@ operational details.
   shortlist to "not played"; that happens when the night is finished.
 - Marking a game as played in a session with group people no longer fails
   (the page sent an empty account list the API rejects).
-- The session page updates after saving attendance, players, or the
-  shortlist; it kept showing "Saving…" since Angular made OnPush the default.
+- Pages update after slow actions again: the session page kept showing
+  "Saving…", and the group settings page could miss the email invitation
+  link, because Angular now checks components only when told (OnPush by
+  default). Invitation cards, the group forms, the game proposal form and
+  the invitation sign-up keep their busy state in signals.
 - Signing in no longer fails at random when the database is slow to answer
   its first query after a quiet spell: a read that times out is tried once more.
 - A long name without spaces no longer makes the group page wider than a

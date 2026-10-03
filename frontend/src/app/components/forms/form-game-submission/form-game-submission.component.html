@@ -179,13 +179,13 @@
     </button>
     <button appButton
       type="submit"
-      [disabled]="gameSubmissionForm.invalid || isSubmitting"
+      [disabled]="gameSubmissionForm.invalid || isSubmitting()"
       class="text-sm"
       >
-      @if (!isSubmitting) {
+      @if (!isSubmitting()) {
         <span>Submit Proposal</span>
       }
-      @if (isSubmitting) {
+      @if (isSubmitting()) {
         <span>Submitting...</span>
       }
     </button>

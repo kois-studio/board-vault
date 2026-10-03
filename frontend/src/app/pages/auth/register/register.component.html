@@ -17,8 +17,8 @@
                         <div class="mt-8 rounded-2xl border border-bv-primary/30 bg-bv-primary-soft p-5 text-left" role="status">
                             <p class="font-semibold text-bv-text">Your Board Vault account is already registered.</p>
                             <p class="mt-2 text-sm leading-6 text-bv-text-muted">Continue with this secure invitation link and we’ll add you to the group. No new password is needed.</p>
-                            <button appButton type="button" class="mt-5 w-full" [disabled]="isInvitationSubmitting" (click)="completeInvitationSignUp()">
-                                {{ isInvitationSubmitting ? 'Joining…' : 'Continue to the group' }}
+                            <button appButton type="button" class="mt-5 w-full" [disabled]="isInvitationSubmitting()" (click)="completeInvitationSignUp()">
+                                {{ isInvitationSubmitting() ? 'Joining…' : 'Continue to the group' }}
                             </button>
                         </div>
                     } @else {
@@ -43,8 +43,8 @@
                                 }
                             </div>
                             <div id="clerk-captcha" aria-live="polite"></div>
-                            <button appButton type="submit" class="w-full" [disabled]="isInvitationSubmitting">
-                                {{ isInvitationSubmitting ? 'Joining…' : 'Join the group' }}
+                            <button appButton type="submit" class="w-full" [disabled]="isInvitationSubmitting()">
+                                {{ isInvitationSubmitting() ? 'Joining…' : 'Join the group' }}
                             </button>
                         </form>
                     }
