@@ -16,11 +16,13 @@ import {
     GroupGameInterestBody,
     UpdateGroupAcquisitionDecisionBody,
 } from '../../../common/types/group-game-interest.type'
+import { GroupInsightsDto } from '../../../common/types/group-insights.type'
 import { CreateGroupRequestBody, GroupDto, UpdateGroupBody } from '../../../common/types/group.type'
 import { InvitationWithAccountsData } from '../../../common/types/invitation.type'
 import { ClerkIdentityService } from '../../common/auth/clerk-identity.service'
 
 import { GroupAcquisitionService } from './group-acquisition.service'
+import { GroupInsightsService } from './group-insights.service'
 import { GroupsService } from './groups.service'
 
 @UseGuards(AuthGuard)
@@ -33,6 +35,7 @@ export class GroupsController {
         private readonly groupsService: GroupsService,
         private readonly groupAcquisitionService: GroupAcquisitionService,
         private readonly clerkIdentityService: ClerkIdentityService,
+        private readonly groupInsightsService: GroupInsightsService,
     ) {}
 
     @Get('/')
@@ -117,6 +120,14 @@ export class GroupsController {
         @Req() request: { user: { userId: number } },
     ) {
         return this.clerkIdentityService.revokeGroupInvitation(groupId, request.user.userId, params.invitationId)
+    }
+
+    @UseGuards(UserInGroupGuard)
+    @Get('/:groupId/insights')
+    @ApiOperation({ summary: 'Get standings, most played and never played games from completed game nights' })
+    @ApiResponse({ status: 200, type: GroupInsightsDto })
+    getInsights(@Param('groupId', ParseIntPipe) groupId: number) {
+        return this.groupInsightsService.getInsights(groupId)
     }
 
     @UseGuards(UserInGroupGuard)

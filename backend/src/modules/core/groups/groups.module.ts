@@ -8,13 +8,14 @@ import { DatabaseModule } from '../../common/database/database.module'
 import { GroupMembershipsModule } from '../group-memberships/group-memberships.module'
 
 import { GroupAcquisitionService } from './group-acquisition.service'
+import { GroupInsightsService } from './group-insights.service'
 import { GroupsController } from './groups.controller'
 import { GroupsService } from './groups.service'
 // module dependencies
 
 @Module({
     imports: [AuthModule, CacheModule, DatabaseModule, GroupMembershipsModule],
-    providers: [GroupsService, GroupAcquisitionService, GroupOwnerGuard, UserInGroupGuard],
+    providers: [GroupsService, GroupAcquisitionService, GroupInsightsService, GroupOwnerGuard, UserInGroupGuard],
     exports: [GroupsService],
     controllers: [GroupsController],
 })

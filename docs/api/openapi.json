@@ -1338,6 +1338,42 @@
         ]
       }
     },
+    "/groups/{groupId}/insights": {
+      "get": {
+        "operationId": "GroupsController_getInsights",
+        "parameters": [
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupInsightsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get standings, most played and never played games from completed game nights",
+        "tags": [
+          "groups"
+        ]
+      }
+    },
     "/groups/{groupId}/acquisition-board": {
       "get": {
         "operationId": "GroupsController_getAcquisitionBoard",
@@ -5628,6 +5664,137 @@
           "emailAddress",
           "status",
           "createdAt"
+        ]
+      },
+      "GroupStandingDto": {
+        "type": "object",
+        "properties": {
+          "accountId": {
+            "type": "object",
+            "example": 4,
+            "nullable": true,
+            "description": "Set for anyone with an account."
+          },
+          "groupPersonId": {
+            "type": "object",
+            "example": 12,
+            "nullable": true,
+            "description": "The group person, when the group has one for them."
+          },
+          "displayName": {
+            "type": "string",
+            "example": "Lucía"
+          },
+          "avatar": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AvatarDto"
+              }
+            ]
+          },
+          "sessions": {
+            "type": "number",
+            "example": 6,
+            "description": "Completed game nights where they played at least one game."
+          },
+          "gamesPlayed": {
+            "type": "number",
+            "example": 14,
+            "description": "Games they played across completed game nights."
+          },
+          "wins": {
+            "type": "number",
+            "example": 5,
+            "description": "Games they won, shared wins included."
+          }
+        },
+        "required": [
+          "accountId",
+          "groupPersonId",
+          "displayName",
+          "avatar",
+          "sessions",
+          "gamesPlayed",
+          "wins"
+        ]
+      },
+      "GroupGamePlayCountDto": {
+        "type": "object",
+        "properties": {
+          "gameData": {
+            "$ref": "#/components/schemas/GameCompleteDto"
+          },
+          "sessions": {
+            "type": "number",
+            "example": 3,
+            "description": "Completed game nights where it was played."
+          },
+          "lastPlayedAt": {
+            "type": "string",
+            "example": "2026-09-04T19:00:00.000Z"
+          }
+        },
+        "required": [
+          "gameData",
+          "sessions",
+          "lastPlayedAt"
+        ]
+      },
+      "GroupInsightsDto": {
+        "type": "object",
+        "properties": {
+          "sessions": {
+            "type": "number",
+            "example": 8,
+            "description": "Completed game nights."
+          },
+          "gamesPlayed": {
+            "type": "number",
+            "example": 19,
+            "description": "Games played across completed game nights."
+          },
+          "gamesWithWinner": {
+            "type": "number",
+            "example": 7,
+            "description": "Played games with at least one winner recorded."
+          },
+          "standings": {
+            "description": "Most wins first, then most games played.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GroupStandingDto"
+            }
+          },
+          "mostPlayed": {
+            "description": "The five games played on most game nights.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GroupGamePlayCountDto"
+            }
+          },
+          "neverPlayed": {
+            "description": "Up to twelve games the group owns but has never played, by title.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GameCompleteDto"
+            }
+          },
+          "neverPlayedCount": {
+            "type": "number",
+            "example": 23,
+            "description": "How many owned games the group has never played."
+          }
+        },
+        "required": [
+          "sessions",
+          "gamesPlayed",
+          "gamesWithWinner",
+          "standings",
+          "mostPlayed",
+          "neverPlayed",
+          "neverPlayedCount"
         ]
       },
       "UserPublicDto": {

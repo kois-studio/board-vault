@@ -619,6 +619,116 @@ export class GroupQueries {
         })
     }
 
+    /**
+     * Standings, play counts and never-played games from the group's completed
+     * game nights: four reads for the whole group, however many people it has.
+     */
+    async getGroupInsights(groupId: number) {
+        // Who played what, once per person: a group person linked to an account counts as the account.
+        const completedPlays = `
+            WITH completed AS (SELECT id FROM Meet WHERE groupId = ? AND status = 'completed'),
+            plays AS (
+                SELECT mag.meetId, mag.gameId, mag.accountId, NULL AS personId
+                FROM MeetAccountGame mag
+                JOIN completed c ON c.id = mag.meetId
+                UNION
+                SELECT mpg.meetId, mpg.gameId, gp.accountId, CASE WHEN gp.accountId IS NULL THEN gp.id END
+                FROM MeetPersonGame mpg
+                JOIN completed c ON c.id = mpg.meetId
+                JOIN GroupPerson gp ON gp.id = mpg.groupPersonId
+            ),
+            wins AS (
+                SELECT DISTINCT r.meetId, r.gameId, COALESCE(r.accountId, gp.accountId) AS accountId,
+                    CASE WHEN COALESCE(r.accountId, gp.accountId) IS NULL THEN r.groupPersonId END AS personId
+                FROM MeetGameResult r
+                JOIN completed c ON c.id = r.meetId
+                LEFT JOIN GroupPerson gp ON gp.id = r.groupPersonId
+                WHERE r.isWinner = 1
+            )`
+        const gameColumns = `g.id, g.imageUrl, g.gameAvgDuration, g.minPlayers, g.maxPlayers, gt_en.title, gt_es.title`
+        const gameTitles = `
+            LEFT JOIN GameTranslation gt_en ON gt_en.gameId = g.id AND gt_en.languageCode = 'en'
+            LEFT JOIN GameTranslation gt_es ON gt_es.gameId = g.id AND gt_es.languageCode = 'es'`
+
+        const [totals, standings, mostPlayed, neverPlayed] = await Promise.all([
+            this.database.execute({
+                sql: `${completedPlays}
+                    SELECT
+                        (SELECT COUNT(*) FROM completed),
+                        (SELECT COUNT(*) FROM MeetGame mg JOIN completed c ON c.id = mg.meetId WHERE mg.gameStatus = 'played'),
+                        (SELECT COUNT(*) FROM (SELECT DISTINCT meetId, gameId FROM wins))`,
+                args: [groupId],
+            }),
+            this.database.execute({
+                sql: `${completedPlays},
+                    standings AS (
+                        SELECT p.accountId, p.personId, COUNT(DISTINCT p.meetId) AS sessions, COUNT(*) AS gamesPlayed
+                        FROM plays p
+                        GROUP BY p.accountId, p.personId
+                    ),
+                    win_counts AS (
+                        SELECT accountId, personId, COUNT(*) AS wins FROM wins GROUP BY accountId, personId
+                    )
+                    SELECT
+                        s.accountId,
+                        gp.id,
+                        COALESCE(gp.displayName, NULLIF(a.displayName, ''), a.username) AS displayName,
+                        COALESCE(gp.avatar, a.avatar),
+                        s.sessions,
+                        s.gamesPlayed,
+                        COALESCE(w.wins, 0) AS wins
+                    FROM standings s
+                    LEFT JOIN win_counts w ON w.accountId IS s.accountId AND w.personId IS s.personId
+                    LEFT JOIN Account a ON a.id = s.accountId
+                    LEFT JOIN GroupPerson gp ON gp.groupId = ?
+                        AND ((s.accountId IS NOT NULL AND gp.accountId = s.accountId) OR (s.accountId IS NULL AND gp.id = s.personId))
+                    ORDER BY wins DESC, s.gamesPlayed DESC, displayName COLLATE NOCASE`,
+                args: [groupId, groupId],
+            }),
+            this.database.execute({
+                sql: `
+                    SELECT ${gameColumns}, COUNT(*) AS sessions, MAX(m.meetDate) AS lastPlayedAt
+                    FROM MeetGame mg
+                    JOIN Meet m ON m.id = mg.meetId AND m.groupId = ? AND m.status = 'completed'
+                    JOIN Game g ON g.id = mg.gameId
+                    ${gameTitles}
+                    WHERE mg.gameStatus = 'played'
+                    GROUP BY g.id
+                    ORDER BY sessions DESC, lastPlayedAt DESC
+                    LIMIT 5`,
+                args: [groupId],
+            }),
+            this.database.execute({
+                sql: `
+                    WITH shelf AS (
+                        SELECT og.gameId
+                        FROM OwnedGame og
+                        JOIN GroupMembership gm ON gm.accountId = og.accountId AND gm.groupId = ?
+                        UNION
+                        SELECT gpo.gameId
+                        FROM GroupPersonGameOwnership gpo
+                        JOIN GroupPerson gp ON gp.id = gpo.groupPersonId AND gp.groupId = ? AND gp.status = 'active'
+                        WHERE gpo.status = 'asserted'
+                    )
+                    SELECT ${gameColumns}, COUNT(*) OVER () AS total
+                    FROM shelf s
+                    JOIN Game g ON g.id = s.gameId
+                    ${gameTitles}
+                    WHERE NOT EXISTS (
+                        SELECT 1
+                        FROM MeetGame mg
+                        JOIN Meet m ON m.id = mg.meetId AND m.groupId = ? AND m.status = 'completed'
+                        WHERE mg.gameId = s.gameId AND mg.gameStatus = 'played'
+                    )
+                    ORDER BY COALESCE(gt_en.title, gt_es.title) COLLATE NOCASE
+                    LIMIT 12`,
+                args: [groupId, groupId, groupId],
+            }),
+        ])
+
+        return { totals, standings, mostPlayed, neverPlayed }
+    }
+
     getGroupAcquisitionBoard(groupId: number) {
         return this.database.execute({
             sql: `
