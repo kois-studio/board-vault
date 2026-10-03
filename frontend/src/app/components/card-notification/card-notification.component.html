@@ -7,6 +7,9 @@
             <p>{{ notification.message }}</p>
         </div>
         <p>{{ notificationDate() }}</p>
+        @if (link(); as link) {
+            <a class="mt-1 inline-block font-medium text-bv-primary underline underline-offset-2" [routerLink]="link.path" (click)="markAsRead()">{{ link.label }}</a>
+        }
     </div>
     <!-- RIGHT: buttons -->
     <div class="text-lg">

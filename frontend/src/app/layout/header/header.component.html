@@ -42,8 +42,11 @@
                     }
                 } @else if (isAuthenticated()) {
                     @if (isCurrentUserAdmin()) {
-                        <a routerLink="/admin" class="text-sm font-medium hover:underline text-bv-danger" aria-label="Admin Panel">
+                        <a routerLink="/admin" class="flex items-center gap-1.5 text-sm font-medium hover:underline text-bv-danger" [attr.aria-label]="pendingProposalCount() ? 'Admin Panel, ' + pendingProposalCount() + ' game proposals waiting' : 'Admin Panel'">
                             Admin Panel
+                            @if (pendingProposalCount()) {
+                                <span class="rounded-full bg-bv-danger px-2 py-0.5 text-xs font-semibold text-white" aria-hidden="true">{{ pendingProposalCount() }}</span>
+                            }
                         </a>
                     }
                     <app-profile-menu />

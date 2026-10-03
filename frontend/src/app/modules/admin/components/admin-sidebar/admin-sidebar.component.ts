@@ -1,16 +1,23 @@
 import { CommonModule } from '@angular/common'
-import { Component, input } from '@angular/core'
+import { Component, inject, input, OnInit } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { DarkModeToggleComponent } from '../../../../components/ui/dark-mode-toggle/dark-mode-toggle.component'
 import { IconComponent } from '../../../../components/ui/icon/icon.component'
+import { PendingProposalsService } from '../../../../core/services/pending-proposals.service'
 
 @Component({
     selector: 'app-admin-sidebar',
     imports: [CommonModule, RouterModule, DarkModeToggleComponent, IconComponent],
     templateUrl: './admin-sidebar.component.html',
 })
-export class AdminSidebarComponent {
+export class AdminSidebarComponent implements OnInit {
     readonly collapsed = input.required<boolean>()
+    private readonly pendingProposals = inject(PendingProposalsService)
+    public readonly pendingCount = this.pendingProposals.count
+
+    ngOnInit(): void {
+        void this.pendingProposals.refresh()
+    }
 
     // --------------------------------------------------------------------------
     //        Sidebar Menu Items

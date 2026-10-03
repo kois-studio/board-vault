@@ -1,10 +1,11 @@
-import { Component, HostListener, inject, signal } from '@angular/core'
+import { Component, effect, HostListener, inject, signal } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { ButtonComponent } from '../../components/ui/button/button.component'
 import { DarkModeToggleComponent } from '../../components/ui/dark-mode-toggle/dark-mode-toggle.component'
 import { IconComponent } from '../../components/ui/icon/icon.component'
 import { ClerkService } from '../../core/services/clerk.service'
 import { LoginService } from '../../core/services/login.service'
+import { PendingProposalsService } from '../../core/services/pending-proposals.service'
 import { ProfileMenuComponent } from '../profile-menu/profile-menu.component'
 
 @Component({
@@ -15,6 +16,7 @@ import { ProfileMenuComponent } from '../profile-menu/profile-menu.component'
 export class LayoutHeaderComponent {
     private readonly loginService = inject(LoginService)
     private readonly clerkService = inject(ClerkService)
+    private readonly pendingProposals = inject(PendingProposalsService)
 
     // --------------------------------------------------------------------------
     //        Services signals
@@ -26,6 +28,15 @@ export class LayoutHeaderComponent {
     public readonly selfRegistrationEnabled = this.clerkService.isSelfRegistrationEnabled
     public readonly clerkIsSignedIn = this.clerkService.isSignedIn
     public readonly isMobileNavigationOpen = signal(false)
+    public readonly pendingProposalCount = this.pendingProposals.count
+
+    constructor() {
+        // Admins see how many game proposals are waiting next to the Admin Panel link.
+        effect(() => {
+            if (this.isAuthenticated() && this.isCurrentUserAdmin()) void this.pendingProposals.refresh()
+            else this.pendingProposals.clear()
+        })
+    }
 
     public readonly mobileNavigation = [
         { path: '/dashboard', label: 'Home', icon: 'home' },

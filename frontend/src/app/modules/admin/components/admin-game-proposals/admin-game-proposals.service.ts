@@ -3,6 +3,7 @@ import { Api } from '../../../../api/api'
 import type { GameProposalType } from '../../../../api/api.types'
 import { ToastService } from '../../../../components/toast/toast.service'
 import { LogService } from '../../../../core/services/log.service'
+import { PendingProposalsService } from '../../../../core/services/pending-proposals.service'
 
 export type GameProposalWithIdsType = GameProposalType & { submitterId: number; reviewerId?: number }
 
@@ -21,6 +22,7 @@ export class AdminGameProposalsService {
     private readonly api = inject(Api)
     private readonly logger = inject(LogService)
     private readonly toastService = inject(ToastService)
+    private readonly pendingProposals = inject(PendingProposalsService)
 
     // --------------------------------------------------------------------------
     //        Component signals
@@ -48,6 +50,8 @@ export class AdminGameProposalsService {
                 this.proposals.set(response.proposals)
                 this.pagination.set(response.pagination)
             }
+            // The list reloads after every review action, so the admin badges follow it.
+            void this.pendingProposals.refresh()
         } catch (error) {
             this.logger.error('Error loading game proposals:', error)
             this.errorMessage.set('Game proposals could not be loaded. Try again.')

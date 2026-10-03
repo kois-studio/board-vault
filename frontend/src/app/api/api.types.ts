@@ -220,6 +220,7 @@ export type NotificationType = {
     message: string
     createdAt: string
     isRead: boolean
+    data?: Record<string, unknown>
 }
 
 export const NotificationTypeEnum = {
@@ -545,6 +546,8 @@ export type GameProposalType = {
     reviewNotes: string | null
     createdGameId: number | null
     submittedAt: string
+    /** Where the approved game goes for the proposer; missing from older servers. */
+    addTo?: 'shelf' | 'wishlist' | null
 }
 
 export type CreateGameProposalType = {
@@ -555,6 +558,7 @@ export type CreateGameProposalType = {
     maxPlayers?: number
     proposedTags?: string
     notes?: string
+    addTo?: 'shelf' | 'wishlist'
 }
 
 export type UserProposalStatsType = {

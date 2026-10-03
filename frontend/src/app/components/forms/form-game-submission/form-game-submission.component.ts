@@ -38,7 +38,15 @@ export class FormGameSubmissionComponent implements OnInit, OnChanges {
         maxPlayers: new FormControl<number | null>(null, [Validators.min(1), Validators.max(20)]),
         proposedTags: new FormControl(''),
         notes: new FormControl('', [Validators.maxLength(500)]),
+        // Where the game goes for you once an admin approves it.
+        addTo: new FormControl<'shelf' | 'wishlist' | 'none'>('shelf', { nonNullable: true }),
     })
+
+    public readonly addToOptions = [
+        { value: 'shelf', label: 'I own it', hint: 'Added to your shelf' },
+        { value: 'wishlist', label: 'I want it', hint: 'Added to your wishlist' },
+        { value: 'none', label: 'Neither', hint: 'Just add it to the catalogue' },
+    ] as const
 
     // Form controls getters
     get title() {
@@ -126,6 +134,7 @@ export class FormGameSubmissionComponent implements OnInit, OnChanges {
                 maxPlayers: formData.maxPlayers || undefined,
                 proposedTags: formData.proposedTags || undefined,
                 notes: formData.notes || undefined,
+                ...(formData.addTo && formData.addTo !== 'none' ? { addTo: formData.addTo } : {}),
             }
 
             await firstValueFrom(this.api.createGameProposal(currentUser.id, proposalData))

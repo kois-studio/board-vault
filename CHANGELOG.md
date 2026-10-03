@@ -176,6 +176,11 @@ operational details.
   games and nights per person, the most played games with when they were last
   played, and games someone owns that the group has never played
   (`GET /groups/:groupId/insights`).
+- Proposing a game asks where it should go once approved: your shelf ("I
+  own it"), your wishlist, or neither. Approval adds it there in the same
+  transaction (migration 0017). Admins get a notification for each new
+  proposal and see how many are waiting next to the Admin Panel link; the
+  approval notification links to the new game.
 - Add a planned game night to your calendar from its page: Google Calendar,
   or an `.ics` file for Apple Calendar, Outlook and others.
 - Turso and Clerk calls time out after 5 seconds with a `503` and a stable

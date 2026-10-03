@@ -253,6 +253,7 @@ const gameProposalShape = z.object({
     reviewNotes: z.string().nullable(),
     createdGameId: z.number().nullable(),
     submittedAt: z.string(),
+    addTo: z.enum(['shelf', 'wishlist']).nullable().optional(),
 })
 
 export const gameProposalSchema: z.ZodType<GameProposalType> = gameProposalShape
@@ -519,6 +520,7 @@ export const userNotificationsSchema: z.ZodType<Array<NotificationType>> = z.arr
         message: z.string(),
         createdAt: z.string(),
         isRead: z.boolean(),
+        data: z.record(z.string(), z.unknown()).optional(),
     }),
 )
 
