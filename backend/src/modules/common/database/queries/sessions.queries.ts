@@ -260,11 +260,12 @@ export class SessionQueries {
             const placeholders = gameIds.map(() => '?').join(', ')
             const keepPlayedCondition = gameIds.length > 0 ? `AND gameId NOT IN (${placeholders})` : ''
 
+            // Only an unmarked game is skipped; the rest of the shortlist waits for the night to finish.
             await transaction.execute({
                 sql: `
                     UPDATE MeetGame
                     SET gameStatus = 'skipped'
-                    WHERE meetId = ? AND gameStatus IN ('planned', 'played') ${keepPlayedCondition}
+                    WHERE meetId = ? AND gameStatus = 'played' ${keepPlayedCondition}
                 `,
                 args: [meetId, ...gameIds],
             })
@@ -378,11 +379,12 @@ export class SessionQueries {
             const placeholders = gameIds.map(() => '?').join(', ')
             const keepPlayedCondition = gameIds.length > 0 ? `AND gameId NOT IN (${placeholders})` : ''
 
+            // Only an unmarked game is skipped; the rest of the shortlist waits for the night to finish.
             await transaction.execute({
                 sql: `
                     UPDATE MeetGame
                     SET gameStatus = 'skipped'
-                    WHERE meetId = ? AND gameStatus IN ('planned', 'played') ${keepPlayedCondition}
+                    WHERE meetId = ? AND gameStatus = 'played' ${keepPlayedCondition}
                 `,
                 args: [meetId, ...gameIds],
             })

@@ -38,9 +38,10 @@ describe('recording a past session with group people (e2e)', () => {
                     (1, 'organizer@example.test', 'organizer', ${avatar}, 'Organizer', 'user_organizer'),
                     (2, 'member@example.test', 'member', ${avatar}, 'Member', 'user_member');
                 INSERT INTO Game (id, imageUrl, gameAvgDuration, minPlayers, maxPlayers)
-                VALUES (10, 'https://example.test/game-10.png', 60, 2, 4);
-                INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (10, 'en', 'Game Ten', 'game ten');
-                INSERT INTO OwnedGame (accountId, gameId) VALUES (2, 10);
+                VALUES (10, 'https://example.test/game-10.png', 60, 2, 4), (11, 'https://example.test/game-11.png', 30, 2, 5);
+                INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle)
+                VALUES (10, 'en', 'Game Ten', 'game ten'), (11, 'en', 'Game Eleven', 'game eleven');
+                INSERT INTO OwnedGame (accountId, gameId) VALUES (2, 10), (2, 11);
             `,
             encoding: 'utf8',
         })
@@ -212,5 +213,49 @@ describe('recording a past session with group people (e2e)', () => {
         expect(afterChange.body.gameResults).toEqual([
             { gameId: 10, results: [{ accountId: null, groupPersonId: organizerPersonId, isWinner: false, score: 30 }] },
         ])
+    })
+
+    it('keeps the rest of the shortlist planned while games are marked, and skips it when the night finishes', async () => {
+        const { groupId, personIds } = await createGroupWithPeople()
+
+        const scheduled = await request(app.getHttpServer())
+            .post('/sessions/scheduled')
+            .set(withAuth)
+            .send({
+                groupId,
+                sessionDate: '2026-10-20T18:00:00.000Z',
+                timezone: 'Europe/Madrid',
+                groupPersonIds: personIds,
+                plannedGameIds: [10, 11],
+            })
+            .expect(201)
+        const sessionId = Number(scheduled.body.sessionId)
+
+        await request(app.getHttpServer()).patch(`/sessions/${sessionId}/status`).set(withAuth).send({ status: 'active' }).expect(200)
+        const marked = await request(app.getHttpServer())
+            .patch(`/sessions/${sessionId}/played-games`)
+            .set(withAuth)
+            .send({ playedGameIds: [10], games: [{ gameId: 10, participantPersonIds: personIds }] })
+            .expect(200)
+
+        expect(marked.body.skippedGameIds).toEqual([])
+
+        const live = await request(app.getHttpServer()).get(`/sessions/${sessionId}`).set(withAuth).expect(200)
+
+        expect({ planned: live.body.plannedGames, skipped: live.body.skippedGames }).toEqual({ planned: [11], skipped: [] })
+
+        // Unmarking a played game is what skips it during the night.
+        const unmarked = await request(app.getHttpServer())
+            .patch(`/sessions/${sessionId}/played-games`)
+            .set(withAuth)
+            .send({ playedGameIds: [], games: [] })
+            .expect(200)
+
+        expect(unmarked.body.skippedGameIds).toEqual([10])
+
+        await request(app.getHttpServer()).patch(`/sessions/${sessionId}/status`).set(withAuth).send({ status: 'completed' }).expect(200)
+        const finished = await request(app.getHttpServer()).get(`/sessions/${sessionId}`).set(withAuth).expect(200)
+
+        expect([...finished.body.skippedGames].sort()).toEqual([10, 11])
     })
 })
