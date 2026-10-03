@@ -164,6 +164,7 @@ describe('DatabaseService logging', () => {
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
+                .mockResolvedValueOnce({ rows: [[4, null]] })
                 .mockResolvedValueOnce({ rowsAffected: 1 }),
             commit: jest.fn().mockResolvedValue(undefined),
             rollback: jest.fn().mockResolvedValue(undefined),
@@ -210,10 +211,14 @@ describe('DatabaseService logging', () => {
         )
         expect(transaction.execute).toHaveBeenNthCalledWith(
             5,
+            expect.objectContaining({ sql: expect.stringContaining('SELECT submittedBy, addTo FROM GameProposal') }),
+        )
+        expect(transaction.execute).toHaveBeenNthCalledWith(
+            6,
             expect.objectContaining({ sql: expect.stringContaining('INSERT INTO Notification') }),
         )
         expect(transaction.execute).toHaveBeenNthCalledWith(
-            5,
+            6,
             expect.objectContaining({
                 args: [
                     4,
@@ -237,6 +242,7 @@ describe('DatabaseService logging', () => {
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
+                .mockResolvedValueOnce({ rows: [[4, null]] })
                 .mockRejectedValueOnce(new Error('notification write failed')),
             commit: jest.fn().mockResolvedValue(undefined),
             rollback: jest.fn().mockResolvedValue(undefined),
@@ -270,6 +276,118 @@ describe('DatabaseService logging', () => {
         expect(transaction.rollback).toHaveBeenCalledTimes(1)
         expect(transaction.commit).not.toHaveBeenCalled()
         expect(transaction.close).toHaveBeenCalledTimes(1)
+    })
+
+    describe("approval with the proposer's collection choice", () => {
+        const approve = (service: DatabaseService) =>
+            service.games.approveGameProposalAtomically({
+                proposalId: 12,
+                reviewerId: 7,
+                title: 'Catan',
+                imageUrl: '',
+                gameAvgDuration: 60,
+                minPlayers: 3,
+                maxPlayers: 4,
+                translations: [{ languageCode: 'en', title: 'Catan', normalizedTitle: 'catan' }],
+                tagIds: [],
+                notification: {
+                    accountId: 4,
+                    type: 'game_proposal_approved',
+                    message: 'Approved',
+                    data: { gameTitle: 'Catan', proposalId: 12 },
+                },
+            })
+
+        const setup = (addTo: string, failOn?: string) => {
+            const service = new DatabaseService({} as ConfigService)
+            const transaction = {
+                execute: jest.fn().mockImplementation(({ sql }: { sql: string }) => {
+                    if (failOn && sql.includes(failOn)) return Promise.reject(new Error(`${failOn} failed`))
+                    if (sql.includes('INSERT INTO Game ')) return Promise.resolve({ lastInsertRowid: 88 })
+                    if (sql.includes('SELECT submittedBy, addTo')) return Promise.resolve({ rows: [[4, addTo]] })
+                    return Promise.resolve({ rowsAffected: 1 })
+                }),
+                commit: jest.fn().mockResolvedValue(undefined),
+                rollback: jest.fn().mockResolvedValue(undefined),
+                close: jest.fn(),
+            }
+
+            ;(service as unknown as { tursoClient: { transaction: jest.Mock } }).tursoClient = {
+                transaction: jest.fn().mockResolvedValue(transaction),
+            }
+            const statements = () => transaction.execute.mock.calls.map(([statement]) => statement as { sql: string; args: unknown[] })
+
+            return { service, transaction, statements }
+        }
+
+        it.each([
+            ['shelf', 'INSERT INTO OwnedGame', 'added'],
+            ['wishlist', 'INSERT INTO WishlistedGame', 'wishlisted'],
+        ])("puts the new game on the proposer's %s and logs it", async (addTo, insert, action) => {
+            const { service, transaction, statements } = setup(addTo)
+
+            await expect(approve(service)).resolves.toEqual({ createdGameId: 88 })
+
+            expect(statements().find(statement => statement.sql.includes(insert))?.args).toEqual([4, 88])
+            expect(statements().find(statement => statement.sql.includes('INSERT INTO CollectionActivity'))?.args).toEqual([
+                4,
+                88,
+                action,
+                null,
+            ])
+            expect(transaction.commit).toHaveBeenCalledTimes(1)
+        })
+
+        it('adds nothing when the proposer chose neither', async () => {
+            const { service, statements } = setup(null as unknown as string)
+
+            await approve(service)
+
+            expect(statements().some(statement => /OwnedGame|WishlistedGame|CollectionActivity/.test(statement.sql))).toBe(false)
+        })
+
+        it('rolls back the whole approval when the shelf write fails', async () => {
+            const { service, transaction } = setup('shelf', 'INSERT INTO OwnedGame')
+
+            await expect(approve(service)).rejects.toThrow('INSERT INTO OwnedGame failed')
+
+            expect(transaction.rollback).toHaveBeenCalledTimes(1)
+            expect(transaction.commit).not.toHaveBeenCalled()
+        })
+    })
+
+    it('saves a proposal and notifies every other active admin in one transaction', async () => {
+        const service = new DatabaseService({} as ConfigService)
+        const transaction = {
+            execute: jest.fn().mockResolvedValueOnce({ lastInsertRowid: 31 }).mockResolvedValueOnce({ rowsAffected: 2 }),
+            commit: jest.fn().mockResolvedValue(undefined),
+            rollback: jest.fn().mockResolvedValue(undefined),
+            close: jest.fn(),
+        }
+
+        ;(service as unknown as { tursoClient: { transaction: jest.Mock } }).tursoClient = {
+            transaction: jest.fn().mockResolvedValue(transaction),
+        }
+
+        await expect(
+            service.games.createGameProposal({
+                submittedBy: 5,
+                title: 'Azul',
+                addTo: 'shelf',
+                adminNotification: {
+                    type: 'game_proposal_submitted',
+                    message: 'New game proposal: "Azul"',
+                    data: { gameTitle: 'Azul', submittedBy: 5 },
+                },
+            }),
+        ).resolves.toEqual({ proposalId: 31 })
+
+        expect(transaction.execute.mock.calls[0][0].args).toEqual([5, 'Azul', null, null, null, null, null, null, 'shelf'])
+        expect(transaction.execute.mock.calls[1][0]).toEqual({
+            sql: expect.stringContaining('WHERE isAdmin = 1 AND isDeleted = 0 AND id != ?'),
+            args: ['game_proposal_submitted', 'New game proposal: "Azul"', '{"gameTitle":"Azul","submittedBy":5,"proposalId":31}', 5],
+        })
+        expect(transaction.commit).toHaveBeenCalledTimes(1)
     })
 
     it('rejects a game proposal and its notification in one transaction', async () => {

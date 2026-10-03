@@ -6832,6 +6832,15 @@
             "example": "2024-01-10T15:45:00Z",
             "description": "When the proposal was submitted"
           },
+          "addTo": {
+            "type": "string",
+            "enum": [
+              "shelf",
+              "wishlist"
+            ],
+            "nullable": true,
+            "description": "Where the approved game goes for the proposer: their shelf, their wishlist, or neither."
+          },
           "submitterId": {
             "type": "number",
             "example": 1,
@@ -6860,6 +6869,7 @@
           "reviewNotes",
           "createdGameId",
           "submittedAt",
+          "addTo",
           "submitterId",
           "reviewerId"
         ]
@@ -8159,6 +8169,15 @@
             "type": "string",
             "example": "2024-01-10T15:45:00Z",
             "description": "When the proposal was submitted"
+          },
+          "addTo": {
+            "type": "string",
+            "enum": [
+              "shelf",
+              "wishlist"
+            ],
+            "nullable": true,
+            "description": "Where the approved game goes for the proposer: their shelf, their wishlist, or neither."
           }
         },
         "required": [
@@ -8176,7 +8195,8 @@
           "reviewedAt",
           "reviewNotes",
           "createdGameId",
-          "submittedAt"
+          "submittedAt",
+          "addTo"
         ]
       },
       "UserProposalStatsDto": {
@@ -8265,6 +8285,14 @@
             "type": "string",
             "example": "A great family strategy game",
             "description": "User notes about the game"
+          },
+          "addTo": {
+            "type": "string",
+            "enum": [
+              "shelf",
+              "wishlist"
+            ],
+            "description": "On approval, add the game to your shelf (you own it) or your wishlist. Leave out for neither."
           }
         },
         "required": [

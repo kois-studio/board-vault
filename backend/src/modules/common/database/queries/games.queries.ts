@@ -61,6 +61,36 @@ export class GameQueries {
                 throw new NotFoundException('Pending game proposal not found')
             }
 
+            // The proposer asked for the game on their shelf or wishlist: add it in the same transaction.
+            const proposal = await transaction.execute({
+                sql: 'SELECT submittedBy, addTo FROM GameProposal WHERE id = ?',
+                args: [input.proposalId],
+            })
+            const submittedBy = Number(proposal.rows[0]?.[0])
+            const addTo = proposal.rows[0]?.[1]
+
+            if (addTo === 'shelf' || addTo === 'wishlist') {
+                await transaction.execute({
+                    sql:
+                        addTo === 'shelf'
+                            ? 'INSERT INTO OwnedGame (accountId, gameId) VALUES (?, ?)'
+                            : 'INSERT INTO WishlistedGame (accountId, gameId) VALUES (?, ?)',
+                    args: [submittedBy, createdGameId],
+                })
+                await transaction.execute({
+                    sql: 'INSERT INTO CollectionActivity (accountId, gameId, actionType, actionDetails) VALUES (?, ?, ?, ?)',
+                    args: [submittedBy, createdGameId, addTo === 'shelf' ? 'added' : 'wishlisted', null],
+                })
+                await transaction.execute({
+                    sql: `
+                        DELETE FROM CollectionActivity
+                        WHERE accountId = ?
+                          AND id NOT IN (SELECT id FROM CollectionActivity WHERE accountId = ? ORDER BY id DESC LIMIT 32)
+                    `,
+                    args: [submittedBy, submittedBy],
+                })
+            }
+
             await transaction.execute({
                 sql: 'INSERT INTO Notification (accountId, type, message, data) VALUES (?, ?, ?, ?)',
                 args: [
@@ -474,6 +504,7 @@ export class GameQueries {
         })
     }
 
+    /** Saves a proposal and tells every other active admin about it, atomically. */
     async createGameProposal(proposalData: {
         submittedBy: number
         title: string
@@ -483,27 +514,58 @@ export class GameQueries {
         maxPlayers?: number
         proposedTags?: string
         notes?: string
-    }) {
-        const { submittedBy, title, imageUrl, gameAvgDuration, minPlayers, maxPlayers, proposedTags, notes } = proposalData
+        addTo: 'shelf' | 'wishlist' | null
+        adminNotification: { type: string; message: string; data: Record<string, unknown> }
+    }): Promise<{ proposalId: number }> {
+        const { submittedBy, title, imageUrl, gameAvgDuration, minPlayers, maxPlayers, proposedTags, notes, addTo, adminNotification } =
+            proposalData
+        const transaction = await this.database.transaction('write')
 
-        await this.database.execute({
-            sql: `
-                INSERT INTO GameProposal (
-                    submittedBy, title, imageUrl, gameAvgDuration, 
-                    minPlayers, maxPlayers, proposedTags, notes
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            `,
-            args: [
-                submittedBy,
-                title,
-                imageUrl || null,
-                gameAvgDuration || null,
-                minPlayers || null,
-                maxPlayers || null,
-                proposedTags || null,
-                notes || null,
-            ],
-        })
+        try {
+            const inserted = await transaction.execute({
+                sql: `
+                    INSERT INTO GameProposal (
+                        submittedBy, title, imageUrl, gameAvgDuration,
+                        minPlayers, maxPlayers, proposedTags, notes, addTo
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                `,
+                args: [
+                    submittedBy,
+                    title,
+                    imageUrl || null,
+                    gameAvgDuration || null,
+                    minPlayers || null,
+                    maxPlayers || null,
+                    proposedTags || null,
+                    notes || null,
+                    addTo,
+                ],
+            })
+            const proposalId = Number(inserted.lastInsertRowid)
+
+            await transaction.execute({
+                sql: `
+                    INSERT INTO Notification (accountId, type, message, data)
+                    SELECT id, ?, ?, ?
+                    FROM Account
+                    WHERE isAdmin = 1 AND isDeleted = 0 AND id != ?
+                `,
+                args: [
+                    adminNotification.type,
+                    adminNotification.message,
+                    JSON.stringify({ ...adminNotification.data, proposalId }),
+                    submittedBy,
+                ],
+            })
+
+            await transaction.commit()
+            return { proposalId }
+        } catch (error) {
+            await transaction.rollback()
+            throw error
+        } finally {
+            transaction.close()
+        }
     }
 
     async updateGameProposal(

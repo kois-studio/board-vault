@@ -4,6 +4,7 @@ export enum NotificationTypeEnum {
     USER_JOINED_GROUP = 'user_joined_group',
     GAME_PROPOSAL_APPROVED = 'game_proposal_approved',
     GAME_PROPOSAL_REJECTED = 'game_proposal_rejected',
+    GAME_PROPOSAL_SUBMITTED = 'game_proposal_submitted',
 }
 
 export type NotificationDataMap = {
@@ -29,6 +30,12 @@ export type NotificationDataMap = {
         gameTitle: string
         proposalId: number
         createdGameId?: number
+    }
+    // New game proposal "{gameTitle}" from {submittedBy}, sent to every admin
+    [NotificationTypeEnum.GAME_PROPOSAL_SUBMITTED]: {
+        gameTitle: string
+        proposalId: number
+        submittedBy: number
     }
     // Your game proposal "{gameTitle}" was rejected: {reviewNotes}
     [NotificationTypeEnum.GAME_PROPOSAL_REJECTED]: {

@@ -316,10 +316,10 @@ export class AdminService {
                 accountId: proposal.submittedBy,
                 type: NotificationTypeEnum.GAME_PROPOSAL_APPROVED,
                 message: `Your game proposal "${proposal.title}" was approved!`,
+                // The query adds createdGameId once the game exists, so the notification can link to it.
                 data: {
                     gameTitle: proposal.title,
                     proposalId: proposal.id,
-                    createdGameId: undefined,
                 },
             },
         })
@@ -330,6 +330,8 @@ export class AdminService {
             this.cacheService.deleteOne('game-proposal:byStatus:approved'),
             this.cacheService.deleteOne(`game-proposal:bySubmitter:${proposal.submittedBy}`),
             this.cacheService.deleteOne(`user-proposal-stats:${proposal.submittedBy}`),
+            // The approval may have put the game on the proposer's shelf or wishlist.
+            this.cacheService.deleteOne(`collection-activity:byAccountId:${proposal.submittedBy}`),
         ])
 
         return { success: true, createdGameId }

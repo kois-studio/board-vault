@@ -13,7 +13,7 @@ import { NotificationQueries } from './queries/notifications.queries'
 import { RecommendationQueries } from './queries/recommendations.queries'
 import { SessionQueries } from './queries/sessions.queries'
 
-export const CURRENT_SCHEMA_VERSION = '0016'
+export const CURRENT_SCHEMA_VERSION = '0017'
 
 /** Statements that only read, so running them twice is harmless. */
 const READ_ONLY_SQL = /^\s*(SELECT|WITH)\b/i

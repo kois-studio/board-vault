@@ -4,8 +4,14 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { gameProposalSchema, gameProposalsSchema } from '../../../common/schemas/db-game-proposal.schema'
 import { CacheService } from '../../common/cache/cache.service'
 import { DatabaseService } from '../../common/database/database.service'
+import { NotificationTypeEnum } from '../notifications/notifications-enum.type'
 
-import type { GameProposalDto, CreateGameProposalBody, UpdateGameProposalBody } from '../../../common/types/game-proposal.type'
+import type {
+    GameProposalAddTo,
+    GameProposalDto,
+    CreateGameProposalBody,
+    UpdateGameProposalBody,
+} from '../../../common/types/game-proposal.type'
 import type { UserProposalStatsDto } from '../../../common/types/stats.type'
 
 @Injectable()
@@ -35,6 +41,7 @@ export class GameProposalService {
             reviewNotes: row[12] ? String(row[12]) : null,
             createdGameId: row[13] ? Number(row[13]) : null,
             submittedAt: String(row[14]),
+            addTo: row[15] === 'shelf' || row[15] === 'wishlist' ? (row[15] as GameProposalAddTo) : null,
         }))
 
         return this._validateSchema(proposals)
@@ -105,7 +112,8 @@ export class GameProposalService {
     async createGameProposal(submittedBy: number, proposalData: CreateGameProposalBody): Promise<GameProposalDto> {
         this.LOGGER.log('Creating game proposal')
 
-        await this.databaseService.games.createGameProposal({
+        // Admins are told in the same transaction; the proposer is not notified of their own proposal.
+        const { proposalId } = await this.databaseService.games.createGameProposal({
             submittedBy,
             title: proposalData.title,
             imageUrl: proposalData.imageUrl,
@@ -114,27 +122,18 @@ export class GameProposalService {
             maxPlayers: proposalData.maxPlayers,
             proposedTags: proposalData.proposedTags,
             notes: proposalData.notes,
+            addTo: proposalData.addTo ?? null,
+            adminNotification: {
+                type: NotificationTypeEnum.GAME_PROPOSAL_SUBMITTED,
+                message: `New game proposal: "${proposalData.title}"`,
+                data: { gameTitle: proposalData.title, submittedBy },
+            },
         })
 
-        // Get the created proposal to return it
-        const resultSet = await this.databaseService.games.getGameProposalsBySubmitter(submittedBy)
-        const proposals = this._parseResultSet(resultSet)
-
-        // Return the most recent one (should be the one we just created)
-        const createdProposal = proposals[0]
-
-        // Clear cache
         await this.cacheService.deleteOne(`${this.CACHE_KEY}:bySubmitter:${submittedBy}`)
         await this.cacheService.deleteOne(`${this.CACHE_KEY}:byStatus:pending`)
 
-        // TODO: Future enhancements - Add side effects here:
-        // - Send email notification to admin about new proposal
-        // - Send notification to user confirming proposal submission
-        // - Log analytics event for proposal creation
-        // - Trigger webhook for external integrations
-        // - Update proposal statistics cache
-
-        return createdProposal
+        return this.getGameProposalById(proposalId)
     }
 
     async updateGameProposal(id: number, updateData: UpdateGameProposalBody, reviewedBy?: number): Promise<GameProposalDto> {

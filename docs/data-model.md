@@ -10,7 +10,7 @@ The database is SQLite through libSQL: a local file in development, Turso in
 production. The schema is
 [`database/schema/schema.sql`](../database/schema/schema.sql) (the 0001–0005
 baseline) plus the numbered files in
-[`database/migrations/`](../database/migrations/). Current version: **0016**.
+[`database/migrations/`](../database/migrations/). Current version: **0017**.
 All SQL lives in the per-domain query classes in
 [`database/queries/`](../backend/src/modules/common/database/queries/).
 
@@ -38,7 +38,7 @@ sessions they created, and more.
 | `Game` | Catalogue game: image, duration, player counts. | — |
 | `GameTranslation` | Title per language (`en`, `es`) and a normalized title for search. | `Game` (cascade) |
 | `TagCategory`, `Tag`, `GameTag` | Catalogue tagging. | `TagCategory` → `Tag` (cascade); `Game`, `Tag` (cascade) |
-| `GameProposal` | A user's request to add a game; admins approve, reject, or mark as duplicate. | submitter `Account` (cascade); reviewer `Account`, created `Game` (set null) |
+| `GameProposal` | A user's request to add a game; admins approve, reject, or mark as duplicate. `addTo` (`shelf`, `wishlist`, or NULL) is where the approved game goes for the proposer, added in the approval transaction. | submitter `Account` (cascade); reviewer `Account`, created `Game` (set null) |
 | `OwnedGame` | Private shelf: owned game, price, purchase date. | `Account`, `Game` (cascade) |
 | `WishlistedGame` | Private wishlist with priority. | `Account`, `Game` (cascade) |
 | `GameReview` | A user's rating and review. | `Account`, `Game` (cascade) |

@@ -19,6 +19,7 @@ export const gameProposalSchema = z.object({
     reviewNotes: z.string().nullable(),
     createdGameId: z.number().int().nonnegative().nullable(),
     submittedAt: z.string().refine(date => !isNaN(Date.parse(date)), { message: 'Invalid date format' }),
+    addTo: z.enum(['shelf', 'wishlist']).nullable(),
 })
 
 export const gameProposalsSchema = z.array(gameProposalSchema)

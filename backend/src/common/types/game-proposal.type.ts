@@ -6,6 +6,8 @@ import { UserPublicDto } from './user.type'
 /**
  * Base GameProposal as it comes from db
  */
+export type GameProposalAddTo = 'shelf' | 'wishlist'
+
 export class GameProposalDto {
     @ApiProperty({ example: 12345 })
     id: number
@@ -98,6 +100,13 @@ export class GameProposalDto {
         description: 'When the proposal was submitted',
     })
     submittedAt: string
+
+    @ApiProperty({
+        enum: ['shelf', 'wishlist'],
+        nullable: true,
+        description: 'Where the approved game goes for the proposer: their shelf, their wishlist, or neither.',
+    })
+    addTo: GameProposalAddTo | null
 }
 
 /**
@@ -169,6 +178,15 @@ export class CreateGameProposalBody {
     @IsString()
     @MaxLength(2000)
     notes?: string
+
+    @ApiProperty({
+        enum: ['shelf', 'wishlist'],
+        required: false,
+        description: 'On approval, add the game to your shelf (you own it) or your wishlist. Leave out for neither.',
+    })
+    @IsOptional()
+    @IsIn(['shelf', 'wishlist'])
+    addTo?: GameProposalAddTo
 }
 
 /**
