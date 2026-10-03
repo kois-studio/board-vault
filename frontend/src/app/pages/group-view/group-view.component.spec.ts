@@ -66,4 +66,37 @@ describe('group participant history presentation', () => {
             }),
         ).toBe(1)
     })
+
+    it('names the winners of a played game', () => {
+        const component = Object.create(GroupViewComponent.prototype) as GroupViewComponent
+        const ana = { id: 9, displayName: 'Ana', avatar: null, accountId: null }
+        const carlos = { id: 2, displayName: 'Carlos', avatar: null, accountId: 4 }
+
+        expect(
+            component.getWinners({
+                gameData: {} as never,
+                playedBy: [],
+                playedByPeople: [ana, carlos],
+                winnerAccountIds: [4],
+                winnerPersonIds: [9],
+            }),
+        ).toBe('Ana and Carlos won')
+        expect(component.getWinners({ gameData: {} as never, playedBy: [], playedByPeople: [ana] })).toBe('')
+    })
+})
+
+describe('group standings presentation', () => {
+    it('summarises wins, games and nights with singular forms', () => {
+        const component = Object.create(GroupViewComponent.prototype) as GroupViewComponent
+        const standing = { accountId: 1, groupPersonId: 4, displayName: 'Ana', avatar: null, sessions: 1, gamesPlayed: 3, wins: 1 }
+
+        expect(component.standingSummary(standing)).toBe('1 win · 3 games · 1 night')
+        expect(component.standingSummary({ ...standing, wins: 0, gamesPlayed: 1, sessions: 2 })).toBe('0 wins · 1 game · 2 nights')
+    })
+
+    it('falls back to initials for people without an avatar', () => {
+        const component = Object.create(GroupViewComponent.prototype) as GroupViewComponent
+
+        expect(component.initialsAvatar('ana belén')).toEqual(expect.objectContaining({ type: 'initials', initials: 'AB' }))
+    })
 })

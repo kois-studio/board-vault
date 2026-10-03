@@ -145,6 +145,27 @@ export type GroupPersonWorkspaceType = {
     claimable: boolean
 }
 
+/** One person in a group's standings; a group person linked to an account counts as that account. */
+export type GroupStandingType = {
+    accountId: number | null
+    groupPersonId: number | null
+    displayName: string
+    avatar: PublicUserType['avatar'] | null
+    sessions: number
+    gamesPlayed: number
+    wins: number
+}
+
+export type GroupInsightsType = {
+    sessions: number
+    gamesPlayed: number
+    gamesWithWinner: number
+    standings: Array<GroupStandingType>
+    mostPlayed: Array<{ gameData: GameCompleteType; sessions: number; lastPlayedAt: string }>
+    neverPlayed: Array<GameCompleteType>
+    neverPlayedCount: number
+}
+
 export type GroupAcquisitionEntryType = {
     gameData: GameCompleteType
     interestedBy: Array<PublicUserType>

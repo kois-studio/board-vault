@@ -172,6 +172,10 @@ operational details.
   corrected after the night is over (API and migration 0016). Anyone in the
   group marks the winners on the session page; History and the group page
   show who won.
+- The group page shows standings and stats from finished game nights: wins,
+  games and nights per person, the most played games with when they were last
+  played, and games someone owns that the group has never played
+  (`GET /groups/:groupId/insights`).
 - Add a planned game night to your calendar from its page: Google Calendar,
   or an `.ics` file for Apple Calendar, Outlook and others.
 - Turso and Clerk calls time out after 5 seconds with a `503` and a stable

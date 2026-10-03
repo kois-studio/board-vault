@@ -23,6 +23,7 @@ import {
     gamesSchema,
     gameViewSchema,
     groupAcquisitionBoardSchema,
+    groupInsightsSchema,
     groupInvitationsSchema,
     groupPeopleSchema,
     groupPersonSchemaResponse,
@@ -72,6 +73,7 @@ import type {
     GameType,
     GameViewType,
     GroupAcquisitionEntryType,
+    GroupInsightsType,
     GroupPersonType,
     GroupPersonWorkspaceType,
     GroupWithMembersAndGames,
@@ -487,6 +489,12 @@ export class Api {
         return this.http
             .get<Array<HistoryRecordType>>(`${this.url}/dashboard/users/${userId}/groups/${groupId}/meetings`)
             .pipe(map((response) => userHistorySchema.parse(response)))
+    }
+
+    getGroupInsights(groupId: number) {
+        return this.http
+            .get<GroupInsightsType>(`${this.url}/groups/${groupId}/insights`)
+            .pipe(map((response) => groupInsightsSchema.parse(response)))
     }
 
     getGroupAcquisitionBoard(groupId: number) {

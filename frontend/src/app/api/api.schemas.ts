@@ -16,6 +16,7 @@ import type {
     GameViewType,
     GameWithTagsAndTranslationsType,
     GroupAcquisitionEntryType,
+    GroupInsightsType,
     GroupType,
     GroupWithMembersAndGames,
     HistoryRecordType,
@@ -187,6 +188,26 @@ const groupAcquisitionEntrySchema: z.ZodType<GroupAcquisitionEntryType> = z.obje
 })
 
 export const groupAcquisitionBoardSchema = z.array(groupAcquisitionEntrySchema)
+
+export const groupInsightsSchema: z.ZodType<GroupInsightsType> = z.object({
+    sessions: z.number(),
+    gamesPlayed: z.number(),
+    gamesWithWinner: z.number(),
+    standings: z.array(
+        z.object({
+            accountId: z.number().nullable(),
+            groupPersonId: z.number().nullable(),
+            displayName: z.string(),
+            avatar: avatarSchema.nullable(),
+            sessions: z.number(),
+            gamesPlayed: z.number(),
+            wins: z.number(),
+        }),
+    ),
+    mostPlayed: z.array(z.object({ gameData: gameCompleteSchema, sessions: z.number(), lastPlayedAt: z.string() })),
+    neverPlayed: z.array(gameCompleteSchema),
+    neverPlayedCount: z.number(),
+})
 
 const gameReviewSchema = z.object({
     accountId: z.number(),

@@ -6,13 +6,16 @@ import { Api } from '../../api/api'
 import type {
     GameCompleteType,
     GroupAcquisitionEntryType,
+    GroupInsightsType,
     GroupPersonPreferenceType,
     GroupPersonWorkspaceType,
+    GroupStandingType,
     HistoryRecordType,
     InvitationWithAccountsData,
     PublicUserType,
 } from '../../api/api.types'
 import { CardAccountComponent } from '../../components/card-account/card-account.component'
+import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
 import { SkeletonHistoryComponent } from '../../components/skeletons/skeleton-history/skeleton-history.component'
 import { ToastService } from '../../components/toast/toast.service'
 import { ButtonComponent } from '../../components/ui/button/button.component'
@@ -28,7 +31,7 @@ import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
 import { LocalStorageService } from '../../core/services/local-storage.service'
 import { formatAttendeeSummary } from '../../core/utils/formatAttendeeSummary'
-import { formatWinners, type HistoryParticipant, historyWinnerNames, mergeHistoryParticipants } from '../../core/utils/historyParticipants'
+import { formatWinners, historyWinnerNames, mergeHistoryParticipants } from '../../core/utils/historyParticipants'
 import { GroupViewService } from './group-view.service'
 
 type GroupLibraryContext = {
@@ -36,15 +39,6 @@ type GroupLibraryContext = {
     playCount: number
     lastPlayedAt: string | null
     lastPlayedTimezone: string | null
-}
-
-type GroupParticipation = {
-    id: number
-    name: string
-    sessionCount: number
-    gameCount: number
-    kind: 'account' | 'person'
-    member?: PublicUserType
 }
 
 export function shouldShowFirstGroupSetup(input: {
@@ -69,6 +63,7 @@ export function shouldShowFirstGroupSetup(input: {
         CustomDatePipe,
         ImageBackgroundComponent,
         IconComponent,
+        ImageProfileComponent,
         ButtonComponent,
         DialogDirective,
         SkeletonHistoryComponent,
@@ -116,6 +111,9 @@ export class GroupViewComponent {
     public readonly groupHistoryError = signal(false)
     public readonly groupHistory$ = signal<Array<HistoryRecordType>>([])
     public readonly acquisitionBoard$ = signal<Array<GroupAcquisitionEntryType>>([])
+    public readonly insights$ = signal<GroupInsightsType | null>(null)
+    public readonly insightsError = signal(false)
+    private activeInsightsGroupId: number | null = null
     public readonly acquisitionBoardLoading = signal(false)
     public readonly acquisitionBoardError = signal(false)
     public readonly acquisitionMutationGameId = signal<number | null>(null)
@@ -204,55 +202,6 @@ export class GroupViewComponent {
         }
         return [...games.values()]
             .sort((a, b) => b.sessionCount - a.sessionCount || b.playerCount - a.playerCount || a.gameData.id - b.gameData.id)
-            .slice(0, 5)
-    })
-
-    public readonly memberParticipationComputed = computed<Array<GroupParticipation>>(() => {
-        const participation = new Map<string, GroupParticipation>()
-        for (const member of this.groupData$()?.members ?? []) {
-            participation.set(`account:${member.id}`, {
-                id: member.id,
-                name: member.displayName || member.username,
-                sessionCount: 0,
-                gameCount: 0,
-                kind: 'account',
-                member,
-            })
-        }
-
-        // A participant linked to a current member counts on that member; anyone else on their group person.
-        const statsFor = (participant: HistoryParticipant): GroupParticipation | undefined => {
-            const memberStats = participant.accountId === null ? undefined : participation.get(`account:${participant.accountId}`)
-            if (memberStats || participant.personId === null) return memberStats
-
-            const key = `person:${participant.personId}`
-            const stats = participation.get(key) ?? {
-                id: participant.personId,
-                name: participant.displayName,
-                sessionCount: 0,
-                gameCount: 0,
-                kind: 'person' as const,
-            }
-            participation.set(key, stats)
-            return stats
-        }
-
-        for (const record of this.groupHistory$()) {
-            for (const game of record.gamesPlayed) {
-                for (const player of mergeHistoryParticipants(game.playedBy, game.playedByPeople)) {
-                    const stats = statsFor(player)
-                    if (stats) stats.gameCount += 1
-                }
-            }
-            for (const attendee of mergeHistoryParticipants(record.attendedBy, record.attendedByPeople)) {
-                const stats = statsFor(attendee)
-                if (stats) stats.sessionCount += 1
-            }
-        }
-
-        return [...participation.values()]
-            .filter((stats) => stats.sessionCount > 0)
-            .sort((a, b) => b.sessionCount - a.sessionCount || b.gameCount - a.gameCount || a.id - b.id)
             .slice(0, 5)
     })
 
@@ -364,6 +313,9 @@ export class GroupViewComponent {
                 this.groupHistoryError.set(false)
                 this.acquisitionBoard$.set([])
                 this.acquisitionBoardError.set(false)
+                this.insights$.set(null)
+                this.insightsError.set(false)
+                this.activeInsightsGroupId = null
                 this.groupPeople$.set([])
                 this.groupPeopleError.set(false)
                 this.activePeopleGroupId = null
@@ -384,6 +336,11 @@ export class GroupViewComponent {
             if (this.activeAcquisitionGroupId !== groupId) {
                 this.activeAcquisitionGroupId = groupId
                 this.loadAcquisitionBoard(groupId)
+            }
+
+            if (this.activeInsightsGroupId !== groupId) {
+                this.activeInsightsGroupId = groupId
+                this.loadInsights(groupId)
             }
 
             if (this.activePeopleGroupId !== groupId) {
@@ -697,6 +654,32 @@ export class GroupViewComponent {
         } finally {
             this.acquisitionMutationGameId.set(null)
         }
+    }
+
+    public loadInsights(groupId: number): void {
+        this.insightsError.set(false)
+        this.api.getGroupInsights(groupId).subscribe({
+            next: (insights) => this.insights$.set(insights),
+            error: () => this.insightsError.set(true),
+        })
+    }
+
+    /** People without an account or avatar show their initials. */
+    public initialsAvatar(name: string): PublicUserType['avatar'] {
+        const initials = name
+            .split(/\s+/)
+            .filter(Boolean)
+            .map((word) => word[0])
+            .join('')
+            .slice(0, 2)
+            .toUpperCase()
+        return { type: 'initials', initials, backgroundColor: '#64748b', iconName: null, emoji: null }
+    }
+
+    /** "3 wins · 7 games · 4 nights" */
+    public standingSummary(standing: GroupStandingType): string {
+        const plural = (count: number, word: string) => `${count} ${word}${count === 1 ? '' : 's'}`
+        return [plural(standing.wins, 'win'), plural(standing.gamesPlayed, 'game'), plural(standing.sessions, 'night')].join(' · ')
     }
 
     private loadAcquisitionBoard(groupId: number): void {
