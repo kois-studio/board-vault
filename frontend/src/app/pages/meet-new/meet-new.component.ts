@@ -1,245 +1,324 @@
-import { CommonModule } from '@angular/common'
-import { Component, effect } from '@angular/core'
-import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
+import { Component, computed, effect, inject, signal, untracked } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../api/api'
-import type { GameCompleteType, GroupPersonWorkspaceType } from '../../api/api.types'
+import type { GameCompleteType, GroupPersonWorkspaceType, PublicUserType } from '../../api/api.types'
+import { ImageProfileComponent } from '../../components/image-profile/image-profile.component'
 import { ToastService } from '../../components/toast/toast.service'
 import { ButtonComponent } from '../../components/ui/button/button.component'
+import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
+import { IconComponent } from '../../components/ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../../components/ui/image-background/image-background.component'
+import { PageHeaderComponent } from '../../components/ui/page-header/page-header.component'
 import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
 import { DataService } from '../../core/services/data.service'
 import { LoadingService } from '../../core/services/loading.service'
 
+/** Someone who can be invited: a member account, or a group person when the group has them. */
+export type PlanPerson = { id: number; name: string; avatar: PublicUserType['avatar']; gameIds: Set<number> }
+
+export type PlanGame = { game: GameCompleteType; title: string; owners: Array<string>; fits: boolean }
+
+const DAY_MS = 24 * 60 * 60 * 1000
+
+/** YYYY-MM-DD in the browser's timezone. */
+function localDate(date: Date): string {
+    const offset = date.getTimezoneOffset() * 60 * 1000
+    return new Date(date.getTime() - offset).toISOString().split('T')[0]
+}
+
+function initialsAvatar(name: string): PublicUserType['avatar'] {
+    const initials = name
+        .split(/\s+/)
+        .filter(Boolean)
+        .map((word) => word[0])
+        .join('')
+        .slice(0, 2)
+        .toUpperCase()
+    return { type: 'initials', initials, backgroundColor: '#64748b', iconName: null, emoji: null }
+}
+
 @Component({
-    imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterLink, ButtonComponent, ImageBackgroundComponent],
+    imports: [
+        ReactiveFormsModule,
+        RouterLink,
+        ButtonComponent,
+        ContainerWrapperComponent,
+        IconComponent,
+        ImageBackgroundComponent,
+        ImageProfileComponent,
+        PageHeaderComponent,
+    ],
     templateUrl: 'meet-new.component.html',
 })
 export class MeetNewComponent {
-    public isCreatingLoading = false
-    // --------------------------------------------------------------------------
-    //        DATA from services
-    // --------------------------------------------------------------------------
-    public userData: ReturnType<typeof this.dataService.currentUser> = null
-    public userGroups: ReturnType<typeof this.dataService.userGroups> = []
-    public invitationsGroupIndex: ReturnType<typeof this.dataService.invitationsGroupIndex> = {}
+    private readonly route = inject(ActivatedRoute)
+    private readonly dataService = inject(DataService)
+    private readonly api = inject(Api)
+    private readonly router = inject(Router)
+    private readonly toastService = inject(ToastService)
+    private readonly loadingService = inject(LoadingService)
 
-    // --------------------------------------------------------------------------
-    //        DATA for this component
-    // --------------------------------------------------------------------------
-    public groupData: null | (typeof this.userGroups)[number] = null
-    public groupPeople: Array<GroupPersonWorkspaceType> = []
-    public useGroupPeople = false
-    public selectedAttendeeIds: Array<number> = []
-    public selectedPlannedGameIds: Array<number> = []
-    public notes = ''
-    private didInitializeSelections = false
-    public today = new Date().toISOString().split('T')[0] // Format: YYYY-MM-DD
-    public localTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
-    public dateForm = new FormControl(this.today, [
+    public readonly today = localDate(new Date())
+    public readonly localTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+    public readonly dateForm = new FormControl(this.today, [
         Validators.required,
-        (control) => {
-            if (!control.value) return null
-            const selectedDate = new Date(control.value)
-            const today = new Date(new Date().toISOString().split('T')[0])
-            return selectedDate >= today ? null : { futureDate: true }
-        },
+        (control) => (control.value && control.value < this.today ? { futureDate: true } : null),
     ])
-    public timeForm = new FormControl('19:00', [Validators.required])
+    public readonly timeForm = new FormControl('19:00', [Validators.required])
+    private readonly dateValue = toSignal(this.dateForm.valueChanges, { initialValue: this.dateForm.value })
+    private readonly timeValue = toSignal(this.timeForm.valueChanges, { initialValue: this.timeForm.value })
 
-    constructor(
-        private readonly route: ActivatedRoute,
-        private readonly dataService: DataService,
-        private readonly api: Api,
-        private readonly router: Router,
-        private readonly toastService: ToastService,
-        private readonly loadingService: LoadingService,
-    ) {
+    public readonly groupPeople = signal<Array<GroupPersonWorkspaceType>>([])
+    private readonly personCatalog = signal<Array<GameCompleteType>>([])
+    public readonly selectedAttendeeIds = signal<Array<number>>([])
+    public readonly selectedPlannedGameIds = signal<Array<number>>([])
+    public readonly notes = signal('')
+    public readonly gameQuery = signal('')
+    public readonly isCreating = signal(false)
+    private initializedGroupId: number | null = null
+
+    private readonly groupId = Number.parseInt(this.route.snapshot.paramMap.get('groupId') || '', 10)
+
+    public readonly groupData = computed(() => {
+        if (!this.dataService.currentUser()) return null
+        return this.dataService.userGroups().find((group) => group.id === this.groupId) ?? null
+    })
+
+    /** Groups with group people invite those; older groups invite member accounts. */
+    public readonly useGroupPeople = computed(() => this.groupPeople().length > 0)
+
+    public readonly people = computed<Array<PlanPerson>>(() => {
+        const group = this.groupData()
+        if (!group) return []
+        if (!this.useGroupPeople()) {
+            return group.members.map((member) => ({
+                id: member.id,
+                name: member.displayName || member.username,
+                avatar: member.avatar,
+                gameIds: new Set(member.games.map((game) => game.id)),
+            }))
+        }
+        return this.groupPeople()
+            .filter(({ person }) => person.status === 'active')
+            .map(({ person, ownership }) => {
+                const linked = person.accountId === null ? undefined : group.members.find((member) => member.id === person.accountId)
+                const gameIds = new Set(ownership.filter((entry) => entry.status === 'asserted').map((entry) => entry.gameId))
+                for (const game of linked?.games ?? []) gameIds.add(game.id)
+                return {
+                    id: person.id,
+                    name: person.displayName,
+                    avatar: person.avatar ?? linked?.avatar ?? initialsAvatar(person.displayName),
+                    gameIds,
+                }
+            })
+    })
+
+    public readonly invitedPeople = computed(() => {
+        const selected = new Set(this.selectedAttendeeIds())
+        return this.people().filter((person) => selected.has(person.id))
+    })
+
+    /** Every game someone in the group owns, by title. */
+    public readonly availableGames = computed<Array<GameCompleteType>>(() => {
+        const games = new Map<number, GameCompleteType>()
+        for (const member of this.groupData()?.members ?? []) {
+            for (const game of member.games) games.set(game.id, game)
+        }
+        for (const game of this.personCatalog()) games.set(game.id, game)
+        return [...games.values()].sort((a, b) => this.titleOf(a).localeCompare(this.titleOf(b)))
+    })
+
+    /** Games the invited people bring first; then the rest of the group's games. */
+    public readonly shortlistGames = computed<Array<PlanGame>>(() => {
+        const invited = this.invitedPeople()
+        const query = this.gameQuery().trim().toLowerCase()
+        return this.availableGames()
+            .filter((game) => !query || this.titleOf(game).toLowerCase().includes(query))
+            .map((game) => ({
+                game,
+                title: this.titleOf(game),
+                owners: invited.filter((person) => person.gameIds.has(game.id)).map((person) => person.name),
+                fits: invited.length === 0 || (game.minPlayers <= invited.length && invited.length <= game.maxPlayers),
+            }))
+            .sort((a, b) => Number(b.owners.length > 0) - Number(a.owners.length > 0))
+    })
+
+    public readonly quickDates = computed(() => {
+        const now = new Date()
+        const nextWeekday = (weekday: number, extraWeeks = 0) => {
+            const days = (weekday - now.getDay() + 7) % 7
+            return localDate(new Date(now.getTime() + (days + extraWeeks * 7) * DAY_MS))
+        }
+        return [
+            { label: 'Today', value: this.today },
+            { label: 'Friday', value: nextWeekday(5) },
+            { label: 'Saturday', value: nextWeekday(6) },
+            { label: 'Next Friday', value: nextWeekday(5, 1) },
+        ].filter((option, index, options) => options.findIndex((other) => other.value === option.value) === index)
+    })
+
+    public readonly whenSummary = computed(() => {
+        const date = this.dateValue()
+        const time = this.timeValue()
+        if (!date || !time) return 'Choose a day and time'
+        const start = new Date(`${date}T${time}`)
+        if (Number.isNaN(start.getTime())) return 'Choose a day and time'
+        const day = new Intl.DateTimeFormat('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }).format(start)
+        return `${day} · ${time}`
+    })
+
+    public readonly canCreate = computed(
+        () =>
+            !this.isCreating() &&
+            Boolean(this.dateValue()) &&
+            Boolean(this.timeValue()) &&
+            (this.dateValue() ?? '') >= this.today &&
+            this.selectedAttendeeIds().length > 0,
+    )
+
+    public readonly isLoadingGroups = computed(() => Boolean(this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_GROUPS]))
+    public readonly groupsError = computed(() => this.dataService.userGroupsError())
+    public readonly groupUnavailable = computed(() => !this.isLoadingGroups() && !this.groupsError() && this.groupData() === null)
+
+    constructor() {
         effect(() => {
-            this.userData = this.dataService.currentUser()
-            this.userGroups = this.dataService.userGroups()
-            this.invitationsGroupIndex = this.dataService.invitationsGroupIndex()
-
-            const groupId = Number.parseInt(this.route.snapshot.paramMap.get('groupId') || '', 10)
-            const groupData = this.userGroups.find((group) => group.id === groupId)
-
-            if (Number.isNaN(groupId) || !this.userData || !groupData) {
-                this.groupData = null
-                this.groupPeople = []
-                this.useGroupPeople = false
-                this.selectedAttendeeIds = []
-                this.selectedPlannedGameIds = []
-                this.didInitializeSelections = false
-                return
-            }
-
-            this.groupData = groupData
-            if (!this.didInitializeSelections) {
-                const requestedAttendees = (
-                    this.route.snapshot.queryParamMap.get('participantIds') ??
-                    this.route.snapshot.queryParamMap.get('attendeeIds') ??
-                    ''
-                )
-                    .split(',')
-                    .map(Number)
-                    .filter((accountId) => groupData.members.some((member) => member.id === accountId))
-                const requestedGameId = Number(this.route.snapshot.queryParamMap.get('plannedGameId'))
-
-                this.selectedAttendeeIds =
-                    requestedAttendees.length > 0 ? [...new Set(requestedAttendees)] : groupData.members.map((member) => member.id)
-                this.selectedPlannedGameIds =
-                    Number.isInteger(requestedGameId) && this.availableGames.some((game) => game.id === requestedGameId)
-                        ? [requestedGameId]
-                        : []
-                this.didInitializeSelections = true
-                this.loadGroupPeople(groupId, requestedAttendees)
-            }
+            const group = this.groupData()
+            untracked(() => {
+                if (!group) {
+                    this.initializedGroupId = null
+                    this.groupPeople.set([])
+                    this.personCatalog.set([])
+                    this.selectedAttendeeIds.set([])
+                    this.selectedPlannedGameIds.set([])
+                    return
+                }
+                if (this.initializedGroupId === group.id) return
+                this.initializedGroupId = group.id
+                this.initializeSelections()
+            })
         })
     }
 
-    get dateClass() {
-        if (!this.dateForm.dirty && !this.dateForm.touched) return ''
-        return this.dateForm.valid ? 'border-bv-success' : 'border-bv-danger'
+    titleOf(game: GameCompleteType): string {
+        return game.titleTranslations.en || game.title || 'Untitled game'
     }
 
-    get availableGames(): Array<GameCompleteType> {
-        const games = new Map<number, GameCompleteType>()
-        for (const member of this.groupData?.members ?? []) {
-            for (const game of member.games) {
-                games.set(game.id, game)
-            }
-        }
-        return [...games.values()].sort((a, b) => (a.titleTranslations.en ?? a.title).localeCompare(b.titleTranslations.en ?? b.title))
+    isInvited(personId: number): boolean {
+        return this.selectedAttendeeIds().includes(personId)
     }
 
-    get selectedAttendeesLabel(): string {
-        const total = this.useGroupPeople ? this.groupPeople.length : (this.groupData?.members.length ?? 0)
-        return `${this.selectedAttendeeIds.length} of ${total} people invited`
+    isShortlisted(gameId: number): boolean {
+        return this.selectedPlannedGameIds().includes(gameId)
     }
 
-    get selectedGamesLabel(): string {
-        return this.selectedPlannedGameIds.length === 0
-            ? 'No games locked in yet'
-            : `${this.selectedPlannedGameIds.length} game${this.selectedPlannedGameIds.length === 1 ? '' : 's'} on the shortlist`
-    }
-
-    selectAllAttendees(): void {
-        this.selectedAttendeeIds = this.useGroupPeople
-            ? this.groupPeople.filter((person) => person.person.status === 'active').map((person) => person.person.id)
-            : (this.groupData?.members.map((member) => member.id) ?? [])
-    }
-
-    clearAttendees(): void {
-        this.selectedAttendeeIds = []
-    }
-
-    selectAllGames(): void {
-        this.selectedPlannedGameIds = this.availableGames.map((game) => game.id)
-    }
-
-    clearGames(): void {
-        this.selectedPlannedGameIds = []
+    toggleAttendee(personId: number): void {
+        this.selectedAttendeeIds.update((ids) => (ids.includes(personId) ? ids.filter((id) => id !== personId) : [...ids, personId]))
     }
 
     togglePlannedGame(gameId: number): void {
-        this.selectedPlannedGameIds = this.selectedPlannedGameIds.includes(gameId)
-            ? this.selectedPlannedGameIds.filter((id) => id !== gameId)
-            : [...this.selectedPlannedGameIds, gameId]
+        this.selectedPlannedGameIds.update((ids) => (ids.includes(gameId) ? ids.filter((id) => id !== gameId) : [...ids, gameId]))
     }
 
-    toggleAttendee(accountId: number): void {
-        this.selectedAttendeeIds = this.selectedAttendeeIds.includes(accountId)
-            ? this.selectedAttendeeIds.filter((id) => id !== accountId)
-            : [...this.selectedAttendeeIds, accountId]
+    selectAllAttendees(): void {
+        this.selectedAttendeeIds.set(this.people().map((person) => person.id))
     }
 
-    getGroupPersonName(person: GroupPersonWorkspaceType): string {
-        return person.person.displayName
+    clearAttendees(): void {
+        this.selectedAttendeeIds.set([])
     }
 
-    getGroupPersonGameCount(person: GroupPersonWorkspaceType): number {
-        return person.ownership.filter((ownership) => ownership.status === 'asserted').length
+    clearGames(): void {
+        this.selectedPlannedGameIds.set([])
     }
 
-    private loadGroupPeople(groupId: number, requestedIds: Array<number>): void {
-        const loader = this.api.getGroupPeople
-        if (typeof loader !== 'function') return
-
-        loader.call(this.api, groupId).subscribe({
-            next: (response) => {
-                this.groupPeople = response.people
-                this.useGroupPeople = response.people.length > 0
-                if (!this.useGroupPeople) return
-
-                const activeIds = response.people.filter((person) => person.person.status === 'active').map((person) => person.person.id)
-                const selectedRequestedIds = requestedIds.filter((id) => activeIds.includes(id))
-                this.selectedAttendeeIds = selectedRequestedIds.length > 0 ? [...new Set(selectedRequestedIds)] : activeIds
-            },
-            error: () => {
-                this.groupPeople = []
-                this.useGroupPeople = false
-            },
-        })
+    pickDate(value: string): void {
+        this.dateForm.setValue(value)
+        this.dateForm.markAsDirty()
     }
 
-    get disableCreateButton() {
-        if (!this.dateForm.value || !this.timeForm.value) {
-            return true
-        }
-
-        return this.isCreatingLoading || this.dateForm.invalid || this.timeForm.invalid || this.selectedAttendeeIds.length === 0
-    }
-
-    get isLoadingGroups(): boolean {
-        return this.loadingService.loadingStatesIndex()[LOADING_KEYS.USER_GROUPS]
-    }
-
-    get groupsError(): boolean {
-        return this.dataService.userGroupsError()
-    }
-
-    get groupUnavailable(): boolean {
-        return !this.isLoadingGroups && !this.groupsError && this.groupData === null
+    ownersLabel(entry: PlanGame): string {
+        if (entry.owners.length === 0) return 'Nobody invited owns it'
+        if (entry.owners.length <= 2) return `Bring: ${entry.owners.join(', ')}`
+        return `Bring: ${entry.owners.slice(0, 2).join(', ')} +${entry.owners.length - 2}`
     }
 
     retryGroups(): void {
         this.dataService.refreshUserGroups()
     }
 
-    onClickCreateMeeting() {
-        const groupId = this.groupData?.id
+    async onClickCreateMeeting(): Promise<void> {
+        const group = this.groupData()
         const sessionDate = this.dateForm.value
         const sessionTime = this.timeForm.value
 
-        if (!groupId || !sessionDate || !sessionTime || this.dateForm.invalid || this.timeForm.invalid) {
+        if (!group || !sessionDate || !sessionTime || this.dateForm.invalid || this.timeForm.invalid) {
             this.dateForm.markAsTouched()
             this.timeForm.markAsTouched()
             return
         }
+        if (!this.canCreate()) return
 
-        this.isCreatingLoading = true
+        this.isCreating.set(true)
+        try {
+            await firstValueFrom(
+                this.api.scheduleSession({
+                    groupId: group.id,
+                    sessionDate: new Date(`${sessionDate}T${sessionTime}`).toISOString(),
+                    timezone: this.localTimezone,
+                    notes: this.notes().trim() || undefined,
+                    ...(this.useGroupPeople()
+                        ? { groupPersonIds: this.selectedAttendeeIds() }
+                        : { attendeeIds: this.selectedAttendeeIds() }),
+                    plannedGameIds: this.selectedPlannedGameIds(),
+                }),
+            )
+            this.dataService.refreshUserMeets()
+            this.toastService.success('Game night planned.')
+            await this.router.navigate(['/play/upcoming-sessions'])
+        } catch {
+            this.toastService.error('Could not plan the game night. Please try again.')
+        } finally {
+            this.isCreating.set(false)
+        }
+    }
 
-        firstValueFrom(
-            this.api.scheduleSession({
-                groupId,
-                sessionDate: new Date(`${sessionDate}T${sessionTime}`).toISOString(),
-                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                notes: this.notes.trim() || undefined,
-                ...(this.useGroupPeople ? { groupPersonIds: this.selectedAttendeeIds } : { attendeeIds: this.selectedAttendeeIds }),
-                plannedGameIds: this.selectedPlannedGameIds,
-            }),
+    /** Invitees and a game can arrive from a recommendation ("Plan this"); otherwise everyone is invited. */
+    private initializeSelections(): void {
+        const group = this.groupData()
+        if (!group) return
+        const query = this.route.snapshot.queryParamMap
+        const requestedIds = (query.get('participantIds') ?? query.get('attendeeIds') ?? '')
+            .split(',')
+            .map(Number)
+            .filter((id) => Number.isInteger(id) && id > 0)
+        const requestedMembers = requestedIds.filter((id) => group.members.some((member) => member.id === id))
+        this.selectedAttendeeIds.set(
+            requestedMembers.length > 0 ? [...new Set(requestedMembers)] : group.members.map((member) => member.id),
         )
-            .then(() => {
-                this.dataService.refreshUserMeets()
-                this.toastService.success('Session scheduled.')
-                return this.router.navigate(['/play/upcoming-sessions'])
-            })
-            .catch(() => {
-                this.toastService.error('Could not schedule the session. Please try again.')
-            })
-            .finally(() => {
-                this.isCreatingLoading = false
-            })
+
+        const requestedGameId = Number(query.get('plannedGameId'))
+        this.selectedPlannedGameIds.set(
+            Number.isInteger(requestedGameId) && this.availableGames().some((game) => game.id === requestedGameId) ? [requestedGameId] : [],
+        )
+
+        void this.loadGroupPeople(group.id, requestedIds)
+    }
+
+    private async loadGroupPeople(groupId: number, requestedIds: Array<number>): Promise<void> {
+        try {
+            const { people } = await firstValueFrom(this.api.getGroupPeople(groupId))
+            if (people.length === 0) return
+            this.groupPeople.set(people)
+
+            const activeIds = this.people().map((person) => person.id)
+            const requested = requestedIds.filter((id) => activeIds.includes(id))
+            this.selectedAttendeeIds.set(requested.length > 0 ? [...new Set(requested)] : activeIds)
+            this.personCatalog.set(await firstValueFrom(this.api.getGroupPersonCatalog(groupId)))
+        } catch {
+            // Without group people, the plan invites member accounts.
+        }
     }
 }

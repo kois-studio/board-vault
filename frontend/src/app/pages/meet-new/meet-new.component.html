@@ -1,163 +1,166 @@
-<main class="min-h-[calc(100vh-8rem)] bg-bv-bg px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
-  <div class="mx-auto max-w-3xl">
-    @if (isLoadingGroups) {
-      <section class="rounded-3xl border border-bv-border bg-bv-surface p-8 text-center shadow-sm" role="status">
-        <p class="text-secondary">Loading the group plan…</p>
-      </section>
+<app-page-header titleText="Plan a game night" [showActionButton]="false">
+    @if (groupData(); as group) {
+        For <a class="font-medium text-bv-primary underline underline-offset-2 wrap-anywhere" [routerLink]="['/groups', group.id]">{{ group.name }}</a>. Everyone invited can answer, and you can change the plan later.
+    } @else {
+        Pick a day, who is invited, and a few games to consider.
     }
-    @if (!isLoadingGroups && groupsError) {
-      <section class="rounded-3xl border border-bv-warning/30 bg-bv-warning/10 p-8 text-center" role="alert">
-        <h1 class="text-2xl font-bold">This group plan is temporarily unavailable</h1>
-        <p class="mt-2 text-secondary">We could not load your groups. Your saved data is safe; try again or return to the groups workspace.</p>
-        <div class="mt-6 flex flex-col justify-center gap-3 sm:flex-row"><button appButton icon="arrow-repeat" (click)="retryGroups()">Retry</button><a appButton variant="secondary" class="text-center" routerLink="/dashboard">Back to groups</a></div>
-      </section>
-    }
-    @if (!isLoadingGroups && !groupsError && groupUnavailable) {
-      <section class="rounded-3xl border border-bv-border bg-bv-surface p-8 text-center shadow-sm">
-        <h1 class="text-2xl font-bold">This group is no longer available</h1>
-        <p class="mt-2 text-secondary">You may have left the group, or this link may be out of date.</p>
-        <a appButton class="mt-6" routerLink="/dashboard">Return to groups</a>
-      </section>
-    }
-    <div [hidden]="isLoadingGroups || groupsError || groupUnavailable">
-      <a appButton variant="secondary" [routerLink]="['/groups', $safeNavigationMigration(groupData?.id)]" class="mb-6">Back to group</a>
+</app-page-header>
 
-      <div class="app-bg-secondary shadow-md rounded-lg p-6 lg:p-8">
-        <header class="mb-8">
-          <p class="text-sm font-medium text-bv-primary">{{ groupData?.name }}</p>
-          <h1 class="text-3xl font-bold mt-1">Plan a game night</h1>
-          <p class="text-secondary mt-3">Pick a date, invite the people who should be there, and put a few games on the shortlist. You can adjust the session later.</p>
-        </header>
-
-        <div class="grid gap-8">
-          <section aria-labelledby="session-date-heading">
-            <div class="flex items-start gap-3 mb-3">
-              <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-bv-primary text-sm font-semibold text-bv-on-primary">1</span>
-              <div>
-                <h2 id="session-date-heading" class="font-semibold">Choose the date</h2>
-                <p class="text-secondary text-sm">Use the day your group expects to play together.</p>
-              </div>
+<container-wrapper>
+    <div class="mx-auto max-w-4xl">
+        @if (isLoadingGroups()) {
+            <p class="py-12 text-center text-bv-text-muted" role="status">Loading the group…</p>
+        } @else if (groupsError()) {
+            <div class="py-12 text-center" role="alert">
+                <p class="text-bv-text-muted">Your groups could not be loaded.</p>
+                <p class="mt-2 text-sm text-bv-text-muted">Check your connection and try again.</p>
+                <button appButton class="mt-4" icon="arrow-repeat" (click)="retryGroups()">Retry</button>
             </div>
-            <label for="session-date" class="block text-sm font-medium mb-2">Game night date</label>
-            <input
-              id="session-date"
-              type="date"
-              [formControl]="dateForm"
-              [class]="dateClass"
-              class="app-input"
-              [min]="today"
-              required
-              />
-            @if (dateForm.invalid && (dateForm.dirty || dateForm.touched)) {
-              <div role="alert">
-                @if (dateForm.hasError('required')) {
-                  <div class="text-sm text-bv-danger py-1">Date is required.</div>
-                }
-                @if (dateForm.hasError('futureDate')) {
-                  <div class="text-sm text-bv-danger py-1">Date cannot be in the past.</div>
-                }
-              </div>
-            }
-            <label for="session-time" class="block text-sm font-medium mt-4 mb-2">Start time</label>
-            <input id="session-time" type="time" aria-label="Game night start time" [formControl]="timeForm" class="app-input" required />
-            @if (timeForm.invalid && (timeForm.dirty || timeForm.touched)) {
-              <div role="alert" class="text-sm text-bv-danger py-1">Start time is required.</div>
-            }
-            <p class="text-secondary text-sm mt-2">Saved in your local timezone: {{ localTimezone }}.</p>
-          </section>
+        } @else if (groupUnavailable()) {
+            <div class="rounded-lg border border-dashed border-bv-border px-6 py-12 text-center">
+                <h2 class="text-xl font-bold">This group is not available</h2>
+                <p class="mx-auto mt-2 max-w-lg text-sm text-bv-text-muted">You may have left the group, or this link may be out of date.</p>
+                <a appButton class="mt-6" routerLink="/dashboard">Back to your groups</a>
+            </div>
+        } @else {
+            <div class="space-y-6">
+                <!-- When -->
+                <section class="rounded-lg border border-bv-border bg-bv-surface p-5 shadow-sm sm:p-6" aria-labelledby="plan-when">
+                    <h2 id="plan-when" class="text-lg font-semibold">When?</h2>
+                    <div class="mt-3 flex flex-wrap gap-2" role="group" aria-label="Quick dates">
+                        @for (option of quickDates(); track option.value) {
+                            <button type="button" class="app-chip" [attr.aria-pressed]="dateForm.value === option.value" (click)="pickDate(option.value)">{{ option.label }}</button>
+                        }
+                    </div>
+                    <div class="mt-4 grid gap-4 sm:grid-cols-[12rem_9rem_1fr] sm:items-end">
+                        <div>
+                            <label for="session-date" class="mb-1 block text-sm font-medium">Day</label>
+                            <input id="session-date" type="date" class="app-input" [formControl]="dateForm" [min]="today" [class.border-bv-danger]="dateForm.invalid && (dateForm.dirty || dateForm.touched)" [attr.aria-invalid]="dateForm.invalid" aria-describedby="session-date-error" required />
+                        </div>
+                        <div>
+                            <label for="session-time" class="mb-1 block text-sm font-medium">Start time</label>
+                            <input id="session-time" type="time" class="app-input" [formControl]="timeForm" [class.border-bv-danger]="timeForm.invalid && (timeForm.dirty || timeForm.touched)" required />
+                        </div>
+                        <p class="text-sm text-bv-text-muted sm:pb-2">Your timezone: {{ localTimezone }}</p>
+                    </div>
+                    <p id="session-date-error" class="mt-2 text-sm text-bv-danger" aria-live="polite">
+                        @if (dateForm.hasError('required') && (dateForm.dirty || dateForm.touched)) {
+                            Choose a day.
+                        } @else if (dateForm.hasError('futureDate')) {
+                            That day has already passed. To add a night you already played, <a class="underline" routerLink="/play/log-session">record a session</a>.
+                        } @else if (timeForm.invalid && (timeForm.dirty || timeForm.touched)) {
+                            Choose a start time.
+                        }
+                    </p>
+                </section>
 
-          <section aria-labelledby="attendees-heading">
-            <div class="flex flex-wrap items-start justify-between gap-3 mb-3">
-              <div class="flex items-start gap-3">
-                <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-bv-primary text-sm font-semibold text-bv-on-primary">2</span>
-                <div>
-                  <h2 id="attendees-heading" class="font-semibold">Choose attendees</h2>
-                  <p class="text-secondary text-sm">Who do you expect to play? They will receive this session in their upcoming list.</p>
+                <!-- Who -->
+                <section class="rounded-lg border border-bv-border bg-bv-surface p-5 shadow-sm sm:p-6" aria-labelledby="plan-who">
+                    <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+                        <h2 id="plan-who" class="text-lg font-semibold">Who’s invited?</h2>
+                        <span class="text-sm text-bv-text-muted" aria-live="polite">{{ selectedAttendeeIds().length }} of {{ people().length }}</span>
+                        <button type="button" class="rounded text-sm font-medium text-bv-primary underline underline-offset-2" (click)="selectAllAttendees()">Everyone</button>
+                        <button type="button" class="rounded text-sm text-bv-text-muted underline underline-offset-2" (click)="clearAttendees()">Nobody</button>
+                    </div>
+                    @if (people().length === 0) {
+                        <p class="mt-3 text-sm text-bv-text-muted">Nobody in this group yet.</p>
+                    } @else {
+                        <div class="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                            @for (person of people(); track person.id) {
+                                @let invited = isInvited(person.id);
+                                <button
+                                    type="button"
+                                    class="flex min-w-0 items-center gap-3 rounded-lg border p-3 text-left transition"
+                                    [class]="invited ? 'border-bv-primary bg-bv-primary-soft' : 'border-bv-border hover:border-bv-primary/50'"
+                                    [attr.aria-pressed]="invited"
+                                    (click)="toggleAttendee(person.id)"
+                                >
+                                    <app-image-profile [avatar]="person.avatar" aria-hidden="true" />
+                                    <span class="min-w-0 flex-1">
+                                        <span class="line-clamp-2 font-medium wrap-anywhere" [title]="person.name">{{ person.name }}</span>
+                                        <span class="block text-xs text-bv-text-muted">{{ person.gameIds.size }} {{ person.gameIds.size === 1 ? 'game' : 'games' }}</span>
+                                    </span>
+                                    <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border" [class]="invited ? 'border-bv-primary bg-bv-primary text-bv-on-primary' : 'border-bv-border'" aria-hidden="true">
+                                        @if (invited) {
+                                            <app-icon name="check" [size]="14" />
+                                        }
+                                    </span>
+                                </button>
+                            }
+                        </div>
+                    }
+                </section>
+
+                <!-- Shortlist -->
+                <section class="rounded-lg border border-bv-border bg-bv-surface p-5 shadow-sm sm:p-6" aria-labelledby="plan-games">
+                    <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+                        <h2 id="plan-games" class="text-lg font-semibold">Shortlist <span class="text-sm font-normal text-bv-text-muted">optional</span></h2>
+                        <span class="text-sm text-bv-text-muted" aria-live="polite">{{ selectedPlannedGameIds().length }} chosen</span>
+                        @if (selectedPlannedGameIds().length > 0) {
+                            <button type="button" class="rounded text-sm text-bv-text-muted underline underline-offset-2" (click)="clearGames()">Clear</button>
+                        }
+                    </div>
+                    <p class="mt-1 text-sm text-bv-text-muted">A few games to consider. Leave it empty to decide on the night.</p>
+                    @if (availableGames().length === 0) {
+                        <p class="mt-4 rounded-lg border border-dashed border-bv-border p-4 text-sm text-bv-text-muted">Nobody in this group has games in Board Vault yet.</p>
+                    } @else {
+                        @if (availableGames().length > 8) {
+                            <label class="relative mt-4 block sm:max-w-xs">
+                                <span class="sr-only">Find a game</span>
+                                <app-icon name="search" [size]="16" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-bv-text-muted" aria-hidden="true" />
+                                <input type="search" class="app-input pl-9" placeholder="Find a game" [value]="gameQuery()" (input)="gameQuery.set($any($event.target).value)" />
+                            </label>
+                        }
+                        <div class="mt-4 grid max-h-[28rem] gap-2 overflow-y-auto pr-1 sm:grid-cols-2">
+                            @for (entry of shortlistGames(); track entry.game.id) {
+                                @let chosen = isShortlisted(entry.game.id);
+                                <button
+                                    type="button"
+                                    class="flex min-w-0 items-center gap-3 rounded-lg border p-2 text-left transition"
+                                    [class]="chosen ? 'border-bv-primary bg-bv-primary-soft' : entry.owners.length > 0 ? 'border-bv-border hover:border-bv-primary/50' : 'border-bv-border opacity-60 hover:opacity-100'"
+                                    [attr.aria-pressed]="chosen"
+                                    (click)="togglePlannedGame(entry.game.id)"
+                                >
+                                    <image-background class="h-12 w-12 shrink-0" [src]="entry.game.imageUrl" [alt]="entry.title + ' cover'" />
+                                    <span class="min-w-0 flex-1">
+                                        <span class="block truncate font-medium" [title]="entry.title">{{ entry.title }}</span>
+                                        <span class="block truncate text-xs text-bv-text-muted" [title]="ownersLabel(entry)">{{ ownersLabel(entry) }}</span>
+                                        <span class="block text-xs" [class]="entry.fits ? 'text-bv-text-muted' : 'text-bv-warning'">
+                                            {{ entry.game.minPlayers }}–{{ entry.game.maxPlayers }} players{{ entry.fits ? '' : ' · not for ' + invitedPeople().length }}
+                                        </span>
+                                    </span>
+                                    <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border" [class]="chosen ? 'border-bv-primary bg-bv-primary text-bv-on-primary' : 'border-bv-border'" aria-hidden="true">
+                                        @if (chosen) {
+                                            <app-icon name="check" [size]="14" />
+                                        }
+                                    </span>
+                                </button>
+                            } @empty {
+                                <p class="text-sm text-bv-text-muted">No game matches “{{ gameQuery() }}”.</p>
+                            }
+                        </div>
+                    }
+                </section>
+
+                <!-- Note -->
+                <section class="rounded-lg border border-bv-border bg-bv-surface p-5 shadow-sm sm:p-6" aria-labelledby="plan-note">
+                    <h2 id="plan-note" class="text-lg font-semibold">Note <span class="text-sm font-normal text-bv-text-muted">optional</span></h2>
+                    <label for="session-notes" class="sr-only">Note for the group</label>
+                    <textarea id="session-notes" class="app-input mt-3 min-h-20" maxlength="1000" placeholder="For example: at Ana’s place, bring snacks." [value]="notes()" (input)="notes.set($any($event.target).value)"></textarea>
+                </section>
+
+                <!-- Summary -->
+                <div class="sticky bottom-4 z-10 flex flex-col gap-3 rounded-lg border border-bv-primary/30 bg-bv-surface p-4 shadow-lg sm:flex-row sm:items-center">
+                    <p class="min-w-0 flex-1 text-sm">
+                        <span class="font-semibold">{{ whenSummary() }}</span>
+                        <span class="text-bv-text-muted"> · {{ selectedAttendeeIds().length }} invited · {{ selectedPlannedGameIds().length }} {{ selectedPlannedGameIds().length === 1 ? 'game' : 'games' }}</span>
+                        @if (selectedAttendeeIds().length === 0) {
+                            <span class="block text-bv-warning">Invite at least one person.</span>
+                        }
+                    </p>
+                    <button appButton icon="calendar-plus" [disabled]="!canCreate()" (click)="onClickCreateMeeting()">{{ isCreating() ? 'Planning…' : 'Plan game night' }}</button>
                 </div>
-              </div>
-              <div class="flex gap-3 text-sm">
-                <button type="button" class="text-bv-primary underline" (click)="selectAllAttendees()">Everyone</button>
-                <button type="button" class="text-secondary underline" (click)="clearAttendees()">Clear</button>
-              </div>
             </div>
-            @if ((useGroupPeople ? groupPeople.length : (groupData?.members?.length ?? 0)) === 0) {
-              <p class="text-secondary text-sm">No group members are available.</p>
-            } @else {
-              <p class="text-secondary text-sm mb-3" aria-live="polite">{{ selectedAttendeesLabel }}</p>
-              <div class="grid gap-2 sm:grid-cols-2">
-                @if (useGroupPeople) {
-                  @for (person of groupPeople; track person.person.id) {
-                    <label class="flex items-center gap-3 rounded-lg border border-bv-border p-3 cursor-pointer has-[:checked]:border-bv-primary">
-                      <input type="checkbox" [checked]="selectedAttendeeIds.includes(person.person.id)" (change)="toggleAttendee(person.person.id)" />
-                      <span class="min-w-0 wrap-anywhere">{{ getGroupPersonName(person) }}</span>
-                      <span class="text-secondary text-sm ml-auto shrink-0 whitespace-nowrap">{{ getGroupPersonGameCount(person) }} games</span>
-                    </label>
-                  }
-                } @else {
-                  @for (member of groupData?.members ?? []; track member.id) {
-                    <label class="flex items-center gap-3 rounded-lg border border-bv-border p-3 cursor-pointer has-[:checked]:border-bv-primary">
-                      <input type="checkbox" [checked]="selectedAttendeeIds.includes(member.id)" (change)="toggleAttendee(member.id)" />
-                      <span class="min-w-0 wrap-anywhere">{{ member.displayName || member.username }}</span>
-                      <span class="text-secondary text-sm ml-auto shrink-0 whitespace-nowrap">{{ member.games.length }} games</span>
-                    </label>
-                  }
-                }
-              </div>
-            }
-          </section>
-
-          <section aria-labelledby="games-heading">
-            <div class="flex flex-wrap items-start justify-between gap-3 mb-3">
-              <div class="flex items-start gap-3">
-                <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-bv-primary text-sm font-semibold text-bv-on-primary">3</span>
-                <div>
-                  <h2 id="games-heading" class="font-semibold">Make a shortlist <span class="text-secondary font-normal">(optional)</span></h2>
-                  <p class="text-secondary text-sm">Choose games to consider. Leave this empty if the group will decide on the night.</p>
-                </div>
-              </div>
-              @if (availableGames.length > 0) {
-                <div class="flex gap-3 text-sm">
-                  <button type="button" class="text-bv-primary underline" (click)="selectAllGames()">All games</button>
-                  <button type="button" class="text-secondary underline" (click)="clearGames()">Clear</button>
-                </div>
-              }
-            </div>
-            <p class="text-secondary text-sm mb-3" aria-live="polite">{{ selectedGamesLabel }}</p>
-            @if (availableGames.length === 0) {
-              <div class="rounded-lg border border-dashed border-bv-border p-4 text-secondary text-sm">No games are currently available in this group. Add games to member collections first, or plan the session without a shortlist.</div>
-            } @else {
-              <div class="grid gap-2 max-h-72 overflow-y-auto pr-1">
-                @for (game of availableGames; track game.id) {
-                  <label class="flex items-center gap-3 rounded-lg border border-bv-border p-3 cursor-pointer has-[:checked]:border-bv-primary">
-                    <input type="checkbox" [checked]="selectedPlannedGameIds.includes(game.id)" (change)="togglePlannedGame(game.id)" />
-                    <image-background class="block h-12 w-12 shrink-0 rounded" [src]="game.imageUrl" [alt]="(game.titleTranslations.en || game.title) + ' cover'" />
-                    <span class="font-medium">{{ game.titleTranslations.en || game.title }}</span>
-                  </label>
-                }
-              </div>
-            }
-          </section>
-
-          <section aria-labelledby="notes-heading">
-            <div class="flex items-start gap-3 mb-3">
-              <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-bv-primary text-sm font-semibold text-bv-on-primary">4</span>
-              <div>
-                <h2 id="notes-heading" class="font-semibold">Add context <span class="text-secondary font-normal">(optional)</span></h2>
-                <p class="text-secondary text-sm">A quick reason, idea, or reminder helps the group understand this plan later.</p>
-              </div>
-            </div>
-            <label for="session-notes" class="sr-only">Session notes</label>
-            <textarea id="session-notes" class="app-input min-h-24" [(ngModel)]="notes" maxlength="1000" placeholder="For example: Try the new co-op game or finish our campaign."></textarea>
-          </section>
-        </div>
-
-        <footer class="mt-8 border-t border-bv-border pt-6">
-          <p class="text-secondary text-sm mb-4">The session will be created as scheduled. Everyone can then open it to see the plan, update attendance, and record what was actually played.</p>
-          <button appButton class="w-full sm:w-auto" title="Plan game night" (click)="onClickCreateMeeting()" [disabled]="disableCreateButton">
-            {{ isCreatingLoading ? 'Planning…' : 'Plan game night' }}
-          </button>
-        </footer>
-      </div>
+        }
     </div>
-  </div>
-</main>
+</container-wrapper>

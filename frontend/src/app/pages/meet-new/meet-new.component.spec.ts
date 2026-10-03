@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing'
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router'
 import { of } from 'rxjs'
 import { Api } from '../../api/api'
+import type { GroupPersonWorkspaceType } from '../../api/api.types'
 import { ToastService } from '../../components/toast/toast.service'
 import { LOADING_KEYS } from '../../core/enums/loading-keys-enum'
 import { DataService } from '../../core/services/data.service'
@@ -19,18 +20,21 @@ describe('MeetNewComponent social handoff', () => {
                 id: 1,
                 displayName: 'Organizer',
                 username: 'organizer',
-                games: [{ id: 42, title: 'Cascadia', titleTranslations: { en: 'Cascadia', es: 'Cascadia' } }],
+                avatar: null,
+                games: [{ id: 42, title: 'Cascadia', titleTranslations: { en: 'Cascadia', es: 'Cascadia' }, minPlayers: 1, maxPlayers: 4 }],
             },
-            { id: 2, displayName: 'Member', username: 'member', games: [] },
+            { id: 2, displayName: 'Member', username: 'member', avatar: null, games: [] },
         ],
     }
 
-    const setup = async (queryParams: Record<string, string> = {}, groupData = group) => {
+    const setup = async (queryParams: Record<string, string> = {}, groupData = group, people: Array<GroupPersonWorkspaceType> = []) => {
         const api = {
             scheduleSession: vi
                 .fn()
                 .mockName('scheduleSession')
                 .mockReturnValue(of({ id: 99 })),
+            getGroupPeople: vi.fn().mockName('getGroupPeople').mockReturnValue(of({ people })),
+            getGroupPersonCatalog: vi.fn().mockName('getGroupPersonCatalog').mockReturnValue(of([])),
         }
         const routerData = {
             snapshot: {
@@ -63,47 +67,88 @@ describe('MeetNewComponent social handoff', () => {
 
         const fixture = TestBed.createComponent(MeetNewComponent)
         fixture.detectChanges()
+        await fixture.whenStable()
         return { fixture, component: fixture.componentInstance, api, dataService, loadingService }
     }
 
-    it('lets a long unbroken attendee name wrap instead of overflowing its card', async () => {
+    it('invites everyone by default and shows a long name without overflowing', async () => {
         const longName = '⸻'.repeat(20)
-        const { fixture } = await setup({}, { ...group, members: [group.members[0], { ...group.members[1], displayName: longName }] })
+        const { fixture, component } = await setup(
+            {},
+            { ...group, members: [group.members[0], { ...group.members[1], displayName: longName }] },
+        )
+        fixture.detectChanges()
 
-        const label = [...fixture.nativeElement.querySelectorAll('label')].find((element: HTMLElement) =>
+        expect(component.selectedAttendeeIds()).toEqual([1, 2])
+        const tile = [...fixture.nativeElement.querySelectorAll('button[aria-pressed]')].find((element: HTMLElement) =>
             element.textContent?.includes(longName),
-        ) as HTMLLabelElement
-        const [name, gameCount] = [...label.querySelectorAll('span')] as Array<HTMLSpanElement>
-
-        // jsdom has no layout: assert the classes that let the name shrink and wrap, and keep the count on one line.
-        expect(name.textContent?.trim()).toBe(longName)
-        expect(name.classList).toContain('min-w-0')
-        expect(name.classList).toContain('wrap-anywhere')
-        expect(gameCount.classList).toContain('shrink-0')
-        expect(gameCount.classList).toContain('whitespace-nowrap')
+        ) as HTMLButtonElement
+        const name = tile.querySelector('span.wrap-anywhere') as HTMLSpanElement
+        expect(tile.getAttribute('aria-pressed')).toBe('true')
+        expect(name.parentElement?.classList).toContain('min-w-0')
     })
 
     it('restores selected attendees and the recommended game from the decision handoff', async () => {
         const { component } = await setup({ attendeeIds: '2', plannedGameId: '42' })
 
-        expect(component.groupData?.id).toBe(7)
-        expect(component.selectedAttendeeIds).toEqual([2])
-        expect(component.selectedPlannedGameIds).toEqual([42])
-        expect(component.availableGames.map((game) => game.id)).toEqual([42])
+        expect(component.groupData()?.id).toBe(7)
+        expect(component.selectedAttendeeIds()).toEqual([2])
+        expect(component.selectedPlannedGameIds()).toEqual([42])
+        expect(component.availableGames().map((game) => game.id)).toEqual([42])
     })
 
-    it('submits the planned group context only after at least one attendee is selected', async () => {
-        const { fixture, component, api, dataService } = await setup()
+    it('lists who brings each game and whether the player count fits', async () => {
+        const { component } = await setup()
+
+        expect(component.shortlistGames()).toEqual([expect.objectContaining({ title: 'Cascadia', owners: ['Organizer'], fits: true })])
+        component.toggleAttendee(1)
+        expect(component.shortlistGames()[0].owners).toEqual([])
+    })
+
+    it('invites group people once they load, and sends them as group people', async () => {
+        const people = [
+            {
+                person: { id: 12, accountId: 1, displayName: 'Organizer', status: 'active', avatar: null },
+                ownership: [],
+                preferences: [],
+                claimable: false,
+            },
+            {
+                person: { id: 13, accountId: null, displayName: 'Guest', status: 'active', avatar: null },
+                ownership: [{ gameId: 42, status: 'asserted' }],
+                preferences: [],
+                claimable: false,
+            },
+            {
+                person: { id: 14, accountId: null, displayName: 'Gone', status: 'archived', avatar: null },
+                ownership: [],
+                preferences: [],
+                claimable: false,
+            },
+        ] as unknown as Array<GroupPersonWorkspaceType>
+        const { fixture, component, api } = await setup({}, group, people)
+
+        expect(component.useGroupPeople()).toBe(true)
+        expect(component.people().map((person) => person.name)).toEqual(['Organizer', 'Guest'])
+        expect(component.selectedAttendeeIds()).toEqual([12, 13])
+        expect(component.shortlistGames()[0].owners).toEqual(['Organizer', 'Guest'])
+
+        await component.onClickCreateMeeting()
+        await fixture.whenStable()
+
+        expect(api.scheduleSession).toHaveBeenCalledWith(expect.objectContaining({ groupPersonIds: [12, 13] }))
+    })
+
+    it('plans the night only after at least one person is invited', async () => {
+        const { component, api, dataService } = await setup()
         component.clearAttendees()
 
-        expect(component.disableCreateButton).toBe(true)
+        expect(component.canCreate()).toBe(false)
         component.selectAllAttendees()
-        expect(component.disableCreateButton).toBe(false)
+        expect(component.canCreate()).toBe(true)
 
-        component.notes = 'Try the group recommendation.'
-        component.onClickCreateMeeting()
-        await fixture.whenStable()
-        await new Promise((resolve) => setTimeout(resolve, 0))
+        component.notes.set('Try the group recommendation.')
+        await component.onClickCreateMeeting()
 
         expect(api.scheduleSession).toHaveBeenCalledWith(
             expect.objectContaining({
@@ -115,19 +160,28 @@ describe('MeetNewComponent social handoff', () => {
             }),
         )
         expect(dataService.refreshUserMeets).toHaveBeenCalled()
-        expect(component.isCreatingLoading).toBe(false)
+        expect(component.isCreating()).toBe(false)
+    })
+
+    it('rejects a day in the past', async () => {
+        const { component } = await setup()
+
+        component.pickDate('2000-01-01')
+
+        expect(component.dateForm.hasError('futureDate')).toBe(true)
+        expect(component.canCreate()).toBe(false)
     })
 
     it('clears stale planning context when the group disappears during a refresh', async () => {
         const { fixture, component, dataService } = await setup()
 
-        expect(component.groupData?.id).toBe(7)
+        expect(component.groupData()?.id).toBe(7)
         dataService.userGroups.set([])
         fixture.detectChanges()
 
-        expect(component.groupData).toBeNull()
-        expect(component.selectedAttendeeIds).toEqual([])
-        expect(component.selectedPlannedGameIds).toEqual([])
-        expect(component.groupUnavailable).toBe(true)
+        expect(component.groupData()).toBeNull()
+        expect(component.selectedAttendeeIds()).toEqual([])
+        expect(component.selectedPlannedGameIds()).toEqual([])
+        expect(component.groupUnavailable()).toBe(true)
     })
 })
