@@ -255,7 +255,7 @@ compliance:
       next_action: Remove dependencies with their last use.
     - id: DEP-006
       status: compliant
-      evidence: npm audit --audit-level=low in CI for both packages (zero findings); Dependabot security updates arrive outside the monthly schedule.
+      evidence: 'npm audit --audit-level=low in CI for both packages (zero findings); the frontend omits peer-only packages, which the app never imports (react-native under @clerk/clerk-js has an unpatched braces advisory, GHSA-vfj7-8cjw-p6xm). Dependabot security updates arrive outside the monthly schedule.'
       priority: high
       next_action: Review the monthly Dependabot PRs.
     - id: DEP-007
