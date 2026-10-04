@@ -27,14 +27,15 @@ The job fails when the median run of any page drops below:
 
 | Category | Minimum |
 | --- | --- |
-| Performance | 50 |
+| Performance | 80 |
 | Accessibility | 95 |
 | Best practices | 90 |
 | SEO | 90 |
 
-Performance varies from run to run on shared CI machines (62 to 76 across
-the first run's nine audits), so its floor sits well under the baseline and
-catches large regressions only. Treat the scores
+Performance varies from run to run on shared CI machines (92 to 95 across
+the nine audits of the baseline run), so its floor sits under the baseline and
+catches real regressions, such as Clerk or a large library loading before the
+first paint. Treat the scores
 as signals; a passing score does not mean a page is accessible.
 
 ## Baseline (CI, October 2026)
@@ -43,11 +44,13 @@ Median of three runs on the GitHub runner:
 
 | Page | Performance | Accessibility | Best practices | SEO |
 | --- | --- | --- | --- | --- |
-| `/` | 75 | 100 | 96 | 100 |
-| `/login` | 76 | 100 | 96 | 100 |
-| `/register` | 65 | 100 | 96 | 100 |
+| `/` | 95 | 100 | 96 | 100 |
+| `/login` | 95 | 100 | 96 | 100 |
+| `/register` | 92 | 100 | 96 | 100 |
 
-Open findings: [#72](https://github.com/kois-studio/board-vault/issues/72) (public pages paint slowly on mobile).
+The first audit scored 65 to 76. [#72](https://github.com/kois-studio/board-vault/issues/72)
+raised it by drawing the page before Clerk loads and bundling only the icons
+in use.
 
 ## Read a report
 
