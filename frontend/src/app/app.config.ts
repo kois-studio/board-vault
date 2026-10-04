@@ -10,6 +10,10 @@ export const appConfig: ApplicationConfig = {
         provideZoneChangeDetection({ eventCoalescing: true }),
         provideRouter(routes),
         provideHttpClient(withXhr(), withInterceptors([authInterceptor])),
-        provideAppInitializer(() => inject(ClerkService).initialize()),
+        // Not awaited: Clerk is about 500 KB, and public pages don't need it to render.
+        // Guards and API tokens wait for it (ClerkService.whenLoaded).
+        provideAppInitializer(() => {
+            void inject(ClerkService).initialize()
+        }),
     ],
 }

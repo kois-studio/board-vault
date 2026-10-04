@@ -13,6 +13,9 @@ operational details.
 
 ### Changed
 
+- Public pages paint about twice as fast on phones. Icons ship only the ones
+  the app uses (they pulled in the whole icon set), and Clerk loads after the
+  first paint instead of before it; signed-in pages still wait for it.
 - The session page is redesigned: a date header with the status, your RSVP
   and the organizer's actions; the games played tonight with their players
   and winners; the shortlist; and who's coming with attendance alongside.

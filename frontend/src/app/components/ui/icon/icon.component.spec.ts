@@ -2,9 +2,6 @@ import { TestBed } from '@angular/core/testing'
 import { IconComponent } from './icon.component'
 
 describe('IconComponent', () => {
-    // The first import of the Lucide barrel is slow on a cold, busy runner.
-    beforeAll(() => import('@lucide/angular'), 30_000)
-
     const render = (name: string) => {
         const fixture = TestBed.createComponent(IconComponent)
         fixture.componentRef.setInput('name', name)
@@ -24,7 +21,7 @@ describe('IconComponent', () => {
         await vi.waitFor(() => expect(fixture.componentInstance.iconComponent()?.name).toContain('LucideCircleQuestionMark'))
     })
 
-    it('loads the new icon when the name changes', async () => {
+    it('switches icon when the name changes', async () => {
         const fixture = render('menu')
         await vi.waitFor(() => expect(fixture.componentInstance.iconComponent()?.name).toContain('LucideMenu'))
 

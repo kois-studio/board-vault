@@ -8,7 +8,13 @@ import { LoginService } from '../services/login.service'
 import { AuthOnlyGuard, SHOWS_AUTH_HANDOFF } from './auth.guard'
 
 describe('AuthOnlyGuard', () => {
-    function run(options: { authenticated: boolean; signedIn: boolean; handoffLayout: boolean; verification: Observable<boolean> }) {
+    function run(options: {
+        authenticated: boolean
+        signedIn: boolean
+        handoffLayout: boolean
+        verification: Observable<boolean>
+        clerkLoaded?: Promise<void>
+    }) {
         const loginService = {
             isAuthenticated: signal(options.authenticated),
             verifySession: vi.fn().mockName('verifySession').mockReturnValue(options.verification),
@@ -16,7 +22,10 @@ describe('AuthOnlyGuard', () => {
         TestBed.configureTestingModule({
             providers: [
                 { provide: LoginService, useValue: loginService },
-                { provide: ClerkService, useValue: { isSignedIn: signal(options.signedIn) } },
+                {
+                    provide: ClerkService,
+                    useValue: { isSignedIn: signal(options.signedIn), whenLoaded: () => options.clerkLoaded ?? Promise.resolve() },
+                },
             ],
         })
         const route = { pathFromRoot: [{ data: options.handoffLayout ? { [SHOWS_AUTH_HANDOFF]: true } : {} }, { data: {} }] }
@@ -52,5 +61,27 @@ describe('AuthOnlyGuard', () => {
         const { result } = run({ authenticated: false, signedIn: false, handoffLayout: true, verification: of(false) })
 
         expect(await firstValueFrom(result)).toBe(false)
+    })
+
+    it('decides nothing until Clerk has loaded', async () => {
+        let finishLoading = () => {}
+        const clerkLoaded = new Promise<void>((resolve) => {
+            finishLoading = resolve
+        })
+        const { loginService, result } = run({
+            authenticated: false,
+            signedIn: false,
+            handoffLayout: false,
+            verification: of(false),
+            clerkLoaded,
+        })
+        const decision = firstValueFrom(result)
+
+        await Promise.resolve()
+        expect(loginService.verifySession).not.toHaveBeenCalled()
+
+        finishLoading()
+        expect(await decision).toBe(false)
+        expect(loginService.verifySession).toHaveBeenCalled()
     })
 })

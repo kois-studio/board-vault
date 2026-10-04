@@ -28,7 +28,23 @@ export class ClerkService {
     public readonly isSignedIn = signal(false)
     public readonly userId = signal<string | null>(null)
 
-    public async initialize(): Promise<void> {
+    private loaded: Promise<void> = Promise.resolve()
+
+    /**
+     * Starts loading Clerk. Pages render meanwhile; anything that needs the
+     * session (route guards, API tokens) waits for whenLoaded().
+     */
+    public initialize(): Promise<void> {
+        this.loaded = this.load()
+        return this.loaded
+    }
+
+    /** Resolves once Clerk has loaded, or failed to; it never rejects. */
+    public whenLoaded(): Promise<void> {
+        return this.loaded
+    }
+
+    private async load(): Promise<void> {
         if (!environment.clerkPublishableKey) {
             // Without a key nobody can sign in. The sign-in page explains the
             // missing configuration instead of failing silently.
@@ -38,6 +54,8 @@ export class ClerkService {
         }
 
         try {
+            // Let the first page paint before downloading and parsing Clerk.
+            await afterFirstPaint()
             const { Clerk: ClerkConstructor } = await import('@clerk/clerk-js')
             const clerkUiCtor = await this.loadClerkUiScript()
             const clerk = new ClerkConstructor(environment.clerkPublishableKey)
@@ -58,6 +76,7 @@ export class ClerkService {
     }
 
     public async getToken(): Promise<string | null> {
+        await this.loaded
         return (await this.clerk?.session?.getToken()) ?? null
     }
 
@@ -205,4 +224,12 @@ export class ClerkService {
     private getInvitationStatus(): string | null {
         return typeof globalThis.location !== 'undefined' ? new URLSearchParams(globalThis.location.search).get('__clerk_status') : null
     }
+}
+
+/** Resolves when the browser is idle after rendering, or after a second at most. */
+function afterFirstPaint(): Promise<void> {
+    return new Promise((resolve) => {
+        if (typeof requestIdleCallback === 'function') requestIdleCallback(() => resolve(), { timeout: 1000 })
+        else setTimeout(resolve, 0)
+    })
 }

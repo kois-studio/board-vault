@@ -1,7 +1,7 @@
 // auth.guard.ts
 import { inject } from '@angular/core'
 import { ActivatedRouteSnapshot, CanActivateFn } from '@angular/router'
-import { Observable, of } from 'rxjs'
+import { from, Observable, of, switchMap } from 'rxjs'
 
 import { ClerkService } from '../services/clerk.service'
 import { LoginService } from '../services/login.service'
@@ -26,6 +26,10 @@ export const AuthOnlyGuard: CanActivateFn = (route: ActivatedRouteSnapshot): Obs
         return of(true)
     }
 
+    return from(clerkService.whenLoaded()).pipe(switchMap(() => afterClerkLoaded(route, loginService, clerkService)))
+}
+
+function afterClerkLoaded(route: ActivatedRouteSnapshot, loginService: LoginService, clerkService: ClerkService): Observable<boolean> {
     const layoutShowsHandoff = route.pathFromRoot.some((snapshot) => snapshot.data?.[SHOWS_AUTH_HANDOFF] === true)
     if (clerkService.isSignedIn() && layoutShowsHandoff) {
         loginService.verifySession().subscribe()

@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http'
 import { computed, effect, Injectable, inject, signal } from '@angular/core'
 import { Router } from '@angular/router'
-import { Observable, of } from 'rxjs'
+import { from, Observable, of } from 'rxjs'
 import { catchError, finalize, map, shareReplay, switchMap, tap } from 'rxjs/operators'
 
 import { Api } from '../../api/api'
@@ -54,6 +54,10 @@ export class LoginService {
      * backend maps it to the Board Vault account and returns its id.
      */
     public verifySession(): Observable<boolean> {
+        return from(this.clerkService.whenLoaded()).pipe(switchMap(() => this.verifyLoadedSession()))
+    }
+
+    private verifyLoadedSession(): Observable<boolean> {
         if (this.clerkService.isSignedIn()) {
             return this.verifyClerkSession()
         }

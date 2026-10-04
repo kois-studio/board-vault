@@ -12,7 +12,8 @@ export class GuestOnlyGuard implements CanActivate {
     private readonly loginService = inject(LoginService)
     private readonly clerkService = inject(ClerkService)
 
-    public canActivate(): boolean {
+    public async canActivate(): Promise<boolean> {
+        await this.clerkService.whenLoaded()
         if (this.loginService.isAuthenticated() || this.clerkService.isSignedIn()) {
             this.router.navigate(['/dashboard'])
             return false // Prevent navigation to the login/register page

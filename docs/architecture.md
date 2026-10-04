@@ -94,7 +94,7 @@ List `AuthGuard` first; the others read `request.user`.
 | Path | Responsibility |
 | --- | --- |
 | `app.routes.ts` | All routes and their guards. |
-| `app.config.ts` | Providers; initializes Clerk before the first route. |
+| `app.config.ts` | Providers; starts Clerk once the first page has painted. Route guards and API tokens wait for it (`ClerkService.whenLoaded`); public pages don't. |
 | `api/` | `Api` (every HTTP call), zod response schemas, shared types. |
 | `core/services/clerk.service.ts` | Clerk lifecycle, sign-in and sign-up modals, invitation tickets, session token. |
 | `core/services/login.service.ts` | Board Vault session state: verifies Clerk sessions with `/auth/clerk/status` and loads the current user. |

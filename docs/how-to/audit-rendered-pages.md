@@ -51,9 +51,9 @@ Open findings: [#72](https://github.com/kois-studio/board-vault/issues/72) (publ
 
 ## Read a report
 
-Download the `lighthouse-reports` artifact from the CI run and open an HTML
-file from `.lighthouseci/`. `lighthouse-results/manifest.json` lists the
-median run of each page.
+Download the `lighthouse-reports` artifact from the CI run. It has an HTML
+and a JSON report for every run; `manifest.json` marks the median run of each
+page.
 
 ## Run it locally
 
