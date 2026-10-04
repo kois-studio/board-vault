@@ -211,6 +211,32 @@ native element, so every attribute and directive (`routerLink`,
   pressed. Toggle chips, tabs, menu items, and icon-only controls are not
   buttons in this sense and keep their own styles.
 
+## Logo and app icons
+
+The mark is a vault door in plum with a Sunglow lock plate, and a meeple cut
+out of the plate as the keyhole: the group's games, kept safe. It is a
+placeholder until the designer delivers the final logo
+([#49](https://github.com/kois-studio/board-vault/issues/49)); replace the
+files below, keep their names.
+
+| File | Use |
+| --- | --- |
+| `public/images/logo.svg` | The logo in the app (header, footer, landing). Door, hinges and dial. |
+| `public/favicon.svg`, `public/favicon.ico` | Browser tab. Plate and meeple only: the door detail turns to noise below 32 px. |
+| `public/icons/icon-192.png`, `icon-512.png` | Web manifest icons; `icon-512.png` is also the link-preview image. |
+| `public/icons/icon-maskable-512.png` | Android adaptive icon: full-bleed plum, the plate inside the safe zone. |
+| `public/icons/apple-touch-icon.png` | iOS home screen (180 px, square; iOS rounds it). |
+
+- Colours: plum `#8A2C7A`, door lines `#A8479A`, plate Sunglow `#FFD166`.
+  The mark has its own plum background, so it reads on both themes; don't
+  recolour it per theme.
+- Show it at 32 px or more with its door; under that, use the favicon mark.
+- Don't add text inside the mark. The name sits next to it in the app's
+  sans-serif, bold.
+- [`manifest.webmanifest`](../frontend/public/manifest.webmanifest) makes the
+  app installable (standalone, starts at `/dashboard`). There is no service
+  worker: nothing is cached offline, so signed-in data is never stale.
+
 ## Layout patterns
 
 - **App shell:** one landmark, one page heading, responsive navigation, and a

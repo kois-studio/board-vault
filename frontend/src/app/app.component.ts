@@ -47,7 +47,7 @@ export class AppComponent {
         this.meta.updateTag({ property: 'og:description', content: metadata.description })
         this.meta.updateTag({ property: 'og:url', content: canonicalUrl })
         this.meta.updateTag({ property: 'og:type', content: 'website' })
-        this.meta.updateTag({ property: 'og:image', content: `${this.getPublicSiteOrigin()}/images/logo.webp` })
+        this.meta.updateTag({ property: 'og:image', content: `${this.getPublicSiteOrigin()}/icons/icon-512.png` })
         this.meta.updateTag({ name: 'twitter:card', content: 'summary' })
         this.meta.updateTag({ name: 'twitter:title', content: metadata.title })
         this.meta.updateTag({ name: 'twitter:description', content: metadata.description })
