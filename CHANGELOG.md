@@ -13,6 +13,8 @@ operational details.
 
 ### Changed
 
+- The frontend validates API responses with zod 4 (`zod/mini`), which also
+  makes the first download slightly smaller.
 - Public pages paint about twice as fast on phones. Icons ship only the ones
   the app uses (they pulled in the whole icon set), and Clerk loads after the
   first paint instead of before it; signed-in pages still wait for it.

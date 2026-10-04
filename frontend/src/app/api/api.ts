@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { map } from 'rxjs'
-import { z } from 'zod'
+import * as z from 'zod/mini'
 import { environment } from '../../environments/environment'
 import {
     adminApprovalResponseSchema,

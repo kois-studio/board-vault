@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import * as z from 'zod/mini'
 
 import type {
     AdminGamesResultType,
@@ -50,9 +50,9 @@ export const clerkAuthStatusSchema = z.object({
     clerkUserId: z.string(),
 })
 
-export const gameCompleteSchema: z.ZodType<GameCompleteType> = z.object({
+export const gameCompleteSchema: z.ZodMiniType<GameCompleteType> = z.object({
     id: z.number(),
-    title: z.string().optional(),
+    title: z.optional(z.string()),
     imageUrl: z.string(),
     gameAvgDuration: z.number(),
     minPlayers: z.number(),
@@ -63,9 +63,9 @@ export const gameCompleteSchema: z.ZodType<GameCompleteType> = z.object({
     }),
 })
 
-const gameSchema: z.ZodType<GameType> = z.object({
+const gameSchema: z.ZodMiniType<GameType> = z.object({
     id: z.number(),
-    title: z.string().optional(),
+    title: z.optional(z.string()),
     imageUrl: z.string(),
     gameAvgDuration: z.number(),
     minPlayers: z.number(),
@@ -82,21 +82,21 @@ const paginationSchema = z.object({
     itemsPerPage: z.number(),
 })
 
-export const tagCategorySchema: z.ZodType<TagCategoryType> = z.object({
+export const tagCategorySchema: z.ZodMiniType<TagCategoryType> = z.object({
     id: z.number(),
     name: z.string(),
     tags: z.array(z.number()),
     gameCount: z.number(),
 })
 
-export const tagSchema: z.ZodType<TagType> = z.object({
+export const tagSchema: z.ZodMiniType<TagType> = z.object({
     id: z.number(),
     name: z.string(),
     categoryId: z.number(),
     gameCount: z.number(),
 })
 
-const gameWithTagsAndTranslationsSchema: z.ZodType<GameWithTagsAndTranslationsType> = z.object({
+const gameWithTagsAndTranslationsSchema: z.ZodMiniType<GameWithTagsAndTranslationsType> = z.object({
     id: z.number(),
     imageUrl: z.string(),
     gameAvgDuration: z.number(),
@@ -109,49 +109,49 @@ const gameWithTagsAndTranslationsSchema: z.ZodType<GameWithTagsAndTranslationsTy
 export const adminTagCategoriesSchema = z.array(tagCategorySchema)
 export const adminTagsSchema = z.array(tagSchema)
 
-export const adminGamesSchema: z.ZodType<AdminGamesResultType> = z.object({
+export const adminGamesSchema: z.ZodMiniType<AdminGamesResultType> = z.object({
     games: z.array(gameWithTagsAndTranslationsSchema),
     pagination: paginationSchema,
 })
 
-export const browseGamesSchema: z.ZodType<BrowseGamesResultType> = z.object({
+export const browseGamesSchema: z.ZodMiniType<BrowseGamesResultType> = z.object({
     games: z.array(gameCompleteSchema),
     pagination: paginationSchema,
 })
 
-export const gameOwnedSchema: z.ZodType<GameOwnedType> = z.object({
+export const gameOwnedSchema: z.ZodMiniType<GameOwnedType> = z.object({
     accountId: z.number(),
     gameId: z.number(),
-    purchaseDate: z.string().nullable(),
-    purchasePrice: z.number().nullable(),
-    purchaseNotes: z.string().nullable(),
+    purchaseDate: z.nullable(z.string()),
+    purchasePrice: z.nullable(z.number()),
+    purchaseNotes: z.nullable(z.string()),
 })
 
 const gameViewRatingSchema = z.object({
-    userRating: z.number().nullable(),
-    avgGroupsRating: z.object({ review: z.number(), count: z.number() }).nullable(),
-    avgGlobalRating: z.object({ review: z.number(), count: z.number() }).nullable(),
+    userRating: z.nullable(z.number()),
+    avgGroupsRating: z.nullable(z.object({ review: z.number(), count: z.number() })),
+    avgGlobalRating: z.nullable(z.object({ review: z.number(), count: z.number() })),
 })
 
-export const gameViewSchema: z.ZodType<GameViewType> = z.object({
+export const gameViewSchema: z.ZodMiniType<GameViewType> = z.object({
     gameData: gameCompleteSchema,
-    ownedGameData: z
-        .object({
-            purchaseDate: z.string().nullable(),
-            purchasePrice: z.number().nullable(),
-            purchaseNotes: z.string().nullable(),
-        })
-        .nullable(),
+    ownedGameData: z.nullable(
+        z.object({
+            purchaseDate: z.nullable(z.string()),
+            purchasePrice: z.nullable(z.number()),
+            purchaseNotes: z.nullable(z.string()),
+        }),
+    ),
     tags: z.array(z.object({ tag: z.string(), category: z.string() })),
-    wishlistedGameData: z.object({ dateAdded: z.string(), notes: z.string() }).nullable(),
+    wishlistedGameData: z.nullable(z.object({ dateAdded: z.string(), notes: z.string() })),
     ratingData: gameViewRatingSchema,
     similarGames: z.array(gameCompleteSchema),
 })
 
 const avatarSchema = z.object({
     backgroundColor: z.string(),
-    iconName: z.string().nullable(),
-    emoji: z.string().nullable(),
+    iconName: z.nullable(z.string()),
+    emoji: z.nullable(z.string()),
     type: z.enum(['icon', 'emoji', 'initials']),
     initials: z.string(),
 })
@@ -163,42 +163,42 @@ export const publicUserSchema = z.object({
     avatar: avatarSchema,
 })
 
-export const userSchema: z.ZodType<UserType> = z.object({
+export const userSchema: z.ZodMiniType<UserType> = z.object({
     ...publicUserSchema.shape,
-    email: z.string().email(),
+    email: z.email(),
     createdAt: z.string(),
 })
 
-const groupSchema: z.ZodType<GroupType> = z.object({
+const groupSchema: z.ZodMiniType<GroupType> = z.object({
     id: z.number(),
     name: z.string(),
     createdBy: z.number(),
     createdAt: z.string(),
 })
 
-const groupAcquisitionEntrySchema: z.ZodType<GroupAcquisitionEntryType> = z.object({
+const groupAcquisitionEntrySchema: z.ZodMiniType<GroupAcquisitionEntryType> = z.object({
     gameData: gameCompleteSchema,
     interestedBy: z.array(publicUserSchema),
-    interestCount: z.number().int().nonnegative(),
-    ownerCount: z.number().int().nonnegative(),
+    interestCount: z.int().check(z.nonnegative()),
+    ownerCount: z.int().check(z.nonnegative()),
     firstInterestedAt: z.string(),
     decisionStatus: z.enum(['open', 'planned', 'not_now']),
-    decisionAt: z.string().nullable(),
-    decisionBy: publicUserSchema.nullable(),
+    decisionAt: z.nullable(z.string()),
+    decisionBy: z.nullable(publicUserSchema),
 })
 
 export const groupAcquisitionBoardSchema = z.array(groupAcquisitionEntrySchema)
 
-export const groupInsightsSchema: z.ZodType<GroupInsightsType> = z.object({
+export const groupInsightsSchema: z.ZodMiniType<GroupInsightsType> = z.object({
     sessions: z.number(),
     gamesPlayed: z.number(),
     gamesWithWinner: z.number(),
     standings: z.array(
         z.object({
-            accountId: z.number().nullable(),
-            groupPersonId: z.number().nullable(),
+            accountId: z.nullable(z.number()),
+            groupPersonId: z.nullable(z.number()),
             displayName: z.string(),
-            avatar: avatarSchema.nullable(),
+            avatar: z.nullable(avatarSchema),
             sessions: z.number(),
             gamesPlayed: z.number(),
             wins: z.number(),
@@ -216,7 +216,7 @@ const gameReviewSchema = z.object({
     reviewDate: z.string(),
 })
 
-const gameReviewWithGameDataSchema: z.ZodType<GameReviewWithGameData> = gameReviewSchema.extend({
+const gameReviewWithGameDataSchema: z.ZodMiniType<GameReviewWithGameData> = z.extend(gameReviewSchema, {
     gameData: gameCompleteSchema,
 })
 
@@ -227,11 +227,11 @@ const collectionActivitySchema = z.object({
     accountId: z.number(),
     gameId: z.number(),
     actionType: z.enum(['added', 'rated', 'wishlisted', 'unwishlisted', 'updated', 'removed']),
-    actionDetails: z.object({ rating: z.number().nullable() }).nullable(),
+    actionDetails: z.nullable(z.object({ rating: z.nullable(z.number()) })),
     createdAt: z.string(),
 })
 
-const collectionActivityWithGameDataSchema: z.ZodType<CollectionActivityWithGameDataType> = collectionActivitySchema.extend({
+const collectionActivityWithGameDataSchema: z.ZodMiniType<CollectionActivityWithGameDataType> = z.extend(collectionActivitySchema, {
     gameData: gameCompleteSchema,
 })
 
@@ -242,29 +242,29 @@ const gameProposalShape = z.object({
     submittedBy: z.number(),
     status: z.enum(['pending', 'approved', 'rejected', 'duplicate']),
     title: z.string(),
-    imageUrl: z.string().nullable(),
-    gameAvgDuration: z.number().nullable(),
-    minPlayers: z.number().nullable(),
-    maxPlayers: z.number().nullable(),
-    proposedTags: z.string().nullable(),
-    notes: z.string().nullable(),
-    reviewedBy: z.number().nullable(),
-    reviewedAt: z.string().nullable(),
-    reviewNotes: z.string().nullable(),
-    createdGameId: z.number().nullable(),
+    imageUrl: z.nullable(z.string()),
+    gameAvgDuration: z.nullable(z.number()),
+    minPlayers: z.nullable(z.number()),
+    maxPlayers: z.nullable(z.number()),
+    proposedTags: z.nullable(z.string()),
+    notes: z.nullable(z.string()),
+    reviewedBy: z.nullable(z.number()),
+    reviewedAt: z.nullable(z.string()),
+    reviewNotes: z.nullable(z.string()),
+    createdGameId: z.nullable(z.number()),
     submittedAt: z.string(),
-    addTo: z.enum(['shelf', 'wishlist']).nullable().optional(),
+    addTo: z.optional(z.nullable(z.enum(['shelf', 'wishlist']))),
 })
 
-export const gameProposalSchema: z.ZodType<GameProposalType> = gameProposalShape
+export const gameProposalSchema: z.ZodMiniType<GameProposalType> = gameProposalShape
 
-export const adminGameProposalSchema = gameProposalShape.extend({
+export const adminGameProposalSchema = z.extend(gameProposalShape, {
     submitterId: z.number(),
-    reviewerId: z.number().optional(),
+    reviewerId: z.optional(z.number()),
 })
 
 export const userProposalsSchema = z.array(gameProposalSchema)
-export const userProposalStatsSchema: z.ZodType<UserProposalStatsType> = z.object({
+export const userProposalStatsSchema: z.ZodMiniType<UserProposalStatsType> = z.object({
     totalProposals: z.number(),
     approvedProposals: z.number(),
     rejectedProposals: z.number(),
@@ -280,28 +280,30 @@ export const adminGameProposalsSchema = z.object({
 })
 export const adminApprovalResponseSchema = z.object({
     success: z.boolean(),
-    createdGameId: z.number().optional(),
+    createdGameId: z.optional(z.number()),
 })
 export const adminSuccessResponseSchema = z.object({ success: z.boolean() })
 
-const groupMemberSchema: z.ZodType<GroupWithMembersAndGames['members'][number]> = z.object({
+const groupMemberSchema: z.ZodMiniType<GroupWithMembersAndGames['members'][number]> = z.object({
     ...publicUserSchema.shape,
     joinedAt: z.string(),
     games: z.array(gameCompleteSchema),
     reviews: z.array(gameReviewSchema),
 })
 
-const groupWithMembersAndGamesSchema: z.ZodType<GroupWithMembersAndGames, z.ZodTypeDef, unknown> = z.object({
+const groupWithMembersAndGamesSchema: z.ZodMiniType<GroupWithMembersAndGames, unknown> = z.object({
     id: z.number(),
     name: z.string(),
     createdBy: z.number(),
     createdAt: z.string(),
     members: z.array(groupMemberSchema),
     // Older APIs do not send placeholders yet.
-    placeholders: z
-        .array(z.object({ id: z.number(), displayName: z.string(), avatar: avatarSchema.nullable(), gameIds: z.array(z.number()) }))
-        .optional()
-        .default([]),
+    placeholders: z._default(
+        z.optional(
+            z.array(z.object({ id: z.number(), displayName: z.string(), avatar: z.nullable(avatarSchema), gameIds: z.array(z.number()) })),
+        ),
+        [],
+    ),
 })
 
 export const userGroupsSchema = z.array(groupWithMembersAndGamesSchema)
@@ -309,14 +311,14 @@ export const userGroupsSchema = z.array(groupWithMembersAndGamesSchema)
 const groupPersonSchema = z.object({
     id: z.number(),
     groupId: z.number(),
-    accountId: z.number().nullable(),
+    accountId: z.nullable(z.number()),
     kind: z.enum(['placeholder', 'linked']),
     status: z.enum(['active', 'archived']),
     displayName: z.string(),
-    avatar: avatarSchema.nullable(),
+    avatar: z.nullable(avatarSchema),
     createdAt: z.string(),
     updatedAt: z.string(),
-    claimedAt: z.string().nullable(),
+    claimedAt: z.nullable(z.string()),
 })
 
 const groupPersonOwnershipSchema = z.object({
@@ -324,7 +326,7 @@ const groupPersonOwnershipSchema = z.object({
     status: z.enum(['asserted', 'rejected', 'disputed']),
     source: z.enum(['placeholder_setup', 'account_collection', 'claimed_import']),
     enteredByAccountId: z.number(),
-    confirmedByAccountId: z.number().nullable(),
+    confirmedByAccountId: z.nullable(z.number()),
     createdAt: z.string(),
     updatedAt: z.string(),
 })
@@ -344,14 +346,14 @@ export const groupPeopleSchema = z.object({
             person: groupPersonSchema,
             ownership: z.array(groupPersonOwnershipSchema),
             preferences: z.array(groupPersonPreferenceSchema),
-            claimable: z.boolean().default(false),
+            claimable: z._default(z.boolean(), false),
         }),
     ),
 })
 
 export const groupPersonSchemaResponse = groupPersonSchema
 
-export const groupInvitationsSchema: z.ZodType<Array<InvitationWithAccountsData>> = z.array(
+export const groupInvitationsSchema: z.ZodMiniType<Array<InvitationWithAccountsData>> = z.array(
     z.object({
         id: z.number(),
         groupId: z.number(),
@@ -364,22 +366,22 @@ export const groupInvitationsSchema: z.ZodType<Array<InvitationWithAccountsData>
     }),
 )
 
-export const clerkGroupInvitationSchema: z.ZodType<ClerkGroupInvitationType> = z.object({
-    invitationId: z.string().min(1),
-    emailAddress: z.string().email(),
-    url: z.string().url(),
+export const clerkGroupInvitationSchema: z.ZodMiniType<ClerkGroupInvitationType> = z.object({
+    invitationId: z.string().check(z.minLength(1)),
+    emailAddress: z.email(),
+    url: z.url(),
 })
 
-export const clerkGroupInvitationSummarySchema: z.ZodType<ClerkGroupInvitationSummaryType> = z.object({
-    invitationId: z.string().min(1),
-    emailAddress: z.string().email(),
+export const clerkGroupInvitationSummarySchema: z.ZodMiniType<ClerkGroupInvitationSummaryType> = z.object({
+    invitationId: z.string().check(z.minLength(1)),
+    emailAddress: z.email(),
     status: z.literal('pending'),
     createdAt: z.string(),
 })
 
 export const clerkGroupInvitationSummariesSchema = z.array(clerkGroupInvitationSummarySchema)
 
-export const userInvitationsSchema: z.ZodType<Array<InvitationWithExtraData>> = z.array(
+export const userInvitationsSchema: z.ZodMiniType<Array<InvitationWithExtraData>> = z.array(
     z.object({
         id: z.number(),
         groupId: z.number(),
@@ -393,10 +395,10 @@ export const userInvitationsSchema: z.ZodType<Array<InvitationWithExtraData>> = 
 )
 
 const gameResultEntrySchema = z.object({
-    accountId: z.number().nullable(),
-    groupPersonId: z.number().nullable(),
+    accountId: z.nullable(z.number()),
+    groupPersonId: z.nullable(z.number()),
     isWinner: z.boolean(),
-    score: z.number().nullable(),
+    score: z.nullable(z.number()),
 })
 
 const meetFields = z.object({
@@ -407,19 +409,19 @@ const meetFields = z.object({
     isConfirmed: z.boolean(),
     status: z.enum(['scheduled', 'active', 'completed', 'cancelled']),
     timezone: z.string(),
-    notes: z.string().nullable(),
+    notes: z.nullable(z.string()),
 })
 
-export const meetSchema: z.ZodType<MeetType> = meetFields
+export const meetSchema: z.ZodMiniType<MeetType> = meetFields
 
-export const meetDetailsSchema: z.ZodType<MeetWithAttendeesAndGamesType> = meetFields.extend({
+export const meetDetailsSchema: z.ZodMiniType<MeetWithAttendeesAndGamesType> = z.extend(meetFields, {
     attendees: z.array(z.number()),
     attendeeStatuses: z.array(
         z.object({
             accountId: z.number(),
             rsvpStatus: z.enum(['pending', 'accepted', 'declined']),
             attendanceStatus: z.enum(['unknown', 'attended', 'absent']),
-        }) satisfies z.ZodType<MeetAttendeeStatusType>,
+        }) satisfies z.ZodMiniType<MeetAttendeeStatusType>,
     ),
     playedGames: z.array(z.number()),
     plannedGames: z.array(z.number()),
@@ -430,65 +432,69 @@ export const meetDetailsSchema: z.ZodType<MeetWithAttendeesAndGamesType> = meetF
             participantIds: z.array(z.number()),
         }),
     ),
-    participants: z.array(z.number()).optional().default([]),
-    participantStatuses: z
-        .array(
-            z.object({
-                groupPersonId: z.number(),
-                rsvpStatus: z.enum(['pending', 'accepted', 'declined']),
-                attendanceStatus: z.enum(['unknown', 'attended', 'absent']),
-            }),
-        )
-        .optional()
-        .default([]),
-    playedGamePersonParticipants: z
-        .array(
-            z.object({
-                gameId: z.number(),
-                participantIds: z.array(z.number()),
-            }),
-        )
-        .optional()
-        .default([]),
-    gameResults: z
-        .array(
+    participants: z._default(z.optional(z.array(z.number())), []),
+    participantStatuses: z._default(
+        z.optional(
+            z.array(
+                z.object({
+                    groupPersonId: z.number(),
+                    rsvpStatus: z.enum(['pending', 'accepted', 'declined']),
+                    attendanceStatus: z.enum(['unknown', 'attended', 'absent']),
+                }),
+            ),
+        ),
+        [],
+    ),
+    playedGamePersonParticipants: z._default(
+        z.optional(
+            z.array(
+                z.object({
+                    gameId: z.number(),
+                    participantIds: z.array(z.number()),
+                }),
+            ),
+        ),
+        [],
+    ),
+    gameResults: z.optional(
+        z.array(
             z.object({
                 gameId: z.number(),
                 results: z.array(gameResultEntrySchema),
             }),
-        )
-        .optional(),
+        ),
+    ),
 })
 
-const historyRecordSchema: z.ZodType<HistoryRecordType> = z.object({
+const historyRecordSchema: z.ZodMiniType<HistoryRecordType> = z.object({
     meetData: meetFields,
     attendedBy: z.array(publicUserSchema),
-    attendedByPeople: z
-        .array(
+    attendedByPeople: z.optional(
+        z.array(
             z.object({
                 id: z.number(),
                 displayName: z.string(),
-                avatar: avatarSchema.nullable(),
-                accountId: z.number().nullable().optional(),
+                avatar: z.nullable(avatarSchema),
+                accountId: z.optional(z.nullable(z.number())),
             }),
-        )
-        .optional(),
+        ),
+    ),
     gamesPlayed: z.array(
         z.object({
             gameData: gameCompleteSchema,
             playedBy: z.array(publicUserSchema),
-            playedByPeople: z
-                .array(
+            playedByPeople: z.optional(
+                z.array(
                     z.object({
                         id: z.number(),
                         displayName: z.string(),
-                        avatar: avatarSchema.nullable(),
-                        accountId: z.number().nullable().optional(),
+                        avatar: z.nullable(avatarSchema),
+                        accountId: z.optional(z.nullable(z.number())),
                     }),
-                )
-                .optional(),
-            winnerAccountIds: z.array(z.number()).optional(),
-            winnerPersonIds: z.array(z.number()).optional(),
+                ),
+            ),
+            winnerAccountIds: z.optional(z.array(z.number())),
+            winnerPersonIds: z.optional(z.array(z.number())),
         }),
     ),
 })
@@ -497,22 +503,22 @@ export const userHistorySchema = z.array(historyRecordSchema)
 
 export const userMeetsSchema = z.array(meetFields)
 
-export const userStatsSchema: z.ZodType<UserStatsType> = z.object({
+export const userStatsSchema: z.ZodMiniType<UserStatsType> = z.object({
     totalGamesValue: z.number(),
 })
 
-export const sessionRsvpUpdatedSchema: z.ZodType<SessionRsvpUpdatedType> = z.object({
+export const sessionRsvpUpdatedSchema: z.ZodMiniType<SessionRsvpUpdatedType> = z.object({
     sessionId: z.number(),
     rsvpStatus: z.enum(['pending', 'accepted', 'declined']),
 })
 
-export const sessionAttendanceUpdatedSchema: z.ZodType<SessionAttendanceUpdatedType> = z.object({
+export const sessionAttendanceUpdatedSchema: z.ZodMiniType<SessionAttendanceUpdatedType> = z.object({
     sessionId: z.number(),
     attendedIds: z.array(z.number()),
-    attendedPersonIds: z.array(z.number()).optional(),
+    attendedPersonIds: z.optional(z.array(z.number())),
 })
 
-export const userNotificationsSchema: z.ZodType<Array<NotificationType>> = z.array(
+export const userNotificationsSchema: z.ZodMiniType<Array<NotificationType>> = z.array(
     z.object({
         id: z.number(),
         accountId: z.number(),
@@ -520,37 +526,37 @@ export const userNotificationsSchema: z.ZodType<Array<NotificationType>> = z.arr
         message: z.string(),
         createdAt: z.string(),
         isRead: z.boolean(),
-        data: z.record(z.string(), z.unknown()).optional(),
+        data: z.optional(z.record(z.string(), z.unknown())),
     }),
 )
 
-export const sessionCreatedSchema: z.ZodType<SessionCreatedType> = z.object({
+export const sessionCreatedSchema: z.ZodMiniType<SessionCreatedType> = z.object({
     sessionId: z.number(),
     status: z.literal('completed'),
 })
 
-export const scheduledSessionCreatedSchema: z.ZodType<ScheduledSessionCreatedType> = z.object({
+export const scheduledSessionCreatedSchema: z.ZodMiniType<ScheduledSessionCreatedType> = z.object({
     sessionId: z.number(),
     status: z.literal('scheduled'),
 })
 
-export const sessionStatusUpdatedSchema: z.ZodType<SessionStatusUpdatedType> = z.object({
+export const sessionStatusUpdatedSchema: z.ZodMiniType<SessionStatusUpdatedType> = z.object({
     sessionId: z.number(),
     status: z.enum(['scheduled', 'active', 'completed', 'cancelled']),
 })
 
-export const sessionAttendeesUpdatedSchema: z.ZodType<SessionAttendeesUpdatedType> = z.object({
+export const sessionAttendeesUpdatedSchema: z.ZodMiniType<SessionAttendeesUpdatedType> = z.object({
     sessionId: z.number(),
     attendeeIds: z.array(z.number()),
-    groupPersonIds: z.array(z.number()).optional(),
+    groupPersonIds: z.optional(z.array(z.number())),
 })
 
-export const sessionShortlistUpdatedSchema: z.ZodType<SessionShortlistUpdatedType> = z.object({
+export const sessionShortlistUpdatedSchema: z.ZodMiniType<SessionShortlistUpdatedType> = z.object({
     sessionId: z.number(),
     plannedGameIds: z.array(z.number()),
 })
 
-export const sessionPlayedGamesUpdatedSchema: z.ZodType<SessionPlayedGamesUpdatedType> = z.object({
+export const sessionPlayedGamesUpdatedSchema: z.ZodMiniType<SessionPlayedGamesUpdatedType> = z.object({
     sessionId: z.number(),
     playedGameIds: z.array(z.number()),
     skippedGameIds: z.array(z.number()),
@@ -560,21 +566,21 @@ export const sessionPlayedGamesUpdatedSchema: z.ZodType<SessionPlayedGamesUpdate
             participantIds: z.array(z.number()),
         }),
     ),
-    playedGamePersonParticipants: z
-        .array(
+    playedGamePersonParticipants: z.optional(
+        z.array(
             z.object({
                 gameId: z.number(),
                 participantIds: z.array(z.number()),
             }),
-        )
-        .optional(),
+        ),
+    ),
 })
 
-export const recommendationsSchema: z.ZodType<RecommendationsType> = z.object({
+export const recommendationsSchema: z.ZodMiniType<RecommendationsType> = z.object({
     groupId: z.number(),
     attendeeIds: z.array(z.number()),
-    participantIds: z.array(z.number()).optional(),
-    availableMinutes: z.number().nullable(),
+    participantIds: z.optional(z.array(z.number())),
+    availableMinutes: z.nullable(z.number()),
     decisionLens: z.enum(['balanced', 'fresh', 'favorite']),
     recommendations: z.array(
         z.object({
@@ -584,24 +590,24 @@ export const recommendationsSchema: z.ZodType<RecommendationsType> = z.object({
                 reasons: z.array(z.string()),
                 attendeeOwnerCount: z.number(),
                 attendeeCount: z.number(),
-                averageReview: z.number().nullable(),
-                lastPlayedAt: z.string().nullable(),
+                averageReview: z.nullable(z.number()),
+                lastPlayedAt: z.nullable(z.string()),
                 interestedCount: z.number(),
                 notForUsCount: z.number(),
             }),
         }),
     ),
-    noResultReason: z.string().nullable(),
+    noResultReason: z.nullable(z.string()),
 })
 
-export const recommendationSignalsSchema: z.ZodType<RecommendationSignalsType> = z.object({
+export const recommendationSignalsSchema: z.ZodMiniType<RecommendationSignalsType> = z.object({
     groupId: z.number(),
     signals: z.array(
         z.object({
             gameId: z.number(),
             interestedCount: z.number(),
             notForUsCount: z.number(),
-            yourFeedback: z.enum(['interested', 'not_for_us']).nullable(),
+            yourFeedback: z.nullable(z.enum(['interested', 'not_for_us'])),
             interestedBy: z.array(publicUserSchema),
             lastUpdatedAt: z.string(),
         }),
@@ -609,11 +615,14 @@ export const recommendationSignalsSchema: z.ZodType<RecommendationSignalsType> =
 })
 
 export const successSchema = z.object({ success: z.literal(true) })
-export const createdGroupSchema: z.ZodType<CreatedGroupType> = z.object({ success: z.literal(true), groupId: z.number().int().positive() })
+export const createdGroupSchema: z.ZodMiniType<CreatedGroupType> = z.object({
+    success: z.literal(true),
+    groupId: z.int().check(z.positive()),
+})
 
 export const wishlistResponseSchema = z.object({ isWishlisted: z.boolean() })
 
-export const gameResultsUpdatedSchema: z.ZodType<GameResultsUpdatedType> = z.object({
+export const gameResultsUpdatedSchema: z.ZodMiniType<GameResultsUpdatedType> = z.object({
     sessionId: z.number(),
     gameId: z.number(),
     results: z.array(gameResultEntrySchema),
