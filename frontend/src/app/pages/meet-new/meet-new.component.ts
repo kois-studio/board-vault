@@ -26,7 +26,7 @@ const DAY_MS = 24 * 60 * 60 * 1000
 /** YYYY-MM-DD in the browser's timezone. */
 function localDate(date: Date): string {
     const offset = date.getTimezoneOffset() * 60 * 1000
-    return new Date(date.getTime() - offset).toISOString().split('T')[0]
+    return new Date(date.getTime() - offset).toISOString().slice(0, 10)
 }
 
 function initialsAvatar(name: string): PublicUserType['avatar'] {

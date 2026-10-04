@@ -17,7 +17,6 @@ import { GameTagsService } from '../../../modules/core/game-tags/game-tags.servi
 import { GameTranslationService } from '../../../modules/core/game-translation/game-translation.service'
 import { GamesService } from '../../../modules/core/games/games.service'
 import { NotificationTypeEnum } from '../../../modules/core/notifications/notifications-enum.type'
-import { NotificationsService } from '../../../modules/core/notifications/notifications.service'
 import { TagCategoryService } from '../../../modules/core/tag-category/tag-category.service'
 import { TagsService } from '../../../modules/core/tags/tags.service'
 import { CacheService } from '../../common/cache/cache.service'
@@ -34,7 +33,6 @@ export class AdminService {
         private readonly tagCategoryService: TagCategoryService,
         private readonly gameTranslationService: GameTranslationService,
         private readonly gameProposalService: GameProposalService,
-        private readonly notificationsService: NotificationsService,
         private readonly databaseService: DatabaseService,
         private readonly cacheService: CacheService,
     ) {}

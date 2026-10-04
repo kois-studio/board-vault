@@ -62,8 +62,8 @@ describe('AuthHandoffComponent', () => {
         expect(fixture.nativeElement.querySelector('section').getAttribute('aria-busy')).toBe('false')
         expect(buttons.length).toBe(2)
 
-        buttons[0].click()
-        buttons[1].click()
+        buttons[0]?.click()
+        buttons[1]?.click()
 
         expect(retry).toHaveBeenCalled()
         expect(signOut).toHaveBeenCalled()

@@ -45,10 +45,12 @@ export class InvitationsService {
         const resultSet = await this.databaseService.invitations.getInvitationById(id)
         const invitations = this._parseResultSet(resultSet)
 
-        if (invitations.length === 0) {
+        const [invitation] = invitations
+
+        if (!invitation) {
             throw new NotFoundException(`Invitation with id ${id} not found`)
         }
-        return invitations[0]
+        return invitation
     }
 
     async getInvitationByIdForAccount(id: number, accountId: number): Promise<InvitationDto> {

@@ -11,21 +11,15 @@ import { LoadingService } from '../../core/services/loading.service'
 import { MeetNewComponent } from './meet-new.component'
 
 describe('MeetNewComponent social handoff', () => {
-    const group = {
-        id: 7,
-        name: 'Friday Crew',
-        createdBy: 1,
-        members: [
-            {
-                id: 1,
-                displayName: 'Organizer',
-                username: 'organizer',
-                avatar: null,
-                games: [{ id: 42, title: 'Cascadia', titleTranslations: { en: 'Cascadia', es: 'Cascadia' }, minPlayers: 1, maxPlayers: 4 }],
-            },
-            { id: 2, displayName: 'Member', username: 'member', avatar: null, games: [] },
-        ],
+    const organizer = {
+        id: 1,
+        displayName: 'Organizer',
+        username: 'organizer',
+        avatar: null,
+        games: [{ id: 42, title: 'Cascadia', titleTranslations: { en: 'Cascadia', es: 'Cascadia' }, minPlayers: 1, maxPlayers: 4 }],
     }
+    const member = { id: 2, displayName: 'Member', username: 'member', avatar: null, games: [] as typeof organizer.games }
+    const group = { id: 7, name: 'Friday Crew', createdBy: 1, members: [organizer, member] }
 
     const setup = async (queryParams: Record<string, string> = {}, groupData = group, people: Array<GroupPersonWorkspaceType> = []) => {
         const api = {
@@ -73,10 +67,7 @@ describe('MeetNewComponent social handoff', () => {
 
     it('invites everyone by default and shows a long name without overflowing', async () => {
         const longName = '⸻'.repeat(20)
-        const { fixture, component } = await setup(
-            {},
-            { ...group, members: [group.members[0], { ...group.members[1], displayName: longName }] },
-        )
+        const { fixture, component } = await setup({}, { ...group, members: [organizer, { ...member, displayName: longName }] })
         fixture.detectChanges()
 
         expect(component.selectedAttendeeIds()).toEqual([1, 2])
@@ -102,7 +93,7 @@ describe('MeetNewComponent social handoff', () => {
 
         expect(component.shortlistGames()).toEqual([expect.objectContaining({ title: 'Cascadia', owners: ['Organizer'], fits: true })])
         component.toggleAttendee(1)
-        expect(component.shortlistGames()[0].owners).toEqual([])
+        expect(component.shortlistGames()[0]?.owners).toEqual([])
     })
 
     it('invites group people once they load, and sends them as group people', async () => {
@@ -131,7 +122,7 @@ describe('MeetNewComponent social handoff', () => {
         expect(component.useGroupPeople()).toBe(true)
         expect(component.people().map((person) => person.name)).toEqual(['Organizer', 'Guest'])
         expect(component.selectedAttendeeIds()).toEqual([12, 13])
-        expect(component.shortlistGames()[0].owners).toEqual(['Organizer', 'Guest'])
+        expect(component.shortlistGames()[0]?.owners).toEqual(['Organizer', 'Guest'])
 
         await component.onClickCreateMeeting()
         await fixture.whenStable()

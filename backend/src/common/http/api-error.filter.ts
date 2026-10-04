@@ -115,7 +115,7 @@ export class ApiErrorFilter implements ExceptionFilter {
             details && details.length > 0
                 ? statusCode === HttpStatus.BAD_REQUEST
                     ? 'Request validation failed'
-                    : details[0]
+                    : (details[0] ?? 'Request failed')
                 : typeof candidate.message === 'string' && candidate.message.length > 0
                   ? candidate.message
                   : 'Request failed'

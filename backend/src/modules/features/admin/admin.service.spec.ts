@@ -18,7 +18,6 @@ describe('AdminService', () => {
                 {} as never,
                 gameTranslationService as never,
                 gameProposalService as never,
-                {} as never,
                 fakeDatabase({ approveGameProposalAtomically }),
                 cacheService as never,
             )

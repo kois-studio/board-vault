@@ -12,7 +12,7 @@ export class JsonLogger extends ConsoleLogger {
         super({ json: true })
     }
 
-    protected getJsonLogObject(
+    protected override getJsonLogObject(
         message: unknown,
         options: { context: string; logLevel: LogLevel; writeStreamType?: 'stdout' | 'stderr'; errorStack?: unknown },
     ) {

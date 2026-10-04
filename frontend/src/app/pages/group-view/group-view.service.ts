@@ -40,10 +40,9 @@ export class GroupViewService {
         // index all reviews by gameId and userId
         for (const member of this.groupData()?.members ?? []) {
             for (const review of member.reviews) {
-                if (reviews[review.gameId] === undefined) {
-                    reviews[review.gameId] = {}
-                }
-                reviews[review.gameId][member.id] = review.review
+                const gameReviews = reviews[review.gameId] ?? {}
+                gameReviews[member.id] = review.review
+                reviews[review.gameId] = gameReviews
             }
         }
         return reviews
@@ -118,9 +117,11 @@ export class GroupViewService {
                             games.push({ ...game, active: true, quantity: 1 })
                         } else {
                             // if was already added, simply update the active flag
-                            const index = games.findIndex((g) => g.id === game.id)
-                            games[index].active = true
-                            games[index].quantity++
+                            const existing = games.find((g) => g.id === game.id)
+                            if (existing) {
+                                existing.active = true
+                                existing.quantity++
+                            }
                         }
                     }
                 }

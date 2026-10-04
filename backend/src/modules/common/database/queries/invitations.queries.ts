@@ -79,21 +79,23 @@ export class InvitationQueries {
             args: [invitationDto.username],
         })
 
-        if (toAccount.rows.length === 0) {
+        const [invitedAccount] = toAccount.rows
+
+        if (!invitedAccount) {
             throw new NotFoundException('User not found')
         }
 
         if (invitationDto.groupPersonId !== undefined && invitationDto.groupPersonId !== null) {
-            await this.assertClaimableGroupPerson(invitationDto.groupId, invitationDto.groupPersonId, Number(toAccount.rows[0].id))
+            await this.assertClaimableGroupPerson(invitationDto.groupId, invitationDto.groupPersonId, Number(invitedAccount.id))
         }
 
         await this.database.execute({
             sql: "INSERT INTO Invitation (groupId, fromAccountId, toAccountId, expiresAt, groupPersonId) VALUES (?, ?, ?, datetime('now', '+30 days'), ?)",
-            args: [invitationDto.groupId, invitationDto.fromAccountId, toAccount.rows[0].id, invitationDto.groupPersonId ?? null],
+            args: [invitationDto.groupId, invitationDto.fromAccountId, invitedAccount.id ?? null, invitationDto.groupPersonId ?? null],
         })
 
         // return the invited user
-        return toAccount.rows[0]
+        return invitedAccount
     }
 
     private async assertClaimableGroupPerson(groupId: number, groupPersonId: number, accountId: number): Promise<void> {
@@ -108,13 +110,15 @@ export class InvitationQueries {
             args: [accountId, groupPersonId, groupId],
         })
 
-        if (result.rows.length === 0) {
+        const [placeholder] = result.rows
+
+        if (!placeholder) {
             throw new NotFoundException('The selected placeholder is not available for claiming')
         }
 
         await this.database.execute({
             sql: "UPDATE GroupPerson SET claimEmail = ?, claimExpiresAt = datetime('now', '+30 days'), updatedAt = CURRENT_TIMESTAMP WHERE id = ? AND groupId = ?",
-            args: [String(result.rows[0][1]).toLowerCase(), groupPersonId, groupId],
+            args: [String(placeholder[1]).toLowerCase(), groupPersonId, groupId],
         })
     }
 

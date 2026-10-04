@@ -96,7 +96,7 @@ export class SessionsService {
 
         if (
             usesAccounts &&
-            games.some((game, index) => game.participantIds.length === 0 && personGames[index].participantIds.length === 0)
+            games.some((game, index) => game.participantIds.length === 0 && (personGames[index]?.participantIds.length ?? 0) === 0)
         ) {
             throw new BadRequestException('Every played game must have at least one participant')
         }
@@ -119,11 +119,11 @@ export class SessionsService {
         const selectedAccountIds = new Set(attendeeIds)
         const selectedPersonIds = new Set(groupPersonIds)
 
-        for (let index = 0; index < games.length; index += 1) {
-            if (games[index].participantIds.some(participantId => !selectedAccountIds.has(participantId))) {
+        for (const [index, game] of games.entries()) {
+            if (game.participantIds.some(participantId => !selectedAccountIds.has(participantId))) {
                 throw new BadRequestException('Game participants must be selected attendees')
             }
-            if (personGames[index].participantIds.some(participantId => !selectedPersonIds.has(participantId))) {
+            if (personGames[index]?.participantIds.some(participantId => !selectedPersonIds.has(participantId))) {
                 throw new BadRequestException('Game participants must be selected group people')
             }
         }
@@ -217,11 +217,13 @@ export class SessionsService {
     async updateSessionStatus(actorAccountId: number, sessionId: number, body: UpdateSessionStatusBody): Promise<SessionStatusUpdatedDto> {
         const session = await this.databaseService.sessions.getMeetByIdForCreator(sessionId, actorAccountId)
 
-        if (session.rows.length === 0) {
+        const [sessionRow] = session.rows
+
+        if (!sessionRow) {
             throw new ForbiddenException('Only the session organizer can change its status')
         }
 
-        const currentStatus = String(session.rows[0][5] ?? 'completed') as SessionStatusUpdatedDto['status']
+        const currentStatus = String(sessionRow[5] ?? 'completed') as SessionStatusUpdatedDto['status']
         const allowedTransitions: Record<SessionStatusUpdatedDto['status'], Array<UpdateSessionStatusBody['status']>> = {
             scheduled: ['active', 'cancelled'],
             active: ['completed', 'cancelled'],
@@ -249,7 +251,9 @@ export class SessionsService {
     ): Promise<SessionAttendeesUpdatedDto> {
         const session = await this.databaseService.sessions.getMeetByIdForCreator(sessionId, actorAccountId)
 
-        if (session.rows.length === 0) {
+        const [sessionRow] = session.rows
+
+        if (!sessionRow) {
             throw new ForbiddenException('Only the session organizer can manage attendees')
         }
 
@@ -260,13 +264,13 @@ export class SessionsService {
             throw new BadRequestException('A session must retain at least one attendee')
         }
 
-        const status = String(session.rows[0][5] ?? 'completed') as SessionStatusUpdatedDto['status']
+        const status = String(sessionRow[5] ?? 'completed') as SessionStatusUpdatedDto['status']
 
         if (status !== 'scheduled' && status !== 'active') {
             throw new BadRequestException(`Cannot edit attendees on a ${status} session`)
         }
 
-        const groupId = Number(session.rows[0][1])
+        const groupId = Number(sessionRow[1])
         const memberIds = await this.databaseService.groups.getGroupMemberIds(groupId)
 
         if (attendeeIds.some(accountId => !memberIds.includes(accountId))) {
@@ -316,17 +320,19 @@ export class SessionsService {
     ): Promise<SessionShortlistUpdatedDto> {
         const session = await this.databaseService.sessions.getMeetByIdForCreator(sessionId, actorAccountId)
 
-        if (session.rows.length === 0) {
+        const [sessionRow] = session.rows
+
+        if (!sessionRow) {
             throw new ForbiddenException('Only the session organizer can manage the shortlist')
         }
 
-        const status = String(session.rows[0][5] ?? 'completed') as SessionStatusUpdatedDto['status']
+        const status = String(sessionRow[5] ?? 'completed') as SessionStatusUpdatedDto['status']
 
         if (status !== 'scheduled' && status !== 'active') {
             throw new BadRequestException(`Cannot edit the shortlist on a ${status} session`)
         }
 
-        const groupId = Number(session.rows[0][1])
+        const groupId = Number(sessionRow[1])
         const personIds = await this.getMeetPersonIds(sessionId)
         const availableGameIds = new Set(await this.databaseService.groups.getGroupAvailableGameIds(groupId))
 
@@ -354,17 +360,19 @@ export class SessionsService {
     ): Promise<SessionPlayedGamesUpdatedDto> {
         const session = await this.databaseService.sessions.getMeetByIdForCreator(sessionId, actorAccountId)
 
-        if (session.rows.length === 0) {
+        const [sessionRow] = session.rows
+
+        if (!sessionRow) {
             throw new ForbiddenException('Only the session organizer can record games played')
         }
 
-        const status = String(session.rows[0][5] ?? 'completed') as SessionStatusUpdatedDto['status']
+        const status = String(sessionRow[5] ?? 'completed') as SessionStatusUpdatedDto['status']
 
         if (status !== 'scheduled' && status !== 'active') {
             throw new BadRequestException(`Cannot edit played games on a ${status} session`)
         }
 
-        const groupId = Number(session.rows[0][1])
+        const groupId = Number(sessionRow[1])
         const personIds = await this.getMeetPersonIds(sessionId)
         const accountIds = await this.databaseService.sessions.getMeetAttendeeIds(sessionId)
         const availableGameIds = new Set<number>()
@@ -399,7 +407,7 @@ export class SessionsService {
         if (body.games) {
             const detailedGameIds = games.map(game => game.gameId)
 
-            if (games.some((game, index) => game.participantIds.length === 0 && personGames[index].participantIds.length === 0)) {
+            if (games.some((game, index) => game.participantIds.length === 0 && (personGames[index]?.participantIds.length ?? 0) === 0)) {
                 throw new BadRequestException('Every played game must have at least one participant')
             }
 
@@ -486,11 +494,13 @@ export class SessionsService {
     ): Promise<SessionAttendanceUpdatedDto> {
         const session = await this.databaseService.sessions.getMeetByIdForCreator(sessionId, actorAccountId)
 
-        if (session.rows.length === 0) {
+        const [sessionRow] = session.rows
+
+        if (!sessionRow) {
             throw new ForbiddenException('Only the session organizer can record attendance')
         }
 
-        const status = String(session.rows[0][5] ?? 'completed')
+        const status = String(sessionRow[5] ?? 'completed')
 
         if (status !== 'active' && status !== 'completed') {
             throw new BadRequestException(`Cannot record attendance for a ${status} session`)

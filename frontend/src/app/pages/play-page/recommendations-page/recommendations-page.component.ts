@@ -126,6 +126,7 @@ export class RecommendationsPageComponent {
                 const requestedGroupId = Number(this.route.snapshot.queryParamMap.get('groupId'))
                 const requestedGroup = groups.find((group) => group.id === requestedGroupId)
                 const group = requestedGroup ?? groups[0]
+                if (!group) return
                 const requestedAttendeeIds = this.readRequestedAttendeeIds(group)
                 this.selectGroup(group.id, requestedAttendeeIds)
             }

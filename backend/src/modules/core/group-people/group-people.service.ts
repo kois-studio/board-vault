@@ -24,10 +24,11 @@ export class GroupPeopleService {
     async getWorkspace(actorAccountId: number, groupId: number, includeArchived = false): Promise<Array<GroupPersonWorkspaceDto>> {
         await this.assertGroupMember(actorAccountId, groupId)
         const account = await this.databaseService.accounts.getUserById(actorAccountId)
+        const accountEmail = account.rows[0]?.email
         const claimableIds = new Set(
-            account.rows.length === 0
+            accountEmail === undefined
                 ? []
-                : (await this.databaseService.groups.getClaimableGroupPersonIds(groupId, String(account.rows[0].email))).rows.map(row =>
+                : (await this.databaseService.groups.getClaimableGroupPersonIds(groupId, String(accountEmail))).rows.map(row =>
                       Number(row[0]),
                   ),
         )
@@ -133,9 +134,9 @@ export class GroupPeopleService {
 
     async claim(actorAccountId: number, groupId: number, personId: number, body: ClaimGroupPersonBody) {
         await this.assertGroupMember(actorAccountId, groupId)
-        const account = await this.databaseService.accounts.getUserById(actorAccountId)
+        const [accountRow] = (await this.databaseService.accounts.getUserById(actorAccountId)).rows
 
-        if (account.rows.length === 0) throw new ForbiddenException('Account not found')
+        if (!accountRow) throw new ForbiddenException('Account not found')
 
         const ownership = await this.getOwnershipRows(personId, groupId)
         const preferences = await this.getPreferenceRows(personId, groupId)
@@ -147,7 +148,7 @@ export class GroupPeopleService {
             groupId,
             groupPersonId: personId,
             accountId: actorAccountId,
-            email: String(account.rows[0].email),
+            email: String(accountRow.email),
             keepOwnershipGameIds,
             keepPreferenceGameIds,
             importOwnershipToCollection: body.importOwnershipToCollection === true,
@@ -162,16 +163,19 @@ export class GroupPeopleService {
         await this.assertGroupMember(actorAccountId, groupId)
         const existing = await this.databaseService.groups.getLinkedGroupPersonByAccount(groupId, actorAccountId)
 
-        if (existing.rows.length > 0) return this.mapPersonRow(existing.rows[0])
+        const [existingPerson] = existing.rows
 
-        const account = await this.databaseService.accounts.getUserById(actorAccountId)
+        if (existingPerson) return this.mapPersonRow(existingPerson)
 
-        if (account.rows.length === 0) throw new ForbiddenException('Account not found')
+        const [accountRow] = (await this.databaseService.accounts.getUserById(actorAccountId)).rows
+
+        if (!accountRow) throw new ForbiddenException('Account not found')
+        // The person takes the account's name and avatar.
         const result = await this.databaseService.groups.createLinkedGroupPerson(
             groupId,
             actorAccountId,
-            String(account.rows[5] ?? account.rows[1]),
-            typeof account.rows[4] === 'string' ? account.rows[4] : null,
+            String(accountRow.displayName || accountRow.username),
+            typeof accountRow.avatar === 'string' ? accountRow.avatar : null,
         )
 
         return this.getPersonOrThrow(Number(result.lastInsertRowid), groupId)
@@ -188,10 +192,12 @@ export class GroupPeopleService {
     private async assertGroupOwner(accountId: number, groupId: number): Promise<void> {
         const group = await this.databaseService.groups.getGroupById(groupId)
 
-        if (group.rows.length === 0) {
+        const [groupRow] = group.rows
+
+        if (!groupRow) {
             throw new NotFoundException('Group not found')
         }
-        if (Number(group.rows[0][2]) !== accountId) {
+        if (Number(groupRow[2]) !== accountId) {
             throw new ForbiddenException('Only the group owner can manage group people')
         }
     }
@@ -207,10 +213,12 @@ export class GroupPeopleService {
     private async getPersonOrThrow(personId: number, groupId: number): Promise<GroupPersonDto> {
         const result = await this.databaseService.groups.getGroupPersonById(personId, groupId)
 
-        if (result.rows.length === 0) {
+        const [personRow] = result.rows
+
+        if (!personRow) {
             throw new NotFoundException('Group person not found')
         }
-        return this.mapPersonRow(result.rows[0])
+        return this.mapPersonRow(personRow)
     }
 
     private async getOwnershipRows(personId: number, groupId: number): Promise<Array<GroupPersonGameOwnershipDto>> {

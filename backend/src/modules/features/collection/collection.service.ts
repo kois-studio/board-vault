@@ -47,7 +47,7 @@ export class CollectionService {
     }
 
     @LogFeature(new Logger('CollectionService'))
-    async getGamesNotOwnedByUser(userId: number, search: string, page: number, limit: number): Promise<BrowseGamesResultDto> {
+    async getGamesNotOwnedByUser(_userId: number, search: string, page: number, limit: number): Promise<BrowseGamesResultDto> {
         const result = await this.gameTranslationService.browseGamesByTitle({
             search,
             page,

@@ -46,11 +46,13 @@ export class MeetsService {
         const resultSet = await this.databaseService.sessions.getMeetByIdForAccount(id, accountId)
         const meets = this._parseResultSet(resultSet)
 
-        if (meets.length === 0) {
+        const [meet] = meets
+
+        if (!meet) {
             throw new NotFoundException(`Meet with id ${id} not found`)
         }
 
-        return meets[0]
+        return meet
     }
 
     /** The sessions among `ids` that the account can see. */

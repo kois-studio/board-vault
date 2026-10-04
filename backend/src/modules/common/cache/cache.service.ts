@@ -16,12 +16,12 @@ const REDIS_FAILURE_COOLDOWN_MS = 30_000
  *
  * @param response_on_error If not provided, it will return null
  */
-function Wrapper(response_on_error: any = null) {
-    return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
+function Wrapper(response_on_error: unknown = null) {
+    return (target: object, propertyKey: string, descriptor: PropertyDescriptor) => {
         const originalMethod = descriptor.value
         const LOGGER = new Logger(target.constructor.name)
 
-        descriptor.value = async function (...args: any[]) {
+        descriptor.value = async function (this: unknown, ...args: unknown[]) {
             const service = this as {
                 REDIS_DISABLED?: boolean
                 REDIS_UNAVAILABLE_UNTIL?: number
@@ -58,7 +58,7 @@ export class CacheService {
     private readonly REDIS_DISABLED: boolean
     private REDIS_UNAVAILABLE_UNTIL = 0
 
-    constructor(private readonly configService: ConfigService) {
+    constructor(configService: ConfigService) {
         this.REDIS_DISABLED = configService.get<string>('UPSTASH_REDIS_REST_DISABLE') === 'true'
         this.REDIS = this.REDIS_DISABLED
             ? null
@@ -137,12 +137,17 @@ export class CacheService {
      * @default short
      */
     @Wrapper()
-    async set(key: string, data: any, ttl: keyof typeof CACHE_TTL = 'short'): Promise<void> {
+    async set(key: string, data: unknown, ttl: keyof typeof CACHE_TTL = 'short'): Promise<void> {
         this.LOGGER.log('REDIS: set cache value')
 
         await this.REDIS!.set(key, data, { ex: CACHE_TTL[ttl] })
     }
 
+    /**
+     * Returns the stored JSON, or null. Typed `any` on purpose: callers read the
+     * shape they stored under their own key, and those that need a guarantee
+     * re-validate it (for example `_validateSchema([cached])`).
+     */
     @Wrapper()
     async get(key: string): Promise<any> {
         this.LOGGER.log('REDIS: get cache value')

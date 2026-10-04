@@ -50,11 +50,13 @@ export class GamesOwnedService {
 
         const ownedGames = this._parseResultSet(resultSet)
 
-        if (ownedGames.length === 0) {
+        const [ownedGame] = ownedGames
+
+        if (!ownedGame) {
             throw new NotFoundException(`OwnedGame with accountId ${accountId} and gameId ${gameId} not found`)
         }
 
-        return ownedGames[0]
+        return ownedGame
     }
 
     async getGamesOwnedByAccountId(accountId: number): Promise<Array<GameOwnedDto>> {
@@ -70,13 +72,13 @@ export class GamesOwnedService {
         const resultSet = await this.databaseService.collection.isGameIdOwnedByAccountId(accountId, gameId)
         const ownedGames = this._parseResultSet(resultSet)
 
-        if (ownedGames.length === 0 && throwError) {
+        const [ownedGame] = ownedGames
+
+        if (!ownedGame && throwError) {
             throw new NotFoundException(`OwnedGame with id ${accountId} ${gameId} not found`)
-        } else if (ownedGames.length === 0) {
-            return null
         }
 
-        return ownedGames[0]
+        return ownedGame ?? null
     }
 
     async createGamesOwned(ownedGameDto: GameOwnedDto): Promise<SuccessDto> {

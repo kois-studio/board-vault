@@ -197,7 +197,7 @@ describe('HistoryPageComponent sessions recorded with group people', () => {
         // Two attendee avatars come from accounts, and the guest without one gets initials.
         const avatars = [...fixture.nativeElement.querySelectorAll('app-image-profile')] as Array<HTMLElement>
         expect(avatars.length).toBe(3)
-        expect(avatars[2].textContent).toContain('G')
+        expect(avatars[2]?.textContent).toContain('G')
         expect(text).toContain('Everyone played')
         expect(fixture.componentInstance.historySummary().people).toBe(3)
     })

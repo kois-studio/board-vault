@@ -172,11 +172,9 @@ export class MeetViewComponent {
         // Step 1: Index all reviews by gameId and userId
         for (const member of groupData.members) {
             for (const review of member.reviews) {
-                if (this.gameReviews[review.gameId] === undefined) {
-                    this.gameReviews[review.gameId] = {}
-                }
-
-                this.gameReviews[review.gameId][member.id] = review.review
+                const gameReviews = this.gameReviews[review.gameId] ?? {}
+                gameReviews[member.id] = review.review
+                this.gameReviews[review.gameId] = gameReviews
             }
         }
 
@@ -432,8 +430,10 @@ export class MeetViewComponent {
         if (!this.meetData || gameId === null || !this.canRecordResults || this.isSavingResults) return
 
         const results = this.playersOf(gameId)
-            .map((person) => ({ person, draft: this.resultsDraft[person.key] }))
-            .filter(({ draft }) => draft && (draft.isWinner || draft.score !== null))
+            .flatMap((person) => {
+                const draft = this.resultsDraft[person.key]
+                return draft && (draft.isWinner || draft.score !== null) ? [{ person, draft }] : []
+            })
             .map(({ person, draft }) => ({
                 ...(person.personId !== null ? { groupPersonId: person.personId } : { accountId: person.accountId as number }),
                 isWinner: draft.isWinner,
@@ -844,8 +844,8 @@ export class MeetViewComponent {
                         games.push({ ...game, active: true })
                     } else {
                         // if was already added, simply update the active flag
-                        const index = games.findIndex((g) => g.id === game.id)
-                        games[index].active = true
+                        const existing = games.find((g) => g.id === game.id)
+                        if (existing) existing.active = true
                     }
                 }
             }

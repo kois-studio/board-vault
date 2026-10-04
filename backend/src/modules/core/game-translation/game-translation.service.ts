@@ -179,7 +179,7 @@ export class GameTranslationService {
 
         // Parse and validate the results
         const gameTranslations = this._parseResultSet(gamesResult)
-        const total = Number(countResult.rows[0].total)
+        const total = Number(countResult.rows[0]?.total ?? 0)
 
         // Calculate total pages
         const totalPages = Math.ceil(total / options.pageSize)
@@ -239,7 +239,7 @@ export class GameTranslationService {
 
         // Parse the results - gamesResult now returns gameIds directly
         const gameIds = gamesResult.rows.map(row => Number(row[0]))
-        const total = Number(countResult.rows[0].total)
+        const total = Number(countResult.rows[0]?.total ?? 0)
 
         // Calculate total pages
         const totalPages = Math.ceil(total / options.pageSize)

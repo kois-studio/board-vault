@@ -85,4 +85,30 @@ describe('GroupPeopleService participant boundaries', () => {
         await expect(service.joinAsNewPerson(7, 12)).resolves.toEqual(expect.objectContaining({ id: 21, kind: 'linked' }))
         expect(databaseService.createLinkedGroupPerson).not.toHaveBeenCalled()
     })
+
+    it('names a newly joined person after the account, with its avatar', async () => {
+        const avatar = JSON.stringify({ backgroundColor: '#000', iconName: null, emoji: '🎲', type: 'emoji', initials: '' })
+        const { service, databaseService } = createService({
+            getUserById: jest
+                .fn()
+                .mockResolvedValue({ rows: [{ id: 7, email: 'friend@example.com', username: 'friend', displayName: 'Friend', avatar }] }),
+        })
+
+        await service.joinAsNewPerson(7, 12)
+
+        // It used to read rows instead of columns and name the person "undefined".
+        expect(databaseService.createLinkedGroupPerson).toHaveBeenCalledWith(12, 7, 'Friend', avatar)
+    })
+
+    it('falls back to the username when the account has no display name', async () => {
+        const { service, databaseService } = createService({
+            getUserById: jest
+                .fn()
+                .mockResolvedValue({ rows: [{ id: 7, email: 'friend@example.com', username: 'friend', displayName: '', avatar: null }] }),
+        })
+
+        await service.joinAsNewPerson(7, 12)
+
+        expect(databaseService.createLinkedGroupPerson).toHaveBeenCalledWith(12, 7, 'friend', null)
+    })
 })

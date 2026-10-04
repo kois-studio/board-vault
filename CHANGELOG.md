@@ -16,6 +16,9 @@ operational details.
 - The session page is redesigned: a date header with the status, your RSVP
   and the organizer's actions; the games played tonight with their players
   and winners; the shortlist; and who's coming with attendance alongside.
+- TypeScript is strict in both packages, with unchecked index access and
+  unused locals and parameters reported; the remaining undocumented `any`
+  are typed.
 - Sign-in is Clerk-only (ADR-0012). The legacy password, email-verification,
   and password-reset flows and their endpoints are removed, and migration 0015
   drops the credential columns.
@@ -102,6 +105,9 @@ operational details.
 
 ### Fixed
 
+- Joining a group as a new person named you "undefined" and dropped your
+  avatar (the code read rows instead of columns); found by the stricter
+  TypeScript checks.
 - Marking the first game of a live night no longer moves the rest of the
   shortlist to "not played"; that happens when the night is finished.
 - Marking a game as played in a session with group people no longer fails

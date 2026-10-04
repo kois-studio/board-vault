@@ -3,6 +3,7 @@ import { BadRequestException, NotFoundException } from '@nestjs/common'
 import type { SupportedLanguage } from '../../../../common/types/game-translation.type'
 import type { CreateNotificationBody } from '../../../../common/types/notification.type'
 import type { DatabaseService } from '../database.service'
+import type { InValue } from '@libsql/client'
 
 /** The game catalogue: games, translations, tags, and proposals. */
 export class GameQueries {
@@ -213,7 +214,7 @@ export class GameQueries {
 
         // Building the query parts
         const whereConditions = []
-        const queryArgs: any[] = []
+        const queryArgs: Array<InValue> = []
 
         // Add language condition (always included)
         whereConditions.push('languageCode = ?')
@@ -256,7 +257,7 @@ export class GameQueries {
 
         // Building the query parts
         const whereConditions = []
-        const queryArgs: any[] = []
+        const queryArgs: Array<InValue> = []
 
         // Add language condition (always included)
         whereConditions.push('languageCode = ?')
@@ -295,7 +296,7 @@ export class GameQueries {
 
         // Building the query parts
         const whereConditions = []
-        const queryArgs: any[] = []
+        const queryArgs: Array<InValue> = []
 
         // Add search condition if provided
         if (search && search.trim() !== '') {
@@ -335,7 +336,7 @@ export class GameQueries {
 
         // Building the query parts
         const whereConditions = []
-        const queryArgs: any[] = []
+        const queryArgs: Array<InValue> = []
 
         // Add search condition if provided
         if (search && search.trim() !== '') {

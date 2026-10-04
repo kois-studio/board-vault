@@ -63,20 +63,24 @@ export class GamesService {
 
         if (cachedGame) {
             this.LOGGER.log('Returning cached game')
-            return this._validateSchema([cachedGame])[0]
+            const [validated] = this._validateSchema([cachedGame])
+
+            if (validated) return validated
         }
 
         // Step 2: If no cached, get them from database
         const resultSet = await this.databaseService.games.getGameById(id)
         const games = this._parseResultSet(resultSet)
 
-        if (games.length === 0) {
+        const [game] = games
+
+        if (!game) {
             throw new NotFoundException(`Game with id ${id} not found`)
         }
 
         // Step 3: Save them to cache
-        await this.cacheService.set(`${this.CACHE_KEY}:byId:${id}`, games[0])
-        return games[0]
+        await this.cacheService.set(`${this.CACHE_KEY}:byId:${id}`, game)
+        return game
     }
 
     async getSafeGameById(id: number): Promise<null | GameDto> {
@@ -114,6 +118,10 @@ export class GamesService {
 
         // Return the most recent one (should be the one we just created)
         const createdGame = games[games.length - 1]
+
+        if (!createdGame) {
+            throw new NotFoundException('The created game could not be read back')
+        }
 
         // Clear cache
         await this.cacheService.deleteOne(`${this.CACHE_KEY}:all`)

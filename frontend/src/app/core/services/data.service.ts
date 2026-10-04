@@ -388,18 +388,18 @@ export class DataService {
                     this.currentUser.set(updatedUser)
                     this.userGroups.update((groups) =>
                         groups.map((group) => {
-                            const userIndex = group.members.findIndex((member) => member.id === currentUser.id)
-                            if (userIndex === -1) return group
+                            const member = group.members.find((candidate) => candidate.id === currentUser.id)
+                            if (!member) return group
 
                             // update the user data inside that group
                             if (requestBody.username) {
-                                group.members[userIndex].username = requestBody.username
+                                member.username = requestBody.username
                             }
                             if (requestBody.displayName) {
-                                group.members[userIndex].displayName = requestBody.displayName
+                                member.displayName = requestBody.displayName
                             }
                             if (requestBody.avatar) {
-                                group.members[userIndex].avatar = requestBody.avatar
+                                member.avatar = requestBody.avatar
                             }
 
                             return group

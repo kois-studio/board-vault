@@ -96,7 +96,7 @@ export class ModalEditTagComponent {
                     })
                     this.hideDialog()
                 },
-                error: (error: any) => {
+                error: (error: unknown) => {
                     this.isLoading.set(false)
                     this.logger.error('Error updating tag:', error)
                     this.toastService.error('Failed to update tag. Please try again.')

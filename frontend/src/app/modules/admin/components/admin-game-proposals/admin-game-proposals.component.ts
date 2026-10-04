@@ -1,5 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
+import type { GameProposalType } from '../../../../api/api.types'
 import { ButtonComponent } from '../../../../components/ui/button/button.component'
 import { DialogDirective } from '../../../../components/ui/dialog/dialog.directive'
 import { IconComponent } from '../../../../components/ui/icon/icon.component'
@@ -92,12 +93,12 @@ export class AdminGameProposalsComponent implements OnInit {
     // --------------------------------------------------------------------------
     //        Helper methods
     // --------------------------------------------------------------------------
-    public getStatusBadgeClass(status: string): string {
-        return this.adminGameProposalsService.getStatusBadgeClass(status as any)
+    public getStatusBadgeClass(status: GameProposalType['status']): string {
+        return this.adminGameProposalsService.getStatusBadgeClass(status)
     }
 
-    public getStatusText(status: string): string {
-        return this.adminGameProposalsService.getStatusText(status as any)
+    public getStatusText(status: GameProposalType['status']): string {
+        return this.adminGameProposalsService.getStatusText(status)
     }
 
     public formatDate(dateString: string): string {

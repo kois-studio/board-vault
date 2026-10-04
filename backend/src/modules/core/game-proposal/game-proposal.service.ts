@@ -1,7 +1,7 @@
 import { ResultSet } from '@libsql/client/.'
 import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 
-import { gameProposalSchema, gameProposalsSchema } from '../../../common/schemas/db-game-proposal.schema'
+import { gameProposalsSchema } from '../../../common/schemas/db-game-proposal.schema'
 import { CacheService } from '../../common/cache/cache.service'
 import { DatabaseService } from '../../common/database/database.service'
 import { NotificationTypeEnum } from '../notifications/notifications-enum.type'
@@ -58,17 +58,6 @@ export class GameProposalService {
         return result.data
     }
 
-    private _validateSingleSchema(proposal: GameProposalDto): GameProposalDto {
-        const result = gameProposalSchema.safeParse(proposal)
-
-        if (!result.success) {
-            this.LOGGER.error('Failed to parse GameProposal from database')
-            throw new Error('Invalid game proposal data')
-        }
-
-        return result.data
-    }
-
     async getGameProposals(): Promise<Array<GameProposalDto>> {
         this.LOGGER.log('Getting all game proposals')
 
@@ -84,11 +73,13 @@ export class GameProposalService {
         const resultSet = await this.databaseService.games.getGameProposalById(id)
         const proposals = this._parseResultSet(resultSet)
 
-        if (proposals.length === 0) {
+        const [proposal] = proposals
+
+        if (!proposal) {
             throw new NotFoundException(`Game proposal with id ${id} not found`)
         }
 
-        return proposals[0]
+        return proposal
     }
 
     async getGameProposalsByStatus(status: 'pending' | 'approved' | 'rejected' | 'duplicate'): Promise<Array<GameProposalDto>> {
@@ -139,7 +130,7 @@ export class GameProposalService {
     async updateGameProposal(id: number, updateData: UpdateGameProposalBody, reviewedBy?: number): Promise<GameProposalDto> {
         this.LOGGER.log('Updating game proposal')
 
-        const updatePayload: any = { ...updateData }
+        const updatePayload: UpdateGameProposalBody & { reviewedBy?: number } = { ...updateData }
 
         if (reviewedBy !== undefined) {
             updatePayload.reviewedBy = reviewedBy

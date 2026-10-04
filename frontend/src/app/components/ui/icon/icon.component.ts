@@ -158,7 +158,7 @@ export class IconComponent {
 
     private async loadIcon(normalizedName: string): Promise<void> {
         const lucide = await LUCIDE_MODULE
-        const exportName = ICON_EXPORTS[normalizedName] ?? ICON_EXPORTS['circle-help']
+        const exportName = ICON_EXPORTS[normalizedName] ?? 'LucideCircleQuestionMark'
 
         // Ignore a load that finished after the name changed again.
         if (this.normalizedName() === normalizedName) {

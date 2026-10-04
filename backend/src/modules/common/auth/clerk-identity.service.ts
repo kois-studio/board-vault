@@ -35,7 +35,9 @@ export class ClerkIdentityService {
         if (groupPersonId !== undefined) {
             const person = await this.databaseService.groups.getGroupPersonById(groupPersonId, groupId)
 
-            if (person.rows.length === 0 || String(person.rows[0][3]) !== 'placeholder' || person.rows[0][2] !== null) {
+            const [personRow] = person.rows
+
+            if (!personRow || String(personRow[3]) !== 'placeholder' || personRow[2] !== null) {
                 throw new NotFoundException('The selected placeholder is not available for claiming')
             }
             const claimTarget = await this.databaseService.groups.setGroupPersonClaimEmail(groupPersonId, groupId, emailAddress)
@@ -239,7 +241,7 @@ export class ClerkIdentityService {
     private async assertGroupOwner(groupId: number, inviterAccountId: number): Promise<void> {
         const group = await this.databaseService.groups.getGroupById(groupId)
 
-        if (group.rows.length === 0 || Number(group.rows[0][2]) !== inviterAccountId) {
+        if (Number(group.rows[0]?.[2]) !== inviterAccountId) {
             throw new ForbiddenException('You are not the owner of this group')
         }
     }
@@ -329,7 +331,7 @@ export class ClerkIdentityService {
     }
 
     private async buildUsername(clerkUsername: string | null, email: string, clerkUserId: string): Promise<string> {
-        const base = (clerkUsername || email.split('@')[0]).replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 40)
+        const base = (clerkUsername || email.split('@')[0] || '').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 40)
         const safeBase = base.length >= 4 ? base : `player${clerkUserId.slice(-8)}`
 
         try {
@@ -347,7 +349,7 @@ export class ClerkIdentityService {
     private buildDisplayName(firstName: string | null, lastName: string | null, username: string | null, email: string): string {
         const fullName = [firstName, lastName].filter(Boolean).join(' ').trim()
 
-        const safeName = (fullName || username || email.split('@')[0]).slice(0, 255)
+        const safeName = (fullName || username || email.split('@')[0] || '').slice(0, 255)
 
         return safeName.length >= 4 ? safeName : `Player ${safeName}`
     }

@@ -46,7 +46,7 @@ describe('PlayService history', () => {
         const history = await service.getUserGamesHistory(1)
 
         expect(history).toHaveLength(1)
-        expect(history[0].gamesPlayed[0].playedBy.map(user => user.id)).toEqual([1])
+        expect(history[0]?.gamesPlayed[0]?.playedBy.map(user => user.id)).toEqual([1])
         expect(meets.getMeetsByIdsForAccount).toHaveBeenCalledWith([10, 11], 1)
         expect(database.sessions.getHistoryDetailsByMeetIds).toHaveBeenCalledTimes(1)
         expect(database.sessions.getHistoryDetailsByMeetIds).toHaveBeenCalledWith([10])
@@ -116,9 +116,9 @@ describe('PlayService history', () => {
             { id: 9, displayName: 'Guest', accountId: null, avatar: guestAvatar },
         ]
 
-        expect(record.attendedBy).toEqual([])
-        expect(record.attendedByPeople).toEqual(expectedPeople)
-        expect(record.gamesPlayed[0].playedByPeople).toEqual(expectedPeople)
+        expect(record?.attendedBy).toEqual([])
+        expect(record?.attendedByPeople).toEqual(expectedPeople)
+        expect(record?.gamesPlayed[0]?.playedByPeople).toEqual(expectedPeople)
     })
 
     it('sorts a user meet list without mutating the database response contract', async () => {

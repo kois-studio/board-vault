@@ -118,11 +118,13 @@ export class MeetAccountGamesService {
     private async _assertAccountCanAccessMeet(accountId: number, meetId: number): Promise<number> {
         const resultSet = await this.databaseService.sessions.getMeetByIdForAccount(meetId, accountId)
 
-        if (resultSet.rows.length === 0) {
+        const [meet] = resultSet.rows
+
+        if (!meet) {
             throw new ForbiddenException('You are not a member of this meet group')
         }
 
-        return Number(resultSet.rows[0][1])
+        return Number(meet[1])
     }
 
     async createMeetAccountGameForAccount(accountId: number, meetId: number, gameId: number): Promise<MeetAccountGameDto> {

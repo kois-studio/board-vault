@@ -28,7 +28,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
     return from(clerkService.getToken()).pipe(
         switchMap((clerkToken) => next(requestWithToken(clerkToken))),
-        catchError((error: any) => {
+        catchError((error: unknown) => {
             if (error instanceof HttpErrorResponse && error.status === 401) {
                 // The API rejected the Clerk session (expired, revoked, or not linked).
                 logService.error('AuthInterceptor: Received 401. Logging out.', error)

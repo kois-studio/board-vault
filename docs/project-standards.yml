@@ -133,15 +133,13 @@ compliance:
       priority: high
       next_action: None.
     - id: TS-001
-      status: deferred
-      evidence: 'Frontend uses strict: true. The backend enables only strictNullChecks, noImplicitAny, strictBindCallApply, and noFallthroughCasesInSwitch.'
+      status: compliant
+      evidence: 'Both packages use strict: true. The backend turns off strictPropertyInitialization only, with a comment: DTO classes are filled in by class-transformer and the services.'
       priority: high
-      next_action: 'https://github.com/kois-studio/board-vault/issues/33'
     - id: TS-002
-      status: partial
-      evidence: 'A few undocumented any remain (cache decorator, CacheService get/set, dashboard proposal stats); new code in this batch uses unknown or precise types.'
+      status: compliant
+      evidence: 'Non-test code uses unknown or precise types. The one documented any is CacheService.get, whose callers read the JSON they stored; $any in templates is limited to DOM event targets.'
       priority: high
-      next_action: 'https://github.com/kois-studio/board-vault/issues/33'
     - id: TS-003
       status: compliant
       evidence: DTO classes with class-validator and Swagger decorators for every route; typed query classes; frontend api.types.ts.
@@ -173,15 +171,13 @@ compliance:
       priority: medium
       next_action: Revisit when Biome covers the type-aware ESLint rules the backend relies on.
     - id: TS-009
-      status: deferred
-      evidence: Frontend enables noPropertyAccessFromIndexSignature; neither package enables noUncheckedIndexedAccess.
+      status: compliant
+      evidence: Both packages enable noUncheckedIndexedAccess; the frontend also enables noPropertyAccessFromIndexSignature.
       priority: high
-      next_action: 'https://github.com/kois-studio/board-vault/issues/33'
     - id: TS-010
-      status: deferred
-      evidence: 'Frontend enables noImplicitOverride, noImplicitReturns, and noFallthroughCasesInSwitch; unused-local/parameter checks rely on the linters, and the backend lacks most flags.'
+      status: compliant
+      evidence: 'Both packages enable noImplicitOverride, noImplicitReturns, noUnusedLocals, noUnusedParameters, and noFallthroughCasesInSwitch.'
       priority: high
-      next_action: 'https://github.com/kois-studio/board-vault/issues/33'
     - id: TS-011
       status: not_applicable
       evidence: Considered; optional-versus-undefined does not change behavior in the current DTOs. Revisit if a PATCH contract needs it.

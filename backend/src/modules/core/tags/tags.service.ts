@@ -53,11 +53,13 @@ export class TagsService {
         const resultSet = await this.databaseService.games.getTagById(tagId)
         const tags = this._parseResultSet(resultSet)
 
-        if (tags.length === 0) {
+        const [tag] = tags
+
+        if (!tag) {
             throw new NotFoundException(`Tag with id ${tagId} not found`)
         }
 
-        return tags[0]
+        return tag
     }
 
     async getTagsByCategoryId(categoryId: number): Promise<Array<TagDto>> {

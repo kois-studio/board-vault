@@ -53,10 +53,12 @@ export class ReviewsService {
         const resultSet = await this.databaseService.collection.getGameReviewById(accountId, gameId)
         const reviews = this._parseResultSet(resultSet)
 
-        if (reviews.length === 0) {
+        const [review] = reviews
+
+        if (!review) {
             throw new NotFoundException(`Review with accountId ${accountId} and gameId ${gameId} not found`)
         }
-        return reviews[0]
+        return review
     }
 
     async getSafeGameReviewsById(accountId: number, gameId: number): Promise<null | GameReviewDto> {
@@ -138,8 +140,8 @@ export class ReviewsService {
         // Step 2: If no cached, get them from database
         const resultSet = await this.databaseService.collection.getAvgGlobalRating(gameId)
         const avgGlobalRating = {
-            review: Number(resultSet.rows[0].avgGlobalRating),
-            count: Number(resultSet.rows[0].count),
+            review: Number(resultSet.rows[0]?.avgGlobalRating),
+            count: Number(resultSet.rows[0]?.count),
         }
 
         // Step 3: Save them to cache
@@ -162,8 +164,8 @@ export class ReviewsService {
         // Step 2: If no cached, get them from database
         const resultSet = await this.databaseService.collection.getAvgGroupsRating(accountId, gameId)
         const avgGroupsRating = {
-            review: Number(resultSet.rows[0].avgGroupsRating),
-            count: Number(resultSet.rows[0].count),
+            review: Number(resultSet.rows[0]?.avgGroupsRating),
+            count: Number(resultSet.rows[0]?.count),
         }
 
         // Step 3: Save them to cache

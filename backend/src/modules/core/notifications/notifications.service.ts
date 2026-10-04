@@ -50,10 +50,12 @@ export class NotificationsService {
         const resultSet = await this.databaseService.notifications.getNotificationById(id, accountId)
         const notifications = this._parseResultSet(resultSet)
 
-        if (notifications.length === 0) {
+        const [notification] = notifications
+
+        if (!notification) {
             throw new NotFoundException(`Notification with id ${id} not found`)
         }
-        return notifications[0]
+        return notification
     }
 
     async getNotificationsByAccountId(accountId: number): Promise<Array<NotificationDto>> {

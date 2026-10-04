@@ -61,7 +61,7 @@ export class GameTagsService {
 
         const resultSet = await this.databaseService.games.getGameCountByTagCategoryId(tagCategoryId)
 
-        return Number(resultSet.rows[0][0])
+        return Number(resultSet.rows[0]?.[0] ?? 0)
     }
 
     async getGameCountByTagId(tagId: number): Promise<number> {
@@ -69,7 +69,7 @@ export class GameTagsService {
 
         const resultSet = await this.databaseService.games.getGameCountByTagId(tagId)
 
-        return Number(resultSet.rows[0][0])
+        return Number(resultSet.rows[0]?.[0] ?? 0)
     }
 
     async addGameTag(gameId: number, tagId: number): Promise<{ success: boolean }> {

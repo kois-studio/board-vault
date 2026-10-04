@@ -1,7 +1,7 @@
-import { applyDecorators } from '@nestjs/common'
+import { applyDecorators, type Type } from '@nestjs/common'
 import { ApiResponse } from '@nestjs/swagger'
 
-export function ApiCustomResponse(type: any) {
+export function ApiCustomResponse(type: Type<unknown> | [Type<unknown>]) {
     return applyDecorators(
         ApiResponse({
             status: 200,

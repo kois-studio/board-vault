@@ -40,11 +40,13 @@ export class GroupMembershipsService {
         const resultSet = await this.databaseService.groups.getGroupMembershipById(accountId, groupId)
         const memberships = this._parseResultSet(resultSet)
 
-        if (memberships.length === 0) {
+        const [membership] = memberships
+
+        if (!membership) {
             throw new NotFoundException(`Membership with id ${accountId} ${groupId} not found`)
         }
 
-        return memberships[0]
+        return membership
     }
 
     async getSafeGroupMembershipById(accountId: number, groupId: number): Promise<null | GroupMembershipDto> {
@@ -85,11 +87,13 @@ export class GroupMembershipsService {
     async createGroupMembershipFromInvitation(accountId: number, groupId: number) {
         const invitation = await this.databaseService.invitations.getInvitationByGroupAndRecipient(groupId, accountId)
 
-        if (invitation.rows.length === 0) {
+        const [row] = invitation.rows
+
+        if (!row) {
             throw new ForbiddenException('A pending invitation is required to join this group')
         }
 
-        return this.databaseService.invitations.acceptInvitationAtomically(Number(invitation.rows[0][0]), accountId, groupId)
+        return this.databaseService.invitations.acceptInvitationAtomically(Number(row[0]), accountId, groupId)
     }
 
     async deleteGroupMembershipById(accountId: number, groupId: number): Promise<{ success: boolean }> {

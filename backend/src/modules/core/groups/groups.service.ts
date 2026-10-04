@@ -50,11 +50,13 @@ export class GroupsService {
         const resultSet = await this.databaseService.groups.getGroupById(id)
         const groups = this._parseResultSet(resultSet)
 
-        if (groups.length === 0) {
+        const [group] = groups
+
+        if (!group) {
             throw new NotFoundException(`Group with id ${id} not found`)
         }
 
-        return groups[0]
+        return group
     }
 
     async getGroupByName(name: string): Promise<GroupDto> {
@@ -62,11 +64,13 @@ export class GroupsService {
         const resultSet = await this.databaseService.groups.getGroupByName(name)
         const groups = this._parseResultSet(resultSet)
 
-        if (groups.length === 0) {
+        const [group] = groups
+
+        if (!group) {
             throw new NotFoundException(`Group with name ${name} not found`)
         }
 
-        return groups[0]
+        return group
     }
 
     async createGroup(groupBody: CreateGroupBody) {

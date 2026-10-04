@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Logger, Param, UseGuards } from '@nestjs/common'
+import { Controller, Delete, Get, Param, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { AdminGuard } from '../../../common/guards/admin.guard'
@@ -12,11 +12,7 @@ import { CacheService } from './cache.service'
 @UseGuards(AuthGuard, AdminGuard)
 @Controller('cache')
 export class CacheController {
-    private readonly logger: Logger
-
-    constructor(private readonly cacheService: CacheService) {
-        this.logger = new Logger(this.constructor.name)
-    }
+    constructor(private readonly cacheService: CacheService) {}
 
     /**
      * ## Print all the database keys registered

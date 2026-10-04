@@ -39,7 +39,7 @@ describe('FormGameSubmissionComponent', () => {
         component.gameSubmissionForm.patchValue({ title: 'Patchwork', addTo: 'none' })
         await component.onSubmit()
 
-        expect(createGameProposal.mock.calls[0][1]).toEqual(expect.objectContaining({ addTo: 'wishlist' }))
-        expect(createGameProposal.mock.calls[1][1]).not.toHaveProperty('addTo')
+        expect(createGameProposal.mock.calls[0]?.[1]).toEqual(expect.objectContaining({ addTo: 'wishlist' }))
+        expect(createGameProposal.mock.calls[1]?.[1]).not.toHaveProperty('addTo')
     })
 })

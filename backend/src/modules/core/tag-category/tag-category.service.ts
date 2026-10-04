@@ -1,5 +1,5 @@
 import { ResultSet } from '@libsql/client/.'
-import { Injectable, Logger } from '@nestjs/common'
+import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { tagCategoriesSchema } from '../../../common/schemas/db-tag-category.schema'
 import { TagCategoryDto } from '../../../common/types/tag-category.type'
@@ -42,9 +42,13 @@ export class TagCategoryService {
 
     async getTagCategoryById(id: number): Promise<TagCategoryDto> {
         const resultSet = await this.databaseService.games.getTagCategoryById(id)
-        const tags = this._parseResultSet(resultSet)
+        const [category] = this._parseResultSet(resultSet)
 
-        return tags[0]
+        if (!category) {
+            throw new NotFoundException(`Tag category with id ${id} not found`)
+        }
+
+        return category
     }
 
     async createTagCategory(name: string): Promise<TagCategoryDto> {

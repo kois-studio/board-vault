@@ -54,10 +54,10 @@ describe('PlayPageComponent', () => {
             '/play/history',
             '/play/log-session',
         ])
-        expect(cards[0].textContent).toContain('1 session')
-        expect(cards[0].textContent).toContain('Next: Friday crew')
-        expect(cards[2].textContent).toContain('3 sessions')
-        expect(cards[2].textContent).toContain('Last: Friday crew')
+        expect(cards[0]?.textContent).toContain('1 session')
+        expect(cards[0]?.textContent).toContain('Next: Friday crew')
+        expect(cards[2]?.textContent).toContain('3 sessions')
+        expect(cards[2]?.textContent).toContain('Last: Friday crew')
     })
 
     it('flags planned sessions whose night has passed', async () => {

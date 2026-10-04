@@ -16,6 +16,7 @@ import { UsersService } from '../../core/users/users.service'
 import { buildHistoryRecords, parseAvatar } from '../play/history-records'
 
 import type { SuccessDto } from '../../../common/types/auth.type'
+import type { GameProposalDto } from '../../../common/types/game-proposal.type'
 import type { CreatedGroupDto, GroupMemberWithGames, GroupWithMembersAndGames } from '../../../common/types/group.type'
 import type { UserStatsDto, UserProposalStatsDto } from '../../../common/types/stats.type'
 import type { UserPublicWithGames } from '../../../common/types/user.type'
@@ -146,7 +147,7 @@ export class DashboardService {
     }
 
     @LogFeature(new Logger('DashboardService'))
-    async getGroupMeetings(userId: number, groupId: number): Promise<Array<HistoryRecordDto>> {
+    async getGroupMeetings(_userId: number, groupId: number): Promise<Array<HistoryRecordDto>> {
         const groupMeetings = (await this.meetsService.getMeetsByGroupId(groupId)).filter(meet => meet.status === 'completed')
 
         return buildHistoryRecords(groupMeetings, {
@@ -212,7 +213,7 @@ export class DashboardService {
         return stats
     }
 
-    private _calculateProposalStats(proposals: Array<any>): UserProposalStatsDto {
+    private _calculateProposalStats(proposals: Array<Pick<GameProposalDto, 'status'>>): UserProposalStatsDto {
         const totalProposals = proposals.length
         const approvedProposals = proposals.filter(p => p.status === 'approved').length
         const rejectedProposals = proposals.filter(p => p.status === 'rejected').length

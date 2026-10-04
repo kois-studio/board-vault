@@ -104,7 +104,7 @@ export class LogSessionWizardComponent {
     public currentStep = signal<SessionStep>('who')
     public isLoading = signal<boolean>(false)
 
-    public steps: StepInfo[] = [
+    public steps: [StepInfo, ...StepInfo[]] = [
         { key: 'who', label: 'Who and when', description: 'Pick the group, the day, and who came.' },
         {
             key: 'games',
@@ -195,7 +195,8 @@ export class LogSessionWizardComponent {
         // With a single group there is nothing to choose.
         effect(() => {
             const groups = this.userGroups()
-            if (groups.length === 1 && untracked(() => this.selectedGroup()) === null) this.selectGroup(groups[0])
+            const [onlyGroup] = groups
+            if (groups.length === 1 && onlyGroup && untracked(() => this.selectedGroup()) === null) this.selectGroup(onlyGroup)
         })
 
         effect(() => {
@@ -359,12 +360,14 @@ export class LogSessionWizardComponent {
             void this.submitSession()
             return
         }
-        this.currentStep.set(STEP_ORDER[STEP_ORDER.indexOf(step) + 1])
+        const next = STEP_ORDER[STEP_ORDER.indexOf(step) + 1]
+        if (next) this.currentStep.set(next)
     }
 
     public previousStep(): void {
         const index = STEP_ORDER.indexOf(this.currentStep())
-        if (index > 0) this.currentStep.set(STEP_ORDER[index - 1])
+        const previous = STEP_ORDER[index - 1]
+        if (index > 0 && previous) this.currentStep.set(previous)
     }
 
     /** Steps already passed can be reopened from the progress bar. */

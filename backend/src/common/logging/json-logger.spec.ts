@@ -22,7 +22,7 @@ describe('JsonLogger', () => {
         expect(lines).toEqual([
             expect.objectContaining({ level: 'log', context: 'LoggerMiddleware', event: 'http.request.completed', statusCode: 200 }),
         ])
-        expect(lines[0].message).toBe('http.request.completed')
+        expect(lines[0]?.message).toBe('http.request.completed')
     })
 
     it('adds the request id to every line inside a request', () => {

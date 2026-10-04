@@ -55,6 +55,7 @@ export class DialogDirective implements OnDestroy {
 
         const first = focusableElements[0]
         const last = focusableElements[focusableElements.length - 1]
+        if (!first || !last) return
         const activeElement = this.document.activeElement
 
         if (event.shiftKey && activeElement === first) {

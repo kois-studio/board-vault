@@ -38,11 +38,11 @@ describe('CollectionPageComponent', () => {
             '/collection/reviews',
             '/collection/wishlist',
         ])
-        expect(cards[0].textContent).toContain('2 games')
-        expect(cards[2].textContent).toContain('1 review')
-        expect(cards[2].textContent).not.toContain('1 reviews')
-        expect(cards[3].textContent).toContain('1 game')
-        expect(cards[3].textContent).not.toContain('1 games')
+        expect(cards[0]?.textContent).toContain('2 games')
+        expect(cards[2]?.textContent).toContain('1 review')
+        expect(cards[2]?.textContent).not.toContain('1 reviews')
+        expect(cards[3]?.textContent).toContain('1 game')
+        expect(cards[3]?.textContent).not.toContain('1 games')
         expect(element.querySelector('app-collection-activity')).not.toBeNull()
     })
 })

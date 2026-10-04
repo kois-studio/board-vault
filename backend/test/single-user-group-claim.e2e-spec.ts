@@ -150,7 +150,7 @@ describe('single-user group claim workflow (e2e)', () => {
         })
 
         expect(pendingInvitation.rows).toEqual([expect.objectContaining({ id: expect.any(Number), groupPersonId: anaId })])
-        const invitationId = Number(pendingInvitation.rows[0].id)
+        const invitationId = Number(pendingInvitation.rows[0]?.id)
 
         await request(app.getHttpServer()).post('/memberships').set(withAuth(memberToken)).send({ groupId }).expect(201)
 
@@ -219,7 +219,7 @@ describe('single-user group claim workflow (e2e)', () => {
             args: [invitationId],
         })
 
-        expect(Number(Object.values(invitationCount.rows[0])[0])).toBe(0)
+        expect(Number(Object.values(invitationCount.rows[0] ?? {})[0])).toBe(0)
 
         await request(app.getHttpServer())
             .post(`/groups/${groupId}/people/${anaId}/claim`)

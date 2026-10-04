@@ -187,13 +187,13 @@ export class AdminGamesManageComponent implements OnInit {
     // --------------------------------------------------------------------------
     //        Event Handlers
     // --------------------------------------------------------------------------
-    public onTranslationsUpdated(update: any): void {
+    public onTranslationsUpdated(update: unknown): void {
         this.logger.log('Translations updated, refreshing games list:', update)
         // Refresh the games list to ensure we have the most up-to-date data
         this._refreshGamesList()
     }
 
-    public onTagsUpdated(update: any): void {
+    public onTagsUpdated(update: unknown): void {
         this.logger.log('Tags updated, refreshing games list:', update)
         // Refresh the games list to ensure we have the most up-to-date data
         this._refreshGamesList()

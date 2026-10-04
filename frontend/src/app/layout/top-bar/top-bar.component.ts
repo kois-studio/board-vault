@@ -56,13 +56,13 @@ export class LayoutTopBarComponent implements OnInit {
 
     public readonly currentUrl$ = signal<string>('')
     public readonly activeSection = computed(() => {
-        const url = this.currentUrl$().split(/[?#]/)[0]
+        const url = this.currentUrl$().split(/[?#]/)[0] ?? ''
         const matches = (prefix: string) => url === prefix || url.startsWith(`${prefix}/`)
         return this.sections.find((section) => matches(`/${section.path}`) || section.owns.some(matches)) ?? null
     })
 
     public isSubsectionActive(path: string): boolean {
-        const url = this.currentUrl$().split(/[?#]/)[0]
+        const url = this.currentUrl$().split(/[?#]/)[0] ?? ''
         return url === `/${path}` || url.startsWith(`/${path}/`)
     }
 

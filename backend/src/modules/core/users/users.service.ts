@@ -47,10 +47,12 @@ export class UsersService {
         const resultSet = await this.databaseService.accounts.getUserById(id)
         const users = this._parseResultSet(resultSet)
 
-        if (users.length === 0) {
+        const [user] = users
+
+        if (!user) {
             throw new NotFoundException(`User with id ${id} not found`)
         }
-        return users[0]
+        return user
     }
 
     /** Public profiles for many accounts in one query, keyed by id. */
@@ -84,11 +86,13 @@ export class UsersService {
         const resultSet = await this.databaseService.accounts.getUserByEmail(email)
         const users = this._parseResultSet(resultSet)
 
-        if (users.length === 0) {
+        const [user] = users
+
+        if (!user) {
             throw new NotFoundException(`User with email ${email} not found`)
         }
 
-        return users[0]
+        return user
     }
 
     async getUserByUsername(username: string): Promise<UserGetDto> {
@@ -96,11 +100,13 @@ export class UsersService {
         const resultSet = await this.databaseService.accounts.getUserByUsername(username)
         const users = this._parseResultSet(resultSet)
 
-        if (users.length === 0) {
+        const [user] = users
+
+        if (!user) {
             throw new NotFoundException(`User with username ${username} not found`)
         }
 
-        return users[0]
+        return user
     }
 
     async getUserByClerkId(clerkUserId: string): Promise<UserGetDto> {
@@ -108,11 +114,13 @@ export class UsersService {
         const resultSet = await this.databaseService.accounts.getUserByClerkId(clerkUserId)
         const users = this._parseResultSet(resultSet)
 
-        if (users.length === 0) {
+        const [user] = users
+
+        if (!user) {
             throw new NotFoundException(`No user linked to Clerk identity ${clerkUserId}`)
         }
 
-        return users[0]
+        return user
     }
 
     async createClerkUser(user: { email: string; username: string; displayName: string; avatar: object; clerkUserId: string }) {
