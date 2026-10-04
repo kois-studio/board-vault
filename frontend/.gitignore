@@ -48,3 +48,7 @@ testem.log
 Thumbs.db
 
 public/runtime-config.js
+
+# Lighthouse audit output
+/.lighthouseci
+/lighthouse-results

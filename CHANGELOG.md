@@ -105,6 +105,8 @@ operational details.
 
 ### Fixed
 
+- The header, footer and landing logo load a 6 KB image instead of 75 KB,
+  and hashed scripts and styles are cached for a year.
 - Signing out clears every account's data, including search results, the
   open group and the admin badge, and drops answers still on the way, so the
   next account to sign in on the same browser starts empty.
@@ -178,6 +180,9 @@ operational details.
 
 ### Added
 
+- CI runs Lighthouse on the production build of the landing, sign-in and
+  sign-up pages, keeps the reports, and fails when a score drops below its
+  floor (see `docs/how-to/audit-rendered-pages.md`).
 - Sessions record who won each played game, with optional scores. Ties,
   co-op wins, and nobody winning are all possible, and results can be
   corrected after the night is over (API and migration 0016). Anyone in the

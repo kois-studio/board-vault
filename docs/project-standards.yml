@@ -419,25 +419,23 @@ compliance:
       priority: high
       next_action: Confirm the Turso restore retention and record it in the runbook.
     - id: WEB-001
-      status: deferred
-      evidence: No rendered-page audit runs yet.
+      status: compliant
+      evidence: Lighthouse CI on the production build covers performance, accessibility, best practices and SEO (frontend/lighthouserc.json, docs/how-to/audit-rendered-pages.md).
       priority: high
-      next_action: 'https://github.com/kois-studio/board-vault/issues/31'
     - id: WEB-002
-      status: deferred
-      evidence: No audit cadence yet.
+      status: partial
+      evidence: The audit runs in the frontend CI job on every push to main and every manual branch run, so each release is audited. No scheduled run yet.
       priority: high
-      next_action: 'https://github.com/kois-studio/board-vault/issues/31'
+      next_action: Add a scheduled audit against the deployed site once the public pages are stable.
     - id: WEB-003
-      status: deferred
-      evidence: No audited routes yet.
+      status: partial
+      evidence: Lighthouse covers landing, sign-in and sign-up. Signed-in pages get Playwright accessibility checks against the development Clerk instance (e2e/rendered-core-audit.spec.ts), run on demand rather than in CI.
       priority: high
-      next_action: 'https://github.com/kois-studio/board-vault/issues/31'
+      next_action: Run Lighthouse on signed-in pages once CI can hold a test account safely.
     - id: WEB-004
-      status: deferred
-      evidence: No audit results to track yet.
+      status: compliant
+      evidence: Reports are kept as a CI artifact for 30 days; the baseline and thresholds are in docs/how-to/audit-rendered-pages.md, and findings are issues (#72).
       priority: medium
-      next_action: 'https://github.com/kois-studio/board-vault/issues/31'
     - id: IDN-001
       status: compliant
       evidence: 'docs/authentication.md and ADR-0012: Clerk owns credentials, sessions, verification, and recovery; Board Vault owns accounts, groups, and authorization.'
