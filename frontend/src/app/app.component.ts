@@ -28,6 +28,9 @@ export class AppComponent {
             )
             .subscribe((event) => {
                 this.updateDocumentMetadata(event.urlAfterRedirects)
+                // Move focus to the new page on in-app navigation only. On the first load the
+                // browser starts at the top, so the skip link stays the first Tab stop.
+                if (event.id === 1) return
                 setTimeout(() => document.getElementById('main-content')?.focus({ preventScroll: true }))
             })
     }
