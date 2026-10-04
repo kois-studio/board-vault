@@ -239,15 +239,13 @@ compliance:
       priority: high
       next_action: None.
     - id: DEP-003
-      status: deferred
-      evidence: 'Node is pinned by .nvmrc and engines 24.x; npm comes from that Node locally and in CI, but Vercel uses the latest 24.x.'
+      status: compliant
+      evidence: 'npm 11.12.1 everywhere: it ships with the Node in .nvmrc (local and CI), packageManager records it, and both vercel.json files install with npx npm@11.12.1.'
       priority: high
-      next_action: 'https://github.com/kois-studio/board-vault/issues/35'
     - id: DEP-004
-      status: deferred
-      evidence: CI installs with --ignore-scripts; Vercel npm ci runs dependency lifecycle scripts without an allow-list.
+      status: compliant
+      evidence: CI and Vercel install with --ignore-scripts. No dependency script is needed to build or run either app (the allow-list is empty; see docs/environments.md).
       priority: high
-      next_action: 'https://github.com/kois-studio/board-vault/issues/35'
     - id: DEP-005
       status: compliant
       evidence: 'Unused packages were removed in this batch (Karma, Jasmine, build-angular); CODEOWNERS makes David the owner; Dependabot runs monthly.'

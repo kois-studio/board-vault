@@ -17,6 +17,7 @@
         "local:reset": "node database/scripts/reset-local.mjs",
         "seed:social-fixture": "node database/scripts/seed-social-fixture.mjs"
     },
+    "packageManager": "npm@11.12.1",
     "engines": {
         "node": "24.x"
     }

@@ -19,6 +19,13 @@ unreachable database URL, a dummy Clerk key, Redis off), not secrets, so an
 owner-forced preview can boot and answer `/health`; `/health/ready` stays not
 ready there.
 
+Every install uses npm 11.12.1, the npm that ships with the Node in `.nvmrc`
+(`packageManager` records it; both `vercel.json` files run
+`npx npm@11.12.1 ci`). CI and Vercel install with `--ignore-scripts`: neither
+app needs a dependency's install script to build or run, so none may run on
+a deploy. If a new dependency needs one, list it here and run it explicitly
+in the install command.
+
 To use the shared development database instead of your own SQLite file, set
 `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` in `backend/.env` to the values
 David shares. It holds the game catalogue and sample groups with play history.

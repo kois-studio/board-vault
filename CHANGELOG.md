@@ -13,6 +13,8 @@ operational details.
 
 ### Changed
 
+- Vercel installs exactly like CI: npm 11.12.1 and no dependency install
+  scripts.
 - The frontend validates API responses with zod 4 (`zod/mini`), which also
   makes the first download slightly smaller.
 - Public pages paint about twice as fast on phones. Icons ship only the ones
