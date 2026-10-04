@@ -1,5 +1,6 @@
 {
     "$schema": "https://openapi.vercel.sh/vercel.json",
     "framework": "nestjs",
+    "regions": ["dub1"],
     "installCommand": "npx --yes npm@11.12.1 ci --ignore-scripts"
 }

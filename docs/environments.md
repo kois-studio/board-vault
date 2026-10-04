@@ -19,6 +19,12 @@ unreachable database URL, a dummy Clerk key, Redis off), not secrets, so an
 owner-forced preview can boot and answer `/health`; `/health/ready` stays not
 ready there.
 
+Production runs in Europe, close together: the API in Vercel `dub1`
+(Dublin, set in `backend/vercel.json`), both Turso databases in AWS
+`eu-west-1` (Ireland), and Upstash Redis in AWS `eu-central-1` (Frankfurt).
+A request makes several database queries in a row, so the API must stay next
+to Turso; move them together.
+
 Every install uses npm 11.12.1, the npm that ships with the Node in `.nvmrc`
 (`packageManager` records it; both `vercel.json` files run
 `npx npm@11.12.1 ci`). CI and Vercel install with `--ignore-scripts`: neither
