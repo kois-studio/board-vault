@@ -1,4 +1,5 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core'
+import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { NavigationEnd, Router, RouterLink } from '@angular/router'
 import { filter } from 'rxjs/operators'
 import { ContainerWrapperComponent } from '../../components/ui/container-wrapper/container-wrapper.component'
@@ -23,6 +24,7 @@ type Section = {
 })
 export class LayoutTopBarComponent implements OnInit {
     public readonly router = inject(Router)
+    private readonly destroyRef = inject(DestroyRef)
 
     public readonly sections: Array<Section> = [
         {
@@ -68,8 +70,13 @@ export class LayoutTopBarComponent implements OnInit {
 
     ngOnInit() {
         this.currentUrl$.set(this.router.url)
-        this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((event: NavigationEnd) => {
-            this.currentUrl$.set(event.urlAfterRedirects)
-        })
+        this.router.events
+            .pipe(
+                filter((event) => event instanceof NavigationEnd),
+                takeUntilDestroyed(this.destroyRef),
+            )
+            .subscribe((event: NavigationEnd) => {
+                this.currentUrl$.set(event.urlAfterRedirects)
+            })
     }
 }

@@ -103,6 +103,26 @@ List `AuthGuard` first; the others read `request.user`.
 | `layout/` | `layout-complete` (header, footer, handoff) and `layout-basic` (focused actions). |
 | `modules/admin/` | Lazy-loaded admin area. |
 
+### Shared state
+
+Root services that hold one account's data. Each owner clears itself when
+`DataService.currentUser` becomes `null` on sign-out, and loads still running
+for the previous account are cancelled, so the next account starts empty
+(`core/services/sign-out-state.spec.ts`).
+
+| Owner | Holds |
+| --- | --- |
+| `DataService` | The current user and everything loaded for them: games, groups, invitations, notifications, reviews, sessions, history, wishlist, activity, proposals, stats. |
+| `LoginService` | Whether the session is ready, the current user id, and whether they are an admin. |
+| `PendingProposalsService` | The pending proposal count behind the admin badges. |
+| `GroupViewService` | The open group and its member and game filters. |
+| `BrowsePageService` | Catalogue search results, term and page. |
+| `AdminGamesManageService` | Admin catalogue search results and term. |
+
+Page state lives in the page component. Subscriptions that do not complete on
+their own (router events, route params, form value changes) end with the
+component through `takeUntilDestroyed` or `toSignal`.
+
 ### Routes
 
 | Route | Guard | Page |

@@ -1,4 +1,5 @@
-import { Component, inject, OnInit, signal } from '@angular/core'
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, Router } from '@angular/router'
 import { FormGameSubmissionComponent } from '../../../components/forms/form-game-submission/form-game-submission.component'
 import { ButtonComponent } from '../../../components/ui/button/button.component'
@@ -13,14 +14,15 @@ import { PageHeaderComponent } from '../../../components/ui/page-header/page-hea
 export class ProposeGamePageComponent implements OnInit {
     private readonly route = inject(ActivatedRoute)
     private readonly router = inject(Router)
+    private readonly destroyRef = inject(DestroyRef)
 
-    public initialTitle: string | undefined
+    public readonly initialTitle = signal<string | undefined>(undefined)
     public isSubmitted = signal(false)
 
     ngOnInit() {
         // Get title from query params
-        this.route.queryParams.subscribe((params) => {
-            this.initialTitle = params['title'] || undefined
+        this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
+            this.initialTitle.set(params['title'] || undefined)
         })
     }
 

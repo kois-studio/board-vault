@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common'
-import { Component, computed, effect, inject, OnDestroy, signal } from '@angular/core'
+import { Component, computed, effect, inject, signal } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms'
 import { ActivatedRoute, RouterLink } from '@angular/router'
-import { finalize, Subscription } from 'rxjs'
+import { finalize } from 'rxjs'
 import { Api } from '../../../api/api'
 import type { GameViewType } from '../../../api/api.types'
 import { CardGameComponent } from '../../../components/card-game/card-game.component'
@@ -37,7 +38,7 @@ import { DataService } from '../../../core/services/data.service'
     ],
     templateUrl: './game-view.component.html',
 })
-export class GameViewPageComponent implements OnDestroy {
+export class GameViewPageComponent {
     private readonly api = inject(Api)
     private readonly route = inject(ActivatedRoute)
     private readonly dataService = inject(DataService)
@@ -90,7 +91,6 @@ export class GameViewPageComponent implements OnDestroy {
     // --------------------------------------------------------------------------
     //        Component props
     // --------------------------------------------------------------------------
-    private _routeSub: Subscription | undefined
     private lastLoadedGameKey: string | null = null
     // A signal, not a field: the load can start inside an effect, where a plain field change is never rendered.
     public readonly isLoadingGameData = signal(true)
@@ -111,7 +111,7 @@ export class GameViewPageComponent implements OnDestroy {
     }
 
     constructor() {
-        this._routeSub = this.route.paramMap.subscribe((params) => {
+        this.route.paramMap.pipe(takeUntilDestroyed()).subscribe((params) => {
             const gameId = Number.parseInt(params.get('gameId') || '', 10)
             this._loadGameData(this.currentUser$()?.id, gameId)
         })
@@ -398,10 +398,5 @@ export class GameViewPageComponent implements OnDestroy {
                     this._loadGameData(currentUser.id, gameId)
                 },
             })
-    }
-
-    ngOnDestroy(): void {
-        // unsubscribe from the route params
-        this._routeSub?.unsubscribe()
     }
 }

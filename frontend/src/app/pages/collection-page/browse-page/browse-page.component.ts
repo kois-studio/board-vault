@@ -1,4 +1,5 @@
 import { Component, computed, effect, inject, signal, untracked } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { ReactiveFormsModule } from '@angular/forms'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
@@ -103,6 +104,7 @@ export class BrowsePageComponent {
             .pipe(
                 debounceTime(500), // Wait 500ms after the user stops typing
                 distinctUntilChanged(), // Only emit if search term changed
+                takeUntilDestroyed(),
             )
             .subscribe((value) => {
                 const trimmedValue = value?.trim() || ''

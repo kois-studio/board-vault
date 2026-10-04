@@ -1,5 +1,6 @@
-import { computed, Injectable, signal } from '@angular/core'
+import { computed, effect, Injectable, inject, signal, untracked } from '@angular/core'
 import { GameCompleteType, GameType, GroupWithMembersAndGames, UserType } from '../../api/api.types'
+import { DataService } from '../../core/services/data.service'
 
 /**
  * The group view has a lot of logic (signals, computed properties, etc)
@@ -18,6 +19,23 @@ export class GroupViewService {
     public readonly isFilteringGames = signal(false) // to filter out 'disabled' games
     public readonly isHidingMaxPlayers = signal(false) // to disable games based on min/max players
     public readonly isRecalculatingReviews = signal<boolean>(false) // to recalculate the reviews based on the selected members
+
+    private readonly dataService = inject(DataService)
+
+    constructor() {
+        // Signing out clears this state, so the next account never sees it.
+        effect(() => {
+            if (!this.dataService.currentUser()) untracked(() => this.reset())
+        })
+    }
+
+    public reset(): void {
+        this.groupData.set(null)
+        this.selectedMembers.set([])
+        this.isFilteringGames.set(false)
+        this.isHidingMaxPlayers.set(false)
+        this.isRecalculatingReviews.set(false)
+    }
 
     // --------------------------------------------------------------------------
     // #region           game reviews

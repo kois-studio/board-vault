@@ -1,5 +1,5 @@
 import { effect, Injectable, inject, signal } from '@angular/core'
-import { catchError, concatMap, finalize, firstValueFrom, of, tap, throwError } from 'rxjs'
+import { catchError, concatMap, finalize, firstValueFrom, of, Subject, takeUntil, tap, throwError } from 'rxjs'
 import { Api } from '../../api/api'
 import type {
     CollectionActivityWithGameDataType,
@@ -84,6 +84,10 @@ export class DataService {
     // (this {groupId} which {Invitation[]} has pending)
     public readonly invitationsGroupIndex = signal<Record<number, Array<InvitationWithAccountsData>>>({})
 
+    // Emits when the signed-in user changes or signs out. Loads started for the previous user stop
+    // here, so a late answer cannot put their data back after sign-out.
+    private readonly userChanged = new Subject<void>()
+
     // --------------------------------------------------------------------------
     // --------------------------------------------------------------------------
     constructor() {
@@ -92,6 +96,7 @@ export class DataService {
         // Effect to react to currentUser changes (login/logout)
         effect(() => {
             const user = this.currentUser()
+            this.userChanged.next()
             if (user?.id) {
                 this.logger.log(`DataService: currentUser updated (ID: ${user.id}). Fetching derived data.`)
                 this._fetchAllDerivedUserData(user.id)
@@ -168,7 +173,10 @@ export class DataService {
         this.loadingService.start(LOADING_KEYS.USER_GAMES)
         this.api
             .getUserGames(userId)
-            .pipe(finalize(() => this.loadingService.finish(LOADING_KEYS.USER_GAMES)))
+            .pipe(
+                takeUntil(this.userChanged),
+                finalize(() => this.loadingService.finish(LOADING_KEYS.USER_GAMES)),
+            )
             .subscribe({
                 next: (games) => {
                     this.userGames.set(games)
@@ -191,7 +199,10 @@ export class DataService {
         this.userInvitationsError.set(false)
         this.api
             .getUserInvitations(userId)
-            .pipe(finalize(() => this.userInvitationsLoading.set(false)))
+            .pipe(
+                takeUntil(this.userChanged),
+                finalize(() => this.userInvitationsLoading.set(false)),
+            )
             .subscribe({
                 next: (invitations) => {
                     this.userInvitations.set(invitations)
@@ -213,7 +224,10 @@ export class DataService {
         this.userNotificationsError.set(false)
         this.api
             .getUserNotifications(userId)
-            .pipe(finalize(() => this.userNotificationsLoading.set(false)))
+            .pipe(
+                takeUntil(this.userChanged),
+                finalize(() => this.userNotificationsLoading.set(false)),
+            )
             .subscribe({
                 next: (notifications) => {
                     this.userNotifications.set(notifications)
@@ -235,7 +249,10 @@ export class DataService {
         this.loadingService.start(LOADING_KEYS.USER_REVIEWS)
         this.api
             .getUserReviews(accountId)
-            .pipe(finalize(() => this.loadingService.finish(LOADING_KEYS.USER_REVIEWS)))
+            .pipe(
+                takeUntil(this.userChanged),
+                finalize(() => this.loadingService.finish(LOADING_KEYS.USER_REVIEWS)),
+            )
             .subscribe({
                 next: (reviews) => {
                     this.userReviews.set(reviews)
@@ -252,7 +269,10 @@ export class DataService {
         this.loadingService.start(LOADING_KEYS.USER_GROUPS)
         this.api
             .getUserGroups(accountId)
-            .pipe(finalize(() => this.loadingService.finish(LOADING_KEYS.USER_GROUPS)))
+            .pipe(
+                takeUntil(this.userChanged),
+                finalize(() => this.loadingService.finish(LOADING_KEYS.USER_GROUPS)),
+            )
             .subscribe({
                 next: (groups) => {
                     this.userGroups.set(groups)
@@ -263,17 +283,20 @@ export class DataService {
                             continue
                         }
 
-                        this.api.getGroupInvitations(group.id).subscribe({
-                            next: (invitations) => {
-                                this.invitationsGroupIndex.update((index) => ({
-                                    ...index,
-                                    [group.id]: invitations,
-                                }))
-                            },
-                            error: () => {
-                                this.toastService.error(`Error retrieving invited members for group: ${group.name}`)
-                            },
-                        })
+                        this.api
+                            .getGroupInvitations(group.id)
+                            .pipe(takeUntil(this.userChanged))
+                            .subscribe({
+                                next: (invitations) => {
+                                    this.invitationsGroupIndex.update((index) => ({
+                                        ...index,
+                                        [group.id]: invitations,
+                                    }))
+                                },
+                                error: () => {
+                                    this.toastService.error(`Error retrieving invited members for group: ${group.name}`)
+                                },
+                            })
                     }
                 },
                 error: () => {
@@ -288,7 +311,10 @@ export class DataService {
         this.loadingService.start(LOADING_KEYS.USER_MEETS)
         this.api
             .getUserMeets(userId)
-            .pipe(finalize(() => this.loadingService.finish(LOADING_KEYS.USER_MEETS)))
+            .pipe(
+                takeUntil(this.userChanged),
+                finalize(() => this.loadingService.finish(LOADING_KEYS.USER_MEETS)),
+            )
             .subscribe({
                 next: (meets) => this.userMeets.set(meets),
                 error: () => {
@@ -303,7 +329,10 @@ export class DataService {
         this.loadingService.start(LOADING_KEYS.USER_GAMES_HISTORY)
         this.api
             .getUserGamesHistory(userId)
-            .pipe(finalize(() => this.loadingService.finish(LOADING_KEYS.USER_GAMES_HISTORY)))
+            .pipe(
+                takeUntil(this.userChanged),
+                finalize(() => this.loadingService.finish(LOADING_KEYS.USER_GAMES_HISTORY)),
+            )
             .subscribe({
                 next: (history) => this.userHistory.set(history),
                 error: () => {
@@ -318,7 +347,10 @@ export class DataService {
         this.loadingService.start(LOADING_KEYS.USER_WISHLIST)
         this.api
             .getUserWishlist(userId)
-            .pipe(finalize(() => this.loadingService.finish(LOADING_KEYS.USER_WISHLIST)))
+            .pipe(
+                takeUntil(this.userChanged),
+                finalize(() => this.loadingService.finish(LOADING_KEYS.USER_WISHLIST)),
+            )
             .subscribe({
                 next: (wishlist) => {
                     this.userWishlist.set(wishlist)
@@ -334,7 +366,10 @@ export class DataService {
         this.loadingService.start(LOADING_KEYS.USER_COLLECTION_ACTIVITY)
         this.api
             .getUserCollectionActivity(userId)
-            .pipe(finalize(() => this.loadingService.finish(LOADING_KEYS.USER_COLLECTION_ACTIVITY)))
+            .pipe(
+                takeUntil(this.userChanged),
+                finalize(() => this.loadingService.finish(LOADING_KEYS.USER_COLLECTION_ACTIVITY)),
+            )
             .subscribe({
                 next: (collectionActivity) => {
                     this.userCollectionActivity.set(collectionActivity)
@@ -350,7 +385,10 @@ export class DataService {
         this.loadingService.start(LOADING_KEYS.USER_STATS)
         this.api
             .getUserStats(userId)
-            .pipe(finalize(() => this.loadingService.finish(LOADING_KEYS.USER_STATS)))
+            .pipe(
+                takeUntil(this.userChanged),
+                finalize(() => this.loadingService.finish(LOADING_KEYS.USER_STATS)),
+            )
             .subscribe({
                 next: (stats) => {
                     this.userStats.set(stats)
@@ -796,7 +834,10 @@ export class DataService {
         this.userProposalsError.set(false)
         this.api
             .getUserProposals(userId)
-            .pipe(finalize(() => this.userProposalsLoading.set(false)))
+            .pipe(
+                takeUntil(this.userChanged),
+                finalize(() => this.userProposalsLoading.set(false)),
+            )
             .subscribe({
                 next: (proposals) => {
                     this.userProposals.set(proposals)
@@ -813,7 +854,10 @@ export class DataService {
         this.userProposalStatsError.set(false)
         this.api
             .getUserProposalStats(userId)
-            .pipe(finalize(() => this.userProposalStatsLoading.set(false)))
+            .pipe(
+                takeUntil(this.userChanged),
+                finalize(() => this.userProposalStatsLoading.set(false)),
+            )
             .subscribe({
                 next: (stats) => {
                     this.userProposalStats.set(stats)

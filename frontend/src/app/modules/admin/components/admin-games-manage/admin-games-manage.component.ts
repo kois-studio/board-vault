@@ -1,4 +1,5 @@
-import { Component, inject, OnInit, signal, ViewChild } from '@angular/core'
+import { Component, DestroyRef, inject, OnInit, signal, ViewChild } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { ReactiveFormsModule } from '@angular/forms'
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
 import { Api } from '../../../../api/api'
@@ -31,6 +32,7 @@ import { AdminGamesManageService } from './admin-games-manage.service'
 export class AdminGamesManageComponent implements OnInit {
     protected readonly Math = Math
     private readonly api = inject(Api)
+    private readonly destroyRef = inject(DestroyRef)
     private readonly logger = inject(LogService)
     private readonly toastService = inject(ToastService)
     private readonly adminGamesManageService = inject(AdminGamesManageService)
@@ -76,6 +78,7 @@ export class AdminGamesManageComponent implements OnInit {
             .pipe(
                 debounceTime(500), // Wait 500ms after the user stops typing
                 distinctUntilChanged(), // Only emit if search term changed
+                takeUntilDestroyed(this.destroyRef),
             )
             .subscribe((value) => {
                 this.searchTerm$.set(value || '')

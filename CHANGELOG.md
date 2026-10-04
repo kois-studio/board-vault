@@ -105,6 +105,11 @@ operational details.
 
 ### Fixed
 
+- Signing out clears every account's data, including search results, the
+  open group and the admin badge, and drops answers still on the way, so the
+  next account to sign in on the same browser starts empty.
+- Visiting the catalogue or the admin game search repeatedly no longer
+  stacks a new search listener each time.
 - Joining a group as a new person named you "undefined" and dropped your
   avatar (the code read rows instead of columns); found by the stricter
   TypeScript checks.

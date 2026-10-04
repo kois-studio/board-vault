@@ -514,10 +514,9 @@ compliance:
       priority: high
       next_action: None.
     - id: ANGULAR-007
-      status: deferred
-      evidence: Shared services hold user state without a documented owner and reset policy.
+      status: compliant
+      evidence: docs/architecture.md (Shared state) names each root service that holds account data; each clears itself on sign-out.
       priority: high
-      next_action: 'https://github.com/kois-studio/board-vault/issues/32'
     - id: ANGULAR-008
       status: partial
       evidence: Business rules mostly live in the backend; some view logic stays in components.
@@ -529,10 +528,9 @@ compliance:
       priority: medium
       next_action: Add specs with new guards or interceptors.
     - id: ANGULAR-010
-      status: deferred
-      evidence: 'About 57 subscribe calls and 4 managed lifecycles; most are one-shot HTTP calls, the rest need review.'
+      status: compliant
+      evidence: Router events, route params and form value changes end with their component (takeUntilDestroyed or toSignal); the other subscriptions are one-shot HTTP calls.
       priority: high
-      next_action: 'https://github.com/kois-studio/board-vault/issues/32'
     - id: ANGULAR-011
       status: compliant
       evidence: Playwright public journeys run in CI; authenticated journeys (32 checks) run on demand against the development Clerk instance (docs/how-to/run-with-clerk.md).
@@ -554,10 +552,9 @@ compliance:
       priority: high
       next_action: Record gaps from the UI review as issues.
     - id: ANGULAR-015
-      status: deferred
-      evidence: No written scope or reset policy for shared client state.
+      status: compliant
+      evidence: Shared state is scoped to the signed-in account and reset on sign-out, with a unit test (core/services/sign-out-state.spec.ts).
       priority: medium
-      next_action: 'https://github.com/kois-studio/board-vault/issues/32'
     - id: NEST-001
       status: compliant
       evidence: modules/core per entity and modules/features per product capability; common/ for cross-cutting pieces.

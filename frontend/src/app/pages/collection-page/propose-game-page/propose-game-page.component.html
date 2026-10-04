@@ -4,7 +4,7 @@
     </app-page-header>
     <container-wrapper>
         <form-game-submission 
-            [initialTitle]="initialTitle"
+            [initialTitle]="initialTitle()"
             (proposalSubmitted)="onProposalSubmitted()"
         />
     </container-wrapper>
