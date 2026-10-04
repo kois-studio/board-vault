@@ -27,22 +27,25 @@ The job fails when the median run of any page drops below:
 
 | Category | Minimum |
 | --- | --- |
-| Performance | 60 |
+| Performance | 50 |
 | Accessibility | 95 |
 | Best practices | 90 |
 | SEO | 90 |
 
-Performance varies from run to run on shared CI machines, so its floor sits
-well under the baseline and catches large regressions only. Treat the scores
+Performance varies from run to run on shared CI machines (62 to 76 across
+the first run's nine audits), so its floor sits well under the baseline and
+catches large regressions only. Treat the scores
 as signals; a passing score does not mean a page is accessible.
 
-## Baseline (October 2026)
+## Baseline (CI, October 2026)
+
+Median of three runs on the GitHub runner:
 
 | Page | Performance | Accessibility | Best practices | SEO |
 | --- | --- | --- | --- | --- |
-| `/` | 79 | 100 | 96 | 100 |
-| `/login` | 90 | 100 | 96 | 100 |
-| `/register` | 79 | 100 | 96 | 100 |
+| `/` | 75 | 100 | 96 | 100 |
+| `/login` | 76 | 100 | 96 | 100 |
+| `/register` | 65 | 100 | 96 | 100 |
 
 Open findings: [#72](https://github.com/kois-studio/board-vault/issues/72) (public pages paint slowly on mobile).
 
