@@ -3,6 +3,7 @@ import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/commo
 import { ConfigService } from '@nestjs/config'
 
 import { ProviderTimeoutError, fetchWithTimeout } from '../../../common/http/provider-timeout'
+import { structuredLog } from '../../../common/logging/structured-log'
 
 import { AccountQueries } from './queries/accounts.queries'
 import { CollectionQueries } from './queries/collection.queries'
@@ -15,9 +16,9 @@ import { SessionQueries } from './queries/sessions.queries'
 
 export const CURRENT_SCHEMA_VERSION = '0017'
 
-/** Statements that only read, so running them twice is harmless. */
+/** Statements that only read, so running them twice is harmless. Any write keyword, even inside a `WITH`, makes it a write. */
 const READ_ONLY_SQL = /^\s*(SELECT|WITH)\b/i
-const WRITE_SQL = /\b(INSERT|UPDATE|DELETE|REPLACE)\b/i
+const WRITE_SQL = /\b(INSERT|UPDATE|DELETE|REPLACE|CREATE|DROP|ALTER)\b/i
 
 function isReadOnly(sql: string): boolean {
     return READ_ONLY_SQL.test(sql) && !WRITE_SQL.test(sql)
@@ -93,7 +94,7 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
         } catch (error) {
             if (!(error instanceof ProviderTimeoutError) || !isReadOnly(sql)) throw error
 
-            this.LOGGER.warn('Database read timed out; retrying once')
+            this.LOGGER.warn(structuredLog('database.retry', { reason: 'timeout' }))
             return this.tursoClient.execute(stmt)
         }
     }

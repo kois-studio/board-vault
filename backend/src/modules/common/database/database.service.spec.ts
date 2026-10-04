@@ -1340,11 +1340,17 @@ describe('DatabaseService logging', () => {
             return service
         }
 
-        it('retries a read once', async () => {
+        it('retries a read once and logs the retry without the SQL', async () => {
             const execute = jest.fn().mockRejectedValueOnce(new ProviderTimeoutError('database')).mockResolvedValueOnce({ rows: [] })
+            const service = serviceWith(execute)
+            const warn = jest
+                .spyOn((service as unknown as { LOGGER: { warn: (message: string) => void } }).LOGGER, 'warn')
+                .mockImplementation()
 
-            await expect(serviceWith(execute).execute('SELECT 1')).resolves.toEqual({ rows: [] })
+            // Column names that contain a write keyword still make a read.
+            await expect(service.execute('SELECT id, isDeleted, updated_at FROM Account')).resolves.toEqual({ rows: [] })
             expect(execute).toHaveBeenCalledTimes(2)
+            expect(warn).toHaveBeenCalledWith('{"event":"database.retry","reason":"timeout"}')
         })
 
         it('gives up after the second timeout', async () => {

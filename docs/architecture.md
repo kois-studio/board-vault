@@ -39,7 +39,10 @@ because Turso's first query after a quiet spell can stall for seconds; writes
 are never repeated. Redis calls give up
 after 250 ms ([data-model.md](data-model.md#cache-redis)). A Clerk timeout
 while checking a session is a 503, never a 401, so the app does not sign the
-user out.
+user out. A database read that times out is retried once before failing:
+Turso can take seconds to answer the first query after a short idle spell,
+and the next one is fast. Writes are never retried, because the timed-out
+attempt may already have been applied.
 7. The frontend [`Api`](../frontend/src/app/api/api.ts) adapter validates every
    response with the zod schemas in [`api.schemas.ts`](../frontend/src/app/api/api.schemas.ts).
 
