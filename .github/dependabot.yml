@@ -11,8 +11,13 @@ updates:
     # TypeScript majors wait for the toolchain: typescript-eslint and the Nest
     # CLI support TypeScript 6.0 only, and TypeScript 7 has no stable compiler
     # API yet (issue #50).
+    # @types/node majors follow the Node runtime (24: .nvmrc, engines, Vercel),
+    # not the newest Node release.
     ignore:
       - dependency-name: typescript
+        update-types:
+          - version-update:semver-major
+      - dependency-name: "@types/node"
         update-types:
           - version-update:semver-major
     groups:
@@ -39,9 +44,13 @@ updates:
       interval: monthly
     open-pull-requests-limit: 3
     # TypeScript majors follow Angular's supported range; move them with
-    # `ng update`, not on their own.
+    # `ng update`, not on their own. @types/node majors follow the Node runtime
+    # (24), not the newest Node release.
     ignore:
       - dependency-name: typescript
+        update-types:
+          - version-update:semver-major
+      - dependency-name: "@types/node"
         update-types:
           - version-update:semver-major
     groups:
