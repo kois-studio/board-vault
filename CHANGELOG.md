@@ -201,6 +201,12 @@ operational details.
   DatabaseService split), linked people show their account avatar and
   username, and Play › History and Home show the new session without a
   reload.
+- Game ratings add up: a game's "Your groups" average counts each rating once,
+  however many groups you share with its author (it could show more ratings
+  than "Everyone"), and a new rating refreshes the cached averages. Saving the
+  same rating again no longer repeats it in Recent Activity. Title searches
+  read `%` and `_` as plain characters, so `__` or `%%` no longer list the
+  whole catalogue.
 
 ### Added
 

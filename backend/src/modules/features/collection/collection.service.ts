@@ -49,8 +49,15 @@ export class CollectionService {
 
     @LogFeature(new Logger('CollectionService'))
     async browseCatalogue(userId: number, query: BrowseGamesQuery): Promise<BrowseGamesResultDto> {
+        const search = this.gameTranslationService.normalizeTitle(query.search)
+
+        // Punctuation alone, such as `%%`, normalizes to nothing: a search with no match, not the whole catalogue.
+        if (search === '' && query.search.trim() !== '') {
+            return { games: [], pagination: { currentPage: query.page, totalPages: 0, totalItems: 0, itemsPerPage: query.limit } }
+        }
+
         const { gameIds, total } = await this.gamesService.browseCatalogue({
-            search: this.gameTranslationService.normalizeTitle(query.search),
+            search,
             players: query.players,
             length: query.length,
             tagIds: query.tags,

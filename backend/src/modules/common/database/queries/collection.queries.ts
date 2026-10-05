@@ -4,6 +4,13 @@ import type { CollectionActivityDto } from '../../../../common/types/collection-
 import type { GameOwnedDto, UpdateGameOwnedDto } from '../../../../common/types/game-owned.type.js'
 import type { DatabaseService } from '../database.service.js'
 
+/** One `?` (the account id): everyone sharing a group with that account, the account included, each once. */
+const ACCOUNTS_SHARING_A_GROUP_WITH = `
+    SELECT DISTINCT member.accountId
+    FROM GroupMembership member
+    JOIN GroupMembership mine ON mine.groupId = member.groupId
+    WHERE mine.accountId = ?`
+
 /** Personal collections: owned games, wishlist, reviews, and activity. */
 export class CollectionQueries {
     constructor(private readonly database: DatabaseService) {}
@@ -302,14 +309,21 @@ export class CollectionQueries {
         const transaction = await this.database.transaction('write')
 
         try {
-            await transaction.execute({
-                sql: 'DELETE FROM GameReview WHERE accountId = ? AND gameId = ?',
-                args: [accountId, gameId],
-            })
-            await transaction.execute({
-                sql: 'INSERT INTO GameReview (accountId, gameId, review) VALUES (?, ?, ?)',
+            const saved = await transaction.execute({
+                sql: `
+                    INSERT INTO GameReview (accountId, gameId, review) VALUES (?, ?, ?)
+                    ON CONFLICT (accountId, gameId) DO UPDATE SET review = excluded.review, reviewDate = CURRENT_TIMESTAMP
+                    WHERE GameReview.review <> excluded.review
+                `,
                 args: [accountId, gameId, review],
             })
+
+            // Saving the same rating again changes no row, so it is not news for the activity feed.
+            if (saved.rowsAffected === 0) {
+                await transaction.commit()
+                return { success: true }
+            }
+
             await transaction.execute({
                 sql: 'INSERT INTO CollectionActivity (accountId, gameId, actionType, actionDetails) VALUES (?, ?, ?, ?)',
                 args: [accountId, gameId, 'rated', JSON.stringify({ rating: review })],
@@ -424,7 +438,8 @@ export class CollectionQueries {
         })
     }
 
-    // The average rating of the game from the groups the user is a member of
+    // The average rating of the game from the people who share a group with the user, the user included.
+    // Each review counts once, however many groups its author shares with the user.
     getAvgGroupsRating(accountId: number, gameId: number) {
         return this.database.execute({
             sql: `
@@ -432,11 +447,17 @@ export class CollectionQueries {
                 AVG(gr.review) AS avgGroupsRating,
                 COUNT(gr.review) AS count
             FROM GameReview gr
-            JOIN GroupMembership gm ON gr.accountId = gm.accountId  -- Link review to group membership
-            JOIN GroupMembership gm2 ON gm.groupId = gm2.groupId  -- Find groups user is also in
-            WHERE gm2.accountId = ?  -- Filter: user must be in the same group
-            AND gr.gameId = ?;  -- Filter: only for the specific game`,
-            args: [accountId, gameId],
+            WHERE gr.gameId = ?
+              AND gr.accountId IN (${ACCOUNTS_SHARING_A_GROUP_WITH})`,
+            args: [gameId, accountId],
+        })
+    }
+
+    /** The accounts whose group rating includes this account's reviews: everyone sharing a group with it, itself included. */
+    getAccountIdsSharingAGroupWith(accountId: number) {
+        return this.database.execute({
+            sql: ACCOUNTS_SHARING_A_GROUP_WITH,
+            args: [accountId],
         })
     }
 
