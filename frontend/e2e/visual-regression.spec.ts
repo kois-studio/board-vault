@@ -11,7 +11,7 @@ test.describe('public visual regression', () => {
             await page.setViewportSize({ width: 1280, height: 800 })
             await page.emulateMedia({ colorScheme: theme })
             await page.goto('/')
-            await expect(page.locator('app-icon svg').first()).toBeVisible()
+            await expect(page.locator('app-icon svg:visible').first()).toBeVisible()
             await page.waitForTimeout(250)
 
             await expect(page).toHaveScreenshot(`landing-desktop-${theme}.png`, {
@@ -25,7 +25,7 @@ test.describe('public visual regression', () => {
             await page.setViewportSize({ width: 390, height: 844 })
             await page.emulateMedia({ colorScheme: theme })
             await page.goto('/')
-            await expect(page.locator('app-icon svg').first()).toBeVisible()
+            await expect(page.locator('app-icon svg:visible').first()).toBeVisible()
             await page.waitForTimeout(250)
 
             await expect(page).toHaveScreenshot(`landing-mobile-${theme}.png`, {
