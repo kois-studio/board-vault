@@ -1,7 +1,8 @@
 <header class="border-b border-bv-border bg-bv-surface p-2">
     <nav class="relative z-40 flex items-center justify-between px-4" aria-label="Primary navigation">
-        <a routerLink="/" aria-label="Board Vault home">
-            <img src="/images/logo.svg" alt="Board Vault" width="64" height="64" class="w-16" />
+        <a routerLink="/" aria-label="Board Vault home" class="flex min-h-11 items-center gap-2 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bv-primary">
+            <app-logo class="text-bv-primary" [size]="28" />
+            <span class="text-2xl font-bold text-bv-text">Board Vault</span>
         </a>
 
         <div class="flex items-center gap-3">

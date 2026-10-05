@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router'
 import { ButtonComponent } from '../../components/ui/button/button.component'
 import { DarkModeToggleComponent } from '../../components/ui/dark-mode-toggle/dark-mode-toggle.component'
 import { IconComponent } from '../../components/ui/icon/icon.component'
+import { LogoComponent } from '../../components/ui/logo/logo.component'
 import { ClerkService } from '../../core/services/clerk.service'
 import { LoginService } from '../../core/services/login.service'
 import { PendingProposalsService } from '../../core/services/pending-proposals.service'
@@ -11,7 +12,7 @@ import { ProfileMenuComponent } from '../profile-menu/profile-menu.component'
 @Component({
     selector: 'app-layout-header',
     templateUrl: './header.component.html',
-    imports: [RouterLink, ProfileMenuComponent, DarkModeToggleComponent, ButtonComponent, IconComponent],
+    imports: [LogoComponent, RouterLink, ProfileMenuComponent, DarkModeToggleComponent, ButtonComponent, IconComponent],
 })
 export class LayoutHeaderComponent {
     private readonly loginService = inject(LoginService)

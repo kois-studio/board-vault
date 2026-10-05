@@ -17,10 +17,10 @@ operational details.
   game must have every chosen tag), can hide the games you own, and sorts
   A–Z, shortest first, or newest. Filters live in the URL, and on phones they
   sit behind a Filters button. Title search now also matches Spanish titles.
-- A new placeholder logo (a vault door whose lock plate has a meeple
-  keyhole) and favicon, and the app can be installed on phones: a web
-  manifest with app icons, an adaptive Android icon, and an iOS home-screen
-  icon.
+- A new logo, "Round": four pieces around a shared square, in plum (pink
+  in dark mode), next to the name in the header and footer. The app can be
+  installed on phones: a web manifest with app icons, an adaptive Android
+  icon, and an iOS home-screen icon.
 - Vercel installs exactly like CI: npm 11.12.1 and no dependency install
   scripts.
 - The frontend validates API responses with zod 4 (`zod/mini`), which also

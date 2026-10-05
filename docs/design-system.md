@@ -213,26 +213,33 @@ native element, so every attribute and directive (`routerLink`,
 
 ## Logo and app icons
 
-The mark is a vault door in plum with a Sunglow lock plate, and a meeple cut
-out of the plate as the keyhole: the group's games, kept safe. It is a
-placeholder until the designer delivers the final logo
-([#49](https://github.com/kois-studio/board-vault/issues/49)); replace the
-files below, keep their names.
+The mark, "Round", is four rounded pieces turning around an empty square: a
+pinwheel. Everyone takes a side and the middle is shared, like a group around
+the table. It is abstract and one flat colour. Geometry, on a 64×64 viewBox:
+four 28×16 pieces with corner radius 3 and 2-unit gaps, filling 9 to 55 (9 of
+padding on every side), around a 12×12 empty centre. Keep the proportions;
+no strokes or effects.
 
 | File | Use |
 | --- | --- |
-| `public/images/logo.svg` | The logo in the app (header, footer, landing). Door, hinges and dial. |
-| `public/favicon.svg`, `public/favicon.ico` | Browser tab. Plate and meeple only: the door detail turns to noise below 32 px. |
-| `public/icons/icon-192.png`, `icon-512.png` | Web manifest icons; `icon-512.png` is also the link-preview image. |
-| `public/icons/icon-maskable-512.png` | Android adaptive icon: full-bleed plum, the plate inside the safe zone. |
+| `components/ui/logo` (`<app-logo>`) | The mark inline in the app, in `currentColor`: header, footer, landing. |
+| `public/images/logo.svg` | The mark as a file, fixed plum, for anything outside the app. |
+| `public/favicon.svg` | Browser tab: plum on light, `#E58AD0` on dark (`prefers-color-scheme`). |
+| `public/favicon.ico` | Older browsers: 16, 32, and 48 px, plum mark on a lilac square. |
+| `public/icons/icon-192.png`, `icon-512.png` | Web manifest icons, plum mark on lilac; `icon-512.png` is also the link-preview image. |
+| `public/icons/icon-maskable-512.png` | Android adaptive icon: full-bleed plum with the white mark at 60%, inside the safe zone. |
 | `public/icons/apple-touch-icon.png` | iOS home screen (180 px, square; iOS rounds it). |
 
-- Colours: plum `#8A2C7A`, door lines `#A8479A`, plate Sunglow `#FFD166`.
-  The mark has its own plum background, so it reads on both themes; don't
-  recolour it per theme.
-- Show it at 32 px or more with its door; under that, use the favicon mark.
-- Don't add text inside the mark. The name sits next to it in the app's
-  sans-serif, bold.
+- **Colour:** plum (`text-bv-primary`) by default. In the app, write
+  `<app-logo class="text-bv-primary" />`; the token switches to `#E58AD0` in
+  dark mode on its own. On plum or dark fills use white, or Sunglow on the
+  plum charcoal. Monochrome: `text-bv-text`, or pure black or white.
+- **One mark at every size:** it stays readable down to 16 px, so there is no
+  small-size variant.
+- **Lockup:** the mark sits left of "Board Vault" in the app's sans-serif,
+  bold. The gap is about 0.3× the mark's height and the mark about 1.3× the
+  text's cap height (header: 28 px mark, `text-2xl`, `gap-2`). Never put text
+  inside the mark.
 - [`manifest.webmanifest`](../frontend/public/manifest.webmanifest) makes the
   app installable (standalone, starts at `/dashboard`). There is no service
   worker: nothing is cached offline, so signed-in data is never stale.
