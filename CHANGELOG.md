@@ -122,6 +122,7 @@ operational details.
 
 ### Fixed
 
+- The session heading no longer reads the time twice to screen readers.
 - The header, footer and landing logo load a 6 KB image instead of 75 KB,
   and hashed scripts and styles are cached for a year.
 - Signing out clears every account's data, including search results, the

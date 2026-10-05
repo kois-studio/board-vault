@@ -47,7 +47,8 @@ npm run local:setup
 This creates `data/board-vault.local.db` inside your checkout with sample
 games, a group, and sessions. It also creates or reuses two test users in the
 development Clerk instance. Run it again at any time to start over; it only
-touches your own local file.
+touches your own local file. The sample games have no artwork (their image
+addresses are placeholders), so their cards show "Artwork unavailable".
 
 ## 5. Run the app
 
@@ -83,7 +84,8 @@ npm run test:unit
 npm run build
 ```
 
-If these pass, your machine is ready.
+If these pass, your machine is ready. On a fresh clone the install and setup
+take well under a minute, and the three checks about half a minute more.
 
 ## Your first change
 
@@ -114,6 +116,7 @@ npm run local:setup
 | Login page says sign-in is not configured | `CLERK_PUBLISHABLE_KEY` is empty. Set it and restart `npm start`. |
 | Signed in but "We could not finish connecting this sign-in" | The backend is not running, or your local database was created without the Clerk key. Re-run `npm run local:setup`. |
 | `npm ci` fails with a lockfile error | Check `node --version` is 24.x. |
+| The frontend install reports "13 high severity vulnerabilities" | Known, and they don't reach the app. Clerk's wallet sign-in support pulls in `react-native` and its bundler, whose `braces` has an advisory with no fixed version. None of it is bundled or run. Don't run `npm audit fix`; it rewrites the lockfile. |
 | `npm start` exits with `EADDRINUSE` or another app opens on port 4200 | Something else uses port 4200. Run `npm start -- --port 4300` and open <http://localhost:4300>. For invitation links, also set `BOARD_VAULT_CLERK_INVITATION_REDIRECT_URL=http://localhost:4300/register` in `backend/.env`. |
 | Screenshot tests are skipped on macOS or Windows | Expected. They only run on Linux; see [how-to/update-screenshots.md](how-to/update-screenshots.md). |
 | Something else | Open a bug report issue with the steps and the error text. |

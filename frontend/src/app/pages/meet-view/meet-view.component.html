@@ -36,7 +36,7 @@
                     </div>
                     <h1 class="mt-2 text-2xl font-bold sm:text-3xl">
                         Game night <span class="text-bv-text-muted">· {{ when.time }}</span>
-                        <span class="sr-only">, {{ meet.meetDate | customDate: true: meet.timezone }}</span>
+                        <span class="sr-only">, {{ meet.meetDate | customDate: false: meet.timezone }}</span>
                     </h1>
                     <p class="mt-1 text-sm text-bv-text-muted wrap-anywhere">{{ groupData?.name }} · {{ when.weekday }} {{ when.day }} {{ when.month }} {{ when.year }} · {{ meet.timezone }}</p>
                     <p class="mt-3 max-w-2xl text-sm text-bv-text-muted">{{ sessionStatusDescription }}</p>
