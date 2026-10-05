@@ -195,24 +195,6 @@ export class GameProposalService {
         return proposal
     }
 
-    async markGameProposalAsDuplicate(id: number, reviewedBy: number, reviewNotes?: string): Promise<GameProposalDto> {
-        this.LOGGER.log('Marking game proposal as duplicate')
-
-        const proposal = await this.updateGameProposal(
-            id,
-            {
-                status: 'duplicate',
-                reviewNotes,
-            },
-            reviewedBy,
-        )
-
-        // Clear user proposal stats cache
-        await this.cacheService.deleteOne(`user-proposal-stats:${proposal.submittedBy}`)
-
-        return proposal
-    }
-
     async getUserProposalStats(userId: number): Promise<UserProposalStatsDto> {
         this.LOGGER.log('Getting user proposal stats')
 

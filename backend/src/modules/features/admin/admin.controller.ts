@@ -26,7 +26,7 @@ import {
     AdminGameProposalsResponseDto,
     AdminGamesQuery,
     AdminProposalsQuery,
-    AdminDuplicateProposalQuery,
+    DuplicateGameProposalBody,
 } from '../../../common/types/admin.type.js'
 import { SuccessDto } from '../../../common/types/auth.type.js'
 import { GameProposalCompleteDto } from '../../../common/types/game-proposal.type.js'
@@ -206,9 +206,9 @@ export class AdminController {
     async markGameProposalAsDuplicate(
         @Req() request: { user: { userId: number } },
         @Param('id', ParseIntPipe) id: number,
-        @Query() query: AdminDuplicateProposalQuery,
+        @Body() body: DuplicateGameProposalBody,
     ) {
-        return this.adminService.markGameProposalAsDuplicate(id, request.user.userId, query.reviewNotes)
+        return this.adminService.markGameProposalAsDuplicate(id, request.user.userId, body)
     }
 
     @Delete('/proposals/:id')

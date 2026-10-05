@@ -59,7 +59,10 @@ import {
     wishlistResponseSchema,
 } from './api.schemas'
 import type {
+    AdminGameProposalsType,
+    AdminGameProposalType,
     AdminGamesResultType,
+    ApproveGameProposalType,
     BrowseFilters,
     BrowseGamesResultType,
     CatalogueTagType,
@@ -711,36 +714,17 @@ export class Api {
         params.append('limit', limit.toString())
 
         return this.http
-            .get<{
-                proposals: Array<GameProposalType & { submitterId: number; reviewerId?: number }>
-                pagination: {
-                    currentPage: number
-                    totalPages: number
-                    totalItems: number
-                    itemsPerPage: number
-                }
-            }>(`${this.url}/admin/proposals?${params.toString()}`)
+            .get<AdminGameProposalsType>(`${this.url}/admin/proposals?${params.toString()}`)
             .pipe(map((response) => adminGameProposalsSchema.parse(response)))
     }
 
     getAdminGameProposal(id: number) {
         return this.http
-            .get<GameProposalType & { submitterId: number; reviewerId?: number }>(`${this.url}/admin/proposals/${id}`)
+            .get<AdminGameProposalType>(`${this.url}/admin/proposals/${id}`)
             .pipe(map((response) => adminGameProposalSchema.parse(response)))
     }
 
-    approveGameProposal(
-        id: number,
-        approvalData: {
-            reviewNotes?: string
-            imageUrl?: string
-            gameAvgDuration?: number
-            minPlayers?: number
-            maxPlayers?: number
-            translations?: Record<string, string>
-            tagIds?: number[]
-        },
-    ) {
+    approveGameProposal(id: number, approvalData: ApproveGameProposalType) {
         return this.http
             .post<{ success: boolean; createdGameId?: number }>(`${this.url}/admin/proposals/${id}/approve`, approvalData)
             .pipe(map((response) => adminApprovalResponseSchema.parse(response)))
@@ -752,12 +736,9 @@ export class Api {
             .pipe(map((response) => adminSuccessResponseSchema.parse(response)))
     }
 
-    markGameProposalAsDuplicate(id: number, reviewNotes?: string) {
-        const params = new URLSearchParams()
-        if (reviewNotes) params.append('reviewNotes', reviewNotes)
-
+    markGameProposalAsDuplicate(id: number, body: { duplicateOfGameId: number; reviewNotes?: string }) {
         return this.http
-            .post<{ success: boolean }>(`${this.url}/admin/proposals/${id}/duplicate?${params.toString()}`, {})
+            .post<{ success: boolean }>(`${this.url}/admin/proposals/${id}/duplicate`, body)
             .pipe(map((response) => adminSuccessResponseSchema.parse(response)))
     }
 

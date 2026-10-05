@@ -141,7 +141,7 @@ component through `takeUntilDestroyed` or `toSignal`.
 | `/games/:gameId` | `AuthOnlyGuard` | Game detail |
 | `/play`, `/play/…` | `AuthOnlyGuard` | Play hub (a card per subpage); upcoming, recommendations, log a session, history |
 | `/settings`, `/settings/profile`, `/settings/appearance`, `/settings/security` | `AuthOnlyGuard` | Settings: profile, theme, and Clerk account security (`/settings/account` redirects to profile) |
-| `/admin`, `/admin/panel`, `/admin/proposals`, `/admin/manage-games`, `/admin/manage-tags` | `AdminGuard` | Administration: overview, proposals, games, tags (lazy chunk, inside the app layout) |
+| `/admin`, `/admin/panel`, `/admin/proposals`, `/admin/proposals/:id`, `/admin/manage-games`, `/admin/manage-tags` | `AdminGuard` | Administration: overview, proposals and the review of one, games, tags (lazy chunk, inside the app layout) |
 
 The app has three sections: Home (groups and their pages), Collection
 (games, browse, reviews, wishlist), and Play (upcoming, what to play,

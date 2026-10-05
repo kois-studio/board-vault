@@ -405,8 +405,9 @@ describe('DatabaseService logging', () => {
         }
 
         await expect(
-            service.games.rejectGameProposalAtomically({
+            service.games.closeGameProposalAtomically({
                 proposalId: 12,
+                status: 'rejected',
                 reviewerId: 7,
                 reviewNotes: 'Already present',
                 notification: {
@@ -420,7 +421,7 @@ describe('DatabaseService logging', () => {
 
         expect(transaction.execute).toHaveBeenNthCalledWith(
             1,
-            expect.objectContaining({ sql: expect.stringContaining("status = 'rejected'") }),
+            expect.objectContaining({ sql: expect.stringContaining("status = 'pending'"), args: ['rejected', 7, 'Already present', 12] }),
         )
         expect(transaction.execute).toHaveBeenNthCalledWith(
             2,
@@ -445,8 +446,9 @@ describe('DatabaseService logging', () => {
         }
 
         await expect(
-            service.games.rejectGameProposalAtomically({
+            service.games.closeGameProposalAtomically({
                 proposalId: 12,
+                status: 'rejected',
                 reviewerId: 7,
                 reviewNotes: 'Already present',
                 notification: {

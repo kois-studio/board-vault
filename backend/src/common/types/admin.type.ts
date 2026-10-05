@@ -1,9 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
-import { ArrayMaxSize, IsArray, IsIn, IsInt, IsNotEmpty, IsObject, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator'
+import { ArrayMaxSize, IsArray, IsIn, IsInt, IsNotEmpty, IsOptional, IsString, Max, MaxLength, Min, ValidateNested } from 'class-validator'
 
 import { GameProposalCompleteDto } from './game-proposal.type.js'
-import { SupportedLanguage } from './game-translation.type.js'
 import { GameWithTagsAndTranslationsDto, BrowseGamesPaginationDto } from './game.type.js'
 
 const ADMIN_PAGE_SIZE_MAX = 100
@@ -53,12 +52,32 @@ export class AdminProposalsQuery {
     limit = 10
 }
 
-export class AdminDuplicateProposalQuery {
-    @ApiPropertyOptional({ example: 'Already present in the catalog.' })
+export class DuplicateGameProposalBody {
+    @ApiProperty({ example: 42, description: 'The catalogue game this proposal duplicates; the proposer is told about it.' })
+    @IsInt()
+    @Min(1)
+    duplicateOfGameId: number
+
+    @ApiPropertyOptional({ example: 'Listed under its Spanish title.' })
     @IsOptional()
     @IsString()
     @MaxLength(280)
     reviewNotes?: string
+}
+
+/** Title per supported language; any other key is rejected. */
+export class ProposalTranslationsBody {
+    @ApiPropertyOptional({ example: 'Catan' })
+    @IsOptional()
+    @IsString()
+    @MaxLength(200)
+    en?: string
+
+    @ApiPropertyOptional({ example: 'Los colonos de Catán' })
+    @IsOptional()
+    @IsString()
+    @MaxLength(200)
+    es?: string
 }
 
 export class UpdateGameTranslationsBody {
@@ -124,7 +143,7 @@ export class ApproveGameProposalBody {
     @ApiProperty({
         example: 'https://www.example.com/game-image.jpg',
         required: false,
-        description: 'Image URL for the game (if not provided in proposal)',
+        description: 'Artwork URL; overrides the proposal. Empty means no artwork.',
     })
     @IsOptional()
     @IsString()
@@ -134,41 +153,45 @@ export class ApproveGameProposalBody {
     @ApiProperty({
         example: 120,
         required: false,
-        description: 'Average duration in minutes (if not provided in proposal)',
+        description: 'Average length in minutes; overrides the proposal. Required when the proposal has none.',
     })
     @IsOptional()
     @IsInt()
-    @Min(0)
+    @Min(1)
+    @Max(1440)
     gameAvgDuration?: number
 
     @ApiProperty({
         example: 3,
         required: false,
-        description: 'Minimum players (if not provided in proposal)',
+        description: 'Minimum players; overrides the proposal. Required when the proposal has none.',
     })
     @IsOptional()
     @IsInt()
-    @Min(0)
+    @Min(1)
+    @Max(100)
     minPlayers?: number
 
     @ApiProperty({
         example: 4,
         required: false,
-        description: 'Maximum players (if not provided in proposal)',
+        description: 'Maximum players; overrides the proposal. Required when the proposal has none.',
     })
     @IsOptional()
     @IsInt()
-    @Min(0)
+    @Min(1)
+    @Max(100)
     maxPlayers?: number
 
     @ApiProperty({
-        example: { en: 'Catan', es: 'Catan' },
+        type: ProposalTranslationsBody,
         required: false,
-        description: 'Game title translations',
+        description: 'Title per language. English defaults to the proposed title.',
     })
     @IsOptional()
-    @IsObject()
-    translations?: Record<SupportedLanguage, string>
+    @ValidateNested()
+    @Type(() => ProposalTranslationsBody)
+    translations?: ProposalTranslationsBody
 
     @ApiProperty({
         example: [1, 2, 3],
@@ -194,6 +217,20 @@ export class RejectGameProposalBody {
     reviewNotes: string
 }
 
+export class ProposalStatusCountsDto {
+    @ApiProperty({ example: 3 })
+    pending: number
+
+    @ApiProperty({ example: 40 })
+    approved: number
+
+    @ApiProperty({ example: 5 })
+    rejected: number
+
+    @ApiProperty({ example: 2 })
+    duplicate: number
+}
+
 export class AdminGameProposalsResponseDto {
     @ApiProperty({
         description: 'Array of game proposals with submitter and reviewer information',
@@ -206,4 +243,7 @@ export class AdminGameProposalsResponseDto {
         type: BrowseGamesPaginationDto,
     })
     pagination: BrowseGamesPaginationDto
+
+    @ApiProperty({ type: ProposalStatusCountsDto, description: 'How many proposals have each status, for the filter tabs' })
+    statusCounts: ProposalStatusCountsDto
 }

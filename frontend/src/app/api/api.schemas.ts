@@ -1,6 +1,7 @@
 import * as z from 'zod/mini'
 
 import type {
+    AdminGameProposalsType,
     AdminGamesResultType,
     BrowseGamesResultType,
     CatalogueTagType,
@@ -279,9 +280,10 @@ export const userProposalStatsSchema: z.ZodMiniType<UserProposalStatsType> = z.o
     reputationScore: z.number(),
 })
 
-export const adminGameProposalsSchema = z.object({
+export const adminGameProposalsSchema: z.ZodMiniType<AdminGameProposalsType> = z.object({
     proposals: z.array(adminGameProposalSchema),
     pagination: paginationSchema,
+    statusCounts: z.object({ pending: z.number(), approved: z.number(), rejected: z.number(), duplicate: z.number() }),
 })
 export const adminApprovalResponseSchema = z.object({
     success: z.boolean(),

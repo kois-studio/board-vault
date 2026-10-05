@@ -138,10 +138,12 @@ export class GameQueries {
         }
     }
 
-    async rejectGameProposalAtomically(input: {
+    /** Rejects a pending proposal or marks it as a duplicate, and tells the proposer, in one transaction. */
+    async closeGameProposalAtomically(input: {
         proposalId: number
+        status: 'rejected' | 'duplicate'
         reviewerId: number
-        reviewNotes: string
+        reviewNotes: string | null
         notification: CreateNotificationBody
     }): Promise<void> {
         const transaction = await this.database.transaction('write')
@@ -150,13 +152,13 @@ export class GameQueries {
             const proposalResult = await transaction.execute({
                 sql: `
                     UPDATE GameProposal
-                    SET status = 'rejected',
+                    SET status = ?,
                         reviewedBy = ?,
                         reviewedAt = CURRENT_TIMESTAMP,
                         reviewNotes = ?
                     WHERE id = ? AND status = 'pending'
                 `,
-                args: [input.reviewerId, input.reviewNotes, input.proposalId],
+                args: [input.status, input.reviewerId, input.reviewNotes, input.proposalId],
             })
 
             if (proposalResult.rowsAffected !== 1) {
@@ -507,7 +509,7 @@ export class GameQueries {
     }
 
     getGameProposals() {
-        return this.database.execute('SELECT * FROM GameProposal ORDER BY submittedAt DESC')
+        return this.database.execute('SELECT * FROM GameProposal ORDER BY submittedAt DESC, id DESC')
     }
 
     getGameProposalById(id: number) {
@@ -519,14 +521,14 @@ export class GameQueries {
 
     getGameProposalsByStatus(status: 'pending' | 'approved' | 'rejected' | 'duplicate') {
         return this.database.execute({
-            sql: 'SELECT * FROM GameProposal WHERE status = ? ORDER BY submittedAt DESC',
+            sql: 'SELECT * FROM GameProposal WHERE status = ? ORDER BY submittedAt DESC, id DESC',
             args: [status],
         })
     }
 
     getGameProposalsBySubmitter(submittedBy: number) {
         return this.database.execute({
-            sql: 'SELECT * FROM GameProposal WHERE submittedBy = ? ORDER BY submittedAt DESC',
+            sql: 'SELECT * FROM GameProposal WHERE submittedBy = ? ORDER BY submittedAt DESC, id DESC',
             args: [submittedBy],
         })
     }

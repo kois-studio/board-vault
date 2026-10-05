@@ -1,0 +1,251 @@
+<div class="space-y-6">
+    <a routerLink="/admin/proposals" class="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-bv-text-muted hover:text-bv-text">
+        <app-icon name="arrow-left" [size]="16" /> All proposals
+    </a>
+
+    @if (isLoading()) {
+        <div class="flex justify-center py-8"><app-spinner size="medium" /></div>
+    } @else if (loadError(); as error) {
+        <div class="rounded-xl border border-bv-danger/30 bg-bv-danger/10 p-4 text-sm text-bv-danger" role="alert">{{ error }}</div>
+    } @else if (proposal(); as proposal) {
+        <app-admin-page-header
+            [title]="proposal.title"
+            [description]="isPending()
+                ? 'Check what was proposed, correct the catalogue fields, then approve, reject with a reason, or point to the game it duplicates.'
+                : statusText() + (proposal.reviewedAt ? ' on ' + formatDate(proposal.reviewedAt) : '') + '.'"
+        />
+
+        <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
+            <!-- Catalogue fields: what the game will be -->
+            <form class="space-y-6 rounded-lg border border-bv-border bg-bv-surface p-4 shadow-sm sm:p-6" [formGroup]="form" (ngSubmit)="approve()" novalidate>
+                <h3 class="text-lg font-semibold">Catalogue entry</h3>
+
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <label for="titleEn" class="mb-1 block text-sm font-medium">English title</label>
+                        <input id="titleEn" class="app-input" formControlName="titleEn" [attr.aria-invalid]="form.controls.titleEn.touched && form.controls.titleEn.invalid" />
+                        @if (form.controls.titleEn.touched && form.controls.titleEn.invalid) {
+                            <p class="mt-1 text-sm text-bv-danger">The English title is required.</p>
+                        }
+                    </div>
+                    <div>
+                        <label for="titleEs" class="mb-1 block text-sm font-medium">Spanish title</label>
+                        <input id="titleEs" class="app-input" formControlName="titleEs" aria-describedby="titleEs-hint" />
+                        <p id="titleEs-hint" class="mt-1 text-sm text-bv-text-muted">Starts as a copy. Leave it empty if there is no Spanish edition.</p>
+                    </div>
+                </div>
+
+                <div class="grid gap-4 sm:grid-cols-[minmax(0,1fr)_6rem]">
+                    <div>
+                        <label for="imageUrl" class="mb-1 block text-sm font-medium">Artwork URL</label>
+                        <input id="imageUrl" type="url" class="app-input" formControlName="imageUrl" placeholder="https://…" (input)="updateImagePreview()" aria-describedby="imageUrl-hint" />
+                        <p id="imageUrl-hint" class="mt-1 text-sm" [class.text-bv-danger]="form.controls.imageUrl.invalid" [class.text-bv-text-muted]="form.controls.imageUrl.valid">
+                            @if (form.controls.imageUrl.invalid) { Use a full http(s) address. } @else { Empty means no artwork; the app shows its placeholder. }
+                        </p>
+                    </div>
+                    <div class="flex h-24 w-24 items-center justify-center overflow-hidden rounded-lg bg-bv-surface-2" aria-hidden="true">
+                        @if (imagePreview(); as src) {
+                            <image-background class="block h-24 w-24" [src]="src" [alt]="''" />
+                        } @else {
+                            <app-icon name="image" [size]="24" className="text-bv-text-muted" />
+                        }
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                    <div>
+                        <label for="minPlayers" class="mb-1 block text-sm font-medium">Min players</label>
+                        <input id="minPlayers" type="number" inputmode="numeric" min="1" max="100" class="app-input" formControlName="minPlayers" />
+                    </div>
+                    <div>
+                        <label for="maxPlayers" class="mb-1 block text-sm font-medium">Max players</label>
+                        <input id="maxPlayers" type="number" inputmode="numeric" min="1" max="100" class="app-input" formControlName="maxPlayers" />
+                    </div>
+                    <div class="col-span-2 sm:col-span-1">
+                        <label for="gameAvgDuration" class="mb-1 block text-sm font-medium">Length (minutes)</label>
+                        <input id="gameAvgDuration" type="number" inputmode="numeric" min="1" max="1440" class="app-input" formControlName="gameAvgDuration" />
+                    </div>
+                </div>
+                @if (playersOutOfOrder) {
+                    <p class="text-sm text-bv-danger">Min players cannot be more than max players.</p>
+                } @else if (isPending() && (form.controls.minPlayers.invalid || form.controls.maxPlayers.invalid || form.controls.gameAvgDuration.invalid)) {
+                    <p class="text-sm text-bv-text-muted">Players and length are required. They drive Browse filters and suggestions, so nothing is guessed.</p>
+                }
+
+                <fieldset class="min-w-0 space-y-3">
+                    <legend class="text-sm font-medium">Tags</legend>
+                    @if (proposedTags().length > 0) {
+                        <p class="text-sm text-bv-text-muted">Proposed: {{ proposedTags().join(', ') }}. Matching tags are already chosen.</p>
+                    }
+                    <p class="text-sm" aria-live="polite">
+                        @if (selectedTags().length > 0) {
+                            <span class="text-bv-text-muted">Chosen:</span> {{ selectedTags().length }} ·
+                            @for (tag of selectedTags(); track tag.id; let last = $last) {
+                                <span class="font-medium">{{ tag.name }}</span>{{ last ? '' : ', ' }}
+                            }
+                        } @else {
+                            <span class="text-bv-text-muted">No tags chosen.</span>
+                        }
+                    </p>
+                    @for (group of tagGroups(); track group.id) {
+                        <details class="group rounded-lg border border-bv-border" [open]="initiallyOpenGroups().has(group.id)">
+                            <summary class="flex min-h-11 cursor-pointer items-center justify-between gap-3 px-3 text-sm font-medium">
+                                <span>{{ group.name }}</span>
+                                <span class="flex items-center gap-2 text-bv-text-muted">
+                                    @if (selectedInGroup(group); as count) {
+                                        <span class="rounded-full bg-bv-primary px-2 text-xs text-bv-on-primary">{{ count }}</span>
+                                    }
+                                    <app-icon name="chevron-down" [size]="16" className="transition group-open:rotate-180" />
+                                </span>
+                            </summary>
+                            <div class="flex flex-wrap gap-2 px-3 pb-3">
+                                @for (tag of group.tags; track tag.id) {
+                                    <button type="button" class="app-chip" [attr.aria-pressed]="isTagSelected(tag.id)" [disabled]="!isPending()" (click)="toggleTag(tag.id)">
+                                        {{ tag.name }}
+                                    </button>
+                                }
+                            </div>
+                        </details>
+                    } @empty {
+                        <p class="text-sm text-bv-text-muted">There are no tags yet. Add them under Tags.</p>
+                    }
+                </fieldset>
+
+                @if (isPending()) {
+                    <div>
+                        <label for="reviewNotes" class="mb-1 block text-sm font-medium">Note for your records <span class="font-normal text-bv-text-muted">(optional)</span></label>
+                        <textarea id="reviewNotes" rows="2" class="app-input" formControlName="reviewNotes"></textarea>
+                    </div>
+
+                    <div class="flex flex-col-reverse gap-3 border-t border-bv-border pt-4 sm:flex-row sm:flex-wrap sm:justify-end [&>button]:whitespace-nowrap">
+                        <button appButton variant="secondary" type="button" (click)="openDuplicate()">Duplicate of…</button>
+                        <button appButton variant="danger" type="button" (click)="openReject()">Reject</button>
+                        <button appButton variant="success" type="submit" icon="check" [loading]="isSubmitting()" [disabled]="form.invalid || playersOutOfOrder">
+                            Approve and add
+                        </button>
+                    </div>
+                }
+            </form>
+
+            <!-- What was submitted -->
+            <aside class="order-first space-y-6 lg:order-none">
+                <section class="space-y-3 rounded-lg border border-bv-border bg-bv-surface p-4 shadow-sm">
+                    <h3 class="text-lg font-semibold">As proposed</h3>
+                    <dl class="space-y-2 text-sm">
+                        <div><dt class="text-bv-text-muted">Title</dt><dd class="font-medium break-words">{{ proposal.title }}</dd></div>
+                        <div>
+                            <dt class="text-bv-text-muted">Players</dt>
+                            <dd>@if (proposal.minPlayers || proposal.maxPlayers) { {{ proposal.minPlayers ?? '?' }}–{{ proposal.maxPlayers ?? '?' }} } @else { <span class="text-bv-text-muted">Not given</span> }</dd>
+                        </div>
+                        <div>
+                            <dt class="text-bv-text-muted">Length</dt>
+                            <dd>@if (proposal.gameAvgDuration) { {{ proposal.gameAvgDuration }} min } @else { <span class="text-bv-text-muted">Not given</span> }</dd>
+                        </div>
+                        <div>
+                            <dt class="text-bv-text-muted">Tags</dt>
+                            <dd>@if (proposedTags().length > 0) { {{ proposedTags().join(', ') }} } @else { <span class="text-bv-text-muted">None</span> }</dd>
+                        </div>
+                        @if (proposal.imageUrl) {
+                            <div><dt class="text-bv-text-muted">Artwork</dt><dd class="break-all">{{ proposal.imageUrl }}</dd></div>
+                        }
+                        @if (proposal.notes) {
+                            <div><dt class="text-bv-text-muted">Notes</dt><dd class="whitespace-pre-line break-words">{{ proposal.notes }}</dd></div>
+                        }
+                        <div><dt class="text-bv-text-muted">For the proposer</dt><dd>{{ addToText(proposal.addTo) }}</dd></div>
+                        <div><dt class="text-bv-text-muted">Submitted</dt><dd>{{ formatDate(proposal.submittedAt) }}</dd></div>
+                        @if (proposal.reviewNotes) {
+                            <div><dt class="text-bv-text-muted">Review note</dt><dd class="whitespace-pre-line break-words">{{ proposal.reviewNotes }}</dd></div>
+                        }
+                        @if (proposal.createdGameId) {
+                            <div><dt class="text-bv-text-muted">Game</dt><dd><a class="font-medium text-bv-primary underline" [routerLink]="['/games', proposal.createdGameId]">Open the game</a></dd></div>
+                        }
+                    </dl>
+                </section>
+
+                @if (isPending()) {
+                    <section class="space-y-3 rounded-lg border border-bv-border bg-bv-surface p-4 shadow-sm" aria-labelledby="possible-duplicates">
+                        <h3 id="possible-duplicates" class="text-lg font-semibold">Possible duplicates</h3>
+                        @for (game of possibleDuplicates(); track game.id) {
+                            <div class="flex items-center gap-3">
+                                @if (game.imageUrl) {
+                                    <image-background class="block h-10 w-10 shrink-0 rounded-md" [src]="game.imageUrl" [alt]="''" />
+                                } @else {
+                                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-bv-surface-2"><app-icon name="image" [size]="16" className="text-bv-text-muted" /></div>
+                                }
+                                <a class="min-w-0 flex-1 truncate text-sm font-medium hover:underline" [routerLink]="['/games', game.id]" target="_blank">{{ gameTitle(game) }}</a>
+                                <button appButton variant="secondary" size="small" type="button" (click)="openDuplicate(game)" [attr.aria-label]="'It is ' + gameTitle(game)">It's this one</button>
+                            </div>
+                        } @empty {
+                            <p class="text-sm text-bv-text-muted">No catalogue game has a similar title.</p>
+                        }
+                    </section>
+                }
+            </aside>
+        </div>
+    }
+</div>
+
+@if (isRejecting()) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" (click)="isRejecting.set(false)">
+        <section appDialog (dialogClosed)="isRejecting.set(false)" class="w-full max-w-lg rounded-xl border border-bv-border bg-bv-surface p-6 shadow-2xl" aria-labelledby="reject-title" (click)="$event.stopPropagation()">
+            <h2 id="reject-title" class="text-xl font-bold">Reject this proposal?</h2>
+            <p class="mt-2 text-sm text-bv-text-muted">The proposer reads your reason in their notifications.</p>
+            <fieldset class="mt-4 min-w-0">
+                <legend class="sr-only">Quick reasons</legend>
+                <div class="flex flex-wrap gap-2">
+                    @for (reason of quickReasons; track reason) {
+                        <button type="button" class="app-chip" [attr.aria-pressed]="rejectReason.value === reason" (click)="useQuickReason(reason)">{{ reason.split('.')[0] }}</button>
+                    }
+                </div>
+            </fieldset>
+            <label for="rejectReason" class="mb-1 mt-4 block text-sm font-medium">Reason</label>
+            <textarea id="rejectReason" rows="3" class="app-input" [formControl]="rejectReason"></textarea>
+            @if (rejectReason.touched && !rejectReason.value.trim()) {
+                <p class="mt-1 text-sm text-bv-danger">Write a reason, or pick one above.</p>
+            }
+            <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                <button appButton variant="secondary" type="button" (click)="isRejecting.set(false)">Cancel</button>
+                <button appButton variant="danger" type="button" [loading]="isSubmitting()" [disabled]="!rejectReason.value.trim()" (click)="confirmReject()">Reject proposal</button>
+            </div>
+        </section>
+    </div>
+}
+
+@if (isMarkingDuplicate()) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" (click)="isMarkingDuplicate.set(false)">
+        <section appDialog (dialogClosed)="isMarkingDuplicate.set(false)" class="w-full max-w-lg rounded-xl border border-bv-border bg-bv-surface p-6 shadow-2xl" aria-labelledby="duplicate-title" (click)="$event.stopPropagation()">
+            <h2 id="duplicate-title" class="text-xl font-bold">Which game does it duplicate?</h2>
+            <p class="mt-2 text-sm text-bv-text-muted">The proposer is told the game is already in Board Vault, with a link to it.</p>
+
+            @if (duplicateOf(); as game) {
+                <div class="mt-4 flex items-center gap-3 rounded-lg border border-bv-primary bg-bv-surface-2 p-3">
+                    <span class="min-w-0 flex-1 truncate font-medium">{{ gameTitle(game) }}</span>
+                    <button appButton variant="secondary" size="small" type="button" (click)="duplicateOf.set(null)">Change</button>
+                </div>
+            } @else {
+                <form class="mt-4 flex gap-2" (submit)="$event.preventDefault(); searchDuplicates()">
+                    <label for="duplicateSearch" class="sr-only">Search the catalogue</label>
+                    <input id="duplicateSearch" type="search" class="app-input" [formControl]="duplicateSearch" placeholder="Search the catalogue" />
+                    <button appButton variant="secondary" type="submit" icon="search" [loading]="isSearchingDuplicates()" aria-label="Search"></button>
+                </form>
+                <ul class="mt-3 max-h-64 space-y-1 overflow-y-auto">
+                    @for (game of duplicateResults(); track game.id) {
+                        <li>
+                            <button type="button" class="app-menu-item w-full" (click)="duplicateOf.set(game)">{{ gameTitle(game) }}</button>
+                        </li>
+                    } @empty {
+                        <li class="px-3 py-2 text-sm text-bv-text-muted">No match yet. Search the catalogue by title, in English or Spanish.</li>
+                    }
+                </ul>
+            }
+
+            <label for="duplicateNotes" class="mb-1 mt-4 block text-sm font-medium">Note for the proposer <span class="font-normal text-bv-text-muted">(optional)</span></label>
+            <input id="duplicateNotes" class="app-input" [formControl]="duplicateNotes" placeholder="For example: listed under its Spanish title." />
+
+            <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                <button appButton variant="secondary" type="button" (click)="isMarkingDuplicate.set(false)">Cancel</button>
+                <button appButton type="button" [loading]="isSubmitting()" [disabled]="!duplicateOf()" (click)="confirmDuplicate()">Mark as duplicate</button>
+            </div>
+        </section>
+    </div>
+}

@@ -5,6 +5,7 @@ export enum NotificationTypeEnum {
     GAME_PROPOSAL_APPROVED = 'game_proposal_approved',
     GAME_PROPOSAL_REJECTED = 'game_proposal_rejected',
     GAME_PROPOSAL_SUBMITTED = 'game_proposal_submitted',
+    GAME_PROPOSAL_DUPLICATE = 'game_proposal_duplicate',
 }
 
 export type NotificationDataMap = {
@@ -42,5 +43,12 @@ export type NotificationDataMap = {
         gameTitle: string
         proposalId: number
         reviewNotes: string
+    }
+    // Your game proposal "{gameTitle}" is already in Board Vault as "{duplicateOfTitle}"
+    [NotificationTypeEnum.GAME_PROPOSAL_DUPLICATE]: {
+        gameTitle: string
+        proposalId: number
+        duplicateOfGameId: number
+        duplicateOfTitle: string
     }
 }

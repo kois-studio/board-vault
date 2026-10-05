@@ -37,6 +37,14 @@ describe('CardNotificationComponent', () => {
         expect(link.getAttribute('href')).toBe('/games/88')
     })
 
+    it('links a duplicate proposal to the game already in the catalogue', () => {
+        const fixture = render(notification('game_proposal_duplicate', { proposalId: 4, duplicateOfGameId: 40, duplicateOfTitle: 'Azul' }))
+        const link = fixture.nativeElement.querySelector('a') as HTMLAnchorElement
+
+        expect(link.textContent?.trim()).toBe('Open the existing game')
+        expect(link.getAttribute('href')).toBe('/games/40')
+    })
+
     it('sends admins to the proposals to review', () => {
         const fixture = render(notification('game_proposal_submitted', { proposalId: 4 }))
 

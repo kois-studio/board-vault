@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common'
+import { BadRequestException, Injectable, Logger } from '@nestjs/common'
 
 import { LogFeature } from '../../../common/decorators/logger.decorator.js'
 import {
@@ -8,6 +8,8 @@ import {
     ApproveGameProposalBody,
     RejectGameProposalBody,
     AdminGameProposalsResponseDto,
+    DuplicateGameProposalBody,
+    ProposalStatusCountsDto,
 } from '../../../common/types/admin.type.js'
 import { GameProposalCompleteDto } from '../../../common/types/game-proposal.type.js'
 import { SupportedLanguage } from '../../../common/types/game-translation.type.js'
@@ -195,10 +197,15 @@ export class AdminService {
         page: number = 1,
         limit: number = 10,
     ): Promise<AdminGameProposalsResponseDto> {
-        // Get proposals based on status filter
-        const proposals = status
-            ? await this.gameProposalService.getGameProposalsByStatus(status)
-            : await this.gameProposalService.getGameProposals()
+        const allProposals = await this.gameProposalService.getGameProposals()
+        const statusCounts: ProposalStatusCountsDto = { pending: 0, approved: 0, rejected: 0, duplicate: 0 }
+
+        for (const proposal of allProposals) statusCounts[proposal.status] += 1
+
+        // Newest first, except the pending queue: oldest first, as it should be worked through.
+        const proposals = status ? allProposals.filter(proposal => proposal.status === status) : allProposals
+
+        if (status === 'pending') proposals.reverse()
 
         // Calculate pagination
         const totalItems = proposals.length
@@ -222,6 +229,7 @@ export class AdminService {
                 totalItems,
                 itemsPerPage: limit,
             },
+            statusCounts,
         }
     }
 
@@ -244,46 +252,56 @@ export class AdminService {
     ): Promise<{ success: boolean; createdGameId?: number }> {
         const proposal = await this.gameProposalService.getGameProposalById(proposalId)
 
-        // Create the new game
+        // The game gets exactly the reviewed values: the admin's, or the proposal's. Nothing is guessed,
+        // because player counts and length drive Browse filters and suggestions.
+        const gameAvgDuration = approvalData.gameAvgDuration ?? proposal.gameAvgDuration
+        const minPlayers = approvalData.minPlayers ?? proposal.minPlayers
+        const maxPlayers = approvalData.maxPlayers ?? proposal.maxPlayers
+        const missing = [
+            gameAvgDuration ? null : 'gameAvgDuration',
+            minPlayers ? null : 'minPlayers',
+            maxPlayers ? null : 'maxPlayers',
+        ].filter(field => field !== null)
+
+        if (missing.length > 0) {
+            throw new BadRequestException(`The proposal has no ${missing.join(', ')}; set them to approve it.`)
+        }
+        if (minPlayers! > maxPlayers!) {
+            throw new BadRequestException('minPlayers cannot be greater than maxPlayers.')
+        }
+
+        const tagIds = [...new Set(approvalData.tagIds ?? [])]
+
+        if (tagIds.length > 0) {
+            const known = new Set((await this.tagService.getTags()).map(tag => tag.id))
+            const unknown = tagIds.filter(tagId => !known.has(tagId))
+
+            if (unknown.length > 0) throw new BadRequestException(`Unknown tag ids: ${unknown.join(', ')}.`)
+        }
+
         const gameData = {
             title: proposal.title,
             // Empty means no artwork; the frontend shows its own placeholder.
             imageUrl: approvalData.imageUrl ?? proposal.imageUrl ?? '',
-            gameAvgDuration: approvalData.gameAvgDuration ?? proposal.gameAvgDuration ?? 60,
-            minPlayers: approvalData.minPlayers ?? proposal.minPlayers ?? 2,
-            maxPlayers: approvalData.maxPlayers ?? proposal.maxPlayers ?? 4,
+            gameAvgDuration: gameAvgDuration!,
+            minPlayers: minPlayers!,
+            maxPlayers: maxPlayers!,
         }
 
-        const translations: Array<{ languageCode: SupportedLanguage; title: string; normalizedTitle: string }> = []
-        let englishTranslationAdded = false
-
-        if (approvalData.translations && Object.keys(approvalData.translations).length > 0) {
-            for (const [languageCode, title] of Object.entries(approvalData.translations)) {
-                if (title?.trim()) {
-                    translations.push({
-                        languageCode: languageCode as SupportedLanguage,
-                        title,
-                        normalizedTitle: this.gameTranslationService.normalizeTitle(title),
-                    })
-                    englishTranslationAdded = englishTranslationAdded || languageCode === 'en'
-                }
-            }
+        const titles: Record<SupportedLanguage, string | undefined> = {
+            en: approvalData.translations?.en?.trim() || proposal.title,
+            es: approvalData.translations?.es?.trim() || undefined,
         }
-
-        if (!englishTranslationAdded) {
-            translations.push({
-                languageCode: 'en',
-                title: proposal.title,
-                normalizedTitle: this.gameTranslationService.normalizeTitle(proposal.title),
-            })
-        }
+        const translations = Object.entries(titles)
+            .filter((entry): entry is [SupportedLanguage, string] => Boolean(entry[1]))
+            .map(([languageCode, title]) => ({ languageCode, title, normalizedTitle: this.gameTranslationService.normalizeTitle(title) }))
 
         const { createdGameId } = await this.databaseService.games.approveGameProposalAtomically({
             proposalId,
             reviewerId,
             ...gameData,
             translations,
-            tagIds: approvalData.tagIds ?? [],
+            tagIds,
             reviewNotes: approvalData.reviewNotes,
             notification: {
                 accountId: proposal.submittedBy,
@@ -314,8 +332,9 @@ export class AdminService {
     async rejectGameProposal(proposalId: number, reviewerId: number, rejectionData: RejectGameProposalBody): Promise<{ success: boolean }> {
         const proposal = await this.gameProposalService.getGameProposalById(proposalId)
 
-        await this.databaseService.games.rejectGameProposalAtomically({
+        await this.databaseService.games.closeGameProposalAtomically({
             proposalId,
+            status: 'rejected',
             reviewerId,
             reviewNotes: rejectionData.reviewNotes,
             notification: {
@@ -342,8 +361,44 @@ export class AdminService {
     }
 
     @LogFeature(new Logger('AdminService'))
-    async markGameProposalAsDuplicate(proposalId: number, reviewerId: number, reviewNotes?: string): Promise<{ success: boolean }> {
-        await this.gameProposalService.markGameProposalAsDuplicate(proposalId, reviewerId, reviewNotes)
+    async markGameProposalAsDuplicate(
+        proposalId: number,
+        reviewerId: number,
+        body: DuplicateGameProposalBody,
+    ): Promise<{ success: boolean }> {
+        const proposal = await this.gameProposalService.getGameProposalById(proposalId)
+
+        // Throws 404 when the game does not exist.
+        await this.gameService.getGameById(body.duplicateOfGameId)
+        const titles = await this.gameTranslationService.getGameTranslations(body.duplicateOfGameId)
+        const duplicateOfTitle = titles.en || titles.es || 'a game in the catalogue'
+        const reviewNotes = body.reviewNotes?.trim() || null
+
+        await this.databaseService.games.closeGameProposalAtomically({
+            proposalId,
+            status: 'duplicate',
+            reviewerId,
+            reviewNotes,
+            notification: {
+                accountId: proposal.submittedBy,
+                type: NotificationTypeEnum.GAME_PROPOSAL_DUPLICATE,
+                message: `Your game proposal "${proposal.title}" is already in Board Vault as "${duplicateOfTitle}".${reviewNotes ? ` ${reviewNotes}` : ''}`,
+                data: {
+                    gameTitle: proposal.title,
+                    proposalId: proposal.id,
+                    duplicateOfGameId: body.duplicateOfGameId,
+                    duplicateOfTitle,
+                },
+            },
+        })
+
+        await Promise.all([
+            this.cacheService.deleteOne(`game-proposal:byId:${proposalId}`),
+            this.cacheService.deleteOne('game-proposal:byStatus:pending'),
+            this.cacheService.deleteOne('game-proposal:byStatus:duplicate'),
+            this.cacheService.deleteOne(`game-proposal:bySubmitter:${proposal.submittedBy}`),
+            this.cacheService.deleteOne(`user-proposal-stats:${proposal.submittedBy}`),
+        ])
 
         return { success: true }
     }

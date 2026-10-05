@@ -581,6 +581,33 @@ export type CreateGameProposalType = {
     addTo?: 'shelf' | 'wishlist'
 }
 
+export type ProposalStatus = GameProposalType['status']
+
+export type AdminGameProposalType = GameProposalType & { submitterId: number; reviewerId?: number }
+
+export type AdminGameProposalsType = {
+    proposals: Array<AdminGameProposalType>
+    pagination: {
+        currentPage: number
+        totalPages: number
+        totalItems: number
+        itemsPerPage: number
+    }
+    /** How many proposals have each status, for the filter tabs. */
+    statusCounts: Record<ProposalStatus, number>
+}
+
+/** What an admin approves: every field overrides the proposal; players and length are required when it has none. */
+export type ApproveGameProposalType = {
+    reviewNotes?: string
+    imageUrl?: string
+    gameAvgDuration?: number
+    minPlayers?: number
+    maxPlayers?: number
+    translations?: Partial<Record<SupportedLanguage, string>>
+    tagIds?: number[]
+}
+
 export type UserProposalStatsType = {
     totalProposals: number
     approvedProposals: number

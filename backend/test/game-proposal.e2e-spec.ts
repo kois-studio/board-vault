@@ -71,7 +71,7 @@ describe('proposing a game (e2e)', () => {
         const response = await request(app.getHttpServer())
             .post('/profile/users/2/proposals')
             .set(asProposer)
-            .send({ title, minPlayers: 2, maxPlayers: 4, ...(addTo ? { addTo } : {}) })
+            .send({ title, minPlayers: 2, maxPlayers: 4, gameAvgDuration: 30, ...(addTo ? { addTo } : {}) })
             .expect(201)
 
         expect(response.body).toEqual(expect.objectContaining({ title, status: 'pending', addTo: addTo ?? null }))
@@ -132,10 +132,15 @@ describe('proposing a game (e2e)', () => {
             .post(`/admin/proposals/${rejected}/reject`)
             .set(asAdmin)
             .send({ reviewNotes: 'Not a board game' })
+        const existing = await database.execute(
+            "INSERT INTO Game (imageUrl, gameAvgDuration, minPlayers, maxPlayers) VALUES ('', 30, 2, 4) RETURNING id",
+        )
+
         await request(app.getHttpServer())
             .post(`/admin/proposals/${duplicate}/duplicate`)
             .set(asAdmin)
-            .query({ reviewNotes: 'Already listed' })
+            .send({ duplicateOfGameId: Number(existing.rows[0]?.id), reviewNotes: 'Already listed' })
+            .expect(201)
 
         const after = await database.execute('SELECT (SELECT COUNT(*) FROM OwnedGame) + (SELECT COUNT(*) FROM WishlistedGame)')
         const statuses = await database.execute({
@@ -145,5 +150,172 @@ describe('proposing a game (e2e)', () => {
 
         expect(statuses.rows.map(row => row.status)).toEqual(['rejected', 'duplicate'])
         expect(Number(after.rows[0]?.[0])).toBe(Number(before.rows[0]?.[0]))
+    })
+
+    describe('reviewing a proposal', () => {
+        async function proposeBare(title: string, extra: Record<string, unknown> = {}): Promise<number> {
+            const response = await request(app.getHttpServer())
+                .post('/profile/users/2/proposals')
+                .set(asProposer)
+                .send({ title, ...extra })
+                .expect(201)
+
+            return Number(response.body.id)
+        }
+
+        async function createTag(name: string): Promise<number> {
+            const category = await database.execute({
+                sql: 'INSERT INTO TagCategory (name) VALUES (?) RETURNING id',
+                args: [`${name} category`],
+            })
+            const tag = await database.execute({
+                sql: 'INSERT INTO Tag (name, categoryId) VALUES (?, ?) RETURNING id',
+                args: [name, Number(category.rows[0]?.id)],
+            })
+
+            return Number(tag.rows[0]?.id)
+        }
+
+        it('will not approve without players and length, and invents none', async () => {
+            const proposalId = await proposeBare('Hanabi')
+
+            const refused = await request(app.getHttpServer())
+                .post(`/admin/proposals/${proposalId}/approve`)
+                .set(asAdmin)
+                .send({})
+                .expect(400)
+
+            expect(refused.body.message).toBe('The proposal has no gameAvgDuration, minPlayers, maxPlayers; set them to approve it.')
+            const status = await database.execute({ sql: 'SELECT status FROM GameProposal WHERE id = ?', args: [proposalId] })
+
+            expect(status.rows[0]?.status).toBe('pending')
+        })
+
+        it('creates the game with exactly the reviewed values, both titles and the chosen tags', async () => {
+            const proposalId = await proposeBare('Codenames', { proposedTags: 'party' })
+            const partyTag = await createTag('Party')
+
+            const approved = await request(app.getHttpServer())
+                .post(`/admin/proposals/${proposalId}/approve`)
+                .set(asAdmin)
+                .send({
+                    minPlayers: 2,
+                    maxPlayers: 8,
+                    gameAvgDuration: 15,
+                    imageUrl: 'https://example.test/codenames.png',
+                    translations: { en: 'Codenames', es: 'Código Secreto' },
+                    tagIds: [partyTag],
+                })
+                .expect(201)
+            const gameId = Number(approved.body.createdGameId)
+
+            const game = await database.execute({
+                sql: 'SELECT imageUrl, gameAvgDuration, minPlayers, maxPlayers FROM Game WHERE id = ?',
+                args: [gameId],
+            })
+            const titles = await database.execute({
+                sql: 'SELECT languageCode, title FROM GameTranslation WHERE gameId = ? ORDER BY languageCode',
+                args: [gameId],
+            })
+            const tags = await database.execute({ sql: 'SELECT tagId FROM GameTag WHERE gameId = ?', args: [gameId] })
+
+            expect({ ...game.rows[0] }).toEqual({
+                imageUrl: 'https://example.test/codenames.png',
+                gameAvgDuration: 15,
+                minPlayers: 2,
+                maxPlayers: 8,
+            })
+            expect(titles.rows.map(row => [row.languageCode, row.title])).toEqual([
+                ['en', 'Codenames'],
+                ['es', 'Código Secreto'],
+            ])
+            expect(tags.rows.map(row => Number(row.tagId))).toEqual([partyTag])
+        })
+
+        it('refuses unknown tags and more minimum than maximum players', async () => {
+            const proposalId = await proposeBare('Skull')
+            const base = { minPlayers: 3, maxPlayers: 6, gameAvgDuration: 20 }
+
+            await request(app.getHttpServer())
+                .post(`/admin/proposals/${proposalId}/approve`)
+                .set(asAdmin)
+                .send({ ...base, tagIds: [999_999] })
+                .expect(400)
+            await request(app.getHttpServer())
+                .post(`/admin/proposals/${proposalId}/approve`)
+                .set(asAdmin)
+                .send({ ...base, minPlayers: 7 })
+                .expect(400)
+        })
+
+        it('tells the proposer the rejection reason the admin wrote', async () => {
+            const proposalId = await proposeBare('Monopoly')
+
+            await request(app.getHttpServer())
+                .post(`/admin/proposals/${proposalId}/reject`)
+                .set(asAdmin)
+                .send({ reviewNotes: 'This is not a board game we track.' })
+                .expect(201)
+
+            const message = await database.execute({
+                sql: "SELECT message FROM Notification WHERE type = 'game_proposal_rejected' AND json_extract(data, '$.proposalId') = ?",
+                args: [proposalId],
+            })
+
+            expect(String(message.rows[0]?.message)).toContain('This is not a board game we track.')
+        })
+
+        it('points the proposer to the game a duplicate duplicates, and needs that game', async () => {
+            const proposalId = await proposeBare('Los colonos de Catan')
+            const catan = await database.execute(
+                "INSERT INTO Game (imageUrl, gameAvgDuration, minPlayers, maxPlayers) VALUES ('', 90, 3, 4) RETURNING id",
+            )
+            const catanId = Number(catan.rows[0]?.id)
+
+            await database.execute({
+                sql: "INSERT INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (?, 'en', 'Catan', 'catan')",
+                args: [catanId],
+            })
+
+            await request(app.getHttpServer()).post(`/admin/proposals/${proposalId}/duplicate`).set(asAdmin).send({}).expect(400)
+            await request(app.getHttpServer())
+                .post(`/admin/proposals/${proposalId}/duplicate`)
+                .set(asAdmin)
+                .send({ duplicateOfGameId: 999_999 })
+                .expect(404)
+            await request(app.getHttpServer())
+                .post(`/admin/proposals/${proposalId}/duplicate`)
+                .set(asAdmin)
+                .send({ duplicateOfGameId: catanId, reviewNotes: 'Listed under its English title.' })
+                .expect(201)
+
+            const [notification] = await notificationsFor('game_proposal_duplicate', proposalId)
+
+            expect(notification).toEqual({
+                accountId: 2,
+                data: { gameTitle: 'Los colonos de Catan', proposalId, duplicateOfGameId: catanId, duplicateOfTitle: 'Catan' },
+            })
+        })
+
+        it('counts proposals per status and lists the pending queue oldest first', async () => {
+            const response = await request(app.getHttpServer())
+                .get('/admin/proposals')
+                .query({ status: 'pending', limit: 100 })
+                .set(asAdmin)
+                .expect(200)
+            const submitted = response.body.proposals.map((proposal: { submittedAt: string; id: number }) => [
+                proposal.submittedAt,
+                proposal.id,
+            ])
+
+            expect(response.body.statusCounts).toEqual(
+                expect.objectContaining({
+                    pending: response.body.pagination.totalItems,
+                    rejected: expect.any(Number),
+                    duplicate: expect.any(Number),
+                }),
+            )
+            expect(submitted).toEqual([...submitted].sort((a, b) => String(a[0]).localeCompare(String(b[0])) || a[1] - b[1]))
+        })
     })
 })

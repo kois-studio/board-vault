@@ -29,6 +29,10 @@ export class CardNotificationComponent {
         if (notification.type === 'game_proposal_approved' && typeof createdGameId === 'number') {
             return { path: ['/games', createdGameId], label: 'Open the game' }
         }
+        const duplicateOfGameId = notification.data?.['duplicateOfGameId']
+        if (notification.type === 'game_proposal_duplicate' && typeof duplicateOfGameId === 'number') {
+            return { path: ['/games', duplicateOfGameId], label: 'Open the existing game' }
+        }
         if (notification.type === 'game_proposal_submitted') {
             return { path: ['/admin', 'proposals'], label: 'Review proposals' }
         }
@@ -55,6 +59,7 @@ export class CardNotificationComponent {
                 game_proposal_submitted: 'lightbulb',
                 game_proposal_approved: 'circle-check',
                 game_proposal_rejected: 'circle-x',
+                game_proposal_duplicate: 'files',
             }[type] ?? 'info'
         )
     }

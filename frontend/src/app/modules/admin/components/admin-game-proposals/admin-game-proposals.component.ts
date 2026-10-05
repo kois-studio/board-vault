@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core'
-import { FormsModule } from '@angular/forms'
-import type { GameProposalType } from '../../../../api/api.types'
+import { RouterLink } from '@angular/router'
+import type { ProposalStatus } from '../../../../api/api.types'
 import { ButtonComponent } from '../../../../components/ui/button/button.component'
 import { DialogDirective } from '../../../../components/ui/dialog/dialog.directive'
 import { IconComponent } from '../../../../components/ui/icon/icon.component'
@@ -13,11 +13,11 @@ import { AdminGameProposalsService } from './admin-game-proposals.service'
     imports: [
         AdminPageHeaderComponent,
         ButtonComponent,
-        FormsModule,
         ImageBackgroundComponent,
         SpinnerComponent,
         IconComponent,
         DialogDirective,
+        RouterLink,
     ],
     providers: [AdminGameProposalsService],
     selector: 'app-admin-game-proposals',
@@ -40,43 +40,36 @@ export class AdminGameProposalsComponent implements OnInit {
     public readonly currentStatus = this.adminGameProposalsService.currentStatus
     public readonly currentPage = this.adminGameProposalsService.currentPage
     public readonly errorMessage = this.adminGameProposalsService.errorMessage
+    public readonly statusCounts = this.adminGameProposalsService.statusCounts
     public readonly pendingDeleteProposalId = signal<number | null>(null)
 
     // --------------------------------------------------------------------------
     //        Component methods
     // --------------------------------------------------------------------------
+    public readonly filters: Array<{ status: ProposalStatus | null; label: string }> = [
+        { status: 'pending', label: 'Pending' },
+        { status: 'approved', label: 'Approved' },
+        { status: 'rejected', label: 'Rejected' },
+        { status: 'duplicate', label: 'Duplicate' },
+        { status: null, label: 'All' },
+    ]
+
     public ngOnInit(): void {
-        this.loadProposals()
+        void this.adminGameProposalsService.loadProposals('pending')
     }
 
-    public async loadProposals(status?: 'pending' | 'approved' | 'rejected' | 'duplicate'): Promise<void> {
-        await this.adminGameProposalsService.loadProposals(status, 1, 10)
+    public countFor(status: ProposalStatus | null): number | null {
+        const counts = this.statusCounts()
+        if (!counts) return null
+        return status ? counts[status] : counts.pending + counts.approved + counts.rejected + counts.duplicate
     }
 
     public async onPageChange(page: number): Promise<void> {
-        await this.adminGameProposalsService.loadProposals(this.currentStatus() || undefined, page, 10)
+        await this.adminGameProposalsService.loadProposals(this.currentStatus(), page)
     }
 
-    public async onStatusFilterChange(status: 'pending' | 'approved' | 'rejected' | 'duplicate' | null): Promise<void> {
-        await this.loadProposals(status || undefined)
-    }
-
-    public async onApproveProposal(proposalId: number): Promise<void> {
-        // For now, we'll use minimal approval data
-        // In the future, this could open a modal for more detailed approval
-        await this.adminGameProposalsService.approveProposal(proposalId, {
-            reviewNotes: 'Approved by admin',
-        })
-    }
-
-    public async onRejectProposal(proposalId: number): Promise<void> {
-        // For now, we'll use a default rejection message
-        // In the future, this could open a modal for rejection notes
-        await this.adminGameProposalsService.rejectProposal(proposalId, 'Rejected by admin')
-    }
-
-    public async onMarkAsDuplicate(proposalId: number): Promise<void> {
-        await this.adminGameProposalsService.markAsDuplicate(proposalId, 'Marked as duplicate')
+    public async onStatusFilterChange(status: ProposalStatus | null): Promise<void> {
+        await this.adminGameProposalsService.loadProposals(status)
     }
 
     public async onDeleteProposal(proposalId: number): Promise<void> {
@@ -96,17 +89,17 @@ export class AdminGameProposalsComponent implements OnInit {
     }
 
     public async retryProposals(): Promise<void> {
-        await this.loadProposals(this.currentStatus() || undefined)
+        await this.adminGameProposalsService.reload()
     }
 
     // --------------------------------------------------------------------------
     //        Helper methods
     // --------------------------------------------------------------------------
-    public getStatusBadgeClass(status: GameProposalType['status']): string {
+    public getStatusBadgeClass(status: ProposalStatus): string {
         return this.adminGameProposalsService.getStatusBadgeClass(status)
     }
 
-    public getStatusText(status: GameProposalType['status']): string {
+    public getStatusText(status: ProposalStatus): string {
         return this.adminGameProposalsService.getStatusText(status)
     }
 

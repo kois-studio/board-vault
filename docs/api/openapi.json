@@ -2909,17 +2909,18 @@
             "schema": {
               "type": "number"
             }
-          },
-          {
-            "name": "reviewNotes",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "example": "Already present in the catalog.",
-              "type": "string"
-            }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DuplicateGameProposalBody"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Game proposal marked as duplicate",
@@ -6970,6 +6971,33 @@
           "reviewerId"
         ]
       },
+      "ProposalStatusCountsDto": {
+        "type": "object",
+        "properties": {
+          "pending": {
+            "type": "number",
+            "example": 3
+          },
+          "approved": {
+            "type": "number",
+            "example": 40
+          },
+          "rejected": {
+            "type": "number",
+            "example": 5
+          },
+          "duplicate": {
+            "type": "number",
+            "example": 2
+          }
+        },
+        "required": [
+          "pending",
+          "approved",
+          "rejected",
+          "duplicate"
+        ]
+      },
       "AdminGameProposalsResponseDto": {
         "type": "object",
         "properties": {
@@ -6987,12 +7015,34 @@
                 "$ref": "#/components/schemas/BrowseGamesPaginationDto"
               }
             ]
+          },
+          "statusCounts": {
+            "description": "How many proposals have each status, for the filter tabs",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProposalStatusCountsDto"
+              }
+            ]
           }
         },
         "required": [
           "proposals",
-          "pagination"
+          "pagination",
+          "statusCounts"
         ]
+      },
+      "ProposalTranslationsBody": {
+        "type": "object",
+        "properties": {
+          "en": {
+            "type": "string",
+            "example": "Catan"
+          },
+          "es": {
+            "type": "string",
+            "example": "Los colonos de Catán"
+          }
+        }
       },
       "ApproveGameProposalBody": {
         "type": "object",
@@ -7005,30 +7055,30 @@
           "imageUrl": {
             "type": "string",
             "example": "https://www.example.com/game-image.jpg",
-            "description": "Image URL for the game (if not provided in proposal)"
+            "description": "Artwork URL; overrides the proposal. Empty means no artwork."
           },
           "gameAvgDuration": {
             "type": "number",
             "example": 120,
-            "description": "Average duration in minutes (if not provided in proposal)"
+            "description": "Average length in minutes; overrides the proposal. Required when the proposal has none."
           },
           "minPlayers": {
             "type": "number",
             "example": 3,
-            "description": "Minimum players (if not provided in proposal)"
+            "description": "Minimum players; overrides the proposal. Required when the proposal has none."
           },
           "maxPlayers": {
             "type": "number",
             "example": 4,
-            "description": "Maximum players (if not provided in proposal)"
+            "description": "Maximum players; overrides the proposal. Required when the proposal has none."
           },
           "translations": {
-            "type": "object",
-            "example": {
-              "en": "Catan",
-              "es": "Catan"
-            },
-            "description": "Game title translations"
+            "description": "Title per language. English defaults to the proposed title.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProposalTranslationsBody"
+              }
+            ]
           },
           "tagIds": {
             "example": [
@@ -7055,6 +7105,23 @@
         },
         "required": [
           "reviewNotes"
+        ]
+      },
+      "DuplicateGameProposalBody": {
+        "type": "object",
+        "properties": {
+          "duplicateOfGameId": {
+            "type": "number",
+            "example": 42,
+            "description": "The catalogue game this proposal duplicates; the proposer is told about it."
+          },
+          "reviewNotes": {
+            "type": "string",
+            "example": "Listed under its Spanish title."
+          }
+        },
+        "required": [
+          "duplicateOfGameId"
         ]
       },
       "GameOwnershipDto": {

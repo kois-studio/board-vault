@@ -9,55 +9,19 @@
     }
 
     <!-- Status Filter -->
-    <div class="bg-bv-surface shadow-lg rounded-lg p-4">
+    <fieldset class="min-w-0">
+        <legend class="sr-only">Show proposals</legend>
         <div class="flex flex-wrap gap-2">
-            <button
-                type="button"
-                (click)="onStatusFilterChange(null)"
-                [attr.aria-pressed]="currentStatus() === null"
-                [class]="'px-3 py-1 rounded-md text-sm font-medium transition-colors ' + 
-                        (currentStatus() === null ? 'bg-bv-primary text-bv-on-primary' : 'bg-bv-surface-2 text-bv-text-muted hover:bg-bv-border')"
-            >
-                All
-            </button>
-            <button
-                type="button"
-                (click)="onStatusFilterChange('pending')"
-                [attr.aria-pressed]="currentStatus() === 'pending'"
-                [class]="'px-3 py-1 rounded-md text-sm font-medium transition-colors ' + 
-                        (currentStatus() === 'pending' ? 'bg-bv-warning text-bv-on-warning' : 'bg-bv-surface-2 text-bv-text-muted hover:bg-bv-border')"
-            >
-                Pending
-            </button>
-            <button
-                type="button"
-                (click)="onStatusFilterChange('approved')"
-                [attr.aria-pressed]="currentStatus() === 'approved'"
-                [class]="'px-3 py-1 rounded-md text-sm font-medium transition-colors ' + 
-                        (currentStatus() === 'approved' ? 'bg-bv-success text-bv-on-success' : 'bg-bv-surface-2 text-bv-text-muted hover:bg-bv-border')"
-            >
-                Approved
-            </button>
-            <button
-                type="button"
-                (click)="onStatusFilterChange('rejected')"
-                [attr.aria-pressed]="currentStatus() === 'rejected'"
-                [class]="'px-3 py-1 rounded-md text-sm font-medium transition-colors ' + 
-                        (currentStatus() === 'rejected' ? 'bg-bv-danger text-bv-on-danger' : 'bg-bv-surface-2 text-bv-text-muted hover:bg-bv-border')"
-            >
-                Rejected
-            </button>
-            <button
-                type="button"
-                (click)="onStatusFilterChange('duplicate')"
-                [attr.aria-pressed]="currentStatus() === 'duplicate'"
-                [class]="'px-3 py-1 rounded-md text-sm font-medium transition-colors ' + 
-                        (currentStatus() === 'duplicate' ? 'bg-bv-text text-bv-surface' : 'bg-bv-surface-2 text-bv-text-muted hover:bg-bv-border')"
-            >
-                Duplicate
-            </button>
+            @for (filter of filters; track filter.label) {
+                <button type="button" class="app-chip" [attr.aria-pressed]="currentStatus() === filter.status" (click)="onStatusFilterChange(filter.status)">
+                    {{ filter.label }}
+                    @if (countFor(filter.status); as count) {
+                        <span class="tabular-nums opacity-80">{{ count }}</span>
+                    }
+                </button>
+            }
         </div>
-    </div>
+    </fieldset>
 
     <!-- Loading State -->
     @if (isLoading()) {
@@ -73,7 +37,9 @@
                         No game proposals found.
                     </p>
                     <p class="text-bv-text-muted text-sm mt-1">
-                        @if (currentStatus()) {
+                        @if (currentStatus() === 'pending') {
+                            Nothing to review. New proposals appear here.
+                        } @else if (currentStatus()) {
                             No {{ currentStatus() }} proposals available.
                         } @else {
                             No proposals have been submitted yet.
@@ -118,11 +84,8 @@
                                             }
                                             <div>
                                                 <h3 class="text-sm font-medium text-bv-text">
-                                                    {{ proposal.title }}
+                                                    <a class="hover:underline" [routerLink]="['/admin/proposals', proposal.id]">{{ proposal.title }}</a>
                                                 </h3>
-                                                <p class="text-xs text-bv-text-muted">
-                                                    ID: {{ proposal.id }}
-                                                </p>
                                             </div>
                                         </div>
                                     </td>
@@ -166,35 +129,12 @@
                                     <!-- Actions -->
                                     <td class="px-4 py-4">
                                         <div class="flex flex-wrap gap-1">
-                                            @if (proposal.status === 'pending') {
-                                                <button appButton variant="success" size="small"
-                                                    type="button"
-                                                    (click)="onApproveProposal(proposal.id)"
-                                                    class="text-xs"
-                                                    title="Approve proposal"
-                                                    aria-label="Approve proposal"
-                                                >
-                                                    <app-icon name="check" [size]="16" />
-                                                </button>
-                                                <button appButton variant="danger" size="small"
-                                                    type="button"
-                                                    (click)="onRejectProposal(proposal.id)"
-                                                    class="text-xs"
-                                                    title="Reject proposal"
-                                                    aria-label="Reject proposal"
-                                                >
-                                                    <app-icon name="x" [size]="16" />
-                                                </button>
-                                                <button appButton variant="secondary" size="small"
-                                                    type="button"
-                                                    (click)="onMarkAsDuplicate(proposal.id)"
-                                                    class="text-xs"
-                                                    title="Mark as duplicate"
-                                                    aria-label="Mark proposal as duplicate"
-                                                >
-                                                    <app-icon name="file-text" [size]="16" />
-                                                </button>
-                                            }
+                                            <a appButton [variant]="proposal.status === 'pending' ? 'primary' : 'secondary'" size="small"
+                                                [routerLink]="['/admin/proposals', proposal.id]"
+                                                [attr.aria-label]="(proposal.status === 'pending' ? 'Review ' : 'Open ') + proposal.title"
+                                            >
+                                                {{ proposal.status === 'pending' ? 'Review' : 'Open' }}
+                                            </a>
                                             <button appButton variant="danger" size="small"
                                                 type="button"
                                                 (click)="onDeleteProposal(proposal.id)"

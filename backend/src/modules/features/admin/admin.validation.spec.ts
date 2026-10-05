@@ -65,16 +65,39 @@ describe('AdminController write validation', () => {
 
     it('rejects oversized duplicate-review notes before the service is called', async () => {
         await request(app.getHttpServer())
-            .post('/admin/proposals/12/duplicate?reviewNotes=' + 'a'.repeat(281))
+            .post('/admin/proposals/12/duplicate')
+            .send({ duplicateOfGameId: 3, reviewNotes: 'a'.repeat(281) })
             .expect(400)
 
         expect(markGameProposalAsDuplicate).not.toHaveBeenCalled()
     })
 
-    it('accepts bounded duplicate-review notes and passes them to the service', async () => {
-        await request(app.getHttpServer()).post('/admin/proposals/12/duplicate?reviewNotes=already-present').expect(201)
+    it('requires the game a duplicate proposal points to', async () => {
+        await request(app.getHttpServer()).post('/admin/proposals/12/duplicate').send({ reviewNotes: 'already-present' }).expect(400)
 
-        expect(markGameProposalAsDuplicate).toHaveBeenCalledWith(12, 7, 'already-present')
+        expect(markGameProposalAsDuplicate).not.toHaveBeenCalled()
+    })
+
+    it('passes the duplicate-of game and notes to the service in the body', async () => {
+        await request(app.getHttpServer())
+            .post('/admin/proposals/12/duplicate')
+            .send({ duplicateOfGameId: 3, reviewNotes: 'already-present' })
+            .expect(201)
+
+        expect(markGameProposalAsDuplicate).toHaveBeenCalledWith(12, 7, { duplicateOfGameId: 3, reviewNotes: 'already-present' })
+    })
+
+    it('rejects approval titles in languages the catalogue does not support', async () => {
+        await request(app.getHttpServer())
+            .post('/admin/proposals/12/approve')
+            .send({ minPlayers: 2, maxPlayers: 4, gameAvgDuration: 45, translations: { en: 'Azul', fr: 'Azul' } })
+            .expect(400)
+    })
+
+    it('rejects impossible player counts and lengths at the boundary', async () => {
+        for (const body of [{ minPlayers: 0 }, { maxPlayers: 101 }, { gameAvgDuration: 0 }]) {
+            await request(app.getHttpServer()).post('/admin/proposals/12/approve').send(body).expect(400)
+        }
     })
 })
 
