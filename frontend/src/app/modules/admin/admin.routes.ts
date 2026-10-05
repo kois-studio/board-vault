@@ -1,5 +1,6 @@
 // src/app/modules/admin/admin.routes.ts
 import { Routes } from '@angular/router'
+import { AdminGameEditComponent } from './components/admin-game-edit/admin-game-edit.component'
 import { AdminGameProposalsComponent } from './components/admin-game-proposals/admin-game-proposals.component'
 import { AdminGamesManageComponent } from './components/admin-games-manage/admin-games-manage.component'
 import { AdminPageComponent } from './components/admin-page/admin-page.component'
@@ -16,6 +17,7 @@ export const ADMIN_ROUTES: Routes = [
             { path: 'proposals', component: AdminGameProposalsComponent },
             { path: 'proposals/:id', component: AdminProposalReviewComponent },
             { path: 'manage-games', component: AdminGamesManageComponent },
+            { path: 'manage-games/:id', component: AdminGameEditComponent },
             { path: 'manage-tags', component: AdminTagsManageComponent },
         ],
     },

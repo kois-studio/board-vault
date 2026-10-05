@@ -1,132 +1,143 @@
-<div class="space-y-8">
-    <app-admin-page-header title="Games" description="Edit the titles and tags of games in the Board Vault catalogue." />
+<div class="space-y-6">
+    <app-admin-page-header title="Games" description="The whole catalogue. Find games with missing or doubtful data, and fix titles, artwork, players, length and tags." />
 
-    <!-- Search Bar -->
-    <div class="search-container mb-6">
-        <div class="relative">
-            <label for="admin-game-search" class="sr-only">Search games to manage</label>
-            <input
-                id="admin-game-search"
-                type="text" 
-                placeholder="Search games..." 
-                class="w-full p-3 pl-10 border border-bv-border rounded-md focus:outline-none focus:ring-2 focus:ring-bv-primary focus:border-bv-primary bg-bv-surface text-bv-text"
-                [formControl]="searchControl"
-            />
-            <div class="absolute left-3 top-3">
-                <app-icon name="search" [size]="18" className="text-bv-text-muted" />
+    <!-- Filters -->
+    <section class="space-y-4 rounded-lg border border-bv-border bg-bv-surface p-4 shadow-sm" aria-label="Filters">
+        <div class="grid gap-3 sm:grid-cols-[minmax(0,1fr)_8rem_minmax(0,14rem)]">
+            <div>
+                <label for="admin-games-search" class="sr-only">Search by title</label>
+                <input id="admin-games-search" type="search" class="app-input" [formControl]="searchControl" placeholder="Search by English or Spanish title" />
             </div>
-            @if (isSearching$()) {
-                <div class="absolute right-3 top-3">
-                <app-icon name="refresh" [size]="18" className="text-bv-text-muted motion-safe:animate-spin" />
-                </div>
-            }
+            <div>
+                <label for="admin-games-players" class="sr-only">Players</label>
+                <input
+                    id="admin-games-players"
+                    type="number"
+                    inputmode="numeric"
+                    min="1"
+                    max="100"
+                    class="app-input"
+                    placeholder="Players"
+                    [value]="filters().players ?? ''"
+                    (change)="setPlayers($any($event.target).value)"
+                />
+            </div>
+            <div>
+                <label for="admin-games-tag" class="sr-only">Tag</label>
+                <select id="admin-games-tag" class="app-input" (change)="setTag($any($event.target).value)">
+                    <option value="" [selected]="!filters().tagIds?.length">Any tag</option>
+                    @for (tag of catalogueTags(); track tag.id) {
+                        <option [value]="tag.id" [selected]="filters().tagIds?.[0] === tag.id">{{ tag.categoryName }} · {{ tag.name }} ({{ tag.gameCount }})</option>
+                    }
+                </select>
+            </div>
         </div>
-    </div>
 
-    @if (searchError(); as error) {
-        <div class="rounded-xl border border-bv-danger/30 bg-bv-danger/10 p-4 text-sm text-bv-danger" role="alert">
-            {{ error }} Search again to retry.
+        <fieldset class="min-w-0">
+            <legend class="mb-2 text-sm font-medium">Length</legend>
+            <div class="flex flex-wrap gap-2">
+                @for (option of lengthOptions; track option.value) {
+                    <button type="button" class="app-chip" [attr.aria-pressed]="filters().length === option.value" (click)="setLength(option.value)">{{ option.label }}</button>
+                }
+            </div>
+        </fieldset>
+
+        <fieldset class="min-w-0">
+            <legend class="mb-2 text-sm font-medium">Needs attention</legend>
+            <div class="flex flex-wrap gap-2">
+                <button type="button" class="app-chip" [attr.aria-pressed]="!filters().issue" (click)="setIssue(null)">Any</button>
+                @for (issue of issues; track issue.value) {
+                    <button type="button" class="app-chip" [attr.aria-pressed]="filters().issue === issue.value" (click)="setIssue(issue.value)">{{ issue.label }}</button>
+                }
+            </div>
+            @if (activeIssue(); as issue) {
+                <p class="mt-2 text-sm text-bv-text-muted">{{ issue.hint }}</p>
+            }
+        </fieldset>
+    </section>
+
+    @if (errorMessage(); as error) {
+        <div class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-bv-danger/30 bg-bv-danger/10 p-4 text-sm text-bv-danger" role="alert">
+            <span>{{ error }}</span>
+            <button type="button" class="font-medium underline" (click)="retry()">Retry</button>
         </div>
     }
 
-    <!-- Loading state -->
-    @if (isSearching$()) {
-        <div class="flex justify-center py-8">
-            <app-spinner size="large" />
-        </div>
-    } @else if (gamesList$().length === 0) {
-        <!-- no data -->
-        <div class="text-center text-bv-text-muted py-8">
-            @if (searchTerm$() && searchTerm$().trim().length >= 3) {
-                <p>No games found matching "{{searchTerm$().trim()}}"</p>
-            } @else if (searchTerm$() && searchTerm$().trim().length > 0) {
-                <p>Type at least 3 characters to search for games</p>
-            } @else {
-                <p>Search for games to manage their translations and tags</p>
+    <section class="rounded-lg border border-bv-border bg-bv-surface shadow-sm" aria-labelledby="admin-games-results" [attr.aria-busy]="isLoading()">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-bv-border px-4 py-3">
+            <h3 id="admin-games-results" class="text-sm font-medium" aria-live="polite">
+                @if (pagination(); as page) {
+                    {{ page.totalItems }} {{ page.totalItems === 1 ? 'game' : 'games' }}
+                } @else {
+                    Games
+                }
+            </h3>
+            @if (hasFilters()) {
+                <button type="button" class="text-sm font-medium text-bv-primary underline" (click)="clearFilters()">Clear filters</button>
             }
         </div>
-    } @else {
-        <div class="space-y-4">
-            @for (game of gamesList$(); track $index + '-' + game.id) {
-                <div class="bg-bv-surface rounded-lg border border-bv-border p-4">
-                    <div class="flex items-start justify-between">
-                        <div class="flex-1">
-                            <div class="flex items-center gap-3 mb-2">
-                                <image-background class="block h-12 w-12 rounded-md" [src]="game.imageUrl" [alt]="game.title + ' cover'" />
-                                <div>
-                                    <h3 class="font-medium text-bv-text">{{ game.title }}</h3>
-                                    <p class="text-sm text-bv-text-muted">
-                                        {{ game.minPlayers }}-{{ game.maxPlayers }} players • {{ game.gameAvgDuration }} min
-                                    </p>
-                                </div>
-                            </div>
 
-                            <!-- Translations -->
-                            <div class="mb-3">
-                                <h4 class="text-sm font-medium text-bv-text-muted mb-1">Translations:</h4>
-                                <div class="flex flex-wrap gap-2">
-                                    @for (translation of getTranslationEntries(game.translations); track $index + '-' + translation[0]) {
-                                        <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-bv-surface-2 text-bv-text-muted">
-                                            <span class="font-medium mr-1">{{ translation[0] }}:</span>
-                                            {{ translation[1] }}
-                                        </span>
-                                    }
-                                </div>
-                            </div>
-
-                            <!-- Tags -->
-                            <div>
-                                <h4 class="text-sm font-medium text-bv-text-muted mb-1">Tags:</h4>
-                                @if (game.tags.length > 0) {
-                                    <app-tags [tags]="getTagsForDisplay(game.tags)" />
-                                } @else {
-                                    <span class="text-sm text-bv-text-muted">No tags assigned</span>
+        @if (isLoading() && games().length === 0) {
+            <div class="flex justify-center py-10"><app-spinner size="medium" /></div>
+        } @else if (games().length === 0) {
+            <p class="p-8 text-center text-bv-text-muted">
+                @if (filters().issue) {
+                    Nothing to fix here.
+                } @else {
+                    No games match these filters.
+                }
+            </p>
+        } @else {
+            <ul class="divide-y divide-bv-border" [class.opacity-60]="isLoading()">
+                @for (game of games(); track game.id) {
+                    <li>
+                        <a
+                            class="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3 hover:bg-bv-surface-2 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-bv-primary sm:grid sm:grid-cols-[3rem_minmax(0,1.4fr)_minmax(0,1fr)_7rem_minmax(0,1.2fr)] sm:gap-4"
+                            [routerLink]="['/admin/manage-games', game.id]"
+                        >
+                            @if (game.imageUrl) {
+                                <image-background class="block h-12 w-12 shrink-0 rounded-lg" [src]="game.imageUrl" [alt]="''" />
+                            } @else {
+                                <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-bv-surface-2" aria-hidden="true">
+                                    <app-icon name="image" [size]="18" className="text-bv-text-muted" />
+                                </span>
+                            }
+                            <span class="min-w-0 flex-1">
+                                <span class="block truncate font-medium">{{ game.title || 'Untitled game' }}</span>
+                                <span class="block truncate text-sm text-bv-text-muted sm:hidden">
+                                    {{ game.minPlayers }}–{{ game.maxPlayers }} players · {{ game.gameAvgDuration }} min · {{ game.tags.length }} tags
+                                </span>
+                            </span>
+                            <span class="hidden truncate text-sm text-bv-text-muted sm:block" [attr.aria-label]="'Spanish title: ' + (game.translations.es || 'none')">
+                                {{ game.translations.es || '—' }}
+                            </span>
+                            <span class="hidden text-sm text-bv-text-muted sm:block">
+                                {{ game.minPlayers }}–{{ game.maxPlayers }} · {{ game.gameAvgDuration }}′<br />
+                                {{ game.tags.length }} {{ game.tags.length === 1 ? 'tag' : 'tags' }}
+                            </span>
+                            <span class="flex basis-full flex-wrap gap-1 pl-15 empty:hidden sm:basis-auto sm:pl-0">
+                                @for (issue of game.issues; track issue) {
+                                    <span class="rounded-full bg-bv-warning/10 px-2 py-0.5 text-xs font-medium text-bv-warning">{{ issueLabel(issue) }}</span>
                                 }
-                            </div>
-                        </div>
+                            </span>
+                        </a>
+                    </li>
+                }
+            </ul>
 
-                        <div class="flex gap-2 ml-4">
-                            <button appButton 
-                                variant="secondary" 
-                                size="small"
-                                (click)="onEditTranslations(game)"
-                                class="cursor-pointer"
-                            >
-                                Edit Translations
-                            </button>
-                            <button appButton 
-                                variant="secondary" 
-                                size="small"
-                                (click)="onEditTags(game)"
-                                class="cursor-pointer"
-                            >
-                                Edit Tags
-                            </button>
+            @if (pagination(); as page) {
+                @if (page.totalPages > 1) {
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-t border-bv-border px-4 py-3 text-sm text-bv-text-muted">
+                        <span>
+                            {{ (page.currentPage - 1) * page.itemsPerPage + 1 }}–{{ Math.min(page.currentPage * page.itemsPerPage, page.totalItems) }} of {{ page.totalItems }}
+                        </span>
+                        <div class="flex gap-2">
+                            <button appButton variant="secondary" size="small" type="button" [disabled]="page.currentPage <= 1" (click)="goToPage(page.currentPage - 1)">Previous</button>
+                            <button appButton variant="secondary" size="small" type="button" [disabled]="page.currentPage >= page.totalPages" (click)="goToPage(page.currentPage + 1)">Next</button>
                         </div>
                     </div>
-                </div>
+                }
             }
-        </div>
-    }
-
-    @if (pagination(); as page) {
-        <nav class="flex flex-wrap items-center justify-between gap-3 border-t border-bv-border pt-4" aria-label="Game management pagination">
-            <p class="text-sm text-bv-text-muted">Showing {{ (page.currentPage - 1) * page.itemsPerPage + 1 }}–{{ Math.min(page.currentPage * page.itemsPerPage, page.totalItems) }} of {{ page.totalItems }}</p>
-            <div class="flex gap-2">
-                <button appButton variant="secondary" type="button" [disabled]="page.currentPage <= 1 || isSearching$()" (click)="onPageChange(page.currentPage - 1)">Previous</button>
-                <button appButton variant="secondary" type="button" [disabled]="page.currentPage >= page.totalPages || isSearching$()" (click)="onPageChange(page.currentPage + 1)">Next</button>
-            </div>
-        </nav>
-    }
-
-    <!-- Modals -->
-    <app-modal-edit-game-translations
-        #editTranslationsModal
-        (translationsUpdated)="onTranslationsUpdated($event)"
-    ></app-modal-edit-game-translations>
-
-    <app-modal-edit-game-tags
-        #editTagsModal
-        (tagsUpdated)="onTagsUpdated($event)"
-    ></app-modal-edit-game-tags>
+        }
+    </section>
 </div>

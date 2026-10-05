@@ -2501,9 +2501,57 @@
         ]
       }
     },
+    "/admin/tags/{id}/merge": {
+      "post": {
+        "operationId": "AdminController_mergeTag",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MergeTagBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MergeTagResultDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Tag not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Merge a tag into another: its games get the other tag, then it is deleted (one transaction)",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
     "/admin/games": {
       "get": {
-        "deprecated": false,
         "operationId": "AdminController_getGames",
         "parameters": [
           {
@@ -2538,11 +2586,64 @@
               "example": 10,
               "type": "number"
             }
+          },
+          {
+            "name": "players",
+            "required": false,
+            "in": "query",
+            "description": "Only games that play with this many people.",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "example": 4,
+              "type": "number"
+            }
+          },
+          {
+            "name": "length",
+            "required": false,
+            "in": "query",
+            "description": "Average length, as in Browse.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "short",
+                "medium",
+                "long",
+                "epic"
+              ]
+            }
+          },
+          {
+            "name": "tags",
+            "required": false,
+            "in": "query",
+            "description": "Comma-separated tag ids. A game must have all of them.",
+            "schema": {
+              "example": "3,7",
+              "type": "string"
+            }
+          },
+          {
+            "name": "issue",
+            "required": false,
+            "in": "query",
+            "description": "Only games with this data problem: no English title; no artwork; no Spanish title or one equal to the English; no tags; or players or length still equal to the values old approvals guessed (60 min, 2-4 players).",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "no-title",
+                "no-artwork",
+                "no-spanish",
+                "no-tags",
+                "guessed-values"
+              ]
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "Paginated list of games with translations and tags",
+            "description": "One page of the catalogue",
             "content": {
               "application/json": {
                 "schema": {
@@ -2557,16 +2658,52 @@
             "bearer": []
           }
         ],
-        "summary": "Get games with translations and tags (paginated and searchable)",
+        "summary": "List the catalogue: search, Browse filters and one data-quality issue, by English title",
         "tags": [
           "admin"
         ]
       }
     },
-    "/admin/games/{id}/translations": {
-      "put": {
-        "deprecated": false,
-        "operationId": "AdminController_updateGameTranslations",
+    "/admin/games/{id}": {
+      "get": {
+        "operationId": "AdminController_getGame",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminGameDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Game not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get one catalogue game with its titles, tags and data-quality issues",
+        "tags": [
+          "admin"
+        ]
+      },
+      "patch": {
+        "operationId": "AdminController_updateGame",
         "parameters": [
           {
             "name": "id",
@@ -2582,21 +2719,27 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateGameTranslationsBody"
+                "$ref": "#/components/schemas/UpdateAdminGameBody"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Game translations updated",
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SuccessDto"
+                  "$ref": "#/components/schemas/AdminGameDto"
                 }
               }
             }
+          },
+          "400": {
+            "description": "Invalid values, more min than max players, or unknown tags"
+          },
+          "404": {
+            "description": "Game not found"
           }
         },
         "security": [
@@ -2604,54 +2747,7 @@
             "bearer": []
           }
         ],
-        "summary": "Update game translations",
-        "tags": [
-          "admin"
-        ]
-      }
-    },
-    "/admin/games/{id}/tags": {
-      "put": {
-        "deprecated": false,
-        "operationId": "AdminController_updateGameTags",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateGameTagsBody"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Game tags updated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessDto"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Update game tags",
+        "summary": "Update a game: titles, artwork, players, length and tags, saved together",
         "tags": [
           "admin"
         ]
@@ -6673,6 +6769,32 @@
           "gameCount"
         ]
       },
+      "MergeTagBody": {
+        "type": "object",
+        "properties": {
+          "intoTagId": {
+            "type": "number",
+            "example": 7,
+            "description": "The tag that keeps existing; every game with the merged tag gets this one."
+          }
+        },
+        "required": [
+          "intoTagId"
+        ]
+      },
+      "MergeTagResultDto": {
+        "type": "object",
+        "properties": {
+          "gamesMoved": {
+            "type": "number",
+            "example": 12,
+            "description": "Games that gained the kept tag (they had only the merged one)."
+          }
+        },
+        "required": [
+          "gamesMoved"
+        ]
+      },
       "GameTagWithCategoryDto": {
         "type": "object",
         "properties": {
@@ -6698,7 +6820,7 @@
           "categoryName"
         ]
       },
-      "GameWithTagsAndTranslationsDto": {
+      "AdminGameDto": {
         "type": "object",
         "properties": {
           "id": {
@@ -6738,6 +6860,25 @@
             "items": {
               "$ref": "#/components/schemas/GameTagWithCategoryDto"
             }
+          },
+          "title": {
+            "type": "string",
+            "example": "Catan",
+            "description": "The English title (empty only for a game without one)."
+          },
+          "issues": {
+            "type": "array",
+            "description": "Data problems this game has, as the issue filter defines them.",
+            "items": {
+              "type": "string",
+              "enum": [
+                "no-title",
+                "no-artwork",
+                "no-spanish",
+                "no-tags",
+                "guessed-values"
+              ]
+            }
           }
         },
         "required": [
@@ -6747,7 +6888,9 @@
           "minPlayers",
           "maxPlayers",
           "translations",
-          "tags"
+          "tags",
+          "title",
+          "issues"
         ]
       },
       "BrowseGamesPaginationDto": {
@@ -6781,10 +6924,10 @@
         "type": "object",
         "properties": {
           "games": {
-            "description": "Array of games with their translations and tags",
+            "description": "One page of the catalogue, by English title",
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/GameWithTagsAndTranslationsDto"
+              "$ref": "#/components/schemas/AdminGameDto"
             }
           },
           "pagination": {
@@ -6801,40 +6944,62 @@
           "pagination"
         ]
       },
-      "UpdateGameTranslationsBody": {
+      "AdminGameTitlesBody": {
         "type": "object",
         "properties": {
           "en": {
             "type": "string",
-            "description": "English translation of the game title",
             "example": "Catan"
           },
           "es": {
             "type": "string",
-            "description": "Spanish translation of the game title",
-            "example": "Catan"
+            "example": "Los colonos de Catán",
+            "description": "Empty removes the Spanish title."
           }
         }
       },
-      "UpdateGameTagsBody": {
+      "UpdateAdminGameBody": {
         "type": "object",
         "properties": {
+          "translations": {
+            "$ref": "#/components/schemas/AdminGameTitlesBody"
+          },
+          "imageUrl": {
+            "type": "string",
+            "example": "https://www.example.com/catan.jpg",
+            "description": "Empty means no artwork."
+          },
+          "minPlayers": {
+            "type": "number",
+            "example": 3,
+            "minimum": 1,
+            "maximum": 100
+          },
+          "maxPlayers": {
+            "type": "number",
+            "example": 4,
+            "minimum": 1,
+            "maximum": 100
+          },
+          "gameAvgDuration": {
+            "type": "number",
+            "example": 90,
+            "minimum": 1,
+            "maximum": 1440,
+            "description": "Average length in minutes."
+          },
           "tagIds": {
-            "description": "Array of tag IDs to assign to the game",
             "example": [
               1,
-              2,
-              3
+              2
             ],
+            "description": "The whole set of tags; replaces the current ones.",
             "type": "array",
             "items": {
-              "type": "number"
+              "type": "string"
             }
           }
-        },
-        "required": [
-          "tagIds"
-        ]
+        }
       },
       "GameProposalCompleteDto": {
         "type": "object",

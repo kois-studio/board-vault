@@ -146,10 +146,12 @@ describe('AdminController list query validation', () => {
     })
 
     it('transforms valid list query values and applies defaults', async () => {
-        await request(app.getHttpServer()).get('/admin/games?search=catan&page=2&limit=25').expect(200)
+        await request(app.getHttpServer()).get('/admin/games?search=catan&page=2&limit=25&tags=3,7&issue=no-tags').expect(200)
         await request(app.getHttpServer()).get('/admin/proposals?status=pending&page=3&limit=20').expect(200)
 
-        expect(getAdminGames).toHaveBeenCalledWith('catan', 2, 25)
+        expect(getAdminGames).toHaveBeenCalledWith(
+            expect.objectContaining({ search: 'catan', page: 2, limit: 25, tags: [3, 7], issue: 'no-tags' }),
+        )
         expect(getAdminGameProposals).toHaveBeenCalledWith('pending', 3, 20)
     })
 })

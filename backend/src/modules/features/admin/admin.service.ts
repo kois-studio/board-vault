@@ -1,9 +1,12 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common'
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { LogFeature } from '../../../common/decorators/logger.decorator.js'
 import {
-    UpdateGameTranslationsBody,
-    UpdateGameTagsBody,
+    AdminGameDto,
+    AdminGamesQuery,
+    CATALOGUE_QUALITY_ISSUES,
+    MergeTagResultDto,
+    UpdateAdminGameBody,
     AdminGamesResponseDto,
     ApproveGameProposalBody,
     RejectGameProposalBody,
@@ -28,6 +31,8 @@ import type { TagCategoryWithTagsDto } from '../../../common/types/tag-category.
 
 @Injectable()
 export class AdminService {
+    private readonly LOGGER = new Logger(AdminService.name)
+
     constructor(
         private readonly tagService: TagsService,
         private readonly gameService: GamesService,
@@ -108,85 +113,154 @@ export class AdminService {
         return this.tagService.deleteTag(id)
     }
 
+    /** Moves every game from one tag to another, then deletes the first; one transaction. */
+    async mergeTag(tagId: number, intoTagId: number): Promise<MergeTagResultDto> {
+        if (tagId === intoTagId) throw new BadRequestException('A tag cannot be merged into itself.')
+        const [tag, into] = await Promise.all([this.tagService.getTagById(tagId), this.tagService.getTagById(intoTagId)])
+
+        const result = await this.databaseService.games.mergeTagAtomically({ tagId, intoTagId })
+
+        await Promise.all([
+            this.cacheService.deleteOne(`tags:byCategoryId:${tag.categoryId}`),
+            this.cacheService.deleteOne(`tags:byCategoryId:${into.categoryId}`),
+        ])
+
+        return result
+    }
+
     // #endregion
 
     // #region Games
 
     @LogFeature(new Logger('AdminService'))
-    async getAdminGames(search: string = '', page: number = 1, limit: number = 10): Promise<AdminGamesResponseDto> {
-        // Use multi-language search for admin
-        const result = await this.gameTranslationService.browseGamesByTitleMultiLanguage({
-            search,
-            page,
-            pageSize: limit,
-            excludeGameIds: [], // No exclusions for admin
-        })
-
-        // Get full game data with translations and tags for the found games
-        const gamesWithDetails = await Promise.all(
-            result.gameIds.map(async gameId => {
-                const game = await this.gameService.getGameById(gameId)
-                const translations = await this.gameTranslationService.getGameTranslations(gameId)
-                const gameTags = await this.gameTagsService.getGameTags(gameId)
-
-                // Get tag details for each game tag
-                const tags: Array<GameTagWithCategoryDto> = await Promise.all(
-                    gameTags.map(async gameTag => {
-                        const tag = await this.tagService.getTagById(gameTag.tagId)
-                        const category = await this.tagCategoryService.getTagCategoryById(tag.categoryId)
-
-                        return {
-                            id: tag.id,
-                            name: tag.name,
-                            categoryName: category.name,
-                        }
-                    }),
-                )
-
-                return {
-                    ...game,
-                    translations,
-                    tags,
-                }
-            }),
-        )
+    async getAdminGames(query: AdminGamesQuery): Promise<AdminGamesResponseDto> {
+        const filters = {
+            search: this.gameTranslationService.normalizeTitle(query.search ?? ''),
+            players: query.players,
+            length: query.length,
+            tagIds: query.tags,
+            issue: query.issue,
+        }
+        const [page, count] = await Promise.all([
+            this.databaseService.games.browseAdminCatalogue({ ...filters, skip: (query.page - 1) * query.limit, take: query.limit }),
+            this.databaseService.games.countAdminCatalogue(filters),
+        ])
+        const totalItems = Number(count.rows[0]?.['total'] ?? 0)
 
         return {
-            games: gamesWithDetails,
+            games: await this.toAdminGames(page.rows),
             pagination: {
-                currentPage: result.currentPage,
-                totalPages: result.totalPages,
-                totalItems: result.totalItems,
-                itemsPerPage: result.itemsPerPage,
+                currentPage: query.page,
+                totalPages: Math.ceil(totalItems / query.limit),
+                totalItems,
+                itemsPerPage: query.limit,
             },
         }
     }
 
-    async updateGameTranslations(gameId: number, translations: UpdateGameTranslationsBody): Promise<{ success: boolean }> {
-        // Update each translation
-        for (const [languageCode, title] of Object.entries(translations)) {
-            if (title?.trim()) {
-                await this.gameTranslationService.upsertGameTranslation(gameId, languageCode, title)
-            }
-        }
+    async getAdminGame(gameId: number): Promise<AdminGameDto> {
+        // Throws 404 when the game does not exist.
+        await this.gameService.getGameById(gameId)
+        const page = await this.databaseService.games.browseAdminCatalogue({ search: '', tagIds: [], skip: 0, take: 1, gameId })
+        const [game] = await this.toAdminGames(page.rows)
 
-        return { success: true }
+        if (!game) throw new NotFoundException(`Game with id ${gameId} not found`)
+
+        return game
     }
 
-    async updateGameTags(gameId: number, payload: UpdateGameTagsBody): Promise<{ success: boolean }> {
-        // Clear all existing tags for this game first
-        const currentTags = await this.gameTagsService.getGameTags(gameId)
+    /** Saves titles, artwork, players, length and tags of one game together. */
+    async updateGame(gameId: number, adminId: number, body: UpdateAdminGameBody): Promise<AdminGameDto> {
+        const current = await this.gameService.getGameById(gameId)
+        const minPlayers = body.minPlayers ?? current.minPlayers
+        const maxPlayers = body.maxPlayers ?? current.maxPlayers
 
-        for (const gameTag of currentTags) {
-            await this.gameTagsService.removeGameTag(gameId, gameTag.tagId)
+        if (minPlayers > maxPlayers) {
+            throw new BadRequestException('minPlayers cannot be greater than maxPlayers.')
         }
 
-        // Add the new tags
-        for (const tagId of payload.tagIds) {
-            await this.gameTagsService.addGameTag(gameId, tagId)
+        const tagIds = body.tagIds ? [...new Set(body.tagIds)] : undefined
+
+        if (tagIds?.length) await this.assertTagsExist(tagIds)
+
+        const game: Partial<Record<'imageUrl' | 'gameAvgDuration' | 'minPlayers' | 'maxPlayers', string | number>> = {}
+
+        if (body.imageUrl !== undefined) game.imageUrl = body.imageUrl.trim()
+        if (body.minPlayers !== undefined) game.minPlayers = body.minPlayers
+        if (body.maxPlayers !== undefined) game.maxPlayers = body.maxPlayers
+        if (body.gameAvgDuration !== undefined) game.gameAvgDuration = body.gameAvgDuration
+
+        const translations: Partial<Record<SupportedLanguage, { title: string; normalizedTitle: string } | null>> = {}
+
+        for (const languageCode of ['en', 'es'] as const) {
+            const title = body.translations?.[languageCode]
+
+            if (title === undefined) continue
+            const trimmed = title.trim()
+
+            if (!trimmed && languageCode === 'en') throw new BadRequestException('The English title cannot be empty.')
+            translations[languageCode] = trimmed
+                ? { title: trimmed, normalizedTitle: this.gameTranslationService.normalizeTitle(trimmed) }
+                : null
         }
 
-        return { success: true }
+        await this.databaseService.games.updateGameAtomically({ gameId, game, translations, tagIds })
+
+        await Promise.all([
+            this.cacheService.deleteOne(`games:byId:${gameId}`),
+            this.cacheService.deleteOne(`game-translation:byGameId:${gameId}`),
+            this.cacheService.deleteOne(`game-tags:byGameId:${gameId}`),
+        ])
+
+        // Field names only: no titles or URLs in logs.
+        const fields = [
+            ...Object.keys(game),
+            ...Object.keys(translations).map(language => `title.${language}`),
+            ...(tagIds ? ['tags'] : []),
+        ]
+
+        this.LOGGER.log({ event: 'admin.game.updated', adminId, gameId, fields })
+
+        return this.getAdminGame(gameId)
+    }
+
+    private async assertTagsExist(tagIds: Array<number>): Promise<void> {
+        const known = new Set((await this.tagService.getTags()).map(tag => tag.id))
+        const unknown = tagIds.filter(tagId => !known.has(tagId))
+
+        if (unknown.length > 0) throw new BadRequestException(`Unknown tag ids: ${unknown.join(', ')}.`)
+    }
+
+    private async toAdminGames(rows: Array<Record<string, unknown>>): Promise<Array<AdminGameDto>> {
+        const gameIds = rows.map(row => Number(row['id']))
+        const tagRows = await this.databaseService.games.getTagsOfGames(gameIds)
+        const tagsByGame = new Map<number, Array<GameTagWithCategoryDto>>()
+
+        for (const row of tagRows.rows) {
+            const gameId = Number(row['gameId'])
+
+            tagsByGame.set(gameId, [
+                ...(tagsByGame.get(gameId) ?? []),
+                { id: Number(row['id']), name: String(row['name']), categoryName: String(row['categoryName']) },
+            ])
+        }
+
+        return rows.map(row => {
+            const id = Number(row['id'])
+            const titleEn = String(row['titleEn'] ?? '')
+
+            return {
+                id,
+                title: titleEn,
+                imageUrl: String(row['imageUrl'] ?? ''),
+                gameAvgDuration: Number(row['gameAvgDuration']),
+                minPlayers: Number(row['minPlayers']),
+                maxPlayers: Number(row['maxPlayers']),
+                translations: { en: titleEn, es: String(row['titleEs'] ?? '') },
+                tags: tagsByGame.get(id) ?? [],
+                issues: CATALOGUE_QUALITY_ISSUES.filter(issue => Number(row[issue]) === 1),
+            }
+        })
     }
 
     // #region Game Proposals

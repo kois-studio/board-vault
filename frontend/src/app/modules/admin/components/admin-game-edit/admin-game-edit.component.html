@@ -1,0 +1,31 @@
+<div class="space-y-6">
+    <a routerLink="/admin/manage-games" class="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-bv-text-muted hover:text-bv-text">
+        <app-icon name="arrow-left" [size]="16" /> All games
+    </a>
+
+    @if (isLoading()) {
+        <div class="flex justify-center py-8"><app-spinner size="medium" /></div>
+    } @else if (loadError(); as error) {
+        <div class="rounded-xl border border-bv-danger/30 bg-bv-danger/10 p-4 text-sm text-bv-danger" role="alert">{{ error }}</div>
+    } @else if (game(); as game) {
+        <app-admin-page-header [title]="game.title || 'Untitled game'" description="Changes apply to every shelf, wishlist and session that has this game.">
+            <a appButton variant="secondary" size="small" [routerLink]="['/games', game.id]" icon="arrow-right">Game page</a>
+        </app-admin-page-header>
+
+        @if (game.issues.length > 0) {
+            <ul class="space-y-1 rounded-lg border border-bv-warning/30 bg-bv-warning/10 p-4 text-sm" aria-label="Needs attention">
+                @for (issue of game.issues; track issue) {
+                    <li class="flex gap-2"><app-icon name="triangle-alert" [size]="16" className="mt-0.5 shrink-0 text-bv-warning" /> {{ issueText(issue) }}</li>
+                }
+            </ul>
+        }
+
+        <form class="space-y-6 rounded-lg border border-bv-border bg-bv-surface p-4 shadow-sm sm:p-6" [formGroup]="form" (ngSubmit)="save()" novalidate>
+            <app-admin-game-fields [form]="form" [tagGroups]="tagGroups()" [(selectedTagIds)]="selectedTagIds" />
+
+            <div class="flex justify-end border-t border-bv-border pt-4">
+                <button appButton type="submit" icon="check" [loading]="isSaving()" [disabled]="form.invalid || playersOutOfOrder">Save changes</button>
+            </div>
+        </form>
+    }
+</div>

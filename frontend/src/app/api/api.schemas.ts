@@ -3,6 +3,7 @@ import * as z from 'zod/mini'
 import type {
     AdminGameProposalsType,
     AdminGamesResultType,
+    AdminGameType,
     BrowseGamesResultType,
     CatalogueTagType,
     ClerkGroupInvitationSummaryType,
@@ -16,7 +17,6 @@ import type {
     GameReviewWithGameData,
     GameType,
     GameViewType,
-    GameWithTagsAndTranslationsType,
     GroupAcquisitionEntryType,
     GroupInsightsType,
     GroupType,
@@ -98,16 +98,6 @@ export const tagSchema: z.ZodMiniType<TagType> = z.object({
     gameCount: z.number(),
 })
 
-const gameWithTagsAndTranslationsSchema: z.ZodMiniType<GameWithTagsAndTranslationsType> = z.object({
-    id: z.number(),
-    imageUrl: z.string(),
-    gameAvgDuration: z.number(),
-    minPlayers: z.number(),
-    maxPlayers: z.number(),
-    translations: z.object({ en: z.string(), es: z.string() }),
-    tags: z.array(z.object({ id: z.number(), name: z.string(), categoryName: z.string() })),
-})
-
 export const adminTagCategoriesSchema = z.array(tagCategorySchema)
 export const adminTagsSchema = z.array(tagSchema)
 
@@ -115,10 +105,24 @@ export const catalogueTagsSchema: z.ZodMiniType<Array<CatalogueTagType>> = z.arr
     z.object({ id: z.number(), name: z.string(), categoryName: z.string(), gameCount: z.number() }),
 )
 
+export const adminGameSchema: z.ZodMiniType<AdminGameType> = z.object({
+    id: z.number(),
+    title: z.string(),
+    imageUrl: z.string(),
+    gameAvgDuration: z.number(),
+    minPlayers: z.number(),
+    maxPlayers: z.number(),
+    translations: z.object({ en: z.string(), es: z.string() }),
+    tags: z.array(z.object({ id: z.number(), name: z.string(), categoryName: z.string() })),
+    issues: z.array(z.enum(['no-title', 'no-artwork', 'no-spanish', 'no-tags', 'guessed-values'])),
+})
+
 export const adminGamesSchema: z.ZodMiniType<AdminGamesResultType> = z.object({
-    games: z.array(gameWithTagsAndTranslationsSchema),
+    games: z.array(adminGameSchema),
     pagination: paginationSchema,
 })
+
+export const mergeTagResultSchema = z.object({ gamesMoved: z.number() })
 
 export const browseGamesSchema: z.ZodMiniType<BrowseGamesResultType> = z.object({
     games: z.array(gameCompleteSchema),

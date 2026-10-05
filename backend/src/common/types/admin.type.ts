@@ -1,11 +1,16 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
-import { Type } from 'class-transformer'
+import { Transform, Type } from 'class-transformer'
 import { ArrayMaxSize, IsArray, IsIn, IsInt, IsNotEmpty, IsOptional, IsString, Max, MaxLength, Min, ValidateNested } from 'class-validator'
 
 import { GameProposalCompleteDto } from './game-proposal.type.js'
-import { GameWithTagsAndTranslationsDto, BrowseGamesPaginationDto } from './game.type.js'
+import { GAME_LENGTHS, GameWithTagsAndTranslationsDto, BrowseGamesPaginationDto } from './game.type.js'
+
+import type { GameLength } from './game.type.js'
 
 const ADMIN_PAGE_SIZE_MAX = 100
+
+export const CATALOGUE_QUALITY_ISSUES = ['no-title', 'no-artwork', 'no-spanish', 'no-tags', 'guessed-values'] as const
+export type CatalogueQualityIssue = (typeof CATALOGUE_QUALITY_ISSUES)[number]
 
 export class AdminGamesQuery {
     @ApiPropertyOptional({ type: String, example: 'catan', description: 'Title search, across supported translations.' })
@@ -28,6 +33,122 @@ export class AdminGamesQuery {
     @Min(1)
     @Max(ADMIN_PAGE_SIZE_MAX)
     limit = 10
+
+    @ApiPropertyOptional({ type: Number, example: 4, minimum: 1, maximum: 100, description: 'Only games that play with this many people.' })
+    @IsOptional()
+    @Type(() => Number)
+    @IsInt()
+    @Min(1)
+    @Max(100)
+    players?: number
+
+    @ApiPropertyOptional({ enum: GAME_LENGTHS, description: 'Average length, as in Browse.' })
+    @IsOptional()
+    @IsIn(GAME_LENGTHS)
+    length?: GameLength
+
+    @ApiPropertyOptional({ type: String, example: '3,7', description: 'Comma-separated tag ids. A game must have all of them.' })
+    @IsOptional()
+    @Transform(({ value }) => (typeof value === 'string' ? value.split(',').filter(Boolean).map(Number) : value))
+    @IsArray()
+    @ArrayMaxSize(10)
+    @IsInt({ each: true })
+    @Min(1, { each: true })
+    tags: number[] = []
+
+    @ApiPropertyOptional({
+        enum: CATALOGUE_QUALITY_ISSUES,
+        description:
+            'Only games with this data problem: no English title; no artwork; no Spanish title or one equal to the English; no tags; or players or length still equal to the values old approvals guessed (60 min, 2-4 players).',
+    })
+    @IsOptional()
+    @IsIn(CATALOGUE_QUALITY_ISSUES)
+    issue?: CatalogueQualityIssue
+}
+
+/** One game as the admin catalogue lists it. */
+export class AdminGameDto extends GameWithTagsAndTranslationsDto {
+    @ApiProperty({ example: 'Catan', description: 'The English title (empty only for a game without one).' })
+    title: string
+
+    @ApiProperty({
+        enum: CATALOGUE_QUALITY_ISSUES,
+        isArray: true,
+        description: 'Data problems this game has, as the issue filter defines them.',
+    })
+    issues: Array<CatalogueQualityIssue>
+}
+
+/** Titles to save; an empty Spanish title removes it. */
+export class AdminGameTitlesBody {
+    @ApiPropertyOptional({ example: 'Catan' })
+    @IsOptional()
+    @IsString()
+    @IsNotEmpty()
+    @MaxLength(200)
+    en?: string
+
+    @ApiPropertyOptional({ example: 'Los colonos de Catán', description: 'Empty removes the Spanish title.' })
+    @IsOptional()
+    @IsString()
+    @MaxLength(200)
+    es?: string
+}
+
+/** Changes to one catalogue game. Every field is optional; the ones sent are saved together. */
+export class UpdateAdminGameBody {
+    @ApiPropertyOptional({ type: AdminGameTitlesBody })
+    @IsOptional()
+    @ValidateNested()
+    @Type(() => AdminGameTitlesBody)
+    translations?: AdminGameTitlesBody
+
+    @ApiPropertyOptional({ example: 'https://www.example.com/catan.jpg', description: 'Empty means no artwork.' })
+    @IsOptional()
+    @IsString()
+    @MaxLength(2048)
+    imageUrl?: string
+
+    @ApiPropertyOptional({ example: 3, minimum: 1, maximum: 100 })
+    @IsOptional()
+    @IsInt()
+    @Min(1)
+    @Max(100)
+    minPlayers?: number
+
+    @ApiPropertyOptional({ example: 4, minimum: 1, maximum: 100 })
+    @IsOptional()
+    @IsInt()
+    @Min(1)
+    @Max(100)
+    maxPlayers?: number
+
+    @ApiPropertyOptional({ example: 90, minimum: 1, maximum: 1440, description: 'Average length in minutes.' })
+    @IsOptional()
+    @IsInt()
+    @Min(1)
+    @Max(1440)
+    gameAvgDuration?: number
+
+    @ApiPropertyOptional({ example: [1, 2], description: 'The whole set of tags; replaces the current ones.' })
+    @IsOptional()
+    @IsArray()
+    @ArrayMaxSize(50)
+    @IsInt({ each: true })
+    @Min(1, { each: true })
+    tagIds?: number[]
+}
+
+export class MergeTagBody {
+    @ApiProperty({ example: 7, description: 'The tag that keeps existing; every game with the merged tag gets this one.' })
+    @IsInt()
+    @Min(1)
+    intoTagId: number
+}
+
+export class MergeTagResultDto {
+    @ApiProperty({ example: 12, description: 'Games that gained the kept tag (they had only the merged one).' })
+    gamesMoved: number
 }
 
 export class AdminProposalsQuery {
@@ -80,47 +201,12 @@ export class ProposalTranslationsBody {
     es?: string
 }
 
-export class UpdateGameTranslationsBody {
-    @ApiProperty({
-        description: 'English translation of the game title',
-        example: 'Catan',
-        required: false,
-    })
-    @IsOptional()
-    @IsString()
-    @MaxLength(200)
-    en?: string
-
-    @ApiProperty({
-        description: 'Spanish translation of the game title',
-        example: 'Catan',
-        required: false,
-    })
-    @IsOptional()
-    @IsString()
-    @MaxLength(200)
-    es?: string
-}
-
-export class UpdateGameTagsBody {
-    @ApiProperty({
-        description: 'Array of tag IDs to assign to the game',
-        example: [1, 2, 3],
-        type: [Number],
-    })
-    @IsArray()
-    @ArrayMaxSize(100)
-    @IsInt({ each: true })
-    @Min(1, { each: true })
-    tagIds: number[]
-}
-
 export class AdminGamesResponseDto {
     @ApiProperty({
-        description: 'Array of games with their translations and tags',
-        type: [GameWithTagsAndTranslationsDto],
+        description: 'One page of the catalogue, by English title',
+        type: [AdminGameDto],
     })
-    games: Array<GameWithTagsAndTranslationsDto>
+    games: Array<AdminGameDto>
 
     @ApiProperty({
         description: 'Pagination information',

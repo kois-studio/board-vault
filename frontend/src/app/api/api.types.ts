@@ -451,8 +451,35 @@ export type BrowseGamesResultType = {
     }
 }
 
+/** A catalogue data problem, as the admin Games filter names it. */
+export type CatalogueIssue = 'no-title' | 'no-artwork' | 'no-spanish' | 'no-tags' | 'guessed-values'
+
+export type AdminGameType = GameWithTagsAndTranslationsType & {
+    /** The English title. */
+    title: string
+    issues: Array<CatalogueIssue>
+}
+
+export type AdminGamesFilters = {
+    search?: string
+    players?: number
+    length?: GameLength
+    tagIds?: Array<number>
+    issue?: CatalogueIssue
+}
+
+/** The fields sent are saved together; an empty Spanish title removes it. */
+export type UpdateAdminGameType = {
+    translations?: Partial<Record<SupportedLanguage, string>>
+    imageUrl?: string
+    minPlayers?: number
+    maxPlayers?: number
+    gameAvgDuration?: number
+    tagIds?: Array<number>
+}
+
 export type AdminGamesResultType = {
-    games: Array<GameWithTagsAndTranslationsType>
+    games: Array<AdminGameType>
     pagination: {
         currentPage: number
         totalPages: number

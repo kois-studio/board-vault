@@ -1,0 +1,100 @@
+<div class="space-y-6" [formGroup]="form()">
+    <div class="grid gap-4 sm:grid-cols-2">
+        <div>
+            <label for="titleEn" class="mb-1 block text-sm font-medium">English title</label>
+            <input id="titleEn" class="app-input" formControlName="titleEn" [attr.aria-invalid]="form().controls.titleEn.touched && form().controls.titleEn.invalid" />
+            @if (form().controls.titleEn.touched && form().controls.titleEn.invalid) {
+                <p class="mt-1 text-sm text-bv-danger">The English title is required.</p>
+            }
+        </div>
+        <div>
+            <label for="titleEs" class="mb-1 block text-sm font-medium">Spanish title</label>
+            <input id="titleEs" class="app-input" formControlName="titleEs" aria-describedby="titleEs-hint" />
+            <p id="titleEs-hint" class="mt-1 text-sm text-bv-text-muted">Leave it empty if there is no Spanish edition.</p>
+        </div>
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-[minmax(0,1fr)_6rem]">
+        <div>
+            <label for="imageUrl" class="mb-1 block text-sm font-medium">Artwork URL</label>
+            <input id="imageUrl" type="url" class="app-input" formControlName="imageUrl" placeholder="https://…" aria-describedby="imageUrl-hint" />
+            <p id="imageUrl-hint" class="mt-1 text-sm" [class.text-bv-danger]="form().controls.imageUrl.invalid || imageFailed()" [class.text-bv-text-muted]="form().controls.imageUrl.valid && !imageFailed()">
+                @if (form().controls.imageUrl.invalid) {
+                    Use a full http(s) address.
+                } @else if (imageFailed()) {
+                    This image doesn't load. Check the address.
+                } @else {
+                    Empty means no artwork; the app shows its placeholder.
+                }
+            </p>
+        </div>
+        <div class="flex h-24 w-24 items-center justify-center overflow-hidden rounded-lg bg-bv-surface-2" aria-hidden="true">
+            @if (imagePreview() && !imageFailed()) {
+                <img class="h-full w-full object-cover" [src]="imagePreview()" alt="" (error)="imageFailed.set(true)" />
+            } @else {
+                <app-icon [name]="imageFailed() ? 'triangle-alert' : 'image'" [size]="24" className="text-bv-text-muted" />
+            }
+        </div>
+    </div>
+
+    <div class="space-y-2">
+        <div class="grid grid-cols-2 gap-4 sm:grid-cols-3">
+            <div>
+                <label for="minPlayers" class="mb-1 block text-sm font-medium">Min players</label>
+                <input id="minPlayers" type="number" inputmode="numeric" min="1" max="100" class="app-input" formControlName="minPlayers" />
+            </div>
+            <div>
+                <label for="maxPlayers" class="mb-1 block text-sm font-medium">Max players</label>
+                <input id="maxPlayers" type="number" inputmode="numeric" min="1" max="100" class="app-input" formControlName="maxPlayers" />
+            </div>
+            <div class="col-span-2 sm:col-span-1">
+                <label for="gameAvgDuration" class="mb-1 block text-sm font-medium">Length (minutes)</label>
+                <input id="gameAvgDuration" type="number" inputmode="numeric" min="1" max="1440" class="app-input" formControlName="gameAvgDuration" />
+            </div>
+        </div>
+        @if (playersOutOfOrder) {
+            <p class="text-sm text-bv-danger">Min players cannot be more than max players.</p>
+        } @else if (!readonly() && missingRequired) {
+            <p class="text-sm text-bv-text-muted">{{ requiredHint() }}</p>
+        }
+    </div>
+
+    <fieldset class="min-w-0 space-y-3">
+        <legend class="text-sm font-medium">Tags</legend>
+        @if (proposedTags().length > 0) {
+            <p class="text-sm text-bv-text-muted">Proposed: {{ proposedTags().join(', ') }}. Matching tags are already chosen.</p>
+        }
+        <p class="text-sm" aria-live="polite">
+            @if (selectedTags().length > 0) {
+                <span class="text-bv-text-muted">Chosen:</span> {{ selectedTags().length }} ·
+                @for (tag of selectedTags(); track tag.id; let last = $last) {
+                    <span class="font-medium">{{ tag.name }}</span>{{ last ? '' : ', ' }}
+                }
+            } @else {
+                <span class="text-bv-text-muted">No tags chosen.</span>
+            }
+        </p>
+        @for (group of tagGroups(); track group.id) {
+            <details class="group rounded-lg border border-bv-border" [open]="initiallyOpenGroups().has(group.id)">
+                <summary class="flex min-h-11 cursor-pointer items-center justify-between gap-3 px-3 text-sm font-medium">
+                    <span>{{ group.name }}</span>
+                    <span class="flex items-center gap-2 text-bv-text-muted">
+                        @if (selectedInGroup(group); as count) {
+                            <span class="rounded-full bg-bv-primary px-2 text-xs text-bv-on-primary">{{ count }}</span>
+                        }
+                        <app-icon name="chevron-down" [size]="16" className="transition group-open:rotate-180" />
+                    </span>
+                </summary>
+                <div class="flex flex-wrap gap-2 px-3 pb-3">
+                    @for (tag of group.tags; track tag.id) {
+                        <button type="button" class="app-chip" [attr.aria-pressed]="isTagSelected(tag.id)" [disabled]="readonly()" (click)="toggleTag(tag.id)">
+                            {{ tag.name }}
+                        </button>
+                    }
+                </div>
+            </details>
+        } @empty {
+            <p class="text-sm text-bv-text-muted">There are no tags yet. Add them under Tags.</p>
+        }
+    </fieldset>
+</div>

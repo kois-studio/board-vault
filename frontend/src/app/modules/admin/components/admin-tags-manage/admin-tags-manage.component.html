@@ -1,214 +1,101 @@
-<div class="space-y-8">
-	<app-admin-page-header title="Tags" description="The categories and tags that describe games in Board Vault, used by Browse filters and suggestions." />
+<div class="space-y-6">
+    <app-admin-page-header title="Tags" description="The categories and tags that describe games, used by Browse filters and suggestions. Merge tags that mean the same thing.">
+        <div class="flex flex-wrap gap-2">
+            <button appButton variant="secondary" type="button" icon="plus" (click)="onAddCategory()">Category</button>
+            <button appButton type="button" icon="plus" (click)="onAddTag()">Tag</button>
+        </div>
+    </app-admin-page-header>
 
-	@if (errorMessage(); as error) {
-	<div class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-bv-danger/30 bg-bv-danger/10 p-4 text-sm text-bv-danger" role="alert">
-		<span>{{ error }}</span>
-		<button type="button" class="font-medium underline" (click)="retryData()">Retry</button>
-	</div>
-	}
+    @if (errorMessage(); as error) {
+        <div class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-bv-danger/30 bg-bv-danger/10 p-4 text-sm text-bv-danger" role="alert">
+            <span>{{ error }}</span>
+            <button type="button" class="font-medium underline" (click)="retryData()">Retry</button>
+        </div>
+    }
 
-	<!-- Section for Tag Categories -->
-	<section class="bg-bv-surface shadow-lg rounded-lg p-6">
-		<div class="flex justify-between items-center mb-4">
-			<h3 class="text-xl font-semibold text-bv-text">
-				Tag Categories
-			</h3>
-			<button appButton (click)="onAddCategory()" variant="primary" icon="plus-lg">
-				Add new
-			</button>
-		</div>
+    <div>
+        <label for="tag-search" class="sr-only">Search tags</label>
+        <input id="tag-search" type="search" class="app-input" placeholder="Search tags" [value]="search()" (input)="search.set($any($event.target).value)" />
+    </div>
 
-		@if (isLoadingCategories()) {
-		<div class="flex justify-center py-8">
-			<app-spinner size="medium" />
-		</div>
-		} @else {
-		<div class="overflow-x-auto">
-			<table
-				class="min-w-full divide-y divide-bv-border"
-			>
-				<thead class="bg-bv-bg">
-					<tr>
-						<th
-							scope="col"
-							class="px-6 py-3 text-left text-xs font-medium text-bv-text-muted uppercase tracking-wider"
-						>
-							Name
-						</th>
-						<th
-							scope="col"
-							class="px-6 py-3 text-left text-xs font-medium text-bv-text-muted uppercase tracking-wider"
-						>
-							Tags in Category
-						</th>
-						<th
-							scope="col"
-							class="px-6 py-3 text-left text-xs font-medium text-bv-text-muted uppercase tracking-wider"
-						>
-							Games with Category
-						</th>
-						<th scope="col" class="relative px-6 py-3">
-							<span class="sr-only">Actions</span>
-						</th>
-					</tr>
-				</thead>
-				<tbody
-					class="bg-bv-surface divide-y divide-bv-border"
-				>
-					@for (category of tagCategories(); track category.id) {
-					<tr>
-						<td
-							class="px-6 py-4 whitespace-nowrap text-sm font-medium text-bv-text"
-						>
-							{{ category.name }}
-						</td>
-						<td
-							class="px-6 py-4 whitespace-nowrap text-sm text-bv-text-muted"
-						>
-							{{ category.tags.length }}
-						</td>
-						<td
-							class="px-6 py-4 whitespace-nowrap text-sm text-bv-text-muted"
-						>
-							{{ category.gameCount }}
-						</td>
-						<td
-							class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3"
-						>
-							<button
-								(click)="onEditCategory(category)"
-								class="text-bv-primary hover:text-bv-on-primary-soft cursor-pointer"
-							>
-								Edit
-							</button>
-							<button
-								(click)="onDeleteCategory(category)"
-								class="text-bv-danger cursor-pointer"
-							>
-								Delete
-							</button>
-						</td>
-					</tr>
-					} @empty {
-					<tr>
-						<td
-							colspan="4"
-							class="px-6 py-4 text-center text-sm text-bv-text-muted"
-						>
-							No tag categories found.
-						</td>
-					</tr>
-					}
-				</tbody>
-			</table>
-		</div>
-		}
-	</section>
+    @if (isLoadingCategories() || isLoadingTags()) {
+        <div class="flex justify-center py-8"><app-spinner size="medium" /></div>
+    } @else {
+        @for (section of sections(); track section.category.id) {
+            <section class="rounded-lg border border-bv-border bg-bv-surface shadow-sm" [attr.aria-labelledby]="'category-' + section.category.id">
+                <header class="flex flex-wrap items-center justify-between gap-3 border-b border-bv-border px-4 py-3">
+                    <div>
+                        <h3 [id]="'category-' + section.category.id" class="font-semibold">{{ section.category.name }}</h3>
+                        <p class="text-sm text-bv-text-muted">
+                            {{ section.category.tags.length }} {{ section.category.tags.length === 1 ? 'tag' : 'tags' }} ·
+                            {{ section.category.gameCount }} {{ section.category.gameCount === 1 ? 'game' : 'games' }}
+                        </p>
+                    </div>
+                    <div class="flex gap-1">
+                        <button appButton variant="secondary" size="small" type="button" (click)="onEditCategory(section.category)" [attr.aria-label]="'Rename ' + section.category.name">Rename</button>
+                        <button appButton variant="secondary" size="small" type="button" (click)="onDeleteCategory(section.category)" [attr.aria-label]="'Delete ' + section.category.name">
+                            <app-icon name="trash" [size]="16" className="text-bv-danger" />
+                        </button>
+                    </div>
+                </header>
+                <ul class="divide-y divide-bv-border">
+                    @for (tag of section.tags; track tag.id) {
+                        <li class="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 px-4 py-2">
+                            <span class="min-w-0">
+                                <span class="font-medium">{{ tag.name }}</span>
+                                <span class="ml-2 text-sm text-bv-text-muted" [class.text-bv-warning]="tag.gameCount === 0">
+                                    {{ tag.gameCount === 0 ? 'unused' : tag.gameCount + (tag.gameCount === 1 ? ' game' : ' games') }}
+                                </span>
+                            </span>
+                            <span class="flex gap-1">
+                                <button type="button" class="min-h-9 rounded-md px-2 text-sm font-medium text-bv-primary hover:bg-bv-surface-2" (click)="onEditTag(tag)" [attr.aria-label]="'Edit ' + tag.name">Edit</button>
+                                <button type="button" class="min-h-9 rounded-md px-2 text-sm font-medium text-bv-primary hover:bg-bv-surface-2" (click)="onMergeTag(tag)" [attr.aria-label]="'Merge ' + tag.name + ' into another tag'">Merge</button>
+                                <button type="button" class="min-h-9 rounded-md px-2 text-sm font-medium text-bv-danger hover:bg-bv-surface-2" (click)="onDeleteTag(tag)" [attr.aria-label]="'Delete ' + tag.name">Delete</button>
+                            </span>
+                        </li>
+                    } @empty {
+                        <li class="px-4 py-3 text-sm text-bv-text-muted">No tags in this category.</li>
+                    }
+                </ul>
+            </section>
+        } @empty {
+            <p class="rounded-lg border border-bv-border bg-bv-surface p-8 text-center text-bv-text-muted">
+                {{ search() ? 'No tag matches "' + search() + '".' : 'No categories yet. Add one to start tagging games.' }}
+            </p>
+        }
+    }
 
-	<!-- Section for Tags -->
-	<section class="bg-bv-surface shadow-lg rounded-lg p-6">
-		<div class="flex justify-between items-center mb-4">
-			<h3 class="text-xl font-semibold text-bv-text">
-				Tags
-			</h3>
-			<button appButton (click)="onAddTag()" variant="primary" icon="plus-lg">
-				Add new
-			</button>
-		</div>
-
-		@if (isLoadingTags()) {
-		<div class="flex justify-center py-8">
-			<app-spinner size="medium" />
-		</div>
-		} @else {
-		<div class="overflow-x-auto">
-			<table
-				class="min-w-full divide-y divide-bv-border"
-			>
-				<thead class="bg-bv-bg">
-					<tr>
-						<th
-							scope="col"
-							class="px-6 py-3 text-left text-xs font-medium text-bv-text-muted uppercase tracking-wider"
-						>
-							Name
-						</th>
-						<th
-							scope="col"
-							class="px-6 py-3 text-left text-xs font-medium text-bv-text-muted uppercase tracking-wider"
-						>
-							Category
-						</th>
-						<th
-							scope="col"
-							class="px-6 py-3 text-left text-xs font-medium text-bv-text-muted uppercase tracking-wider"
-						>
-							Games with Tag
-						</th>
-						<th scope="col" class="relative px-6 py-3">
-							<span class="sr-only">Actions</span>
-						</th>
-					</tr>
-				</thead>
-				<tbody
-					class="bg-bv-surface divide-y divide-bv-border"
-				>
-					@for (tag of tagsWithCategory(); track tag.id) {
-					<tr>
-						<td
-							class="px-6 py-4 whitespace-nowrap text-sm font-medium text-bv-text"
-						>
-							{{ tag.name }}
-						</td>
-						<td
-							class="px-6 py-4 whitespace-nowrap text-sm text-bv-text-muted"
-						>
-							{{ tag.categoryName?.name }}
-						</td>
-						<td
-							class="px-6 py-4 whitespace-nowrap text-sm text-bv-text-muted"
-						>
-							{{ tag.gameCount }}
-						</td>
-						<td
-							class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3"
-						>
-							<button
-								(click)="onEditTag(tag)"
-								class="text-bv-primary hover:text-bv-on-primary-soft cursor-pointer"
-							>
-								Edit
-							</button>
-							<button
-								(click)="onDeleteTag(tag)"
-								class="text-bv-danger cursor-pointer"
-							>
-								Delete
-							</button>
-						</td>
-					</tr>
-					} @empty {
-					<tr>
-						<td
-							colspan="4"
-							class="px-6 py-4 text-center text-sm text-bv-text-muted"
-						>
-							No tags found.
-						</td>
-					</tr>
-					}
-				</tbody>
-			</table>
-		</div>
-		}
-	</section>
-
-	<!-- Modals -->
-	<app-modal-edit-category (categoryUpdated)="onCategoryUpdated($event)"></app-modal-edit-category>
-	<app-modal-edit-tag (tagUpdated)="onTagUpdated($event)"></app-modal-edit-tag>
-	<app-modal-add-category (categoryCreated)="onCategoryCreated($event)"></app-modal-add-category>
-	<app-modal-add-tag (tagCreated)="onTagCreated($event)"></app-modal-add-tag>
-	<app-modal-delete-category (categoryDeleted)="onCategoryDeleted($event)"></app-modal-delete-category>
-	<app-modal-delete-tag (tagDeleted)="onTagDeleted($event)"></app-modal-delete-tag>
+    <!-- Modals -->
+    <app-modal-edit-category (categoryUpdated)="onCategoryUpdated($event)"></app-modal-edit-category>
+    <app-modal-edit-tag (tagUpdated)="onTagUpdated($event)"></app-modal-edit-tag>
+    <app-modal-add-category (categoryCreated)="onCategoryCreated($event)"></app-modal-add-category>
+    <app-modal-add-tag (tagCreated)="onTagCreated($event)"></app-modal-add-tag>
+    <app-modal-delete-category (categoryDeleted)="onCategoryDeleted($event)"></app-modal-delete-category>
+    <app-modal-delete-tag (tagDeleted)="onTagDeleted($event)"></app-modal-delete-tag>
 </div>
+
+@if (mergingTag(); as tag) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" (click)="mergingTag.set(null)">
+        <section appDialog (dialogClosed)="mergingTag.set(null)" class="w-full max-w-lg rounded-xl border border-bv-border bg-bv-surface p-6 shadow-2xl" aria-labelledby="merge-title" (click)="$event.stopPropagation()">
+            <h2 id="merge-title" class="text-xl font-bold">Merge "{{ tag.name }}" into…</h2>
+            <p class="mt-2 text-sm text-bv-text-muted">For tags that mean the same thing. Every game with "{{ tag.name }}" gets the tag you keep, then "{{ tag.name }}" is deleted.</p>
+            <label for="merge-into" class="mb-1 mt-4 block text-sm font-medium">Tag to keep</label>
+            <select id="merge-into" class="app-input" (change)="setMergeInto($any($event.target).value)">
+                <option value="" [selected]="!mergeIntoId()">Choose a tag</option>
+                @for (target of mergeTargets(); track target.id) {
+                    <option [value]="target.id">{{ target.categoryName }} · {{ target.name }} ({{ target.gameCount }})</option>
+                }
+            </select>
+            @if (mergeInto(); as into) {
+                <p class="mt-3 rounded-lg bg-bv-surface-2 p-3 text-sm" aria-live="polite">
+                    {{ tag.gameCount }} {{ tag.gameCount === 1 ? 'game has' : 'games have' }} "{{ tag.name }}". They will have "{{ into.name }}"
+                    (games with both keep it once), and "{{ tag.name }}" is deleted. This cannot be undone.
+                </p>
+            }
+            <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                <button appButton variant="secondary" type="button" (click)="mergingTag.set(null)">Cancel</button>
+                <button appButton variant="danger" type="button" [loading]="isMerging()" [disabled]="!mergeInto()" (click)="confirmMerge()">Merge tags</button>
+            </div>
+        </section>
+    </div>
+}

@@ -1,25 +1,31 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core'
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { Api } from '../../../../api/api'
-import type { AdminGameProposalType, GameWithTagsAndTranslationsType, TagCategoryType, TagType } from '../../../../api/api.types'
+import type { AdminGameProposalType, AdminGameType } from '../../../../api/api.types'
 import { ButtonComponent } from '../../../../components/ui/button/button.component'
 import { DialogDirective } from '../../../../components/ui/dialog/dialog.directive'
 import { IconComponent } from '../../../../components/ui/icon/icon.component'
 import { ImageBackgroundComponent } from '../../../../components/ui/image-background/image-background.component'
 import { SpinnerComponent } from '../../../../components/ui/spinner/spinner.component'
 import { LogService } from '../../../../core/services/log.service'
+import {
+    AdminGameFieldsComponent,
+    createGameFieldsForm,
+    groupTags,
+    playersOutOfOrder,
+    type TagGroup,
+} from '../admin-game-fields/admin-game-fields.component'
 import { AdminGameProposalsService } from '../admin-game-proposals/admin-game-proposals.service'
 import { AdminPageHeaderComponent } from '../admin-page-header/admin-page-header.component'
 import { duplicateSearchTerms, matchProposedTags, parseProposedTags, QUICK_REJECTION_REASONS } from './proposal-review.utils'
-
-type TagGroup = { id: number; name: string; tags: Array<TagType> }
 
 /** One proposal, reviewed: what was submitted, possible duplicates, and the catalogue fields the admin approves. */
 @Component({
     selector: 'app-admin-proposal-review',
     imports: [
+        AdminGameFieldsComponent,
         AdminPageHeaderComponent,
         ButtonComponent,
         DialogDirective,
@@ -46,33 +52,13 @@ export class AdminProposalReviewComponent implements OnInit {
 
     public readonly tagGroups = signal<Array<TagGroup>>([])
     public readonly selectedTagIds = signal<ReadonlySet<number>>(new Set())
-    /** Categories open on arrival: the ones holding a pre-selected tag. Fixed, so a toggle never folds the one in use. */
-    public readonly initiallyOpenGroups = signal<ReadonlySet<number>>(new Set())
-    public readonly possibleDuplicates = signal<Array<GameWithTagsAndTranslationsType>>([])
+    public readonly possibleDuplicates = signal<Array<AdminGameType>>([])
 
     public readonly proposedTags = computed(() => parseProposedTags(this.proposal()?.proposedTags ?? null))
-    public readonly selectedTags = computed(() =>
-        this.tagGroups()
-            .flatMap((group) => group.tags)
-            .filter((tag) => this.selectedTagIds().has(tag.id)),
-    )
     public readonly isPending = computed(() => this.proposal()?.status === 'pending')
 
-    public readonly form = new FormGroup({
-        titleEn: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(200)] }),
-        titleEs: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(200)] }),
-        imageUrl: new FormControl('', {
-            nonNullable: true,
-            validators: [Validators.pattern(/^https?:\/\/.+/), Validators.maxLength(2048)],
-        }),
-        minPlayers: new FormControl<number | null>(null, [Validators.required, Validators.min(1), Validators.max(100)]),
-        maxPlayers: new FormControl<number | null>(null, [Validators.required, Validators.min(1), Validators.max(100)]),
-        gameAvgDuration: new FormControl<number | null>(null, [Validators.required, Validators.min(1), Validators.max(1440)]),
-        reviewNotes: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(2000)] }),
-    })
-
-    /** The live artwork preview follows the field, but only once it looks like a URL. */
-    public readonly imagePreview = signal('')
+    public readonly form = createGameFieldsForm()
+    public readonly reviewNotes = new FormControl('', { nonNullable: true, validators: [Validators.maxLength(2000)] })
 
     // Reject and duplicate dialogs
     public readonly quickReasons = QUICK_REJECTION_REASONS
@@ -81,9 +67,9 @@ export class AdminProposalReviewComponent implements OnInit {
 
     public readonly isMarkingDuplicate = signal(false)
     public readonly duplicateSearch = new FormControl('', { nonNullable: true })
-    public readonly duplicateResults = signal<Array<GameWithTagsAndTranslationsType>>([])
+    public readonly duplicateResults = signal<Array<AdminGameType>>([])
     public readonly isSearchingDuplicates = signal(false)
-    public readonly duplicateOf = signal<GameWithTagsAndTranslationsType | null>(null)
+    public readonly duplicateOf = signal<AdminGameType | null>(null)
     public readonly duplicateNotes = new FormControl('', { nonNullable: true, validators: [Validators.maxLength(280)] })
 
     public async ngOnInit(): Promise<void> {
@@ -96,9 +82,8 @@ export class AdminProposalReviewComponent implements OnInit {
             ])
             this.proposal.set(proposal)
             const preselected = new Set(matchProposedTags(parseProposedTags(proposal.proposedTags), tags))
-            this.tagGroups.set(this.groupTags(tags, categories))
             this.selectedTagIds.set(preselected)
-            this.initiallyOpenGroups.set(new Set(tags.filter((tag) => preselected.has(tag.id)).map((tag) => tag.categoryId)))
+            this.tagGroups.set(groupTags(tags, categories))
             this.form.reset({
                 titleEn: proposal.title,
                 // Spanish starts as a copy: most titles are the same in both.
@@ -107,9 +92,7 @@ export class AdminProposalReviewComponent implements OnInit {
                 minPlayers: proposal.minPlayers,
                 maxPlayers: proposal.maxPlayers,
                 gameAvgDuration: proposal.gameAvgDuration,
-                reviewNotes: '',
             })
-            this.updateImagePreview()
             if (proposal.status !== 'pending') this.form.disable()
             void this.findPossibleDuplicates(proposal.title)
         } catch (error) {
@@ -123,29 +106,8 @@ export class AdminProposalReviewComponent implements OnInit {
     // --------------------------------------------------------------------------
     //        Catalogue fields
     // --------------------------------------------------------------------------
-    public updateImagePreview(): void {
-        const control = this.form.controls.imageUrl
-        this.imagePreview.set(control.valid ? control.value.trim() : '')
-    }
-
-    public selectedInGroup(group: TagGroup): number {
-        return group.tags.filter((tag) => this.selectedTagIds().has(tag.id)).length
-    }
-
-    public isTagSelected(tagId: number): boolean {
-        return this.selectedTagIds().has(tagId)
-    }
-
-    public toggleTag(tagId: number): void {
-        const next = new Set(this.selectedTagIds())
-        if (next.has(tagId)) next.delete(tagId)
-        else next.add(tagId)
-        this.selectedTagIds.set(next)
-    }
-
     public get playersOutOfOrder(): boolean {
-        const { minPlayers, maxPlayers } = this.form.getRawValue()
-        return minPlayers !== null && maxPlayers !== null && minPlayers > maxPlayers
+        return playersOutOfOrder(this.form)
     }
 
     public async approve(): Promise<void> {
@@ -162,7 +124,7 @@ export class AdminProposalReviewComponent implements OnInit {
             maxPlayers: value.maxPlayers ?? undefined,
             gameAvgDuration: value.gameAvgDuration ?? undefined,
             tagIds: [...this.selectedTagIds()],
-            reviewNotes: value.reviewNotes.trim() || undefined,
+            reviewNotes: this.reviewNotes.value.trim() || undefined,
         })
         this.isSubmitting.set(false)
         if (createdGameId !== null) void this.router.navigate(['/admin/proposals'])
@@ -198,7 +160,7 @@ export class AdminProposalReviewComponent implements OnInit {
     // --------------------------------------------------------------------------
     //        Duplicate of…
     // --------------------------------------------------------------------------
-    public openDuplicate(game: GameWithTagsAndTranslationsType | null = null): void {
+    public openDuplicate(game: AdminGameType | null = null): void {
         this.duplicateOf.set(game)
         this.duplicateNotes.reset('')
         this.duplicateSearch.reset('')
@@ -211,7 +173,7 @@ export class AdminProposalReviewComponent implements OnInit {
         if (term.length < 2) return
         this.isSearchingDuplicates.set(true)
         try {
-            const result = await firstValueFrom(this.api.getAdminGames(term, 1, 8))
+            const result = await firstValueFrom(this.api.getAdminGames({ search: term }, 1, 8))
             this.duplicateResults.set(result.games)
         } catch (error) {
             this.logger.error('Error searching the catalogue:', error)
@@ -235,8 +197,8 @@ export class AdminProposalReviewComponent implements OnInit {
         }
     }
 
-    public gameTitle(game: GameWithTagsAndTranslationsType): string {
-        return game.translations.en || game.translations.es || game.title || `Game ${game.id}`
+    public gameTitle(game: AdminGameType): string {
+        return game.title || game.translations.es || `Game ${game.id}`
     }
 
     public addToText(addTo: AdminGameProposalType['addTo']): string {
@@ -260,26 +222,14 @@ export class AdminProposalReviewComponent implements OnInit {
     private async findPossibleDuplicates(title: string): Promise<void> {
         try {
             const searches = await Promise.all(
-                duplicateSearchTerms(title).map((term) => firstValueFrom(this.api.getAdminGames(term, 1, 5))),
+                duplicateSearchTerms(title).map((term) => firstValueFrom(this.api.getAdminGames({ search: term }, 1, 5))),
             )
-            const byId = new Map<number, GameWithTagsAndTranslationsType>()
+            const byId = new Map<number, AdminGameType>()
             for (const game of searches.flatMap((result) => result.games)) byId.set(game.id, game)
             this.possibleDuplicates.set([...byId.values()].slice(0, 5))
         } catch (error) {
             // A failed hint is not worth an error on the page; the search in "Duplicate of…" still works.
             this.logger.error('Error looking for possible duplicates:', error)
         }
-    }
-
-    private groupTags(tags: Array<TagType>, categories: Array<TagCategoryType>): Array<TagGroup> {
-        const byName = (a: { name: string }, b: { name: string }) => a.name.localeCompare(b.name)
-        return categories
-            .map((category) => ({
-                id: category.id,
-                name: category.name,
-                tags: tags.filter((tag) => tag.categoryId === category.id).sort(byName),
-            }))
-            .filter((group) => group.tags.length > 0)
-            .sort(byName)
     }
 }

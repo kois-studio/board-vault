@@ -64,7 +64,7 @@ attempt may already have been applied.
 | `modules/common/cache/` | Upstash Redis wrapper and the admin cache endpoints. |
 | `modules/common/health/` | `/health` (liveness) and `/health/ready` (database, cache, schema version). |
 | `modules/core/*` | One module per domain entity: games, tags, translations, owned games, wishlist, reviews, collection activity, game proposals, groups (`UserGroup`), memberships, group people, invitations, notifications, meets (sessions), attendees, users. |
-| `modules/features/admin` | `/admin`: catalogue tags, categories, translations, and game proposals (admins only). |
+| `modules/features/admin` | `/admin`: the catalogue (list with data-quality filters, one-request game edits), tags and categories (including merge), and game proposals (admins only). |
 | `modules/features/collection` | `/collection/users/:userId/…`: private shelf, wishlist, reviews, activity. |
 | `modules/features/dashboard` | `/dashboard/users/:userId/…`: stats, groups, group creation and membership management. |
 | `modules/features/play` | `/play`: recommendations, recommendation feedback, play history. |
@@ -141,7 +141,7 @@ component through `takeUntilDestroyed` or `toSignal`.
 | `/games/:gameId` | `AuthOnlyGuard` | Game detail |
 | `/play`, `/play/…` | `AuthOnlyGuard` | Play hub (a card per subpage); upcoming, recommendations, log a session, history |
 | `/settings`, `/settings/profile`, `/settings/appearance`, `/settings/security` | `AuthOnlyGuard` | Settings: profile, theme, and Clerk account security (`/settings/account` redirects to profile) |
-| `/admin`, `/admin/panel`, `/admin/proposals`, `/admin/proposals/:id`, `/admin/manage-games`, `/admin/manage-tags` | `AdminGuard` | Administration: overview, proposals and the review of one, games, tags (lazy chunk, inside the app layout) |
+| `/admin`, `/admin/panel`, `/admin/proposals`, `/admin/proposals/:id`, `/admin/manage-games`, `/admin/manage-games/:id`, `/admin/manage-tags` | `AdminGuard` | Administration: overview, proposals and the review of one, the catalogue and the edit form of one game, tags (lazy chunk, inside the app layout) |
 
 The app has three sections: Home (groups and their pages), Collection
 (games, browse, reviews, wishlist), and Play (upcoming, what to play,

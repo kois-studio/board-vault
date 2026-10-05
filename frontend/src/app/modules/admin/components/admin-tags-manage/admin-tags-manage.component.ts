@@ -1,6 +1,9 @@
 // src/app/pages/admin/tags-manage/admin-tags-manage.component.ts
 
-import { Component, inject, OnInit, ViewChild } from '@angular/core'
+import { HttpErrorResponse } from '@angular/common/http'
+import { Component, computed, inject, OnInit, signal, ViewChild } from '@angular/core'
+import { firstValueFrom } from 'rxjs'
+import { Api } from '../../../../api/api'
 import type { TagCategoryType, TagType } from '../../../../api/api.types'
 import { ModalAddCategoryComponent } from '../../../../components/modals/modal-add-category/modal-add-category.component'
 import { ModalAddTagComponent } from '../../../../components/modals/modal-add-tag/modal-add-tag.component'
@@ -10,6 +13,8 @@ import { ModalEditCategoryComponent } from '../../../../components/modals/modal-
 import { ModalEditTagComponent } from '../../../../components/modals/modal-edit-tag/modal-edit-tag.component'
 import { ToastService } from '../../../../components/toast/toast.service'
 import { ButtonComponent } from '../../../../components/ui/button/button.component'
+import { DialogDirective } from '../../../../components/ui/dialog/dialog.directive'
+import { IconComponent } from '../../../../components/ui/icon/icon.component'
 import { SpinnerComponent } from '../../../../components/ui/spinner/spinner.component'
 import { AdminPageHeaderComponent } from '../admin-page-header/admin-page-header.component'
 import { AdminTagsManageService } from './admin-tags-manage.service'
@@ -18,6 +23,8 @@ import { AdminTagsManageService } from './admin-tags-manage.service'
     imports: [
         AdminPageHeaderComponent,
         ButtonComponent,
+        DialogDirective,
+        IconComponent,
         SpinnerComponent,
         ModalEditCategoryComponent,
         ModalEditTagComponent,
@@ -31,6 +38,7 @@ import { AdminTagsManageService } from './admin-tags-manage.service'
 export class AdminTagsManageComponent implements OnInit {
     private readonly toastService = inject(ToastService)
     private readonly adminTagsManageService = inject(AdminTagsManageService)
+    private readonly api = inject(Api)
 
     // --------------------------------------------------------------------------
     //        Modal references
@@ -49,8 +57,36 @@ export class AdminTagsManageComponent implements OnInit {
     public readonly tagCategories = this.adminTagsManageService.tagCategories
     public readonly isLoadingCategories = this.adminTagsManageService.isLoadingCategories
     public readonly isLoadingTags = this.adminTagsManageService.isLoadingTags
-    public readonly tagsWithCategory = this.adminTagsManageService.tagsWithCategory
     public readonly errorMessage = this.adminTagsManageService.errorMessage
+
+    /** Filters the tags by name; categories without a match are hidden while searching. */
+    public readonly search = signal('')
+    public readonly sections = computed(() => {
+        const term = this.search().trim().toLowerCase()
+        const byName = (a: { name: string }, b: { name: string }) => a.name.localeCompare(b.name)
+        return [...this.tagCategories()]
+            .sort(byName)
+            .map((category) => ({
+                category,
+                tags: this.tags()
+                    .filter((tag) => tag.categoryId === category.id && (!term || tag.name.toLowerCase().includes(term)))
+                    .sort(byName),
+            }))
+            .filter((section) => !term || section.tags.length > 0)
+    })
+
+    // Merge: every game with the merged tag gets the kept one; the merged tag is deleted.
+    public readonly mergingTag = signal<TagType | null>(null)
+    public readonly mergeIntoId = signal<number | null>(null)
+    public readonly isMerging = signal(false)
+    public readonly mergeInto = computed(() => this.tags().find((tag) => tag.id === this.mergeIntoId()) ?? null)
+    public readonly mergeTargets = computed(() => {
+        const merging = this.mergingTag()
+        return this.tags()
+            .filter((tag) => tag.id !== merging?.id)
+            .map((tag) => ({ ...tag, categoryName: this.tagCategories().find((category) => category.id === tag.categoryId)?.name ?? '' }))
+            .sort((a, b) => a.categoryName.localeCompare(b.categoryName) || a.name.localeCompare(b.name))
+    })
 
     public async retryData(): Promise<void> {
         try {
@@ -97,6 +133,37 @@ export class AdminTagsManageComponent implements OnInit {
     public onDeleteTag(tag: TagType): void {
         const categoryName = this.tagCategories().find((cat) => cat.id === tag.categoryId)?.name || 'Unknown'
         this.deleteTagModal.showDialog(tag, categoryName)
+    }
+
+    public onMergeTag(tag: TagType): void {
+        this.mergeIntoId.set(null)
+        this.mergingTag.set(tag)
+    }
+
+    public setMergeInto(value: string): void {
+        const tagId = Number.parseInt(value, 10)
+        this.mergeIntoId.set(Number.isInteger(tagId) ? tagId : null)
+    }
+
+    public async confirmMerge(): Promise<void> {
+        const tag = this.mergingTag()
+        const into = this.mergeInto()
+        if (!tag || !into) return
+
+        this.isMerging.set(true)
+        try {
+            const { gamesMoved } = await firstValueFrom(this.api.mergeAdminTag(tag.id, into.id))
+            this.mergingTag.set(null)
+            this.toastService.success(
+                `"${tag.name}" merged into "${into.name}". ${gamesMoved} ${gamesMoved === 1 ? 'game' : 'games'} gained it.`,
+            )
+            await this.adminTagsManageService.refreshData()
+        } catch (error) {
+            const message = error instanceof HttpErrorResponse && error.status === 400 ? error.error?.message : null
+            this.toastService.error(typeof message === 'string' ? message : 'The tags could not be merged. Try again.')
+        } finally {
+            this.isMerging.set(false)
+        }
     }
 
     // --------------------------------------------------------------------------

@@ -7,6 +7,7 @@ import {
     adminApprovalResponseSchema,
     adminGameProposalSchema,
     adminGameProposalsSchema,
+    adminGameSchema,
     adminGamesSchema,
     adminSuccessResponseSchema,
     adminTagCategoriesSchema,
@@ -30,6 +31,7 @@ import {
     groupPersonSchemaResponse,
     meetDetailsSchema,
     meetSchema,
+    mergeTagResultSchema,
     publicUserSchema,
     recommendationSignalsSchema,
     recommendationsSchema,
@@ -61,7 +63,9 @@ import {
 import type {
     AdminGameProposalsType,
     AdminGameProposalType,
+    AdminGamesFilters,
     AdminGamesResultType,
+    AdminGameType,
     ApproveGameProposalType,
     BrowseFilters,
     BrowseGamesResultType,
@@ -103,6 +107,7 @@ import type {
     SessionStatusUpdatedType,
     TagCategoryType,
     TagType,
+    UpdateAdminGameType,
     UpdateGameOwnedType,
     UpdateGameResultsRequest,
     UpdateSessionAttendanceRequest,
@@ -366,9 +371,13 @@ export class Api {
 
     // #region Admin Games
 
-    getAdminGames(search = '', page = 1, limit = 10) {
+    getAdminGames(filters: AdminGamesFilters = {}, page = 1, limit = 10) {
         const params = new URLSearchParams()
-        if (search) params.append('search', search)
+        if (filters.search) params.append('search', filters.search)
+        if (filters.players) params.append('players', String(filters.players))
+        if (filters.length) params.append('length', filters.length)
+        if (filters.tagIds?.length) params.append('tags', filters.tagIds.join(','))
+        if (filters.issue) params.append('issue', filters.issue)
         params.append('page', page.toString())
         params.append('limit', limit.toString())
 
@@ -377,16 +386,21 @@ export class Api {
             .pipe(map((response) => adminGamesSchema.parse(response)))
     }
 
-    updateAdminGameTranslations(gameId: number, translations: Record<string, string>) {
-        return this.http
-            .put<{ success: true }>(`${this.url}/admin/games/${gameId}/translations`, translations)
-            .pipe(map((response) => successSchema.parse(response)))
+    getAdminGame(gameId: number) {
+        return this.http.get<AdminGameType>(`${this.url}/admin/games/${gameId}`).pipe(map((response) => adminGameSchema.parse(response)))
     }
 
-    updateAdminGameTags(gameId: number, tagIds: number[]) {
+    /** Saves the fields sent, together; an empty Spanish title removes it. */
+    updateAdminGame(gameId: number, body: UpdateAdminGameType) {
         return this.http
-            .put<{ success: true }>(`${this.url}/admin/games/${gameId}/tags`, { tagIds })
-            .pipe(map((response) => successSchema.parse(response)))
+            .patch<AdminGameType>(`${this.url}/admin/games/${gameId}`, body)
+            .pipe(map((response) => adminGameSchema.parse(response)))
+    }
+
+    mergeAdminTag(tagId: number, intoTagId: number) {
+        return this.http
+            .post<{ gamesMoved: number }>(`${this.url}/admin/tags/${tagId}/merge`, { intoTagId })
+            .pipe(map((response) => mergeTagResultSchema.parse(response)))
     }
 
     // #endregion

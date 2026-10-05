@@ -3,8 +3,10 @@ import {
     Controller,
     Delete,
     Get,
+    HttpCode,
     Param,
     ParseIntPipe,
+    Patch,
     Post,
     Put,
     Query,
@@ -18,8 +20,10 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 import { AdminGuard } from '../../../common/guards/admin.guard.js'
 import { AuthGuard } from '../../../common/guards/auth.guard.js'
 import {
-    UpdateGameTranslationsBody,
-    UpdateGameTagsBody,
+    AdminGameDto,
+    MergeTagBody,
+    MergeTagResultDto,
+    UpdateAdminGameBody,
     AdminGamesResponseDto,
     ApproveGameProposalBody,
     RejectGameProposalBody,
@@ -105,33 +109,45 @@ export class AdminController {
         return this.adminService.deleteTag(id)
     }
 
+    @Post('/tags/:id/merge')
+    @HttpCode(200)
+    @ApiOperation({ summary: 'Merge a tag into another: its games get the other tag, then it is deleted (one transaction)' })
+    @ApiResponse({ status: 200, type: MergeTagResultDto })
+    @ApiResponse({ status: 404, description: 'Tag not found' })
+    async mergeTag(@Param('id', ParseIntPipe) id: number, @Body() body: MergeTagBody) {
+        return this.adminService.mergeTag(id, body.intoTagId)
+    }
+
     // #endregion
 
     // #region Games
 
     @Get('/games')
-    @ApiOperation({ summary: 'Get games with translations and tags (paginated and searchable)', deprecated: false })
-    @ApiResponse({
-        status: 200,
-        description: 'Paginated list of games with translations and tags',
-        type: AdminGamesResponseDto,
-    })
+    @ApiOperation({ summary: 'List the catalogue: search, Browse filters and one data-quality issue, by English title' })
+    @ApiResponse({ status: 200, description: 'One page of the catalogue', type: AdminGamesResponseDto })
     async getGames(@Query() query: AdminGamesQuery) {
-        return this.adminService.getAdminGames(query.search ?? '', query.page, query.limit)
+        return this.adminService.getAdminGames(query)
     }
 
-    @Put('/games/:id/translations')
-    @ApiOperation({ summary: 'Update game translations', deprecated: false })
-    @ApiResponse({ status: 200, type: SuccessDto, description: 'Game translations updated' })
-    async updateGameTranslations(@Param('id', ParseIntPipe) id: number, @Body() translations: UpdateGameTranslationsBody) {
-        return this.adminService.updateGameTranslations(id, translations)
+    @Get('/games/:id')
+    @ApiOperation({ summary: 'Get one catalogue game with its titles, tags and data-quality issues' })
+    @ApiResponse({ status: 200, type: AdminGameDto })
+    @ApiResponse({ status: 404, description: 'Game not found' })
+    async getGame(@Param('id', ParseIntPipe) id: number) {
+        return this.adminService.getAdminGame(id)
     }
 
-    @Put('/games/:id/tags')
-    @ApiOperation({ summary: 'Update game tags', deprecated: false })
-    @ApiResponse({ status: 200, type: SuccessDto, description: 'Game tags updated' })
-    async updateGameTags(@Param('id', ParseIntPipe) id: number, @Body() payload: UpdateGameTagsBody) {
-        return this.adminService.updateGameTags(id, payload)
+    @Patch('/games/:id')
+    @ApiOperation({ summary: 'Update a game: titles, artwork, players, length and tags, saved together' })
+    @ApiResponse({ status: 200, type: AdminGameDto })
+    @ApiResponse({ status: 400, description: 'Invalid values, more min than max players, or unknown tags' })
+    @ApiResponse({ status: 404, description: 'Game not found' })
+    async updateGame(
+        @Req() request: { user: { userId: number } },
+        @Param('id', ParseIntPipe) id: number,
+        @Body() body: UpdateAdminGameBody,
+    ) {
+        return this.adminService.updateGame(id, request.user.userId, body)
     }
 
     // #endregion

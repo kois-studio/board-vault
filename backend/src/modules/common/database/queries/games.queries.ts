@@ -1,5 +1,6 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common'
 
+import type { CatalogueQualityIssue } from '../../../../common/types/admin.type.js'
 import type { SupportedLanguage } from '../../../../common/types/game-translation.type.js'
 import type { BrowseSort, GameLength } from '../../../../common/types/game.type.js'
 import type { CreateNotificationBody } from '../../../../common/types/notification.type.js'
@@ -23,6 +24,28 @@ const CATALOGUE_LENGTH: Record<GameLength, string> = {
     medium: 'g.gameAvgDuration BETWEEN 30 AND 60',
     long: 'g.gameAvgDuration > 60 AND g.gameAvgDuration <= 120',
     epic: 'g.gameAvgDuration > 120',
+}
+
+/**
+ * Catalogue data problems, as SQL over `Game g`. The guessed-values check finds games approved
+ * before #86, when a proposal without players or length got 60 min and 2-4 players.
+ */
+export const CATALOGUE_QUALITY: Record<CatalogueQualityIssue, string> = {
+    'no-title': "NOT EXISTS (SELECT 1 FROM GameTranslation en WHERE en.gameId = g.id AND en.languageCode = 'en')",
+    'no-artwork': "g.imageUrl = ''",
+    'no-spanish': `NOT EXISTS (
+        SELECT 1 FROM GameTranslation es
+        WHERE es.gameId = g.id AND es.languageCode = 'es'
+          AND es.title <> COALESCE((SELECT en.title FROM GameTranslation en WHERE en.gameId = g.id AND en.languageCode = 'en'), '')
+    )`,
+    'no-tags': 'NOT EXISTS (SELECT 1 FROM GameTag gt WHERE gt.gameId = g.id)',
+    'guessed-values': `EXISTS (
+        SELECT 1 FROM GameProposal p
+        WHERE p.createdGameId = g.id
+          AND ((p.gameAvgDuration IS NULL AND g.gameAvgDuration = 60)
+            OR (p.minPlayers IS NULL AND g.minPlayers = 2)
+            OR (p.maxPlayers IS NULL AND g.maxPlayers = 4))
+    )`,
 }
 
 const CATALOGUE_ORDER: Record<BrowseSort, string> = {
@@ -659,4 +682,142 @@ export class GameQueries {
             args: [id],
         })
     }
+
+    // #region Admin catalogue
+
+    /** One page of the catalogue for admins: Browse's filters plus one data-quality issue, by English title. */
+    browseAdminCatalogue(filters: CatalogueFilters & { issue?: CatalogueQualityIssue; gameId?: number; skip: number; take: number }) {
+        const { where, args } = this.adminCatalogueWhere(filters)
+
+        return this.database.execute({
+            sql: `
+                SELECT g.id, g.imageUrl, g.gameAvgDuration, g.minPlayers, g.maxPlayers,
+                       COALESCE(en.title, '') AS titleEn, COALESCE(es.title, '') AS titleEs,
+                       ${Object.entries(CATALOGUE_QUALITY)
+                           .map(([issue, condition]) => `CASE WHEN ${condition} THEN 1 ELSE 0 END AS "${issue}"`)
+                           .join(',\n                       ')}
+                FROM Game g
+                LEFT JOIN GameTranslation en ON en.gameId = g.id AND en.languageCode = 'en'
+                LEFT JOIN GameTranslation es ON es.gameId = g.id AND es.languageCode = 'es'
+                ${where}
+                ORDER BY COALESCE(en.title, es.title, '') COLLATE NOCASE ASC, g.id ASC
+                LIMIT ? OFFSET ?
+            `,
+            args: [...args, filters.take, filters.skip],
+        })
+    }
+
+    countAdminCatalogue(filters: CatalogueFilters & { issue?: CatalogueQualityIssue }) {
+        const { where, args } = this.adminCatalogueWhere(filters)
+
+        return this.database.execute({ sql: `SELECT COUNT(*) AS total FROM Game g ${where}`, args })
+    }
+
+    /** The tags of several games at once, by category and name. */
+    getTagsOfGames(gameIds: Array<number>) {
+        if (gameIds.length === 0) return Promise.resolve({ rows: [] as Array<Record<string, unknown>> })
+
+        return this.database.execute({
+            sql: `
+                SELECT gameTag.gameId, tag.id, tag.name, category.name AS categoryName
+                FROM GameTag gameTag
+                JOIN Tag tag ON tag.id = gameTag.tagId
+                JOIN TagCategory category ON category.id = tag.categoryId
+                WHERE gameTag.gameId IN (${gameIds.map(() => '?').join(', ')})
+                ORDER BY category.name, tag.name
+            `,
+            args: gameIds,
+        })
+    }
+
+    /** Saves an admin's changes to one game in one transaction. `es: null` removes the Spanish title. */
+    async updateGameAtomically(input: {
+        gameId: number
+        game: Partial<Record<'imageUrl' | 'gameAvgDuration' | 'minPlayers' | 'maxPlayers', string | number>>
+        translations: Partial<Record<SupportedLanguage, { title: string; normalizedTitle: string } | null>>
+        tagIds?: Array<number>
+    }): Promise<void> {
+        const transaction = await this.database.transaction('write')
+
+        try {
+            const columns = Object.entries(input.game)
+
+            if (columns.length > 0) {
+                await transaction.execute({
+                    sql: `UPDATE Game SET ${columns.map(([column]) => `${column} = ?`).join(', ')} WHERE id = ?`,
+                    args: [...columns.map(([, value]) => value), input.gameId],
+                })
+            }
+
+            for (const [languageCode, translation] of Object.entries(input.translations)) {
+                await transaction.execute(
+                    translation
+                        ? {
+                              sql: 'INSERT OR REPLACE INTO GameTranslation (gameId, languageCode, title, normalizedTitle) VALUES (?, ?, ?, ?)',
+                              args: [input.gameId, languageCode, translation.title, translation.normalizedTitle],
+                          }
+                        : { sql: 'DELETE FROM GameTranslation WHERE gameId = ? AND languageCode = ?', args: [input.gameId, languageCode] },
+                )
+            }
+
+            if (input.tagIds) {
+                await transaction.execute({ sql: 'DELETE FROM GameTag WHERE gameId = ?', args: [input.gameId] })
+                for (const tagId of input.tagIds) {
+                    await transaction.execute({ sql: 'INSERT INTO GameTag (gameId, tagId) VALUES (?, ?)', args: [input.gameId, tagId] })
+                }
+            }
+
+            await transaction.commit()
+        } catch (error) {
+            await transaction.rollback()
+            throw error
+        }
+    }
+
+    /**
+     * Merges one tag into another: games with the merged tag get the kept one, then the merged tag is deleted.
+     * Returns how many games gained the kept tag.
+     */
+    async mergeTagAtomically(input: { tagId: number; intoTagId: number }): Promise<{ gamesMoved: number }> {
+        const transaction = await this.database.transaction('write')
+
+        try {
+            const moved = await transaction.execute({
+                sql: 'INSERT OR IGNORE INTO GameTag (gameId, tagId) SELECT gameId, ? FROM GameTag WHERE tagId = ?',
+                args: [input.intoTagId, input.tagId],
+            })
+
+            // Explicit, so the merge never depends on foreign-key cascades being enabled.
+            await transaction.execute({ sql: 'DELETE FROM GameTag WHERE tagId = ?', args: [input.tagId] })
+            const deleted = await transaction.execute({ sql: 'DELETE FROM Tag WHERE id = ?', args: [input.tagId] })
+
+            if (deleted.rowsAffected !== 1) {
+                throw new NotFoundException('Tag not found')
+            }
+
+            await transaction.commit()
+            return { gamesMoved: moved.rowsAffected }
+        } catch (error) {
+            await transaction.rollback()
+            throw error
+        }
+    }
+
+    private adminCatalogueWhere(filters: CatalogueFilters & { issue?: CatalogueQualityIssue; gameId?: number }): {
+        where: string
+        args: Array<InValue>
+    } {
+        const { where, args } = this.catalogueWhere(filters)
+        const conditions = where ? [where.replace(/^WHERE /, '')] : []
+
+        if (filters.issue) conditions.push(CATALOGUE_QUALITY[filters.issue])
+        if (filters.gameId !== undefined) {
+            conditions.push('g.id = ?')
+            args.push(filters.gameId)
+        }
+
+        return { where: conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '', args }
+    }
+
+    // #endregion
 }

@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing'
 import { ActivatedRoute, convertToParamMap, provideRouter, Router } from '@angular/router'
 import { of } from 'rxjs'
 import { Api } from '../../../../api/api'
-import type { AdminGameProposalType } from '../../../../api/api.types'
+import type { AdminGameProposalType, AdminGameType } from '../../../../api/api.types'
 import { ToastService } from '../../../../components/toast/toast.service'
 import { LogService } from '../../../../core/services/log.service'
 import { PendingProposalsService } from '../../../../core/services/pending-proposals.service'
@@ -28,7 +28,7 @@ describe('AdminProposalReviewComponent', () => {
         submittedAt: '2026-10-01T10:00:00.000Z',
         addTo: 'shelf',
     }
-    const azulInCatalogue = {
+    const azulInCatalogue: AdminGameType = {
         id: 40,
         title: 'Azul',
         imageUrl: '',
@@ -37,6 +37,7 @@ describe('AdminProposalReviewComponent', () => {
         maxPlayers: 4,
         translations: { en: 'Azul', es: 'Azul' },
         tags: [],
+        issues: [],
     }
 
     let api: Record<string, ReturnType<typeof vi.fn>>
@@ -96,7 +97,7 @@ describe('AdminProposalReviewComponent', () => {
         expect(pressed(element)).toEqual(['Family', 'Abstract'])
         expect(element.textContent).toContain('Proposed: abstract, Family')
         expect(element.textContent).toContain("It's this one")
-        expect(api['getAdminGames']).toHaveBeenCalledWith('Azul', 1, 5)
+        expect(api['getAdminGames']).toHaveBeenCalledWith({ search: 'Azul' }, 1, 5)
     })
 
     it('cannot approve until players and length are set, and then sends exactly the reviewed values', async () => {
@@ -107,7 +108,7 @@ describe('AdminProposalReviewComponent', () => {
         expect(approve().disabled).toBe(true)
 
         component.form.patchValue({ maxPlayers: 4, gameAvgDuration: 30, titleEs: 'Azul (ES)' })
-        component.toggleTag(1)
+        component.selectedTagIds.set(new Set([2]))
         fixture.detectChanges()
         expect(approve().disabled).toBe(false)
 
