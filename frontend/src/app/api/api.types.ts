@@ -421,6 +421,26 @@ export type GameReviewWithGameData = GameReviewDto & {
     gameData: GameCompleteType
 }
 
+export type GameLength = 'short' | 'medium' | 'long' | 'epic'
+export type BrowseSort = 'title' | 'shortest' | 'newest'
+
+/** Browse filters; they live in the page URL. */
+export type BrowseFilters = {
+    players: number | null
+    length: GameLength | null
+    tags: Array<number>
+    hideOwned: boolean
+    sort: BrowseSort
+}
+
+/** A tag that at least one catalogue game has. */
+export type CatalogueTagType = {
+    id: number
+    name: string
+    categoryName: string
+    gameCount: number
+}
+
 export type BrowseGamesResultType = {
     games: Array<GameCompleteType>
     pagination: {

@@ -1,7 +1,9 @@
 import { computed, effect, Injectable, inject, signal, untracked } from '@angular/core'
 import { FormControl } from '@angular/forms'
-import { GameCompleteType } from '../../../api/api.types'
+import { BrowseFilters, CatalogueTagType, GameCompleteType } from '../../../api/api.types'
 import { DataService } from '../../../core/services/data.service'
+
+export const DEFAULT_BROWSE_FILTERS: BrowseFilters = { players: null, length: null, tags: [], hideOwned: false, sort: 'title' }
 
 /**
  * This service is user to keep the state of the browse page
@@ -22,6 +24,8 @@ export class BrowsePageService {
     public readonly currentPage = signal(1)
     public readonly hasMoreGames = signal(false)
     public readonly searchControl = new FormControl<string>('')
+    public readonly filters = signal<BrowseFilters>(DEFAULT_BROWSE_FILTERS)
+    public readonly catalogueTags = signal<Array<CatalogueTagType>>([])
 
     private readonly dataService = inject(DataService)
 
@@ -39,5 +43,6 @@ export class BrowsePageService {
         this.currentPage.set(1)
         this.hasMoreGames.set(false)
         this.searchControl.setValue('', { emitEvent: false })
+        this.filters.set(DEFAULT_BROWSE_FILTERS)
     }
 }

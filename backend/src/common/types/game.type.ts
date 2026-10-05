@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
-import { Type } from 'class-transformer'
-import { IsInt, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator'
+import { Transform, Type } from 'class-transformer'
+import { ArrayMaxSize, IsArray, IsBoolean, IsIn, IsInt, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator'
 
 import { GameTagWithCategoryDto } from './tag.type'
 
@@ -116,6 +116,12 @@ export class GameViewRatingDto {
     avgGlobalRating: GameViewRatingSummaryDto | null
 }
 
+export const GAME_LENGTHS = ['short', 'medium', 'long', 'epic'] as const
+export type GameLength = (typeof GAME_LENGTHS)[number]
+
+export const BROWSE_SORTS = ['title', 'shortest', 'newest'] as const
+export type BrowseSort = (typeof BROWSE_SORTS)[number]
+
 export class BrowseGamesQuery {
     @ApiPropertyOptional({ type: String, example: 'catan', description: 'Title search across supported translations.' })
     @IsOptional()
@@ -137,6 +143,42 @@ export class BrowseGamesQuery {
     @Min(1)
     @Max(20)
     limit = 20
+
+    @ApiPropertyOptional({ type: Number, example: 4, minimum: 1, maximum: 20, description: 'Only games that play with this many people.' })
+    @IsOptional()
+    @Type(() => Number)
+    @IsInt()
+    @Min(1)
+    @Max(20)
+    players?: number
+
+    @ApiPropertyOptional({
+        enum: GAME_LENGTHS,
+        description: 'Average length: short under 30 min, medium 30 to 60, long 61 to 120, epic over 120.',
+    })
+    @IsOptional()
+    @IsIn(GAME_LENGTHS)
+    length?: GameLength
+
+    @ApiPropertyOptional({ type: String, example: '3,7', description: 'Comma-separated tag ids. A game must have all of them.' })
+    @IsOptional()
+    @Transform(({ value }) => (typeof value === 'string' ? value.split(',').filter(Boolean).map(Number) : value))
+    @IsArray()
+    @ArrayMaxSize(10)
+    @IsInt({ each: true })
+    @Min(1, { each: true })
+    tags: number[] = []
+
+    @ApiPropertyOptional({ type: Boolean, default: false, description: 'Leave out the games the user owns.' })
+    @IsOptional()
+    @Transform(({ value }) => value === true || value === 'true')
+    @IsBoolean()
+    hideOwned = false
+
+    @ApiPropertyOptional({ enum: BROWSE_SORTS, default: 'title' })
+    @IsOptional()
+    @IsIn(BROWSE_SORTS)
+    sort: BrowseSort = 'title'
 }
 
 /**

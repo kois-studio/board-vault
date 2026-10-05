@@ -1,9 +1,35 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common'
 
 import type { SupportedLanguage } from '../../../../common/types/game-translation.type'
+import type { BrowseSort, GameLength } from '../../../../common/types/game.type'
 import type { CreateNotificationBody } from '../../../../common/types/notification.type'
 import type { DatabaseService } from '../database.service'
 import type { InValue } from '@libsql/client'
+
+export type CatalogueFilters = {
+    /** Normalized title fragment; empty matches every game. */
+    search: string
+    players?: number
+    length?: GameLength
+    /** A game must have every one of these tags. */
+    tagIds: number[]
+    /** Leave out the games this account owns. */
+    hideOwnedBy?: number
+}
+
+/** Average length in minutes. The ranges meet without overlapping. */
+const CATALOGUE_LENGTH: Record<GameLength, string> = {
+    short: 'g.gameAvgDuration < 30',
+    medium: 'g.gameAvgDuration BETWEEN 30 AND 60',
+    long: 'g.gameAvgDuration > 60 AND g.gameAvgDuration <= 120',
+    epic: 'g.gameAvgDuration > 120',
+}
+
+const CATALOGUE_ORDER: Record<BrowseSort, string> = {
+    title: 't.title COLLATE NOCASE ASC, g.id ASC',
+    shortest: 'g.gameAvgDuration IS NULL, g.gameAvgDuration ASC, t.title COLLATE NOCASE ASC, g.id ASC',
+    newest: 'g.id DESC',
+}
 
 /** The game catalogue: games, translations, tags, and proposals. */
 export class GameQueries {
@@ -209,86 +235,75 @@ export class GameQueries {
         })
     }
 
-    browseGames(options: { search: string; skip: number; take: number; excludeGameIds: number[]; languageCode: SupportedLanguage }) {
-        const { search, skip, take, excludeGameIds, languageCode } = options
-
-        // Building the query parts
-        const whereConditions = []
-        const queryArgs: Array<InValue> = []
-
-        // Add language condition (always included)
-        whereConditions.push('languageCode = ?')
-        queryArgs.push(languageCode)
-
-        // Add search condition if provided
-        if (search && search.trim() !== '') {
-            whereConditions.push('normalizedTitle LIKE ?')
-            queryArgs.push(`%${search}%`)
-        }
-
-        // Add exclusion condition if game IDs to exclude are provided
-        if (excludeGameIds.length > 0) {
-            whereConditions.push(`gameId NOT IN (${excludeGameIds.map(() => '?').join(', ')})`)
-            queryArgs.push(...excludeGameIds)
-        }
-
-        // Combine WHERE conditions if any
-        const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : ''
-
-        // Main query for fetching games with pagination
-        const sql = `
-            SELECT * FROM GameTranslation 
-            ${whereClause}
-            ORDER BY title ASC
-            LIMIT ? OFFSET ?
-        `
-
-        // Add pagination params
-        queryArgs.push(take, skip)
+    /** One page of catalogue game ids, filtered and sorted for Browse. */
+    browseCatalogue(filters: CatalogueFilters & { sort: BrowseSort; skip: number; take: number }) {
+        const { where, args } = this.catalogueWhere(filters)
 
         return this.database.execute({
-            sql,
-            args: queryArgs,
+            sql: `
+                SELECT g.id FROM Game g
+                JOIN GameTranslation t ON t.gameId = g.id AND t.languageCode = 'en'
+                ${where}
+                ORDER BY ${CATALOGUE_ORDER[filters.sort]}
+                LIMIT ? OFFSET ?
+            `,
+            args: [...args, filters.take, filters.skip],
         })
     }
 
-    countGames(options: { search: string; excludeGameIds: number[]; languageCode: SupportedLanguage }) {
-        const { search, excludeGameIds, languageCode } = options
-
-        // Building the query parts
-        const whereConditions = []
-        const queryArgs: Array<InValue> = []
-
-        // Add language condition (always included)
-        whereConditions.push('languageCode = ?')
-        queryArgs.push(languageCode)
-
-        // Add search condition if provided
-        if (search && search.trim() !== '') {
-            whereConditions.push('normalizedTitle LIKE ?')
-            queryArgs.push(`%${search}%`)
-        }
-
-        // Add exclusion condition if game IDs to exclude are provided
-        if (excludeGameIds.length > 0) {
-            whereConditions.push(`gameId NOT IN (${excludeGameIds.map(() => '?').join(', ')})`)
-            queryArgs.push(...excludeGameIds)
-        }
-
-        // Combine WHERE conditions if any
-        const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : ''
-
-        // Query for counting total games matching criteria
-        // Using COUNT(DISTINCT gameId) to count unique games, not translations
-        const sql = `
-            SELECT COUNT(DISTINCT gameId) as total FROM GameTranslation
-            ${whereClause}
-        `
+    countCatalogue(filters: CatalogueFilters) {
+        const { where, args } = this.catalogueWhere(filters)
 
         return this.database.execute({
-            sql,
-            args: queryArgs,
+            sql: `
+                SELECT COUNT(*) AS total FROM Game g
+                JOIN GameTranslation t ON t.gameId = g.id AND t.languageCode = 'en'
+                ${where}
+            `,
+            args,
         })
+    }
+
+    /** Tags used by at least one game, with their category and how many games have them. */
+    getCatalogueTags() {
+        return this.database.execute(`
+            SELECT tag.id, tag.name, category.name AS categoryName, COUNT(gameTag.gameId) AS gameCount
+            FROM Tag tag
+            JOIN TagCategory category ON category.id = tag.categoryId
+            JOIN GameTag gameTag ON gameTag.tagId = tag.id
+            GROUP BY tag.id
+            ORDER BY category.name, tag.name
+        `)
+    }
+
+    private catalogueWhere(filters: CatalogueFilters): { where: string; args: Array<InValue> } {
+        const conditions: Array<string> = []
+        const args: Array<InValue> = []
+
+        if (filters.search) {
+            // Any translation matches, so a Spanish title finds the game too.
+            conditions.push('EXISTS (SELECT 1 FROM GameTranslation s WHERE s.gameId = g.id AND s.normalizedTitle LIKE ?)')
+            args.push(`%${filters.search}%`)
+        }
+        if (filters.players !== undefined) {
+            conditions.push('g.minPlayers <= ? AND g.maxPlayers >= ?')
+            args.push(filters.players, filters.players)
+        }
+        if (filters.length) {
+            conditions.push(CATALOGUE_LENGTH[filters.length])
+        }
+        if (filters.tagIds.length > 0) {
+            conditions.push(
+                `g.id IN (SELECT gameId FROM GameTag WHERE tagId IN (${filters.tagIds.map(() => '?').join(', ')}) GROUP BY gameId HAVING COUNT(DISTINCT tagId) = ?)`,
+            )
+            args.push(...filters.tagIds, new Set(filters.tagIds).size)
+        }
+        if (filters.hideOwnedBy !== undefined) {
+            conditions.push('NOT EXISTS (SELECT 1 FROM OwnedGame o WHERE o.gameId = g.id AND o.accountId = ?)')
+            args.push(filters.hideOwnedBy)
+        }
+
+        return { where: conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '', args }
     }
 
     browseGamesMultiLanguage(options: { search: string; skip: number; take: number; excludeGameIds: number[] }) {

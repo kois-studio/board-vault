@@ -7,7 +7,7 @@
 </app-page-header>
 <container-wrapper>
     <!-- Search Bar -->
-    <div class="search-container py-6">
+    <div class="search-container pt-6 pb-4">
         <div class="relative">
             <label for="game-search" class="sr-only">Search games</label>
             <input
@@ -24,6 +24,128 @@
             @if (isSearching$()) {
                 <div class="absolute right-4 top-1/2 -translate-y-1/2">
                     <app-icon name="refresh" [size]="18" className="text-bv-text-muted motion-safe:animate-spin" />
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Filters: a row on larger screens, behind a button on phones -->
+    <div class="pb-6">
+        <button
+            type="button"
+            class="inline-flex min-h-11 items-center gap-2 rounded-lg border border-bv-border bg-bv-surface px-4 text-sm font-semibold sm:hidden"
+            aria-controls="browse-filters"
+            [attr.aria-expanded]="filtersOpen()"
+            (click)="filtersOpen.set(!filtersOpen())"
+        >
+            <app-icon name="sliders-horizontal" [size]="16" aria-hidden="true" />
+            Filters
+            @if (activeFilterCount()) {
+                <span class="rounded-full bg-bv-primary px-2 text-xs text-bv-on-primary">{{ activeFilterCount() }}</span>
+            }
+        </button>
+        <div id="browse-filters" class="mt-3 flex-col gap-4 sm:mt-0 sm:flex" [class.flex]="filtersOpen()" [class.hidden]="!filtersOpen()">
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:items-end">
+                <label class="flex flex-col gap-1 text-sm font-medium">
+                    Players
+                    <select
+                        #playersSelect
+                        class="min-h-11 rounded border border-bv-border bg-bv-surface px-3 text-base focus:outline-none focus:ring-2 focus:ring-bv-primary"
+                        (change)="setPlayers(playersSelect.value)"
+                    >
+                        <option value="" [selected]="filters$().players === null">Any number</option>
+                        @for (count of playerOptions; track count) {
+                            <option [value]="count" [selected]="filters$().players === count">Plays with {{ count }}</option>
+                        }
+                    </select>
+                </label>
+                <label class="flex flex-col gap-1 text-sm font-medium">
+                    Length
+                    <select
+                        #lengthSelect
+                        class="min-h-11 rounded border border-bv-border bg-bv-surface px-3 text-base focus:outline-none focus:ring-2 focus:ring-bv-primary"
+                        (change)="setLength(lengthSelect.value)"
+                    >
+                        <option value="" [selected]="filters$().length === null">Any length</option>
+                        @for (option of lengthOptions; track option.value) {
+                            <option [value]="option.value" [selected]="filters$().length === option.value">{{ option.label }}</option>
+                        }
+                    </select>
+                </label>
+                <label class="flex flex-col gap-1 text-sm font-medium">
+                    Sort by
+                    <select
+                        #sortSelect
+                        class="min-h-11 rounded border border-bv-border bg-bv-surface px-3 text-base focus:outline-none focus:ring-2 focus:ring-bv-primary"
+                        (change)="setSort(sortSelect.value)"
+                    >
+                        @for (option of sortOptions; track option.value) {
+                            <option [value]="option.value" [selected]="filters$().sort === option.value">{{ option.label }}</option>
+                        }
+                    </select>
+                </label>
+                <label class="flex min-h-11 items-center gap-2 text-sm font-medium">
+                    <input
+                        #hideOwnedInput
+                        type="checkbox"
+                        class="h-5 w-5 accent-bv-primary"
+                        [checked]="filters$().hideOwned"
+                        (change)="setHideOwned(hideOwnedInput.checked)"
+                    />
+                    Hide games I own
+                </label>
+            </div>
+            @if (tagGroups().length) {
+                <div class="flex flex-wrap items-center gap-2">
+                    <button
+                        type="button"
+                        class="inline-flex min-h-9 items-center gap-1 rounded-full border border-bv-border bg-bv-surface px-3 text-sm font-medium hover:bg-bv-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bv-primary"
+                        aria-controls="browse-tags"
+                        [attr.aria-expanded]="tagsOpen()"
+                        (click)="tagsOpen.set(!tagsOpen())"
+                    >
+                        {{ tagsOpen() ? 'Hide tags' : 'Filter by tags' }}
+                    </button>
+                    @for (tag of selectedTags(); track tag.id) {
+                        <button
+                            type="button"
+                            class="min-h-9 rounded-full border border-bv-primary bg-bv-primary px-3 text-sm text-bv-on-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bv-primary"
+                            [attr.aria-label]="'Remove tag ' + tag.name"
+                            (click)="toggleTag(tag.id)"
+                        >
+                            {{ tag.name }} ×
+                        </button>
+                    }
+                </div>
+                @if (tagsOpen()) {
+                    <fieldset id="browse-tags" class="min-w-0 rounded-lg border border-bv-border bg-bv-surface p-4">
+                        <legend class="px-1 text-sm font-medium">Tags <span class="font-normal text-bv-text-muted">(games with all of the chosen tags)</span></legend>
+                        <div class="flex flex-col gap-3">
+                            @for (group of tagGroups(); track group.category) {
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <span class="w-full text-xs font-semibold uppercase tracking-wide text-bv-text-muted">{{ group.category }}</span>
+                                    @for (tag of group.tags; track tag.id) {
+                                        <button
+                                            type="button"
+                                            class="min-h-9 rounded-full border px-3 text-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bv-primary"
+                                            [class]="filters$().tags.includes(tag.id) ? 'border-bv-primary bg-bv-primary text-bv-on-primary' : 'border-bv-border bg-bv-surface hover:bg-bv-surface-2'"
+                                            [attr.aria-pressed]="filters$().tags.includes(tag.id)"
+                                            (click)="toggleTag(tag.id)"
+                                        >
+                                            {{ tag.name }} <span class="opacity-80">{{ tag.gameCount }}</span>
+                                        </button>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </fieldset>
+                }
+            }
+            @if (activeFilterCount()) {
+                <div>
+                    <button type="button" class="min-h-11 text-sm font-semibold text-bv-primary hover:underline" (click)="clearFilters()">
+                        Clear filters ({{ activeFilterCount() }})
+                    </button>
                 </div>
             }
         </div>
@@ -47,6 +169,10 @@
                     } @else if (allSearchResultsOwnedByGroup()) {
                         <p class="mb-2">Your group already owns every matching game</p>
                         <p class="text-sm text-bv-text-muted mb-4">Search for another game if you want to grow the group’s acquisition shortlist.</p>
+                    } @else if (activeFilterCount()) {
+                        <p class="mb-2">No games match these filters</p>
+                        <p class="text-sm text-bv-text-muted mb-4">Try fewer filters, or another number of players.</p>
+                        <button appButton (click)="clearFilters()">Clear filters</button>
                     } @else {
                         <p class="mb-2">No games found matching "{{searchTerm$().trim()}}"</p>
                         <p class="text-sm text-bv-text-muted mb-4">Please review the spelling</p>

@@ -37,7 +37,7 @@ describe('UserOwnershipGuard', () => {
         expect(hasOwnershipGuard(UsersController.prototype, 'getUserById')).toBe(true)
         expect(hasOwnershipGuard(DashboardController.prototype, 'getGroupsOfUser')).toBe(true)
         expect(hasOwnershipGuard(CollectionController.prototype, 'getGamesOwnedByUser')).toBe(true)
-        expect(hasOwnershipGuard(CollectionController.prototype, 'getGamesNotOwnedByUser')).toBe(true)
+        expect(hasOwnershipGuard(CollectionController.prototype, 'browseCatalogue')).toBe(true)
         expect(hasOwnershipGuard(CollectionController.prototype, 'getReviewsOfUser')).toBe(true)
         expect(hasOwnershipGuard(CollectionController.prototype, 'getUserWishlist')).toBe(true)
         expect(hasOwnershipGuard(PlayController.prototype, 'getUserGamesHistory')).toBe(true)
@@ -54,7 +54,7 @@ describe('UserOwnershipGuard', () => {
             'removeGameFromUserCollection',
             'updateGameOwnership',
             'toggleWishlist',
-            'getGamesNotOwnedByUser',
+            'browseCatalogue',
             'getReviewsOfUser',
             'saveGameReview',
             'getUserWishlist',

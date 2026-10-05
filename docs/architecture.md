@@ -119,7 +119,7 @@ for the previous account are cancelled, so the next account starts empty
 | `LoginService` | Whether the session is ready, the current user id, and whether they are an admin. |
 | `PendingProposalsService` | The pending proposal count behind the admin badges. |
 | `GroupViewService` | The open group and its member and game filters. |
-| `BrowsePageService` | Catalogue search results, term and page. |
+| `BrowsePageService` | Catalogue search results, term, page, filters (players, length, tags, hide owned, sort) and the tag list. The page URL is the source of truth for the term and filters (`?q=&players=&length=&tags=&hideOwned=&sort=`), so a filtered view survives a reload and can be shared; filtering runs on the server. |
 | `AdminGamesManageService` | Admin catalogue search results and term. |
 
 Page state lives in the page component. Subscriptions that do not complete on

@@ -3,6 +3,7 @@ import * as z from 'zod/mini'
 import type {
     AdminGamesResultType,
     BrowseGamesResultType,
+    CatalogueTagType,
     ClerkGroupInvitationSummaryType,
     ClerkGroupInvitationType,
     CollectionActivityWithGameDataType,
@@ -108,6 +109,10 @@ const gameWithTagsAndTranslationsSchema: z.ZodMiniType<GameWithTagsAndTranslatio
 
 export const adminTagCategoriesSchema = z.array(tagCategorySchema)
 export const adminTagsSchema = z.array(tagSchema)
+
+export const catalogueTagsSchema: z.ZodMiniType<Array<CatalogueTagType>> = z.array(
+    z.object({ id: z.number(), name: z.string(), categoryName: z.string(), gameCount: z.number() }),
+)
 
 export const adminGamesSchema: z.ZodMiniType<AdminGamesResultType> = z.object({
     games: z.array(gameWithTagsAndTranslationsSchema),

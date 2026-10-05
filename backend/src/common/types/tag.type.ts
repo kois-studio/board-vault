@@ -38,3 +38,9 @@ export class GameTagWithCategoryDto {
     @ApiProperty({ example: 'Game Type', description: 'Category name' })
     categoryName: string
 }
+
+/** A tag that at least one catalogue game has, for the Browse filters. */
+export class CatalogueTagDto extends GameTagWithCategoryDto {
+    @ApiProperty({ example: 12, description: 'Games in the catalogue with this tag' })
+    gameCount: number
+}

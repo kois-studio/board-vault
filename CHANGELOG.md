@@ -13,6 +13,10 @@ operational details.
 
 ### Changed
 
+- Browse filters the catalogue by number of players, length, and tags (a
+  game must have every chosen tag), can hide the games you own, and sorts
+  A–Z, shortest first, or newest. Filters live in the URL, and on phones they
+  sit behind a Filters button. Title search now also matches Spanish titles.
 - A new placeholder logo (a vault door whose lock plate has a meeple
   keyhole) and favicon, and the app can be installed on phones: a web
   manifest with app icons, an adaptive Android icon, and an iOS home-screen

@@ -3217,7 +3217,7 @@
     "/collection/users/{userId}/browse/games": {
       "get": {
         "deprecated": false,
-        "operationId": "CollectionController_getGamesNotOwnedByUser",
+        "operationId": "CollectionController_browseCatalogue",
         "parameters": [
           {
             "name": "userId",
@@ -3259,17 +3259,106 @@
               "example": 20,
               "type": "number"
             }
+          },
+          {
+            "name": "players",
+            "required": false,
+            "in": "query",
+            "description": "Only games that play with this many people.",
+            "schema": {
+              "minimum": 1,
+              "maximum": 20,
+              "example": 4,
+              "type": "number"
+            }
+          },
+          {
+            "name": "length",
+            "required": false,
+            "in": "query",
+            "description": "Average length: short under 30 min, medium 30 to 60, long 61 to 120, epic over 120.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "short",
+                "medium",
+                "long",
+                "epic"
+              ]
+            }
+          },
+          {
+            "name": "tags",
+            "required": false,
+            "in": "query",
+            "description": "Comma-separated tag ids. A game must have all of them.",
+            "schema": {
+              "example": "3,7",
+              "type": "string"
+            }
+          },
+          {
+            "name": "hideOwned",
+            "required": false,
+            "in": "query",
+            "description": "Leave out the games the user owns.",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "title",
+              "type": "string",
+              "enum": [
+                "title",
+                "shortest",
+                "newest"
+              ]
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "List of all games not owned by the user",
+            "description": "One page of catalogue games matching the filters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BrowseGamesResultDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Browse the catalogue with filters",
+        "tags": [
+          "collection"
+        ]
+      }
+    },
+    "/collection/tags": {
+      "get": {
+        "deprecated": false,
+        "operationId": "CollectionController_getCatalogueTags",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Tags with their category and game count",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/BrowseGamesResultDto"
+                    "$ref": "#/components/schemas/CatalogueTagDto"
                   }
                 }
               }
@@ -3281,7 +3370,7 @@
             "bearer": []
           }
         ],
-        "summary": "Browse games not owned by a user",
+        "summary": "Tags used by catalogue games, for the Browse filters",
         "tags": [
           "collection"
         ]
@@ -7205,6 +7294,37 @@
         "required": [
           "games",
           "pagination"
+        ]
+      },
+      "CatalogueTagDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1,
+            "description": "Tag ID"
+          },
+          "name": {
+            "type": "string",
+            "example": "Strategy",
+            "description": "Tag name"
+          },
+          "categoryName": {
+            "type": "string",
+            "example": "Game Type",
+            "description": "Category name"
+          },
+          "gameCount": {
+            "type": "number",
+            "example": 12,
+            "description": "Games in the catalogue with this tag"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "categoryName",
+          "gameCount"
         ]
       },
       "GameReviewWithGameDataDto": {

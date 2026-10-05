@@ -4,8 +4,12 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { safeErrorName } from '../../../common/logging/structured-log'
 import { gamesSchema } from '../../../common/schemas'
 import { GameDto } from '../../../common/types/game.type'
+import { CatalogueTagDto } from '../../../common/types/tag.type'
 import { CacheService } from '../../common/cache/cache.service'
 import { DatabaseService } from '../../common/database/database.service'
+
+import type { BrowseSort } from '../../../common/types/game.type'
+import type { CatalogueFilters } from '../../common/database/queries/games.queries'
 
 @Injectable()
 export class GamesService {
@@ -41,6 +45,29 @@ export class GamesService {
     }
 
     // #region methods
+
+    /** One page of catalogue game ids for Browse, and how many games match in total. */
+    async browseCatalogue(
+        filters: CatalogueFilters & { sort: BrowseSort; page: number; pageSize: number },
+    ): Promise<{ gameIds: Array<number>; total: number }> {
+        const [page, count] = await Promise.all([
+            this.databaseService.games.browseCatalogue({ ...filters, skip: (filters.page - 1) * filters.pageSize, take: filters.pageSize }),
+            this.databaseService.games.countCatalogue(filters),
+        ])
+
+        return { gameIds: page.rows.map(row => Number(row[0])), total: Number(count.rows[0]?.[0] ?? 0) }
+    }
+
+    async getCatalogueTags(): Promise<Array<CatalogueTagDto>> {
+        const resultSet = await this.databaseService.games.getCatalogueTags()
+
+        return resultSet.rows.map(row => ({
+            id: Number(row[0]),
+            name: String(row[1]),
+            categoryName: String(row[2]),
+            gameCount: Number(row[3]),
+        }))
+    }
 
     /** Many games in one query, keyed by id. Missing ids are left out. */
     async getGamesByIds(ids: Array<number>): Promise<Map<number, GameDto>> {

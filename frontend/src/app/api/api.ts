@@ -12,6 +12,7 @@ import {
     adminTagCategoriesSchema,
     adminTagsSchema,
     browseGamesSchema,
+    catalogueTagsSchema,
     clerkAuthStatusSchema,
     clerkGroupInvitationSchema,
     clerkGroupInvitationSummariesSchema,
@@ -59,7 +60,9 @@ import {
 } from './api.schemas'
 import type {
     AdminGamesResultType,
+    BrowseFilters,
     BrowseGamesResultType,
+    CatalogueTagType,
     ClerkGroupInvitationSummaryType,
     ClerkGroupInvitationType,
     CollectionActivityWithGameDataType,
@@ -394,11 +397,21 @@ export class Api {
             .pipe(map((response) => userGamesSchema.parse(response)))
     }
 
-    browseGamesNotOwnedByUser(userId: number, search: string, page: number, limit: number) {
-        const params = new URLSearchParams({ search, page: page.toString(), limit: limit.toString() })
+    browseGamesNotOwnedByUser(userId: number, search: string, page: number, limit: number, filters: BrowseFilters) {
+        const params = new URLSearchParams({ search, page: page.toString(), limit: limit.toString(), sort: filters.sort })
+        if (filters.players !== null) params.set('players', filters.players.toString())
+        if (filters.length !== null) params.set('length', filters.length)
+        if (filters.tags.length > 0) params.set('tags', filters.tags.join(','))
+        if (filters.hideOwned) params.set('hideOwned', 'true')
         return this.http
             .get<BrowseGamesResultType>(`${this.url}/collection/users/${userId}/browse/games?${params.toString()}`)
             .pipe(map((response) => browseGamesSchema.parse(response)))
+    }
+
+    getCatalogueTags() {
+        return this.http
+            .get<Array<CatalogueTagType>>(`${this.url}/collection/tags`)
+            .pipe(map((response) => catalogueTagsSchema.parse(response)))
     }
 
     getGameView(userId: number, gameId: number) {

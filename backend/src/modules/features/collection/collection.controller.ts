@@ -22,6 +22,7 @@ import { CollectionActivityDto } from '../../../common/types/collection-activity
 import { GameOwnedDto, UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
 import { CreateGameReviewBody, GameReviewWithGameDataDto } from '../../../common/types/game-review.type'
 import { BrowseGamesQuery, BrowseGamesResultDto, GameCompleteDto, GameDto, GameViewDto } from '../../../common/types/game.type'
+import { CatalogueTagDto } from '../../../common/types/tag.type'
 import { WishlistResponseDto } from '../../../common/types/wishlisted-game.type'
 
 import { CollectionService } from './collection.service'
@@ -93,10 +94,17 @@ export class CollectionController {
 
     @UseGuards(UserOwnershipGuard)
     @Get('/users/:userId/browse/games')
-    @ApiOperation({ summary: 'Browse games not owned by a user', deprecated: false })
-    @ApiResponse({ status: 200, type: [BrowseGamesResultDto], description: 'List of all games not owned by the user' })
-    async getGamesNotOwnedByUser(@Param('userId', ParseIntPipe) userId: number, @Query() query: BrowseGamesQuery) {
-        return this.collectionService.getGamesNotOwnedByUser(userId, query.search, query.page, query.limit)
+    @ApiOperation({ summary: 'Browse the catalogue with filters', deprecated: false })
+    @ApiResponse({ status: 200, type: BrowseGamesResultDto, description: 'One page of catalogue games matching the filters' })
+    async browseCatalogue(@Param('userId', ParseIntPipe) userId: number, @Query() query: BrowseGamesQuery) {
+        return this.collectionService.browseCatalogue(userId, query)
+    }
+
+    @Get('/tags')
+    @ApiOperation({ summary: 'Tags used by catalogue games, for the Browse filters', deprecated: false })
+    @ApiResponse({ status: 200, type: [CatalogueTagDto], description: 'Tags with their category and game count' })
+    async getCatalogueTags() {
+        return this.collectionService.getCatalogueTags()
     }
 
     @UseGuards(UserOwnershipGuard)

@@ -16,7 +16,8 @@ import { WishlistService } from '../../core/wishlist/wishlist.service'
 import type { SuccessDto } from '../../../common/types/auth.type'
 import type { CollectionActivityWithGameDataDto } from '../../../common/types/collection-activity.type'
 import type { CreateGameReviewBody, GameReviewWithGameDataDto } from '../../../common/types/game-review.type'
-import type { BrowseGamesResultDto, GameCompleteDto, GameDto, GameViewDto } from '../../../common/types/game.type'
+import type { BrowseGamesQuery, BrowseGamesResultDto, GameCompleteDto, GameDto, GameViewDto } from '../../../common/types/game.type'
+import type { CatalogueTagDto } from '../../../common/types/tag.type'
 
 @Injectable()
 export class CollectionService {
@@ -47,30 +48,41 @@ export class CollectionService {
     }
 
     @LogFeature(new Logger('CollectionService'))
-    async getGamesNotOwnedByUser(_userId: number, search: string, page: number, limit: number): Promise<BrowseGamesResultDto> {
-        const result = await this.gameTranslationService.browseGamesByTitle({
-            search,
-            page,
-            pageSize: limit,
-            excludeGameIds: [], // this was implemented to only show the games the user doesn't own, but now we show them with an icon
+    async browseCatalogue(userId: number, query: BrowseGamesQuery): Promise<BrowseGamesResultDto> {
+        const { gameIds, total } = await this.gamesService.browseCatalogue({
+            search: this.gameTranslationService.normalizeTitle(query.search),
+            players: query.players,
+            length: query.length,
+            tagIds: query.tags,
+            hideOwnedBy: query.hideOwned ? userId : undefined,
+            sort: query.sort,
+            page: query.page,
+            pageSize: query.limit,
         })
-
-        const gamesWithTranslations = await Promise.all(
-            result.gameIds.map(async gameId => ({
-                ...(await this.gamesService.getGameById(gameId)),
-                titleTranslations: await this.gameTranslationService.getGameTranslations(gameId),
-            })),
-        )
+        const [games, translations] = await Promise.all([
+            this.gamesService.getGamesByIds(gameIds),
+            this.gameTranslationService.getTranslationsByGameIds(gameIds),
+        ])
 
         return {
-            games: gamesWithTranslations,
+            games: gameIds.flatMap(gameId => {
+                const game = games.get(gameId)
+                const titleTranslations = translations.get(gameId)
+
+                return game && titleTranslations ? [{ ...game, titleTranslations }] : []
+            }),
             pagination: {
-                currentPage: result.currentPage,
-                totalPages: result.totalPages,
-                totalItems: result.totalItems,
-                itemsPerPage: result.itemsPerPage,
+                currentPage: query.page,
+                totalPages: Math.ceil(total / query.limit),
+                totalItems: total,
+                itemsPerPage: query.limit,
             },
         }
+    }
+
+    @LogFeature(new Logger('CollectionService'))
+    async getCatalogueTags(): Promise<Array<CatalogueTagDto>> {
+        return this.gamesService.getCatalogueTags()
     }
 
     @LogFeature(new Logger('CollectionService'))
