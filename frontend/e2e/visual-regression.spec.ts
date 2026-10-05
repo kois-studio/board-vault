@@ -1,4 +1,12 @@
-import { expect, test } from '@playwright/test'
+import { expect, type Page, test } from '@playwright/test'
+
+/** The landing samples render when their section scrolls into view (@defer), so scroll through the page first. */
+async function revealDeferredSections(page: Page): Promise<void> {
+    await page.locator('#how-it-works').scrollIntoViewIfNeeded()
+    await expect(page.locator('figure')).toHaveCount(5)
+    await page.evaluate(() => window.scrollTo(0, 0))
+    await page.waitForTimeout(250)
+}
 
 test.describe('public visual regression', () => {
     // Baselines are rendered on the CI Linux runner. Font rendering differs on
@@ -12,7 +20,7 @@ test.describe('public visual regression', () => {
             await page.emulateMedia({ colorScheme: theme })
             await page.goto('/')
             await expect(page.locator('app-icon svg:visible').first()).toBeVisible()
-            await page.waitForTimeout(250)
+            await revealDeferredSections(page)
 
             await expect(page).toHaveScreenshot(`landing-desktop-${theme}.png`, {
                 fullPage: true,
@@ -26,7 +34,7 @@ test.describe('public visual regression', () => {
             await page.emulateMedia({ colorScheme: theme })
             await page.goto('/')
             await expect(page.locator('app-icon svg:visible').first()).toBeVisible()
-            await page.waitForTimeout(250)
+            await revealDeferredSections(page)
 
             await expect(page).toHaveScreenshot(`landing-mobile-${theme}.png`, {
                 fullPage: true,
