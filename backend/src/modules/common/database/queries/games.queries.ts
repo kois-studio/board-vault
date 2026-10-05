@@ -392,13 +392,6 @@ export class GameQueries {
         })
     }
 
-    getTagsByCategoryId(categoryId: number) {
-        return this.database.execute({
-            sql: 'SELECT * FROM Tag WHERE categoryId = ?',
-            args: [categoryId],
-        })
-    }
-
     createTag(name: string, categoryId: number) {
         return this.database.execute({
             sql: 'INSERT INTO Tag (name, categoryId) VALUES (?, ?)',
@@ -467,10 +460,28 @@ export class GameQueries {
         })
     }
 
-    getGameCountByTagCategoryId(tagCategoryId: number) {
+    /** Categories with their tag ids (as a JSON array) and how many distinct games use any of their tags. */
+    getTagCategoriesWithTags(categoryId: number | null = null) {
         return this.database.execute({
-            sql: `SELECT COUNT(*) FROM GameTag WHERE tagId IN (SELECT id FROM Tag WHERE categoryId = ?)`,
-            args: [tagCategoryId],
+            sql: `
+            SELECT
+                category.id,
+                category.name,
+                (SELECT json_group_array(tagId) FROM (SELECT tag.id AS tagId FROM Tag tag WHERE tag.categoryId = category.id ORDER BY tag.id)) AS tagIds,
+                (
+                    SELECT COUNT(DISTINCT gameTag.gameId)
+                    FROM GameTag gameTag
+                    JOIN Tag tag ON tag.id = gameTag.tagId
+                    WHERE tag.categoryId = category.id
+                ) AS gameCount
+            FROM
+                TagCategory category
+            WHERE
+                ?1 IS NULL OR category.id = ?1
+            ORDER BY
+                category.id;
+            `,
+            args: [categoryId],
         })
     }
 

@@ -41,46 +41,21 @@ export class AdminService {
 
     @LogFeature(new Logger('AdminService'))
     async getAdminTagCategories(): Promise<TagCategoryWithTagsDto[]> {
-        const categories = await this.tagCategoryService.getTagCategories()
-
-        return Promise.all(
-            categories.map(async category => {
-                const tags = await this.tagService.getTagsByCategoryId(category.id)
-                const gameCount = await this.gameTagsService.getGameCountByTagCategoryId(category.id)
-
-                return {
-                    ...category,
-                    tags,
-                    gameCount,
-                }
-            }),
-        )
+        return this.tagCategoryService.getTagCategoriesWithTags()
     }
 
     // #endregion
 
     async createTagCategory(name: string): Promise<TagCategoryWithTagsDto> {
         const category = await this.tagCategoryService.createTagCategory(name)
-        const tags = await this.tagService.getTagsByCategoryId(category.id)
-        const gameCount = await this.gameTagsService.getGameCountByTagCategoryId(category.id)
 
-        return {
-            ...category,
-            tags,
-            gameCount,
-        }
+        return this.tagCategoryService.getTagCategoryWithTags(category.id)
     }
 
     async updateTagCategory(id: number, name: string): Promise<TagCategoryWithTagsDto> {
-        const category = await this.tagCategoryService.updateTagCategory(id, name)
-        const tags = await this.tagService.getTagsByCategoryId(category.id)
-        const gameCount = await this.gameTagsService.getGameCountByTagCategoryId(category.id)
+        await this.tagCategoryService.updateTagCategory(id, name)
 
-        return {
-            ...category,
-            tags,
-            gameCount,
-        }
+        return this.tagCategoryService.getTagCategoryWithTags(id)
     }
 
     async deleteTagCategory(id: number): Promise<{ success: boolean }> {

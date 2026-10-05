@@ -1,8 +1,6 @@
 import { ApiProperty, OmitType } from '@nestjs/swagger'
 import { IsNumber, IsString, MaxLength } from 'class-validator'
 
-import { TagDto } from './tag.type.js'
-
 /**
  * Tag category
  */
@@ -18,13 +16,13 @@ export class TagCategoryDto {
 }
 
 /**
- * Tag category with tags and game count
+ * Tag category with the ids of its tags and how many distinct games use them
  */
 export class TagCategoryWithTagsDto extends TagCategoryDto {
-    @ApiProperty({ type: [TagDto] })
-    tags: TagDto[]
+    @ApiProperty({ type: [Number], example: [3, 7, 12], description: 'Ids of the tags in this category' })
+    tags: number[]
 
-    @ApiProperty({ example: 10 })
+    @ApiProperty({ example: 10, description: 'Distinct games with at least one tag in this category' })
     gameCount: number
 }
 

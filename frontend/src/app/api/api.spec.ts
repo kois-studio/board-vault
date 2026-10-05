@@ -3,6 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing'
 import { firstValueFrom } from 'rxjs'
 
+import openapi from '../../../../docs/api/openapi.json'
 import { environment } from '../../environments/environment'
 
 import { Api } from './api'
@@ -339,6 +340,31 @@ describe('Api response contracts', () => {
                 fromAccount: { id: 1, username: 'owner', displayName: 'Owner' },
                 group: { id: 7, name: 'Friday games', createdBy: 1, createdAt: '2026-09-01T10:00:00.000Z' },
             },
+        ])
+
+        await expect(response).rejects.toThrow()
+    })
+
+    it('accepts admin tag categories in the shape the API documents', async () => {
+        const { properties } = openapi.components.schemas.TagCategoryWithTagsDto
+        const category = {
+            id: properties.id.example,
+            name: properties.name.example,
+            tags: properties.tags.example,
+            gameCount: properties.gameCount.example,
+        }
+        const response = firstValueFrom(api.getAdminTagCategories())
+
+        http.expectOne(`${environment.apiUrl}/admin/tag-categories`).flush([category])
+
+        await expect(response).resolves.toEqual([category])
+    })
+
+    it('rejects admin tag categories that carry tag objects instead of ids', async () => {
+        const response = firstValueFrom(api.getAdminTagCategories())
+
+        http.expectOne(`${environment.apiUrl}/admin/tag-categories`).flush([
+            { id: 1, name: 'Genre', tags: [{ id: 3, name: 'Strategy', categoryId: 1, gameCount: 2 }], gameCount: 2 },
         ])
 
         await expect(response).rejects.toThrow()

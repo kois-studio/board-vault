@@ -54,14 +54,14 @@ export class AdminController {
 
     @Post('/tag-categories')
     @ApiOperation({ summary: 'Create a new tag category', deprecated: false })
-    @ApiResponse({ status: 200, type: CreateTagCategoryDto, description: 'New tag category created' })
+    @ApiResponse({ status: 200, type: TagCategoryWithTagsDto, description: 'New tag category created' })
     async createTagCategory(@Body() tagCategoryDto: CreateTagCategoryDto) {
         return this.adminService.createTagCategory(tagCategoryDto.name)
     }
 
     @Put('/tag-categories/:id')
     @ApiOperation({ summary: 'Update a tag category', deprecated: false })
-    @ApiResponse({ status: 200, type: CreateTagCategoryDto, description: 'Tag category updated' })
+    @ApiResponse({ status: 200, type: TagCategoryWithTagsDto, description: 'Tag category updated' })
     async updateTagCategory(@Param('id', ParseIntPipe) id: number, @Body() tagCategoryDto: CreateTagCategoryDto) {
         return this.adminService.updateTagCategory(id, tagCategoryDto.name)
     }

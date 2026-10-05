@@ -2267,7 +2267,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CreateTagCategoryDto"
+                  "$ref": "#/components/schemas/TagCategoryWithTagsDto"
                 }
               }
             }
@@ -2314,7 +2314,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CreateTagCategoryDto"
+                  "$ref": "#/components/schemas/TagCategoryWithTagsDto"
                 }
               }
             }
@@ -6575,6 +6575,54 @@
           }
         }
       },
+      "TagCategoryWithTagsDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "Action"
+          },
+          "tags": {
+            "example": [
+              3,
+              7,
+              12
+            ],
+            "description": "Ids of the tags in this category",
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "gameCount": {
+            "type": "number",
+            "example": 10,
+            "description": "Distinct games with at least one tag in this category"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "tags",
+          "gameCount"
+        ]
+      },
+      "CreateTagCategoryDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Action"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
       "TagDto": {
         "type": "object",
         "properties": {
@@ -6600,47 +6648,6 @@
           "name",
           "categoryId",
           "gameCount"
-        ]
-      },
-      "TagCategoryWithTagsDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number",
-            "example": 1
-          },
-          "name": {
-            "type": "string",
-            "example": "Action"
-          },
-          "tags": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/TagDto"
-            }
-          },
-          "gameCount": {
-            "type": "number",
-            "example": 10
-          }
-        },
-        "required": [
-          "id",
-          "name",
-          "tags",
-          "gameCount"
-        ]
-      },
-      "CreateTagCategoryDto": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "example": "Action"
-          }
-        },
-        "required": [
-          "name"
         ]
       },
       "CreateTagDto": {

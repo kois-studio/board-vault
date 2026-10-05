@@ -62,15 +62,6 @@ export class TagsService {
         return tag
     }
 
-    async getTagsByCategoryId(categoryId: number): Promise<Array<TagDto>> {
-        this.LOGGER.log('Getting tags for category')
-
-        const resultSet = await this.databaseService.games.getTagsByCategoryId(categoryId)
-        const tags = this._parseResultSet(resultSet)
-
-        return tags
-    }
-
     async createTag(name: string, categoryId: number): Promise<TagDto> {
         this.LOGGER.log('Creating tag in category')
 

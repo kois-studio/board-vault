@@ -2,7 +2,7 @@ import { ResultSet } from '@libsql/client'
 import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { tagCategoriesSchema } from '../../../common/schemas/db-tag-category.schema.js'
-import { TagCategoryDto } from '../../../common/types/tag-category.type.js'
+import { TagCategoryDto, TagCategoryWithTagsDto } from '../../../common/types/tag-category.type.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 
 @Injectable()
@@ -38,6 +38,35 @@ export class TagCategoryService {
         const tags = this._parseResultSet(resultSet)
 
         return tags
+    }
+
+    /** All categories with their tag ids and distinct game counts, in one query. */
+    async getTagCategoriesWithTags(): Promise<Array<TagCategoryWithTagsDto>> {
+        this.LOGGER.log('Getting tag categories with tags')
+
+        const resultSet = await this.databaseService.games.getTagCategoriesWithTags()
+
+        return this._parseWithTags(resultSet)
+    }
+
+    async getTagCategoryWithTags(id: number): Promise<TagCategoryWithTagsDto> {
+        const resultSet = await this.databaseService.games.getTagCategoriesWithTags(id)
+        const [category] = this._parseWithTags(resultSet)
+
+        if (!category) {
+            throw new NotFoundException(`Tag category with id ${id} not found`)
+        }
+
+        return category
+    }
+
+    private _parseWithTags(resultSet: ResultSet): Array<TagCategoryWithTagsDto> {
+        return resultSet.rows.map(row => ({
+            id: Number(row[0]),
+            name: String(row[1]),
+            tags: (JSON.parse(String(row[2])) as Array<unknown>).map(Number),
+            gameCount: Number(row[3]),
+        }))
     }
 
     async getTagCategoryById(id: number): Promise<TagCategoryDto> {
