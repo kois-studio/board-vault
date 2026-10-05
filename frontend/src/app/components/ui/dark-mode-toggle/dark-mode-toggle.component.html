@@ -2,17 +2,17 @@
     type="button"
     (click)="toggleDarkMode()"
     class="h-[34px] w-[58px] cursor-pointer rounded-full border-2 border-bv-border bg-bv-surface-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-bv-primary focus-visible:ring-offset-2"
-    [attr.aria-label]="modeLabel"
-    [attr.aria-pressed]="isDarkMode"
-    [title]="modeLabel"
+    [attr.aria-label]="modeLabel()"
+    [attr.aria-pressed]="isDarkMode()"
+    [title]="modeLabel()"
 >
     <span
         class="pointer-events-none flex h-[30px] w-[30px] translate-x-[0px] transform items-center justify-center rounded-full ring-0 transition-transform duration-300 ease-out motion-reduce:transition-none"
         [ngClass]="{
-            'translate-x-[0px] bg-bv-accent text-bv-on-accent': !isDarkMode,
-            'translate-x-[24px] bg-bv-primary text-bv-on-primary': isDarkMode
+            'translate-x-[0px] bg-bv-accent text-bv-on-accent': !isDarkMode(),
+            'translate-x-[24px] bg-bv-primary text-bv-on-primary': isDarkMode()
         }"
     >
-        <app-icon [name]="isDarkMode ? 'moon' : 'sun'" [size]="16" className="motion-reduce:animate-none" />
+        <app-icon [name]="isDarkMode() ? 'moon' : 'sun'" [size]="16" className="motion-reduce:animate-none" />
     </span>
 </button>

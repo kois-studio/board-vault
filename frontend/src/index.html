@@ -26,10 +26,17 @@
         <meta name="twitter:title" content="Board Vault — Game night, remembered" />
         <meta name="twitter:description" content="A private workspace for recurring board-game groups to decide, play, and remember together." />
 
+        <!-- Applies the theme before the first paint; ThemeService (core/services/theme.service.ts) takes over after. -->
         <script>
-            const savedTheme = localStorage.getItem('theme')
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) document.documentElement.classList.add('dark')
+            ;(() => {
+                let saved = null
+                try {
+                    saved = localStorage.getItem('theme')
+                } catch {}
+                const dark = saved === 'dark' || (saved !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+                document.documentElement.classList.toggle('dark', dark)
+                for (const meta of document.querySelectorAll('meta[name="theme-color"]')) meta.content = dark ? '#201C20' : '#F3EDF9'
+            })()
         </script>
     </head>
     <body class="app-bg-primary">

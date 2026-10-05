@@ -140,7 +140,7 @@ component through `takeUntilDestroyed` or `toSignal`.
 | `/collection`, `/collection/…` | `AuthOnlyGuard` | Collection hub (a card per subpage and recent activity); My Games, browse, reviews, wishlist, propose a game |
 | `/games/:gameId` | `AuthOnlyGuard` | Game detail |
 | `/play`, `/play/…` | `AuthOnlyGuard` | Play hub (a card per subpage); upcoming, recommendations, log a session, history |
-| `/settings/account`, `/settings/security` | `AuthOnlyGuard` | Profile and Clerk account security |
+| `/settings`, `/settings/profile`, `/settings/appearance`, `/settings/security` | `AuthOnlyGuard` | Settings: profile, theme, and Clerk account security (`/settings/account` redirects to profile) |
 | `/admin/…` | `AdminGuard` | Catalogue administration |
 
 The top bar has three sections: Home (groups and their pages), Collection
@@ -149,6 +149,14 @@ Settings is in the profile menu.
 
 `LayoutCompleteComponent` wraps browsing pages; `LayoutBasicComponent` wraps
 focused actions (create, edit, claim, propose) without navigation.
+`SidebarLayoutComponent` is the shell for areas with their own sections
+(Settings): sidebar and section side by side on desktop, and on phones a
+list of sections at the base route that opens each section full width.
+
+`ThemeService` owns the colour scheme: `localStorage.theme` is `system`
+(the default), `light`, or `dark`. `system` follows the OS live, and the
+service keeps the `theme-color` meta tags on the theme actually shown. The
+inline script in `index.html` applies the same rules before the first paint.
 
 ## Security context
 

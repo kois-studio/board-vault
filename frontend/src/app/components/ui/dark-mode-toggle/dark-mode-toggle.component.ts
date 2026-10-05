@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common'
-import { Component, OnInit } from '@angular/core'
+import { Component, computed, inject } from '@angular/core'
+import { ThemeService } from '../../../core/services/theme.service'
 import { IconComponent } from '../icon/icon.component'
 
 @Component({
@@ -7,22 +8,13 @@ import { IconComponent } from '../icon/icon.component'
     selector: 'app-dark-mode-toggle',
     templateUrl: './dark-mode-toggle.component.html',
 })
-export class DarkModeToggleComponent implements OnInit {
-    public isDarkMode = false
+export class DarkModeToggleComponent {
+    private readonly theme = inject(ThemeService)
 
-    public get modeLabel(): string {
-        return this.isDarkMode ? 'Use light mode' : 'Use dark mode'
-    }
-
-    ngOnInit(): void {
-        this.isDarkMode = document.documentElement.classList.contains('dark')
-    }
+    public readonly isDarkMode = this.theme.isDark
+    public readonly modeLabel = computed(() => (this.isDarkMode() ? 'Use light mode' : 'Use dark mode'))
 
     toggleDarkMode(): void {
-        this.isDarkMode = !this.isDarkMode
-
-        const newMode = this.isDarkMode ? 'dark' : 'light'
-        localStorage.setItem('theme', newMode)
-        document.documentElement.classList.toggle('dark', this.isDarkMode)
+        this.theme.setPreference(this.isDarkMode() ? 'light' : 'dark')
     }
 }

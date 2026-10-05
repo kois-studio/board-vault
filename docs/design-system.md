@@ -28,6 +28,11 @@ Plum is the primary colour, Sunglow the accent, and the backgrounds are lilac
 not `bg-white dark:bg-zinc-900`. **Do not use Tailwind's palette colours
 (`zinc`, `indigo`, `red`, …) in templates.**
 
+People choose System (the default, following the device), Light, or Dark in
+**Settings → Appearance**. To show the light tokens inside a dark page (as
+the Appearance previews do), wrap the element in `class="theme-light"`; `class="dark"`
+does the opposite.
+
 | Token | Tailwind class example | Use | Light | Dark |
 | --- | --- | --- | --- | --- |
 | `--bv-bg` | `bg-bv-bg` | App background | `#F3EDF9` | `#201C20` |

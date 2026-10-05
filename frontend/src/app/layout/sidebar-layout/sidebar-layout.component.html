@@ -1,0 +1,73 @@
+<div class="container mx-auto max-w-6xl px-4 py-6 md:py-10">
+    <div class="mb-6">
+        @if (hasSection()) {
+        <a
+            [routerLink]="basePath()"
+            class="mb-1 inline-flex min-h-11 items-center gap-2 rounded-lg pr-3 text-sm font-semibold text-bv-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bv-primary md:hidden"
+        >
+            <app-icon name="arrow-left" [size]="18" />
+            <span>{{ title() }}</span>
+        </a>
+        }
+        <h1 class="text-3xl font-bold" [class.sr-only]="hasSection()" [class.md:not-sr-only]="hasSection()">{{ title() }}</h1>
+    </div>
+
+    <div class="md:grid md:grid-cols-[15rem_minmax(0,1fr)] md:items-start md:gap-10">
+        <div class="md:sticky md:top-6" [class.hidden]="hasSection()" [class.md:block]="hasSection()">
+            <ng-content select="[sidebarHeader]" />
+
+            <nav [attr.aria-label]="title() + ' sections'" class="grid gap-6">
+                @for (group of groups(); track $index) {
+                <div class="rounded-xl border border-bv-border bg-bv-surface p-2 md:border-0 md:bg-transparent md:p-0">
+                    @if (group.label) {
+                    <p [id]="'sidebar-group-' + $index" class="px-3 pb-2 pt-2 text-xs font-semibold uppercase tracking-wide text-bv-text-muted md:pt-0">
+                        {{ group.label }}
+                    </p>
+                    }
+                    <ul class="grid gap-1" [attr.aria-labelledby]="group.label ? 'sidebar-group-' + $index : null">
+                        @for (item of group.items; track item.link) {
+                        <li>
+                            <a
+                                [routerLink]="item.link"
+                                routerLinkActive
+                                #active="routerLinkActive"
+                                [attr.aria-current]="active.isActive ? 'page' : null"
+                                class="flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bv-primary motion-reduce:transition-none"
+                                [class]="
+                                    active.isActive
+                                        ? 'bg-bv-primary-soft font-semibold text-bv-on-primary-soft'
+                                        : 'text-bv-text-muted hover:bg-bv-surface-2 hover:text-bv-text'
+                                "
+                            >
+                                <app-icon [name]="item.icon" [size]="18" />
+                                <span class="min-w-0 flex-1 truncate">{{ item.label }}</span>
+                                @if (item.badge) {
+                                <span class="rounded-full bg-bv-primary px-2 py-0.5 text-xs font-semibold text-bv-on-primary">
+                                    {{ item.badge }}<span class="sr-only"> {{ item.badgeLabel ?? 'new' }}</span>
+                                </span>
+                                }
+                                <app-icon name="chevron-right" [size]="16" className="md:hidden" />
+                            </a>
+                        </li>
+                        }
+                    </ul>
+                </div>
+                }
+            </nav>
+
+            <div class="mt-6 border-t border-bv-border pt-4">
+                <a
+                    routerLink="/dashboard"
+                    class="flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-bv-text-muted hover:bg-bv-surface-2 hover:text-bv-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bv-primary"
+                >
+                    <app-icon name="arrow-left" [size]="18" />
+                    <span>Back to app</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="min-w-0" [class.hidden]="!hasSection()" [class.md:block]="!hasSection()">
+            <router-outlet (activate)="hasSection.set(true)" (deactivate)="hasSection.set(false)" />
+        </div>
+    </div>
+</div>

@@ -1,0 +1,65 @@
+<h2 class="pb-2 text-2xl font-bold tracking-wide">Appearance</h2>
+<p class="pb-8 text-bv-text-muted">Choose how Board Vault looks. The choice is saved on this device.</p>
+
+<fieldset class="min-w-0">
+    <legend class="pb-3 font-semibold">Theme</legend>
+    <div class="grid gap-4 sm:grid-cols-3">
+        @for (option of options; track option.value) {
+        <label
+            class="block cursor-pointer rounded-xl border-2 bg-bv-surface p-2 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-bv-primary has-[:focus-visible]:ring-offset-2 motion-reduce:transition-none"
+            [class]="preference() === option.value ? 'border-bv-primary' : 'border-bv-border hover:border-bv-text-muted'"
+        >
+            <input
+                type="radio"
+                name="theme"
+                class="sr-only"
+                [value]="option.value"
+                [checked]="preference() === option.value"
+                (change)="choose(option.value)"
+            />
+            <div aria-hidden="true" class="overflow-hidden rounded-lg border border-bv-border">
+                @switch (option.value) {
+                @case ('system') {
+                <div class="grid grid-cols-2">
+                    <div class="theme-light"><ng-container *ngTemplateOutlet="preview" /></div>
+                    <div class="dark"><ng-container *ngTemplateOutlet="preview" /></div>
+                </div>
+                }
+                @case ('light') {
+                <div class="theme-light"><ng-container *ngTemplateOutlet="preview" /></div>
+                }
+                @case ('dark') {
+                <div class="dark"><ng-container *ngTemplateOutlet="preview" /></div>
+                }
+                }
+            </div>
+            <span class="flex items-center gap-2 px-1 pt-3 font-semibold">
+                <app-icon [name]="option.icon" [size]="16" />
+                {{ option.label }}
+                @if (preference() === option.value) {
+                <app-icon name="check" [size]="18" className="ml-auto text-bv-primary" />
+                }
+            </span>
+            <span class="block px-1 pb-1 pt-1 text-sm text-bv-text-muted">{{ option.description }}</span>
+        </label>
+        }
+    </div>
+</fieldset>
+
+<!-- A miniature of the app drawn with the theme tokens: header, a card, and a primary button. -->
+<ng-template #preview>
+    <div class="h-28 bg-bv-bg p-2">
+        <div class="flex items-center gap-1.5 rounded bg-bv-surface px-2 py-1.5">
+            <span class="h-2.5 w-2.5 rounded-sm bg-bv-primary"></span>
+            <span class="h-1.5 w-10 rounded-full bg-bv-text/70"></span>
+        </div>
+        <div class="mt-2 rounded bg-bv-surface p-2">
+            <div class="h-1.5 w-14 rounded-full bg-bv-text/70"></div>
+            <div class="mt-1.5 h-1.5 w-20 max-w-full rounded-full bg-bv-text-muted/50"></div>
+            <div class="mt-2.5 flex gap-1.5">
+                <span class="h-3.5 w-10 rounded bg-bv-primary"></span>
+                <span class="h-3.5 w-6 rounded bg-bv-accent"></span>
+            </div>
+        </div>
+    </div>
+</ng-template>

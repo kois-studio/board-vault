@@ -1,11 +1,19 @@
+import { TestBed } from '@angular/core/testing'
+import { ThemeService } from '../../../core/services/theme.service'
 import { DarkModeToggleComponent } from './dark-mode-toggle.component'
 
 describe('DarkModeToggleComponent', () => {
-    it('exposes the next theme action as its accessible label', () => {
-        const component = new DarkModeToggleComponent()
+    afterEach(() => localStorage.clear())
 
-        expect(component.modeLabel).toBe('Use dark mode')
-        component.isDarkMode = true
-        expect(component.modeLabel).toBe('Use light mode')
+    it('names the next theme and switches to it through ThemeService', () => {
+        const component = TestBed.runInInjectionContext(() => new DarkModeToggleComponent())
+        const theme = TestBed.inject(ThemeService)
+
+        theme.setPreference('light')
+        expect(component.modeLabel()).toBe('Use dark mode')
+
+        component.toggleDarkMode()
+        expect(theme.preference()).toBe('dark')
+        expect(component.modeLabel()).toBe('Use light mode')
     })
 })

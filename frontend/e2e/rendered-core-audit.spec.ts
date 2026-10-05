@@ -4,7 +4,7 @@ const authStorageState = process.env['PLAYWRIGHT_AUTH_STORAGE_STATE']
 const groupId = process.env['PLAYWRIGHT_GROUP_ID']
 const sessionId = process.env['PLAYWRIGHT_SESSION_ID']
 
-const coreRoutes = ['/groups/:groupId', '/groups/:groupId/edit', '/groups/:groupId/sessions/new', '/collection', '/play/upcoming-sessions', '/play/history']
+const coreRoutes = ['/groups/:groupId', '/groups/:groupId/edit', '/groups/:groupId/sessions/new', '/collection', '/play/upcoming-sessions', '/play/history', '/settings/profile', '/settings/appearance', '/settings/security']
 
 function accessibleNameScript() {
     return () => {
@@ -64,9 +64,16 @@ async function assertKeyboardTraversal(page: Page, route: string, width: number)
             const style = getComputedStyle(element)
             return rect.width > 0 && rect.height > 0 && style.display !== 'none' && style.visibility !== 'hidden'
         }
-        const focusable = Array.from(document.querySelectorAll('a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])')).filter(
-            element => isVisible(element) && !element.hasAttribute('disabled'),
-        )
+        // A radio group is one Tab stop (arrow keys move inside it), so count each group once.
+        const radioGroups = new Set<string>()
+        const focusable = Array.from(document.querySelectorAll('a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])')).filter(element => {
+            if (!isVisible(element) || element.hasAttribute('disabled')) return false
+            if (element instanceof HTMLInputElement && element.type === 'radio' && element.name) {
+                if (radioGroups.has(element.name)) return false
+                radioGroups.add(element.name)
+            }
+            return true
+        })
         const firstFocusable = focusable[0]
         if (!(firstFocusable instanceof HTMLElement)) return 0
         firstFocusable.focus()

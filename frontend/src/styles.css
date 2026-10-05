@@ -9,7 +9,9 @@
  * on-success, on-warning, and on-danger are additions for filled status
  * buttons; everything else is the designer's table as written.
  */
-:root {
+/* `.theme-light` re-applies the light tokens inside a dark page (the Appearance previews). */
+:root,
+.theme-light {
     color-scheme: light;
     --bv-bg: #f3edf9;
     --bv-surface: #ffffff;

@@ -145,11 +145,18 @@ export const routes: Routes = [
                 loadComponent: () => import('./pages/settings/settings.component').then((m) => m.SettingsPageComponent),
                 canActivate: [AuthOnlyGuard],
                 children: [
-                    { path: '', redirectTo: 'account', pathMatch: 'full' },
+                    // No default child: on phones /settings is the list of sections (SidebarLayoutComponent).
                     {
-                        path: 'account',
+                        path: 'profile',
                         loadComponent: () =>
                             import('./pages/settings/account/settings-account.component').then((m) => m.SettingsAccountComponent),
+                        canActivate: [AuthOnlyGuard],
+                    },
+                    { path: 'account', redirectTo: 'profile', pathMatch: 'full' },
+                    {
+                        path: 'appearance',
+                        loadComponent: () =>
+                            import('./pages/settings/appearance/settings-appearance.component').then((m) => m.SettingsAppearanceComponent),
                         canActivate: [AuthOnlyGuard],
                     },
                     {
