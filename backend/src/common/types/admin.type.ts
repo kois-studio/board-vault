@@ -139,6 +139,107 @@ export class UpdateAdminGameBody {
     tagIds?: number[]
 }
 
+class OverviewProposalsDto {
+    @ApiProperty({ example: 3 })
+    pending: number
+
+    @ApiProperty({
+        example: '2026-10-01 09:30:00',
+        nullable: true,
+        type: String,
+        description: 'When the oldest pending proposal was sent.',
+    })
+    oldestPendingAt: string | null
+}
+
+class OverviewCatalogueIssuesDto {
+    @ApiProperty({ example: 0 })
+    'no-title': number
+
+    @ApiProperty({ example: 4 })
+    'no-artwork': number
+
+    @ApiProperty({ example: 12 })
+    'no-spanish': number
+
+    @ApiProperty({ example: 2 })
+    'no-tags': number
+
+    @ApiProperty({ example: 1 })
+    'guessed-values': number
+}
+
+class OverviewTagsDto {
+    @ApiProperty({ example: 5, description: 'Tags no game has.' })
+    unused: number
+
+    @ApiProperty({ example: 0, description: 'Categories with no tags.' })
+    emptyCategories: number
+}
+
+class OverviewRankedGameDto {
+    @ApiProperty({ example: 4 })
+    gameId: number
+
+    @ApiProperty({ example: 'Azul' })
+    title: string
+
+    @ApiProperty({ example: 6, description: 'How many people own it, or want it.' })
+    count: number
+}
+
+class OverviewCatalogueDto {
+    @ApiProperty({ example: 65 })
+    games: number
+
+    @ApiProperty({ example: 3, description: 'Proposals approved in the last 30 days (games carry no creation date).' })
+    approvedLast30Days: number
+
+    @ApiProperty({ type: [OverviewRankedGameDto] })
+    mostOwned: Array<OverviewRankedGameDto>
+
+    @ApiProperty({ type: [OverviewRankedGameDto], description: 'Most wishlisted games that nobody owns.' })
+    mostWantedUnowned: Array<OverviewRankedGameDto>
+}
+
+class OverviewDecisionDto {
+    @ApiProperty({ example: 12 })
+    proposalId: number
+
+    @ApiProperty({ example: 'Azul' })
+    title: string
+
+    @ApiProperty({ enum: ['approved', 'rejected', 'duplicate'] })
+    status: 'approved' | 'rejected' | 'duplicate'
+
+    @ApiProperty({ example: '2026-10-05 18:00:00' })
+    reviewedAt: string
+
+    @ApiProperty({ example: 'Admin', nullable: true, type: String })
+    reviewerName: string | null
+
+    @ApiProperty({ example: 40, nullable: true, type: Number })
+    createdGameId: number | null
+}
+
+/** What needs doing and the catalogue at a glance: aggregate counts, no personal data beyond reviewer names. */
+export class AdminOverviewDto {
+    @ApiProperty({ type: OverviewProposalsDto })
+    proposals: OverviewProposalsDto
+
+    @ApiProperty({ type: OverviewCatalogueIssuesDto, description: 'Games with each data problem, as the Games filter defines them.' })
+    catalogueIssues: Record<CatalogueQualityIssue, number>
+
+    @ApiProperty({ type: OverviewTagsDto })
+    tags: OverviewTagsDto
+
+    @ApiProperty({ type: OverviewCatalogueDto })
+    catalogue: OverviewCatalogueDto
+
+    @ApiProperty({ type: [OverviewDecisionDto], description: 'The last ten proposal decisions.' })
+    recentDecisions: Array<OverviewDecisionDto>
+}
+
 export class MergeTagBody {
     @ApiProperty({ example: 7, description: 'The tag that keeps existing; every game with the merged tag gets this one.' })
     @IsInt()

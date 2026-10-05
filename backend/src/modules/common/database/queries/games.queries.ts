@@ -819,5 +819,58 @@ export class GameQueries {
         return { where: conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '', args }
     }
 
+    /**
+     * The admin overview in four reads: every count in one statement, the most-owned games, the most-wanted
+     * games nobody owns, and the last ten proposal decisions. Deleted accounts do not count.
+     */
+    getAdminOverview() {
+        const issueCounts = Object.entries(CATALOGUE_QUALITY)
+            .map(([issue, condition]) => `(SELECT COUNT(*) FROM Game g WHERE ${condition}) AS "${issue}"`)
+            .join(',\n                    ')
+        const englishTitle = "(SELECT title FROM GameTranslation t WHERE t.gameId = g.id AND t.languageCode = 'en') AS title"
+
+        return Promise.all([
+            this.database.execute(`
+                SELECT
+                    (SELECT COUNT(*) FROM GameProposal WHERE status = 'pending') AS pendingProposals,
+                    (SELECT MIN(submittedAt) FROM GameProposal WHERE status = 'pending') AS oldestPendingAt,
+                    ${issueCounts},
+                    (SELECT COUNT(*) FROM Tag tag WHERE NOT EXISTS (SELECT 1 FROM GameTag gt WHERE gt.tagId = tag.id)) AS unusedTags,
+                    (SELECT COUNT(*) FROM TagCategory c WHERE NOT EXISTS (SELECT 1 FROM Tag tag WHERE tag.categoryId = c.id)) AS emptyCategories,
+                    (SELECT COUNT(*) FROM Game) AS games,
+                    (SELECT COUNT(*) FROM GameProposal WHERE status = 'approved' AND reviewedAt >= datetime('now', '-30 days')) AS approvedLast30Days
+            `),
+            this.database.execute(`
+                SELECT g.id AS gameId, ${englishTitle}, COUNT(*) AS count
+                FROM OwnedGame o
+                JOIN Account a ON a.id = o.accountId AND a.isDeleted = 0
+                JOIN Game g ON g.id = o.gameId
+                GROUP BY g.id
+                ORDER BY count DESC, title COLLATE NOCASE
+                LIMIT 5
+            `),
+            this.database.execute(`
+                SELECT g.id AS gameId, ${englishTitle}, COUNT(*) AS count
+                FROM WishlistedGame w
+                JOIN Account a ON a.id = w.accountId AND a.isDeleted = 0
+                JOIN Game g ON g.id = w.gameId
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM OwnedGame o JOIN Account owner ON owner.id = o.accountId AND owner.isDeleted = 0 WHERE o.gameId = g.id
+                )
+                GROUP BY g.id
+                ORDER BY count DESC, title COLLATE NOCASE
+                LIMIT 5
+            `),
+            this.database.execute(`
+                SELECT p.id, p.title, p.status, p.reviewedAt, p.createdGameId, reviewer.displayName AS reviewerName
+                FROM GameProposal p
+                LEFT JOIN Account reviewer ON reviewer.id = p.reviewedBy
+                WHERE p.status <> 'pending' AND p.reviewedAt IS NOT NULL
+                ORDER BY p.reviewedAt DESC, p.id DESC
+                LIMIT 10
+            `),
+        ])
+    }
+
     // #endregion
 }

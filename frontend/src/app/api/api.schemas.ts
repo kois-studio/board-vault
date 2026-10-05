@@ -4,6 +4,7 @@ import type {
     AdminGameProposalsType,
     AdminGamesResultType,
     AdminGameType,
+    AdminOverviewType,
     BrowseGamesResultType,
     CatalogueTagType,
     ClerkGroupInvitationSummaryType,
@@ -120,6 +121,36 @@ export const adminGameSchema: z.ZodMiniType<AdminGameType> = z.object({
 export const adminGamesSchema: z.ZodMiniType<AdminGamesResultType> = z.object({
     games: z.array(adminGameSchema),
     pagination: paginationSchema,
+})
+
+const rankedGamesSchema = z.array(z.object({ gameId: z.number(), title: z.string(), count: z.number() }))
+
+export const adminOverviewSchema: z.ZodMiniType<AdminOverviewType> = z.object({
+    proposals: z.object({ pending: z.number(), oldestPendingAt: z.nullable(z.string()) }),
+    catalogueIssues: z.object({
+        'no-title': z.number(),
+        'no-artwork': z.number(),
+        'no-spanish': z.number(),
+        'no-tags': z.number(),
+        'guessed-values': z.number(),
+    }),
+    tags: z.object({ unused: z.number(), emptyCategories: z.number() }),
+    catalogue: z.object({
+        games: z.number(),
+        approvedLast30Days: z.number(),
+        mostOwned: rankedGamesSchema,
+        mostWantedUnowned: rankedGamesSchema,
+    }),
+    recentDecisions: z.array(
+        z.object({
+            proposalId: z.number(),
+            title: z.string(),
+            status: z.enum(['approved', 'rejected', 'duplicate']),
+            reviewedAt: z.string(),
+            reviewerName: z.nullable(z.string()),
+            createdGameId: z.nullable(z.number()),
+        }),
+    ),
 })
 
 export const mergeTagResultSchema = z.object({ gamesMoved: z.number() })

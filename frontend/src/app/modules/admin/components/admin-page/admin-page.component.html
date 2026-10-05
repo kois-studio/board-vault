@@ -1,21 +1,122 @@
-<section>
-    <app-admin-page-header title="Overview" description="Look after the shared game catalogue: review what people propose, and keep games and tags tidy." />
+<div class="space-y-8">
+    <app-admin-page-header title="Overview" description="What needs doing in the shared catalogue, and how it is used." />
 
-    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        @for (area of adminAreas; track area.route) {
-            <a
-                [routerLink]="area.route"
-                class="group rounded-xl border border-bv-border bg-bv-surface p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-bv-primary hover:shadow-md focus:outline-none focus:ring-2 focus:ring-bv-primary focus:ring-offset-2 dark:focus:ring-offset-bv-surface"
-            >
-                <span class="mb-5 flex h-12 w-12 items-center justify-center rounded-lg bg-bv-primary-soft text-bv-on-primary-soft" aria-hidden="true">
-                    <app-icon [name]="area.icon" [size]="28" />
-                </span>
-                <h3 class="text-xl font-semibold text-bv-text group-hover:text-bv-primary">{{ area.title }}</h3>
-                <p class="mt-2 text-sm leading-6 text-bv-text-muted">{{ area.description }}</p>
-                <span class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-bv-primary">
-                    Open area <app-icon name="arrow-right" [size]="16" aria-hidden="true" />
-                </span>
-            </a>
-        }
-    </div>
-</section>
+    @if (isLoading() && !overview()) {
+        <div class="flex justify-center py-8"><app-spinner size="medium" /></div>
+    } @else if (errorMessage(); as error) {
+        <div class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-bv-danger/30 bg-bv-danger/10 p-4 text-sm text-bv-danger" role="alert">
+            <span>{{ error }}</span>
+            <button type="button" class="font-medium underline" (click)="load()">Retry</button>
+        </div>
+    } @else if (overview(); as overview) {
+        <!-- 1. Work queues -->
+        <section aria-labelledby="overview-queues" class="space-y-3">
+            <h3 id="overview-queues" class="text-lg font-semibold">Needs doing</h3>
+            <div class="grid gap-4 lg:grid-cols-3">
+                <a routerLink="/admin/proposals" class="group rounded-lg border border-bv-border bg-bv-surface p-5 shadow-sm transition hover:border-bv-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bv-primary">
+                    <span class="flex items-center justify-between gap-3">
+                        <span class="flex items-center gap-2 font-semibold"><app-icon name="file-text" [size]="18" /> Proposals waiting</span>
+                        <app-badge [tone]="overview.proposals.pending > 0 ? 'warning' : 'success'" [text]="overview.proposals.pending" />
+                    </span>
+                    <span class="mt-2 block text-sm text-bv-text-muted">
+                        @if (overview.proposals.pending > 0) {
+                            Review them in order, {{ oldestText(overview.proposals.oldestPendingAt) }}.
+                        } @else {
+                            Nothing waiting.
+                        }
+                    </span>
+                </a>
+
+                <div class="rounded-lg border border-bv-border bg-bv-surface p-5 shadow-sm">
+                    <p class="flex items-center gap-2 font-semibold"><app-icon name="gamepad" [size]="18" /> Catalogue health</p>
+                    <p class="mt-1 text-sm text-bv-text-muted">Games with each problem; one game can have several.</p>
+                    <ul class="mt-2 space-y-1 text-sm">
+                        @for (row of issueRows(); track row.value) {
+                            <li>
+                                <a class="flex min-h-9 items-center justify-between gap-3 rounded-md px-2 hover:bg-bv-surface-2" routerLink="/admin/manage-games" [queryParams]="issueQuery(row.value)">
+                                    <span>{{ row.label }}</span>
+                                    <span class="tabular-nums" [class.text-bv-text-muted]="row.count === 0" [class.font-semibold]="row.count > 0">{{ row.count }}</span>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+
+                <a routerLink="/admin/manage-tags" class="group rounded-lg border border-bv-border bg-bv-surface p-5 shadow-sm transition hover:border-bv-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bv-primary">
+                    <span class="flex items-center justify-between gap-3">
+                        <span class="flex items-center gap-2 font-semibold"><app-icon name="tag" [size]="18" /> Tags to tidy</span>
+                        <app-badge [tone]="overview.tags.unused + overview.tags.emptyCategories > 0 ? 'warning' : 'success'" [text]="overview.tags.unused + overview.tags.emptyCategories" />
+                    </span>
+                    <span class="mt-2 block text-sm text-bv-text-muted">
+                        @if (overview.tags.unused + overview.tags.emptyCategories > 0) {
+                            {{ overview.tags.unused }} {{ overview.tags.unused === 1 ? 'tag' : 'tags' }} no game has ·
+                            {{ overview.tags.emptyCategories }} empty {{ overview.tags.emptyCategories === 1 ? 'category' : 'categories' }}
+                        } @else {
+                            Every tag is in use.
+                        }
+                    </span>
+                </a>
+            </div>
+        </section>
+
+        <!-- 2. Catalogue at a glance -->
+        <section aria-labelledby="overview-glance" class="space-y-3">
+            <h3 id="overview-glance" class="text-lg font-semibold">Catalogue at a glance</h3>
+            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <div class="rounded-lg border border-bv-border bg-bv-surface p-5 shadow-sm">
+                    <p class="text-3xl font-bold tabular-nums">{{ overview.catalogue.games }}</p>
+                    <p class="text-sm text-bv-text-muted">games in the catalogue</p>
+                </div>
+                <div class="rounded-lg border border-bv-border bg-bv-surface p-5 shadow-sm">
+                    <p class="text-3xl font-bold tabular-nums">{{ overview.catalogue.approvedLast30Days }}</p>
+                    <p class="text-sm text-bv-text-muted">added from proposals in the last 30 days</p>
+                </div>
+                <div class="rounded-lg border border-bv-border bg-bv-surface p-5 shadow-sm sm:col-span-2 lg:col-span-1">
+                    <p class="mb-2 font-semibold">Most owned</p>
+                    <ol class="space-y-1 text-sm">
+                        @for (game of overview.catalogue.mostOwned; track game.gameId) {
+                            <li class="flex justify-between gap-3">
+                                <a class="truncate hover:underline" [routerLink]="['/admin/manage-games', game.gameId]">{{ game.title || 'Untitled game' }}</a>
+                                <span class="shrink-0 tabular-nums text-bv-text-muted">{{ game.count }}</span>
+                            </li>
+                        } @empty {
+                            <li class="text-bv-text-muted">No shelves yet.</li>
+                        }
+                    </ol>
+                </div>
+                <div class="rounded-lg border border-bv-border bg-bv-surface p-5 shadow-sm sm:col-span-2 lg:col-span-1">
+                    <p class="font-semibold">Wanted, owned by nobody</p>
+                    <p class="mb-2 text-xs text-bv-text-muted">On wishlists, on no shelf.</p>
+                    <ol class="space-y-1 text-sm">
+                        @for (game of overview.catalogue.mostWantedUnowned; track game.gameId) {
+                            <li class="flex justify-between gap-3">
+                                <a class="truncate hover:underline" [routerLink]="['/admin/manage-games', game.gameId]">{{ game.title || 'Untitled game' }}</a>
+                                <span class="shrink-0 tabular-nums text-bv-text-muted">{{ game.count }}</span>
+                            </li>
+                        } @empty {
+                            <li class="text-bv-text-muted">Every wanted game is on someone's shelf.</li>
+                        }
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Recent decisions -->
+        <section aria-labelledby="overview-decisions" class="space-y-3">
+            <h3 id="overview-decisions" class="text-lg font-semibold">Recent proposal decisions</h3>
+            <ul class="divide-y divide-bv-border rounded-lg border border-bv-border bg-bv-surface shadow-sm">
+                @for (decision of overview.recentDecisions; track decision.proposalId) {
+                    <li>
+                        <a class="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3 hover:bg-bv-surface-2" [routerLink]="['/admin/proposals', decision.proposalId]">
+                            <app-badge [tone]="decisionTone(decision.status)" [text]="decisionText(decision.status)" />
+                            <span class="min-w-0 flex-1 truncate font-medium">{{ decision.title }}</span>
+                            <span class="text-sm text-bv-text-muted">{{ decision.reviewerName ?? 'An admin' }} · {{ whenText(decision.reviewedAt) }}</span>
+                        </a>
+                    </li>
+                } @empty {
+                    <li class="px-4 py-3 text-sm text-bv-text-muted">No decisions yet.</li>
+                }
+            </ul>
+        </section>
+    }
+</div>

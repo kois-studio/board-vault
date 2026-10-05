@@ -21,6 +21,7 @@ import { AdminGuard } from '../../../common/guards/admin.guard.js'
 import { AuthGuard } from '../../../common/guards/auth.guard.js'
 import {
     AdminGameDto,
+    AdminOverviewDto,
     MergeTagBody,
     MergeTagResultDto,
     UpdateAdminGameBody,
@@ -116,6 +117,17 @@ export class AdminController {
     @ApiResponse({ status: 404, description: 'Tag not found' })
     async mergeTag(@Param('id', ParseIntPipe) id: number, @Body() body: MergeTagBody) {
         return this.adminService.mergeTag(id, body.intoTagId)
+    }
+
+    // #endregion
+
+    // #region Overview
+
+    @Get('/overview')
+    @ApiOperation({ summary: 'What needs doing and the catalogue at a glance (aggregate counts, cached for a minute)' })
+    @ApiResponse({ status: 200, type: AdminOverviewDto })
+    async getOverview() {
+        return this.adminService.getOverview()
     }
 
     // #endregion

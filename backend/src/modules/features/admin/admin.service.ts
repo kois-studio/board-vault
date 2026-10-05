@@ -1,9 +1,11 @@
 import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { LogFeature } from '../../../common/decorators/logger.decorator.js'
+import { structuredLog } from '../../../common/logging/structured-log.js'
 import {
     AdminGameDto,
     AdminGamesQuery,
+    AdminOverviewDto,
     CATALOGUE_QUALITY_ISSUES,
     MergeTagResultDto,
     UpdateAdminGameBody,
@@ -28,6 +30,8 @@ import { CacheService } from '../../common/cache/cache.service.js'
 import { DatabaseService } from '../../common/database/database.service.js'
 
 import type { TagCategoryWithTagsDto } from '../../../common/types/tag-category.type.js'
+
+const ADMIN_OVERVIEW_CACHE_KEY = 'admin:overview'
 
 @Injectable()
 export class AdminService {
@@ -219,7 +223,7 @@ export class AdminService {
             ...(tagIds ? ['tags'] : []),
         ]
 
-        this.LOGGER.log({ event: 'admin.game.updated', adminId, gameId, fields })
+        this.LOGGER.log(structuredLog('admin.game.updated', { adminId, gameId, fields }))
 
         return this.getAdminGame(gameId)
     }
@@ -262,6 +266,52 @@ export class AdminService {
             }
         })
     }
+
+    // #region Overview
+
+    /** What needs doing and the catalogue at a glance, in aggregate counts. Cached for a minute. */
+    @LogFeature(new Logger('AdminService'))
+    async getOverview(): Promise<AdminOverviewDto> {
+        const cached = await this.cacheService.get(ADMIN_OVERVIEW_CACHE_KEY)
+
+        if (cached) return cached as AdminOverviewDto
+
+        const [counts, mostOwned, wantedUnowned, decisions] = await this.databaseService.games.getAdminOverview()
+        const row: Record<string, unknown> = counts.rows[0] ?? {}
+        const count = (name: string) => Number(row[name] ?? 0)
+        const ranked = (rows: Array<Record<string, unknown>>) =>
+            rows.map(entry => ({ gameId: Number(entry['gameId']), title: String(entry['title'] ?? ''), count: Number(entry['count']) }))
+
+        const overview: AdminOverviewDto = {
+            proposals: {
+                pending: count('pendingProposals'),
+                oldestPendingAt: row['oldestPendingAt'] ? String(row['oldestPendingAt']) : null,
+            },
+            catalogueIssues: Object.fromEntries(
+                CATALOGUE_QUALITY_ISSUES.map(issue => [issue, count(issue)]),
+            ) as AdminOverviewDto['catalogueIssues'],
+            tags: { unused: count('unusedTags'), emptyCategories: count('emptyCategories') },
+            catalogue: {
+                games: count('games'),
+                approvedLast30Days: count('approvedLast30Days'),
+                mostOwned: ranked(mostOwned.rows),
+                mostWantedUnowned: ranked(wantedUnowned.rows),
+            },
+            recentDecisions: decisions.rows.map(entry => ({
+                proposalId: Number(entry['id']),
+                title: String(entry['title']),
+                status: String(entry['status']) as AdminOverviewDto['recentDecisions'][number]['status'],
+                reviewedAt: String(entry['reviewedAt']),
+                reviewerName: entry['reviewerName'] ? String(entry['reviewerName']) : null,
+                createdGameId: entry['createdGameId'] ? Number(entry['createdGameId']) : null,
+            })),
+        }
+
+        await this.cacheService.set(ADMIN_OVERVIEW_CACHE_KEY, overview, 'minute')
+        return overview
+    }
+
+    // #endregion
 
     // #region Game Proposals
 

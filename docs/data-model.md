@@ -85,8 +85,9 @@ read results and the rate-limit counters, through
   `game-proposal:byStatus:pending`. Rate limits use `rate-limit:…` keys that
   expire with their window.
 - **Values:** JSON, serialized by the Upstash client.
-- **TTL:** every entry expires: `short` 1 hour (collections, reviews,
-  wishlist), `medium` 6 hours, `long` 1 day (translations). See
+- **TTL:** every entry expires: `minute` 1 minute (the admin overview,
+  `admin:overview`), `short` 1 hour (collections, reviews, wishlist),
+  `medium` 6 hours, `long` 1 day (translations). See
   [`cache.types.ts`](../backend/src/modules/common/cache/cache.types.ts).
 - **Invalidation:** a write deletes the keys it makes stale in the same
   service method. A missed invalidation is bounded by the TTL, which is the

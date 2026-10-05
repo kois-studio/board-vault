@@ -9,6 +9,7 @@ import {
     adminGameProposalsSchema,
     adminGameSchema,
     adminGamesSchema,
+    adminOverviewSchema,
     adminSuccessResponseSchema,
     adminTagCategoriesSchema,
     adminTagsSchema,
@@ -66,6 +67,7 @@ import type {
     AdminGamesFilters,
     AdminGamesResultType,
     AdminGameType,
+    AdminOverviewType,
     ApproveGameProposalType,
     BrowseFilters,
     BrowseGamesResultType,
@@ -395,6 +397,10 @@ export class Api {
         return this.http
             .patch<AdminGameType>(`${this.url}/admin/games/${gameId}`, body)
             .pipe(map((response) => adminGameSchema.parse(response)))
+    }
+
+    getAdminOverview() {
+        return this.http.get<AdminOverviewType>(`${this.url}/admin/overview`).pipe(map((response) => adminOverviewSchema.parse(response)))
     }
 
     mergeAdminTag(tagId: number, intoTagId: number) {

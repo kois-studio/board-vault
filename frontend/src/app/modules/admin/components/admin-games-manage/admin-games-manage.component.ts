@@ -1,7 +1,7 @@
 import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { ReactiveFormsModule } from '@angular/forms'
-import { RouterLink } from '@angular/router'
+import { ActivatedRoute, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
 import { Api } from '../../../../api/api'
@@ -50,6 +50,7 @@ export class AdminGamesManageComponent implements OnInit {
     private readonly destroyRef = inject(DestroyRef)
     private readonly logger = inject(LogService)
     private readonly service = inject(AdminGamesManageService)
+    private readonly route = inject(ActivatedRoute)
 
     protected readonly Math = Math
     public readonly issues = CATALOGUE_ISSUES
@@ -70,8 +71,14 @@ export class AdminGamesManageComponent implements OnInit {
     })
 
     public ngOnInit(): void {
-        // Coming back from a game keeps the list as it was; the first visit loads the whole catalogue.
-        if (!this.pagination()) void this.service.load()
+        // A link from the Overview opens one problem's list; coming back from a game keeps the list as it was.
+        const issue = this.issues.find((option) => option.value === this.route.snapshot.queryParamMap.get('issue'))?.value
+        if (issue) {
+            this.searchControl.setValue('', { emitEvent: false })
+            void this.service.load({ issue }, 1)
+        } else if (!this.pagination()) {
+            void this.service.load()
+        }
         void this.loadTags()
 
         this.searchControl.valueChanges

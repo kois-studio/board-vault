@@ -47,7 +47,17 @@ describe('admin catalogue (e2e)', () => {
                     (1, 'en', 'Azul', 'azul'), (1, 'es', 'Azul (edición)', 'azul (edicion)'),
                     (2, 'en', 'Catan', 'catan'), (2, 'es', 'Catan', 'catan'),
                     (3, 'en', 'Hanabi', 'hanabi');
-                INSERT INTO GameProposal (submittedBy, status, title, createdGameId) VALUES (2, 'approved', 'Hanabi', 3);
+                INSERT INTO GameProposal (submittedBy, status, title, createdGameId, reviewedBy, reviewedAt, submittedAt) VALUES
+                    (2, 'approved', 'Hanabi', 3, 1, datetime('now', '-2 days'), datetime('now', '-3 days')),
+                    (2, 'rejected', 'Monopoly', NULL, 1, datetime('now', '-40 days'), datetime('now', '-41 days')),
+                    (2, 'pending', 'Codenames', NULL, NULL, NULL, '2026-09-01 10:00:00'),
+                    (2, 'pending', 'Skull', NULL, NULL, NULL, '2026-09-20 10:00:00');
+
+                -- Azul is owned by two people (one deleted, who does not count); Catan is wanted and owned by nobody.
+                INSERT INTO Account (id, email, username, avatar, displayName, clerkUserId, isAdmin, isDeleted) VALUES
+                    (3, 'gone@example.test', 'gone', ${avatar}, 'Gone', 'user_gone', 0, 1);
+                INSERT INTO OwnedGame (accountId, gameId) VALUES (1, 1), (2, 1), (3, 1), (2, 3);
+                INSERT INTO WishlistedGame (accountId, gameId) VALUES (1, 2), (2, 2), (3, 2), (1, 3);
 
                 INSERT INTO TagCategory (id, name) VALUES (1, 'Genre'), (2, 'Players');
                 INSERT INTO Tag (id, name, categoryId) VALUES (1, 'Abstract', 1), (2, 'Two-Player', 2), (3, '2 players', 2), (4, 'Strategy', 1);
@@ -107,6 +117,30 @@ describe('admin catalogue (e2e)', () => {
                 ],
             }),
         )
+    })
+
+    it('sums up what needs doing and the catalogue for the overview', async () => {
+        const response = await request(app.getHttpServer()).get('/admin/overview').set(asAdmin).expect(200)
+
+        expect(response.body).toEqual({
+            proposals: { pending: 2, oldestPendingAt: '2026-09-01 10:00:00' },
+            catalogueIssues: { 'no-title': 1, 'no-artwork': 1, 'no-spanish': 3, 'no-tags': 2, 'guessed-values': 1 },
+            tags: { unused: 0, emptyCategories: 0 },
+            catalogue: {
+                games: 4,
+                approvedLast30Days: 1,
+                mostOwned: [
+                    { gameId: 1, title: 'Azul', count: 2 },
+                    { gameId: 3, title: 'Hanabi', count: 1 },
+                ],
+                mostWantedUnowned: [{ gameId: 2, title: 'Catan', count: 2 }],
+            },
+            recentDecisions: [
+                expect.objectContaining({ title: 'Hanabi', status: 'approved', reviewerName: 'Admin', createdGameId: 3 }),
+                expect.objectContaining({ title: 'Monopoly', status: 'rejected', reviewerName: 'Admin', createdGameId: null }),
+            ],
+        })
+        await request(app.getHttpServer()).get('/admin/overview').set(asPlayer).expect(403)
     })
 
     it('filters by search, players, length, tags and each data problem', async () => {

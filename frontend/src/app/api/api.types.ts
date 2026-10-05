@@ -468,6 +468,29 @@ export type AdminGamesFilters = {
     issue?: CatalogueIssue
 }
 
+export type AdminRankedGameType = { gameId: number; title: string; count: number }
+
+/** What needs doing and the catalogue at a glance. */
+export type AdminOverviewType = {
+    proposals: { pending: number; oldestPendingAt: string | null }
+    catalogueIssues: Record<CatalogueIssue, number>
+    tags: { unused: number; emptyCategories: number }
+    catalogue: {
+        games: number
+        approvedLast30Days: number
+        mostOwned: Array<AdminRankedGameType>
+        mostWantedUnowned: Array<AdminRankedGameType>
+    }
+    recentDecisions: Array<{
+        proposalId: number
+        title: string
+        status: 'approved' | 'rejected' | 'duplicate'
+        reviewedAt: string
+        reviewerName: string | null
+        createdGameId: number | null
+    }>
+}
+
 /** The fields sent are saved together; an empty Spanish title removes it. */
 export type UpdateAdminGameType = {
     translations?: Partial<Record<SupportedLanguage, string>>

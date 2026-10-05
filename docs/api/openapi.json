@@ -2550,6 +2550,33 @@
         ]
       }
     },
+    "/admin/overview": {
+      "get": {
+        "operationId": "AdminController_getOverview",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminOverviewDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "What needs doing and the catalogue at a glance (aggregate counts, cached for a minute)",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
     "/admin/games": {
       "get": {
         "operationId": "AdminController_getGames",
@@ -6793,6 +6820,211 @@
         },
         "required": [
           "gamesMoved"
+        ]
+      },
+      "OverviewProposalsDto": {
+        "type": "object",
+        "properties": {
+          "pending": {
+            "type": "number",
+            "example": 3
+          },
+          "oldestPendingAt": {
+            "type": "string",
+            "example": "2026-10-01 09:30:00",
+            "nullable": true,
+            "description": "When the oldest pending proposal was sent."
+          }
+        },
+        "required": [
+          "pending",
+          "oldestPendingAt"
+        ]
+      },
+      "OverviewCatalogueIssuesDto": {
+        "type": "object",
+        "properties": {
+          "no-title": {
+            "type": "number",
+            "example": 0
+          },
+          "no-artwork": {
+            "type": "number",
+            "example": 4
+          },
+          "no-spanish": {
+            "type": "number",
+            "example": 12
+          },
+          "no-tags": {
+            "type": "number",
+            "example": 2
+          },
+          "guessed-values": {
+            "type": "number",
+            "example": 1
+          }
+        },
+        "required": [
+          "no-title",
+          "no-artwork",
+          "no-spanish",
+          "no-tags",
+          "guessed-values"
+        ]
+      },
+      "OverviewTagsDto": {
+        "type": "object",
+        "properties": {
+          "unused": {
+            "type": "number",
+            "example": 5,
+            "description": "Tags no game has."
+          },
+          "emptyCategories": {
+            "type": "number",
+            "example": 0,
+            "description": "Categories with no tags."
+          }
+        },
+        "required": [
+          "unused",
+          "emptyCategories"
+        ]
+      },
+      "OverviewRankedGameDto": {
+        "type": "object",
+        "properties": {
+          "gameId": {
+            "type": "number",
+            "example": 4
+          },
+          "title": {
+            "type": "string",
+            "example": "Azul"
+          },
+          "count": {
+            "type": "number",
+            "example": 6,
+            "description": "How many people own it, or want it."
+          }
+        },
+        "required": [
+          "gameId",
+          "title",
+          "count"
+        ]
+      },
+      "OverviewCatalogueDto": {
+        "type": "object",
+        "properties": {
+          "games": {
+            "type": "number",
+            "example": 65
+          },
+          "approvedLast30Days": {
+            "type": "number",
+            "example": 3,
+            "description": "Proposals approved in the last 30 days (games carry no creation date)."
+          },
+          "mostOwned": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OverviewRankedGameDto"
+            }
+          },
+          "mostWantedUnowned": {
+            "description": "Most wishlisted games that nobody owns.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OverviewRankedGameDto"
+            }
+          }
+        },
+        "required": [
+          "games",
+          "approvedLast30Days",
+          "mostOwned",
+          "mostWantedUnowned"
+        ]
+      },
+      "OverviewDecisionDto": {
+        "type": "object",
+        "properties": {
+          "proposalId": {
+            "type": "number",
+            "example": 12
+          },
+          "title": {
+            "type": "string",
+            "example": "Azul"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "approved",
+              "rejected",
+              "duplicate"
+            ]
+          },
+          "reviewedAt": {
+            "type": "string",
+            "example": "2026-10-05 18:00:00"
+          },
+          "reviewerName": {
+            "type": "string",
+            "example": "Admin",
+            "nullable": true
+          },
+          "createdGameId": {
+            "type": "number",
+            "example": 40,
+            "nullable": true
+          }
+        },
+        "required": [
+          "proposalId",
+          "title",
+          "status",
+          "reviewedAt",
+          "reviewerName",
+          "createdGameId"
+        ]
+      },
+      "AdminOverviewDto": {
+        "type": "object",
+        "properties": {
+          "proposals": {
+            "$ref": "#/components/schemas/OverviewProposalsDto"
+          },
+          "catalogueIssues": {
+            "description": "Games with each data problem, as the Games filter defines them.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OverviewCatalogueIssuesDto"
+              }
+            ]
+          },
+          "tags": {
+            "$ref": "#/components/schemas/OverviewTagsDto"
+          },
+          "catalogue": {
+            "$ref": "#/components/schemas/OverviewCatalogueDto"
+          },
+          "recentDecisions": {
+            "description": "The last ten proposal decisions.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OverviewDecisionDto"
+            }
+          }
+        },
+        "required": [
+          "proposals",
+          "catalogueIssues",
+          "tags",
+          "catalogue",
+          "recentDecisions"
         ]
       },
       "GameTagWithCategoryDto": {
