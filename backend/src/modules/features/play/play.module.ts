@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common'
 
-import { DatabaseModule } from '../../common/database/database.module'
-import { GameTranslationModule } from '../../core/game-translation/game-translation.module'
-import { GamesModule } from '../../core/games/games.module'
-import { MeetAccountGamesModule } from '../../core/meet-account-games/meet-account-games.module'
-import { MeetsModule } from '../../core/meets/meets.module'
-import { UsersModule } from '../../core/users/users.module'
+import { DatabaseModule } from '../../common/database/database.module.js'
+import { GameTranslationModule } from '../../core/game-translation/game-translation.module.js'
+import { GamesModule } from '../../core/games/games.module.js'
+import { MeetAccountGamesModule } from '../../core/meet-account-games/meet-account-games.module.js'
+import { MeetsModule } from '../../core/meets/meets.module.js'
+import { UsersModule } from '../../core/users/users.module.js'
 
-import { PlayController } from './play.controller'
-import { PlayService } from './play.service'
+import { PlayController } from './play.controller.js'
+import { PlayService } from './play.service.js'
 
 @Module({
     imports: [DatabaseModule, UsersModule, GamesModule, MeetsModule, MeetAccountGamesModule, GameTranslationModule],

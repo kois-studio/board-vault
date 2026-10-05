@@ -1,11 +1,11 @@
-import { ResultSet } from '@libsql/client/.'
+import { ResultSet } from '@libsql/client'
 import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 
-import { tagsSchema } from '../../../common/schemas/db-tag.schema'
-import { CacheService } from '../../common/cache/cache.service'
-import { DatabaseService } from '../../common/database/database.service'
+import { tagsSchema } from '../../../common/schemas/db-tag.schema.js'
+import { CacheService } from '../../common/cache/cache.service.js'
+import { DatabaseService } from '../../common/database/database.service.js'
 
-import type { TagDto } from '../../../common/types/tag.type'
+import type { TagDto } from '../../../common/types/tag.type.js'
 
 @Injectable()
 export class TagsService {

@@ -1,9 +1,9 @@
 import { BadRequestException } from '@nestjs/common'
 
-import { ACCOUNT_COLUMNS } from '../database.constants'
+import { ACCOUNT_COLUMNS } from '../database.constants.js'
 
-import type { UpdateUserBody } from '../../../../common/types/user.type'
-import type { DatabaseService } from '../database.service'
+import type { UpdateUserBody } from '../../../../common/types/user.type.js'
+import type { DatabaseService } from '../database.service.js'
 
 /** Accounts (the `Account` table). */
 export class AccountQueries {

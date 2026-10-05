@@ -2,9 +2,9 @@ import { createHmac, randomBytes } from 'node:crypto'
 
 import { BadRequestException, NotFoundException } from '@nestjs/common'
 
-import { ClerkWebhookController } from './clerk-webhook.controller'
+import { ClerkWebhookController } from './clerk-webhook.controller.js'
 
-import type { RawBodyRequest } from '../../../common/http/http-hardening'
+import type { RawBodyRequest } from '../../../common/http/http-hardening.js'
 
 const key = randomBytes(24)
 const signingSecret = `whsec_${key.toString('base64')}`
@@ -28,7 +28,7 @@ describe('ClerkWebhookController', () => {
     const body = JSON.stringify(event)
 
     function createController(secret: string | undefined = signingSecret) {
-        const handle = jest.fn().mockResolvedValue(undefined)
+        const handle = vi.fn().mockResolvedValue(undefined)
         const controller = new ClerkWebhookController({ get: () => secret } as never, { handle } as never)
 
         return { controller, handle }

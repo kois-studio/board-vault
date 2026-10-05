@@ -1,6 +1,6 @@
 import { createServer, type Server } from 'node:http'
 
-import { ProviderTimeoutError, fetchWithTimeout, withTimeout } from './provider-timeout'
+import { ProviderTimeoutError, fetchWithTimeout, withTimeout } from './provider-timeout.js'
 
 import type { AddressInfo } from 'node:net'
 

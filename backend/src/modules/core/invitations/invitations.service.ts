@@ -1,11 +1,11 @@
-import { ResultSet } from '@libsql/client/.'
+import { ResultSet } from '@libsql/client'
 import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 
-import { invitationsSchema } from '../../../common/schemas'
-import { DatabaseService } from '../../common/database/database.service'
+import { invitationsSchema } from '../../../common/schemas/index.js'
+import { DatabaseService } from '../../common/database/database.service.js'
 
-import type { CreateInvitationBody, CreateInvitationByUsernameBody, InvitationDto } from '../../../common/types/invitation.type'
-import type { AvatarDto, UserPublicDto } from '../../../common/types/user.type'
+import type { CreateInvitationBody, CreateInvitationByUsernameBody, InvitationDto } from '../../../common/types/invitation.type.js'
+import type { AvatarDto, UserPublicDto } from '../../../common/types/user.type.js'
 
 @Injectable()
 export class InvitationsService {

@@ -1,30 +1,30 @@
 import { ExecutionContext, INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
-import * as request from 'supertest'
+import request from 'supertest'
 
-import { AuthGuard } from '../../common/guards/auth.guard'
-import { GroupOwnerGuard } from '../../common/guards/group-owner.guard'
-import { RateLimitGuard } from '../../common/guards/rate-limit.guard'
-import { UserInGroupGuard } from '../../common/guards/user-in-group.guard'
-import { ClerkIdentityService } from '../common/auth/clerk-identity.service'
+import { AuthGuard } from '../../common/guards/auth.guard.js'
+import { GroupOwnerGuard } from '../../common/guards/group-owner.guard.js'
+import { RateLimitGuard } from '../../common/guards/rate-limit.guard.js'
+import { UserInGroupGuard } from '../../common/guards/user-in-group.guard.js'
+import { ClerkIdentityService } from '../common/auth/clerk-identity.service.js'
 
-import { GroupMembershipsController } from './group-memberships/group-memberships.controller'
-import { GroupMembershipsService } from './group-memberships/group-memberships.service'
-import { GroupAcquisitionService } from './groups/group-acquisition.service'
-import { GroupInsightsService } from './groups/group-insights.service'
-import { GroupsController } from './groups/groups.controller'
-import { GroupsService } from './groups/groups.service'
-import { InvitationsController } from './invitations/invitations.controller'
-import { InvitationsService } from './invitations/invitations.service'
-import { NotificationsController } from './notifications/notifications.controller'
-import { NotificationsService } from './notifications/notifications.service'
+import { GroupMembershipsController } from './group-memberships/group-memberships.controller.js'
+import { GroupMembershipsService } from './group-memberships/group-memberships.service.js'
+import { GroupAcquisitionService } from './groups/group-acquisition.service.js'
+import { GroupInsightsService } from './groups/group-insights.service.js'
+import { GroupsController } from './groups/groups.controller.js'
+import { GroupsService } from './groups/groups.service.js'
+import { InvitationsController } from './invitations/invitations.controller.js'
+import { InvitationsService } from './invitations/invitations.service.js'
+import { NotificationsController } from './notifications/notifications.controller.js'
+import { NotificationsService } from './notifications/notifications.service.js'
 
 describe('Legacy write DTO validation', () => {
     let app: INestApplication
-    const createGroup = jest.fn().mockResolvedValue({ success: true })
-    const createInvitation = jest.fn().mockResolvedValue({ success: true })
-    const createNotification = jest.fn().mockResolvedValue({ success: true })
-    const createGroupMembershipFromInvitation = jest.fn().mockResolvedValue({ success: true })
+    const createGroup = vi.fn().mockResolvedValue({ success: true })
+    const createInvitation = vi.fn().mockResolvedValue({ success: true })
+    const createNotification = vi.fn().mockResolvedValue({ success: true })
+    const createGroupMembershipFromInvitation = vi.fn().mockResolvedValue({ success: true })
 
     beforeEach(async () => {
         const module = await Test.createTestingModule({
@@ -56,7 +56,7 @@ describe('Legacy write DTO validation', () => {
 
         app = module.createNestApplication()
         await app.init()
-        jest.clearAllMocks()
+        vi.clearAllMocks()
     })
 
     afterEach(async () => {

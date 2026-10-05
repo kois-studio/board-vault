@@ -1,15 +1,15 @@
 import { GUARDS_METADATA } from '@nestjs/common/constants'
 
-import { AdminGuard } from '../../../common/guards/admin.guard'
+import { AdminGuard } from '../../../common/guards/admin.guard.js'
 
-import { AdminController } from './admin.controller'
-import { AdminService } from './admin.service'
+import { AdminController } from './admin.controller.js'
+import { AdminService } from './admin.service.js'
 
 describe('AdminController reviewer identity', () => {
     const request = { user: { userId: 7 } }
 
     it('derives the approval reviewer from the authenticated user', async () => {
-        const approveGameProposal = jest.fn().mockResolvedValue({ success: true })
+        const approveGameProposal = vi.fn().mockResolvedValue({ success: true })
         const controller = new AdminController({ approveGameProposal } as unknown as AdminService)
         const body = { reviewNotes: 'approved' }
 
@@ -19,8 +19,8 @@ describe('AdminController reviewer identity', () => {
     })
 
     it('derives rejection and duplicate reviewers from the authenticated user', async () => {
-        const rejectGameProposal = jest.fn().mockResolvedValue({ success: true })
-        const markGameProposalAsDuplicate = jest.fn().mockResolvedValue({ success: true })
+        const rejectGameProposal = vi.fn().mockResolvedValue({ success: true })
+        const markGameProposalAsDuplicate = vi.fn().mockResolvedValue({ success: true })
         const controller = new AdminController({ rejectGameProposal, markGameProposalAsDuplicate } as unknown as AdminService)
 
         await controller.rejectGameProposal(request, 12, { reviewNotes: 'duplicate' })

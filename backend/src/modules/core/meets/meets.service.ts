@@ -1,10 +1,10 @@
-import { ResultSet } from '@libsql/client/.'
+import { ResultSet } from '@libsql/client'
 import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 
-import { mapMeetDetailsResult } from '../../../common/mappers/meet-details.mapper'
-import { meetsSchema } from '../../../common/schemas/db-meet.schema'
-import { MeetDto, MeetWithAttendeesAndGames } from '../../../common/types/meet.type'
-import { DatabaseService } from '../../common/database/database.service'
+import { mapMeetDetailsResult } from '../../../common/mappers/meet-details.mapper.js'
+import { meetsSchema } from '../../../common/schemas/db-meet.schema.js'
+import { MeetDto, MeetWithAttendeesAndGames } from '../../../common/types/meet.type.js'
+import { DatabaseService } from '../../common/database/database.service.js'
 
 @Injectable()
 export class MeetsService {

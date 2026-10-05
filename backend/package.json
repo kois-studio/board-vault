@@ -5,6 +5,7 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "type": "module",
   "scripts": {
     "build": "nest build",
     "compodoc": "compodoc -p tsconfig.json --port 9001 --includes docs -w -s",
@@ -18,20 +19,18 @@
     "lint:logs": "node scripts/check-log-boundary.mjs",
     "docs:openapi": "node scripts/generate-openapi.mjs",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "vitest run --config vitest.e2e.config.mts"
   },
   "dependencies": {
     "@clerk/backend": "^3.20.1",
     "@libsql/client": "^0.18.0",
-    "@nestjs/common": "^11.2.6",
+    "@nestjs/common": "^12.1.2",
     "@nestjs/config": "^4.0.4",
-    "@nestjs/core": "^11.2.6",
-    "@nestjs/platform-express": "^11.2.6",
-    "@nestjs/swagger": "^11.4.7",
+    "@nestjs/core": "^12.1.2",
+    "@nestjs/platform-express": "^12.1.2",
+    "@nestjs/swagger": "^12.0.2",
     "@upstash/redis": "^1.39.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
@@ -41,11 +40,11 @@
   },
   "devDependencies": {
     "@compodoc/compodoc": "^2.0.0",
-    "@nestjs/cli": "^11.0.24",
-    "@nestjs/schematics": "^11.1.0",
-    "@nestjs/testing": "^11.2.6",
+    "@nestjs/cli": "^12.0.8",
+    "@nestjs/schematics": "^12.0.6",
+    "@nestjs/testing": "^12.1.2",
+    "@swc/core": "^1.16.13",
     "@types/express": "^4.17.17",
-    "@types/jest": "^30.0.0",
     "@types/node": "^24.0.0",
     "@types/supertest": "^7.2.1",
     "@typescript-eslint/eslint-plugin": "^8.70.1",
@@ -55,32 +54,15 @@
     "eslint-import-resolver-typescript": "^4.4.5",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-prettier": "^5.5.6",
-    "jest": "^30.5.2",
     "prettier": "^3.9.9",
     "source-map-support": "^0.5.21",
     "supertest": "^7.3.0",
-    "ts-jest": "^29.4.14",
     "ts-loader": "^9.6.2",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.1.3"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ],
-    "rootDir": "src",
-    "testRegex": ".*\\.spec\\.ts$",
-    "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
-    },
-    "collectCoverageFrom": [
-      "**/*.(t|j)s"
-    ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "typescript": "~6.0.3",
+    "unplugin-swc": "^2.0.0",
+    "vitest": "^5.0.3"
   },
   "overrides": {
     "@nestjs/swagger": {

@@ -1,6 +1,6 @@
-import { fakeDatabase } from '../../../../test/fake-database'
+import { fakeDatabase } from '../../../../test/fake-database.js'
 
-import { UsersService } from './users.service'
+import { UsersService } from './users.service.js'
 
 describe('UsersService account rows', () => {
     const avatar = {
@@ -25,7 +25,7 @@ describe('UsersService account rows', () => {
         email: 'alice@example.test',
         id: 1,
     }
-    const serviceWith = (row: object) => new UsersService(fakeDatabase({ getUserById: jest.fn().mockResolvedValue({ rows: [row] }) }))
+    const serviceWith = (row: object) => new UsersService(fakeDatabase({ getUserById: vi.fn().mockResolvedValue({ rows: [row] }) }))
 
     it('returns only public identity fields for nested user responses', async () => {
         await expect(serviceWith(accountRow).getPublicUserById(1)).resolves.toEqual({

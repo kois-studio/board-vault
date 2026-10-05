@@ -1,19 +1,19 @@
 import { BadRequestException, ForbiddenException, Injectable, Logger } from '@nestjs/common'
 
-import { LogFeature } from '../../../common/decorators/logger.decorator'
-import { InvitationWithExtraData } from '../../../common/types/invitation.type'
-import { DatabaseService } from '../../common/database/database.service'
-import { GameProposalService } from '../../core/game-proposal/game-proposal.service'
-import { GroupsService } from '../../core/groups/groups.service'
-import { InvitationsService } from '../../core/invitations/invitations.service'
-import { NotificationsService } from '../../core/notifications/notifications.service'
-import { UsersService } from '../../core/users/users.service'
+import { LogFeature } from '../../../common/decorators/logger.decorator.js'
+import { InvitationWithExtraData } from '../../../common/types/invitation.type.js'
+import { DatabaseService } from '../../common/database/database.service.js'
+import { GameProposalService } from '../../core/game-proposal/game-proposal.service.js'
+import { GroupsService } from '../../core/groups/groups.service.js'
+import { InvitationsService } from '../../core/invitations/invitations.service.js'
+import { NotificationsService } from '../../core/notifications/notifications.service.js'
+import { UsersService } from '../../core/users/users.service.js'
 
-import type { SuccessDto } from '../../../common/types/auth.type'
-import type { CreateGameProposalBody, GameProposalDto } from '../../../common/types/game-proposal.type'
-import type { NotificationDto } from '../../../common/types/notification.type'
-import type { UserProposalStatsDto } from '../../../common/types/stats.type'
-import type { UserSelfDto } from '../../../common/types/user.type'
+import type { SuccessDto } from '../../../common/types/auth.type.js'
+import type { CreateGameProposalBody, GameProposalDto } from '../../../common/types/game-proposal.type.js'
+import type { NotificationDto } from '../../../common/types/notification.type.js'
+import type { UserProposalStatsDto } from '../../../common/types/stats.type.js'
+import type { UserSelfDto } from '../../../common/types/user.type.js'
 
 @Injectable()
 export class ProfileService {

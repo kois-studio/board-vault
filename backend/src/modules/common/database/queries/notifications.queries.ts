@@ -1,7 +1,7 @@
 import { BadRequestException } from '@nestjs/common'
 
-import type { CreateNotificationBody, UpdateNotificationBody } from '../../../../common/types/notification.type'
-import type { DatabaseService } from '../database.service'
+import type { CreateNotificationBody, UpdateNotificationBody } from '../../../../common/types/notification.type.js'
+import type { DatabaseService } from '../database.service.js'
 
 /** Notifications. */
 export class NotificationQueries {

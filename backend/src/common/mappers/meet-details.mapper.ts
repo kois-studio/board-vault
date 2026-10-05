@@ -1,6 +1,6 @@
-import type { GameDto } from '../types/game.type'
-import type { MeetWithAttendeesAndGames } from '../types/meet.type'
-import type { UserGetDto } from '../types/user.type'
+import type { GameDto } from '../types/game.type.js'
+import type { MeetWithAttendeesAndGames } from '../types/meet.type.js'
+import type { UserGetDto } from '../types/user.type.js'
 import type { ResultSet } from '@libsql/client'
 
 export function mapMeetDetailsResult(resultSet: ResultSet): MeetWithAttendeesAndGames | null {

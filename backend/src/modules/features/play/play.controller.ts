@@ -1,11 +1,11 @@
 import { Body, Controller, Get, Param, ParseIntPipe, Post, Query, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
-import { AuthGuard } from '../../../common/guards/auth.guard'
-import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
-import { MeetDto } from '../../../common/types/meet.type'
+import { AuthGuard } from '../../../common/guards/auth.guard.js'
+import { UserOwnershipGuard } from '../../../common/guards/ownership.guard.js'
+import { MeetDto } from '../../../common/types/meet.type.js'
 
-import { PlayService } from './play.service'
+import { PlayService } from './play.service.js'
 import {
     HistoryRecordDto,
     RecommendationFeedbackBody,
@@ -15,7 +15,7 @@ import {
     ParticipantRecommendationRequestBody,
     RecommendationSignalsDto,
     RecommendationsDto,
-} from './play.types'
+} from './play.types.js'
 
 @UseGuards(AuthGuard)
 @ApiTags('play')

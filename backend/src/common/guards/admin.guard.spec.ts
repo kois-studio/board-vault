@@ -1,6 +1,6 @@
 import { ExecutionContext, ForbiddenException } from '@nestjs/common'
 
-import { AdminGuard } from './admin.guard'
+import { AdminGuard } from './admin.guard.js'
 
 const createContext = (user?: Record<string, unknown>): ExecutionContext =>
     ({

@@ -2,9 +2,9 @@ import { Injectable, Logger } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { Redis } from '@upstash/redis'
 
-import { PrintKeysDto } from '../../../common/types/cache.type'
+import { PrintKeysDto } from '../../../common/types/cache.type.js'
 
-import { CACHE_TTL } from './cache.types'
+import { CACHE_TTL } from './cache.types.js'
 
 const REDIS_REQUEST_TIMEOUT_MS = 250
 const REDIS_FAILURE_COOLDOWN_MS = 30_000

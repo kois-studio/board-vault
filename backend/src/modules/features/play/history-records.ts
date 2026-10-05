@@ -1,10 +1,10 @@
-import type { HistoryPersonDto, HistoryRecordDto } from './play.types'
-import type { MeetDto } from '../../../common/types/meet.type'
-import type { DatabaseService } from '../../common/database/database.service'
-import type { GameTranslationService } from '../../core/game-translation/game-translation.service'
-import type { GamesService } from '../../core/games/games.service'
-import type { MeetAccountGamesService } from '../../core/meet-account-games/meet-account-games.service'
-import type { UsersService } from '../../core/users/users.service'
+import type { HistoryPersonDto, HistoryRecordDto } from './play.types.js'
+import type { MeetDto } from '../../../common/types/meet.type.js'
+import type { DatabaseService } from '../../common/database/database.service.js'
+import type { GameTranslationService } from '../../core/game-translation/game-translation.service.js'
+import type { GamesService } from '../../core/games/games.service.js'
+import type { MeetAccountGamesService } from '../../core/meet-account-games/meet-account-games.service.js'
+import type { UsersService } from '../../core/users/users.service.js'
 
 export type HistoryRecordSources = {
     databaseService: DatabaseService

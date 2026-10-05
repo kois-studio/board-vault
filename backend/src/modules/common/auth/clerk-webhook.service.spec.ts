@@ -1,8 +1,9 @@
-import { fakeDatabase } from '../../../../test/fake-database'
+import { fakeDatabase } from '../../../../test/fake-database.js'
 
-import { ClerkWebhookService } from './clerk-webhook.service'
+import { ClerkWebhookService } from './clerk-webhook.service.js'
 
 import type { WebhookEvent } from '@clerk/backend/webhooks'
+import type { Mock } from 'vitest'
 
 const account = { id: 7, email: 'old@example.com', isDeleted: 0 }
 
@@ -23,12 +24,12 @@ function userUpdated(email: string, status = 'verified'): WebhookEvent {
 
 const userDeleted = { type: 'user.deleted', object: 'event', data: { id: 'user_7', deleted: true } } as unknown as WebhookEvent
 
-function createService(overrides: Record<string, jest.Mock> = {}) {
+function createService(overrides: Record<string, Mock> = {}) {
     const queries = {
-        getUserByClerkId: jest.fn().mockResolvedValue({ rows: [account] }),
-        getUserByEmail: jest.fn().mockResolvedValue({ rows: [] }),
-        updateUserEmail: jest.fn().mockResolvedValue({ rowsAffected: 1 }),
-        softDeleteUserById: jest.fn().mockResolvedValue({ rowsAffected: 1 }),
+        getUserByClerkId: vi.fn().mockResolvedValue({ rows: [account] }),
+        getUserByEmail: vi.fn().mockResolvedValue({ rows: [] }),
+        updateUserEmail: vi.fn().mockResolvedValue({ rowsAffected: 1 }),
+        softDeleteUserById: vi.fn().mockResolvedValue({ rowsAffected: 1 }),
         ...overrides,
     }
 
@@ -55,7 +56,7 @@ describe('ClerkWebhookService', () => {
 
     it('does not take an email that belongs to another account', async () => {
         const { service, queries } = createService({
-            getUserByEmail: jest.fn().mockResolvedValue({ rows: [{ id: 9, email: 'new@example.com' }] }),
+            getUserByEmail: vi.fn().mockResolvedValue({ rows: [{ id: 9, email: 'new@example.com' }] }),
         })
 
         await service.handle(userUpdated('new@example.com'))
@@ -73,7 +74,7 @@ describe('ClerkWebhookService', () => {
     })
 
     it('ignores users with no linked account', async () => {
-        const { service, queries } = createService({ getUserByClerkId: jest.fn().mockResolvedValue({ rows: [] }) })
+        const { service, queries } = createService({ getUserByClerkId: vi.fn().mockResolvedValue({ rows: [] }) })
 
         await service.handle(userUpdated('new@example.com'))
         await service.handle(userDeleted)
@@ -92,7 +93,7 @@ describe('ClerkWebhookService', () => {
 
     it('treats a repeated deletion as done', async () => {
         const { service, queries } = createService({
-            getUserByClerkId: jest.fn().mockResolvedValue({ rows: [{ ...account, isDeleted: 1 }] }),
+            getUserByClerkId: vi.fn().mockResolvedValue({ rows: [{ ...account, isDeleted: 1 }] }),
         })
 
         await service.handle(userDeleted)

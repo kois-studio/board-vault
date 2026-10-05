@@ -1,14 +1,14 @@
 import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 
-import { LogFeature } from '../../../common/decorators/logger.decorator'
-import { DatabaseService } from '../../common/database/database.service'
-import { GameTranslationService } from '../../core/game-translation/game-translation.service'
-import { GamesService } from '../../core/games/games.service'
-import { MeetAccountGamesService } from '../../core/meet-account-games/meet-account-games.service'
-import { MeetsService } from '../../core/meets/meets.service'
-import { UsersService } from '../../core/users/users.service'
+import { LogFeature } from '../../../common/decorators/logger.decorator.js'
+import { DatabaseService } from '../../common/database/database.service.js'
+import { GameTranslationService } from '../../core/game-translation/game-translation.service.js'
+import { GamesService } from '../../core/games/games.service.js'
+import { MeetAccountGamesService } from '../../core/meet-account-games/meet-account-games.service.js'
+import { MeetsService } from '../../core/meets/meets.service.js'
+import { UsersService } from '../../core/users/users.service.js'
 
-import { buildHistoryRecords } from './history-records'
+import { buildHistoryRecords } from './history-records.js'
 
 import type {
     HistoryRecordDto,
@@ -21,9 +21,9 @@ import type {
     RecommendationDecisionLens,
     RecommendationSignalsDto,
     RecommendationsDto,
-} from './play.types'
-import type { MeetDto } from '../../../common/types/meet.type'
-import type { AvatarDto, UserPublicDto } from '../../../common/types/user.type'
+} from './play.types.js'
+import type { MeetDto } from '../../../common/types/meet.type.js'
+import type { AvatarDto, UserPublicDto } from '../../../common/types/user.type.js'
 
 @Injectable()
 export class PlayService {

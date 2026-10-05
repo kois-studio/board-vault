@@ -1,9 +1,9 @@
-import { ResultSet } from '@libsql/client/.'
+import { ResultSet } from '@libsql/client'
 import { Injectable, Logger } from '@nestjs/common'
 
-import { gameTagsSchema, GameTagType } from '../../../common/schemas/db-game-tag.schema'
-import { CacheService } from '../../common/cache/cache.service'
-import { DatabaseService } from '../../common/database/database.service'
+import { gameTagsSchema, GameTagType } from '../../../common/schemas/db-game-tag.schema.js'
+import { CacheService } from '../../common/cache/cache.service.js'
+import { DatabaseService } from '../../common/database/database.service.js'
 
 @Injectable()
 export class GameTagsService {

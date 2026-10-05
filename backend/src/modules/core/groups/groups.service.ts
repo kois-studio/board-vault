@@ -1,12 +1,12 @@
-import { ResultSet } from '@libsql/client/.'
+import { ResultSet } from '@libsql/client'
 import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 
-import { groupsSchema } from '../../../common/schemas'
-import { DatabaseService } from '../../common/database/database.service'
+import { groupsSchema } from '../../../common/schemas/index.js'
+import { DatabaseService } from '../../common/database/database.service.js'
 
-import type { CreateGroupBody, GroupDto, UpdateGroupBody } from '../../../common/types/group.type'
-import type { InvitationWithAccountsData } from '../../../common/types/invitation.type'
-import type { AvatarDto, UserPublicDto } from '../../../common/types/user.type'
+import type { CreateGroupBody, GroupDto, UpdateGroupBody } from '../../../common/types/group.type.js'
+import type { InvitationWithAccountsData } from '../../../common/types/invitation.type.js'
+import type { AvatarDto, UserPublicDto } from '../../../common/types/user.type.js'
 
 @Injectable()
 export class GroupsService {

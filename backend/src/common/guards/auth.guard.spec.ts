@@ -1,6 +1,6 @@
 import { ConflictException, ExecutionContext, UnauthorizedException } from '@nestjs/common'
 
-import { AuthGuard } from './auth.guard'
+import { AuthGuard } from './auth.guard.js'
 
 describe('AuthGuard', () => {
     const guard = new AuthGuard()

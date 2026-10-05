@@ -1,16 +1,16 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common'
 
-import type { ClerkGroupInvitationMetadata } from '../../../../common/types/clerk-invitation.type'
-import type { GroupGameInterestBody } from '../../../../common/types/group-game-interest.type'
-import type { CreateGroupMembershipBody } from '../../../../common/types/group-membership.type'
+import type { ClerkGroupInvitationMetadata } from '../../../../common/types/clerk-invitation.type.js'
+import type { GroupGameInterestBody } from '../../../../common/types/group-game-interest.type.js'
+import type { CreateGroupMembershipBody } from '../../../../common/types/group-membership.type.js'
 import type {
     CreateGroupPersonBody,
     GroupPersonGameOwnershipDto,
     GroupPersonGamePreferenceDto,
     UpdateGroupPersonBody,
-} from '../../../../common/types/group-person.type'
-import type { CreateGroupBody, UpdateGroupBody } from '../../../../common/types/group.type'
-import type { DatabaseService } from '../database.service'
+} from '../../../../common/types/group-person.type.js'
+import type { CreateGroupBody, UpdateGroupBody } from '../../../../common/types/group.type.js'
+import type { DatabaseService } from '../database.service.js'
 
 /** Groups, memberships, group people, and acquisition interest. */
 export class GroupQueries {

@@ -1,17 +1,17 @@
 import { Body, Controller, Get, Param, ParseIntPipe, Post, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
-import { AuthGuard } from '../../../common/guards/auth.guard'
-import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
-import { RateLimit, RateLimitGuard } from '../../../common/guards/rate-limit.guard'
-import { SuccessDto } from '../../../common/types/auth.type'
-import { CreateGameProposalBody, GameProposalDto } from '../../../common/types/game-proposal.type'
-import { InvitationWithExtraData } from '../../../common/types/invitation.type'
-import { NotificationDto } from '../../../common/types/notification.type'
-import { UserProposalStatsDto } from '../../../common/types/stats.type'
-import { UserSelfDto } from '../../../common/types/user.type'
+import { AuthGuard } from '../../../common/guards/auth.guard.js'
+import { UserOwnershipGuard } from '../../../common/guards/ownership.guard.js'
+import { RateLimit, RateLimitGuard } from '../../../common/guards/rate-limit.guard.js'
+import { SuccessDto } from '../../../common/types/auth.type.js'
+import { CreateGameProposalBody, GameProposalDto } from '../../../common/types/game-proposal.type.js'
+import { InvitationWithExtraData } from '../../../common/types/invitation.type.js'
+import { NotificationDto } from '../../../common/types/notification.type.js'
+import { UserProposalStatsDto } from '../../../common/types/stats.type.js'
+import { UserSelfDto } from '../../../common/types/user.type.js'
 
-import { ProfileService } from './profile.service'
+import { ProfileService } from './profile.service.js'
 
 @UseGuards(AuthGuard)
 @ApiTags('profile')

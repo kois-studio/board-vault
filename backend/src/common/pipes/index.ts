@@ -1,2 +1,2 @@
-export { LimitPipe } from './limit.pipe'
-export { OffsetPipe } from './offset.pipe'
+export { LimitPipe } from './limit.pipe.js'
+export { OffsetPipe } from './offset.pipe.js'

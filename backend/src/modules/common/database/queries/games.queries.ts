@@ -1,9 +1,9 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common'
 
-import type { SupportedLanguage } from '../../../../common/types/game-translation.type'
-import type { BrowseSort, GameLength } from '../../../../common/types/game.type'
-import type { CreateNotificationBody } from '../../../../common/types/notification.type'
-import type { DatabaseService } from '../database.service'
+import type { SupportedLanguage } from '../../../../common/types/game-translation.type.js'
+import type { BrowseSort, GameLength } from '../../../../common/types/game.type.js'
+import type { CreateNotificationBody } from '../../../../common/types/notification.type.js'
+import type { DatabaseService } from '../database.service.js'
 import type { InValue } from '@libsql/client'
 
 export type CatalogueFilters = {

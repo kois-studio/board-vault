@@ -1,9 +1,9 @@
 import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common'
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
-import { LivenessDto, ReadinessDto } from '../../../common/types/health.type'
+import { LivenessDto, ReadinessDto } from '../../../common/types/health.type.js'
 
-import { HealthService } from './health.service'
+import { HealthService } from './health.service.js'
 
 @ApiTags('health')
 @Controller('health')

@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { IsIn, IsInt, IsOptional, IsString, MaxLength, Min } from 'class-validator'
 
-import { GameCompleteDto } from './game.type'
-import { UserPublicDto } from './user.type'
+import { GameCompleteDto } from './game.type.js'
+import { UserPublicDto } from './user.type.js'
 
 export class GroupGameInterestBody {
     @ApiProperty({ example: 42, description: 'Catalog game the member wants the group to consider acquiring.' })

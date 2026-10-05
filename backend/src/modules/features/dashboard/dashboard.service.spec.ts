@@ -1,11 +1,11 @@
-import { fakeDatabase } from '../../../../test/fake-database'
+import { fakeDatabase } from '../../../../test/fake-database.js'
 
-import { DashboardService } from './dashboard.service'
+import { DashboardService } from './dashboard.service.js'
 
 describe('DashboardService group history', () => {
     it('returns completed sessions only', async () => {
         const meets = {
-            getMeetsByGroupId: jest.fn().mockResolvedValue([
+            getMeetsByGroupId: vi.fn().mockResolvedValue([
                 {
                     id: 10,
                     groupId: 7,
@@ -27,30 +27,30 @@ describe('DashboardService group history', () => {
             ]),
         }
         const meetAccountGames = {
-            getDistinctAccountIdsByMeetIdAndGameId: jest.fn().mockResolvedValue([]),
+            getDistinctAccountIdsByMeetIdAndGameId: vi.fn().mockResolvedValue([]),
         }
         const empty = new Map()
         const database = {
-            getHistoryDetailsByMeetIds: jest.fn().mockResolvedValue({
+            getHistoryDetailsByMeetIds: vi.fn().mockResolvedValue({
                 attendedAccountIds: empty,
                 attendedPersonIds: empty,
                 playedGameIds: empty,
                 personPlays: empty,
                 accountPlays: empty,
             }),
-            getGroupPeople: jest.fn().mockResolvedValue({ rows: [] }),
+            getGroupPeople: vi.fn().mockResolvedValue({ rows: [] }),
         }
 
         const service = new DashboardService(
-            { getPublicUsersByIds: jest.fn().mockResolvedValue(new Map()) } as never,
+            { getPublicUsersByIds: vi.fn().mockResolvedValue(new Map()) } as never,
             fakeDatabase(database),
             {} as never,
             {} as never,
             {} as never,
-            { getGamesByIds: jest.fn().mockResolvedValue(new Map()) } as never,
+            { getGamesByIds: vi.fn().mockResolvedValue(new Map()) } as never,
             {} as never,
             meets as never,
-            { getTranslationsByGameIds: jest.fn().mockResolvedValue(new Map()) } as never,
+            { getTranslationsByGameIds: vi.fn().mockResolvedValue(new Map()) } as never,
             meetAccountGames as never,
             {} as never,
             {} as never,
@@ -64,7 +64,7 @@ describe('DashboardService group history', () => {
 describe('DashboardService group creation', () => {
     it('returns the created group identifier for the onboarding handoff', async () => {
         const database = {
-            createGroupWithMembership: jest.fn().mockResolvedValue({ groupId: 42 }),
+            createGroupWithMembership: vi.fn().mockResolvedValue({ groupId: 42 }),
         }
         const service = new DashboardService(
             {} as never,
@@ -90,36 +90,36 @@ describe('DashboardService groups overview', () => {
     it('loads members, games, and titles once, however many games members own', async () => {
         const owned = (accountId: number) => [1, 2, 3].map(n => ({ accountId, gameId: accountId * 10 + n }))
         const users = {
-            getPublicUsersByIds: jest.fn(async (ids: Array<number>) => new Map(ids.map(id => [id, { id, username: `u${id}` }]))),
+            getPublicUsersByIds: vi.fn(async (ids: Array<number>) => new Map(ids.map(id => [id, { id, username: `u${id}` }]))),
         }
         const games = {
-            getGamesByIds: jest.fn(async (ids: Array<number>) => new Map(ids.map(id => [id, { id, imageUrl: '' }]))),
-            getGameById: jest.fn(),
+            getGamesByIds: vi.fn(async (ids: Array<number>) => new Map(ids.map(id => [id, { id, imageUrl: '' }]))),
+            getGameById: vi.fn(),
         }
         const translations = {
-            getTranslationsByGameIds: jest.fn(async (ids: Array<number>) => new Map(ids.map(id => [id, { en: `Game ${id}`, es: '' }]))),
-            getGameTranslations: jest.fn(),
+            getTranslationsByGameIds: vi.fn(async (ids: Array<number>) => new Map(ids.map(id => [id, { en: `Game ${id}`, es: '' }]))),
+            getGameTranslations: vi.fn(),
         }
         const database = {
-            getActivePlaceholdersByGroupIds: jest
+            getActivePlaceholdersByGroupIds: vi
                 .fn()
                 .mockResolvedValue({ rows: [{ id: 9, groupId: 2, displayName: 'Lucía', avatar: null }] }),
-            getAssertedOwnershipByGroupIds: jest.fn().mockResolvedValue({ rows: [{ groupPersonId: 9, gameId: 77 }] }),
+            getAssertedOwnershipByGroupIds: vi.fn().mockResolvedValue({ rows: [{ groupPersonId: 9, gameId: 77 }] }),
         }
         const service = new DashboardService(
             users as never,
             fakeDatabase(database),
-            { getGroupById: jest.fn(async (id: number) => ({ id, name: `Group ${id}`, createdBy: 1 })) } as never,
+            { getGroupById: vi.fn(async (id: number) => ({ id, name: `Group ${id}`, createdBy: 1 })) } as never,
             {
-                getGroupMembershipsByAccountId: jest.fn().mockResolvedValue([{ groupId: 1 }, { groupId: 2 }]),
-                getGroupMembershipsByGroupId: jest.fn().mockResolvedValue([
+                getGroupMembershipsByAccountId: vi.fn().mockResolvedValue([{ groupId: 1 }, { groupId: 2 }]),
+                getGroupMembershipsByGroupId: vi.fn().mockResolvedValue([
                     { accountId: 1, joinedAt: '2026-01-01' },
                     { accountId: 2, joinedAt: '2026-01-02' },
                 ]),
             } as never,
-            { getGamesOwnedByAccountId: jest.fn(async (id: number) => owned(id)) } as never,
+            { getGamesOwnedByAccountId: vi.fn(async (id: number) => owned(id)) } as never,
             games as never,
-            { getGameReviewsByAccountId: jest.fn().mockResolvedValue([]) } as never,
+            { getGameReviewsByAccountId: vi.fn().mockResolvedValue([]) } as never,
             {} as never,
             translations as never,
             {} as never,

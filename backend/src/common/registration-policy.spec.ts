@@ -1,7 +1,7 @@
 import { ForbiddenException } from '@nestjs/common'
 
-import { API_ERROR_CODES } from './http/api-error'
-import { assertSelfRegistrationEnabled, isSelfRegistrationEnabled } from './registration-policy'
+import { API_ERROR_CODES } from './http/api-error.js'
+import { assertSelfRegistrationEnabled, isSelfRegistrationEnabled } from './registration-policy.js'
 
 describe('registration policy', () => {
     const originalNodeEnv = process.env.NODE_ENV
@@ -49,7 +49,7 @@ describe('registration policy', () => {
 
         try {
             assertSelfRegistrationEnabled()
-            fail('Expected registration to be rejected')
+            throw new Error('Expected registration to be rejected')
         } catch (error) {
             expect(error).toBeInstanceOf(ForbiddenException)
             expect((error as ForbiddenException).getResponse()).toEqual(

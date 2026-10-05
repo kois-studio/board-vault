@@ -1,15 +1,17 @@
-import { fakeDatabase } from '../../../../test/fake-database'
+import { fakeDatabase } from '../../../../test/fake-database.js'
 
-import { AdminService } from './admin.service'
+import { AdminService } from './admin.service.js'
+
+import type { Mock } from 'vitest'
 
 describe('AdminService', () => {
     describe('approveGameProposal', () => {
         const proposal = { id: 3, title: 'Azul', submittedBy: 7, imageUrl: null, gameAvgDuration: null, minPlayers: null, maxPlayers: null }
 
-        function serviceWith(approveGameProposalAtomically: jest.Mock) {
-            const gameProposalService = { getGameProposalById: jest.fn().mockResolvedValue(proposal) }
+        function serviceWith(approveGameProposalAtomically: Mock) {
+            const gameProposalService = { getGameProposalById: vi.fn().mockResolvedValue(proposal) }
             const gameTranslationService = { normalizeTitle: (title: string) => title.toLowerCase() }
-            const cacheService = { deleteOne: jest.fn().mockResolvedValue(undefined) }
+            const cacheService = { deleteOne: vi.fn().mockResolvedValue(undefined) }
 
             return new AdminService(
                 {} as never,
@@ -24,7 +26,7 @@ describe('AdminService', () => {
         }
 
         it('stores no artwork, not a third-party placeholder, when the proposal has no image', async () => {
-            const approveGameProposalAtomically = jest.fn().mockResolvedValue({ createdGameId: 40 })
+            const approveGameProposalAtomically = vi.fn().mockResolvedValue({ createdGameId: 40 })
 
             await serviceWith(approveGameProposalAtomically).approveGameProposal(3, 1, {})
 
@@ -32,7 +34,7 @@ describe('AdminService', () => {
         })
 
         it('keeps the image the reviewer provides', async () => {
-            const approveGameProposalAtomically = jest.fn().mockResolvedValue({ createdGameId: 40 })
+            const approveGameProposalAtomically = vi.fn().mockResolvedValue({ createdGameId: 40 })
 
             await serviceWith(approveGameProposalAtomically).approveGameProposal(3, 1, { imageUrl: 'https://example.test/azul.png' })
 

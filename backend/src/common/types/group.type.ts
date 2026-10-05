@@ -2,8 +2,8 @@ import { ApiProperty, OmitType, PartialType, PickType } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
 import { IsInt, IsNotEmpty, IsString, MaxLength, Min } from 'class-validator'
 
-import { GameReviewDto } from './game-review.type'
-import { AvatarDto, UserPublicWithGames } from './user.type'
+import { GameReviewDto } from './game-review.type.js'
+import { AvatarDto, UserPublicWithGames } from './user.type.js'
 
 export class CreatedGroupDto {
     @ApiProperty({ example: true, description: 'Whether the group was created successfully.' })

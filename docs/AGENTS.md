@@ -68,7 +68,7 @@ Package manifests are the source of truth. From the repository root:
 
 ```shell
 npm run lint              # backend eslint + frontend biome
-npm run test:unit         # backend jest + frontend vitest
+npm run test:unit         # backend and frontend Vitest
 npm run build
 npm run test:e2e          # backend e2e + Playwright public journeys
 npm run verify:migrations # empty-database migration chain

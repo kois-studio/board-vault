@@ -1,10 +1,10 @@
 import { Controller, Get, Param, ParseIntPipe, Req, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
-import { AuthGuard } from '../../../common/guards/auth.guard'
-import { MeetDto, MeetWithAttendeesAndGames } from '../../../common/types/meet.type'
+import { AuthGuard } from '../../../common/guards/auth.guard.js'
+import { MeetDto, MeetWithAttendeesAndGames } from '../../../common/types/meet.type.js'
 
-import { MeetsService } from './meets.service'
+import { MeetsService } from './meets.service.js'
 
 @UseGuards(AuthGuard)
 @ApiTags('meets')

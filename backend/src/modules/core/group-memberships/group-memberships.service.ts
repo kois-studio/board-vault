@@ -1,9 +1,9 @@
-import { ResultSet } from '@libsql/client/.'
+import { ResultSet } from '@libsql/client'
 import { ForbiddenException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common'
 
-import { groupMembreshipsSchema } from '../../../common/schemas'
-import { CreateGroupMembershipBody, GroupMembershipDto } from '../../../common/types/group-membership.type'
-import { DatabaseService } from '../../common/database/database.service'
+import { groupMembreshipsSchema } from '../../../common/schemas/index.js'
+import { CreateGroupMembershipBody, GroupMembershipDto } from '../../../common/types/group-membership.type.js'
+import { DatabaseService } from '../../common/database/database.service.js'
 
 @Injectable()
 export class GroupMembershipsService {

@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common'
 
-import { CacheModule } from '../../common/cache/cache.module'
-import { DatabaseModule } from '../../common/database/database.module'
+import { CacheModule } from '../../common/cache/cache.module.js'
+import { DatabaseModule } from '../../common/database/database.module.js'
 
-import { GameProposalService } from './game-proposal.service'
+import { GameProposalService } from './game-proposal.service.js'
 
 @Module({
     imports: [DatabaseModule, CacheModule],

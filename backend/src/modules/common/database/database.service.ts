@@ -2,17 +2,17 @@ import { Client, createClient, type InStatement, type TransactionMode } from '@l
 import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 
-import { ProviderTimeoutError, fetchWithTimeout } from '../../../common/http/provider-timeout'
-import { structuredLog } from '../../../common/logging/structured-log'
+import { ProviderTimeoutError, fetchWithTimeout } from '../../../common/http/provider-timeout.js'
+import { structuredLog } from '../../../common/logging/structured-log.js'
 
-import { AccountQueries } from './queries/accounts.queries'
-import { CollectionQueries } from './queries/collection.queries'
-import { GameQueries } from './queries/games.queries'
-import { GroupQueries } from './queries/groups.queries'
-import { InvitationQueries } from './queries/invitations.queries'
-import { NotificationQueries } from './queries/notifications.queries'
-import { RecommendationQueries } from './queries/recommendations.queries'
-import { SessionQueries } from './queries/sessions.queries'
+import { AccountQueries } from './queries/accounts.queries.js'
+import { CollectionQueries } from './queries/collection.queries.js'
+import { GameQueries } from './queries/games.queries.js'
+import { GroupQueries } from './queries/groups.queries.js'
+import { InvitationQueries } from './queries/invitations.queries.js'
+import { NotificationQueries } from './queries/notifications.queries.js'
+import { RecommendationQueries } from './queries/recommendations.queries.js'
+import { SessionQueries } from './queries/sessions.queries.js'
 
 export const CURRENT_SCHEMA_VERSION = '0017'
 

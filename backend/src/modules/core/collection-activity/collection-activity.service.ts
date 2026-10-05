@@ -1,10 +1,10 @@
-import { ResultSet } from '@libsql/client/.'
+import { ResultSet } from '@libsql/client'
 import { BadRequestException, Injectable, Logger } from '@nestjs/common'
 
-import { collectionActivitiesSchema } from '../../../common/schemas/db-collection-activity.schema'
-import { CollectionActivityDto } from '../../../common/types/collection-activity.type'
-import { CacheService } from '../../common/cache/cache.service'
-import { DatabaseService } from '../../common/database/database.service'
+import { collectionActivitiesSchema } from '../../../common/schemas/db-collection-activity.schema.js'
+import { CollectionActivityDto } from '../../../common/types/collection-activity.type.js'
+import { CacheService } from '../../common/cache/cache.service.js'
+import { DatabaseService } from '../../common/database/database.service.js'
 
 @Injectable()
 export class CollectionActivityService {

@@ -5,12 +5,12 @@ import { resolve } from 'node:path'
 import { createClient, type Client } from '@libsql/client'
 import { INestApplication } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
-import * as request from 'supertest'
+import request from 'supertest'
 
-import { AppModule } from './../src/app.module'
-import { ClerkTokenVerifier } from './../src/modules/common/auth/clerk-token-verifier'
-import { FakeClerkTokenVerifier, sessionFor } from './fake-clerk-token-verifier'
-import { removeTestDatabase } from './remove-test-database'
+import { AppModule } from './../src/app.module.js'
+import { ClerkTokenVerifier } from './../src/modules/common/auth/clerk-token-verifier.js'
+import { FakeClerkTokenVerifier, sessionFor } from './fake-clerk-token-verifier.js'
+import { removeTestDatabase } from './remove-test-database.js'
 
 const repositoryRoot = resolve(__dirname, '../..')
 const testDatabasePath = resolve(__dirname, 'game-proposal.e2e.sqlite')

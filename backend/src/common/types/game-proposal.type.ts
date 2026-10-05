@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { IsIn, IsInt, IsNotEmpty, IsOptional, IsString, MaxLength, Min } from 'class-validator'
 
-import { UserPublicDto } from './user.type'
+import { UserPublicDto } from './user.type.js'
 
 /**
  * Base GameProposal as it comes from db

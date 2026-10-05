@@ -2,7 +2,7 @@ import { verifyToken } from '@clerk/backend'
 import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 
-import { ProviderTimeoutError, withTimeout } from '../../../common/http/provider-timeout'
+import { ProviderTimeoutError, withTimeout } from '../../../common/http/provider-timeout.js'
 
 /**
  * Verifies Clerk session tokens. Tests replace this provider with a fake

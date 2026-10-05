@@ -1,9 +1,9 @@
 import { Injectable, type NestMiddleware } from '@nestjs/common'
 
-import { ClerkIdentityService } from '../../modules/common/auth/clerk-identity.service'
-import { ClerkTokenVerifier } from '../../modules/common/auth/clerk-token-verifier'
+import { ClerkIdentityService } from '../../modules/common/auth/clerk-identity.service.js'
+import { ClerkTokenVerifier } from '../../modules/common/auth/clerk-token-verifier.js'
 
-import type { AuthenticatedUser } from '../types/auth.type'
+import type { AuthenticatedUser } from '../types/auth.type.js'
 import type { NextFunction, Request, Response } from 'express'
 
 export type AuthenticatedRequest = Request & {

@@ -13,6 +13,8 @@ operational details.
 
 ### Changed
 
+- The API runs on NestJS 12 and TypeScript 6 as an ES module package, and
+  its tests run on Vitest, like the frontend's.
 - Browse filters the catalogue by number of players, length, and tags (a
   game must have every chosen tag), can hide the games you own, and sorts
   A–Z, shortest first, or newest. Filters live in the URL, and on phones they

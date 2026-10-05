@@ -4,12 +4,12 @@ import { NestFactory } from '@nestjs/core'
 import { NestExpressApplication } from '@nestjs/platform-express'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 
-import { AppModule } from './app.module'
-import { ApiErrorFilter } from './common/http/api-error.filter'
-import { getCorsOrigins } from './common/http/cors'
-import { applySecurityHeaders, createBodyParsers } from './common/http/http-hardening'
-import { JsonLogger } from './common/logging/json-logger'
-import { validateEnv } from './common/validators'
+import { AppModule } from './app.module.js'
+import { ApiErrorFilter } from './common/http/api-error.filter.js'
+import { getCorsOrigins } from './common/http/cors.js'
+import { applySecurityHeaders, createBodyParsers } from './common/http/http-hardening.js'
+import { JsonLogger } from './common/logging/json-logger.js'
+import { validateEnv } from './common/validators/index.js'
 
 const port = process.env.PORT || 3000
 const logger = new Logger('Init')

@@ -2,9 +2,9 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
 import { ArrayMaxSize, IsArray, IsIn, IsInt, IsNotEmpty, IsObject, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator'
 
-import { GameProposalCompleteDto } from './game-proposal.type'
-import { SupportedLanguage } from './game-translation.type'
-import { GameWithTagsAndTranslationsDto, BrowseGamesPaginationDto } from './game.type'
+import { GameProposalCompleteDto } from './game-proposal.type.js'
+import { SupportedLanguage } from './game-translation.type.js'
+import { GameWithTagsAndTranslationsDto, BrowseGamesPaginationDto } from './game.type.js'
 
 const ADMIN_PAGE_SIZE_MAX = 100
 

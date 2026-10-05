@@ -1,18 +1,18 @@
 import { Module } from '@nestjs/common'
 
-import { DatabaseModule } from '../../common/database/database.module'
-import { CollectionActivityModule } from '../../core/collection-activity/collection-activity.module'
-import { GameTagsModule } from '../../core/game-tags/game-tags.module'
-import { GameTranslationModule } from '../../core/game-translation/game-translation.module'
-import { GamesModule } from '../../core/games/games.module'
-import { GamesOwnedModule } from '../../core/games-owned/games-owned.module'
-import { ReviewsModule } from '../../core/reviews/reviews.module'
-import { TagCategoryModule } from '../../core/tag-category/tag-category.module'
-import { TagsModule } from '../../core/tags/tags.module'
-import { WishlistModule } from '../../core/wishlist/wishlist.module'
+import { DatabaseModule } from '../../common/database/database.module.js'
+import { CollectionActivityModule } from '../../core/collection-activity/collection-activity.module.js'
+import { GameTagsModule } from '../../core/game-tags/game-tags.module.js'
+import { GameTranslationModule } from '../../core/game-translation/game-translation.module.js'
+import { GamesModule } from '../../core/games/games.module.js'
+import { GamesOwnedModule } from '../../core/games-owned/games-owned.module.js'
+import { ReviewsModule } from '../../core/reviews/reviews.module.js'
+import { TagCategoryModule } from '../../core/tag-category/tag-category.module.js'
+import { TagsModule } from '../../core/tags/tags.module.js'
+import { WishlistModule } from '../../core/wishlist/wishlist.module.js'
 
-import { CollectionController } from './collection.controller'
-import { CollectionService } from './collection.service'
+import { CollectionController } from './collection.controller.js'
+import { CollectionService } from './collection.service.js'
 
 @Module({
     imports: [

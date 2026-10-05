@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto'
 import { CanActivate, ExecutionContext, HttpException, HttpStatus, Injectable, SetMetadata } from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
 
-import { CacheService } from '../../modules/common/cache/cache.service'
+import { CacheService } from '../../modules/common/cache/cache.service.js'
 
 export const RATE_LIMIT_METADATA = 'board-vault:rate-limit'
 

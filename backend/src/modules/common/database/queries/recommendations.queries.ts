@@ -1,4 +1,4 @@
-import type { DatabaseService } from '../database.service'
+import type { DatabaseService } from '../database.service.js'
 
 /** Game recommendation candidates and feedback. */
 export class RecommendationQueries {

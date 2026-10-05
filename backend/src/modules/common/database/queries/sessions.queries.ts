@@ -1,5 +1,5 @@
-import type { MeetAccountGameQueryOptions } from '../../../../modules/core/meet-account-games/meet-account-games.types'
-import type { DatabaseService } from '../database.service'
+import type { MeetAccountGameQueryOptions } from '../../../../modules/core/meet-account-games/meet-account-games.types.js'
+import type { DatabaseService } from '../database.service.js'
 import type { InStatement } from '@libsql/client'
 
 type CompletedSessionInput = {

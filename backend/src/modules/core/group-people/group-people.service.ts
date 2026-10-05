@@ -1,8 +1,8 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
 
-import { DatabaseService } from '../../common/database/database.service'
+import { DatabaseService } from '../../common/database/database.service.js'
 
-import type { GameCompleteDto } from '../../../common/types/game.type'
+import type { GameCompleteDto } from '../../../common/types/game.type.js'
 import type {
     CreateGroupPersonBody,
     GroupPersonDto,
@@ -13,9 +13,9 @@ import type {
     UpdateGroupPersonOwnershipBody,
     UpdateGroupPersonPreferenceBody,
     ClaimGroupPersonBody,
-} from '../../../common/types/group-person.type'
-import type { AvatarDto } from '../../../common/types/user.type'
-import type { ResultSet } from '@libsql/client/.'
+} from '../../../common/types/group-person.type.js'
+import type { AvatarDto } from '../../../common/types/user.type.js'
+import type { ResultSet } from '@libsql/client'
 
 @Injectable()
 export class GroupPeopleService {

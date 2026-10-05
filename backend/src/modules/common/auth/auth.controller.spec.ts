@@ -1,10 +1,10 @@
 import { ExecutionContext, INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
-import * as request from 'supertest'
+import request from 'supertest'
 
-import { AuthGuard } from '../../../common/guards/auth.guard'
+import { AuthGuard } from '../../../common/guards/auth.guard.js'
 
-import { AuthController } from './auth.controller'
+import { AuthController } from './auth.controller.js'
 
 describe('AuthController', () => {
     let app: INestApplication

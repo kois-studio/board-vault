@@ -1,8 +1,8 @@
 import { BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common'
 
-import { fakeDatabase } from '../../../../test/fake-database'
+import { fakeDatabase } from '../../../../test/fake-database.js'
 
-import { SessionsService } from './sessions.service'
+import { SessionsService } from './sessions.service.js'
 
 const body = {
     groupId: 7,
@@ -17,27 +17,27 @@ const body = {
 
 function createDatabaseMock() {
     return {
-        getGroupById: jest.fn().mockResolvedValue({ rows: [[7, 'Friday Group', 1, '2026-01-01']] }),
-        getGroupMemberIds: jest.fn().mockResolvedValue([1, 2, 3]),
-        getGroupAvailableGameIds: jest.fn().mockResolvedValue([42, 43]),
-        createCompletedSession: jest.fn().mockResolvedValue({ lastInsertRowid: 12 }),
-        createScheduledSession: jest.fn().mockResolvedValue({ lastInsertRowid: 13 }),
-        replaceMeetAttendees: jest.fn().mockResolvedValue(true),
-        getMeetByIdForCreator: jest
+        getGroupById: vi.fn().mockResolvedValue({ rows: [[7, 'Friday Group', 1, '2026-01-01']] }),
+        getGroupMemberIds: vi.fn().mockResolvedValue([1, 2, 3]),
+        getGroupAvailableGameIds: vi.fn().mockResolvedValue([42, 43]),
+        createCompletedSession: vi.fn().mockResolvedValue({ lastInsertRowid: 12 }),
+        createScheduledSession: vi.fn().mockResolvedValue({ lastInsertRowid: 13 }),
+        replaceMeetAttendees: vi.fn().mockResolvedValue(true),
+        getMeetByIdForCreator: vi
             .fn()
             .mockResolvedValue({ rows: [[12, 7, 1, '2026-08-16T19:30:00.000Z', 0, 'scheduled', 'Europe/Madrid', null]] }),
-        getMeetDetailsByIdForAccount: jest.fn(),
-        updateMeetStatus: jest.fn().mockResolvedValue({ rowsAffected: 1 }),
-        getMeetAttendeeForAccount: jest.fn(),
-        updateMeetAttendeeRsvp: jest.fn(),
-        getMeetAttendeeIds: jest.fn().mockResolvedValue([1, 2]),
-        getMeetPersonIds: jest.fn().mockResolvedValue([]),
-        getGroupPeople: jest.fn().mockResolvedValue({ rows: [] }),
-        getGroupAvailableGameIdsForPeople: jest.fn().mockResolvedValue([]),
-        updateMeetAttendance: jest.fn().mockResolvedValue(undefined),
-        replaceMeetPlannedGames: jest.fn().mockResolvedValue(true),
-        getMeetPlayedGameParticipants: jest.fn().mockResolvedValue([]),
-        replaceMeetPlayedGames: jest.fn().mockResolvedValue({ applied: true, playedGameIds: [42], skippedGameIds: [43] }),
+        getMeetDetailsByIdForAccount: vi.fn(),
+        updateMeetStatus: vi.fn().mockResolvedValue({ rowsAffected: 1 }),
+        getMeetAttendeeForAccount: vi.fn(),
+        updateMeetAttendeeRsvp: vi.fn(),
+        getMeetAttendeeIds: vi.fn().mockResolvedValue([1, 2]),
+        getMeetPersonIds: vi.fn().mockResolvedValue([]),
+        getGroupPeople: vi.fn().mockResolvedValue({ rows: [] }),
+        getGroupAvailableGameIdsForPeople: vi.fn().mockResolvedValue([]),
+        updateMeetAttendance: vi.fn().mockResolvedValue(undefined),
+        replaceMeetPlannedGames: vi.fn().mockResolvedValue(true),
+        getMeetPlayedGameParticipants: vi.fn().mockResolvedValue([]),
+        replaceMeetPlayedGames: vi.fn().mockResolvedValue({ applied: true, playedGameIds: [42], skippedGameIds: [43] }),
     }
 }
 
@@ -283,8 +283,8 @@ describe('SessionsService', () => {
     it('lets an invited member update their RSVP without changing organizer attendance', async () => {
         const database = createDatabaseMock()
 
-        database.getMeetAttendeeForAccount = jest.fn().mockResolvedValue({ rows: [[13, 2, 'pending', 'unknown', null, 'scheduled']] })
-        database.updateMeetAttendeeRsvp = jest.fn().mockResolvedValue({ rowsAffected: 1 })
+        database.getMeetAttendeeForAccount = vi.fn().mockResolvedValue({ rows: [[13, 2, 'pending', 'unknown', null, 'scheduled']] })
+        database.updateMeetAttendeeRsvp = vi.fn().mockResolvedValue({ rowsAffected: 1 })
         const service = new SessionsService(fakeDatabase(database))
 
         await expect(service.updateSessionRsvp(2, 13, { rsvpStatus: 'accepted' })).resolves.toEqual({
@@ -297,8 +297,8 @@ describe('SessionsService', () => {
     it('rejects RSVP changes after a session is closed', async () => {
         const database = createDatabaseMock()
 
-        database.getMeetAttendeeForAccount = jest.fn().mockResolvedValue({ rows: [[13, 2, 'accepted', 'attended', null, 'completed']] })
-        database.updateMeetAttendeeRsvp = jest.fn()
+        database.getMeetAttendeeForAccount = vi.fn().mockResolvedValue({ rows: [[13, 2, 'accepted', 'attended', null, 'completed']] })
+        database.updateMeetAttendeeRsvp = vi.fn()
         const service = new SessionsService(fakeDatabase(database))
 
         await expect(service.updateSessionRsvp(2, 13, { rsvpStatus: 'declined' })).rejects.toThrow('Cannot RSVP to a completed session')
@@ -614,9 +614,9 @@ describe('SessionsService', () => {
         ) => {
             const database = {
                 ...createDatabaseMock(),
-                getMeetByIdForAccount: jest.fn().mockResolvedValue(visibleSession),
-                getPlayedGameParticipantIds: jest.fn().mockResolvedValue(participants),
-                replaceGameResults: jest.fn().mockResolvedValue(undefined),
+                getMeetByIdForAccount: vi.fn().mockResolvedValue(visibleSession),
+                getPlayedGameParticipantIds: vi.fn().mockResolvedValue(participants),
+                replaceGameResults: vi.fn().mockResolvedValue(undefined),
             }
 
             return { database, service: new SessionsService(fakeDatabase(database)) }

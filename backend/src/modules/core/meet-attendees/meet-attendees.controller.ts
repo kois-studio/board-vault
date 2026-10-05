@@ -1,11 +1,11 @@
 import { Controller, Delete, Param, ParseIntPipe, Post, Req, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
-import { AuthGuard } from '../../../common/guards/auth.guard'
-import { SuccessDto } from '../../../common/types/auth.type'
-import { MeetAttendeeDto } from '../../../common/types/meet-attendee.type'
+import { AuthGuard } from '../../../common/guards/auth.guard.js'
+import { SuccessDto } from '../../../common/types/auth.type.js'
+import { MeetAttendeeDto } from '../../../common/types/meet-attendee.type.js'
 
-import { MeetAttendeesService } from './meet-attendees.service'
+import { MeetAttendeesService } from './meet-attendees.service.js'
 
 @UseGuards(AuthGuard)
 @ApiTags('meetAttendees')

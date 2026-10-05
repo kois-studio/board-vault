@@ -1,13 +1,13 @@
-import { fakeDatabase } from '../../../../test/fake-database'
+import { fakeDatabase } from '../../../../test/fake-database.js'
 
-import { GroupInsightsService } from './group-insights.service'
+import { GroupInsightsService } from './group-insights.service.js'
 
 describe('GroupInsightsService', () => {
     const emoji = JSON.stringify({ backgroundColor: '#000', iconName: null, emoji: '🎲', type: 'emoji', initials: '' })
 
     it('maps standings, play counts and never-played games', async () => {
         const database = {
-            getGroupInsights: jest.fn().mockResolvedValue({
+            getGroupInsights: vi.fn().mockResolvedValue({
                 totals: { rows: [[2, 3, 1]] },
                 standings: {
                     rows: [
@@ -74,7 +74,7 @@ describe('GroupInsightsService', () => {
         const empty = { rows: [] }
         const service = new GroupInsightsService(
             fakeDatabase({
-                getGroupInsights: jest
+                getGroupInsights: vi
                     .fn()
                     .mockResolvedValue({ totals: { rows: [[0, 0, 0]] }, standings: empty, mostPlayed: empty, neverPlayed: empty }),
             }),

@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common'
 
-import { LogFeature } from '../../../common/decorators/logger.decorator'
+import { LogFeature } from '../../../common/decorators/logger.decorator.js'
 import {
     UpdateGameTranslationsBody,
     UpdateGameTagsBody,
@@ -8,21 +8,21 @@ import {
     ApproveGameProposalBody,
     RejectGameProposalBody,
     AdminGameProposalsResponseDto,
-} from '../../../common/types/admin.type'
-import { GameProposalCompleteDto } from '../../../common/types/game-proposal.type'
-import { SupportedLanguage } from '../../../common/types/game-translation.type'
-import { TagDto, GameTagWithCategoryDto } from '../../../common/types/tag.type'
-import { GameProposalService } from '../../../modules/core/game-proposal/game-proposal.service'
-import { GameTagsService } from '../../../modules/core/game-tags/game-tags.service'
-import { GameTranslationService } from '../../../modules/core/game-translation/game-translation.service'
-import { GamesService } from '../../../modules/core/games/games.service'
-import { NotificationTypeEnum } from '../../../modules/core/notifications/notifications-enum.type'
-import { TagCategoryService } from '../../../modules/core/tag-category/tag-category.service'
-import { TagsService } from '../../../modules/core/tags/tags.service'
-import { CacheService } from '../../common/cache/cache.service'
-import { DatabaseService } from '../../common/database/database.service'
+} from '../../../common/types/admin.type.js'
+import { GameProposalCompleteDto } from '../../../common/types/game-proposal.type.js'
+import { SupportedLanguage } from '../../../common/types/game-translation.type.js'
+import { TagDto, GameTagWithCategoryDto } from '../../../common/types/tag.type.js'
+import { GameProposalService } from '../../../modules/core/game-proposal/game-proposal.service.js'
+import { GameTagsService } from '../../../modules/core/game-tags/game-tags.service.js'
+import { GameTranslationService } from '../../../modules/core/game-translation/game-translation.service.js'
+import { GamesService } from '../../../modules/core/games/games.service.js'
+import { NotificationTypeEnum } from '../../../modules/core/notifications/notifications-enum.type.js'
+import { TagCategoryService } from '../../../modules/core/tag-category/tag-category.service.js'
+import { TagsService } from '../../../modules/core/tags/tags.service.js'
+import { CacheService } from '../../common/cache/cache.service.js'
+import { DatabaseService } from '../../common/database/database.service.js'
 
-import type { TagCategoryWithTagsDto } from '../../../common/types/tag-category.type'
+import type { TagCategoryWithTagsDto } from '../../../common/types/tag-category.type.js'
 
 @Injectable()
 export class AdminService {

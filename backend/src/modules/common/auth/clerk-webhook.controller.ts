@@ -3,9 +3,9 @@ import { BadRequestException, Controller, HttpCode, NotFoundException, Post, Req
 import { ConfigService } from '@nestjs/config'
 import { ApiExcludeController } from '@nestjs/swagger'
 
-import { ClerkWebhookService } from './clerk-webhook.service'
+import { ClerkWebhookService } from './clerk-webhook.service.js'
 
-import type { RawBodyRequest } from '../../../common/http/http-hardening'
+import type { RawBodyRequest } from '../../../common/http/http-hardening.js'
 
 /**
  * Receives Clerk user lifecycle events (ADR-0013). Clerk signs each delivery

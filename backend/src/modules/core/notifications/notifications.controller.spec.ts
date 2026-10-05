@@ -1,11 +1,11 @@
-import { NotificationsController } from './notifications.controller'
-import { NotificationsService } from './notifications.service'
+import { NotificationsController } from './notifications.controller.js'
+import { NotificationsService } from './notifications.service.js'
 
 describe('NotificationsController actor identity', () => {
     const request = { user: { userId: 7 } }
 
     it('scopes the legacy notification list to the authenticated account', async () => {
-        const getNotificationsByAccountId = jest.fn().mockResolvedValue([])
+        const getNotificationsByAccountId = vi.fn().mockResolvedValue([])
         const controller = new NotificationsController({ getNotificationsByAccountId } as unknown as NotificationsService)
 
         await controller.getNotifications(request)
@@ -14,7 +14,7 @@ describe('NotificationsController actor identity', () => {
     })
 
     it('derives the notification recipient from the authenticated account', async () => {
-        const createNotification = jest.fn().mockResolvedValue({ success: true })
+        const createNotification = vi.fn().mockResolvedValue({ success: true })
         const controller = new NotificationsController({ createNotification } as unknown as NotificationsService)
         const body = { accountId: 999, type: 'test', message: 'message', data: {} } as never
 
@@ -24,9 +24,9 @@ describe('NotificationsController actor identity', () => {
     })
 
     it('passes the authenticated account to notification reads and mutations', async () => {
-        const getNotificationById = jest.fn().mockResolvedValue({})
-        const updateNotification = jest.fn().mockResolvedValue({ success: true })
-        const deleteNotificationById = jest.fn().mockResolvedValue({ success: true })
+        const getNotificationById = vi.fn().mockResolvedValue({})
+        const updateNotification = vi.fn().mockResolvedValue({ success: true })
+        const deleteNotificationById = vi.fn().mockResolvedValue({ success: true })
         const controller = new NotificationsController({
             getNotificationById,
             updateNotification,

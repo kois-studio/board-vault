@@ -15,8 +15,8 @@ import {
 } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
-import { AdminGuard } from '../../../common/guards/admin.guard'
-import { AuthGuard } from '../../../common/guards/auth.guard'
+import { AdminGuard } from '../../../common/guards/admin.guard.js'
+import { AuthGuard } from '../../../common/guards/auth.guard.js'
 import {
     UpdateGameTranslationsBody,
     UpdateGameTagsBody,
@@ -27,13 +27,13 @@ import {
     AdminGamesQuery,
     AdminProposalsQuery,
     AdminDuplicateProposalQuery,
-} from '../../../common/types/admin.type'
-import { SuccessDto } from '../../../common/types/auth.type'
-import { GameProposalCompleteDto } from '../../../common/types/game-proposal.type'
-import { CreateTagCategoryDto, TagCategoryWithTagsDto } from '../../../common/types/tag-category.type'
-import { CreateTagDto, TagDto } from '../../../common/types/tag.type'
+} from '../../../common/types/admin.type.js'
+import { SuccessDto } from '../../../common/types/auth.type.js'
+import { GameProposalCompleteDto } from '../../../common/types/game-proposal.type.js'
+import { CreateTagCategoryDto, TagCategoryWithTagsDto } from '../../../common/types/tag-category.type.js'
+import { CreateTagDto, TagDto } from '../../../common/types/tag.type.js'
 
-import { AdminService } from './admin.service'
+import { AdminService } from './admin.service.js'
 
 @UseGuards(AuthGuard, AdminGuard)
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))

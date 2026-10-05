@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { IsInt, Max, Min } from 'class-validator'
 
-import { GameCompleteDto } from './game.type'
+import { GameCompleteDto } from './game.type.js'
 
 /**
  * base GameReview as it comes from db

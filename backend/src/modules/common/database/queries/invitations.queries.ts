@@ -1,9 +1,9 @@
 import { ForbiddenException, NotFoundException } from '@nestjs/common'
 
-import { ACCOUNT_COLUMNS } from '../database.constants'
+import { ACCOUNT_COLUMNS } from '../database.constants.js'
 
-import type { CreateInvitationBody, CreateInvitationByUsernameBody } from '../../../../common/types/invitation.type'
-import type { DatabaseService } from '../database.service'
+import type { CreateInvitationBody, CreateInvitationByUsernameBody } from '../../../../common/types/invitation.type.js'
+import type { DatabaseService } from '../database.service.js'
 
 /** Group invitations. */
 export class InvitationQueries {

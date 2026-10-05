@@ -1,6 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common'
 
-import type { AuthenticatedRequest } from '../middlewares/clerk-session.middleware'
+import type { AuthenticatedRequest } from '../middlewares/clerk-session.middleware.js'
 
 /**
  * Requires the Clerk-authenticated account that ClerkSessionMiddleware

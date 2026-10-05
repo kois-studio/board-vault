@@ -1,14 +1,14 @@
 import { BadRequestException, HttpStatus } from '@nestjs/common'
 
-import { API_ERROR_CODES, BoardVaultHttpException } from './api-error'
-import { ApiErrorFilter } from './api-error.filter'
-import { ProviderTimeoutError } from './provider-timeout'
+import { ApiErrorFilter } from './api-error.filter.js'
+import { API_ERROR_CODES, BoardVaultHttpException } from './api-error.js'
+import { ProviderTimeoutError } from './provider-timeout.js'
 
 function createHost(exception: unknown) {
     const response = {
-        setHeader: jest.fn(),
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
+        setHeader: vi.fn(),
+        status: vi.fn().mockReturnThis(),
+        json: vi.fn(),
     }
     const request = { method: 'POST', originalUrl: '/sessions' }
     const host = {
@@ -52,7 +52,7 @@ describe('ApiErrorFilter', () => {
             message: 'Request failed',
             requestId: expect.any(String),
         })
-        expect(JSON.stringify(response.json.mock.calls[0][0])).not.toContain('TURSO_AUTH_TOKEN')
+        expect(JSON.stringify(response.json.mock.calls[0]![0])).not.toContain('TURSO_AUTH_TOKEN')
     })
 
     it('preserves a stable allow-listed domain code', () => {

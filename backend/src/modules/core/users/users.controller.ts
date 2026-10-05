@@ -1,13 +1,13 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Put, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
-import { AdminGuard } from '../../../common/guards/admin.guard'
-import { AuthGuard } from '../../../common/guards/auth.guard'
-import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
-import { SuccessDto } from '../../../common/types/auth.type'
-import { UpdateUserBody, UserGetDto, UserUpdateGamesBody } from '../../../common/types/user.type'
+import { AdminGuard } from '../../../common/guards/admin.guard.js'
+import { AuthGuard } from '../../../common/guards/auth.guard.js'
+import { UserOwnershipGuard } from '../../../common/guards/ownership.guard.js'
+import { SuccessDto } from '../../../common/types/auth.type.js'
+import { UpdateUserBody, UserGetDto, UserUpdateGamesBody } from '../../../common/types/user.type.js'
 
-import { UsersService } from './users.service'
+import { UsersService } from './users.service.js'
 
 @UseGuards(AuthGuard)
 @ApiTags('users')

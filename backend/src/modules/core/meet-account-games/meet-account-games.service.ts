@@ -1,11 +1,11 @@
-import { ResultSet } from '@libsql/client/.'
+import { ResultSet } from '@libsql/client'
 import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 
-import { meetAccountGamesSchema } from '../../../common/schemas/db-meet-account-game.schema'
-import { DatabaseService } from '../../common/database/database.service'
+import { meetAccountGamesSchema } from '../../../common/schemas/db-meet-account-game.schema.js'
+import { DatabaseService } from '../../common/database/database.service.js'
 
-import type { MeetAccountGameQueryOptions } from './meet-account-games.types'
-import type { MeetAccountGameDto } from '../../../common/types/meet-account-game.type'
+import type { MeetAccountGameQueryOptions } from './meet-account-games.types.js'
+import type { MeetAccountGameDto } from '../../../common/types/meet-account-game.type.js'
 
 @Injectable()
 export class MeetAccountGamesService {

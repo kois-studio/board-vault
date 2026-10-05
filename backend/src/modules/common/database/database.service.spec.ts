@@ -1,13 +1,14 @@
-import { ProviderTimeoutError } from '../../../common/http/provider-timeout'
+import { ProviderTimeoutError } from '../../../common/http/provider-timeout.js'
 
-import { DatabaseService } from './database.service'
+import { DatabaseService } from './database.service.js'
 
 import type { ConfigService } from '@nestjs/config'
+import type { Mock } from 'vitest'
 
 describe('DatabaseService logging', () => {
     it('expires targeted placeholder claims when a new invitation is bound', async () => {
         const service = new DatabaseService({} as ConfigService)
-        const execute = jest.fn().mockResolvedValue({ rowsAffected: 1 })
+        const execute = vi.fn().mockResolvedValue({ rowsAffected: 1 })
 
         ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
 
@@ -21,7 +22,7 @@ describe('DatabaseService logging', () => {
 
     it('clears a legacy invitation claim target when its invitation is deleted', async () => {
         const service = new DatabaseService({} as ConfigService)
-        const execute = jest
+        const execute = vi
             .fn()
             .mockResolvedValueOnce({ rows: [[12, 21]] })
             .mockResolvedValueOnce({ rowsAffected: 1 })
@@ -36,8 +37,8 @@ describe('DatabaseService logging', () => {
 
     it('logs only the parameterized SQL template, never bound values', async () => {
         const service = new DatabaseService({} as ConfigService)
-        const execute = jest.fn().mockResolvedValue({ rows: [] })
-        const logger = jest.spyOn((service as unknown as { LOGGER: { log: (message: string) => void } }).LOGGER, 'log')
+        const execute = vi.fn().mockResolvedValue({ rows: [] })
+        const logger = vi.spyOn((service as unknown as { LOGGER: { log: (message: string) => void } }).LOGGER, 'log')
         const statement = {
             sql: 'SELECT * FROM Account WHERE email = ? AND password_reset_token = ?',
             args: ['person@example.com', 'reset-token-secret'],
@@ -55,7 +56,7 @@ describe('DatabaseService logging', () => {
 
     it('builds recommendation candidates from selected attendee ownership', async () => {
         const service = new DatabaseService({} as ConfigService)
-        const execute = jest.fn().mockResolvedValue({ rows: [] })
+        const execute = vi.fn().mockResolvedValue({ rows: [] })
 
         ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
 
@@ -69,7 +70,7 @@ describe('DatabaseService logging', () => {
 
     it('stores recommendation feedback with its selected-attendee context', async () => {
         const service = new DatabaseService({} as ConfigService)
-        const execute = jest.fn().mockResolvedValue({ rowsAffected: 1 })
+        const execute = vi.fn().mockResolvedValue({ rowsAffected: 1 })
 
         ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
 
@@ -89,7 +90,7 @@ describe('DatabaseService logging', () => {
 
     it('projects linked private ownership with explicit account provenance', async () => {
         const service = new DatabaseService({} as ConfigService)
-        const execute = jest.fn().mockResolvedValue({ rows: [] })
+        const execute = vi.fn().mockResolvedValue({ rows: [] })
 
         ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
 
@@ -104,12 +105,12 @@ describe('DatabaseService logging', () => {
     it('updates the legacy bulk collection path in one idempotent transaction', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: jest.fn().mockResolvedValue({ rowsAffected: 1 }),
-            commit: jest.fn().mockResolvedValue(undefined),
-            rollback: jest.fn().mockResolvedValue(undefined),
-            close: jest.fn(),
+            execute: vi.fn().mockResolvedValue({ rowsAffected: 1 }),
+            commit: vi.fn().mockResolvedValue(undefined),
+            rollback: vi.fn().mockResolvedValue(undefined),
+            close: vi.fn(),
         }
-        const transactionFactory = jest.fn().mockResolvedValue(transaction)
+        const transactionFactory = vi.fn().mockResolvedValue(transaction)
 
         ;(service as unknown as { tursoClient: { transaction: typeof transactionFactory } }).tursoClient = {
             transaction: transactionFactory,
@@ -138,14 +139,14 @@ describe('DatabaseService logging', () => {
     it('rolls back the legacy bulk collection path when a later write fails', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: jest.fn().mockResolvedValueOnce({ rowsAffected: 1 }).mockRejectedValueOnce(new Error('ownership write failed')),
-            commit: jest.fn().mockResolvedValue(undefined),
-            rollback: jest.fn().mockResolvedValue(undefined),
-            close: jest.fn(),
+            execute: vi.fn().mockResolvedValueOnce({ rowsAffected: 1 }).mockRejectedValueOnce(new Error('ownership write failed')),
+            commit: vi.fn().mockResolvedValue(undefined),
+            rollback: vi.fn().mockResolvedValue(undefined),
+            close: vi.fn(),
         }
 
-        ;(service as unknown as { tursoClient: { transaction: jest.Mock } }).tursoClient = {
-            transaction: jest.fn().mockResolvedValue(transaction),
+        ;(service as unknown as { tursoClient: { transaction: Mock } }).tursoClient = {
+            transaction: vi.fn().mockResolvedValue(transaction),
         }
 
         await expect(service.collection.updateGames(1, [42], [7])).rejects.toThrow('ownership write failed')
@@ -158,7 +159,7 @@ describe('DatabaseService logging', () => {
     it('approves a game proposal and its notification in one transaction', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: jest
+            execute: vi
                 .fn()
                 .mockResolvedValueOnce({ lastInsertRowid: 88 })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
@@ -166,13 +167,13 @@ describe('DatabaseService logging', () => {
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rows: [[4, null]] })
                 .mockResolvedValueOnce({ rowsAffected: 1 }),
-            commit: jest.fn().mockResolvedValue(undefined),
-            rollback: jest.fn().mockResolvedValue(undefined),
-            close: jest.fn(),
+            commit: vi.fn().mockResolvedValue(undefined),
+            rollback: vi.fn().mockResolvedValue(undefined),
+            close: vi.fn(),
         }
 
-        ;(service as unknown as { tursoClient: { transaction: jest.Mock } }).tursoClient = {
-            transaction: jest.fn().mockResolvedValue(transaction),
+        ;(service as unknown as { tursoClient: { transaction: Mock } }).tursoClient = {
+            transaction: vi.fn().mockResolvedValue(transaction),
         }
 
         await expect(
@@ -236,7 +237,7 @@ describe('DatabaseService logging', () => {
     it('rolls back proposal approval when notification persistence fails', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: jest
+            execute: vi
                 .fn()
                 .mockResolvedValueOnce({ lastInsertRowid: 88 })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
@@ -244,13 +245,13 @@ describe('DatabaseService logging', () => {
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rows: [[4, null]] })
                 .mockRejectedValueOnce(new Error('notification write failed')),
-            commit: jest.fn().mockResolvedValue(undefined),
-            rollback: jest.fn().mockResolvedValue(undefined),
-            close: jest.fn(),
+            commit: vi.fn().mockResolvedValue(undefined),
+            rollback: vi.fn().mockResolvedValue(undefined),
+            close: vi.fn(),
         }
 
-        ;(service as unknown as { tursoClient: { transaction: jest.Mock } }).tursoClient = {
-            transaction: jest.fn().mockResolvedValue(transaction),
+        ;(service as unknown as { tursoClient: { transaction: Mock } }).tursoClient = {
+            transaction: vi.fn().mockResolvedValue(transaction),
         }
 
         await expect(
@@ -301,19 +302,19 @@ describe('DatabaseService logging', () => {
         const setup = (addTo: string, failOn?: string) => {
             const service = new DatabaseService({} as ConfigService)
             const transaction = {
-                execute: jest.fn().mockImplementation(({ sql }: { sql: string }) => {
+                execute: vi.fn().mockImplementation(({ sql }: { sql: string }) => {
                     if (failOn && sql.includes(failOn)) return Promise.reject(new Error(`${failOn} failed`))
                     if (sql.includes('INSERT INTO Game ')) return Promise.resolve({ lastInsertRowid: 88 })
                     if (sql.includes('SELECT submittedBy, addTo')) return Promise.resolve({ rows: [[4, addTo]] })
                     return Promise.resolve({ rowsAffected: 1 })
                 }),
-                commit: jest.fn().mockResolvedValue(undefined),
-                rollback: jest.fn().mockResolvedValue(undefined),
-                close: jest.fn(),
+                commit: vi.fn().mockResolvedValue(undefined),
+                rollback: vi.fn().mockResolvedValue(undefined),
+                close: vi.fn(),
             }
 
-            ;(service as unknown as { tursoClient: { transaction: jest.Mock } }).tursoClient = {
-                transaction: jest.fn().mockResolvedValue(transaction),
+            ;(service as unknown as { tursoClient: { transaction: Mock } }).tursoClient = {
+                transaction: vi.fn().mockResolvedValue(transaction),
             }
             const statements = () => transaction.execute.mock.calls.map(([statement]) => statement as { sql: string; args: unknown[] })
 
@@ -359,14 +360,14 @@ describe('DatabaseService logging', () => {
     it('saves a proposal and notifies every other active admin in one transaction', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: jest.fn().mockResolvedValueOnce({ lastInsertRowid: 31 }).mockResolvedValueOnce({ rowsAffected: 2 }),
-            commit: jest.fn().mockResolvedValue(undefined),
-            rollback: jest.fn().mockResolvedValue(undefined),
-            close: jest.fn(),
+            execute: vi.fn().mockResolvedValueOnce({ lastInsertRowid: 31 }).mockResolvedValueOnce({ rowsAffected: 2 }),
+            commit: vi.fn().mockResolvedValue(undefined),
+            rollback: vi.fn().mockResolvedValue(undefined),
+            close: vi.fn(),
         }
 
-        ;(service as unknown as { tursoClient: { transaction: jest.Mock } }).tursoClient = {
-            transaction: jest.fn().mockResolvedValue(transaction),
+        ;(service as unknown as { tursoClient: { transaction: Mock } }).tursoClient = {
+            transaction: vi.fn().mockResolvedValue(transaction),
         }
 
         await expect(
@@ -382,8 +383,8 @@ describe('DatabaseService logging', () => {
             }),
         ).resolves.toEqual({ proposalId: 31 })
 
-        expect(transaction.execute.mock.calls[0][0].args).toEqual([5, 'Azul', null, null, null, null, null, null, 'shelf'])
-        expect(transaction.execute.mock.calls[1][0]).toEqual({
+        expect(transaction.execute.mock.calls[0]![0].args).toEqual([5, 'Azul', null, null, null, null, null, null, 'shelf'])
+        expect(transaction.execute.mock.calls[1]![0]).toEqual({
             sql: expect.stringContaining('WHERE isAdmin = 1 AND isDeleted = 0 AND id != ?'),
             args: ['game_proposal_submitted', 'New game proposal: "Azul"', '{"gameTitle":"Azul","submittedBy":5,"proposalId":31}', 5],
         })
@@ -393,14 +394,14 @@ describe('DatabaseService logging', () => {
     it('rejects a game proposal and its notification in one transaction', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: jest.fn().mockResolvedValueOnce({ rowsAffected: 1 }).mockResolvedValueOnce({ rowsAffected: 1 }),
-            commit: jest.fn().mockResolvedValue(undefined),
-            rollback: jest.fn().mockResolvedValue(undefined),
-            close: jest.fn(),
+            execute: vi.fn().mockResolvedValueOnce({ rowsAffected: 1 }).mockResolvedValueOnce({ rowsAffected: 1 }),
+            commit: vi.fn().mockResolvedValue(undefined),
+            rollback: vi.fn().mockResolvedValue(undefined),
+            close: vi.fn(),
         }
 
-        ;(service as unknown as { tursoClient: { transaction: jest.Mock } }).tursoClient = {
-            transaction: jest.fn().mockResolvedValue(transaction),
+        ;(service as unknown as { tursoClient: { transaction: Mock } }).tursoClient = {
+            transaction: vi.fn().mockResolvedValue(transaction),
         }
 
         await expect(
@@ -433,14 +434,14 @@ describe('DatabaseService logging', () => {
     it('rolls back proposal rejection when notification persistence fails', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: jest.fn().mockResolvedValueOnce({ rowsAffected: 1 }).mockRejectedValueOnce(new Error('notification write failed')),
-            commit: jest.fn().mockResolvedValue(undefined),
-            rollback: jest.fn().mockResolvedValue(undefined),
-            close: jest.fn(),
+            execute: vi.fn().mockResolvedValueOnce({ rowsAffected: 1 }).mockRejectedValueOnce(new Error('notification write failed')),
+            commit: vi.fn().mockResolvedValue(undefined),
+            rollback: vi.fn().mockResolvedValue(undefined),
+            close: vi.fn(),
         }
 
-        ;(service as unknown as { tursoClient: { transaction: jest.Mock } }).tursoClient = {
-            transaction: jest.fn().mockResolvedValue(transaction),
+        ;(service as unknown as { tursoClient: { transaction: Mock } }).tursoClient = {
+            transaction: vi.fn().mockResolvedValue(transaction),
         }
 
         await expect(
@@ -464,7 +465,7 @@ describe('DatabaseService logging', () => {
 
     it('adds collection ownership, memory, and wishlist cleanup in one transaction', async () => {
         const service = new DatabaseService({} as ConfigService)
-        const execute = jest
+        const execute = vi
             .fn()
             .mockResolvedValueOnce({ rowsAffected: 1 })
             .mockResolvedValueOnce({ rowsAffected: 1 })
@@ -474,11 +475,11 @@ describe('DatabaseService logging', () => {
             .mockResolvedValueOnce({ rowsAffected: 1 })
         const transaction = {
             execute,
-            commit: jest.fn().mockResolvedValue(undefined),
-            rollback: jest.fn().mockResolvedValue(undefined),
-            close: jest.fn(),
+            commit: vi.fn().mockResolvedValue(undefined),
+            rollback: vi.fn().mockResolvedValue(undefined),
+            close: vi.fn(),
         }
-        const transactionFactory = jest.fn().mockResolvedValue(transaction)
+        const transactionFactory = vi.fn().mockResolvedValue(transaction)
 
         ;(service as unknown as { tursoClient: { transaction: typeof transactionFactory } }).tursoClient = {
             transaction: transactionFactory,
@@ -503,16 +504,16 @@ describe('DatabaseService logging', () => {
 
     it('reports duplicate collection activation without touching activity or wishlist state', async () => {
         const service = new DatabaseService({} as ConfigService)
-        const execute = jest.fn().mockResolvedValue({ rowsAffected: 0 })
+        const execute = vi.fn().mockResolvedValue({ rowsAffected: 0 })
         const transaction = {
             execute,
-            commit: jest.fn().mockResolvedValue(undefined),
-            rollback: jest.fn().mockResolvedValue(undefined),
-            close: jest.fn(),
+            commit: vi.fn().mockResolvedValue(undefined),
+            rollback: vi.fn().mockResolvedValue(undefined),
+            close: vi.fn(),
         }
 
-        ;(service as unknown as { tursoClient: { transaction: jest.Mock } }).tursoClient = {
-            transaction: jest.fn().mockResolvedValue(transaction),
+        ;(service as unknown as { tursoClient: { transaction: Mock } }).tursoClient = {
+            transaction: vi.fn().mockResolvedValue(transaction),
         }
 
         await expect(service.collection.addGameToCollection(1, 42)).resolves.toEqual({ success: false, wishlistRemoved: false })
@@ -526,14 +527,14 @@ describe('DatabaseService logging', () => {
     it('rolls back collection activation when activity memory fails', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: jest.fn().mockResolvedValueOnce({ rowsAffected: 1 }).mockRejectedValueOnce(new Error('activity write failed')),
-            commit: jest.fn().mockResolvedValue(undefined),
-            rollback: jest.fn().mockResolvedValue(undefined),
-            close: jest.fn(),
+            execute: vi.fn().mockResolvedValueOnce({ rowsAffected: 1 }).mockRejectedValueOnce(new Error('activity write failed')),
+            commit: vi.fn().mockResolvedValue(undefined),
+            rollback: vi.fn().mockResolvedValue(undefined),
+            close: vi.fn(),
         }
 
-        ;(service as unknown as { tursoClient: { transaction: jest.Mock } }).tursoClient = {
-            transaction: jest.fn().mockResolvedValue(transaction),
+        ;(service as unknown as { tursoClient: { transaction: Mock } }).tursoClient = {
+            transaction: vi.fn().mockResolvedValue(transaction),
         }
 
         await expect(service.collection.addGameToCollection(1, 42)).rejects.toThrow('activity write failed')
@@ -546,18 +547,18 @@ describe('DatabaseService logging', () => {
     it('removes collection ownership and its memory in one transaction', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: jest
+            execute: vi
                 .fn()
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 }),
-            commit: jest.fn().mockResolvedValue(undefined),
-            rollback: jest.fn().mockResolvedValue(undefined),
-            close: jest.fn(),
+            commit: vi.fn().mockResolvedValue(undefined),
+            rollback: vi.fn().mockResolvedValue(undefined),
+            close: vi.fn(),
         }
 
-        ;(service as unknown as { tursoClient: { transaction: jest.Mock } }).tursoClient = {
-            transaction: jest.fn().mockResolvedValue(transaction),
+        ;(service as unknown as { tursoClient: { transaction: Mock } }).tursoClient = {
+            transaction: vi.fn().mockResolvedValue(transaction),
         }
 
         await expect(service.collection.removeGameFromCollection(1, 42)).resolves.toEqual({ rowsAffected: 1 })
@@ -576,18 +577,18 @@ describe('DatabaseService logging', () => {
     it('updates ownership metadata and activity memory in one transaction', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: jest
+            execute: vi
                 .fn()
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 }),
-            commit: jest.fn().mockResolvedValue(undefined),
-            rollback: jest.fn().mockResolvedValue(undefined),
-            close: jest.fn(),
+            commit: vi.fn().mockResolvedValue(undefined),
+            rollback: vi.fn().mockResolvedValue(undefined),
+            close: vi.fn(),
         }
 
-        ;(service as unknown as { tursoClient: { transaction: jest.Mock } }).tursoClient = {
-            transaction: jest.fn().mockResolvedValue(transaction),
+        ;(service as unknown as { tursoClient: { transaction: Mock } }).tursoClient = {
+            transaction: vi.fn().mockResolvedValue(transaction),
         }
 
         await expect(service.collection.updateGameOwnershipAndLogActivity(1, 42, { purchaseNotes: 'Gift' })).resolves.toEqual({
@@ -605,19 +606,19 @@ describe('DatabaseService logging', () => {
     it('toggles wishlist state and records the social activity in one transaction', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: jest
+            execute: vi
                 .fn()
                 .mockResolvedValueOnce({ rows: [] })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 }),
-            commit: jest.fn().mockResolvedValue(undefined),
-            rollback: jest.fn().mockResolvedValue(undefined),
-            close: jest.fn(),
+            commit: vi.fn().mockResolvedValue(undefined),
+            rollback: vi.fn().mockResolvedValue(undefined),
+            close: vi.fn(),
         }
 
-        ;(service as unknown as { tursoClient: { transaction: jest.Mock } }).tursoClient = {
-            transaction: jest.fn().mockResolvedValue(transaction),
+        ;(service as unknown as { tursoClient: { transaction: Mock } }).tursoClient = {
+            transaction: vi.fn().mockResolvedValue(transaction),
         }
 
         await expect(service.collection.toggleWishlistAndLogActivity(1, 42)).resolves.toBe(true)
@@ -637,19 +638,19 @@ describe('DatabaseService logging', () => {
     it('saves a review and its rating memory in one transaction', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: jest
+            execute: vi
                 .fn()
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 }),
-            commit: jest.fn().mockResolvedValue(undefined),
-            rollback: jest.fn().mockResolvedValue(undefined),
-            close: jest.fn(),
+            commit: vi.fn().mockResolvedValue(undefined),
+            rollback: vi.fn().mockResolvedValue(undefined),
+            close: vi.fn(),
         }
 
-        ;(service as unknown as { tursoClient: { transaction: jest.Mock } }).tursoClient = {
-            transaction: jest.fn().mockResolvedValue(transaction),
+        ;(service as unknown as { tursoClient: { transaction: Mock } }).tursoClient = {
+            transaction: vi.fn().mockResolvedValue(transaction),
         }
 
         await expect(service.collection.saveGameReviewAndLogActivity(1, 42, 8)).resolves.toEqual({ success: true })
@@ -669,14 +670,14 @@ describe('DatabaseService logging', () => {
     it('rolls back review replacement when rated activity memory fails', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: jest.fn().mockResolvedValueOnce({ rowsAffected: 1 }).mockRejectedValueOnce(new Error('review write failed')),
-            commit: jest.fn().mockResolvedValue(undefined),
-            rollback: jest.fn().mockResolvedValue(undefined),
-            close: jest.fn(),
+            execute: vi.fn().mockResolvedValueOnce({ rowsAffected: 1 }).mockRejectedValueOnce(new Error('review write failed')),
+            commit: vi.fn().mockResolvedValue(undefined),
+            rollback: vi.fn().mockResolvedValue(undefined),
+            close: vi.fn(),
         }
 
-        ;(service as unknown as { tursoClient: { transaction: jest.Mock } }).tursoClient = {
-            transaction: jest.fn().mockResolvedValue(transaction),
+        ;(service as unknown as { tursoClient: { transaction: Mock } }).tursoClient = {
+            transaction: vi.fn().mockResolvedValue(transaction),
         }
 
         await expect(service.collection.saveGameReviewAndLogActivity(1, 42, 8)).rejects.toThrow('review write failed')
@@ -688,7 +689,7 @@ describe('DatabaseService logging', () => {
 
     it('guards group acquisition interest against games already owned by a member', async () => {
         const service = new DatabaseService({} as ConfigService)
-        const execute = jest.fn().mockResolvedValue({ rowsAffected: 1 })
+        const execute = vi.fn().mockResolvedValue({ rowsAffected: 1 })
 
         ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
 
@@ -703,14 +704,14 @@ describe('DatabaseService logging', () => {
     it('reopens a group acquisition decision with the member interest in one transaction', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: jest.fn().mockResolvedValueOnce({ rowsAffected: 1 }).mockResolvedValueOnce({ rowsAffected: 1 }),
-            commit: jest.fn().mockResolvedValue(undefined),
-            rollback: jest.fn().mockResolvedValue(undefined),
-            close: jest.fn(),
+            execute: vi.fn().mockResolvedValueOnce({ rowsAffected: 1 }).mockResolvedValueOnce({ rowsAffected: 1 }),
+            commit: vi.fn().mockResolvedValue(undefined),
+            rollback: vi.fn().mockResolvedValue(undefined),
+            close: vi.fn(),
         }
 
-        ;(service as unknown as { tursoClient: { transaction: jest.Mock } }).tursoClient = {
-            transaction: jest.fn().mockResolvedValue(transaction),
+        ;(service as unknown as { tursoClient: { transaction: Mock } }).tursoClient = {
+            transaction: vi.fn().mockResolvedValue(transaction),
         }
 
         await expect(service.groups.addGroupGameInterestAndReopenDecision(7, 1, 42)).resolves.toEqual({ rowsAffected: 1 })
@@ -737,14 +738,14 @@ describe('DatabaseService logging', () => {
     it('rolls back group interest when reopening its decision fails', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: jest.fn().mockResolvedValueOnce({ rowsAffected: 1 }).mockRejectedValueOnce(new Error('decision write failed')),
-            commit: jest.fn().mockResolvedValue(undefined),
-            rollback: jest.fn().mockResolvedValue(undefined),
-            close: jest.fn(),
+            execute: vi.fn().mockResolvedValueOnce({ rowsAffected: 1 }).mockRejectedValueOnce(new Error('decision write failed')),
+            commit: vi.fn().mockResolvedValue(undefined),
+            rollback: vi.fn().mockResolvedValue(undefined),
+            close: vi.fn(),
         }
 
-        ;(service as unknown as { tursoClient: { transaction: jest.Mock } }).tursoClient = {
-            transaction: jest.fn().mockResolvedValue(transaction),
+        ;(service as unknown as { tursoClient: { transaction: Mock } }).tursoClient = {
+            transaction: vi.fn().mockResolvedValue(transaction),
         }
 
         await expect(service.groups.addGroupGameInterestAndReopenDecision(7, 1, 42)).rejects.toThrow('decision write failed')
@@ -756,7 +757,7 @@ describe('DatabaseService logging', () => {
 
     it('upserts a group acquisition decision without creating purchase semantics', async () => {
         const service = new DatabaseService({} as ConfigService)
-        const execute = jest.fn().mockResolvedValue({ rowsAffected: 1 })
+        const execute = vi.fn().mockResolvedValue({ rowsAffected: 1 })
 
         ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
 
@@ -771,19 +772,19 @@ describe('DatabaseService logging', () => {
     it('accepts an invitation by creating membership and consuming the invitation in one transaction', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: jest
+            execute: vi
                 .fn()
                 .mockResolvedValueOnce({ rows: [[42, null]] })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 }),
-            commit: jest.fn().mockResolvedValue(undefined),
-            rollback: jest.fn().mockResolvedValue(undefined),
-            close: jest.fn(),
+            commit: vi.fn().mockResolvedValue(undefined),
+            rollback: vi.fn().mockResolvedValue(undefined),
+            close: vi.fn(),
         }
 
         ;(service as unknown as { tursoClient: unknown }).tursoClient = {
-            transaction: jest.fn().mockResolvedValue(transaction),
+            transaction: vi.fn().mockResolvedValue(transaction),
         }
 
         await expect(service.invitations.acceptInvitationAtomically(42, 7, 12)).resolves.toEqual({ success: true })
@@ -810,7 +811,7 @@ describe('DatabaseService logging', () => {
 
     it('does not resolve soft-deleted accounts for username invitations', async () => {
         const service = new DatabaseService({} as ConfigService)
-        const execute = jest.fn().mockResolvedValue({ rows: [] })
+        const execute = vi.fn().mockResolvedValue({ rows: [] })
 
         ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
 
@@ -828,17 +829,17 @@ describe('DatabaseService logging', () => {
     it('rolls back invitation acceptance when the membership write fails', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: jest
+            execute: vi
                 .fn()
                 .mockResolvedValueOnce({ rows: [[42]] })
                 .mockRejectedValueOnce(new Error('membership write failed')),
-            commit: jest.fn(),
-            rollback: jest.fn().mockResolvedValue(undefined),
-            close: jest.fn(),
+            commit: vi.fn(),
+            rollback: vi.fn().mockResolvedValue(undefined),
+            close: vi.fn(),
         }
 
         ;(service as unknown as { tursoClient: unknown }).tursoClient = {
-            transaction: jest.fn().mockResolvedValue(transaction),
+            transaction: vi.fn().mockResolvedValue(transaction),
         }
 
         await expect(service.invitations.acceptInvitationAtomically(42, 7, 12)).rejects.toThrow('membership write failed')
@@ -849,7 +850,7 @@ describe('DatabaseService logging', () => {
 
     it('reads recommendation feedback with only current group-member identity fields', async () => {
         const service = new DatabaseService({} as ConfigService)
-        const execute = jest.fn().mockResolvedValue({ rows: [] })
+        const execute = vi.fn().mockResolvedValue({ rows: [] })
 
         ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
 
@@ -859,13 +860,13 @@ describe('DatabaseService logging', () => {
             sql: expect.stringContaining('INNER JOIN GroupMembership'),
             args: [7],
         })
-        expect(execute.mock.calls[0][0].sql).toContain('a.username')
-        expect(execute.mock.calls[0][0].sql).not.toContain('a.email')
+        expect(execute.mock.calls[0]![0].sql).toContain('a.username')
+        expect(execute.mock.calls[0]![0].sql).not.toContain('a.email')
     })
 
     it('reads only organizer-recorded attendees for session history', async () => {
         const service = new DatabaseService({} as ConfigService)
-        const execute = jest.fn().mockResolvedValue({ rows: [[1], [3]] })
+        const execute = vi.fn().mockResolvedValue({ rows: [[1], [3]] })
 
         ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
 
@@ -878,7 +879,7 @@ describe('DatabaseService logging', () => {
 
     it('uses recorded attendance for personal history and only falls back to legacy play links without an attendee row', async () => {
         const service = new DatabaseService({} as ConfigService)
-        const execute = jest.fn().mockResolvedValue({ rows: [[12], [10]] })
+        const execute = vi.fn().mockResolvedValue({ rows: [[12], [10]] })
 
         ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
 
@@ -887,12 +888,12 @@ describe('DatabaseService logging', () => {
             sql: expect.stringContaining("m.status = 'completed'"),
             args: [7, 7, 7, 7, 7],
         })
-        expect(execute.mock.calls[0][0].sql).toContain("ma.attendanceStatus = 'attended'")
+        expect(execute.mock.calls[0]![0].sql).toContain("ma.attendanceStatus = 'attended'")
     })
 
     it('requires a session organizer to remain a member of the private group', async () => {
         const service = new DatabaseService({} as ConfigService)
-        const execute = jest.fn().mockResolvedValue({ rows: [] })
+        const execute = vi.fn().mockResolvedValue({ rows: [] })
 
         ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
 
@@ -906,7 +907,7 @@ describe('DatabaseService logging', () => {
 
     it('builds recommendation diagnostics for the empty-state explanation', async () => {
         const service = new DatabaseService({} as ConfigService)
-        const execute = jest.fn().mockResolvedValue({ rows: [[4, 2, 0]] })
+        const execute = vi.fn().mockResolvedValue({ rows: [[4, 2, 0]] })
 
         ;(service as unknown as { tursoClient: { execute: typeof execute } }).tursoClient = { execute }
 
@@ -921,15 +922,15 @@ describe('DatabaseService logging', () => {
     it('writes a completed session and its relations using the captured meet id', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: jest.fn().mockResolvedValue({ lastInsertRowid: 42 }),
-            batch: jest.fn().mockResolvedValue([]),
-            commit: jest.fn().mockResolvedValue(undefined),
-            rollback: jest.fn().mockResolvedValue(undefined),
-            close: jest.fn(),
+            execute: vi.fn().mockResolvedValue({ lastInsertRowid: 42 }),
+            batch: vi.fn().mockResolvedValue([]),
+            commit: vi.fn().mockResolvedValue(undefined),
+            rollback: vi.fn().mockResolvedValue(undefined),
+            close: vi.fn(),
         }
 
         ;(service as unknown as { tursoClient: unknown }).tursoClient = {
-            transaction: jest.fn().mockResolvedValue(transaction),
+            transaction: vi.fn().mockResolvedValue(transaction),
         }
 
         await service.sessions.createCompletedSession({
@@ -964,15 +965,15 @@ describe('DatabaseService logging', () => {
     it('rolls back and closes the transaction when a session write fails', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: jest.fn().mockRejectedValue(new Error('write failed')),
-            batch: jest.fn(),
-            commit: jest.fn(),
-            rollback: jest.fn().mockResolvedValue(undefined),
-            close: jest.fn(),
+            execute: vi.fn().mockRejectedValue(new Error('write failed')),
+            batch: vi.fn(),
+            commit: vi.fn(),
+            rollback: vi.fn().mockResolvedValue(undefined),
+            close: vi.fn(),
         }
 
         ;(service as unknown as { tursoClient: unknown }).tursoClient = {
-            transaction: jest.fn().mockResolvedValue(transaction),
+            transaction: vi.fn().mockResolvedValue(transaction),
         }
 
         await expect(
@@ -994,18 +995,18 @@ describe('DatabaseService logging', () => {
     it('joins a provisioned Clerk account only to the inviter-owned group', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: jest
+            execute: vi
                 .fn()
                 .mockResolvedValueOnce({ rows: [[12]] })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 }),
-            commit: jest.fn().mockResolvedValue(undefined),
-            rollback: jest.fn().mockResolvedValue(undefined),
-            close: jest.fn(),
+            commit: vi.fn().mockResolvedValue(undefined),
+            rollback: vi.fn().mockResolvedValue(undefined),
+            close: vi.fn(),
         }
 
         ;(service as unknown as { tursoClient: unknown }).tursoClient = {
-            transaction: jest.fn().mockResolvedValue(transaction),
+            transaction: vi.fn().mockResolvedValue(transaction),
         }
 
         await service.groups.joinGroupFromClerkInvitation(9, { groupId: 12, inviterAccountId: 7, version: 1 })
@@ -1029,14 +1030,14 @@ describe('DatabaseService logging', () => {
     it('rolls back a Clerk invitation join when the group is no longer available', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: jest.fn().mockResolvedValueOnce({ rows: [] }),
-            commit: jest.fn().mockResolvedValue(undefined),
-            rollback: jest.fn().mockResolvedValue(undefined),
-            close: jest.fn(),
+            execute: vi.fn().mockResolvedValueOnce({ rows: [] }),
+            commit: vi.fn().mockResolvedValue(undefined),
+            rollback: vi.fn().mockResolvedValue(undefined),
+            close: vi.fn(),
         }
 
         ;(service as unknown as { tursoClient: unknown }).tursoClient = {
-            transaction: jest.fn().mockResolvedValue(transaction),
+            transaction: vi.fn().mockResolvedValue(transaction),
         }
 
         await expect(service.groups.joinGroupFromClerkInvitation(9, { groupId: 404, inviterAccountId: 7, version: 1 })).rejects.toThrow(
@@ -1052,18 +1053,18 @@ describe('DatabaseService logging', () => {
     it('creates a group and owner membership in one transaction', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: jest
+            execute: vi
                 .fn()
                 .mockResolvedValueOnce({ lastInsertRowid: 77 })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 }),
-            commit: jest.fn().mockResolvedValue(undefined),
-            rollback: jest.fn().mockResolvedValue(undefined),
-            close: jest.fn(),
+            commit: vi.fn().mockResolvedValue(undefined),
+            rollback: vi.fn().mockResolvedValue(undefined),
+            close: vi.fn(),
         }
 
         ;(service as unknown as { tursoClient: unknown }).tursoClient = {
-            transaction: jest.fn().mockResolvedValue(transaction),
+            transaction: vi.fn().mockResolvedValue(transaction),
         }
 
         await expect(service.groups.createGroupWithMembership({ name: 'Friends / Friday', createdBy: 7 })).resolves.toEqual({ groupId: 77 })
@@ -1088,14 +1089,14 @@ describe('DatabaseService logging', () => {
     it('rolls back group creation when owner membership fails', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: jest.fn().mockResolvedValueOnce({ lastInsertRowid: 77 }).mockRejectedValueOnce(new Error('membership write failed')),
-            commit: jest.fn(),
-            rollback: jest.fn().mockResolvedValue(undefined),
-            close: jest.fn(),
+            execute: vi.fn().mockResolvedValueOnce({ lastInsertRowid: 77 }).mockRejectedValueOnce(new Error('membership write failed')),
+            commit: vi.fn(),
+            rollback: vi.fn().mockResolvedValue(undefined),
+            close: vi.fn(),
         }
 
         ;(service as unknown as { tursoClient: unknown }).tursoClient = {
-            transaction: jest.fn().mockResolvedValue(transaction),
+            transaction: vi.fn().mockResolvedValue(transaction),
         }
 
         await expect(service.groups.createGroupWithMembership({ name: 'Friends', createdBy: 7 })).rejects.toThrow('membership write failed')
@@ -1108,15 +1109,15 @@ describe('DatabaseService logging', () => {
     it('replaces session attendees in one transaction', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: jest.fn().mockResolvedValue({ rowsAffected: 1 }),
-            batch: jest.fn().mockResolvedValue([]),
-            commit: jest.fn().mockResolvedValue(undefined),
-            rollback: jest.fn().mockResolvedValue(undefined),
-            close: jest.fn(),
+            execute: vi.fn().mockResolvedValue({ rowsAffected: 1 }),
+            batch: vi.fn().mockResolvedValue([]),
+            commit: vi.fn().mockResolvedValue(undefined),
+            rollback: vi.fn().mockResolvedValue(undefined),
+            close: vi.fn(),
         }
 
         ;(service as unknown as { tursoClient: unknown }).tursoClient = {
-            transaction: jest.fn().mockResolvedValue(transaction),
+            transaction: vi.fn().mockResolvedValue(transaction),
         }
 
         await expect(service.sessions.replaceMeetAttendees(12, [1, 3], 'scheduled')).resolves.toBe(true)
@@ -1141,15 +1142,15 @@ describe('DatabaseService logging', () => {
     it('replaces planned session games atomically and allows clearing the shortlist', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: jest.fn().mockResolvedValue({ rowsAffected: 1 }),
-            batch: jest.fn().mockResolvedValue([]),
-            commit: jest.fn().mockResolvedValue(undefined),
-            rollback: jest.fn().mockResolvedValue(undefined),
-            close: jest.fn(),
+            execute: vi.fn().mockResolvedValue({ rowsAffected: 1 }),
+            batch: vi.fn().mockResolvedValue([]),
+            commit: vi.fn().mockResolvedValue(undefined),
+            rollback: vi.fn().mockResolvedValue(undefined),
+            close: vi.fn(),
         }
 
         ;(service as unknown as { tursoClient: unknown }).tursoClient = {
-            transaction: jest.fn().mockResolvedValue(transaction),
+            transaction: vi.fn().mockResolvedValue(transaction),
         }
 
         await expect(service.sessions.replaceMeetPlannedGames(12, [42, 43], 'active')).resolves.toBe(true)
@@ -1177,15 +1178,15 @@ describe('DatabaseService logging', () => {
     it('rolls back session attendee replacement when inserts fail', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: jest.fn().mockResolvedValue({ rowsAffected: 1 }),
-            batch: jest.fn().mockRejectedValue(new Error('attendee write failed')),
-            commit: jest.fn(),
-            rollback: jest.fn().mockResolvedValue(undefined),
-            close: jest.fn(),
+            execute: vi.fn().mockResolvedValue({ rowsAffected: 1 }),
+            batch: vi.fn().mockRejectedValue(new Error('attendee write failed')),
+            commit: vi.fn(),
+            rollback: vi.fn().mockResolvedValue(undefined),
+            close: vi.fn(),
         }
 
         ;(service as unknown as { tursoClient: unknown }).tursoClient = {
-            transaction: jest.fn().mockResolvedValue(transaction),
+            transaction: vi.fn().mockResolvedValue(transaction),
         }
 
         await expect(service.sessions.replaceMeetAttendees(12, [1, 3], 'active')).rejects.toThrow('attendee write failed')
@@ -1197,15 +1198,15 @@ describe('DatabaseService logging', () => {
     it('writes scheduled attendees as pending in one transaction', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: jest.fn().mockResolvedValue({ lastInsertRowid: 43 }),
-            batch: jest.fn().mockResolvedValue([]),
-            commit: jest.fn().mockResolvedValue(undefined),
-            rollback: jest.fn().mockResolvedValue(undefined),
-            close: jest.fn(),
+            execute: vi.fn().mockResolvedValue({ lastInsertRowid: 43 }),
+            batch: vi.fn().mockResolvedValue([]),
+            commit: vi.fn().mockResolvedValue(undefined),
+            rollback: vi.fn().mockResolvedValue(undefined),
+            close: vi.fn(),
         }
 
         ;(service as unknown as { tursoClient: unknown }).tursoClient = {
-            transaction: jest.fn().mockResolvedValue(transaction),
+            transaction: vi.fn().mockResolvedValue(transaction),
         }
 
         await expect(
@@ -1236,18 +1237,18 @@ describe('DatabaseService logging', () => {
     it('keeps legacy play links and canonical played games synchronized', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: jest
+            execute: vi
                 .fn()
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 })
                 .mockResolvedValueOnce({ rowsAffected: 1 }),
-            commit: jest.fn().mockResolvedValue(undefined),
-            rollback: jest.fn().mockResolvedValue(undefined),
-            close: jest.fn(),
+            commit: vi.fn().mockResolvedValue(undefined),
+            rollback: vi.fn().mockResolvedValue(undefined),
+            close: vi.fn(),
         }
 
         ;(service as unknown as { tursoClient: unknown }).tursoClient = {
-            transaction: jest.fn().mockResolvedValue(transaction),
+            transaction: vi.fn().mockResolvedValue(transaction),
         }
 
         await expect(service.sessions.createMeetAccountGame(1, 12, 42)).resolves.toEqual({ rowsAffected: 1 })
@@ -1269,14 +1270,14 @@ describe('DatabaseService logging', () => {
     it('marks remaining planned games as skipped when a session becomes terminal', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: jest.fn().mockResolvedValueOnce({ rowsAffected: 1 }).mockResolvedValueOnce({ rowsAffected: 2 }),
-            commit: jest.fn().mockResolvedValue(undefined),
-            rollback: jest.fn().mockResolvedValue(undefined),
-            close: jest.fn(),
+            execute: vi.fn().mockResolvedValueOnce({ rowsAffected: 1 }).mockResolvedValueOnce({ rowsAffected: 2 }),
+            commit: vi.fn().mockResolvedValue(undefined),
+            rollback: vi.fn().mockResolvedValue(undefined),
+            close: vi.fn(),
         }
 
         ;(service as unknown as { tursoClient: unknown }).tursoClient = {
-            transaction: jest.fn().mockResolvedValue(transaction),
+            transaction: vi.fn().mockResolvedValue(transaction),
         }
 
         await expect(service.sessions.updateMeetStatus(12, 'active', 'completed')).resolves.toEqual({ rowsAffected: 1 })
@@ -1296,14 +1297,14 @@ describe('DatabaseService logging', () => {
     it('does not rewrite planned games while a session remains active', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: jest.fn().mockResolvedValue({ rowsAffected: 1 }),
-            commit: jest.fn().mockResolvedValue(undefined),
-            rollback: jest.fn().mockResolvedValue(undefined),
-            close: jest.fn(),
+            execute: vi.fn().mockResolvedValue({ rowsAffected: 1 }),
+            commit: vi.fn().mockResolvedValue(undefined),
+            rollback: vi.fn().mockResolvedValue(undefined),
+            close: vi.fn(),
         }
 
         ;(service as unknown as { tursoClient: unknown }).tursoClient = {
-            transaction: jest.fn().mockResolvedValue(transaction),
+            transaction: vi.fn().mockResolvedValue(transaction),
         }
 
         await expect(service.sessions.updateMeetStatus(12, 'scheduled', 'active')).resolves.toEqual({ rowsAffected: 1 })
@@ -1315,14 +1316,14 @@ describe('DatabaseService logging', () => {
     it('does not mark planned games skipped when a concurrent status change wins', async () => {
         const service = new DatabaseService({} as ConfigService)
         const transaction = {
-            execute: jest.fn().mockResolvedValue({ rowsAffected: 0 }),
-            commit: jest.fn().mockResolvedValue(undefined),
-            rollback: jest.fn().mockResolvedValue(undefined),
-            close: jest.fn(),
+            execute: vi.fn().mockResolvedValue({ rowsAffected: 0 }),
+            commit: vi.fn().mockResolvedValue(undefined),
+            rollback: vi.fn().mockResolvedValue(undefined),
+            close: vi.fn(),
         }
 
         ;(service as unknown as { tursoClient: unknown }).tursoClient = {
-            transaction: jest.fn().mockResolvedValue(transaction),
+            transaction: vi.fn().mockResolvedValue(transaction),
         }
 
         await expect(service.sessions.updateMeetStatus(12, 'scheduled', 'cancelled')).resolves.toEqual({ rowsAffected: 0 })
@@ -1333,19 +1334,19 @@ describe('DatabaseService logging', () => {
     })
 
     describe('a database timeout', () => {
-        const serviceWith = (execute: jest.Mock) => {
+        const serviceWith = (execute: Mock) => {
             const service = new DatabaseService({} as ConfigService)
 
-            ;(service as unknown as { tursoClient: { execute: jest.Mock } }).tursoClient = { execute }
+            ;(service as unknown as { tursoClient: { execute: Mock } }).tursoClient = { execute }
             return service
         }
 
         it('retries a read once and logs the retry without the SQL', async () => {
-            const execute = jest.fn().mockRejectedValueOnce(new ProviderTimeoutError('database')).mockResolvedValueOnce({ rows: [] })
+            const execute = vi.fn().mockRejectedValueOnce(new ProviderTimeoutError('database')).mockResolvedValueOnce({ rows: [] })
             const service = serviceWith(execute)
-            const warn = jest
+            const warn = vi
                 .spyOn((service as unknown as { LOGGER: { warn: (message: string) => void } }).LOGGER, 'warn')
-                .mockImplementation()
+                .mockImplementation(() => undefined)
 
             // Column names that contain a write keyword still make a read.
             await expect(service.execute('SELECT id, isDeleted, updated_at FROM Account')).resolves.toEqual({ rows: [] })
@@ -1354,7 +1355,7 @@ describe('DatabaseService logging', () => {
         })
 
         it('gives up after the second timeout', async () => {
-            const execute = jest.fn().mockRejectedValue(new ProviderTimeoutError('database'))
+            const execute = vi.fn().mockRejectedValue(new ProviderTimeoutError('database'))
 
             await expect(serviceWith(execute).execute({ sql: 'WITH x AS (SELECT 1) SELECT * FROM x', args: [] })).rejects.toBeInstanceOf(
                 ProviderTimeoutError,
@@ -1363,7 +1364,7 @@ describe('DatabaseService logging', () => {
         })
 
         it('never repeats a write', async () => {
-            const execute = jest.fn().mockRejectedValue(new ProviderTimeoutError('database'))
+            const execute = vi.fn().mockRejectedValue(new ProviderTimeoutError('database'))
 
             await expect(serviceWith(execute).execute({ sql: 'INSERT INTO Meet (groupId) VALUES (?)', args: [1] })).rejects.toBeInstanceOf(
                 ProviderTimeoutError,
@@ -1375,7 +1376,7 @@ describe('DatabaseService logging', () => {
         })
 
         it('does not retry other errors', async () => {
-            const execute = jest.fn().mockRejectedValue(new Error('SQLITE_ERROR'))
+            const execute = vi.fn().mockRejectedValue(new Error('SQLITE_ERROR'))
 
             await expect(serviceWith(execute).execute('SELECT 1')).rejects.toThrow('SQLITE_ERROR')
             expect(execute).toHaveBeenCalledTimes(1)

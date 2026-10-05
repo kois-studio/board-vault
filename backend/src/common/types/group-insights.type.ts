@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'
 
-import { GameCompleteDto } from './game.type'
-import { AvatarDto } from './user.type'
+import { GameCompleteDto } from './game.type.js'
+import { AvatarDto } from './user.type.js'
 
 /**
  * One person in the group's standings. A group person linked to an account is

@@ -1,10 +1,10 @@
 import { GUARDS_METADATA } from '@nestjs/common/constants'
 
-import { AdminGuard } from '../../../common/guards/admin.guard'
-import { AuthGuard } from '../../../common/guards/auth.guard'
+import { AdminGuard } from '../../../common/guards/admin.guard.js'
+import { AuthGuard } from '../../../common/guards/auth.guard.js'
 
-import { CacheController } from './cache.controller'
-import { CacheService } from './cache.service'
+import { CacheController } from './cache.controller.js'
+import { CacheService } from './cache.service.js'
 
 describe('CacheController', () => {
     it('protects operational cache endpoints with authenticated admin access', () => {
@@ -15,9 +15,9 @@ describe('CacheController', () => {
 
     it('delegates cache operations without exposing provider details in the controller', async () => {
         const cacheService = {
-            keys: jest.fn().mockResolvedValue({ keys: ['user-proposal-stats:1'] }),
-            deleteAll: jest.fn().mockResolvedValue(true),
-            deleteOne: jest.fn().mockResolvedValue(true),
+            keys: vi.fn().mockResolvedValue({ keys: ['user-proposal-stats:1'] }),
+            deleteAll: vi.fn().mockResolvedValue(true),
+            deleteOne: vi.fn().mockResolvedValue(true),
         }
         const controller = new CacheController(cacheService as unknown as CacheService)
 

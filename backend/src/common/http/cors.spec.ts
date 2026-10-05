@@ -1,4 +1,4 @@
-import { getCorsOrigins } from './cors'
+import { getCorsOrigins } from './cors.js'
 
 describe('getCorsOrigins', () => {
     it('keeps localhost out of production defaults', () => {

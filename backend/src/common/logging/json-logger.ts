@@ -1,6 +1,6 @@
 import { ConsoleLogger, type LogLevel } from '@nestjs/common'
 
-import { requestContext } from './request-context'
+import { requestContext } from './request-context.js'
 
 /**
  * One JSON object per line, for Vercel's log search. Messages written with

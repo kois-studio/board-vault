@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common'
 
-import { DatabaseModule } from '../../common/database/database.module'
+import { DatabaseModule } from '../../common/database/database.module.js'
 
-import { TagCategoryService } from './tag-category.service'
+import { TagCategoryService } from './tag-category.service.js'
 
 @Module({
     imports: [DatabaseModule],

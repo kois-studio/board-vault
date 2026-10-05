@@ -15,17 +15,17 @@ import {
 } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
-import { AuthGuard } from '../../../common/guards/auth.guard'
-import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
-import { SuccessDto } from '../../../common/types/auth.type'
-import { CollectionActivityDto } from '../../../common/types/collection-activity.type'
-import { GameOwnedDto, UpdateGameOwnedDto } from '../../../common/types/game-owned.type'
-import { CreateGameReviewBody, GameReviewWithGameDataDto } from '../../../common/types/game-review.type'
-import { BrowseGamesQuery, BrowseGamesResultDto, GameCompleteDto, GameDto, GameViewDto } from '../../../common/types/game.type'
-import { CatalogueTagDto } from '../../../common/types/tag.type'
-import { WishlistResponseDto } from '../../../common/types/wishlisted-game.type'
+import { AuthGuard } from '../../../common/guards/auth.guard.js'
+import { UserOwnershipGuard } from '../../../common/guards/ownership.guard.js'
+import { SuccessDto } from '../../../common/types/auth.type.js'
+import { CollectionActivityDto } from '../../../common/types/collection-activity.type.js'
+import { GameOwnedDto, UpdateGameOwnedDto } from '../../../common/types/game-owned.type.js'
+import { CreateGameReviewBody, GameReviewWithGameDataDto } from '../../../common/types/game-review.type.js'
+import { BrowseGamesQuery, BrowseGamesResultDto, GameCompleteDto, GameDto, GameViewDto } from '../../../common/types/game.type.js'
+import { CatalogueTagDto } from '../../../common/types/tag.type.js'
+import { WishlistResponseDto } from '../../../common/types/wishlisted-game.type.js'
 
-import { CollectionService } from './collection.service'
+import { CollectionService } from './collection.service.js'
 
 @UseGuards(AuthGuard)
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))

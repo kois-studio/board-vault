@@ -2,19 +2,19 @@ import { createClerkClient, type User as ClerkUser } from '@clerk/backend'
 import { ConflictException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 
-import { API_ERROR_CODES, BoardVaultHttpException } from '../../../common/http/api-error'
-import { ProviderTimeoutError, withTimeout } from '../../../common/http/provider-timeout'
-import { assertSelfRegistrationEnabled } from '../../../common/registration-policy'
+import { API_ERROR_CODES, BoardVaultHttpException } from '../../../common/http/api-error.js'
+import { ProviderTimeoutError, withTimeout } from '../../../common/http/provider-timeout.js'
+import { assertSelfRegistrationEnabled } from '../../../common/registration-policy.js'
 import {
     CLERK_GROUP_INVITATION_METADATA_KEY,
     type ClerkGroupInvitationDto,
     type ClerkGroupInvitationSummaryDto,
     type ClerkGroupInvitationMetadata,
-} from '../../../common/types/clerk-invitation.type'
-import { UsersService } from '../../core/users/users.service'
-import { DatabaseService } from '../database/database.service'
+} from '../../../common/types/clerk-invitation.type.js'
+import { UsersService } from '../../core/users/users.service.js'
+import { DatabaseService } from '../database/database.service.js'
 
-import type { AvatarDto, UserGetDto } from '../../../common/types/user.type'
+import type { AvatarDto, UserGetDto } from '../../../common/types/user.type.js'
 
 @Injectable()
 export class ClerkIdentityService {

@@ -1,10 +1,10 @@
 import { Controller, Get, Req, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
-import { AuthGuard } from '../../../common/guards/auth.guard'
-import { SessionStatusDto } from '../../../common/types/auth.type'
+import { AuthGuard } from '../../../common/guards/auth.guard.js'
+import { SessionStatusDto } from '../../../common/types/auth.type.js'
 
-import type { AuthenticatedUser } from '../../../common/types/auth.type'
+import type { AuthenticatedUser } from '../../../common/types/auth.type.js'
 
 @ApiTags('auth')
 @Controller('auth')

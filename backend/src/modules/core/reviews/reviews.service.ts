@@ -1,11 +1,11 @@
-import { ResultSet } from '@libsql/client/.'
+import { ResultSet } from '@libsql/client'
 import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 
-import { safeErrorName } from '../../../common/logging/structured-log'
-import { gameReviewsSchema } from '../../../common/schemas/db-game-review.schema'
-import { GameReviewDto } from '../../../common/types/game-review.type'
-import { CacheService } from '../../common/cache/cache.service'
-import { DatabaseService } from '../../common/database/database.service'
+import { safeErrorName } from '../../../common/logging/structured-log.js'
+import { gameReviewsSchema } from '../../../common/schemas/db-game-review.schema.js'
+import { GameReviewDto } from '../../../common/types/game-review.type.js'
+import { CacheService } from '../../common/cache/cache.service.js'
+import { DatabaseService } from '../../common/database/database.service.js'
 
 @Injectable()
 export class ReviewsService {

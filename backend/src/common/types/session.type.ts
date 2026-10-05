@@ -17,7 +17,7 @@ import {
     ValidateNested,
 } from 'class-validator'
 
-import { GameResultEntryDto } from './meet.type'
+import { GameResultEntryDto } from './meet.type.js'
 
 export class PlaySessionGameBody {
     @ApiProperty({ example: 42 })

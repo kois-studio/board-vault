@@ -1,11 +1,11 @@
-import { ResultSet } from '@libsql/client/.'
+import { ResultSet } from '@libsql/client'
 import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 
-import { notificationsSchema } from '../../../common/schemas'
-import { CreateNotificationBody, NotificationDto, UpdateNotificationRequestBody } from '../../../common/types/notification.type'
-import { DatabaseService } from '../../common/database/database.service'
+import { notificationsSchema } from '../../../common/schemas/index.js'
+import { CreateNotificationBody, NotificationDto, UpdateNotificationRequestBody } from '../../../common/types/notification.type.js'
+import { DatabaseService } from '../../common/database/database.service.js'
 
-import { NotificationDataMap, NotificationTypeEnum } from './notifications-enum.type'
+import { NotificationDataMap, NotificationTypeEnum } from './notifications-enum.type.js'
 
 @Injectable()
 export class NotificationsService {

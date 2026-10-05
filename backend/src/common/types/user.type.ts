@@ -15,7 +15,7 @@ import {
     ValidateNested,
 } from 'class-validator'
 
-import { GameCompleteDto } from './game.type'
+import { GameCompleteDto } from './game.type.js'
 
 // Initials are only shown, and so only required, on an initials avatar. Icon
 // and emoji avatars may keep empty initials, and the API must accept back the

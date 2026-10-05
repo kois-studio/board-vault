@@ -1,7 +1,7 @@
 import { plainToInstance } from 'class-transformer'
 import { validate } from 'class-validator'
 
-import { UpdateUserBody } from './user.type'
+import { UpdateUserBody } from './user.type.js'
 
 describe('UpdateUserBody avatar', () => {
     const avatar = { backgroundColor: '#EF4444', iconName: null, emoji: '😎', type: 'emoji', initials: '' }

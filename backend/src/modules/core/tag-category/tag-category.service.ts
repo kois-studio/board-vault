@@ -1,9 +1,9 @@
-import { ResultSet } from '@libsql/client/.'
+import { ResultSet } from '@libsql/client'
 import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 
-import { tagCategoriesSchema } from '../../../common/schemas/db-tag-category.schema'
-import { TagCategoryDto } from '../../../common/types/tag-category.type'
-import { DatabaseService } from '../../common/database/database.service'
+import { tagCategoriesSchema } from '../../../common/schemas/db-tag-category.schema.js'
+import { TagCategoryDto } from '../../../common/types/tag-category.type.js'
+import { DatabaseService } from '../../common/database/database.service.js'
 
 @Injectable()
 export class TagCategoryService {

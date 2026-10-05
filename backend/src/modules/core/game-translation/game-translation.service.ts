@@ -1,14 +1,14 @@
-import { ResultSet } from '@libsql/client/.'
+import { ResultSet } from '@libsql/client'
 import { Injectable, Logger } from '@nestjs/common'
 
-import { CacheService } from '../../common/cache/cache.service'
-import { DatabaseService } from '../../common/database/database.service'
+import { CacheService } from '../../common/cache/cache.service.js'
+import { DatabaseService } from '../../common/database/database.service.js'
 
-import { gameTranslationsSchema } from './game-translation.schema'
+import { gameTranslationsSchema } from './game-translation.schema.js'
 
-import type { SuccessDto } from '../../../common/types/auth.type'
-import type { GameTranslationDto, SupportedLanguage } from '../../../common/types/game-translation.type'
-import type { BrowseGamesPaginationDto } from '../../../common/types/game.type'
+import type { SuccessDto } from '../../../common/types/auth.type.js'
+import type { GameTranslationDto, SupportedLanguage } from '../../../common/types/game-translation.type.js'
+import type { BrowseGamesPaginationDto } from '../../../common/types/game.type.js'
 
 @Injectable()
 export class GameTranslationService {

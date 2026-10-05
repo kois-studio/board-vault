@@ -18,9 +18,9 @@ import {
 } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
-import { AuthGuard } from '../../../common/guards/auth.guard'
-import { GroupPeopleFeatureGuard } from '../../../common/guards/group-people-feature.guard'
-import { GameCompleteDto } from '../../../common/types/game.type'
+import { AuthGuard } from '../../../common/guards/auth.guard.js'
+import { GroupPeopleFeatureGuard } from '../../../common/guards/group-people-feature.guard.js'
+import { GameCompleteDto } from '../../../common/types/game.type.js'
 import {
     CreateGroupPersonBody,
     GroupPersonDto,
@@ -32,9 +32,9 @@ import {
     UpdateGroupPersonOwnershipBody,
     UpdateGroupPersonPreferenceBody,
     ClaimGroupPersonBody,
-} from '../../../common/types/group-person.type'
+} from '../../../common/types/group-person.type.js'
 
-import { GroupPeopleService } from './group-people.service'
+import { GroupPeopleService } from './group-people.service.js'
 
 @UseGuards(AuthGuard, GroupPeopleFeatureGuard)
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))

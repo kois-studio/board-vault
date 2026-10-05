@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common'
 
-import { DatabaseModule } from '../../common/database/database.module'
+import { DatabaseModule } from '../../common/database/database.module.js'
 
-import { NotificationsController } from './notifications.controller'
-import { NotificationsService } from './notifications.service'
+import { NotificationsController } from './notifications.controller.js'
+import { NotificationsService } from './notifications.service.js'
 // module dependencies
 
 @Module({

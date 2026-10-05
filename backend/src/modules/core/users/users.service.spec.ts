@@ -1,30 +1,32 @@
 import { BadRequestException, ExecutionContext, INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
-import * as request from 'supertest'
+import request from 'supertest'
 
-import { fakeDatabase } from '../../../../test/fake-database'
-import { AdminGuard } from '../../../common/guards/admin.guard'
-import { AuthGuard } from '../../../common/guards/auth.guard'
-import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
-import { DatabaseService } from '../../common/database/database.service'
+import { fakeDatabase } from '../../../../test/fake-database.js'
+import { AdminGuard } from '../../../common/guards/admin.guard.js'
+import { AuthGuard } from '../../../common/guards/auth.guard.js'
+import { UserOwnershipGuard } from '../../../common/guards/ownership.guard.js'
+import { DatabaseService } from '../../common/database/database.service.js'
 
-import { UsersController } from './users.controller'
-import { UsersService } from './users.service'
+import { UsersController } from './users.controller.js'
+import { UsersService } from './users.service.js'
+
+import type { Mock } from 'vitest'
 
 describe('UsersController profile update boundary', () => {
     let app: INestApplication
-    let updateUserProfile: jest.Mock
-    let updateGames: jest.Mock
+    let updateUserProfile: Mock
+    let updateGames: Mock
 
     beforeEach(async () => {
-        updateUserProfile = jest.fn(async (_userId: number, update: Record<string, unknown>) => {
+        updateUserProfile = vi.fn(async (_userId: number, update: Record<string, unknown>) => {
             if (Object.keys(update).length === 0) {
                 throw new BadRequestException('No fields to update')
             }
 
             return { rows: [{ id: 1 }] }
         })
-        updateGames = jest.fn().mockResolvedValue(undefined)
+        updateGames = vi.fn().mockResolvedValue(undefined)
 
         const module = await Test.createTestingModule({
             controllers: [UsersController],

@@ -1,1 +1,1 @@
-export { winrate } from './winrate'
+export { winrate } from './winrate.js'

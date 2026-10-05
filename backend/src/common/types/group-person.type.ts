@@ -2,7 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
 import { ArrayMaxSize, IsArray, IsIn, IsInt, IsNotEmpty, IsOptional, IsString, MaxLength, Min, ValidateNested } from 'class-validator'
 
-import { AvatarDto } from './user.type'
+import { AvatarDto } from './user.type.js'
 
 export type GroupPersonKind = 'placeholder' | 'linked'
 export type GroupPersonStatus = 'active' | 'archived'

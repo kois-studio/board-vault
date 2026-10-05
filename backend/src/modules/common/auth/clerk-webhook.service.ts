@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common'
 
-import { DatabaseService } from '../database/database.service'
+import { DatabaseService } from '../database/database.service.js'
 
 import type { UserJSON } from '@clerk/backend'
 import type { WebhookEvent } from '@clerk/backend/webhooks'

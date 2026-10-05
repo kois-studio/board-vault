@@ -1,14 +1,14 @@
 import { GUARDS_METADATA } from '@nestjs/common/constants'
 
-import { GroupOwnerGuard } from '../../../common/guards/group-owner.guard'
-import { CreateInvitationByUsernameRequestBody, CreateInvitationRequestBody } from '../../../common/types/invitation.type'
+import { GroupOwnerGuard } from '../../../common/guards/group-owner.guard.js'
+import { CreateInvitationByUsernameRequestBody, CreateInvitationRequestBody } from '../../../common/types/invitation.type.js'
 
-import { InvitationsController } from './invitations.controller'
-import { InvitationsService } from './invitations.service'
+import { InvitationsController } from './invitations.controller.js'
+import { InvitationsService } from './invitations.service.js'
 
 describe('InvitationsController actor identity', () => {
     it('derives the generic invitation sender from the authenticated user', async () => {
-        const createInvitation = jest.fn().mockResolvedValue({ success: true })
+        const createInvitation = vi.fn().mockResolvedValue({ success: true })
         const controller = new InvitationsController({ createInvitation } as unknown as InvitationsService)
         const body = { groupId: 12, toAccountId: 8, fromAccountId: 999 } as unknown as CreateInvitationRequestBody
 
@@ -18,7 +18,7 @@ describe('InvitationsController actor identity', () => {
     })
 
     it('derives the username invitation sender from the authenticated user', async () => {
-        const createInvitationByUsername = jest.fn().mockResolvedValue({ id: 8 })
+        const createInvitationByUsername = vi.fn().mockResolvedValue({ id: 8 })
         const controller = new InvitationsController({ createInvitationByUsername } as unknown as InvitationsService)
         const body = { groupId: 12, username: 'target-user', fromAccountId: 999 } as unknown as CreateInvitationByUsernameRequestBody
 
@@ -28,7 +28,7 @@ describe('InvitationsController actor identity', () => {
     })
 
     it('preserves an owner-selected placeholder target while deriving the sender', async () => {
-        const createInvitationByUsername = jest.fn().mockResolvedValue({ id: 8 })
+        const createInvitationByUsername = vi.fn().mockResolvedValue({ id: 8 })
         const controller = new InvitationsController({ createInvitationByUsername } as unknown as InvitationsService)
         const body = {
             groupId: 12,

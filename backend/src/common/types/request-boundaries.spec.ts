@@ -1,12 +1,12 @@
 import { plainToInstance } from 'class-transformer'
 import { validate } from 'class-validator'
 
-import { CacheKeyParam } from './cache.type'
-import { CreateGameProposalBody } from './game-proposal.type'
-import { LegacyCreateGroupParams } from './group.type'
-import { CreateNotificationRequestBody } from './notification.type'
-import { CreatePlaySessionBody, UpdateSessionShortlistBody } from './session.type'
-import { UserUpdateGamesBody } from './user.type'
+import { CacheKeyParam } from './cache.type.js'
+import { CreateGameProposalBody } from './game-proposal.type.js'
+import { LegacyCreateGroupParams } from './group.type.js'
+import { CreateNotificationRequestBody } from './notification.type.js'
+import { CreatePlaySessionBody, UpdateSessionShortlistBody } from './session.type.js'
+import { UserUpdateGamesBody } from './user.type.js'
 
 describe('request boundary limits', () => {
     async function validationErrors<T extends object>(type: new () => T, value: object) {

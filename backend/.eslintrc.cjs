@@ -10,9 +10,8 @@ module.exports = {
     root: true,
     env: {
         node: true,
-        jest: true,
     },
-    ignorePatterns: ['.eslintrc.js'],
+    ignorePatterns: ['.eslintrc.cjs', 'vitest.config.mts', 'vitest.e2e.config.mts'],
     rules: {
         '@typescript-eslint/interface-name-prefix': 'off',
         '@typescript-eslint/explicit-function-return-type': 'off',

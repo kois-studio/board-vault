@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common'
 
-import { CacheModule } from '../../common/cache/cache.module'
-import { DatabaseModule } from '../../common/database/database.module'
-import { GameProposalModule } from '../../core/game-proposal/game-proposal.module'
-import { GroupsModule } from '../../core/groups/groups.module'
-import { InvitationsModule } from '../../core/invitations/invitations.module'
-import { NotificationsModule } from '../../core/notifications/notifications.module'
-import { UsersModule } from '../../core/users/users.module'
+import { CacheModule } from '../../common/cache/cache.module.js'
+import { DatabaseModule } from '../../common/database/database.module.js'
+import { GameProposalModule } from '../../core/game-proposal/game-proposal.module.js'
+import { GroupsModule } from '../../core/groups/groups.module.js'
+import { InvitationsModule } from '../../core/invitations/invitations.module.js'
+import { NotificationsModule } from '../../core/notifications/notifications.module.js'
+import { UsersModule } from '../../core/users/users.module.js'
 
-import { ProfileController } from './profile.controller'
-import { ProfileService } from './profile.service'
+import { ProfileController } from './profile.controller.js'
+import { ProfileService } from './profile.service.js'
 
 @Module({
     imports: [CacheModule, DatabaseModule, UsersModule, NotificationsModule, GroupsModule, InvitationsModule, GameProposalModule],

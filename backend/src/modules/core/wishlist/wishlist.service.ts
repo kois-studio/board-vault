@@ -1,11 +1,11 @@
-import { ResultSet } from '@libsql/client/.'
+import { ResultSet } from '@libsql/client'
 import { Injectable, Logger } from '@nestjs/common'
 
-import { wishlistedGamesSchema } from '../../../common/schemas/db-wishlisted-game.schema'
-import { DatabaseService } from '../../common/database/database.service'
+import { wishlistedGamesSchema } from '../../../common/schemas/db-wishlisted-game.schema.js'
+import { DatabaseService } from '../../common/database/database.service.js'
 
-import type { GameDto } from '../../../common/types/game.type'
-import type { WishlistedGameDto } from '../../../common/types/wishlisted-game.type'
+import type { GameDto } from '../../../common/types/game.type.js'
+import type { WishlistedGameDto } from '../../../common/types/wishlisted-game.type.js'
 
 @Injectable()
 export class WishlistService {

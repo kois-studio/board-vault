@@ -1,20 +1,20 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
-import { AuthGuard } from '../../../common/guards/auth.guard'
-import { GroupOwnerGuard } from '../../../common/guards/group-owner.guard'
-import { RateLimit, RateLimitGuard } from '../../../common/guards/rate-limit.guard'
-import { SuccessDto } from '../../../common/types/auth.type'
+import { AuthGuard } from '../../../common/guards/auth.guard.js'
+import { GroupOwnerGuard } from '../../../common/guards/group-owner.guard.js'
+import { RateLimit, RateLimitGuard } from '../../../common/guards/rate-limit.guard.js'
+import { SuccessDto } from '../../../common/types/auth.type.js'
 import {
     CreateInvitationBody,
     CreateInvitationByUsernameBody,
     CreateInvitationByUsernameRequestBody,
     CreateInvitationRequestBody,
     InvitationDto,
-} from '../../../common/types/invitation.type'
-import { UserPublicDto } from '../../../common/types/user.type'
+} from '../../../common/types/invitation.type.js'
+import { UserPublicDto } from '../../../common/types/user.type.js'
 
-import { InvitationsService } from './invitations.service'
+import { InvitationsService } from './invitations.service.js'
 
 @UseGuards(AuthGuard)
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))

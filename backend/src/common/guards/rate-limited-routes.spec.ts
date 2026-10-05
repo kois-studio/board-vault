@@ -1,10 +1,10 @@
 import { GUARDS_METADATA } from '@nestjs/common/constants'
 
-import { GroupsController } from '../../modules/core/groups/groups.controller'
-import { InvitationsController } from '../../modules/core/invitations/invitations.controller'
-import { ProfileController } from '../../modules/features/profile/profile.controller'
+import { GroupsController } from '../../modules/core/groups/groups.controller.js'
+import { InvitationsController } from '../../modules/core/invitations/invitations.controller.js'
+import { ProfileController } from '../../modules/features/profile/profile.controller.js'
 
-import { RATE_LIMIT_METADATA, RateLimitGuard } from './rate-limit.guard'
+import { RATE_LIMIT_METADATA, RateLimitGuard } from './rate-limit.guard.js'
 
 // Routes that send email or create shared records must stay rate limited.
 describe('rate-limited routes', () => {

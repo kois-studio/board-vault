@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common'
 
-import { CacheService } from '../cache/cache.service'
-import { DatabaseService } from '../database/database.service'
+import { CacheService } from '../cache/cache.service.js'
+import { DatabaseService } from '../database/database.service.js'
 
-import type { LivenessDto, ReadinessDto, ReadinessChecksDto } from '../../../common/types/health.type'
+import type { LivenessDto, ReadinessDto, ReadinessChecksDto } from '../../../common/types/health.type.js'
 
 @Injectable()
 export class HealthService {

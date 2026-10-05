@@ -1,6 +1,6 @@
 import { ForbiddenException } from '@nestjs/common'
 
-import { API_ERROR_CODES } from './http/api-error'
+import { API_ERROR_CODES } from './http/api-error.js'
 
 export const PRIVATE_BETA_REGISTRATION_MESSAGE = 'Board Vault is currently in private beta. Registration is by invitation only.'
 

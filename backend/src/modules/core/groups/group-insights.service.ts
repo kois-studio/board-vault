@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common'
 
-import { DatabaseService } from '../../common/database/database.service'
+import { DatabaseService } from '../../common/database/database.service.js'
 
-import type { GameCompleteDto } from '../../../common/types/game.type'
-import type { GroupInsightsDto } from '../../../common/types/group-insights.type'
-import type { AvatarDto } from '../../../common/types/user.type'
+import type { GameCompleteDto } from '../../../common/types/game.type.js'
+import type { GroupInsightsDto } from '../../../common/types/group-insights.type.js'
+import type { AvatarDto } from '../../../common/types/user.type.js'
 import type { Row } from '@libsql/client'
 
 /** Columns 0–6 of an insights game row: id, image, duration, players, and the en/es titles. */

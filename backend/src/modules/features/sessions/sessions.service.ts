@@ -1,9 +1,9 @@
 import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
 
-import { mapMeetDetailsResult } from '../../../common/mappers/meet-details.mapper'
-import { DatabaseService } from '../../common/database/database.service'
+import { mapMeetDetailsResult } from '../../../common/mappers/meet-details.mapper.js'
+import { DatabaseService } from '../../common/database/database.service.js'
 
-import type { MeetWithAttendeesAndGames } from '../../../common/types/meet.type'
+import type { MeetWithAttendeesAndGames } from '../../../common/types/meet.type.js'
 import type {
     CreatePlaySessionBody,
     CreateScheduledSessionBody,
@@ -23,7 +23,7 @@ import type {
     UpdateSessionStatusBody,
     UpdateGameResultsBody,
     GameResultsUpdatedDto,
-} from '../../../common/types/session.type'
+} from '../../../common/types/session.type.js'
 
 @Injectable()
 export class SessionsService {

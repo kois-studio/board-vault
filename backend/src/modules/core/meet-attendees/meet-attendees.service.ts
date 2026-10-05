@@ -1,6 +1,6 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
 
-import { DatabaseService } from '../../common/database/database.service'
+import { DatabaseService } from '../../common/database/database.service.js'
 
 @Injectable()
 export class MeetAttendeesService {

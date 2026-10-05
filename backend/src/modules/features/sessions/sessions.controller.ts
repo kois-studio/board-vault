@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Put, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
-import { AuthGuard } from '../../../common/guards/auth.guard'
-import { MeetWithAttendeesAndGames } from '../../../common/types/meet.type'
+import { AuthGuard } from '../../../common/guards/auth.guard.js'
+import { MeetWithAttendeesAndGames } from '../../../common/types/meet.type.js'
 import {
     CreatePlaySessionBody,
     CreateScheduledSessionBody,
@@ -22,9 +22,9 @@ import {
     UpdateSessionStatusBody,
     UpdateGameResultsBody,
     GameResultsUpdatedDto,
-} from '../../../common/types/session.type'
+} from '../../../common/types/session.type.js'
 
-import { SessionsService } from './sessions.service'
+import { SessionsService } from './sessions.service.js'
 
 @UseGuards(AuthGuard)
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))

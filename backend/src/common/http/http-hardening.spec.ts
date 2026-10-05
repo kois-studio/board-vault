@@ -1,7 +1,7 @@
-import * as express from 'express'
-import * as request from 'supertest'
+import express from 'express'
+import request from 'supertest'
 
-import { applySecurityHeaders, createBodyParsers } from './http-hardening'
+import { applySecurityHeaders, createBodyParsers } from './http-hardening.js'
 
 describe('HTTP hardening', () => {
     let app: express.Express

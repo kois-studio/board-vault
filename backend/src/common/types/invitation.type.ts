@@ -1,8 +1,8 @@
 import { ApiProperty, ApiPropertyOptional, OmitType } from '@nestjs/swagger'
 import { IsInt, IsNotEmpty, IsOptional, IsString, MaxLength, Min } from 'class-validator'
 
-import type { GroupDto } from './group.type'
-import type { UserPublicDto } from './user.type'
+import type { GroupDto } from './group.type.js'
+import type { UserPublicDto } from './user.type.js'
 
 /**
  * base Invitation as it comes from db

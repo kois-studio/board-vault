@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { ArrayMinSize, ArrayUnique, IsArray, IsIn, IsInt, IsOptional, Max, Min } from 'class-validator'
 
-import { GameCompleteDto } from '../../../common/types/game.type'
-import { MeetDto } from '../../../common/types/meet.type'
-import { UserPublicDto } from '../../../common/types/user.type'
-import { AvatarDto } from '../../../common/types/user.type'
+import { GameCompleteDto } from '../../../common/types/game.type.js'
+import { MeetDto } from '../../../common/types/meet.type.js'
+import { UserPublicDto } from '../../../common/types/user.type.js'
+import { AvatarDto } from '../../../common/types/user.type.js'
 
 export type RecommendationDecisionLens = 'balanced' | 'fresh' | 'favorite'
 

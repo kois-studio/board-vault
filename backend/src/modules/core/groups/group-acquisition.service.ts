@@ -1,14 +1,14 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 
-import { DatabaseService } from '../../common/database/database.service'
+import { DatabaseService } from '../../common/database/database.service.js'
 
 import type {
     GroupAcquisitionDecisionStatus,
     GroupAcquisitionEntryDto,
     GroupGameInterestBody,
     UpdateGroupAcquisitionDecisionBody,
-} from '../../../common/types/group-game-interest.type'
-import type { AvatarDto, UserPublicDto } from '../../../common/types/user.type'
+} from '../../../common/types/group-game-interest.type.js'
+import type { AvatarDto, UserPublicDto } from '../../../common/types/user.type.js'
 
 @Injectable()
 export class GroupAcquisitionService {

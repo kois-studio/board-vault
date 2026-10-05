@@ -1,11 +1,11 @@
 import { Controller, Delete, Get, Param, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
 
-import { AdminGuard } from '../../../common/guards/admin.guard'
-import { AuthGuard } from '../../../common/guards/auth.guard'
-import { CacheKeyParam, PrintKeysDto } from '../../../common/types/cache.type'
+import { AdminGuard } from '../../../common/guards/admin.guard.js'
+import { AuthGuard } from '../../../common/guards/auth.guard.js'
+import { CacheKeyParam, PrintKeysDto } from '../../../common/types/cache.type.js'
 
-import { CacheService } from './cache.service'
+import { CacheService } from './cache.service.js'
 
 @ApiTags('cache')
 @ApiBearerAuth()

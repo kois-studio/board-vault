@@ -3,10 +3,10 @@ import { randomUUID } from 'node:crypto'
 import { Injectable, Logger, NestMiddleware } from '@nestjs/common'
 import { Response, NextFunction } from 'express'
 
-import { requestContext } from '../logging/request-context'
-import { structuredLog } from '../logging/structured-log'
+import { requestContext } from '../logging/request-context.js'
+import { structuredLog } from '../logging/structured-log.js'
 
-import type { AuthenticatedRequest } from './clerk-session.middleware'
+import type { AuthenticatedRequest } from './clerk-session.middleware.js'
 
 type RequestWithCorrelationId = AuthenticatedRequest & { requestId?: string }
 

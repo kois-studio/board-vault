@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 
-import { GameCompleteDto } from './game.type'
+import { GameCompleteDto } from './game.type.js'
 
 export class CollectionActivityDto {
     @ApiProperty({ example: 12345 })

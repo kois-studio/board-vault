@@ -1,6 +1,6 @@
 import { CanActivate, ExecutionContext, ForbiddenException, Injectable, Logger } from '@nestjs/common'
 
-import { GroupsService } from '../../modules/core/groups/groups.service'
+import { GroupsService } from '../../modules/core/groups/groups.service.js'
 
 @Injectable()
 export class GroupOwnerGuard implements CanActivate {

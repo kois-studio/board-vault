@@ -2,9 +2,9 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { Transform, Type } from 'class-transformer'
 import { ArrayMaxSize, IsArray, IsBoolean, IsIn, IsInt, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator'
 
-import { GameTagWithCategoryDto } from './tag.type'
+import { GameTagWithCategoryDto } from './tag.type.js'
 
-import type { SupportedLanguage } from './game-translation.type'
+import type { SupportedLanguage } from './game-translation.type.js'
 
 /**
  * base Game as it comes from db

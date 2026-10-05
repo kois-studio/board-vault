@@ -1,18 +1,18 @@
-import { ResultSet } from '@libsql/client/.'
+import { ResultSet } from '@libsql/client'
 import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 
-import { gameProposalsSchema } from '../../../common/schemas/db-game-proposal.schema'
-import { CacheService } from '../../common/cache/cache.service'
-import { DatabaseService } from '../../common/database/database.service'
-import { NotificationTypeEnum } from '../notifications/notifications-enum.type'
+import { gameProposalsSchema } from '../../../common/schemas/db-game-proposal.schema.js'
+import { CacheService } from '../../common/cache/cache.service.js'
+import { DatabaseService } from '../../common/database/database.service.js'
+import { NotificationTypeEnum } from '../notifications/notifications-enum.type.js'
 
 import type {
     GameProposalAddTo,
     GameProposalDto,
     CreateGameProposalBody,
     UpdateGameProposalBody,
-} from '../../../common/types/game-proposal.type'
-import type { UserProposalStatsDto } from '../../../common/types/stats.type'
+} from '../../../common/types/game-proposal.type.js'
+import type { UserProposalStatsDto } from '../../../common/types/stats.type.js'
 
 @Injectable()
 export class GameProposalService {

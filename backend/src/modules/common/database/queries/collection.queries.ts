@@ -1,8 +1,8 @@
 import { BadRequestException } from '@nestjs/common'
 
-import type { CollectionActivityDto } from '../../../../common/types/collection-activity.type'
-import type { GameOwnedDto, UpdateGameOwnedDto } from '../../../../common/types/game-owned.type'
-import type { DatabaseService } from '../database.service'
+import type { CollectionActivityDto } from '../../../../common/types/collection-activity.type.js'
+import type { GameOwnedDto, UpdateGameOwnedDto } from '../../../../common/types/game-owned.type.js'
+import type { DatabaseService } from '../database.service.js'
 
 /** Personal collections: owned games, wishlist, reviews, and activity. */
 export class CollectionQueries {

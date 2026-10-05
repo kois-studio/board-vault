@@ -2,10 +2,10 @@ import { randomUUID } from 'node:crypto'
 
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logger } from '@nestjs/common'
 
-import { structuredLog } from '../logging/structured-log'
+import { structuredLog } from '../logging/structured-log.js'
 
-import { API_ERROR_CODES, BoardVaultHttpException } from './api-error'
-import { ProviderTimeoutError } from './provider-timeout'
+import { API_ERROR_CODES, BoardVaultHttpException } from './api-error.js'
+import { ProviderTimeoutError } from './provider-timeout.js'
 
 import type { Request, Response } from 'express'
 

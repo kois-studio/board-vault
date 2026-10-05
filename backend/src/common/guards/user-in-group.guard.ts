@@ -1,7 +1,7 @@
 import { Injectable, CanActivate, ExecutionContext, ForbiddenException, Logger } from '@nestjs/common'
 
-import { safeErrorName } from '../../common/logging/structured-log'
-import { GroupMembershipsService } from '../../modules/core/group-memberships/group-memberships.service'
+import { safeErrorName } from '../../common/logging/structured-log.js'
+import { GroupMembershipsService } from '../../modules/core/group-memberships/group-memberships.service.js'
 
 @Injectable()
 export class UserInGroupGuard implements CanActivate {

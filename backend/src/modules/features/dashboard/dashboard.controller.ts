@@ -1,14 +1,14 @@
 import { Controller, Delete, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
-import { AuthGuard } from '../../../common/guards/auth.guard'
-import { UserOwnershipGuard } from '../../../common/guards/ownership.guard'
-import { UserInGroupGuard } from '../../../common/guards/user-in-group.guard'
-import { CreatedGroupDto, GroupWithMembersAndGames, LegacyCreateGroupParams } from '../../../common/types/group.type'
-import { UserStatsDto } from '../../../common/types/stats.type'
-import { HistoryRecordDto } from '../play/play.types'
+import { AuthGuard } from '../../../common/guards/auth.guard.js'
+import { UserOwnershipGuard } from '../../../common/guards/ownership.guard.js'
+import { UserInGroupGuard } from '../../../common/guards/user-in-group.guard.js'
+import { CreatedGroupDto, GroupWithMembersAndGames, LegacyCreateGroupParams } from '../../../common/types/group.type.js'
+import { UserStatsDto } from '../../../common/types/stats.type.js'
+import { HistoryRecordDto } from '../play/play.types.js'
 
-import { DashboardService } from './dashboard.service'
+import { DashboardService } from './dashboard.service.js'
 
 @UseGuards(AuthGuard)
 @ApiTags('dashboard')

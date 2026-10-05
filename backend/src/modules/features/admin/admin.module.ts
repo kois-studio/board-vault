@@ -1,17 +1,17 @@
 import { Module } from '@nestjs/common'
 
-import { CacheModule } from '../../common/cache/cache.module'
-import { DatabaseModule } from '../../common/database/database.module'
-import { GameProposalModule } from '../../core/game-proposal/game-proposal.module'
-import { GameTagsModule } from '../../core/game-tags/game-tags.module'
-import { GameTranslationModule } from '../../core/game-translation/game-translation.module'
-import { GamesModule } from '../../core/games/games.module'
-import { NotificationsModule } from '../../core/notifications/notifications.module'
-import { TagCategoryModule } from '../../core/tag-category/tag-category.module'
-import { TagsModule } from '../../core/tags/tags.module'
+import { CacheModule } from '../../common/cache/cache.module.js'
+import { DatabaseModule } from '../../common/database/database.module.js'
+import { GameProposalModule } from '../../core/game-proposal/game-proposal.module.js'
+import { GameTagsModule } from '../../core/game-tags/game-tags.module.js'
+import { GameTranslationModule } from '../../core/game-translation/game-translation.module.js'
+import { GamesModule } from '../../core/games/games.module.js'
+import { NotificationsModule } from '../../core/notifications/notifications.module.js'
+import { TagCategoryModule } from '../../core/tag-category/tag-category.module.js'
+import { TagsModule } from '../../core/tags/tags.module.js'
 
-import { AdminController } from './admin.controller'
-import { AdminService } from './admin.service'
+import { AdminController } from './admin.controller.js'
+import { AdminService } from './admin.service.js'
 
 @Module({
     imports: [

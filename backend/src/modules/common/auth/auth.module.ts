@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 
-import { UsersModule } from '../../core/users/users.module'
-import { DatabaseModule } from '../database/database.module'
+import { UsersModule } from '../../core/users/users.module.js'
+import { DatabaseModule } from '../database/database.module.js'
 
-import { AuthController } from './auth.controller'
-import { ClerkIdentityService } from './clerk-identity.service'
-import { ClerkTokenVerifier } from './clerk-token-verifier'
-import { ClerkWebhookController } from './clerk-webhook.controller'
-import { ClerkWebhookService } from './clerk-webhook.service'
+import { AuthController } from './auth.controller.js'
+import { ClerkIdentityService } from './clerk-identity.service.js'
+import { ClerkTokenVerifier } from './clerk-token-verifier.js'
+import { ClerkWebhookController } from './clerk-webhook.controller.js'
+import { ClerkWebhookService } from './clerk-webhook.service.js'
 
 @Module({
     imports: [UsersModule, ConfigModule, DatabaseModule],

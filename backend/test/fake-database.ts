@@ -1,12 +1,12 @@
-import { DatabaseService } from '../src/modules/common/database/database.service'
-import { AccountQueries } from '../src/modules/common/database/queries/accounts.queries'
-import { CollectionQueries } from '../src/modules/common/database/queries/collection.queries'
-import { GameQueries } from '../src/modules/common/database/queries/games.queries'
-import { GroupQueries } from '../src/modules/common/database/queries/groups.queries'
-import { InvitationQueries } from '../src/modules/common/database/queries/invitations.queries'
-import { NotificationQueries } from '../src/modules/common/database/queries/notifications.queries'
-import { RecommendationQueries } from '../src/modules/common/database/queries/recommendations.queries'
-import { SessionQueries } from '../src/modules/common/database/queries/sessions.queries'
+import { DatabaseService } from '../src/modules/common/database/database.service.js'
+import { AccountQueries } from '../src/modules/common/database/queries/accounts.queries.js'
+import { CollectionQueries } from '../src/modules/common/database/queries/collection.queries.js'
+import { GameQueries } from '../src/modules/common/database/queries/games.queries.js'
+import { GroupQueries } from '../src/modules/common/database/queries/groups.queries.js'
+import { InvitationQueries } from '../src/modules/common/database/queries/invitations.queries.js'
+import { NotificationQueries } from '../src/modules/common/database/queries/notifications.queries.js'
+import { RecommendationQueries } from '../src/modules/common/database/queries/recommendations.queries.js'
+import { SessionQueries } from '../src/modules/common/database/queries/sessions.queries.js'
 
 const DOMAINS = {
     accounts: AccountQueries,

@@ -1,6 +1,6 @@
 import { NotFoundException } from '@nestjs/common'
 
-import { GroupPeopleFeatureGuard } from './group-people-feature.guard'
+import { GroupPeopleFeatureGuard } from './group-people-feature.guard.js'
 
 describe('GroupPeopleFeatureGuard', () => {
     const previousValue = process.env.BOARD_VAULT_GROUP_PEOPLE_ENABLED

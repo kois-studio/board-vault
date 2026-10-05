@@ -1,16 +1,16 @@
-import { requestContext } from '../logging/request-context'
+import { requestContext } from '../logging/request-context.js'
 
-import { LoggerMiddleware } from './logger.middleware'
+import { LoggerMiddleware } from './logger.middleware.js'
 
 describe('LoggerMiddleware', () => {
     it('correlates responses and never logs query-string tokens', () => {
         const middleware = new LoggerMiddleware()
-        const logger = jest.spyOn((middleware as unknown as { LOGGER: { log: (message: string) => void } }).LOGGER, 'log')
+        const logger = vi.spyOn((middleware as unknown as { LOGGER: { log: (message: string) => void } }).LOGGER, 'log')
         const finishHandlers: Array<() => void> = []
         const response = {
             statusCode: 200,
-            setHeader: jest.fn(),
-            once: jest.fn((_event: string, handler: () => void) => finishHandlers.push(handler)),
+            setHeader: vi.fn(),
+            once: vi.fn((_event: string, handler: () => void) => finishHandlers.push(handler)),
         }
         const request = {
             method: 'GET',
@@ -19,7 +19,7 @@ describe('LoggerMiddleware', () => {
             headers: { authorization: 'Bearer secret-token' },
         }
 
-        middleware.use(request as never, response as never, jest.fn())
+        middleware.use(request as never, response as never, vi.fn())
         finishHandlers[0]?.()
 
         expect(response.setHeader).toHaveBeenCalledWith('X-Request-Id', expect.any(String))
@@ -32,12 +32,12 @@ describe('LoggerMiddleware', () => {
 
     it('adds the route template and account, and scopes the request id', () => {
         const middleware = new LoggerMiddleware()
-        const logger = jest.spyOn((middleware as unknown as { LOGGER: { log: (message: string) => void } }).LOGGER, 'log')
+        const logger = vi.spyOn((middleware as unknown as { LOGGER: { log: (message: string) => void } }).LOGGER, 'log')
         const finishHandlers: Array<() => void> = []
         const response = {
             statusCode: 403,
-            setHeader: jest.fn(),
-            once: jest.fn((_event: string, handler: () => void) => finishHandlers.push(handler)),
+            setHeader: vi.fn(),
+            once: vi.fn((_event: string, handler: () => void) => finishHandlers.push(handler)),
         }
         const request: Record<string, unknown> = { method: 'GET', originalUrl: '/groups/12', url: '/groups/12', headers: {} }
         let requestIdInside: string | undefined

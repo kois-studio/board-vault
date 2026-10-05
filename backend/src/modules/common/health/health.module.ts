@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common'
 
-import { CacheModule } from '../cache/cache.module'
-import { DatabaseModule } from '../database/database.module'
+import { CacheModule } from '../cache/cache.module.js'
+import { DatabaseModule } from '../database/database.module.js'
 
-import { HealthController } from './health.controller'
-import { HealthService } from './health.service'
+import { HealthController } from './health.controller.js'
+import { HealthService } from './health.service.js'
 
 @Module({
     imports: [CacheModule, DatabaseModule],

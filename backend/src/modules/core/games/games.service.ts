@@ -1,15 +1,15 @@
-import { ResultSet } from '@libsql/client/.'
+import { ResultSet } from '@libsql/client'
 import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 
-import { safeErrorName } from '../../../common/logging/structured-log'
-import { gamesSchema } from '../../../common/schemas'
-import { GameDto } from '../../../common/types/game.type'
-import { CatalogueTagDto } from '../../../common/types/tag.type'
-import { CacheService } from '../../common/cache/cache.service'
-import { DatabaseService } from '../../common/database/database.service'
+import { safeErrorName } from '../../../common/logging/structured-log.js'
+import { gamesSchema } from '../../../common/schemas/index.js'
+import { GameDto } from '../../../common/types/game.type.js'
+import { CatalogueTagDto } from '../../../common/types/tag.type.js'
+import { CacheService } from '../../common/cache/cache.service.js'
+import { DatabaseService } from '../../common/database/database.service.js'
 
-import type { BrowseSort } from '../../../common/types/game.type'
-import type { CatalogueFilters } from '../../common/database/queries/games.queries'
+import type { BrowseSort } from '../../../common/types/game.type.js'
+import type { CatalogueFilters } from '../../common/database/queries/games.queries.js'
 
 @Injectable()
 export class GamesService {

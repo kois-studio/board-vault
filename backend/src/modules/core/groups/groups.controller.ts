@@ -1,29 +1,29 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
-import { AuthGuard } from '../../../common/guards/auth.guard'
-import { GroupOwnerGuard } from '../../../common/guards/group-owner.guard'
-import { RateLimit, RateLimitGuard } from '../../../common/guards/rate-limit.guard'
-import { UserInGroupGuard } from '../../../common/guards/user-in-group.guard'
+import { AuthGuard } from '../../../common/guards/auth.guard.js'
+import { GroupOwnerGuard } from '../../../common/guards/group-owner.guard.js'
+import { RateLimit, RateLimitGuard } from '../../../common/guards/rate-limit.guard.js'
+import { UserInGroupGuard } from '../../../common/guards/user-in-group.guard.js'
 import {
     ClerkGroupInvitationDto,
     ClerkInvitationIdParam,
     ClerkGroupInvitationSummaryDto,
     CreateClerkGroupInvitationBody,
-} from '../../../common/types/clerk-invitation.type'
+} from '../../../common/types/clerk-invitation.type.js'
 import {
     GroupAcquisitionEntryDto,
     GroupGameInterestBody,
     UpdateGroupAcquisitionDecisionBody,
-} from '../../../common/types/group-game-interest.type'
-import { GroupInsightsDto } from '../../../common/types/group-insights.type'
-import { CreateGroupRequestBody, GroupDto, UpdateGroupBody } from '../../../common/types/group.type'
-import { InvitationWithAccountsData } from '../../../common/types/invitation.type'
-import { ClerkIdentityService } from '../../common/auth/clerk-identity.service'
+} from '../../../common/types/group-game-interest.type.js'
+import { GroupInsightsDto } from '../../../common/types/group-insights.type.js'
+import { CreateGroupRequestBody, GroupDto, UpdateGroupBody } from '../../../common/types/group.type.js'
+import { InvitationWithAccountsData } from '../../../common/types/invitation.type.js'
+import { ClerkIdentityService } from '../../common/auth/clerk-identity.service.js'
 
-import { GroupAcquisitionService } from './group-acquisition.service'
-import { GroupInsightsService } from './group-insights.service'
-import { GroupsService } from './groups.service'
+import { GroupAcquisitionService } from './group-acquisition.service.js'
+import { GroupInsightsService } from './group-insights.service.js'
+import { GroupsService } from './groups.service.js'
 
 @UseGuards(AuthGuard)
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))

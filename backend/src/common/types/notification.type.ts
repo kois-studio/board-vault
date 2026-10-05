@@ -1,7 +1,7 @@
 import { ApiProperty, OmitType, PartialType, PickType } from '@nestjs/swagger'
 import { IsBoolean, IsInt, IsNotEmpty, IsObject, IsString, MaxLength, Min } from 'class-validator'
 
-import { NotificationDataMap, NotificationTypeEnum } from '../../modules/core/notifications/notifications-enum.type'
+import { NotificationDataMap, NotificationTypeEnum } from '../../modules/core/notifications/notifications-enum.type.js'
 
 /**
  * base Notification as it comes from db
