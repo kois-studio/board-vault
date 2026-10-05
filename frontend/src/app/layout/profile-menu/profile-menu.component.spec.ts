@@ -4,10 +4,13 @@ import { provideRouter } from '@angular/router'
 import type { UserType } from '../../api/api.types'
 import { DataService } from '../../core/services/data.service'
 import { LoginService } from '../../core/services/login.service'
+import { PendingProposalsService } from '../../core/services/pending-proposals.service'
 import { ProfileMenuComponent } from './profile-menu.component'
 
-describe('ProfileMenuComponent dialogs', () => {
+describe('ProfileMenuComponent', () => {
     let fixture: ComponentFixture<ProfileMenuComponent>
+    const isAdmin = signal(false)
+    const pending = signal<number | null>(null)
 
     const dataService = {
         currentUser: signal<UserType | null>({
@@ -18,35 +21,27 @@ describe('ProfileMenuComponent dialogs', () => {
             avatar: { backgroundColor: '#3B82F6', iconName: 'person-fill', emoji: null, type: 'icon', initials: 'OR' },
             createdAt: '2026-09-01T10:00:00.000Z',
         }),
-        userInvitations: signal([]),
-        userInvitationsLoading: signal(false),
-        userInvitationsError: signal(false),
-        userNotifications: signal([]),
-        userNotificationsLoading: signal(false),
-        userNotificationsError: signal(false),
         userProposalStats: signal({ totalProposals: 0 }),
-        retryUserInvitations: vi.fn(),
-        retryUserNotifications: vi.fn(),
     }
 
-    const openMenuItem = (label: RegExp) => {
-        ;(fixture.nativeElement.querySelector('button[aria-label="Open profile menu"]') as HTMLButtonElement).click()
-        fixture.detectChanges()
+    const element = () => fixture.nativeElement as HTMLElement
+    const trigger = () => element().querySelector('button[aria-controls="profile-menu"]') as HTMLButtonElement
 
-        const item = [...fixture.nativeElement.querySelectorAll('[role="menuitem"]')].find((element: HTMLElement) =>
-            label.test(element.textContent ?? ''),
-        ) as HTMLElement
-        item.click()
+    function open(): void {
+        trigger().click()
         fixture.detectChanges()
     }
 
     beforeEach(async () => {
+        isAdmin.set(false)
+        pending.set(null)
         await TestBed.configureTestingModule({
             imports: [ProfileMenuComponent],
             providers: [
                 provideRouter([]),
                 { provide: DataService, useValue: dataService },
-                { provide: LoginService, useValue: { logOut: vi.fn() } },
+                { provide: LoginService, useValue: { logOut: vi.fn(), isCurrentUserAdmin: isAdmin } },
+                { provide: PendingProposalsService, useValue: { count: pending } },
             ],
         }).compileComponents()
 
@@ -54,27 +49,46 @@ describe('ProfileMenuComponent dialogs', () => {
         fixture.detectChanges()
     })
 
-    it('opens and closes the invitations dialog from the menu', () => {
-        openMenuItem(/Group Invitations/)
+    it('is a disclosure: a button with aria-expanded and a plain list, not an ARIA menu', () => {
+        expect(trigger().getAttribute('aria-expanded')).toBe('false')
+        open()
 
-        expect(fixture.nativeElement.querySelector('#invitations-dialog-title')).not.toBeNull()
-        expect(fixture.nativeElement.textContent).toContain('No invitations pending.')
-
-        ;(fixture.nativeElement.querySelector('button[aria-label="Close invitations"]') as HTMLButtonElement).click()
-        fixture.detectChanges()
-
-        expect(fixture.nativeElement.querySelector('#invitations-dialog-title')).toBeNull()
+        expect(trigger().getAttribute('aria-expanded')).toBe('true')
+        expect(element().querySelector('[role="menu"], [role="menuitem"]')).toBeNull()
+        const labels = Array.from(element().querySelectorAll('#profile-menu li')).map((item) =>
+            item.textContent?.replace(/\s+/g, ' ').trim(),
+        )
+        expect(labels).toEqual(['Settings', expect.stringContaining('Theme'), 'My submissions'])
+        expect(element().querySelector('#profile-menu input[type="radio"][value="system"]')).not.toBeNull()
     })
 
-    it('opens and closes the notifications dialog from the menu', () => {
-        openMenuItem(/Notifications/)
-
-        expect(fixture.nativeElement.querySelector('#notifications-dialog-title')).not.toBeNull()
-        expect(fixture.nativeElement.textContent).toContain('No notifications pending.')
-
-        ;(fixture.nativeElement.querySelector('button[aria-label="Close notifications"]') as HTMLButtonElement).click()
+    it('closes on Escape and returns focus to the trigger', () => {
+        open()
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
         fixture.detectChanges()
 
-        expect(fixture.nativeElement.querySelector('#notifications-dialog-title')).toBeNull()
+        expect(element().querySelector('#profile-menu')).toBeNull()
+        expect(document.activeElement).toBe(trigger())
+    })
+
+    it('closes on a click outside', () => {
+        open()
+        document.body.click()
+        fixture.detectChanges()
+
+        expect(element().querySelector('#profile-menu')).toBeNull()
+    })
+
+    it('shows Administration to admins with a neutral count and a dot on the avatar', () => {
+        isAdmin.set(true)
+        pending.set(3)
+        fixture.detectChanges()
+
+        expect(trigger().getAttribute('aria-label')).toBe('Account menu, 3 game proposals waiting')
+        open()
+        const admin = element().querySelector<HTMLAnchorElement>('a[href="/admin"]')
+        expect(admin?.textContent).toContain('Administration')
+        expect(admin?.textContent).toContain('3 proposals waiting')
+        expect(admin?.innerHTML).not.toContain('danger')
     })
 })

@@ -116,6 +116,11 @@
         @apply inline-flex min-h-9 items-center gap-2 rounded-full border border-bv-border bg-bv-surface px-3 py-1.5 text-sm font-medium text-bv-text transition hover:border-bv-primary/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bv-primary disabled:cursor-not-allowed disabled:opacity-60 aria-pressed:border-bv-primary aria-pressed:bg-bv-primary aria-pressed:text-bv-on-primary;
     }
 
+    /* A row in a header popover (the avatar menu): a link or button with an icon. */
+    .app-menu-item {
+        @apply flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-left text-bv-text-muted hover:bg-bv-surface-2 hover:text-bv-text focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-bv-primary;
+    }
+
     .app-bg-primary {
         @apply bg-bv-bg text-bv-text;
     }

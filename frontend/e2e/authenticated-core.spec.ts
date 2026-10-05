@@ -10,7 +10,7 @@ test.describe('authenticated core navigation', () => {
         await page.goto('/dashboard')
 
         await expect(page.getByRole('heading', { name: 'Your groups' })).toBeVisible()
-        await expect(page.locator('body')).toContainText(/Start with the people you play with|Pick up where your group left off/i)
+        await expect(page.locator('body')).toContainText('Your groups, the next game night, and what you played lately.')
     })
 
     test('exposes working dashboard destinations', async ({ page }) => {

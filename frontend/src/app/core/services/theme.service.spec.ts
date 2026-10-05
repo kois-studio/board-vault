@@ -10,7 +10,7 @@ describe('ThemeService', () => {
         listeners = []
         localStorage.clear()
         document.documentElement.classList.remove('dark')
-        document.head.querySelectorAll('meta[name="theme-color"]').forEach((meta) => meta.remove())
+        for (const meta of Array.from(document.head.querySelectorAll('meta[name="theme-color"]'))) meta.remove()
 
         for (const media of ['(prefers-color-scheme: light)', '(prefers-color-scheme: dark)']) {
             const meta = document.createElement('meta')

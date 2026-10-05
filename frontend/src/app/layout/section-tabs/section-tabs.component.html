@@ -1,0 +1,17 @@
+@if (subsections(); as subsections) {
+<div class="border-b border-bv-border bg-bv-surface">
+    <nav class="container mx-auto flex max-w-6xl items-center gap-1 overflow-x-auto px-4 md:gap-2" aria-label="Subsection navigation">
+        @for (subsection of subsections; track subsection.path) {
+        <a
+            [routerLink]="subsection.path"
+            [attr.aria-current]="isActive(subsection.path) ? 'page' : null"
+            class="flex min-h-11 items-center gap-2 whitespace-nowrap border-b-2 px-3 py-2.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-bv-primary motion-reduce:transition-none"
+            [class]="isActive(subsection.path) ? 'border-bv-primary text-bv-primary' : 'border-transparent text-bv-text-muted hover:text-bv-text'"
+        >
+            <app-icon class="hidden sm:inline-flex" [name]="subsection.icon" [size]="16" />
+            {{ subsection.name }}
+        </a>
+        }
+    </nav>
+</div>
+}

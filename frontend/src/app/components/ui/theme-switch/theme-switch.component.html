@@ -1,0 +1,16 @@
+<fieldset class="min-w-0">
+    <legend class="sr-only">Theme</legend>
+    <div class="inline-flex rounded-lg border border-bv-border bg-bv-surface-2 p-0.5">
+        @for (option of options; track option.value) {
+        <label
+            class="flex min-h-9 cursor-pointer items-center justify-center gap-1.5 rounded-md px-2.5 text-sm font-medium transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-bv-primary motion-reduce:transition-none"
+            [class]="preference() === option.value ? 'bg-bv-surface text-bv-text shadow-sm' : 'text-bv-text-muted hover:text-bv-text'"
+            [title]="option.label"
+        >
+            <input type="radio" class="sr-only" [name]="name" [value]="option.value" [checked]="preference() === option.value" (change)="choose(option.value)" />
+            <app-icon [name]="option.icon" [size]="16" />
+            <span class="sr-only">{{ option.label }}</span>
+        </label>
+        }
+    </div>
+</fieldset>

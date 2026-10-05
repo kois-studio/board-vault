@@ -143,9 +143,16 @@ component through `takeUntilDestroyed` or `toSignal`.
 | `/settings`, `/settings/profile`, `/settings/appearance`, `/settings/security` | `AuthOnlyGuard` | Settings: profile, theme, and Clerk account security (`/settings/account` redirects to profile) |
 | `/admin/…` | `AdminGuard` | Catalogue administration |
 
-The top bar has three sections: Home (groups and their pages), Collection
-(games, browse, reviews, wishlist), and Play (upcoming, discover, history).
-Settings is in the profile menu.
+The app has three sections: Home (groups and their pages), Collection
+(games, browse, reviews, wishlist), and Play (upcoming, what to play,
+history), defined once in `layout/app-sections.ts`. Signed in, the header is
+one bar: the logo (to Home), the sections (desktop), the inbox (pending group
+invitations and notifications, one count), and the avatar menu (Settings,
+theme, My submissions, Administration for admins, Sign out). Collection and
+Play pages add their subsection tabs below it. Below `lg` the sections move
+to a bottom tab bar. Header popovers use the disclosure pattern
+(`core/utils/disclosure.ts`): Escape, a click outside, or a navigation closes
+them.
 
 `LayoutCompleteComponent` wraps browsing pages; `LayoutBasicComponent` wraps
 focused actions (create, edit, claim, propose) without navigation.

@@ -1,7 +1,7 @@
 <app-layout-header />
 
 @if (isAuthenticated()) {
-<app-layout-top-bar />
+<app-layout-section-tabs />
 }
 
 @if (isClerkAuthHandoffActive()) {
@@ -13,3 +13,7 @@
 }
 
 <app-layout-footer />
+
+@if (isAuthenticated()) {
+<app-layout-bottom-tabs />
+}

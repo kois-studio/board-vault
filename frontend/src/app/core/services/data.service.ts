@@ -1,5 +1,5 @@
 import { effect, Injectable, inject, signal } from '@angular/core'
-import { catchError, concatMap, finalize, firstValueFrom, of, Subject, takeUntil, tap, throwError } from 'rxjs'
+import { catchError, concatMap, finalize, firstValueFrom, forkJoin, of, Subject, takeUntil, tap, throwError } from 'rxjs'
 import { Api } from '../../api/api'
 import type {
     CollectionActivityWithGameDataType,
@@ -721,6 +721,25 @@ export class DataService {
                     return this.toastService.error('Notification not found')
                 }
                 this.toastService.error('Error updating notification')
+            },
+        })
+    }
+
+    public markAllNotificationsRead() {
+        const unread = this.userNotifications().filter((notification) => !notification.isRead)
+        if (unread.length === 0) return
+
+        forkJoin(unread.map((notification) => this.api.updateNotification(notification.id, { isRead: true }))).subscribe({
+            next: () => {
+                const ids = new Set(unread.map((notification) => notification.id))
+                this.userNotifications.update((notifications) =>
+                    notifications.map((notification) => (ids.has(notification.id) ? { ...notification, isRead: true } : notification)),
+                )
+                this.toastService.success('All notifications marked as read')
+            },
+            error: () => {
+                this.toastService.error('Some notifications could not be marked as read')
+                this.retryUserNotifications()
             },
         })
     }

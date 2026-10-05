@@ -1,0 +1,25 @@
+<!-- Keeps the end of the page clear of the fixed bar. -->
+<div class="h-[calc(4rem+env(safe-area-inset-bottom))] lg:hidden" aria-hidden="true"></div>
+
+<nav
+    aria-label="Section navigation"
+    class="fixed inset-x-0 bottom-0 z-40 border-t border-bv-border bg-bv-surface pb-[env(safe-area-inset-bottom)] lg:hidden"
+>
+    <ul class="mx-auto grid h-16 max-w-md grid-cols-3">
+        @for (section of sections; track section.path) {
+        <li>
+            <a
+                [routerLink]="section.path"
+                [attr.aria-current]="activeSection() === section ? 'page' : null"
+                class="flex h-full flex-col items-center justify-center gap-1 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-bv-primary motion-reduce:transition-none"
+                [class]="activeSection() === section ? 'text-bv-primary' : 'text-bv-text-muted hover:text-bv-text'"
+            >
+                <span class="flex h-7 w-14 items-center justify-center rounded-full" [class.bg-bv-primary-soft]="activeSection() === section">
+                    <app-icon [name]="section.icon" [size]="20" />
+                </span>
+                {{ section.name }}
+            </a>
+        </li>
+        }
+    </ul>
+</nav>

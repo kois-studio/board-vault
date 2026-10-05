@@ -1,13 +1,13 @@
 import { CommonModule } from '@angular/common'
 import { Component, inject, input, OnInit } from '@angular/core'
 import { RouterModule } from '@angular/router'
-import { DarkModeToggleComponent } from '../../../../components/ui/dark-mode-toggle/dark-mode-toggle.component'
 import { IconComponent } from '../../../../components/ui/icon/icon.component'
+import { ThemeSwitchComponent } from '../../../../components/ui/theme-switch/theme-switch.component'
 import { PendingProposalsService } from '../../../../core/services/pending-proposals.service'
 
 @Component({
     selector: 'app-admin-sidebar',
-    imports: [CommonModule, RouterModule, DarkModeToggleComponent, IconComponent],
+    imports: [CommonModule, RouterModule, IconComponent, ThemeSwitchComponent],
     templateUrl: './admin-sidebar.component.html',
 })
 export class AdminSidebarComponent implements OnInit {

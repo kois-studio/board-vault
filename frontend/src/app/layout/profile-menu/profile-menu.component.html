@@ -1,78 +1,71 @@
-<!-- Profile Picture and Dropdown Trigger -->
 <div class="relative">
     <button
-        #profileTrigger
+        #trigger
         type="button"
-        (click)="toggleDropdown()"
-        class="relative cursor-pointer rounded-full focus-visible:outline-none"
-        aria-label="Open profile menu"
-        aria-haspopup="menu"
+        (click)="disclosure.toggle()"
+        class="relative flex cursor-pointer rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bv-primary focus-visible:ring-offset-2"
+        [attr.aria-label]="isAdmin() && pendingProposalCount() ? 'Account menu, ' + pendingProposalCount() + ' game proposals waiting' : 'Account menu'"
         aria-controls="profile-menu"
-        [attr.aria-expanded]="isDropdownVisible"
+        [attr.aria-expanded]="disclosure.isOpen()"
     >
-        @if (currentUser$()) {
-            <app-image-profile [avatar]="currentUser$()!.avatar" />
+        @if (currentUser$(); as user) {
+        <app-image-profile [avatar]="user.avatar" />
         }
-        @if (userInvitations$().length + userUnreadNotificationsComputed().length) {
-            <div
-                class="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-bv-primary text-bv-on-primary"
-                [attr.aria-label]="userInvitations$().length + userUnreadNotificationsComputed().length + ' unread profile items'"
-            >
-                <span class="text-sm" aria-hidden="true">{{ userInvitations$().length + userUnreadNotificationsComputed().length }}</span>
-            </div>
+        @if (isAdmin() && pendingProposalCount()) {
+        <span class="absolute right-0 top-0 h-3 w-3 rounded-full bg-bv-primary ring-2 ring-bv-surface" aria-hidden="true"></span>
         }
     </button>
 
-    <!-- Dropdown Menu -->
-    @if (isDropdownVisible) {
-    <div id="profile-menu" role="menu" class="absolute right-0 z-50 mt-2 w-64 rounded-lg border border-bv-border bg-bv-surface shadow-xl">
-        @if (currentUser$()) {
-            <div class="flex items-center p-4">
-                <app-image-profile [avatar]="currentUser$()!.avatar" />
-                <div class="ml-3">
-                    <p class="font-semibold text-bv-text">{{ currentUser$()!.displayName }}</p>
-                    <p class="text-sm text-bv-text-muted">{{ currentUser$()!.username }}</p>
-                </div>
+    @if (disclosure.isOpen()) {
+    <div id="profile-menu" class="absolute right-0 z-50 mt-2 w-72 overflow-hidden rounded-xl border border-bv-border bg-bv-surface text-bv-text shadow-xl">
+        @if (currentUser$(); as user) {
+        <div class="flex items-center gap-3 border-b border-bv-border p-4">
+            <app-image-profile [avatar]="user.avatar" />
+            <div class="min-w-0">
+                <p class="truncate font-semibold">{{ user.displayName }}</p>
+                <p class="truncate text-sm text-bv-text-muted">{{ user.username }}</p>
             </div>
+        </div>
         }
-        <div class="border-t border-bv-text-muted">
-            <a routerLink="/settings" role="menuitem" (click)="onClickProfileSettings()" class="flex w-full items-center gap-2 border-b border-bv-border px-4 py-3 text-left text-bv-text-muted hover:bg-bv-bg">
-                <app-icon name="settings" [size]="17" /> Manage account
-            </a>
-            <button type="button" role="menuitem" (click)="onClickInvitations()" class="flex w-full items-center gap-2 border-b border-bv-border px-4 py-3 text-left text-bv-text-muted hover:bg-bv-bg">
-                <app-icon name="mail" [size]="17" /> Group Invitations
-                @if (userInvitations$().length) {
-                    <div class="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-bv-primary text-bv-on-primary">
-                        <span class="text-sm" aria-hidden="true">{{ userInvitations$().length }}</span>
-                    </div>
-                }
-            </button>
-            <button type="button" role="menuitem" (click)="onClickNotifications()" class="flex w-full items-center gap-2 border-b border-bv-border px-4 py-3 text-left text-bv-text-muted hover:bg-bv-bg">
-                <app-icon name="bell" [size]="17" /> Notifications
-                @if (userUnreadNotificationsComputed().length > 0) {
-                    <div class="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-bv-primary text-bv-on-primary">
-                        <span class="text-sm" aria-hidden="true">{{ userUnreadNotificationsComputed().length }}</span>
-                    </div>
-                }
-            </button>
-            <a routerLink="/submissions" role="menuitem" (click)="onClickSubmissions()" class="flex w-full items-center gap-2 border-b border-bv-border px-4 py-3 text-left text-bv-text-muted hover:bg-bv-bg">
-                <app-icon name="file-text" [size]="17" /> My Submissions
-                @if (userProposalStats$().totalProposals > 0) {
-                    <div class="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-bv-primary text-bv-on-primary">
-                        <span class="text-sm" aria-hidden="true">{{ userProposalStats$().totalProposals }}</span>
-                    </div>
-                }
-            </a>
-            <button type="button" role="menuitem" (click)="onClickSignOut()" class="flex w-full items-center gap-2 px-4 py-3 text-left text-bv-text-muted hover:bg-bv-bg">
-                <app-icon name="arrow-right" [size]="17" /> Sign out
+
+        <ul class="p-1.5">
+            <li>
+                <a routerLink="/settings" class="app-menu-item">
+                    <app-icon name="settings" [size]="18" /> Settings
+                </a>
+            </li>
+            <li class="flex min-h-11 items-center justify-between gap-3 px-3 py-1">
+                <span class="flex items-center gap-3 text-bv-text-muted"><app-icon name="palette" [size]="18" /> Theme</span>
+                <app-theme-switch />
+            </li>
+            <li>
+                <a routerLink="/submissions" class="app-menu-item">
+                    <app-icon name="file-text" [size]="18" /> My submissions
+                    @if (userProposalStats$().totalProposals > 0) {
+                    <span class="ml-auto rounded-full bg-bv-surface-2 px-2 py-0.5 text-xs font-semibold text-bv-text-muted">
+                        {{ userProposalStats$().totalProposals }}<span class="sr-only"> submitted</span>
+                    </span>
+                    }
+                </a>
+            </li>
+            @if (isAdmin()) {
+            <li>
+                <a routerLink="/admin" class="app-menu-item">
+                    <app-icon name="shield-lock" [size]="18" /> Administration
+                    @if (pendingProposalCount()) {
+                    <span class="ml-auto rounded-full bg-bv-primary px-2 py-0.5 text-xs font-semibold text-bv-on-primary">
+                        {{ pendingProposalCount() }}<span class="sr-only"> proposals waiting</span>
+                    </span>
+                    }
+                </a>
+            </li>
+            }
+        </ul>
+        <div class="border-t border-bv-border p-1.5">
+            <button type="button" class="app-menu-item w-full cursor-pointer" (click)="onClickSignOut()">
+                <app-icon name="logout" [size]="18" /> Sign out
             </button>
         </div>
     </div>
     }
 </div>
-
-<!-- Modal: Invitations -->
-<app-modal-profile-invitations />
-
-<!-- Modal: Notifications -->
-<app-modal-profile-notifications />
